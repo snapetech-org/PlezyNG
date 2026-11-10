@@ -31,6 +31,8 @@ import '../services/companion_remote/lan_discovery_service.dart';
 import '../services/companion_remote/remote_auth_context.dart';
 import '../services/companion_remote/remote_auth_service.dart';
 import '../services/companion_remote/remote_pairing_store.dart';
+import '../services/music/music_transfer_exchange.dart';
+import '../services/music/music_transfer_snapshot.dart';
 import '../utils/app_logger.dart';
 import '../utils/device_identity.dart';
 import '../utils/error_message_utils.dart';
@@ -43,6 +45,8 @@ typedef CommandReceivedCallback = void Function(RemoteCommand command);
 typedef PlexHomeResolver = Future<PlexHome?> Function(String connectionId);
 typedef CompanionRemotePeerServiceFactory = CompanionRemotePeerService Function();
 typedef LanDiscoveryServiceFactory = LanDiscoveryService Function();
+
+enum MusicTransferResult { completed, unavailable, rejected, superseded }
 
 String _localizedRemoteError(Object error, String Function(String details) fallback) {
   if (error is RemotePeerError) {
@@ -74,6 +78,9 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   RemoteSession? _session;
   CompanionRemotePeerService? _peerService;
   CompanionRemotePeerService? _pendingRemotePeer;
+  MusicTransferSession? _musicSession;
+  MusicTransferExchange? _musicTransfer;
+  int _musicTransferVersion = 0;
   LanDiscoveryService? _discoveryService;
   String _deviceName = t.companionRemote.unknownDevice;
   String _platform = 'unknown';
@@ -240,6 +247,30 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   bool get isHost => _session?.isHost ?? false;
   bool get isRemote => _session?.isRemote ?? false;
   bool get isConnected => _session?.isConnected ?? false;
+  bool get supportsMusicTransfer =>
+      isConnected && _musicTransferVersion == 1 && _musicTransfer != null && _musicSession != null;
+
+  void bindMusicSession(MusicTransferSession session) {
+    if (identical(_musicSession, session)) return;
+    _musicSession = session;
+  }
+
+  void unbindMusicSession(MusicTransferSession session) {
+    if (!identical(_musicSession, session)) return;
+    _musicSession = null;
+  }
+
+  Future<MusicTransferResult> transferMusicToPeer() async {
+    final session = _musicSession;
+    final exchange = _musicTransfer;
+    if (!supportsMusicTransfer || session == null || exchange == null) return MusicTransferResult.unavailable;
+    final offer = session.offerTransfer();
+    if (offer == null) return MusicTransferResult.unavailable;
+    if (!await exchange.request(offer.snapshot)) return MusicTransferResult.rejected;
+    if (!identical(_musicSession, session) || !isConnected) return MusicTransferResult.superseded;
+    return await session.finishTransfer(offer) ? MusicTransferResult.completed : MusicTransferResult.superseded;
+  }
+
   RemoteSession? get session => _session;
   RemoteSessionStatus get status => _session?.status ?? RemoteSessionStatus.disconnected;
   RemoteDevice? get connectedDevice => _session?.connectedDevice;
@@ -1063,6 +1094,19 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     // synchronously cancels these subscriptions.
     _cleanupSubscriptions();
     final profileId = _cryptoProfileId;
+    _musicTransfer = MusicTransferExchange(
+      allowed: () => _ownsPeer(peer, generation) && isConnected && profileId != null && profileId == _cryptoProfileId,
+      accept: (snapshot, current) {
+        final session = _musicSession;
+        if (session == null || !current()) return Future.value(false);
+        return session.acceptTransfer(snapshot, current: () => current() && identical(_musicSession, session));
+      },
+      send: (data) {
+        if (_ownsPeer(peer, generation)) {
+          peer.sendCommand(RemoteCommand(type: RemoteCommandType.musicTransfer, data: data));
+        }
+      },
+    );
     _gameSessions = GameSessionExchange(
       isHost: host,
       allowed: () =>
@@ -1155,6 +1199,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
         if (command.type == RemoteCommandType.gameSession) {
           _gameSessions?.receive(command.data);
+        } else if (command.type == RemoteCommandType.musicTransfer) {
+          _musicTransfer?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameCloudSetting) {
           _cloudSettings?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameAction) {
@@ -1193,6 +1239,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
     _deviceDisconnectedSubscription = peer.onDeviceDisconnected.listen((_) {
       if (!_ownsPeer(peer, generation)) return;
+      _musicTransfer?.reset();
+      _musicTransferVersion = 0;
       _gameInventory?.reset();
       _cloudSettings?.reset();
       _gameActions?.reset();
@@ -1252,6 +1300,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _handleDeviceInfo(RemoteCommand command) {
+    _musicTransferVersion = command.data?['musicTransferVersion'] == 1 ? 1 : 0;
     _gameSessionVersion = command.data?['gameSessionVersion'] == 1 ? 1 : 0;
     _cloudSettingsSupported = command.data?['gameCloudSettingVersion'] == 1;
     _gameActionVersion = command.data?['gameActionVersion'] == 1 ? 1 : 0;
@@ -1281,6 +1330,9 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _cleanupSubscriptions() {
+    _musicTransfer?.close();
+    _musicTransfer = null;
+    _musicTransferVersion = 0;
     _gameSessions?.close();
     _gameSessions = null;
     _gameSessionVersion = 0;

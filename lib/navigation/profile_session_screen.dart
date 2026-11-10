@@ -320,21 +320,57 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                 },
               ),
               ChangeNotifierProvider(create: (context) => PlaybackStateProvider()),
+              // The paired channel lives for the profile and must be available
+              // before the music session binds its transfer endpoint.
+              ChangeNotifierProvider(
+                create: (context) {
+                  final provider = CompanionRemoteProvider();
+                  provider.bindSteamAdmission((profileId) async {
+                    if (!context.mounted) return null;
+                    final sources = context.read<SourceController>();
+                    await sources.ready;
+                    if (!context.mounted || sources.profileId != profileId) return null;
+                    final generation = sources.generation;
+                    final data = await sources.repository.preference(profileId, GameLibraryController.preferenceKey);
+                    final credential = GameLibrary.fromJson(data).steamCatalogCredential;
+                    if (credential == null || !context.mounted || sources.generation != generation) return null;
+                    final clear = await CredentialVault.reveal(credential);
+                    return context.mounted && sources.generation == generation && sources.profileId == profileId
+                        ? clear
+                        : null;
+                  });
+                  provider.bindGameWorkspace(context.read<MultiviewWorkspaceController>());
+                  provider.bindProfileServices(
+                    connections: context.read<ConnectionRegistry>(),
+                    activeProfile: context.read<ActiveProfileProvider>(),
+                    profileConnections: context.read<ProfileConnectionRegistry>(),
+                    plexHome: context.read<PlexHomeService>(),
+                  );
+                  return provider;
+                },
+              ),
               // Profile-session scope so a profile switch tears the music
               // session down (dispose stops playback + releases the audio
               // core).
               ChangeNotifierProvider<MusicPlaybackService>(
-                create: (context) => MusicPlaybackServiceImpl(
-                  serverManager: context.read<MultiServerProvider>().serverManager,
-                  database: context.read<AppDatabase>(),
-                  offlineWatchService: context.read<OfflineWatchSyncService>(),
-                  libraryStore: activeId == null ? null : MusicLibraryStore(context.read<AppDatabase>(), activeId),
-                  // Last-session restore (#2148) is per profile; no profile,
-                  // nothing to restore.
-                  sessionStore: activeId == null
-                      ? null
-                      : MusicSessionStore(database: context.read<AppDatabase>(), profileId: activeId),
-                ),
+                lazy: false,
+                create: (context) {
+                  final companion = context.read<CompanionRemoteProvider>();
+                  final music = MusicPlaybackServiceImpl(
+                    serverManager: context.read<MultiServerProvider>().serverManager,
+                    database: context.read<AppDatabase>(),
+                    offlineWatchService: context.read<OfflineWatchSyncService>(),
+                    libraryStore: activeId == null ? null : MusicLibraryStore(context.read<AppDatabase>(), activeId),
+                    // Last-session restore (#2148) is per profile; no profile,
+                    // nothing to restore.
+                    sessionStore: activeId == null
+                        ? null
+                        : MusicSessionStore(database: context.read<AppDatabase>(), profileId: activeId),
+                    onDispose: companion.unbindMusicSession,
+                  );
+                  companion.bindMusicSession(music);
+                  return music;
+                },
               ),
               ChangeNotifierProvider(
                 create: (context) =>
@@ -367,42 +403,6 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                     displayName: () => activeProfile.active?.displayName ?? 'Pleazyng',
                     profileId: () => activeProfile.activeId,
                   );
-                },
-              ),
-              ChangeNotifierProvider(
-                create: (context) {
-                  final provider = CompanionRemoteProvider();
-                  provider.bindSteamAdmission((profileId) async {
-                    if (!context.mounted) {
-                      return null;
-                    }
-                    final sources = context.read<SourceController>();
-                    await sources.ready;
-                    if (!context.mounted || sources.profileId != profileId) {
-                      return null;
-                    }
-                    final generation = sources.generation;
-                    final data = await sources.repository.preference(profileId, GameLibraryController.preferenceKey);
-                    final credential = GameLibrary.fromJson(data).steamCatalogCredential;
-                    if (credential == null || !context.mounted || sources.generation != generation) {
-                      return null;
-                    }
-                    final clear = await CredentialVault.reveal(credential);
-                    return context.mounted && sources.generation == generation && sources.profileId == profileId
-                        ? clear
-                        : null;
-                  });
-                  provider.bindGameWorkspace(context.read<MultiviewWorkspaceController>());
-                  // Keep a running host's crypto identity live: a home user
-                  // removed or a borrowed connection revoked mid-session must
-                  // stop controlling the broadcast.
-                  provider.bindProfileServices(
-                    connections: context.read<ConnectionRegistry>(),
-                    activeProfile: context.read<ActiveProfileProvider>(),
-                    profileConnections: context.read<ProfileConnectionRegistry>(),
-                    plexHome: context.read<PlexHomeService>(),
-                  );
-                  return provider;
                 },
               ),
             ],

@@ -102,7 +102,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicDiscoveryControls,
         MusicAudioControls,
         MusicCacheControls,
-        MusicSignalPathService {
+        MusicSignalPathService,
+        MusicTransferSession {
   final MusicLibraryStore? _libraryStore;
   late final MusicByteCache? _byteCache = _libraryStore == null ? null : MusicByteCache(scope: _libraryStore.profileId);
 
@@ -530,6 +531,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     this._positionPersistInterval = const Duration(seconds: 5),
     @visibleForTesting Future<void> Function(double)? volumePersistenceWriter,
     @visibleForTesting Random? queueRandom,
+    this.onDispose,
   }) : assert(resolver != null || database != null, 'database is required to build the default resolver'),
        _serverManager = serverManager,
        _resolver = resolver ?? ServerMusicSourceResolver(serverManager: serverManager, database: database!),
@@ -586,6 +588,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   final MediaControlsManager Function() _mediaControlsFactory;
   final PlaybackCoordinator _coordinator;
   final Future<void> Function(double) _volumePersistenceWriter;
+  final void Function(MusicPlaybackServiceImpl)? onDispose;
 
   /// Per-profile last-session persistence; null disables restore (#2148).
   final MusicSessionStore? _sessionStore;
@@ -618,9 +621,42 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
   }
 
+  @override
+  MusicTransferOffer? offerTransfer() {
+    final snapshot = captureTransfer();
+    if (snapshot == null) return null;
+    return MusicTransferOffer(
+      snapshot,
+      _queueSessionRevision,
+      _generation,
+      _queueEditRevision,
+      _continuationResumeRevision,
+    );
+  }
+
+  @override
+  Future<bool> finishTransfer(MusicTransferOffer offer) async {
+    if (_disposed ||
+        _queueSessionRevision != offer.session ||
+        _generation != offer.generation ||
+        _queueEditRevision != offer.edit ||
+        _continuationResumeRevision != offer.transport ||
+        _status != (offer.snapshot.playing ? MusicPlaybackStatus.playing : MusicPlaybackStatus.paused) ||
+        _currentTrack?.globalKey !=
+            offer.snapshot.queue.items[offer.snapshot.queue.order[offer.snapshot.queue.cursor]].globalKey) {
+      return false;
+    }
+    if (offer.snapshot.playing) await pause();
+    return !_disposed &&
+        _queueSessionRevision == offer.session &&
+        _generation == offer.generation &&
+        _status == MusicPlaybackStatus.paused;
+  }
+
   /// Validate *this receiver's* active server credentials before changing its
   /// queue. The sender's metadata never grants access or provides a stream URL.
   /// An open failure is not acknowledged, so the sender retains its playback.
+  @override
   Future<bool> acceptTransfer(MusicTransferSnapshot snapshot, {bool Function()? current}) async {
     bool active() => current?.call() ?? true;
     try {
@@ -3228,6 +3264,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _generation++;
     _invalidateArmRequests();
     _disposed = true;
+    onDispose?.call(this);
     _byteCache?.dispose();
     if (_observesLifecycle) {
       WidgetsBinding.instance.removeObserver(this);

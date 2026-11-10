@@ -4,6 +4,20 @@ import '../../media/media_kind.dart';
 import 'music_playback_service.dart';
 import 'music_queue_controller.dart';
 
+/// A sender's queue and intent when the user requested handoff. Only the
+/// snapshot travels over the peer channel; the revisions stay local.
+class MusicTransferOffer {
+  const MusicTransferOffer(this.snapshot, this.session, this.generation, this.edit, this.transport);
+  final MusicTransferSnapshot snapshot;
+  final int session, generation, edit, transport;
+}
+
+abstract interface class MusicTransferSession {
+  MusicTransferOffer? offerTransfer();
+  Future<bool> acceptTransfer(MusicTransferSnapshot snapshot, {bool Function()? current});
+  Future<bool> finishTransfer(MusicTransferOffer offer);
+}
+
 /// A portable queue for an already paired receiver. Only catalog identities
 /// and display metadata cross the wire; the receiver resolves its own streams.
 /// Canonical order is retained separately from playback order so turning

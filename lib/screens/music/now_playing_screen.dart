@@ -29,6 +29,7 @@ import '../../multiview/music_workspace_surface.dart';
 import '../../multiview/workspace_controller.dart';
 import '../../multiview/workspace_models.dart';
 import '../../media/media_server_client.dart';
+import '../../providers/companion_remote_provider.dart';
 import '../../mixins/context_menu_tap_mixin.dart';
 import '../../mpv/mpv.dart';
 import '../../services/device_performance.dart';
@@ -822,8 +823,24 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
 
   /// ⋮ — the current track's standard context menu plus the Sleep timer
   /// entry. On TV ([focusable]) it joins the d-pad chain above the seek bar.
+  Future<void> _transferMusic() async {
+    final companion = context.read<CompanionRemoteProvider>();
+    final device = companion.connectedDevice?.name ?? t.companionRemote.unknownDevice;
+    final result = await companion.transferMusicToPeer();
+    if (!mounted) return;
+    switch (result) {
+      case MusicTransferResult.completed:
+        showSuccessSnackBar(context, t.companionRemote.connectedTo(name: device));
+      case MusicTransferResult.unavailable || MusicTransferResult.rejected:
+        showErrorSnackBar(context, t.musicExperience.error);
+      case MusicTransferResult.superseded:
+        showAppSnackBar(context, t.musicExperience.error);
+    }
+  }
+
   Widget _buildOverflowButton(MediaItem track, {bool focusable = false}) {
     final tk = tokens(context);
+    final companion = context.watch<CompanionRemoteProvider>();
     void showMenu() => contextMenuKey.currentState?.showContextMenu(context);
 
     return MediaContextMenu(
@@ -850,6 +867,14 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
           label: t.musicExperience.signalPath,
           onSelected: () => showMusicSignalPath(context),
         ),
+        if (companion.supportsMusicTransfer)
+          MediaMenuExtraEntry(
+            icon: Symbols.cast_rounded,
+            label: t.musicTools.transferToDevice(
+              device: companion.connectedDevice?.name ?? t.companionRemote.unknownDevice,
+            ),
+            onSelected: _transferMusic,
+          ),
         MediaMenuExtraEntry(icon: Symbols.bedtime_rounded, label: t.music.sleepTimer, onSelected: _showSleepTimerSheet),
       ],
       child: FocusableButton(

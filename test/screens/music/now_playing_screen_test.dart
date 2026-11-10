@@ -12,6 +12,7 @@ import 'package:plezy/media/media_source_info.dart';
 import 'package:plezy/multiview/workspace_controller.dart';
 import 'package:plezy/mpv/mpv.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
+import 'package:plezy/providers/companion_remote_provider.dart';
 import 'package:plezy/screens/music/now_playing_screen.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
@@ -162,6 +163,7 @@ void main() {
           child: MultiProvider(
             providers: [
               ChangeNotifierProvider<MultiServerProvider>.value(value: multiServerProvider),
+              ChangeNotifierProvider(create: (_) => CompanionRemoteProvider()),
               ChangeNotifierProvider(create: (_) => MultiviewWorkspaceController()),
               ChangeNotifierProvider<MusicPlaybackService>.value(value: service),
             ],
@@ -221,6 +223,7 @@ void main() {
           child: MultiProvider(
             providers: [
               ChangeNotifierProvider<MultiServerProvider>.value(value: testMultiServer().provider),
+              ChangeNotifierProvider(create: (_) => CompanionRemoteProvider()),
               ChangeNotifierProvider(create: (_) => MultiviewWorkspaceController()),
               ChangeNotifierProvider<MusicPlaybackService>.value(value: service),
             ],

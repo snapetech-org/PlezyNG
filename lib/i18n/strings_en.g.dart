@@ -14678,6 +14678,9 @@ class Translations$musicTools$en {
 
 	// Translations
 
+	/// en: 'Transfer music to ${device}'
+	String transferToDevice({required Object device}) => 'Transfer music to ${device}';
+
 	/// en: 'Guest DJ'
 	String get guestDj => 'Guest DJ';
 
@@ -22624,6 +22627,7 @@ extension on Translations {
 			'musicExperience.routeLost' => 'Audio output disconnected. Playback paused.',
 			'musicExperience.autoDriving' => 'Open driving view when connected to a car',
 			'musicExperience.routeHint' => 'The car system controls whether the app can appear automatically.',
+			'musicTools.transferToDevice' => ({required Object device}) => 'Transfer music to ${device}',
 			'musicTools.guestDj' => 'Guest DJ',
 			'musicTools.charts' => 'Listening charts',
 			'musicTools.rediscover' => 'Rediscover',

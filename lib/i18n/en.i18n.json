@@ -5598,6 +5598,7 @@
     "routeHint": "The car system controls whether the app can appear automatically."
   },
   "musicTools": {
+    "transferToDevice": "Transfer music to ${device}",
     "guestDj": "Guest DJ",
     "charts": "Listening charts",
     "rediscover": "Rediscover",

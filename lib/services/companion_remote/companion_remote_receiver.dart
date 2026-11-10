@@ -148,6 +148,7 @@ class CompanionRemoteReceiver {
       case RemoteCommandType.gameAction:
       case RemoteCommandType.gameCloudSetting:
       case RemoteCommandType.gameSession:
+      case RemoteCommandType.musicTransfer:
         break;
 
       default:
@@ -181,6 +182,7 @@ bool _isViewerInput(RemoteCommandType type) => switch (type) {
   RemoteCommandType.gameAction ||
   RemoteCommandType.gameSession ||
   RemoteCommandType.gameCloudSetting => false,
+  RemoteCommandType.musicTransfer => false,
   RemoteCommandType.dpadUp ||
   RemoteCommandType.dpadDown ||
   RemoteCommandType.dpadLeft ||

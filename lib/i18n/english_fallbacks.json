@@ -784,6 +784,7 @@
     "matchScreen.plexDiscover",
     "matchScreen.plexLibrary",
     "messages.serverLimitTranscode",
+    "musicTools.transferToDevice",
     "performanceOverlay.deadlineMisses",
     "performanceOverlay.motionInterpolation",
     "performanceOverlay.neuralModelDownloading",

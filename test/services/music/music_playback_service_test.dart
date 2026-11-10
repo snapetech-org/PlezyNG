@@ -1498,6 +1498,14 @@ void main() {
       expect(await accepted, isFalse);
       expect(h.service.currentTrack?.id, 't2');
     });
+
+    test('a local queue edit after remote acknowledgement cannot pause newer playback', () async {
+      await h.playTracks([t1, t2]);
+      final offer = h.service.offerTransfer()!;
+      h.service.addToEnd([t3]);
+      expect(await h.service.finishTransfer(offer), isFalse);
+      expect(h.service.status, MusicPlaybackStatus.playing);
+    });
   });
 
   test('trackTransition advances the cursor, re-arms, and reports the previous track stopped at duration', () async {

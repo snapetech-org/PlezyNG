@@ -8,6 +8,9 @@ import 'package:plezy/models/plex/plex_home.dart';
 import 'package:plezy/models/plex/plex_home_user.dart';
 import 'package:plezy/models/companion_remote/remote_command.dart';
 import 'package:plezy/models/companion_remote/remote_session.dart';
+import 'package:plezy/media/media_backend.dart';
+import 'package:plezy/media/media_item.dart';
+import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/profiles/profile.dart';
 import 'package:plezy/profiles/profile_connection.dart';
 import 'package:plezy/providers/companion_remote_provider.dart';
@@ -15,6 +18,9 @@ import 'package:plezy/services/companion_remote/companion_remote_peer_service.da
 import 'package:plezy/services/companion_remote/lan_discovery_service.dart';
 import 'package:plezy/services/companion_remote/remote_auth_context.dart';
 import 'package:plezy/services/companion_remote/remote_auth_service.dart';
+import 'package:plezy/services/music/music_playback_service.dart';
+import 'package:plezy/services/music/music_queue_controller.dart';
+import 'package:plezy/services/music/music_transfer_snapshot.dart';
 
 import '../test_helpers/backend_client_fixtures.dart';
 import '../test_helpers/prefs.dart';
@@ -148,6 +154,71 @@ void main() {
       host.sentCommands.clear();
       host.emitDeviceConnected(RemoteDevice(id: 'phone', name: 'Phone', platform: 'ios', connectedAt: DateTime(2026)));
       expect(host.sentCommands.single.data, {'playerActive': false});
+    });
+  });
+
+  group('CompanionRemoteProvider — music transfer', () {
+    test('a compatible paired peer acknowledges before the sender finishes its session', () async {
+      final peer = _FakeCompanionRemotePeerService();
+      final harness = await _RemoteHarness.create(_FakePeerFactory([peer]).call);
+      addTearDown(harness.close);
+      final music = _FakeMusicTransferSession();
+      harness.provider.bindMusicSession(music);
+      await harness.provider.connectToManualHost('192.0.2.30:48634', pairingCode: '0123456789abcdef0123456789abcdef');
+      expect(harness.provider.supportsMusicTransfer, isFalse);
+      expect(await harness.provider.transferMusicToPeer(), MusicTransferResult.unavailable);
+      peer.emitCommand(const RemoteCommand(type: RemoteCommandType.deviceInfo, data: {'musicTransferVersion': 1}));
+      expect(harness.provider.supportsMusicTransfer, isTrue);
+
+      final transfer = harness.provider.transferMusicToPeer();
+      final sent = peer.sentCommands.last;
+      expect(sent.type, RemoteCommandType.musicTransfer);
+      expect(music.finishCalls, 0);
+      peer.emitCommand(
+        RemoteCommand(
+          type: RemoteCommandType.musicTransfer,
+          data: {'version': 1, 'op': 'result', 'request': sent.data!['request'], 'accepted': true},
+        ),
+      );
+      expect(await transfer, MusicTransferResult.completed);
+      expect(music.finishCalls, 1);
+      harness.provider.unbindMusicSession(music);
+      expect(harness.provider.supportsMusicTransfer, isFalse);
+    });
+
+    test('receiver replies through the paired channel and ignores malformed snapshots', () async {
+      final peer = _FakeCompanionRemotePeerService();
+      final harness = await _RemoteHarness.create(_FakePeerFactory([peer]).call);
+      addTearDown(harness.close);
+      final music = _FakeMusicTransferSession();
+      harness.provider.bindMusicSession(music);
+      await harness.provider.startHostServer();
+      peer.emitDeviceConnected(RemoteDevice(id: 'phone', name: 'Phone', platform: 'ios', connectedAt: DateTime(2026)));
+      final payload = music.offerTransfer()!.snapshot.toJson();
+      const id = 'abcdef0123456789abcdef0123456789';
+      peer.emitCommand(
+        RemoteCommand(
+          type: RemoteCommandType.musicTransfer,
+          data: {
+            'version': 1,
+            'op': 'request',
+            'request': id,
+            'snapshot': {...payload, 'token': 'secret'},
+          },
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(music.acceptCalls, 0);
+      expect(peer.sentCommands.last.data?['accepted'], isFalse);
+      peer.emitCommand(
+        RemoteCommand(
+          type: RemoteCommandType.musicTransfer,
+          data: {'version': 1, 'op': 'request', 'request': id, 'snapshot': payload},
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(music.acceptCalls, 1);
+      expect(peer.sentCommands.last.data?['accepted'], isTrue);
     });
   });
 
@@ -1151,6 +1222,37 @@ class _FakeLanDiscoveryService extends LanDiscoveryService {
   void stopListening() {
     stopListeningCalls++;
     _listening = false;
+  }
+}
+
+class _FakeMusicTransferSession implements MusicTransferSession {
+  int acceptCalls = 0;
+  int finishCalls = 0;
+  late final snapshot = MusicTransferSnapshot(
+    queue: MusicQueueState(
+      items: [MediaItem(id: 'track', serverId: 'server', backend: MediaBackend.plex, kind: MediaKind.track)],
+      order: const [0],
+      cursor: 0,
+      shuffled: false,
+      repeatMode: MusicRepeatMode.off,
+    ),
+    position: const Duration(seconds: 5),
+    playing: true,
+  );
+
+  @override
+  MusicTransferOffer? offerTransfer() => MusicTransferOffer(snapshot, 1, 1, 1, 1);
+
+  @override
+  Future<bool> acceptTransfer(MusicTransferSnapshot received, {bool Function()? current}) async {
+    acceptCalls++;
+    return current?.call() ?? true;
+  }
+
+  @override
+  Future<bool> finishTransfer(MusicTransferOffer offer) async {
+    finishCalls++;
+    return true;
   }
 }
 

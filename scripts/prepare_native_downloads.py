@@ -18,6 +18,7 @@ import uuid
 
 PRODUCERS = {"simolus3/sqlite3.dart", "edde746/libdovi-builds", "AppImage/type2-runtime", "bblanchon/pdfium-binaries", "gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "arvidn/libtorrent", "simdutf/simdutf", "ninja-build/ninja", "snapetech-org/mpv-build", "vslavik/winsparkle", "libsdl-org/SDL", "jrsoftware/issrc", "AppImage/appimagetool", "lg-flutter-webos/ndk", "lg-flutter-webos/artifacts", "ales-drnz/dart_smb2", "actions/python-versions"}
 PRODUCERS.add("espresso3389/pdfium-xcframework")
+PRODUCERS.add("snapetech-org/pleazyng")
 
 
 def sha256(path):
@@ -61,7 +62,7 @@ def pinned_asset(repository, tag, name, expected, cache, release=None):
     if len(matches) != 1:
         raise ValueError(f"Native asset is not unique: {repository}/{tag}/{name}")
     asset = matches[0]
-    if asset.get("digest") not in (None, f"sha256:{expected}") or not 0 < asset.get("size", 0) <= (512 if repository in {"gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "snapetech-org/mpv-build", "lg-flutter-webos/ndk", "actions/python-versions"} else 64) * 1024**2:
+    if asset.get("digest") not in (None, f"sha256:{expected}") or not 0 < asset.get("size", 0) <= (512 if repository in {"gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "snapetech-org/mpv-build", "snapetech-org/pleazyng", "lg-flutter-webos/ndk", "actions/python-versions"} else 64) * 1024**2:
         raise ValueError(f"Upstream native asset does not match its independent pin: {name}")
     failure = None
     for attempt in range(3):

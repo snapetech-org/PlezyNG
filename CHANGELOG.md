@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Restart the paired Linux music endpoint when reinstalling its service, preserve service files if stopping fails, and expose failed service status to diagnostic callers.
+
 - Add a customizable Favorites music shelf and large driving shortcuts for favorites and owned downloads. Revalidate source visibility and download ownership before explicit playback in the shared session.
 
 - Apply separate cellular and remote music streaming-quality overrides, with cellular taking precedence and unchanged original-quality offline downloads.

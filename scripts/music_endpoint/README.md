@@ -20,6 +20,10 @@ visible app window. The current Linux embedder still needs a virtual X11 display
 Run `install.sh status` for systemd status and recent journal entries. Run
 `install.sh remove` to disable the unit; this keeps the profile and music data.
 Package updates replace the Linux binary; restart the user unit after an update.
+Rerunning the installer enables and restarts the service with the current
+launcher. Status returns the service manager's exit code after printing logs.
+Removal stops before deleting service files if disabling or stopping fails;
+resolve the reported service-manager error and retry. Repeated removal is safe.
 For boot startup without a user login, enable lingering for this user as shown
 by the installer. The service does not grant access to locked profiles or copy
 Plex tokens from a controller.

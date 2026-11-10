@@ -390,9 +390,8 @@ class SyncRuleExecutor {
     final previous = await store.document('stationSnapshot', station.id);
     // Retain the exact candidate batch across queueing failures. A retry must
     // not keep choosing new random tracks and expanding the download budget.
-    final tracks = previous?['pending'] == true &&
-            previous?['signature'] == signature &&
-            previous?['accountScope'] == accountScope
+    final tracks =
+        previous?['pending'] == true && previous?['signature'] == signature && previous?['accountScope'] == accountScope
         ? (previous!['tracks'] as List).map((row) => MediaItem.fromJson(Map<String, dynamic>.from(row as Map))).toList()
         : await station.materialize(client);
     if (!await current()) return null;

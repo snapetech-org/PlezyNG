@@ -1,10 +1,19 @@
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/database/app_database.dart';
 import 'package:plezy/services/music/music_account_scope.dart';
+import 'package:plezy/services/plex_api_cache.dart';
 
 import '../../test_helpers/backend_client_fixtures.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  late AppDatabase database;
+  setUp(() {
+    database = AppDatabase.forTesting(NativeDatabase.memory());
+    PlexApiCache.initialize(database);
+  });
+  tearDown(() => database.close());
   test('direct Plex users are distinct without persisting a token', () {
     final first = testPlexClient(token: 'direct-secret-a');
     final second = testPlexClient(token: 'direct-secret-b');

@@ -1948,8 +1948,9 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     // Sequential with the batch queue: one optional request at a time, rather
     // than launching thousands of lyric downloads for a large playlist.
     try {
-      await MusicOfflineBundle(MusicLibraryStore(_database, ownership.profileId))
-          .prepare(track, client, current: current);
+      await MusicOfflineBundle(
+        MusicLibraryStore(_database, ownership.profileId),
+      ).prepare(track, client, current: current);
     } catch (_) {
       // Optional metadata/storage adapters cannot change a successfully queued
       // audio download into a failure or interrupt the rest of an album batch.

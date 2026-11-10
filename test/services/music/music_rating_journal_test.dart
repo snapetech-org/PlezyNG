@@ -110,6 +110,7 @@ void main() {
     client.isOfflineMode = false;
     await journal.sync();
     expect(client.mutations, [('s:current', 8.0)]);
-    expect(await store.documents('ratingPending', limit: 500), hasLength(500));
+    await journal.sync();
+    expect(client.mutations, [('s:current', 8.0)]);
   });
 }

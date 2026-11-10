@@ -316,8 +316,9 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           final matching = recipes.where((recipe) => recipe.id == id.substring(7)).toList();
           if (matching.length != 1) throw PlatformException(code: 'stale_item');
           final intent = _music.beginPlayIntent();
-          final tracks = await MusicDiscovery((item) => context.getMediaClientForItemOrNull(item))
-              .generate(matching.single);
+          final tracks = await MusicDiscovery(
+            (item) => context.getMediaClientForItemOrNull(item),
+          ).generate(matching.single);
           if (!mounted || !_current || !_music.isPlayIntentCurrent(intent)) return false;
           if (_enqueueRequested(tracks, args)) return true;
           await _music.playFromList(

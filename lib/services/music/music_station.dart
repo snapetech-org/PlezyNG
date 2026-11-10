@@ -89,8 +89,7 @@ class MusicStation {
     final accountScope = musicAccountScope(client);
     void checkCurrent() {
       abort?.throwIfAborted();
-      if (!identical(authentication, client.authenticationSessionId) ||
-          accountScope != musicAccountScope(client)) {
+      if (!identical(authentication, client.authenticationSessionId) || accountScope != musicAccountScope(client)) {
         throw StateError('Station authorization changed');
       }
     }

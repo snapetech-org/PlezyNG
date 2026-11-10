@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../media/media_item.dart';
 import '../../media/media_server_client.dart';
 import '../../utils/serial_future_queue.dart';
+import 'music_account_scope.dart';
 import 'music_library_store.dart';
 
 /// Last explicit rating/favorite decision wins locally. Remote writes are
@@ -31,11 +34,12 @@ class MusicRatingJournal {
       throw ArgumentError('Unsupported numeric rating');
     }
     if (kind == 'favorite' && !client.capabilities.userFavorites) throw UnsupportedError('No favorite flag');
+    final scope = musicAccountScope(client);
     final entry = {
-      'version': 1,
-      'id': '$kind:${item.globalKey}',
+      'version': 2,
+      'id': '$kind:${sha256.convert(utf8.encode(scope))}:${item.globalKey}',
       'revision': const Uuid().v4(),
-      'scope': client.cacheServerId,
+      'scope': scope,
       'kind': kind,
       'value': value,
       'item': musicIdentity(item).toJson(),
@@ -45,10 +49,11 @@ class MusicRatingJournal {
   });
 
   Future<bool> _send(Map<String, dynamic> entry) async {
-    if (_disposed || !store.active || entry['version'] != 1) return false;
+    // Legacy server-only records cannot be assigned to a Plex account safely.
+    if (_disposed || !store.active || entry['version'] != 2) return false;
     final item = MediaItem.fromJson(Map<String, dynamic>.from(entry['item'] as Map));
     final client = clientFor(item);
-    if (client == null || client.isOfflineMode || client.cacheServerId != entry['scope']) return false;
+    if (client == null || client.isOfflineMode || musicAccountScope(client) != entry['scope']) return false;
     final auth = client.authenticationSessionId;
     try {
       if (entry['kind'] == 'rating' && client.capabilities.numericUserRating) {
@@ -58,7 +63,10 @@ class MusicRatingJournal {
       } else {
         return false;
       }
-      if (_disposed || !identical(auth, client.authenticationSessionId) || !identical(clientFor(item), client)) {
+      if (_disposed ||
+          !identical(auth, client.authenticationSessionId) ||
+          !identical(clientFor(item), client) ||
+          musicAccountScope(client) != entry['scope']) {
         return false;
       }
       final current = await store.document('ratingPending', entry['id'] as String);

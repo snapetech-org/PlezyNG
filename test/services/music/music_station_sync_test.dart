@@ -100,6 +100,19 @@ void main() {
     expect(retried, ['a', 'b']);
     expect(client.queries, hasLength(1));
   });
+  test('a different account regenerates a pending station batch', () async {
+    expect((await run((_) async => false))!.failed, isTrue);
+    client.scopedServerId = 's/second-user';
+    client.rows = [musicTrack('new')];
+    final retried = <String>[];
+    await run((item) async {
+      retried.add(item.id);
+      return true;
+    });
+    expect(retried, ['new']);
+    expect(client.queries, hasLength(2));
+    expect((await store.document('stationSnapshot', 'station'))!['accountScope'], 's/second-user');
+  });
   test('editing a rule during generation invalidates the batch', () async {
     final pending = Completer<LibraryPage<MediaItem>>();
     client.page = (_) => pending.future;

@@ -42,6 +42,20 @@ void main() {
     expect(client.mutations, isEmpty);
     expect(await store.documents('ratingPending'), hasLength(1));
   });
+  test('two accounts retain separate edits for the same track', () async {
+    client.isOfflineMode = true;
+    await journal.rate(musicTrack('a'), 3);
+    client.scopedServerId = 's/second-user';
+    await journal.rate(musicTrack('a'), 8);
+    expect(await store.documents('ratingPending'), hasLength(2));
+    client.isOfflineMode = false;
+    await journal.sync();
+    expect(client.mutations, [('s:a', 8.0)]);
+    expect(await store.documents('ratingPending'), hasLength(1));
+    client.scopedServerId = 's/user';
+    await journal.sync();
+    expect(client.mutations, [('s:a', 8.0), ('s:a', 3.0)]);
+  });
   test('a changed authentication session cannot acknowledge an earlier write', () async {
     client.onRate = () async {
       client.authenticationSessionId = Object();

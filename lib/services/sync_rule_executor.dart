@@ -20,6 +20,7 @@ import 'multi_server_manager.dart';
 import 'playlist_items_loader.dart';
 import 'music/music_library_store.dart';
 import 'music/music_station.dart';
+import 'music/music_account_scope.dart';
 
 /// Sync-rule filter values stored in `SyncRules.downloadFilter`.
 class SyncRuleFilter {
@@ -369,12 +370,14 @@ class SyncRuleExecutor {
     }
     if (station.wifiOnly && !(await ConnectivityProbe.check()).hasWifiOrEthernet) return null;
     final authentication = client.authenticationSessionId;
+    final accountScope = musicAccountScope(client);
     final signature = jsonEncode(station.toJson());
     Future<bool> current() async {
       if (!store.active ||
           !serverManager.isServerVisible(client.serverId) ||
           !identical(serverManager.getClient(client.serverId), client) ||
-          !identical(authentication, client.authenticationSessionId)) {
+          !identical(authentication, client.authenticationSessionId) ||
+          accountScope != musicAccountScope(client)) {
         return false;
       }
       final activeRule = await _database.getSyncRule(rule.globalKey);
@@ -387,7 +390,9 @@ class SyncRuleExecutor {
     final previous = await store.document('stationSnapshot', station.id);
     // Retain the exact candidate batch across queueing failures. A retry must
     // not keep choosing new random tracks and expanding the download budget.
-    final tracks = previous?['pending'] == true && previous?['signature'] == signature
+    final tracks = previous?['pending'] == true &&
+            previous?['signature'] == signature &&
+            previous?['accountScope'] == accountScope
         ? (previous!['tracks'] as List).map((row) => MediaItem.fromJson(Map<String, dynamic>.from(row as Map))).toList()
         : await station.materialize(client);
     if (!await current()) return null;
@@ -396,6 +401,7 @@ class SyncRuleExecutor {
       'id': station.id,
       'title': station.title,
       'signature': signature,
+      'accountScope': accountScope,
       'tracks': tracks.map((track) => musicIdentity(track).toJson()).toList(),
       'pending': true,
       'createdAt': now.toUtc().toIso8601String(),

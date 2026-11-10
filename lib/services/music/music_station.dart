@@ -3,6 +3,7 @@ import '../../media/media_item.dart';
 import '../../media/media_kind.dart';
 import '../../media/media_server_client.dart';
 import '../../utils/media_server_http_client.dart' show AbortController;
+import 'music_account_scope.dart';
 
 /// A saved dynamic query, distinct from a materialized server playlist. Filters
 /// use the existing library editor/translator; re-opening re-evaluates the rule.
@@ -85,9 +86,11 @@ class MusicStation {
   Future<List<MediaItem>> materialize(MediaServerClient client, {AbortController? abort}) async {
     if (client.serverId.value != serverId) throw StateError('Station server changed');
     final authentication = client.authenticationSessionId;
+    final accountScope = musicAccountScope(client);
     void checkCurrent() {
       abort?.throwIfAborted();
-      if (!identical(authentication, client.authenticationSessionId)) {
+      if (!identical(authentication, client.authenticationSessionId) ||
+          accountScope != musicAccountScope(client)) {
         throw StateError('Station authorization changed');
       }
     }
@@ -134,7 +137,8 @@ class MusicStation {
         if (result.length + tracks.length > trackLimit ||
             durationLimit > 0 && duration + blockDuration > durationLimit) {
           if (albums) continue; // Never split an album to satisfy a budget.
-          return result;
+          // A later track on this or the next page may still fit the budget.
+          continue;
         }
         for (final track in tracks) {
           if (seen.add(track.globalKey)) result.add(track);

@@ -93,6 +93,21 @@ def main():
     if (monorepo / 'bin/internal/engine.version').read_text().strip() != ENGINE:
         raise RuntimeError('Unexpected engine ABI')
     run(sys.executable, source / 'engine.py', 'apply', VERSION, '--platform', 'windows', cwd=source)
+    # This SDK recognizes both VS year names and the new numeric installation
+    # directories, but the ARM64 CRT table is keyed by year. Normalize the
+    # detected directory through the SDK's own supported-version mapping.
+    toolchain_file = monorepo / 'engine/src/build/vs_toolchain.py'
+    spec = importlib.util.spec_from_file_location('pleazyng_vs_toolchain', toolchain_file)
+    toolchain = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(toolchain)
+    detected = toolchain.GetVisualStudioVersion()
+    if detected not in toolchain.VC_VERSIONS:
+        years = [year for year, directory in toolchain.MSVS_VERSIONS.items() if directory == detected]
+        if len(years) != 1 or years[0] not in toolchain.VC_VERSIONS:
+            raise RuntimeError('Unsupported Visual Studio runtime mapping')
+        os.environ['GYP_MSVS_VERSION'] = years[0]
+    os.environ['GYP_MSVS_OVERRIDE_PATH'] = toolchain.DetectVisualStudioPath()
+    print('Selected Visual Studio ' + toolchain.GetVisualStudioVersion(), flush=True)
     suffix = '_arm64' if args.arch == 'arm64' else ''
     for mode in ['debug', 'release']:
         run(sys.executable, source / 'engine.py', 'build', VERSION, f'host_{mode}{suffix}', cwd=source)

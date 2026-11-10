@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Preserve local listening/report ownership when a paired music group fails source preflight, and correct smart-playlist integration lints found by the whole-repository analyzer.
+
+- Harden group departure against replayed invitations/acknowledgements and transport failures; prevent delayed Cast status/report callbacks from retiring or reporting a replacement receiver session.
+
 - Add an explicitly negotiated two-device music synchronization group over authenticated companion pairing: receiver preflight, monotonic clock-offset sampling, sequenced playhead anchors, drift correction, heartbeat expiry, and lease-bound teardown. Queue/mode replacement ends the group; arbitrary multi-endpoint grouping and acoustic latency qualification remain separate.
 
 - Bind Cast loads to profile/authentication and matching receiver media-session acknowledgements, serialize competing loads, and retire progress/control ownership when another sender replaces the media.

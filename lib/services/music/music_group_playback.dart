@@ -3,6 +3,7 @@ import 'music_playback_service.dart';
 import 'music_transfer_snapshot.dart';
 
 abstract interface class MusicGroupSession implements MusicTransferSession {
+  Future<bool> prepareGroupTransfer(MusicTransferSnapshot snapshot, {required bool Function() current});
   bool groupOfferCurrent(MusicTransferOffer offer);
   bool Function() captureGroupAuthority();
   Object get groupControlRevision;
@@ -38,8 +39,7 @@ class MusicGroupPlayback {
     _roleEpoch++;
     _lease = null;
     _authorized = null;
-    session.setMusicGroupFollower(true);
-    if (!await session.acceptTransfer(snapshot, current: current) || !current()) return false;
+    if (!await session.prepareGroupTransfer(snapshot, current: current) || !current()) return false;
     _lease = session.offerTransfer();
     _authorized = session.captureGroupAuthority();
     return _owns;

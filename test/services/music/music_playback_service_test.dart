@@ -1515,6 +1515,22 @@ void main() {
       expect(h.service.isPlaying, isFalse);
     });
 
+    test('rejected group source does not interrupt local listening ownership', () async {
+      await h.playTracks([t3]);
+      await pumpEventQueue();
+      final occurrence = h.service.playbackOccurrenceRevision;
+      final reports = h.client.reportsFor('started').length;
+      final group = MusicGroupPlayback(h.service, h.service);
+      expect(await group.prepare(transfer(current: t1.copyWith(serverId: 'foreign')), () => true), isFalse);
+      await group.release();
+      await pumpEventQueue();
+      expect(h.service.isPlaying, isTrue);
+      expect(h.service.currentTrack?.id, 't3');
+      expect(h.service.isMusicGroupFollower, isFalse);
+      expect(h.service.playbackOccurrenceRevision, occurrence);
+      expect(h.client.reportsFor('started').length, reports);
+    });
+
     test('account replacement revokes group correction and pauses the old owned source', () async {
       final group = MusicGroupPlayback(h.service, h.service);
       final initial = transfer();

@@ -724,7 +724,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// queue. The sender's metadata never grants access or provides a stream URL.
   /// An open failure is not acknowledged, so the sender retains its playback.
   @override
-  Future<bool> acceptTransfer(MusicTransferSnapshot snapshot, {bool Function()? current}) async {
+  Future<bool> acceptTransfer(MusicTransferSnapshot snapshot, {bool Function()? current}) =>
+      _acceptTransfer(snapshot, current: current);
+
+  @override
+  Future<bool> prepareGroupTransfer(MusicTransferSnapshot snapshot, {required bool Function() current}) =>
+      _acceptTransfer(snapshot, current: current, group: true);
+
+  Future<bool> _acceptTransfer(MusicTransferSnapshot snapshot, {bool Function()? current, bool group = false}) async {
     bool active() => current?.call() ?? true;
     try {
       snapshot.toJson();
@@ -770,6 +777,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return false;
     }
     final expectedRevision = _queueSessionRevision + 1;
+    if (group) setMusicGroupFollower(true);
     await _startQueue(
       tracks: snapshot.queue.items,
       playContext:

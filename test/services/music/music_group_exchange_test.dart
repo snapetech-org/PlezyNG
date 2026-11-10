@@ -77,6 +77,37 @@ void main() {
     });
   });
 
+  test('transport delay contributes to the aligned playhead instead of clock epoch error', () {
+    fakeAsync((async) {
+      final pair = _Pair(async, latency: const Duration(milliseconds: 60));
+      bool? joined;
+      unawaited(pair.leader.start().then((value) => joined = value));
+      async.elapse(const Duration(seconds: 1));
+      async.flushMicrotasks();
+      expect(joined, isTrue);
+      expect(pair.aligned.single.position, const Duration(milliseconds: 12060));
+      pair.close();
+      async.elapse(const Duration(seconds: 1));
+    });
+  });
+
+  test('repeated old acknowledgements cannot extend the heartbeat lease', () {
+    fakeAsync((async) {
+      final pair = _Pair(async);
+      unawaited(pair.leader.start());
+      async.flushMicrotasks();
+      final ack = pair.replies.lastWhere((message) => message['op'] == 'joined');
+      pair.deliver = false;
+      for (var second = 0; second < 7; second++) {
+        pair.leader.receive(ack);
+        async.elapse(const Duration(seconds: 1));
+        async.flushMicrotasks();
+      }
+      expect(pair.leader.active, isFalse);
+      pair.close();
+    });
+  });
+
   test('queue replacement ends rather than silently diverging the group', () {
     fakeAsync((async) {
       final pair = _Pair(async);
@@ -180,7 +211,7 @@ void main() {
 }
 
 class _Pair {
-  _Pair(FakeAsync async, {Completer<bool>? gate}) {
+  _Pair(FakeAsync async, {Completer<bool>? gate, Duration latency = Duration.zero}) {
     leader = MusicGroupExchange(
       allowed: () => allowed,
       capture: () => snapshot,
@@ -194,7 +225,13 @@ class _Pair {
       send: (message) {
         if (failSend) throw StateError('Disconnected');
         messages.add(message);
-        if (deliver) follower.receive(message);
+        if (deliver) {
+          if (latency == Duration.zero) {
+            follower.receive(message);
+          } else {
+            Timer(latency, () => follower.receive(message));
+          }
+        }
       },
     );
     follower = MusicGroupExchange(
@@ -215,7 +252,14 @@ class _Pair {
       changed: () {},
       now: () => 2000 + async.elapsed.inMilliseconds,
       send: (message) {
-        if (deliver) leader.receive(message);
+        replies.add(message);
+        if (deliver) {
+          if (latency == Duration.zero) {
+            leader.receive(message);
+          } else {
+            Timer(latency, () => leader.receive(message));
+          }
+        }
       },
     );
   }
@@ -226,6 +270,7 @@ class _Pair {
   bool Function()? preparationCurrent;
   MusicTransferSnapshot snapshot = _snapshot();
   final messages = <Map<String, dynamic>>[];
+  final replies = <Map<String, dynamic>>[];
   final prepared = <MusicTransferSnapshot>[];
   final aligned = <MusicTransferSnapshot>[];
   void close() {

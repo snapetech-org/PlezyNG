@@ -92,7 +92,17 @@ jobs:
             -memory 4096 -cores 4 -port 5586 > "$RUNNER_TEMP/pleazyng-review-emulator.log" 2>&1 &
           emulator_pid=$!
           trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
-          adb -s emulator-5586 wait-for-device
+          if ! timeout 180 adb -s emulator-5586 wait-for-device; then
+            python3 - "$RUNNER_TEMP/pleazyng-review-emulator.log" <<'PYLOG'
+          import os,sys
+          from pathlib import Path
+          text=Path(sys.argv[1]).read_text(errors='replace')
+          grant=os.environ.get('STORE_REVIEW_ACCESS_CODE','')
+          if grant: text=text.replace(grant,'[REDACTED]')
+          print(text[-12000:])
+          PYLOG
+            exit 1
+          fi
           python3 scripts/stores/qualify_review_access.py --serial emulator-5586 \
             --artifacts "$RUNNER_TEMP/play-qualification"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7

@@ -28,6 +28,10 @@ permissions:
   contents: read
   attestations: read
 
+concurrency:
+  group: pleazyng-copr-delivery
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-24.04

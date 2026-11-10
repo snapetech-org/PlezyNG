@@ -1,0 +1,41 @@
+name: Bootstrap COPR EL10 targets
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pleazyng-copr-delivery
+  cancel-in-progress: false
+
+jobs:
+  configure:
+    if: github.repository == 'snapetech-org/pleazyng' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Validate additive target bootstrap
+        run: python3 -m unittest discover -s scripts/checks -p test_bootstrap_copr_el10.py
+      - name: Install COPR API client
+        run: |
+          python3 -m venv "$RUNNER_TEMP/copr-api"
+          "$RUNNER_TEMP/copr-api/bin/pip" install --disable-pip-version-check copr==2.9
+      - name: Enable EL10 without changing Fedora or submitting builds
+        env:
+          COPR_LOGIN: ${{ secrets.COPR_LOGIN }}
+          COPR_USERNAME: ${{ secrets.COPR_USERNAME }}
+          COPR_TOKEN: ${{ secrets.COPR_TOKEN }}
+          COPR_PROJECT: ${{ vars.COPR_PROJECT }}
+          COPR_BOOTSTRAP_RECEIPT: ${{ runner.temp }}/copr-el10-bootstrap.json
+        run: '"$RUNNER_TEMP/copr-api/bin/python" scripts/bootstrap_copr_el10.py'
+      - name: Retain target activation receipt
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: copr-el10-bootstrap-${{ github.run_id }}
+          path: ${{ runner.temp }}/copr-el10-bootstrap.json
+          if-no-files-found: error
+          retention-days: 30

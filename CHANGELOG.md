@@ -8,6 +8,8 @@
 
 - Add acknowledged remote music output switching inside the shared queue, preserving playback occurrences and playhead while rejecting stale preparation and returning locally paused after receiver revocation.
 
+- Add an idempotent COPR EPEL10 target bootstrap for x86_64 and ARM64 that preserves existing Fedora targets. Native Red Hat family installation and playback qualification remain required before advertising support.
+
 - Dispatch Cast media loads before awaiting receiver acknowledgement, retaining synchronous status events and cleaning up failed or timed-out handshakes.
 
 - Qualify Apple simulator startup on fresh, SDK-matched job-owned devices. Preserve existing simulator saves and real tvOS database recovery checks, and retain ownership receipts for cleanup.

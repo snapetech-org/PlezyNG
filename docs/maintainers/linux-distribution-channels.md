@@ -150,6 +150,23 @@ whose upstream code includes AI-assisted work.
 
 ## Publish already-built Arch and Fedora artifacts
 
+### EL10 target bootstrap
+
+`bootstrap-copr-el10.yml` enables `epel-10-x86_64` and `epel-10-aarch64` on
+the existing `slskdn/pleazyng` project. It preserves every enabled target and
+other project setting, verifies the resulting public configuration, and retains
+a receipt. It uses the existing COPR API secrets only on canonical main;
+credentials remain in process memory. Repeating it makes no changes when the
+targets are already enabled. It shares the publisher's concurrency group and
+does not submit an application or package build.
+
+Once enabled, ordinary COPR submissions include those targets on future releases.
+Enabling an empty target is not native qualification. Check every asynchronous
+build, then install the exact release on clean EL10 with EPEL and CRB enabled.
+Verify dependencies, ordinary startup and playback before adding supported
+Red Hat installation instructions. The EPEL10 COPR environments use CentOS
+Stream plus EPEL; record the tested OS rather than claiming RHEL certification.
+
 Use the [channel retry guide](release-channel-retries.md) with the qualified
 immutable release. Existing `publish-aur.yml` and `publish-copr.yml` use hosted
 Ubuntu and require a published stable tag on main's history. Do not rebuild all

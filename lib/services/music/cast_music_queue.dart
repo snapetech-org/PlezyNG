@@ -9,11 +9,13 @@ import '../../media/media_server_client.dart';
 import '../cast_playback_ownership.dart';
 import '../multi_server_manager.dart';
 import 'cast_music_output.dart';
+import 'music_device_session.dart';
 import 'music_playback_service.dart';
+import 'music_queue_controller.dart';
 import 'music_transfer_snapshot.dart';
 
 class CastMusicQueue {
-  CastMusicQueue._(this.items, this.cursor, this.token, this.authorized);
+  CastMusicQueue._(this.items, this._snapshot, this.token, this.authorized);
 
   static const maxTracks = 32;
   static const maxRequestBytes = 48 * 1024;
@@ -21,9 +23,12 @@ class CastMusicQueue {
   static const occurrenceKey = 'pleazyngOccurrence';
 
   final List<GoogleCastQueueItem> items;
-  final int cursor;
+  final MusicTransferSnapshot _snapshot;
   final String token;
   final bool Function() authorized;
+  int? _mediaSessionId;
+
+  int get cursor => _snapshot.queue.cursor;
 
   GoogleCastQueueLoadOptions options(Duration position) =>
       GoogleCastQueueLoadOptions(startIndex: cursor, playPosition: position);
@@ -31,26 +36,30 @@ class CastMusicQueue {
   bool matches(CastReceiverKey connection, CastReceiverKey? current, GoggleCastMediaStatus? status) =>
       connection == current && matchesMedia(status);
 
-  bool matchesMedia(GoggleCastMediaStatus? status) {
+  bool matchesMedia(GoggleCastMediaStatus? status) => _occurrence(status) != null;
+
+  int? _occurrence(GoggleCastMediaStatus? status) {
     final custom = status?.mediaInformation?.customData;
     final rawIndex = custom?[occurrenceKey];
     final index = rawIndex is String ? int.tryParse(rawIndex) : null;
-    return status != null &&
-        status.mediaSessionID > 0 &&
-        (status.currentItemId ?? 0) > 0 &&
-        custom?[ownerKey] == token &&
-        index != null &&
-        index >= 0 &&
-        index < items.length;
+    if (status == null ||
+        status.mediaSessionID <= 0 ||
+        (_mediaSessionId != null && _mediaSessionId != status.mediaSessionID) ||
+        (status.currentItemId ?? 0) <= 0 ||
+        custom?[ownerKey] != token ||
+        index == null ||
+        index < 0 ||
+        index >= items.length ||
+        status.mediaInformation?.contentId != items[index].mediaInformation.contentId) {
+      return null;
+    }
+    return index;
   }
 
   bool acknowledges(GoggleCastMediaStatus? status, CastMediaPlayerState state) =>
-      matchesMedia(status) &&
-      status!.mediaInformation!.customData![occurrenceKey] == cursor.toString() &&
-      status.playerState == state;
+      _occurrence(status) == cursor && status?.playerState == state;
 
-  bool isFinalOccurrence(GoggleCastMediaStatus? status) =>
-      status?.mediaInformation?.customData?[occurrenceKey] == (items.length - 1).toString();
+  bool isFinalOccurrence(GoggleCastMediaStatus? status) => _occurrence(status) == items.length - 1;
 
   Future<bool> handoff({
     required MusicTransferOffer offer,
@@ -70,7 +79,9 @@ class CastMusicQueue {
       acknowledge: (value) => valid() && acknowledges(value, CastMediaPlayerState.paused),
       load: () => load(items, options(offer.snapshot.position)),
     );
-    if (!valid() || !acknowledges(status(), CastMediaPlayerState.paused)) return false;
+    final loaded = status();
+    if (!valid() || !acknowledges(loaded, CastMediaPlayerState.paused)) return false;
+    _mediaSessionId = loaded!.mediaSessionID;
     if (offer.snapshot.playing) {
       await loadAcknowledgedCastMedia(
         statuses: statuses,
@@ -81,6 +92,71 @@ class CastMusicQueue {
       if (!valid() || !acknowledges(status(), CastMediaPlayerState.playing)) return false;
     }
     return finish(offer);
+  }
+
+  Future<bool> returnToLocal({
+    required bool Function() current,
+    required GoggleCastMediaStatus? Function() status,
+    required Stream<GoggleCastMediaStatus?> statuses,
+    required Stream<void> invalidated,
+    required Duration Function() position,
+    required Future<void> Function() pause,
+    required Future<void> Function() resume,
+    required Future<PreparedMusicDeviceTransfer?> Function(MusicTransferSnapshot snapshot, bool Function() current)
+    prepare,
+  }) async {
+    final start = status();
+    final index = _occurrence(start);
+    if (_mediaSessionId == null || index == null || !current() || !authorized()) return false;
+    final wasPlaying =
+        start?.playerState == CastMediaPlayerState.playing || start?.playerState == CastMediaPlayerState.buffering;
+    if (!wasPlaying && start?.playerState != CastMediaPlayerState.paused) return false;
+    bool sameOccurrence(GoggleCastMediaStatus? value) => _occurrence(value) == index;
+    bool owned() => current() && authorized() && sameOccurrence(status());
+    bool paused() => owned() && status()?.playerState == CastMediaPlayerState.paused;
+
+    var frozen = false;
+    var accepted = false;
+    final queue = _snapshot.queue;
+    final commit = await prepare(
+      MusicTransferSnapshot(
+        queue: MusicQueueState(
+          items: queue.items,
+          order: queue.order,
+          cursor: index,
+          shuffled: queue.shuffled,
+          repeatMode: queue.repeatMode,
+        ),
+        position: Duration.zero,
+        playing: false,
+        playContext: _snapshot.playContext,
+      ),
+      () => frozen ? paused() : owned(),
+    );
+    if (commit == null || !owned()) return false;
+    try {
+      if (wasPlaying) {
+        final state = status()?.playerState;
+        if (state != CastMediaPlayerState.playing && state != CastMediaPlayerState.buffering) return false;
+        await loadAcknowledgedCastMedia(
+          statuses: statuses,
+          invalidated: invalidated,
+          acknowledge: (value) =>
+              current() && authorized() && sameOccurrence(value) && value?.playerState == CastMediaPlayerState.paused,
+          load: pause,
+        );
+      }
+      if (!paused()) return false;
+      frozen = true;
+      final playhead = position();
+      if (playhead < Duration.zero || playhead > const Duration(hours: 24)) return false;
+      accepted = await commit(playhead, wasPlaying);
+      return accepted;
+    } finally {
+      if (frozen && wasPlaying && !accepted && paused()) {
+        await resume().timeout(const Duration(seconds: 5));
+      }
+    }
   }
 
   static Future<CastMusicQueue> prepare(
@@ -136,7 +212,7 @@ class CastMusicQueue {
         ),
       );
     }
-    final prepared = CastMusicQueue._(List.unmodifiable(items), queue.cursor, token, authorized);
+    final prepared = CastMusicQueue._(List.unmodifiable(items), snapshot, token, authorized);
     final size = utf8
         .encode(
           jsonEncode({

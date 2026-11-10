@@ -189,4 +189,67 @@ void main() {
       expect(calls, revoke ? ['load'] : ['load', 'play', 'pause local']);
     });
   }
+
+  for (final outcome in ['adopt', 'reject', 'receiver replaced']) {
+    test('return uses the current Cast occurrence and handles $outcome', () async {
+      final offer = MusicTransferOffer(_snapshot(playing: false), 1, 2, 3, 4);
+      final queue = await prepare(offer.snapshot);
+      final events = StreamController<GoggleCastMediaStatus?>.broadcast(sync: true);
+      addTearDown(events.close);
+      GoggleCastMediaStatus? status;
+      void publish(int index, CastMediaPlayerState state, {int session = 12}) {
+        status = _status(queue, index, state, session: session);
+        events.add(status);
+      }
+
+      expect(
+        await queue.handoff(
+          offer: offer,
+          current: () => true,
+          status: () => status,
+          statuses: events.stream,
+          invalidated: const Stream.empty(),
+          load: (_, _) async => publish(1, CastMediaPlayerState.paused),
+          play: () async => fail('the original offer was paused'),
+          finish: (_) async => true,
+        ),
+        isTrue,
+      );
+      publish(2, CastMediaPlayerState.playing);
+      final actions = <String>[];
+      final returned = await queue.returnToLocal(
+        current: () => true,
+        status: () => status,
+        statuses: events.stream,
+        invalidated: const Stream.empty(),
+        position: () => const Duration(seconds: 42),
+        pause: () async {
+          actions.add('freeze');
+          publish(2, CastMediaPlayerState.paused);
+        },
+        resume: () async => actions.add('resume Cast'),
+        prepare: (snapshot, current) async {
+          actions.add('prepare');
+          expect(snapshot.queue.items, offer.snapshot.queue.items);
+          expect(snapshot.queue.order, [1, 2, 0]);
+          expect(snapshot.queue.cursor, 2);
+          expect(snapshot.queue.shuffled, isTrue);
+          return (position, play) async {
+            actions.add('adopt');
+            expect(current(), isTrue);
+            expect(position, const Duration(seconds: 42));
+            expect(play, isTrue);
+            if (outcome == 'receiver replaced') {
+              publish(2, CastMediaPlayerState.paused, session: 13);
+              expect(current(), isFalse);
+              expect(queue.matchesMedia(status), isFalse);
+            }
+            return outcome == 'adopt';
+          };
+        },
+      );
+      expect(returned, outcome == 'adopt');
+      expect(actions, ['prepare', 'freeze', 'adopt', if (outcome == 'reject') 'resume Cast']);
+    });
+  }
 }

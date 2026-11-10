@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bind a detached Chromecast queue to its acknowledged media session and exact receiver occurrence before preparing a return to local playback.
+
 - Start a saved music station from shuffled tracks, shuffled albums, least played tracks, or oldest releases. The filter editor follows the station's track or album mode, and an invalid album block is skipped in full.
 
 - Keep rolling mixes bound to their original server account across refills and restart. A replaced authentication session cannot append a late batch.

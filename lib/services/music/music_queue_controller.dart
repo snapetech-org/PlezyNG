@@ -63,6 +63,36 @@ class MusicQueueController {
   MediaItem? trackAt(int queueIndex) =>
       queueIndex >= 0 && queueIndex < _order.length ? _items[_order[queueIndex]] : null;
 
+  bool isOrderedAlbum({required bool albumLaunch}) {
+    if (_shuffled || isEmpty) return false;
+    if (length == 1) return albumLaunch;
+    final first = trackAt(0)!;
+    if (!albumLaunch && (first.parentId?.isNotEmpty != true || first.serverId?.isNotEmpty != true)) return false;
+    var previous = first;
+    for (var index = 1; index < length; index++) {
+      final next = trackAt(index)!;
+      if (first.backend != next.backend ||
+          first.serverId != next.serverId ||
+          first.libraryId != next.libraryId ||
+          first.parentId != next.parentId ||
+          previous.globalKey == next.globalKey) {
+        return false;
+      }
+      final previousDisc = previous.parentIndex ?? 1;
+      final disc = next.parentIndex ?? 1;
+      final previousTrack = previous.index;
+      final track = next.index;
+      if (disc <= 0 || previousDisc <= 0 || disc < previousDisc || disc > previousDisc + 1) return false;
+      if (track == null || track <= 0 || previousTrack == null || previousTrack <= 0) {
+        if (!albumLaunch) return false;
+      } else if (disc == previousDisc ? track != previousTrack + 1 : track != 1) {
+        return false;
+      }
+      previous = next;
+    }
+    return true;
+  }
+
   /// Full state copy for persistence — includes the canonical order and the
   /// shuffle permutation the public [queue] getter flattens away, so a
   /// restored session can still un-shuffle back to the original order.

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep sequential albums gapless even when queued from a playlist. Sweet Fades follows edits to the actual queue and stays available for shuffled and mixed queues.
+
 - Transfer an eligible music queue to Chromecast from Now Playing. The receiver can advance the prepared queue after the sender disconnects, and the phone retains its queue paused after an acknowledged handoff.
 
 - Prepare bounded standalone Cast music queues in playback order, with separately identified repeats, paused receiver acknowledgement, and authorization checks on every source.

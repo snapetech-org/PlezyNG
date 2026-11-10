@@ -18,6 +18,34 @@ void main() {
 
   MusicQueueController controller({int seed = 42}) => MusicQueueController(random: Random(seed));
 
+  test('album fade protection requires sequential track metadata from one source', () {
+    MediaItem track(String id, int disc, int number, {String server = 'srv'}) => testMediaItem(
+      id: id,
+      kind: MediaKind.track,
+      serverId: server,
+      libraryId: 'music',
+      parentId: 'album',
+      parentIndex: disc,
+      index: number,
+    );
+    final first = track('first', 1, 1);
+    final second = track('second', 1, 2);
+    final nextDisc = track('next-disc', 2, 1);
+    final queue = controller()..load([first, second, nextDisc]);
+    expect(queue.isOrderedAlbum(albumLaunch: false), isTrue);
+    queue.toggleShuffle();
+    expect(queue.isOrderedAlbum(albumLaunch: true), isFalse);
+    queue.load([first, track('gap', 1, 3)]);
+    expect(queue.isOrderedAlbum(albumLaunch: false), isFalse);
+    queue.load([first, track('foreign', 1, 2, server: 'other')]);
+    expect(queue.isOrderedAlbum(albumLaunch: false), isFalse);
+    queue.load([first, first, second]);
+    expect(queue.isOrderedAlbum(albumLaunch: true), isFalse);
+    queue.load(tracks);
+    expect(queue.isOrderedAlbum(albumLaunch: false), isFalse);
+    expect(queue.isOrderedAlbum(albumLaunch: true), isTrue);
+  });
+
   test('album shuffle preserves disc order, active occurrence and server identity', () {
     MediaItem albumTrack(String id, String server, String album, int disc, int number) => testMediaItem(
       id: id,

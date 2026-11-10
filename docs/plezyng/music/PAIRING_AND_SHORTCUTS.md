@@ -153,6 +153,16 @@ whole page. The operation has bounded pages, message sizes and deadlines; retry
 after an interruption safely merges again. Clearing history is local, not a
 cross-device deletion command, and a later import can restore the peer's copies.
 
+## Sweet Fades and album order
+
+An unshuffled queue of consecutive tracks from one album retains the original
+track boundaries, even when started from a playlist. The player rechecks the
+queue when tracks are added, removed or reordered; mixed and shuffled queues
+remain eligible for fades when loudness data is available. This follows Plex's
+[published album guidance](https://support.plex.tv/articles/205671108-media-playback/)
+and [description of its queue heuristic](https://forums.plex.tv/t/question-about-sweet-fades-feature-behavior-need-your-help/855962).
+It does not establish equivalent fade timing or decoded audio on hardware.
+
 ## Cast music output
 
 On Android and iOS, use the Now Playing device action to select a Cast receiver.

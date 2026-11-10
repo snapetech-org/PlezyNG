@@ -607,7 +607,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
           : _audioPolicy != null
           ? _audioPolicy!.bands.any((band) => band != 0)
           : settings != null && SettingsService.audioEqualizerBandPrefs.any((pref) => settings.read(pref) != 0),
-      fades: _sweetFadesEnabled,
+      fades: _sweetFadesEnabled && !_preserveAlbumGapless,
     );
   }
 
@@ -1072,6 +1072,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   final Map<String, AudioLoudnessProfile?> _loadedLoudnessProfiles = {};
   AudioLoudnessProfile? _currentLoudnessProfile;
   bool _fadeCurrentTrackIn = false;
+  (int, int, bool)? _albumGaplessKey;
+  bool _albumGapless = false;
   double _musicGain = 1;
   bool _workspaceAudioEnabled = true;
   Listenable? _sweetFadesSettingsListenable;
@@ -2304,7 +2306,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _fadeCurrentTrackIn =
         fadeIn &&
         _sweetFadesEnabled &&
-        _playContext?.kind != MusicPlayContextKind.album &&
+        !_preserveAlbumGapless &&
         trackDuration >= const Duration(seconds: 6) &&
         trackHeadLevel != null &&
         trackHeadLevel > -48;
@@ -2543,6 +2545,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   bool get _sweetFadesEnabled =>
       _playbackOutput == null && (SettingsService.instanceOrNull?.read(SettingsService.musicSweetFades) ?? false);
 
+  bool get _preserveAlbumGapless {
+    final albumLaunch = _playContext?.kind == MusicPlayContextKind.album;
+    final key = (_queueSessionRevision, _queueEditRevision, albumLaunch);
+    if (_albumGaplessKey != key) {
+      _albumGaplessKey = key;
+      _albumGapless = _queue.isOrderedAlbum(albumLaunch: albumLaunch);
+    }
+    return _albumGapless;
+  }
+
   bool _overlapCurrent(Player outgoing, _ArmedTrack incoming, int generation, int revision) =>
       !_disposed &&
       _sweetFadesEnabled &&
@@ -2775,14 +2787,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
   }
 
-  /// Applies a short, loudness-aware envelope at the edges of non-album
-  /// tracks. The profile avoids fading a naturally quiet opening or ending;
-  /// this leaves the existing gapless player and playback reporting intact.
   void _updateSweetFade(Duration position) {
     final source = _currentSource;
     final profile = _currentLoudnessProfile;
     if (!_sweetFadesEnabled ||
-        _playContext?.kind == MusicPlayContextKind.album ||
+        _preserveAlbumGapless ||
         source == null ||
         _player?.audioPassthroughActive == true ||
         profile == null) {
@@ -3604,6 +3613,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   void _afterQueueEdit() {
     _cancelOverlap();
     _queueEditRevision++;
+    if (_sweetFadesEnabled && _preserveAlbumGapless) {
+      _fadeCurrentTrackIn = false;
+      _setMusicGain(1);
+    }
     _rearmIfNeeded();
     _syncControlsAvailability();
     _persistSessionSnapshot();

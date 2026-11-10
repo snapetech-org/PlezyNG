@@ -2646,6 +2646,47 @@ void main() {
       expect(incoming.armed?.uri, _urlFor(t3), reason: 'the new primary keeps gapless arming');
     });
 
+    test('an ordered playlist uses gapless until an edit turns it into a mixed queue', () async {
+      resetSharedPreferencesForTest();
+      final settings = await SettingsService.getInstance();
+      await settings.write(SettingsService.musicSweetFades, true);
+      h.dispose();
+      h = _Harness.create(overlapDecoder: true);
+      final first = t1.copyWith(parentId: 'live-album', index: 1, parentIndex: 1);
+      final second = t2.copyWith(parentId: 'live-album', index: 2, parentIndex: 1);
+      final profile = AudioLoudnessProfile(levelsDb: [-24, -24, -24], totalSamples: 3000);
+      for (final (track, stream) in [(first, 721), (second, 722)]) {
+        h.client.loudnessProfiles[stream] = profile;
+        h.resolver.sourceOverrides[track.id] = MusicSource(
+          url: _urlFor(track),
+          reportingClient: h.client,
+          mediaInfo: MediaSourceInfo(
+            videoUrl: _urlFor(track),
+            audioTracks: [MediaAudioTrack(id: stream, selected: true)],
+            subtitleTracks: const [],
+            chapters: const [],
+          ),
+        );
+      }
+      await h.playTracks([first, second], kind: MusicPlayContextKind.playlist);
+      await pumpEventQueue();
+      final outgoing = h.player;
+      outgoing.setPosition(const Duration(minutes: 2, seconds: 59, milliseconds: 100));
+      await pumpEventQueue();
+      expect(h.players, hasLength(1));
+      expect(outgoing.volumes, everyElement(100));
+      expect(outgoing.armed?.uri, _urlFor(second));
+      expect(h.service.signalPath?.fades, isFalse);
+
+      h.service.addToEnd([t3.copyWith(parentId: 'other-album', index: 1)]);
+      await pumpEventQueue();
+      outgoing.setPosition(const Duration(minutes: 2, seconds: 59, milliseconds: 300));
+      await pumpEventQueue();
+      expect(h.players, hasLength(2));
+      expect(h.player.openedUris, [_urlFor(second)]);
+      expect(h.service.signalPath?.fades, isTrue);
+    });
+
     test('pausing an overlap closes the spare core and restores the outgoing song', () async {
       resetSharedPreferencesForTest();
       final settings = await SettingsService.getInstance();

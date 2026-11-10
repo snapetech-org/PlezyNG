@@ -53,6 +53,15 @@ class RecipePreparationTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 recipes.prepare('v3.0.7', checksums, output)
 
+    def test_aerynos_only_requires_x64(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            checksums = root / 'SHA256SUMS.txt'
+            checksums.write_text(self.manifest().splitlines()[0] + '\n')
+            recipes.prepare('v3.0.22', checksums, root / 'output', 'aerynos')
+            self.assertTrue((root / 'output/aerynos/stone.yaml').is_file())
+            self.assertFalse((root / 'output/nix').exists())
+
     def test_rejects_tag_injection_before_writing(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

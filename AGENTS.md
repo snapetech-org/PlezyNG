@@ -118,11 +118,11 @@ The `upstream` remote is the separate Plezy project. Track its `main` only;
 its feature branches are not Pleazyng work to merge or delete automatically.
 Keep upstream attribution requirements when actually adapting upstream work.
 
-## aerynOS review and qualification — owner directive, 2026-11-09
+## aerynOS publication and qualification — owner directive, 2026-11-09
 
-The owner subsequently explicitly requested restoration of a working aerynOS
-recipe for review, native installation and QA, and continuation of that work.
-This supersedes the earlier channel exclusion for downstream recipe preparation
-and isolated qualification. Preserve truthful candidate/qualified status and
-historical QA evidence. Do not imply official aerynOS repository acceptance or
-publish an unqualified candidate as a supported release channel.
+The owner explicitly restored aerynOS as an actual downstream publication target,
+including a working recipe, native installation and QA. This supersedes earlier
+exclusion and review-only scope. Preserve truthful candidate/qualified status,
+source provenance and historical evidence. Publish independently after native
+qualification; official aerynOS repository acceptance is a separate matter.
+Do not submit AI-authored contributions where the project's policy forbids them.

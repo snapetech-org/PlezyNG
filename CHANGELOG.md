@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Prepare aerynOS recipes independently from x64 checksums, and restore aerynOS as a downstream publication target subject to native qualification.
+
 - Run post-publication catalog verification through a read-only reusable workflow, preserving automatic validation while removing the privileged workflow-run trigger rejected by repository policy.
 
 - AppImage update metadata and verified zsync sidecars: build x64 AppImages with fork-specific update information, verify control-file names, blocks and digests, checksum and attest both artifacts, and preserve immutable legacy images without update metadata. Independently adapted from [upstream d832b421](https://github.com/edde746/plezy/commit/d832b4212ceabc68bfee6785177f40bd2a724723), contributed upstream by [@nataloko](https://github.com/nataloko); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).

@@ -105,6 +105,9 @@ reason to describe a binary candidate as accepted. The renderer does not submit 
 
 ## aerynOS
 
+Use `--channel aerynos` to prepare only this x86_64 channel; this requires only
+the x64 checksum. The default also prepares Nix and requires both architectures.
+
 The same preparation command produces `aerynos/stone.yaml` and its supporting
 files in `aerynos/pkg/`, as required by Boulder's `%(pkgdir)` macro. This recipe
 packages the x86_64 release bundle. It does not build the app from source or
@@ -128,13 +131,14 @@ Inspect the resulting manifest for dependency/provider conflicts and unintended
 subpackage splitting before indexing and installing the `.stone` output in the isolated
 test instance. The current Moss CLI uses `moss index --input-dir <output-dir>`,
 `moss repo add <name> file://<absolute-output-dir>/stone.index`, and
-`moss -y pkg add pleazyng`. Keep this repository local to the test guest. Retain the package, manifest, build/install logs and runtime QA
+`moss -y pkg add pleazyng`. Keep qualification repositories local to the test guest until native QA passes. Retain the package, manifest, build/install logs and runtime QA
 evidence. Increment `release` for recipe-only changes to an already distributed
 version. See the [native qualification record](aerynos-qualification.md): build
 and installation pass; the published v3.0.7 input fails video playback QA.
 
-This is downstream packaging for review. No official aerynOS submission or Moss
-repository publication is performed by the generator. The official project's
+aerynOS is a downstream publication target. Qualify the exact package before
+publishing an independent Moss repository; retain the source checksum and native
+evidence. The renderer itself performs no publication or official submission. The official project's
 [contribution policy](https://github.com/aerynOS/.github/blob/main/CONTRIBUTING.md#llm-contributions)
 prohibits LLM-generated contributions; a human submitting this AI-assisted recipe
 does not change its authorship. That policy does not establish a prohibition on

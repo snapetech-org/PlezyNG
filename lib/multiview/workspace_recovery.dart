@@ -105,6 +105,36 @@ List<PublicationFile>? recoverySourceFiles(SourceEntry entry, WorkspaceResumeTar
   return selected;
 }
 
+/// Downloaded editions can resume without reaching the provider. Each selected
+/// file must pass the existing profile-scoped local-content verification.
+Future<SourceEntry?> resolveRecoverySourceEntry({
+  required SourceController sources,
+  required SourceEntry cached,
+  required WorkspaceResumeTarget target,
+  required bool Function() isCurrent,
+}) async {
+  if (!isCurrent()) return null;
+  final selected = recoverySourceFiles(cached, target);
+  if (selected != null) {
+    var offline = true;
+    for (final file in selected) {
+      if (!isCurrent()) return null;
+      try {
+        offline = await sources.hasOfflineContent(cached, file);
+      } on Object {
+        offline = false;
+      }
+      if (!isCurrent()) return null;
+      if (!offline) break;
+    }
+    if (offline) return cached;
+  }
+  if (!isCurrent()) return null;
+  final fresh = await sources.hydrate(cached).timeout(const Duration(seconds: 20));
+  if (!isCurrent() || fresh.key != cached.key) return null;
+  return fresh;
+}
+
 Future<bool> _resumeSource(
   BuildContext context,
   MultiviewWorkspaceController workspace,
@@ -135,8 +165,13 @@ Future<bool> _resumeSource(
     }
     final cached = await sources.repository.entryForRecovery(profile!, target.providerId, target.itemId);
     if (!current() || cached == null) return false;
-    final entry = await sources.hydrate(cached).timeout(const Duration(seconds: 20));
-    if (!current() || entry.key != cached.key) return false;
+    final entry = await resolveRecoverySourceEntry(
+      sources: sources,
+      cached: cached,
+      target: target,
+      isCurrent: current,
+    );
+    if (!current() || entry == null) return false;
     final files = recoverySourceFiles(entry, target);
     if (files == null) return false;
     if (descriptor.kind == MultiviewMediaKind.publication || descriptor.kind == MultiviewMediaKind.comic) {

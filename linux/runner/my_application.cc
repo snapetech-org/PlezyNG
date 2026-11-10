@@ -2,6 +2,8 @@
 
 #include <flutter_linux/flutter_linux.h>
 #include <gdk/gdk.h>
+
+#include "workspace_views.h"
 #ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/gdkwayland.h>
 #endif
@@ -97,6 +99,8 @@ static void my_application_activate(GApplication* application) {
 #else
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(self->flutter_view));
 #endif
+
+  plezy_workspace_views_register(self->flutter_view, window);
 
   // Register Flutter plugins.
   fl_register_plugins(FL_PLUGIN_REGISTRY(self->flutter_view));

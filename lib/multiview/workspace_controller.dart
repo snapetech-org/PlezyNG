@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:ui' as ui;
 
 import 'package:crypto/crypto.dart';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../services/playback_coordinator.dart';
+import 'desktop_workspace_views.dart';
 import 'workspace_models.dart';
 import 'workspace_persistence.dart';
 
@@ -58,6 +61,35 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     : _persistence = persistence,
       _profileId = profileId,
       _hydrated = persistence == null || profileId == null;
+
+  DesktopWorkspaceViews? _desktopViews;
+
+  DesktopWorkspaceViews get _windows {
+    final existing = _desktopViews;
+    if (existing != null) return existing;
+    final created = DesktopWorkspaceViews();
+    created.addListener(_presentationChanged);
+    return _desktopViews = created;
+  }
+
+  void _presentationChanged() {
+    if (!_disposed) _publish();
+  }
+
+  bool _supportsDesktopSurface(WorkspaceSurfaceRegistration registration) =>
+      !kIsWeb &&
+      const {TargetPlatform.linux, TargetPlatform.macOS, TargetPlatform.windows}.contains(defaultTargetPlatform) &&
+      registration.onDetachWindow == null &&
+      registration.videoPlayerSlot == null &&
+      !const {MultiviewMediaKind.video, MultiviewMediaKind.liveTv}.contains(registration.descriptor.kind);
+
+  bool canDetachWindow(String id) {
+    final registration = _sessions[id];
+    return registration != null && (registration.onDetachWindow != null || _supportsDesktopSurface(registration));
+  }
+
+  ui.FlutterView? detachedView(String id) => _desktopViews?.view(id);
+  Iterable<String> get detachedViewIds => _desktopViews?.detachedIds ?? const <String>[];
 
   final WorkspaceSnapshotPersistence? _persistence;
   final String? _profileId;
@@ -240,7 +272,8 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   WorkspaceSurfaceRegistration? session(String id) => _sessions[id];
 
   bool windowOperationPending(String id) => _windowOperations.contains(id);
-  bool isWindowDetached(String id) => _sessions[id]?.isWindowDetached?.call() ?? false;
+  bool isWindowDetached(String id) =>
+      (_desktopViews?.detached(id) ?? false) || (_sessions[id]?.isWindowDetached?.call() ?? false);
   String nativeWindowGeometryKey(VideoPlayerSlot? slot) =>
       sha256.convert(utf8.encode('plezy-window-v1|${_profileId ?? 'default'}|${slot?.name ?? 'primary'}')).toString();
 
@@ -257,6 +290,16 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     }
     _publish();
     try {
+      if (_supportsDesktopSurface(registration)) {
+        if (_desktopViews?.detached(id) ?? false) return await _windows.close(id);
+        final geometryKey = sha256.convert(utf8.encode('workspace-view-v1|${_profileId ?? 'default'}|$id')).toString();
+        final opened = await _windows.open(id, geometryKey: geometryKey, title: registration.descriptor.title);
+        if (_disposed || !identical(_sessions[id]?.buildSurface, registration.buildSurface)) {
+          await _desktopViews?.close(id);
+          return false;
+        }
+        return opened;
+      }
       final operation = isWindowDetached(id) ? registration.onAttachWindow : registration.onDetachWindow;
       return operation != null && await operation();
     } catch (error, stack) {
@@ -575,6 +618,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   WorkspaceSurfaceRegistration? _remove(String id) {
+    if (_desktopViews != null) unawaited(_desktopViews!.close(id));
     final registration = _sessions.remove(id);
     if (registration == null) {
       return null;
@@ -1030,6 +1074,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (_fullscreenSessionId == id) {
       _fullscreenSessionId = null;
     }
+    if (_desktopViews != null) unawaited(_desktopViews!.close(id));
     _parkedSessionIds.add(id);
     if (_focusedSessionId == id) {
       _focusedSessionId = _firstVisibleSessionId(excluding: id);
@@ -1249,7 +1294,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       _sessions.containsKey(id) &&
       !_parkedSessionIds.contains(id) &&
       !_restoredSessionIds.contains(id) &&
-      (_fullscreenSessionId == null || _fullscreenSessionId == id);
+      (_fullscreenSessionId == null || _fullscreenSessionId == id || (_desktopViews?.detached(id) ?? false));
 
   /// Non-gesture positioning path for remotes and keyboards.
   bool moveToCorner(String id, {required bool right, required bool bottom}) {
@@ -1322,6 +1367,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _desktopViews?.removeListener(_presentationChanged);
+    _desktopViews?.dispose();
+    _desktopViews = null;
     _persistenceTimer?.cancel();
     _recoveryTimer?.cancel();
     PlaybackCoordinator.instance

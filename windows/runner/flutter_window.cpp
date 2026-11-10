@@ -188,6 +188,7 @@ bool FlutterWindow::OnCreate() {
   MpvAudioPlayerPluginRegisterWithRegistrar(
       flutter_controller_->engine()->GetRegistrarForPlugin("MpvAudioPlayerPlugin"));
 
+  workspace_views_ = std::make_unique<WorkspaceViews>(flutter_controller_->engine());
   RegisterWindowChannel();
   RegisterDeepLinkChannel();
   RegisterCredentialKeyStore();
@@ -209,6 +210,7 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  workspace_views_.reset();
   // Cancel any pending save timer and save immediately
   if (g_saveTimerId) {
     KillTimer(nullptr, g_saveTimerId);

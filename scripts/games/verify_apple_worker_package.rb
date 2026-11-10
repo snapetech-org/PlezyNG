@@ -29,6 +29,17 @@ raise 'Missing profile build' unless worker.build_configurations.map(&:name).inc
 native = File.join(root, 'build/romm-extension-compile/Release-iphonesimulator')
 framework = File.join(native, 'PlezyRetroWorker.framework')
 raise 'Native worker framework missing' unless File.file?(File.join(framework, 'PlezyRetroWorker'))
+# Xcode resolves every project package even when only this extension is built.
+# The copied host's generated Flutter package is absent here and its relative
+# DV package path changes. Strip app-only package references in this disposable
+# verification project; the production project and worker dependencies stay intact.
+project.targets.each do |target|
+  target.frameworks_build_phase.files.to_a.each do |build_file|
+    build_file.remove_from_project if build_file.product_ref
+  end
+  target.package_product_dependencies.clear
+end
+project.root_object.package_references.clear
 reference = project.frameworks_group.new_file(framework)
 worker.frameworks_build_phase.add_file_reference(reference, true)
 worker.build_configurations.each do |config|

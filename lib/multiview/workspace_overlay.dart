@@ -1,4 +1,5 @@
 import '../widgets/app_icon.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -132,6 +133,7 @@ class _MultiviewOverlay extends StatelessWidget {
         final retainedGameSurfaces = controller.sessions.where(
           (session) =>
               session.descriptor.kind == MultiviewMediaKind.game &&
+              controller.detachedView(session.descriptor.id) == null &&
               !visibleIds.contains(session.descriptor.id) &&
               !controller.isRestored(session.descriptor.id),
         );
@@ -159,7 +161,7 @@ class _MultiviewOverlay extends StatelessWidget {
                 ),
               );
 
-        return Stack(
+        final result = Stack(
           fit: StackFit.expand,
           children: [
             Positioned.fill(child: content),
@@ -183,6 +185,32 @@ class _MultiviewOverlay extends StatelessWidget {
                 child: _WorkspaceSessionTray(controller: controller, maxWidth: trayMaxWidth, maxHeight: trayMaxHeight),
               ),
           ],
+        );
+        final desktopViews = <Widget>[];
+        for (final id in controller.detachedViewIds.toList()) {
+          final view = controller.detachedView(id);
+          final registration = controller.session(id);
+          if (view == null || registration == null) continue;
+          desktopViews.add(
+            View(
+              key: ValueKey<String>('desktop-view:$id'),
+              view: view,
+              child: Builder(
+                builder: (context) => _WorkspaceWindow(
+                  key: ValueKey<String>('desktop-workspace:$id'),
+                  controller: controller,
+                  registration: registration,
+                  viewport: MediaQuery.sizeOf(context),
+                  floating: false,
+                  nativeView: true,
+                ),
+              ),
+            ),
+          );
+        }
+        return ViewAnchor(
+          view: ViewCollection(views: desktopViews),
+          child: result,
         );
       },
     );
@@ -278,6 +306,7 @@ class _WorkspaceWindow extends StatefulWidget {
     required this.floating,
     this.paneSize,
     this.fullscreen = false,
+    this.nativeView = false,
   });
 
   final MultiviewWorkspaceController controller;
@@ -286,6 +315,7 @@ class _WorkspaceWindow extends StatefulWidget {
   final bool floating;
   final Size? paneSize;
   final bool fullscreen;
+  final bool nativeView;
 
   @override
   State<_WorkspaceWindow> createState() => _WorkspaceWindowState();
@@ -520,7 +550,7 @@ class _WorkspaceWindowState extends State<_WorkspaceWindow> {
                               }
                             : null,
                         child: SizedBox.expand(
-                          child: controller.isWindowDetached(id)
+                          child: controller.isWindowDetached(id) && !widget.nativeView
                               ? Center(
                                   child: FilledButton.icon(
                                     onPressed: controller.windowOperationPending(id)
@@ -655,7 +685,7 @@ class _WorkspaceTitleBar extends StatelessWidget {
                 onPressed: () => controller.restore(id),
                 iconSize: 19,
               ),
-            if (registration.onDetachWindow != null)
+            if (controller.canDetachWindow(id))
               _workspaceIconButton(
                 tooltip: controller.isWindowDetached(id)
                     ? t.common.returnToFullView

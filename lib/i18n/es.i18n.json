@@ -315,13 +315,15 @@
     "largeSkipDuration": "Salto grande",
     "rewindOnResume": "Rebobinar al reanudar",
     "secondsUnit(param=seconds)": {
-      "other": "${seconds: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} segundos",
-      "one": "${seconds: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} segundo"
+      "one": "${seconds: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} segundo",
+      "many": "${seconds: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} segundos",
+      "other": "${seconds: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} segundos"
     },
     "defaultSleepTimer": "Temporizador de apagado",
     "minutesUnit(param=minutes)": {
-      "other": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos",
-      "one": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minuto"
+      "one": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minuto",
+      "many": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos",
+      "other": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos"
     },
     "rememberTrackSelections": "Recordar selección de pistas por serie/película",
     "chooseTracksBeforePlayback": "Seleccione audio y subtitulos antes de reproducir",
@@ -2462,8 +2464,9 @@
     "sleepTimer": "Temporizador de apagado",
     "sleepTimerEndOfTrack": "Fin de la canción",
     "sleepTimerMinutes": {
-      "other": "${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos",
-      "one": "${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minuto"
+      "one": "${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minuto",
+      "many": "${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos",
+      "other": "${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos"
     },
     "stopPlayback": "Detener reproducción",
     "previousTrack": "Canción anterior",
@@ -4038,8 +4041,9 @@
     "sleepOff": "Desactivado",
     "endChapter": "Fin del capítulo",
     "minutes(param=count)": {
-      "other": "${count: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos",
-      "one": "${count: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minuto"
+      "one": "${count: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minuto",
+      "many": "${count: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos",
+      "other": "${count: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos"
     },
     "skipBack": "Escape de vuelta",
     "skipForward": "Escape hacia adelante",

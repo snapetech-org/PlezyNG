@@ -114,6 +114,7 @@ class TranslationsEs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$issueReport$es issueReport = Translations$issueReport$es.internal(_root);
 	@override late final Translations$romm$es romm = Translations$romm$es.internal(_root);
 	@override late final Translations$subtitleCapture$es subtitleCapture = Translations$subtitleCapture$es.internal(_root);
+	@override late final Translations$bonusExtras$es bonusExtras = Translations$bonusExtras$es.internal(_root);
 	@override late final Translations$musicExperience$es musicExperience = Translations$musicExperience$es.internal(_root);
 	@override late final Translations$musicTools$es musicTools = Translations$musicTools$es.internal(_root);
 }
@@ -224,6 +225,7 @@ class Translations$common$es extends Translations$common$en {
 	@override String get delete => 'Eliminar';
 	@override String get edit => 'Editar';
 	@override String get shuffle => 'Reproducción aleatoria';
+	@override String get compare => 'Comparar';
 	@override String get addTo => 'Añadir a...';
 	@override String get createNew => 'Crear nuevo';
 	@override String get connect => 'Conectar';
@@ -233,11 +235,13 @@ class Translations$common$es extends Translations$common$en {
 	@override String get resume => 'Reanudar';
 	@override String get error => 'Error';
 	@override String get search => 'Buscar';
+	@override String get preview => 'Vista previa';
 	@override String get home => 'Inicio';
 	@override String get back => 'Atrás';
 	@override String get settings => 'Ajustes';
 	@override String get mute => 'Silenciar';
 	@override String get ok => 'OK';
+	@override String get on => 'Activado';
 	@override String get off => 'Desactivado';
 	@override String get options => 'Opciones';
 	@override String seasonNumber({required Object number}) => 'Temporada ${number}';
@@ -1750,6 +1754,7 @@ class Translations$about$es extends Translations$about$en {
 	@override String get appDescription => 'Un cliente de Plex, Jellyfin y Emby para Flutter';
 	@override String get viewLicensesDescription => 'Ver las licencias de bibliotecas de terceros';
 	@override String get privacyPolicy => 'Política de privacidad';
+	@override String get traktAttribution => 'Pleazyng utiliza Trakt, pero Trakt no lo avala ni lo certifica';
 }
 
 // Path: serverSelection
@@ -3074,6 +3079,12 @@ class Translations$appAccess$es extends Translations$appAccess$en {
 	@override String get purchaseFailed => 'La compra no ha pasado, vuelve a probar.';
 	@override String get restoreFailed => 'No podía llegar a la tienda para restaurar su compra.';
 	@override String get nothingToRestore => 'No Pleazyng compra de vida se encontró para esta cuenta de la tienda.';
+	@override String get reviewAccess => 'Acceso para revisión de la tienda';
+	@override String get reviewAccessActive => 'Acceso para revisión de la tienda activo';
+	@override String get reviewAccessInstructions => 'Introduce el código proporcionado en las instrucciones de revisión de la tienda. Esto no realiza ninguna compra.';
+	@override String get reviewCode => 'Código de revisión';
+	@override String get reviewCodeInvalid => 'El código de revisión no es válido o ha caducado.';
+	@override String get activateReviewAccess => 'Activar';
 }
 
 // Path: detail
@@ -3257,7 +3268,6 @@ class Translations$universalMedia$es extends Translations$universalMedia$en {
 	@override String get favoriteSaved => 'El flujo favorito se salvó a este perfil';
 	@override String skippedEntries({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
 		one: 'Descargar ${count} entrada de lista de reproducción no soportada o insegura.',
-		many: 'Descargar ${count} entradas de lista de reproducción no apoyadas o inseguras.',
 		other: 'Descargar ${count} entradas de lista de reproducción no apoyadas o inseguras.',
 	);
 	@override String get playlistAddress => 'Dirección Playlist';
@@ -3275,7 +3285,6 @@ class Translations$universalMedia$es extends Translations$universalMedia$en {
 	@override String get chooseFiles => 'Elegir archivos';
 	@override String fileQueue({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
 		one: '1 Archivo seleccionado',
-		many: '${count} archivos seleccionados',
 		other: '${count} archivos seleccionados',
 	);
 	@override String get wifiTransfer => 'Enviar archivos a través de Wi-Fi';
@@ -3290,7 +3299,6 @@ class Translations$universalMedia$es extends Translations$universalMedia$en {
 	@override String transferExpires({required Object time}) => 'Esta dirección expira en ${time}.';
 	@override String uploadCount({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
 		one: '${count} archivo recibido',
-		many: 'Los archivos ${count} recibidos',
 		other: 'Los archivos ${count} recibidos',
 	);
 	@override String uploadedData({required Object size}) => 'Recogido por ${size}';
@@ -3711,6 +3719,7 @@ class Translations$audiobook$es extends Translations$audiobook$en {
 	@override String get addSyncSource => 'Añadir Google Drive, OneDrive, Dropbox, WebDAV o S3 en los archivos y libros primero.';
 	@override String get syncDestination => 'Conta de almacenamiento de sincronización';
 	@override String get syncFolder => 'Sincronización de la pasta o prefixo';
+	@override String get syncFolderHelp => 'Elige una carpeta WebDAV existente y separada o un prefijo S3 exclusivo para los archivos de estado de la aplicación. Los archivos multimedia nunca se suben, sustituyen, renombran ni eliminan.';
 	@override String get syncCode => 'Código de sincronización privada';
 	@override String get syncCodeHelp => 'Crea un código en tu primer dispositivo, luego introduzca ese código en tus otros dispositivos. Mantiene una copia privada: es la clave para tu estado cifrado. Utilice un código diferente para cada persona.';
 	@override String get showCode => 'Mostrar o ocultar el código de sincronización';
@@ -3720,6 +3729,7 @@ class Translations$audiobook$es extends Translations$audiobook$en {
 	@override String get syncSourceDisconnect => 'Eliminar esta fuente dejará de leer y escuchar la sincronización aquí. los archivos de sincronización encriptados permanecerán en el proveedor.';
 	@override String get syncReconnect => 'Reconectar la cuenta de almacenamiento';
 	@override String lastSynced({required Object time}) => 'Última sincronización en ${time}';
+	@override String get syncPrivacy => 'La sincronización en la nube guarda datos cifrados de progreso, finalización, marcadores y notas en archivos de sincronización de la aplicación. Los archivos multimedia nunca se suben, sustituyen, renombran ni eliminan. Los tokens de cuenta y las contraseñas no se suben. Google Drive y OneDrive usan el almacenamiento de la aplicación; Dropbox usa Pleazyng Sync; WebDAV y S3 usan la carpeta o el prefijo elegidos. Activar la sincronización puede requerir permiso de escritura del proveedor, pero la aplicación solo escribe esos archivos de estado. La sincronización en la nube y la sincronización compatible de progreso y marcadores con el servidor funcionan de forma independiente, con reintentos separados. Los conflictos se muestran para que los resuelvas. Desactivar la sincronización conserva el historial local y el estado remoto.';
 	@override String get syncConflicts => 'Elegir dónde volver';
 	@override String get conflictHelp => 'Estas modificaciones se hicieron de forma independiente. escoge la posición o la versión de la marca para mantener. Un timestamp posterior o un porcentaje superior no gana automáticamente.';
 	@override String syncDevice({required Object device}) => 'Dispositivo ${device}';
@@ -4243,6 +4253,79 @@ class Translations$subtitleCapture$es extends Translations$subtitleCapture$en {
 	@override String get cpuFallback => 'El procesamiento de voz en la GPU falló. Reintentando con la CPU…';
 }
 
+// Path: bonusExtras
+class Translations$bonusExtras$es extends Translations$bonusExtras$en {
+	Translations$bonusExtras$es.internal(TranslationsEs root) : this._root = root, super.internal(root);
+
+	final TranslationsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Extras';
+	@override String get seeAll => 'Ver todos los extras';
+	@override String get findMore => 'Buscar más';
+	@override String get empty => 'No se encontraron extras verificados para este título.';
+	@override String get search => 'Buscar extras o un tema';
+	@override String get all => 'Todos';
+	@override String get settings => 'Ajustes de extras';
+	@override String get addLink => 'Añadir un enlace';
+	@override String get hide => 'Ocultar este extra';
+	@override String get wrongTitle => 'Título incorrecto';
+	@override String get hidePublisher => 'Ocultar editor';
+	@override String get remove => 'Eliminar enlace personal';
+	@override String get openProvider => 'Abrir en la aplicación del proveedor o en el navegador';
+	@override String get watchHere => 'Ver aquí';
+	@override String get sendToPhone => 'Abrir en tu teléfono';
+	@override String get copyLink => 'Copiar enlace';
+	@override String get playbackUnavailable => 'La reproducción no está disponible aquí. Prueba la aplicación del proveedor, escanea el código o copia el enlace.';
+	@override String get providerNotice => 'La reproducción se abre en el reproductor del proveedor y puede incluir sus recomendaciones.';
+	@override String get external => 'En línea';
+	@override String get library => 'En tu biblioteca';
+	@override String get personal => 'Enlace personal';
+	@override String get unknownLanguage => 'Idioma no especificado';
+	@override String get spoilers => 'Mostrar extras que pueden contener spoilers';
+	@override String get spoilerHint => 'Los títulos que no has visto ocultan los extras, salvo que se haya verificado si contienen spoilers.';
+	@override String get externalEnabled => 'Descubrir extras verificados en línea';
+	@override String get includeAnalysis => 'Incluir análisis cinematográficos revisados';
+	@override String get serviceUrl => 'Dirección del servidor de descubrimiento';
+	@override String get serviceToken => 'Token de acceso al servicio de descubrimiento';
+	@override String get aiMode => 'Asistencia con IA';
+	@override String get aiOff => 'Desactivada';
+	@override String get aiDevice => 'En este dispositivo';
+	@override String get aiServer => 'En mi servidor';
+	@override String get aiCloud => 'En la nube';
+	@override String get aiUrl => 'Dirección del servidor de IA';
+	@override String get aiModel => 'Nombre del modelo';
+	@override String get aiToken => 'Token de acceso a la IA';
+	@override String get aiNotice => 'La IA recibe tu pregunta y los fragmentos permitidos de la transcripción solo cuando buscas. Al desactivarla, la búsqueda normal por tema y en la transcripción sigue disponible.';
+	@override String get deviceNotice => 'La opción «En este dispositivo» requiere un entorno de ejecución compatible con OpenAI instalado en localhost.';
+	@override String get save => 'Guardar';
+	@override String get cancel => 'Cancelar';
+	@override String get invalidSettings => 'Comprueba las direcciones de los servidores y el nombre del modelo. El modo en la nube requiere HTTPS; el modo en este dispositivo requiere localhost.';
+	@override String get failed => 'No se pudieron actualizar los extras. Los extras disponibles en tu biblioteca siguen siendo accesibles.';
+	@override String get partial => 'Algunas fuentes en línea no están disponibles. Se muestran los resultados disponibles.';
+	@override String get linkTitle => 'Título del extra';
+	@override String get linkUrl => 'Enlace de YouTube o Vimeo';
+	@override String get invalidLink => 'Introduce un título y un enlace HTTPS válido a un vídeo de YouTube o Vimeo.';
+	@override String get showHidden => 'Restablecer extras y editores ocultos';
+	@override String get clearCache => 'Borrar la caché de descubrimiento';
+	@override String get transcript => 'Buscar en la transcripción';
+	@override String get importTranscript => 'Importar transcripción SRT o VTT';
+	@override String get transcriptHint => 'Usa una transcripción que tengas permiso para procesar. Se conserva en este perfil; la IA solo la usa con el modo que hayas seleccionado.';
+	@override String get noTranscript => 'No hay ninguna transcripción disponible para buscar.';
+	@override String get transcriptImported => 'Transcripción importada';
+	@override String get invalidTranscript => 'No se pudo leer la transcripción o supera el límite de tamaño.';
+	@override String get aiFallback => 'La búsqueda normal está disponible; la IA no devolvió pruebas compatibles.';
+	@override String get searchAction => 'Buscar';
+	@override String get opened => 'Abierto';
+	@override String get completed => 'Completado';
+	@override String get markCompleted => 'Marcar como completado';
+	@override String get resume => 'Reanudar extra';
+	@override String get restricted => 'Los extras en línea no están disponibles para este perfil.';
+	@override late final Translations$bonusExtras$kind$es kind = Translations$bonusExtras$kind$es.internal(_root);
+	@override String get setupHint => 'Conecta un servidor de descubrimiento en Ajustes de extras para encontrar extras verificados en línea. Los extras de la biblioteca funcionan sin él.';
+	@override String get playbackBlocked => 'Este extra ya no está disponible con tus ajustes actuales.';
+}
+
 // Path: musicExperience
 class Translations$musicExperience$es extends Translations$musicExperience$en {
 	Translations$musicExperience$es.internal(TranslationsEs root) : this._root = root, super.internal(root);
@@ -4648,6 +4731,21 @@ class Translations$discover$findNext$es extends Translations$discover$findNext$e
 	@override String get anyTime => 'Sin límite de tiempo';
 	@override String get timeAvailable => '¿Cuánto tiempo tienes?';
 	@override String get filters => 'Elige para este momento';
+	@override String get availability => 'Disponibilidad';
+	@override String get availabilityNotChecked => 'Volver a comprobar al abrir';
+	@override String get aiRanking => 'Clasificación con IA opcional';
+	@override String get aiRankingHelp => 'Un servicio externo o local compatible con OpenAI puede reordenar hasta 24 sugerencias que cumplan los requisitos. La selección normal sigue disponible si está desactivado o no está disponible.';
+	@override String get aiEndpoint => 'URL del servicio';
+	@override String get aiModel => 'Nombre del modelo';
+	@override String get aiApiKey => 'Clave de API (opcional para servicios locales)';
+	@override String get aiEnabled => 'Activar la clasificación con IA';
+	@override String get aiConsentTitle => 'Revisar los datos para la clasificación con IA';
+	@override String get aiConsentBody => 'Al activarse, el servicio configurado recibe hasta 24 sugerencias con identificadores temporales, título, tipo de contenido, etiquetas de género y de estado de ánimo de los metadatos, y los filtros que hayas seleccionado para este momento: contenido, tiempo, género, estado de ánimo y familiaridad. No recibe identificadores de servidores ni de fuentes, URL, nombres de archivos, historial de reproducción, datos de cuenta, notas, credenciales ni contenido. Los resultados solo pueden reordenar las sugerencias que ya cumplen los requisitos en este dispositivo.';
+	@override String get aiSaved => 'Ajustes de clasificación con IA guardados';
+	@override String get aiInvalidConfig => 'Introduce un modelo y una URL HTTPS válida, o usa HTTP únicamente en este dispositivo.';
+	@override String get aiSavedKey => 'Hay una clave guardada de forma segura';
+	@override String get aiClearKey => 'Eliminar la clave de API guardada';
+	@override String get aiError => 'La clasificación con IA no estaba disponible. Tu orden habitual de descubrimiento sigue activo.';
 	@override String get watch => 'Ver';
 	@override String get listen => 'Escuchar';
 	@override String get read => 'Leer';
@@ -5441,6 +5539,25 @@ class Translations$services$trackerDescriptions$es extends Translations$services
 	@override String get mdblist => 'Mostrar las calificaciones y listas de MDBList en recomendaciones y Explore.';
 }
 
+// Path: bonusExtras.kind
+class Translations$bonusExtras$kind$es extends Translations$bonusExtras$kind$en {
+	Translations$bonusExtras$kind$es.internal(TranslationsEs root) : this._root = root, super.internal(root);
+
+	final TranslationsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get makingOf => 'Cómo se hizo';
+	@override String get effects => 'Efectos y escenas de riesgo';
+	@override String get makeup => 'Maquillaje y vestuario';
+	@override String get interview => 'Entrevistas';
+	@override String get deletedScene => 'Escenas eliminadas';
+	@override String get bloopers => 'Tomas falsas';
+	@override String get commentary => 'Comentarios';
+	@override String get trailer => 'Tráilers';
+	@override String get analysis => 'Análisis cinematográfico';
+	@override String get other => 'Otros extras';
+}
+
 /// The flat map containing all translations for locale <es>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -5543,6 +5660,7 @@ extension on TranslationsEs {
 			'common.delete' => 'Eliminar',
 			'common.edit' => 'Editar',
 			'common.shuffle' => 'Reproducción aleatoria',
+			'common.compare' => 'Comparar',
 			'common.addTo' => 'Añadir a...',
 			'common.createNew' => 'Crear nuevo',
 			'common.connect' => 'Conectar',
@@ -5552,11 +5670,13 @@ extension on TranslationsEs {
 			'common.resume' => 'Reanudar',
 			'common.error' => 'Error',
 			'common.search' => 'Buscar',
+			'common.preview' => 'Vista previa',
 			'common.home' => 'Inicio',
 			'common.back' => 'Atrás',
 			'common.settings' => 'Ajustes',
 			'common.mute' => 'Silenciar',
 			'common.ok' => 'OK',
+			'common.on' => 'Activado',
 			'common.off' => 'Desactivado',
 			'common.options' => 'Opciones',
 			'common.seasonNumber' => ({required Object number}) => 'Temporada ${number}',
@@ -5958,11 +6078,11 @@ extension on TranslationsEs {
 			'settings.dvExperimentDiagnosticsDescription' => 'Activar registros detallados del reproductor en la próxima reproducción.',
 			'settings.disableDolbyVision' => 'Desactivar Dolby Vision',
 			'settings.disableDolbyVisionDescription' => 'Reproducir la capa HDR10 o HLG del archivo en lugar de Dolby Vision, si la tiene',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversion' => 'Conversión de HDR a SDR',
 			'settings.hdrSdrConversionDescription' => 'Elige qué convierte el vídeo HDR cuando la pantalla no puede mostrar HDR.',
 			'settings.hdrSdrConversionAuto' => 'Automático',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAutoDescription' => 'Dispositivo en Android 9 y posteriores, reproductor en versiones anteriores',
 			'settings.hdrSdrConversionDevice' => 'Dispositivo',
 			'settings.hdrSdrConversionDeviceDescription' => 'El hardware de vídeo del dispositivo realiza la conversión. Lo más rápido, pero los colores dependen del dispositivo',
@@ -6472,11 +6592,11 @@ extension on TranslationsEs {
 			'videoControls.loopPointNotSet' => 'No se establece',
 			'videoControls.bookmarksHelp' => 'Las notas se almacenan en este dispositivo. Seleccione una para ir a ese tiempo.',
 			'videoControls.bookmarksButton' => 'Bookmarcas',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.chaptersAndBookmarks' => 'Capítulos y Bookmarks',
 			'videoControls.segmentLoop' => 'El segmento Loop',
 			'videoControls.addBookmark' => 'Añadir Bookmark',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkName' => 'Nombre Bookmark',
 			'videoControls.bookmarkNameHint' => 'Por ejemplo, la escena de apertura',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'El Bookmark ${n}',
@@ -6870,6 +6990,21 @@ extension on TranslationsEs {
 			'discover.findNext.anyTime' => 'Sin límite de tiempo',
 			'discover.findNext.timeAvailable' => '¿Cuánto tiempo tienes?',
 			'discover.findNext.filters' => 'Elige para este momento',
+			'discover.findNext.availability' => 'Disponibilidad',
+			'discover.findNext.availabilityNotChecked' => 'Volver a comprobar al abrir',
+			'discover.findNext.aiRanking' => 'Clasificación con IA opcional',
+			'discover.findNext.aiRankingHelp' => 'Un servicio externo o local compatible con OpenAI puede reordenar hasta 24 sugerencias que cumplan los requisitos. La selección normal sigue disponible si está desactivado o no está disponible.',
+			'discover.findNext.aiEndpoint' => 'URL del servicio',
+			'discover.findNext.aiModel' => 'Nombre del modelo',
+			'discover.findNext.aiApiKey' => 'Clave de API (opcional para servicios locales)',
+			'discover.findNext.aiEnabled' => 'Activar la clasificación con IA',
+			'discover.findNext.aiConsentTitle' => 'Revisar los datos para la clasificación con IA',
+			'discover.findNext.aiConsentBody' => 'Al activarse, el servicio configurado recibe hasta 24 sugerencias con identificadores temporales, título, tipo de contenido, etiquetas de género y de estado de ánimo de los metadatos, y los filtros que hayas seleccionado para este momento: contenido, tiempo, género, estado de ánimo y familiaridad. No recibe identificadores de servidores ni de fuentes, URL, nombres de archivos, historial de reproducción, datos de cuenta, notas, credenciales ni contenido. Los resultados solo pueden reordenar las sugerencias que ya cumplen los requisitos en este dispositivo.',
+			'discover.findNext.aiSaved' => 'Ajustes de clasificación con IA guardados',
+			'discover.findNext.aiInvalidConfig' => 'Introduce un modelo y una URL HTTPS válida, o usa HTTP únicamente en este dispositivo.',
+			'discover.findNext.aiSavedKey' => 'Hay una clave guardada de forma segura',
+			'discover.findNext.aiClearKey' => 'Eliminar la clave de API guardada',
+			'discover.findNext.aiError' => 'La clasificación con IA no estaba disponible. Tu orden habitual de descubrimiento sigue activo.',
 			'discover.findNext.watch' => 'Ver',
 			'discover.findNext.listen' => 'Escuchar',
 			'discover.findNext.read' => 'Leer',
@@ -6971,6 +7106,8 @@ extension on TranslationsEs {
 			'libraries.noLibrariesFound' => 'No se encontraron bibliotecas',
 			'libraries.allLibrariesHidden' => 'Todas las bibliotecas están ocultas',
 			'libraries.hiddenLibrariesCount' => ({required Object count}) => 'Bibliotecas ocultas (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.thisLibraryIsEmpty' => 'Esta biblioteca está vacía',
 			'libraries.noItemsMatchFilters' => 'Ningún elemento coincide con los filtros activos',
 			'libraries.resetFilters' => 'Restablecer filtros',
@@ -6989,8 +7126,6 @@ extension on TranslationsEs {
 			'libraries.hideLibrary' => 'Ocultar biblioteca',
 			'libraries.libraryOptions' => 'Opciones de biblioteca',
 			'libraries.content' => 'contenido de la biblioteca',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Seleccionar biblioteca',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtros (${count})',
 			'libraries.noRecommendations' => 'No hay recomendaciones disponibles',
@@ -7083,6 +7218,7 @@ extension on TranslationsEs {
 			'about.appDescription' => 'Un cliente de Plex, Jellyfin y Emby para Flutter',
 			'about.viewLicensesDescription' => 'Ver las licencias de bibliotecas de terceros',
 			'about.privacyPolicy' => 'Política de privacidad',
+			'about.traktAttribution' => 'Pleazyng utiliza Trakt, pero Trakt no lo avala ni lo certifica',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'No se encontraron servidores para ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Error al cargar servidores: ${error}',
 			'serverSelection.noValidServers' => 'No se encontraron servidores utilizables en esta cuenta',
@@ -7484,6 +7620,8 @@ extension on TranslationsEs {
 			'music.noAudioUrl' => ({required Object track}) => 'No hay ninguna URL de audio disponible para ${track}',
 			'music.discography.singlesAndEps' => 'Sencillos y EP',
 			'music.discography.live' => 'En directo',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Recopilaciones',
 			'watchTogether.title' => 'Ver juntos',
 			'watchTogether.description' => 'Mira contenido sincronizado con amigos y familiares',
@@ -7503,8 +7641,6 @@ extension on TranslationsEs {
 			'watchTogether.paste' => 'Pegar',
 			'watchTogether.noCodeInClipboard' => 'El portapapeles no contiene un código de sala',
 			'watchTogether.copyCode' => 'Copiar código',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Código de sala copiado',
 			'watchTogether.shareInvite' => 'Compartir invitación',
 			'watchTogether.inviteCopied' => 'Invitación copiada. Pégala en un mensaje.',
@@ -7998,6 +8134,8 @@ extension on TranslationsEs {
 			'metadataEdit.basicInfo' => 'Información básica',
 			'metadataEdit.artwork' => 'Imágenes',
 			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.title' => 'Título',
 			'metadataEdit.sortTitle' => 'Título de ordenación',
 			'metadataEdit.originalTitle' => 'Título original',
@@ -8017,8 +8155,6 @@ extension on TranslationsEs {
 			'metadataEdit.fromUrl' => 'Desde URL',
 			'metadataEdit.uploadFile' => 'Subir archivo',
 			'metadataEdit.enterImageUrl' => 'Introducir URL de imagen',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'URL de imagen',
 			'metadataEdit.metadataUpdated' => 'Metadatos actualizados',
 			'metadataEdit.metadataUpdateFailed' => 'Error al actualizar los metadatos',
@@ -8406,6 +8542,12 @@ extension on TranslationsEs {
 			'appAccess.purchaseFailed' => 'La compra no ha pasado, vuelve a probar.',
 			'appAccess.restoreFailed' => 'No podía llegar a la tienda para restaurar su compra.',
 			'appAccess.nothingToRestore' => 'No Pleazyng compra de vida se encontró para esta cuenta de la tienda.',
+			'appAccess.reviewAccess' => 'Acceso para revisión de la tienda',
+			'appAccess.reviewAccessActive' => 'Acceso para revisión de la tienda activo',
+			'appAccess.reviewAccessInstructions' => 'Introduce el código proporcionado en las instrucciones de revisión de la tienda. Esto no realiza ninguna compra.',
+			'appAccess.reviewCode' => 'Código de revisión',
+			'appAccess.reviewCodeInvalid' => 'El código de revisión no es válido o ha caducado.',
+			'appAccess.activateReviewAccess' => 'Activar',
 			'detail.endsAt' => ({required Object time}) => 'Termina a las ${time}',
 			'watchLink.serverUnavailable' => 'No podía llegar a un servidor Plex para este enlace.',
 			'watchLink.notFound' => 'No podría encontrar este espectáculo o película en sus servidores Plex.',
@@ -8506,6 +8648,8 @@ extension on TranslationsEs {
 			'homeLayout.rowsCanBeDragged' => 'Las rayas pueden ser atraídas — tapar el cierre para evitar que',
 			'homeLayout.tapLockToDrag' => 'Toma el cierre para sacar líneas',
 			'homeLayout.customRowLabel' => ({required Object title}) => 'Cálculo: ${title}',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Ocultar',
 			'homeLayout.remove' => 'Eliminar',
@@ -8531,8 +8675,6 @@ extension on TranslationsEs {
 			'universalMedia.favorites' => 'Los favoritos de los flujos salvos',
 			'universalMedia.address' => 'Dirección de los medios',
 			'universalMedia.addressHelp' => 'URLs con parámetros de credencia o firma reconocidos se utilizan únicamente para esta sesión y no pueden ser guardados como favoritos.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.displayName' => 'Nombre de pantalla (opcional)',
 			'universalMedia.displayNameHelp' => 'Seleccione un nombre corto para el jugador y los controles de medios del sistema.',
 			'universalMedia.allowHttp' => 'Permite una conexión HTTP sin cifrado',
@@ -8544,7 +8686,7 @@ extension on TranslationsEs {
 			'universalMedia.saveFavorite' => 'Salva los favoritos',
 			'universalMedia.playNow' => 'Juega ahora',
 			'universalMedia.favoriteSaved' => 'El flujo favorito se salvó a este perfil',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, one: 'Descargar ${count} entrada de lista de reproducción no soportada o insegura.', many: 'Descargar ${count} entradas de lista de reproducción no apoyadas o inseguras.', other: 'Descargar ${count} entradas de lista de reproducción no apoyadas o inseguras.', ), 
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, one: 'Descargar ${count} entrada de lista de reproducción no soportada o insegura.', other: 'Descargar ${count} entradas de lista de reproducción no apoyadas o inseguras.', ), 
 			'universalMedia.playlistAddress' => 'Dirección Playlist',
 			'universalMedia.playlistAddressHelp' => 'Abre una lista de reproducción M3U, M3u8, o PLS desde un enderezo web. enlaces de flujo directo no salvan la lista de reprodución.',
 			'universalMedia.choosePlaylist' => 'Elegir el archivo de playlist',
@@ -8558,7 +8700,7 @@ extension on TranslationsEs {
 			'universalMedia.removeFavorite' => 'Eliminar el flujo favorito',
 			'universalMedia.filesHelp' => 'Seleccione los archivos de audio, vídeo o ISO para una cueva temporal.Los archivos y las URL no se añaden a la historia de la biblioteca.',
 			'universalMedia.chooseFiles' => 'Elegir archivos',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, one: '1 Archivo seleccionado', many: '${count} archivos seleccionados', other: '${count} archivos seleccionados', ), 
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, one: '1 Archivo seleccionado', other: '${count} archivos seleccionados', ), 
 			'universalMedia.wifiTransfer' => 'Enviar archivos a través de Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transferir archivos apoyados de un navegador en la misma red confiada.',
 			'universalMedia.wifiTransferIntro' => 'Abre esta dirección en un navegador en otro dispositivo. Seleccione los archivos para agregarlos a la biblioteca de archivos y libros de este dispositivo.',
@@ -8569,7 +8711,7 @@ extension on TranslationsEs {
 			'universalMedia.copyAddress' => 'Copia de la dirección de transferencia',
 			'universalMedia.addressCopied' => 'Dirección de transferencia copiada',
 			'universalMedia.transferExpires' => ({required Object time}) => 'Esta dirección expira en ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, one: '${count} archivo recibido', many: 'Los archivos ${count} recibidos', other: 'Los archivos ${count} recibidos', ), 
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, one: '${count} archivo recibido', other: 'Los archivos ${count} recibidos', ), 
 			'universalMedia.uploadedData' => ({required Object size}) => 'Recogido por ${size}',
 			'universalMedia.stopTransfer' => 'Detener la transferencia y invalidar la dirección',
 			'universalMedia.startTransfer' => 'Inicio Transferencia',
@@ -8957,6 +9099,7 @@ extension on TranslationsEs {
 			'audiobook.addSyncSource' => 'Añadir Google Drive, OneDrive, Dropbox, WebDAV o S3 en los archivos y libros primero.',
 			'audiobook.syncDestination' => 'Conta de almacenamiento de sincronización',
 			'audiobook.syncFolder' => 'Sincronización de la pasta o prefixo',
+			'audiobook.syncFolderHelp' => 'Elige una carpeta WebDAV existente y separada o un prefijo S3 exclusivo para los archivos de estado de la aplicación. Los archivos multimedia nunca se suben, sustituyen, renombran ni eliminan.',
 			'audiobook.syncCode' => 'Código de sincronización privada',
 			'audiobook.syncCodeHelp' => 'Crea un código en tu primer dispositivo, luego introduzca ese código en tus otros dispositivos. Mantiene una copia privada: es la clave para tu estado cifrado. Utilice un código diferente para cada persona.',
 			'audiobook.showCode' => 'Mostrar o ocultar el código de sincronización',
@@ -8966,6 +9109,7 @@ extension on TranslationsEs {
 			'audiobook.syncSourceDisconnect' => 'Eliminar esta fuente dejará de leer y escuchar la sincronización aquí. los archivos de sincronización encriptados permanecerán en el proveedor.',
 			'audiobook.syncReconnect' => 'Reconectar la cuenta de almacenamiento',
 			'audiobook.lastSynced' => ({required Object time}) => 'Última sincronización en ${time}',
+			'audiobook.syncPrivacy' => 'La sincronización en la nube guarda datos cifrados de progreso, finalización, marcadores y notas en archivos de sincronización de la aplicación. Los archivos multimedia nunca se suben, sustituyen, renombran ni eliminan. Los tokens de cuenta y las contraseñas no se suben. Google Drive y OneDrive usan el almacenamiento de la aplicación; Dropbox usa Pleazyng Sync; WebDAV y S3 usan la carpeta o el prefijo elegidos. Activar la sincronización puede requerir permiso de escritura del proveedor, pero la aplicación solo escribe esos archivos de estado. La sincronización en la nube y la sincronización compatible de progreso y marcadores con el servidor funcionan de forma independiente, con reintentos separados. Los conflictos se muestran para que los resuelvas. Desactivar la sincronización conserva el historial local y el estado remoto.',
 			'audiobook.syncConflicts' => 'Elegir dónde volver',
 			'audiobook.conflictHelp' => 'Estas modificaciones se hicieron de forma independiente. escoge la posición o la versión de la marca para mantener. Un timestamp posterior o un porcentaje superior no gana automáticamente.',
 			'audiobook.syncDevice' => ({required Object device}) => 'Dispositivo ${device}',
@@ -9018,6 +9162,8 @@ extension on TranslationsEs {
 			'sourceSetup.dlnaSearching' => 'Buscando servidores DLNA en la red local',
 			'sourceSetup.networkSearching' => 'Buscando en la red local…',
 			'sourceSetup.dlnaDiscover' => 'Detectar servidores DLNA',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.dlnaHelp' => 'La detección depende de la multidifusión de la red local. Si no aparece ningún servidor, introduce arriba su URL de descripción del dispositivo.',
 			'sourceSetup.dlnaRoot' => 'ID de objeto DLNA; déjalo en blanco para usar la raíz del dispositivo.',
 			'sourceSetup.passwordOrKey' => 'Introduce una contraseña o añade una clave privada abajo.',
@@ -9045,8 +9191,6 @@ extension on TranslationsEs {
 			'sourceSetup.clientCertificate' => 'Certificado de cliente (opcional)',
 			'sourceSetup.clientCertificateHelp' => 'Permite que el NAS autentique este cliente; los ID de AUTH_SYS siguen sujetos a la política del recurso NFS compartido del NAS.',
 			'sourceSetup.savedIdentity' => 'Se usará una identidad de cliente guardada.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Reemplazar la identidad de cliente guardada',
 			'sourceSetup.chooseIdentity' => 'Elegir identidad de cliente PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Frase de contraseña de la identidad de cliente',
@@ -9417,6 +9561,79 @@ extension on TranslationsEs {
 			'subtitleCapture.processingAudio' => 'Procesando audio localmente…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Procesando audio localmente (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'El procesamiento de voz en la GPU falló. Reintentando con la CPU…',
+			'bonusExtras.title' => 'Extras',
+			'bonusExtras.seeAll' => 'Ver todos los extras',
+			'bonusExtras.findMore' => 'Buscar más',
+			'bonusExtras.empty' => 'No se encontraron extras verificados para este título.',
+			'bonusExtras.search' => 'Buscar extras o un tema',
+			'bonusExtras.all' => 'Todos',
+			'bonusExtras.settings' => 'Ajustes de extras',
+			'bonusExtras.addLink' => 'Añadir un enlace',
+			'bonusExtras.hide' => 'Ocultar este extra',
+			'bonusExtras.wrongTitle' => 'Título incorrecto',
+			'bonusExtras.hidePublisher' => 'Ocultar editor',
+			'bonusExtras.remove' => 'Eliminar enlace personal',
+			'bonusExtras.openProvider' => 'Abrir en la aplicación del proveedor o en el navegador',
+			'bonusExtras.watchHere' => 'Ver aquí',
+			'bonusExtras.sendToPhone' => 'Abrir en tu teléfono',
+			'bonusExtras.copyLink' => 'Copiar enlace',
+			'bonusExtras.playbackUnavailable' => 'La reproducción no está disponible aquí. Prueba la aplicación del proveedor, escanea el código o copia el enlace.',
+			'bonusExtras.providerNotice' => 'La reproducción se abre en el reproductor del proveedor y puede incluir sus recomendaciones.',
+			'bonusExtras.external' => 'En línea',
+			'bonusExtras.library' => 'En tu biblioteca',
+			'bonusExtras.personal' => 'Enlace personal',
+			'bonusExtras.unknownLanguage' => 'Idioma no especificado',
+			'bonusExtras.spoilers' => 'Mostrar extras que pueden contener spoilers',
+			'bonusExtras.spoilerHint' => 'Los títulos que no has visto ocultan los extras, salvo que se haya verificado si contienen spoilers.',
+			'bonusExtras.externalEnabled' => 'Descubrir extras verificados en línea',
+			'bonusExtras.includeAnalysis' => 'Incluir análisis cinematográficos revisados',
+			'bonusExtras.serviceUrl' => 'Dirección del servidor de descubrimiento',
+			'bonusExtras.serviceToken' => 'Token de acceso al servicio de descubrimiento',
+			'bonusExtras.aiMode' => 'Asistencia con IA',
+			'bonusExtras.aiOff' => 'Desactivada',
+			'bonusExtras.aiDevice' => 'En este dispositivo',
+			'bonusExtras.aiServer' => 'En mi servidor',
+			'bonusExtras.aiCloud' => 'En la nube',
+			'bonusExtras.aiUrl' => 'Dirección del servidor de IA',
+			'bonusExtras.aiModel' => 'Nombre del modelo',
+			'bonusExtras.aiToken' => 'Token de acceso a la IA',
+			'bonusExtras.aiNotice' => 'La IA recibe tu pregunta y los fragmentos permitidos de la transcripción solo cuando buscas. Al desactivarla, la búsqueda normal por tema y en la transcripción sigue disponible.',
+			'bonusExtras.deviceNotice' => 'La opción «En este dispositivo» requiere un entorno de ejecución compatible con OpenAI instalado en localhost.',
+			'bonusExtras.save' => 'Guardar',
+			'bonusExtras.cancel' => 'Cancelar',
+			'bonusExtras.invalidSettings' => 'Comprueba las direcciones de los servidores y el nombre del modelo. El modo en la nube requiere HTTPS; el modo en este dispositivo requiere localhost.',
+			'bonusExtras.failed' => 'No se pudieron actualizar los extras. Los extras disponibles en tu biblioteca siguen siendo accesibles.',
+			'bonusExtras.partial' => 'Algunas fuentes en línea no están disponibles. Se muestran los resultados disponibles.',
+			'bonusExtras.linkTitle' => 'Título del extra',
+			'bonusExtras.linkUrl' => 'Enlace de YouTube o Vimeo',
+			'bonusExtras.invalidLink' => 'Introduce un título y un enlace HTTPS válido a un vídeo de YouTube o Vimeo.',
+			'bonusExtras.showHidden' => 'Restablecer extras y editores ocultos',
+			'bonusExtras.clearCache' => 'Borrar la caché de descubrimiento',
+			'bonusExtras.transcript' => 'Buscar en la transcripción',
+			'bonusExtras.importTranscript' => 'Importar transcripción SRT o VTT',
+			'bonusExtras.transcriptHint' => 'Usa una transcripción que tengas permiso para procesar. Se conserva en este perfil; la IA solo la usa con el modo que hayas seleccionado.',
+			'bonusExtras.noTranscript' => 'No hay ninguna transcripción disponible para buscar.',
+			'bonusExtras.transcriptImported' => 'Transcripción importada',
+			'bonusExtras.invalidTranscript' => 'No se pudo leer la transcripción o supera el límite de tamaño.',
+			'bonusExtras.aiFallback' => 'La búsqueda normal está disponible; la IA no devolvió pruebas compatibles.',
+			'bonusExtras.searchAction' => 'Buscar',
+			'bonusExtras.opened' => 'Abierto',
+			'bonusExtras.completed' => 'Completado',
+			'bonusExtras.markCompleted' => 'Marcar como completado',
+			'bonusExtras.resume' => 'Reanudar extra',
+			'bonusExtras.restricted' => 'Los extras en línea no están disponibles para este perfil.',
+			'bonusExtras.kind.makingOf' => 'Cómo se hizo',
+			'bonusExtras.kind.effects' => 'Efectos y escenas de riesgo',
+			'bonusExtras.kind.makeup' => 'Maquillaje y vestuario',
+			'bonusExtras.kind.interview' => 'Entrevistas',
+			'bonusExtras.kind.deletedScene' => 'Escenas eliminadas',
+			'bonusExtras.kind.bloopers' => 'Tomas falsas',
+			'bonusExtras.kind.commentary' => 'Comentarios',
+			'bonusExtras.kind.trailer' => 'Tráilers',
+			'bonusExtras.kind.analysis' => 'Análisis cinematográfico',
+			'bonusExtras.kind.other' => 'Otros extras',
+			'bonusExtras.setupHint' => 'Conecta un servidor de descubrimiento en Ajustes de extras para encontrar extras verificados en línea. Los extras de la biblioteca funcionan sin él.',
+			'bonusExtras.playbackBlocked' => 'Este extra ya no está disponible con tus ajustes actuales.',
 			'musicExperience.title' => 'Descubrimiento musical',
 			'musicExperience.mix' => 'Creador de mezclas',
 			'musicExperience.adventure' => 'Aventura sonora',
@@ -9459,6 +9676,8 @@ extension on TranslationsEs {
 			'musicExperience.unknown' => 'Desconocido',
 			'musicExperience.routeLost' => 'Salida de audio desconectada. Reproducción pausada.',
 			'musicExperience.autoDriving' => 'Abrir la vista de conducción al conectar con un coche',
+			_ => null,
+		} ?? switch (path) {
 			'musicExperience.routeHint' => 'El sistema del coche decide si la aplicación puede aparecer automáticamente.',
 			'musicTools.guestDj' => 'DJ invitado',
 			'musicTools.charts' => 'Estadísticas de escucha',

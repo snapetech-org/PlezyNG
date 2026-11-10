@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "win32_window.h"
+#include "workspace_views.h"
 
 class FlutterWindow : public Win32Window {
  public:
@@ -24,6 +25,7 @@ class FlutterWindow : public Win32Window {
   flutter::DartProject project_;
 
   std::unique_ptr<flutter::FlutterViewController> flutter_controller_;
+  std::unique_ptr<WorkspaceViews> workspace_views_;
 
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> window_channel_;
 

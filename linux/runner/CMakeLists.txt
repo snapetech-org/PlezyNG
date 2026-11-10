@@ -4,6 +4,7 @@ project(runner LANGUAGES CXX)
 add_executable(${BINARY_NAME}
   "main.cc"
   "my_application.cc"
+  "workspace_views.cc"
   "mpv/mpv_player.cc"
   "mpv/mpv_plugin.cc"
   "mpv/plane_render_executor.cc"

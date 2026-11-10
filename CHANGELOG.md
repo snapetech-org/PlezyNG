@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Record the complete review of 64 upstream commits through Plezy 2.26, with originating commit and contributor links, retained fork behavior and explicit unshipped native dependencies. Pleazyng keeps its name, logo, native components and GPL license file; the upstream trademark policy is excluded. See the [review and source credits](docs/maintainers/upstream-sync-2026-11-09.md).
+
 - Run post-publication catalog verification through a read-only reusable workflow, preserving automatic validation while removing the privileged workflow-run trigger rejected by repository policy.
 
 - AppImage update metadata and verified zsync sidecars: build x64 AppImages with fork-specific update information, verify control-file names, blocks and digests, checksum and attest both artifacts, and preserve immutable legacy images without update metadata. Independently adapted from [upstream d832b421](https://github.com/edde746/plezy/commit/d832b4212ceabc68bfee6785177f40bd2a724723), contributed upstream by [@nataloko](https://github.com/nataloko); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).

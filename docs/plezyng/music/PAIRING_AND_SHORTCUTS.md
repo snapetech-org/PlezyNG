@@ -12,18 +12,22 @@ label, edition and media versions. Different recordings are not merged because
 their titles happen to match. Missing provider data is not fabricated.
 
 Music home exposes a Plex smart-playlist editor. Existing playlists are refreshed
-from their owning server before editing. The advanced query preserves repeated
-parameters and nested groups; the filter form can add a grouped condition.
+from their owning server before editing, including
+[Plex directory URI rules](https://developer.plex.tv/pms/). The advanced query
+preserves repeated parameters, exact operators, relative dates and nested
+groups. The filter form can add a condition using the rule's source kind.
 Preview queries the server; saving creates or updates the server's rule-based
-playlist instead of freezing a local list. Sorting and limits are query rules.
+playlist instead of freezing a local list. Grouping, sorting and limits remain
+query rules.
 Save-as creates a separate smart playlist. Backend permission failures remain
 failures. Local finite download stations are a different feature.
 
 ## History and conflicting offline edits
 
 Music history is profile-owned listening history, paged by occurrence rather than
-deduplicated by track. New database writes refresh the view. This is not a server
-history import or a RAM-independent live playback queue.
+deduplicated by track. New database writes refresh the loaded window without
+resetting it to the first page. This is not a server history import or a
+RAM-independent live playback queue.
 
 The music-home Sync action shows conflicting offline rating/favorite decisions.
 Choose the reviewed local or remote value explicitly. A stale conflict revision
@@ -98,6 +102,8 @@ On NFC-capable Android devices, open music details and select the NFC-writing
 action. Hold a writable tag near the device until Saved appears, or cancel the
 scan. Capacity, read-only tags, unsupported tags and the scan deadline can cause
 a write to fail; success is shown only after the native write completes.
+Use **Scan NFC tag** in Music home for an explicit foreground read. A cancelled
+reader operation cannot deliver a tag to its replacement.
 
 The NDEF record contains only a `pleazyng://play` link with server/item identity,
 never a server token, media URL or account credentials. Scanning resolves that

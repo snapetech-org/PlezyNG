@@ -52,19 +52,25 @@ below describe their own source checkpoints, not new qualification evidence.
   output. Null output does not prove acoustic continuity or DAC behavior, and
   these focused compiles are not a full application or ARM64 package build.
 
-The seven-area continuation adds authorized credit/edition details, real Plex
-smart-playlist queries and writes, live cursor-paged listening history, reviewed
-rating conflicts, an Android widget and NFC writer, receiver ownership checks,
-and a clock-corrected two-device paired music group. Operational scope and limits
-are documented in [PAIRING_AND_SHORTCUTS.md](PAIRING_AND_SHORTCUTS.md).
+The seven-area continuation connects authorized credit/edition details, native
+Plex smart-playlist rules, live cursor-paged listening history, reviewed rating
+conflicts and paired history reconciliation, Android and provisioned iOS
+widgets/NFC, connection-bound Cast music output, and independently clocked
+multi-device groups. See [PAIRING_AND_SHORTCUTS.md](PAIRING_AND_SHORTCUTS.md) for
+operational scope and limits.
 
-Remaining implementation includes provider/reference metadata equivalence,
-additional discovery controls, a RAM-independent live queue,
-other platforms' widgets/NFC, and arbitrary multi-endpoint
-synchronized groups. The shared music queue now drives Cast through an output
-adapter; receiver hardware/format qualification remains. Native
-car artwork/provisioning and physical Pi/car/DAC/codec/reference qualification
-also remain. No complete-parity claim is made.
+Remaining limits include provider/reference metadata equivalence, server-wide
+history ingestion, additional discovery controls, a RAM-independent live queue,
+sender-independent Cast continuation, and reference group interoperability.
+Native car artwork/provisioning and physical iPhone/Pi/car/Cast/DAC/codec and
+acoustic qualification remain. No complete-parity claim is made.
+
+- The integrated music service/screen, Cast ownership, companion provider and
+  profile lifecycle suite passed **448 tests** at `e7308fcfc`, with 80 further
+  migration, Plex adapter and deep-link tests. Android NFC passes focused Kotlin
+  compilation and an isolated Robolectric cancellation regression. Separate
+  checks cover iOS archive configuration, portable Swift widget snapshots and
+  NFC bridge syntax, not signed Apple SDK builds or physical devices.
 
 ## Added and connected on main
 
@@ -122,7 +128,7 @@ also remain. No complete-parity claim is made.
 | B04 | Track detail, credits and editions | Account-bound metadata details expose performer/writer/producer/composer/contributor roles, labels, release dates, explicit editions and media versions without title-based recording merges. Provider/reference field completeness remains. | Role/provenance/authentication tests pass; live metadata comparison pending. |
 | B05 | Ratings, favorites and listening state | Profile/account-scoped rating/favorite journal detects remote divergence before retry, acknowledges already-applied decisions, and offers explicit local/remote conflict resolution. Cold-offline rating without an account client remains. | Journal ordering, conflict revisions, already-applied retry, revocation and profile-isolation tests pass. |
 | B06 | Regular playlist management | Mix previews reuse existing playlist creation. Playback starts prefer playlist occurrence IDs over media IDs. Full duplicate-aware editing, sharing and artwork parity remains. | Selected repeated-entry playback regressions pass; live playlist write pending. |
-| B07 | Smart playlists and filter editing | Separate Plex smart-playlist editor preserves ordered repeated parameters and nested groups, integrates existing filter forms, server preview, sorting/limits, create/update and save-as. Existing rules are loaded with original account ownership; the server enforces write permissions. Local station rules remain distinct. Non-Plex smart-playlist equivalence and live server qualification remain. | Query preservation/validation and playlist regressions pass; no live permission/share claim. |
+| B07 | Smart playlists and filter editing | Plex smart-playlist editor decodes native directory and server-owned rules, preserving ordered repeated parameters, exact operators, nested groups, source/result types, grouping, sort and limits. The filter form uses the rule's source kind. Server preview, create/update and save-as run under the owning account. Local station rules remain distinct. Non-Plex equivalence and live server qualification remain. | Native URI, Boolean grammar, ordered wire query and playlist regressions pass; no live permission/share claim. |
 | B08 | Collections, sharing and artwork | Existing mechanisms retained; music-specific authorization and artwork completeness remain. | Not newly qualified. |
 | B09 | Customizable music home | Music home is linked from Discover and Now Playing, with ordered/hidden recent, Favorites, rediscovery, anniversaries, charts, recipes, stations and download shelves. Additional reference shelf families and pins remain. | Profile persistence, Favorites source guards and 320px/200% text layout tests pass. |
 | B10 | Anniversaries and rediscovery | Listening-based rediscovery and full-library album anniversaries are integrated into Music home. Anniversary scans reject incomplete/invalid dates, preserve calendar dates across timezones, page with bounded work, and cache by day/account/library revision. | History, precise-date/leap-year, pagination, cache, authorization-revocation and corrupt-pagination tests pass. |
@@ -132,7 +138,7 @@ also remain. No complete-parity claim is made.
 | P04 | Advanced pre-caching | Complete DirectPlay files can be prefetched into a separate profile cache, with a 0–2048 MiB quota, Wi-Fi policy, total request deadline, atomic promotion, hashed credential-qualified keys and LRU eviction. Current account visibility is rechecked before promotion/use; pinned downloads are separate. Transcodes and playlists retain streaming. | Quota/LRU, malformed/partial/oversized responses, network policy, authorization revocation and clear tests pass. |
 | P05 | Streaming and conversion quality | Music streaming has general, remote and cellular settings, with cellular override precedence. Music downloads retain original representation; settings and offline policy explain that distinction. Output equivalence remains. | Precedence/persistence tests pass; no new format/device matrix. |
 | P06 | Queue edits, shuffle and repeat | Existing edits retained; continuation respects manual inserts, removals and clear-upcoming. Full reference gesture/Back To inventory remains. | Queue and playback tests pass. |
-| P07 | Persistent large queues | Full queue, order, cursor and continuation metadata persist without a 1,000-track truncation. Listening history has live database invalidation and keyset pages preserving repeated plays and timestamp ties. Live queue still resides in RAM and shape edits rewrite its rows. | 10,000-track persistence, duplicate occurrences, cursor paging, tied timestamps, live invalidation and migration regressions pass. |
+| P07 | Persistent large queues | Full queue, order, cursor and continuation metadata persist without a 1,000-track truncation. Listening history retains the loaded window through live database invalidation and uses keyset pages preserving repeated plays and timestamp ties. Live queue still resides in RAM and shape edits rewrite its rows. | 10,000-track persistence, duplicate occurrences, cursor paging, tied timestamps, refresh/load races and migration regressions pass. |
 | P08 | Album-aware playback | Album-block shuffle/skip retained; station generation orders whole albums by disc and track, skipping blocks that exceed count/time budgets. | Album queue and station boundary tests pass. |
 | P09 | Timed/plain lyrics | Authorized server lyrics are cached on explicit download and playback; per-track timing offsets affect highlighting and tap-to-seek. New data is profile-owned and rejects late revoked-account results. | Lyrics bundle, revocation and existing widget tests pass; licensed/live provider timing qualification pending. |
 | P10 | Waveform/seek-print navigation | Seek-print analysis now persists in a versioned, at-most-512-sample profile document and is enriched during downloads when the selected cached source exposes Plex analysis. Unknown/invalid analysis remains absent. | Bounded bundle, stale-account and invalid-analysis tests pass; live server/device evidence pending. |
@@ -163,8 +169,8 @@ also remain. No complete-parity claim is made.
 | U03 | Responsive layouts | Music tools extend ordinary app routes; home, prompt and audio forms were corrected for 320px/200% text. Full desktop/tablet/TV D-pad and native packaging matrix remains. | Large-text music tools/driving tests and retained music UI regressions pass. |
 | U04 | Accessibility/localization | Music-tools strings, including NFC scanning actions, have explicit base-locale text and existing regional inheritance; widget transport labels use localized shared strings. Native fallback strings and human language/screen-reader review remain. | Localization/placeholder/source checks and 320px/200% text tests pass. |
 | U05 | Shortcuts/widgets/settings | Android and provisioned iOS home-screen widgets use shared profile/queue-qualified transport. Android uses process-local metadata and requires internal installation. The iOS widget uses expiring display-only snapshots and interactive controls on iOS 17+; it never restores a queue from widget data. Desktop tray/shortcut reference comparison remains. | Shared transport, portable Swift snapshot and archive configuration regressions pass; signed iOS widget and physical device qualification remain pending. |
-| U06 | Links/NFC | Durable server-qualified links resolve through profile authorization, including owned offline copies. Android writes token-free NDEF links; provisioned iPhones support foreground reads and writes with the same link contract. Native writes check tag capacity and reader ownership; iOS scans reject profile changes and extra parameters. | Dart payload/cancellation/link-validation and signing-capability regressions pass. Signed iPhone builds and physical tag qualification remain pending. |
-| R01 | Chromecast music | Now Playing can select an acknowledged Cast output inside the shared session. Receiver URLs come from the active server adapter rather than local files or request headers; queue edits, duplicate occurrences, repeat, shuffle, EOF and OS controls retain the shared queue. Takeover/disconnect returns locally paused without stopping foreign media. Native DSP/overlap is bypassed and reported absent on Cast. | Output switching, stale preflight, receiver controls, EOF/reset, takeover, auth revocation and profile lifecycle regressions pass; no live receiver/format qualification. Receiver continuation still requires the sender process. |
+| U06 | Links/NFC | Durable server-qualified links resolve through profile authorization, including owned offline copies. Android and provisioned iPhones support foreground reads and writes with the same token-free NDEF link contract. Native writes check tag capacity and reader ownership; foreground scans reject profile changes and extra parameters. | Dart payload/cancellation/link-validation and signing-capability regressions pass. Signed iPhone builds and physical tag qualification remain pending. |
+| R01 | Chromecast music | Now Playing can select an acknowledged Cast output inside the shared session. Ownership includes the exact receiver connection and media session; loads prepare paused before authorized playback. Receiver URLs come from the active server adapter rather than local files or request headers. Queue edits, duplicate occurrences, repeat, shuffle, EOF and OS controls retain the shared queue. Takeover/disconnect returns locally paused without stopping foreign media. Native DSP/overlap is bypassed and reported absent on Cast. | Output switching, bounded acknowledgements, receiver changes, EOF/reset, takeover, auth revocation and profile lifecycle regressions pass; no live receiver/format qualification. Receiver continuation still requires the sender process. |
 | R02 | AirPlay/system routes | Existing native routing retained; no general cross-platform sender added. New output diagnostics/recovery parity remains. | No new route hardware evidence. |
 | R03 | Control/transfer distinction | Version-negotiated transfer sends a bounded credential-free queue snapshot; receivers validate their own source access and matching acknowledgement pauses only an unchanged sender. Transfer and paired synchronization are separate explicit actions; selecting a control target starts neither. | Snapshot/protocol/receiver/provider/Now Playing regressions pass; live paired-device qualification remains. |
 | R04 | Headless Raspberry Pi | Linux ARM64 endpoint packaging, explicit headless launch mode and a managed user-service installer are present. Configure and authorize the profile normally first; virtual X11 dependencies remain. | Mode/profile and installer regressions pass; focused Linux x64 checks are not physical Pi or ARM64 package qualification. |

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/strings.g.dart';
@@ -9,6 +10,7 @@ import '../../services/music/music_library_store.dart';
 import '../../utils/music_navigation.dart';
 import '../../providers/companion_remote_provider.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../widgets/app_icon.dart';
 
 class MusicHistoryScreen extends StatefulWidget {
   const MusicHistoryScreen({super.key});
@@ -91,7 +93,7 @@ class _MusicHistoryScreenState extends State<MusicHistoryScreen> {
               tooltip: '${t.homeLayout.sync}: ${companion!.connectedDevice?.name ?? t.companionRemote.unknownDevice}',
               icon: _syncing
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.sync),
+                  : const AppIcon(Symbols.sync_rounded),
               onPressed: _syncing
                   ? null
                   : () async {

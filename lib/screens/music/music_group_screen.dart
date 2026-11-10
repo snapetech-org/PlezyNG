@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/strings.g.dart';
@@ -8,6 +9,7 @@ import '../../providers/companion_remote_provider.dart';
 import '../../services/base_peer_service.dart';
 import '../../services/companion_remote/remote_pairing_store.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../widgets/app_icon.dart';
 import '../../widgets/companion_remote/discovery_view.dart';
 import '../../widgets/companion_remote/remote_pairing_dialog.dart';
 
@@ -87,7 +89,7 @@ class _MusicGroupScreenState extends State<MusicGroupScreen> {
           if (remote.musicGroupActive)
             IconButton(
               tooltip: t.common.cancel,
-              icon: const Icon(Icons.stop_circle_outlined),
+              icon: const AppIcon(Symbols.stop_circle_rounded),
               onPressed: remote.leaveMusicGroup,
             ),
         ],
@@ -96,7 +98,7 @@ class _MusicGroupScreenState extends State<MusicGroupScreen> {
         children: [
           if (remote.supportsMusicGroup)
             ListTile(
-              leading: const Icon(Icons.speaker_group),
+              leading: const AppIcon(Symbols.speaker_group_rounded),
               title: Text(remote.connectedDevice?.name ?? t.companionRemote.unknownDevice),
               subtitle: Text(
                 remote.primaryMusicGroupActive ? t.watchTogether.connected : t.companionRemote.pairing.availableDevices,
@@ -121,7 +123,7 @@ class _MusicGroupScreenState extends State<MusicGroupScreen> {
           for (final host in endpoints)
             ListTile(
               key: ValueKey('joined:${_key(host)}'),
-              leading: const Icon(Icons.speaker),
+              leading: const AppIcon(Symbols.speaker_rounded),
               title: Text(host.name),
               subtitle: Text(
                 remote.musicGroupEndpointJoined(host)
@@ -130,7 +132,7 @@ class _MusicGroupScreenState extends State<MusicGroupScreen> {
               ),
               trailing: IconButton(
                 tooltip: t.common.cancel,
-                icon: const Icon(Icons.remove_circle_outline),
+                icon: const AppIcon(Symbols.remove_circle_rounded),
                 onPressed: () => remote.removeMusicGroupEndpoint(host),
               ),
             ),
@@ -140,12 +142,12 @@ class _MusicGroupScreenState extends State<MusicGroupScreen> {
           for (final host in available)
             ListTile(
               key: ValueKey('available:${_key(host)}'),
-              leading: const Icon(Icons.speaker_group_outlined),
+              leading: const AppIcon(Symbols.speaker_group_rounded),
               title: Text(host.name),
               subtitle: Text(host.platform),
               trailing: _busy.contains(_key(host))
                   ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator())
-                  : const Icon(Icons.add_circle_outline),
+                  : const AppIcon(Symbols.add_circle_rounded),
               onTap: remote.canManageMusicGroups && !_busy.contains(_key(host)) ? () => _add(host) : null,
             ),
         ],

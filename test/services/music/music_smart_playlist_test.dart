@@ -105,7 +105,9 @@ void main() {
     final preview = await client.previewSmartMusicPlaylist(rules);
     expect(preview.items.single.id, '42');
     expect(requests.last.url.queryParameters['X-Plex-Container-Size'], '50');
-    await client.saveSmartMusicPlaylist(title: 'Smart', rules: rules, playlist: playlist);
+    final updated = await client.saveSmartMusicPlaylist(title: 'Smart', rules: rules, playlist: playlist);
+    expect(updated!.serverId, 'srv');
+    expect(updated.smartContent, isNotNull);
     expect(requests.where((request) => request.method == 'PUT').single.url.path, '/playlists/7/items');
     final count = requests.length;
     await expectLater(

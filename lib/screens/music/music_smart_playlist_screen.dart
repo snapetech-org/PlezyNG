@@ -73,11 +73,12 @@ class _MusicSmartPlaylistScreenState extends State<MusicSmartPlaylistScreen> {
     }
     final authentication = client.authenticationSessionId;
     final scope = musicAccountScope(client);
+    final profile = _profile;
     setState(() => _busy = true);
     try {
       final metadata = await client.fetchPlaylistMetadata(playlist.id);
       if (!mounted ||
-          context.read<ActiveProfileProvider>().activeId != _profile ||
+          context.read<ActiveProfileProvider>().activeId != profile ||
           !identical(authentication, client.authenticationSessionId) ||
           scope != musicAccountScope(client) ||
           !identical(client, context.tryGetPlexClientForServer(ServerId(playlist.serverId!)))) {

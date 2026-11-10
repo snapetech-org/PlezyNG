@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve server ownership when refreshing playlist metadata and bind existing smart-playlist editor loads to the profile that requested them.
+
 - Detect server-side rating/favorite changes before replaying offline music edits, retain conflicting decisions for explicit resolution, and recognize writes already acknowledged by another device.
 
 - Create, preview, edit and copy Plex music smart playlists with ordered nested expressions, sorting and limits. Filter-form additions preserve existing expressions and writes retain server-side rules rather than fixed track lists.

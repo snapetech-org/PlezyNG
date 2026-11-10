@@ -87,7 +87,9 @@ mixin _PlexPlaylistMethods on _PlexClientInternals {
       final container = _getMediaContainer(response);
       final metadata = container?['Metadata'];
       if (metadata is! List || metadata.isEmpty) return null;
-      return PlexPlaylistDto.fromJson(metadata.first as Map<String, dynamic>);
+      return PlexPlaylistDto.fromJson(
+        metadata.first as Map<String, dynamic>,
+      ).copyWith(serverId: serverId, serverName: serverName);
     } catch (e) {
       appLogger.e('Failed to get playlist metadata: $e');
       return null;

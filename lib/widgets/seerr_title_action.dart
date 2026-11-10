@@ -190,8 +190,13 @@ class SeerrLegacyLibraryOpportunity {
       (request) => request.status == SeerrRequestStatus.pending || request.status == SeerrRequestStatus.approved,
     );
     final today = now ?? DateTime.now();
+    // A fully available show with no season rows gives no evidence of a
+    // missing season. Partial availability is enough to open the selector;
+    // the sheet itself resolves the precise missing coverage before submit.
+    final hasSeasonEvidence = (info?.seasons?.isNotEmpty ?? false) || overall == SeerrMediaStatus.partiallyAvailable;
     final missingSeasons =
         info != null &&
+        hasSeasonEvidence &&
         kind == MediaKind.show &&
         source.canRequest(kind) &&
         (details.seasons ?? const <SeerrSeason>[]).any((season) {

@@ -4,15 +4,19 @@ import 'package:plezy/multiview/workspace_controller.dart';
 import 'package:plezy/multiview/workspace_models.dart';
 
 WorkspaceSessionDescriptor item(String id) => WorkspaceSessionDescriptor(
-  id: id, kind: MultiviewMediaKind.video, title: id, openedAt: DateTime.utc(2026),
+  id: id,
+  kind: MultiviewMediaKind.video,
+  title: id,
+  openedAt: DateTime.utc(2026),
   resume: WorkspaceResumeTarget(kind: WorkspaceResumeKind.library, providerId: 'server', itemId: id),
 );
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  MultiviewWorkspaceController controller() => MultiviewWorkspaceController()..restoreLayout(
-    WorkspaceSnapshot(sessions: [item('a')], placements: const {}, layoutMode: MultiviewLayoutMode.floating),
-  );
+  MultiviewWorkspaceController controller() => MultiviewWorkspaceController()
+    ..restoreLayout(
+      WorkspaceSnapshot(sessions: [item('a')], placements: const {}, layoutMode: MultiviewLayoutMode.floating),
+    );
 
   test('opening an item independently consumes stale pending recovery', () {
     final workspace = controller();

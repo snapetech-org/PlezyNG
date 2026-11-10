@@ -909,12 +909,14 @@ class SourceRepository {
   /// URLs into workspace preferences. Upserts preserve rowid; the digest also
   /// rejects a deleted rowid later reused for different content.
   Future<String?> recoveryIdentity(String profile, SourceEntry entry) async {
-    final row = await database.customSelect(
-      'SELECT rowid AS recovery_row FROM entries WHERE profile=? AND source=? AND id=?',
-      variables: [Variable(profile), Variable(entry.sourceId), Variable(entry.id)],
-    ).getSingleOrNull();
+    final row = await database
+        .customSelect(
+          'SELECT rowid AS recovery_row FROM entries WHERE profile=? AND source=? AND id=?',
+          variables: [Variable(profile), Variable(entry.sourceId), Variable(entry.id)],
+        )
+        .getSingleOrNull();
     if (row == null) return null;
-    return row.read<int>('recovery_row').toString() + ':' + sourceDigest(entry.key);
+    return "${row.read<int>('recovery_row')}:${sourceDigest(entry.key)}";
   }
 
   Future<SourceEntry?> entryForRecovery(String profile, String source, String identity) async {
@@ -922,15 +924,15 @@ class SourceRepository {
     final separator = identity.indexOf(':');
     final rowId = int.tryParse(identity.substring(0, separator));
     if (rowId == null || rowId <= 0) return null;
-    final row = await database.customSelect(
-      'SELECT payload FROM entries WHERE profile=? AND source=? AND rowid=?',
-      variables: [Variable(profile), Variable(source), Variable(rowId)],
-    ).getSingleOrNull();
+    final row = await database
+        .customSelect(
+          'SELECT payload FROM entries WHERE profile=? AND source=? AND rowid=?',
+          variables: [Variable(profile), Variable(source), Variable(rowId)],
+        )
+        .getSingleOrNull();
     if (row == null) return null;
     final entry = SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('payload'))));
-    return entry.sourceId == source && sourceDigest(entry.key) == identity.substring(separator + 1)
-        ? entry
-        : null;
+    return entry.sourceId == source && sourceDigest(entry.key) == identity.substring(separator + 1) ? entry : null;
   }
 
   Future<SourceEntry?> entryByKey(String profile, String key) async {

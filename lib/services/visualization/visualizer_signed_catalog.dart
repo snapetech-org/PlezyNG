@@ -134,27 +134,29 @@ class VisualizerCatalogVerifier {
       }
       VisualizerSigstoreVerifier.verify(wrapper['sigstoreBundle'], message, now);
     } else {
-      if (trust.keys.isEmpty || wrapper.containsKey('sigstoreBundle') ||
-          wrapper['signatures'] is! List || (wrapper['signatures'] as List).length > 16) {
+      if (trust.keys.isEmpty ||
+          wrapper.containsKey('sigstoreBundle') ||
+          wrapper['signatures'] is! List ||
+          (wrapper['signatures'] as List).length > 16) {
         throw const FormatException('Invalid catalog signature set');
       }
-    final accepted = <String>{};
-    for (final signature in wrapper['signatures'] as List) {
-      if (signature is! Map || signature['keyId'] is! String || signature['signature'] is! String) {
-        throw const FormatException('Malformed catalog signature');
+      final accepted = <String>{};
+      for (final signature in wrapper['signatures'] as List) {
+        if (signature is! Map || signature['keyId'] is! String || signature['signature'] is! String) {
+          throw const FormatException('Malformed catalog signature');
+        }
+        final keyId = signature['keyId'] as String, key = trust.keys[keyId];
+        if (key == null || accepted.contains(keyId)) continue;
+        final raw = base64Decode(signature['signature'] as String);
+        if (raw.length != 64) continue;
+        if (await Ed25519().verify(
+          message,
+          signature: Signature(raw, publicKey: SimplePublicKey(key, type: KeyPairType.ed25519)),
+        )) {
+          accepted.add(keyId);
+        }
       }
-      final keyId = signature['keyId'] as String, key = trust.keys[keyId];
-      if (key == null || accepted.contains(keyId)) continue;
-      final raw = base64Decode(signature['signature'] as String);
-      if (raw.length != 64) continue;
-      if (await Ed25519().verify(
-        message,
-        signature: Signature(raw, publicKey: SimplePublicKey(key, type: KeyPairType.ed25519)),
-      )) {
-        accepted.add(keyId);
-      }
-    }
-    if (accepted.length < trust.threshold) throw const FormatException('Catalog signature quorum was not met');
+      if (accepted.length < trust.threshold) throw const FormatException('Catalog signature quorum was not met');
     }
     final data = jsonDecode(utf8.decode(payload));
     if (data is! Map<String, dynamic> ||

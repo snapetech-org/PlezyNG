@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:drift/native.dart';
 import 'package:plezy/media/ids.dart';
 
@@ -6,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -26,9 +29,15 @@ import 'package:plezy/media/media_server_client.dart';
 import 'package:plezy/media/server_capabilities.dart';
 import 'package:plezy/mixins/deletion_aware.dart';
 import 'package:plezy/providers/download_provider.dart';
+import 'package:plezy/providers/catalog_sources_provider.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
 import 'package:plezy/providers/watch_state_store.dart';
 import 'package:plezy/screens/media_detail_screen.dart';
+import 'package:plezy/models/seerr/seerr_session.dart';
+import 'package:plezy/services/catalog/seerr_catalog_source.dart';
+import 'package:plezy/services/seerr/seerr_client.dart';
+import 'package:plezy/services/seerr/seerr_constants.dart';
+import 'package:plezy/widgets/seerr_request_sheet.dart';
 import 'package:plezy/models/download_models.dart';
 import 'package:plezy/navigation/profile_navigation_scope.dart';
 import 'package:plezy/services/plex_mappers.dart';
@@ -86,6 +95,97 @@ void main() {
 
   tearDown(() {
     TvDetectionService.debugSetAppleTVOverride(null);
+  });
+
+  testWidgets('playable library detail exposes the plain Seerr 4K action', (tester) async {
+    await SettingsService.getInstance();
+    tester.view.physicalSize = const Size(1280, 720);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    var detailReads = 0;
+    var requested4k = false;
+    final client = SeerrClient(
+      const SeerrSession(
+        baseUrl: 'https://seerr.example.com',
+        method: SeerrAuthMethod.local,
+        identifier: 'alice',
+        secret: 'pw',
+        cookie: 'session',
+        userId: 1,
+        permissions: SeerrPermission.request4kMovie,
+        displayName: 'Alice',
+        instanceLabel: 'Seerr',
+        createdAt: 0,
+      ),
+      onSessionInvalidated: () {},
+      httpClient: MockClient((request) async {
+        if (request.url.path == '/api/v1/request/intent/state') return http.Response('not found', 404);
+        if (request.url.path == '/api/v1/movie/603') {
+          detailReads++;
+          return http.Response(
+            jsonEncode({
+              'id': 603,
+              'mediaInfo': {'status': 5, 'status4k': requested4k ? 2 : 1, 'requests': <Object>[]},
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        if (request.url.path == '/api/v1/request') {
+          expect(jsonDecode(request.body)['is4k'], isTrue);
+          requested4k = true;
+          return http.Response(jsonEncode({'id': 1, 'status': 1}), 201, headers: {'content-type': 'application/json'});
+        }
+        if (request.url.path == '/api/v1/settings/public') {
+          return http.Response(
+            jsonEncode({'movie4kEnabled': true, 'mediaServerType': 1}),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        fail('Unexpected Seerr request: ${request.method} ${request.url.path}');
+      }),
+    );
+    final source = SeerrCatalogSource(client);
+    final catalogs = _SeerrDetailCatalogSourcesProvider(source);
+    addTearDown(() {
+      catalogs.dispose();
+      source.dispose();
+      client.dispose();
+    });
+    final movie = testMediaItem(
+      title: 'Library Movie',
+      raw: {
+        'Guid': [
+          {'id': 'tmdb://603'},
+        ],
+      },
+    );
+    await tester.pumpWidget(
+      TranslationProvider(
+        child: ChangeNotifierProvider<CatalogSourcesProvider>.value(
+          value: catalogs,
+          child: MaterialApp(
+            theme: monoTheme(MonoPalette.dark),
+            home: withProfileNavigationScope(child: MediaDetailScreen(metadata: movie)),
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(detailReads, 1);
+    expect(find.byTooltip(t.seerr.request4kHint), findsOneWidget);
+    await tester.tap(find.byTooltip(t.seerr.request4kHint));
+    await tester.pumpAndSettle();
+    expect(find.byType(SeerrRequestSheet), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, t.seerr.request));
+    await tester.pumpAndSettle();
+    expect(requested4k, isTrue);
+    expect(detailReads, greaterThan(1));
+    expect(find.byTooltip(t.seerr.request4kHint), findsNothing);
   });
 
   testWidgets('TV detail scales fallback title to fit logo bounds', (tester) async {
@@ -3472,6 +3572,15 @@ void main() {
       await unmount(tester);
     });
   });
+}
+
+class _SeerrDetailCatalogSourcesProvider extends CatalogSourcesProvider {
+  _SeerrDetailCatalogSourcesProvider(this.source);
+
+  final SeerrCatalogSource source;
+
+  @override
+  SeerrCatalogSource? get seerrSource => source;
 }
 
 Map<String, dynamic> _previewItem(

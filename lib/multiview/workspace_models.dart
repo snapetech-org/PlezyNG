@@ -141,8 +141,9 @@ class WorkspaceResumeTarget {
     }
     final fileIds = json['fileIds'];
     if (fileIds != null &&
-        (fileIds is! List || fileIds.length > 256 ||
-         fileIds.any((value) => value is! String || !RegExp(r'^[0-9a-f]{64}$').hasMatch(value)))) {
+        (fileIds is! List ||
+            fileIds.length > 256 ||
+            fileIds.any((value) => value is! String || !RegExp(r'^[0-9a-f]{64}$').hasMatch(value)))) {
       throw const FormatException('Invalid workspace recovery edition');
     }
     return WorkspaceResumeTarget(
@@ -335,8 +336,9 @@ class WorkspaceSnapshot {
     }
 
     final rawSessions = json['sessions'];
-    if (rawSessions is! List || rawSessions.length > maxSessions)
+    if (rawSessions is! List || rawSessions.length > maxSessions) {
       throw const FormatException('Invalid workspace sessions');
+    }
     final sessions = rawSessions
         .map((value) {
           if (value is! Map) throw const FormatException('Invalid workspace session');
@@ -348,8 +350,9 @@ class WorkspaceSnapshot {
     if (ids.length != sessions.length) throw const FormatException('Duplicate workspace session id');
 
     final rawPlacements = json['placements'];
-    if (rawPlacements is! Map || rawPlacements.length > maxSessions)
+    if (rawPlacements is! Map || rawPlacements.length > maxSessions) {
       throw const FormatException('Invalid workspace placements');
+    }
     final placements = <String, WorkspacePlacement>{};
     for (final entry in rawPlacements.entries) {
       if (entry.key is! String || (entry.key as String).length > 4096 || entry.value is! Map) {

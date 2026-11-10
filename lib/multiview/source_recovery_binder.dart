@@ -83,9 +83,12 @@ class SourceRecoveryBinder {
     if (playback.files.isEmpty || playback.files.length > 256) return null;
     final fingerprints = playback.files.map((file) => file.fingerprint).toList(growable: false);
     return WorkspaceSessionDescriptor(
-      id: 'source:' + sourceDigest(progress.key + ':' + playback.mode.name),
-      kind: playback.video ? MultiviewMediaKind.video
-          : item.kind == SourceItemKind.music ? MultiviewMediaKind.music : MultiviewMediaKind.audiobook,
+      id: 'source:${sourceDigest('${progress.key}:${playback.mode.name}')}',
+      kind: playback.video
+          ? MultiviewMediaKind.video
+          : item.kind == SourceItemKind.music
+          ? MultiviewMediaKind.music
+          : MultiviewMediaKind.audiobook,
       title: item.title.isEmpty ? playback.files.first.name : item.title,
       hasAudio: true,
       hasVideo: playback.video,

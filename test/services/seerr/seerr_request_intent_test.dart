@@ -131,6 +131,7 @@ void main() {
 
     expect(opportunity(const SeerrMediaInfo(statusCode: 4)).missingSeasons, isTrue);
     expect(opportunity(null).missingSeasons, isFalse);
+    expect(opportunity(const SeerrMediaInfo(statusCode: 5)).missingSeasons, isFalse);
     expect(
       opportunity(const SeerrMediaInfo(seasons: [SeerrSeasonInfo(seasonNumber: 2, statusCode: 5)])).missingSeasons,
       isFalse,

@@ -134,7 +134,7 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
       workspace.watchRecovery(this, () {
         if (!mounted || !valid || !_ready || _previewOnly) return null;
         return WorkspaceSessionDescriptor(
-          id: 'publication:' + sourceDigest(widget.entry.key + ':' + widget.file.fingerprint),
+          id: 'publication:${sourceDigest('${widget.entry.key}:${widget.file.fingerprint}')}',
           kind: widget.file.kind == SourceItemKind.comic ? MultiviewMediaKind.comic : MultiviewMediaKind.publication,
           title: _readerTitle.isEmpty ? widget.file.name : _readerTitle,
           openedAt: DateTime.now(),

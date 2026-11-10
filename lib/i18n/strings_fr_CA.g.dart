@@ -691,6 +691,13 @@ class _Translations$seerr$fr_CA extends Translations$seerr$fr {
 	@override String get advancedOptions => 'Avancé';
 	@override String get tags => 'Étiquettes';
 	@override String get statusAvailable => 'Disponible';
+	@override String get requestSeasons => 'Demander les saisons manquantes';
+	@override String get notifyMe => 'Me prévenir de la disponibilité';
+	@override String get notifyMe4k => 'Me prévenir de la disponibilité en 4K';
+	@override String get notificationsOn => 'Alerte de disponibilité activée';
+	@override String get notificationsEnabled => 'Nous vous préviendrons dès que ce sera disponible';
+	@override String get notificationsDisabled => 'Alerte de disponibilité désactivée';
+	@override String get notificationFailed => 'Impossible de mettre à jour l’alerte de disponibilité';
 }
 
 // Path: services
@@ -1620,6 +1627,13 @@ extension on TranslationsFrCa {
 			'seerr.advancedOptions' => 'Avancé',
 			'seerr.tags' => 'Étiquettes',
 			'seerr.statusAvailable' => 'Disponible',
+			'seerr.requestSeasons' => 'Demander les saisons manquantes',
+			'seerr.notifyMe' => 'Me prévenir de la disponibilité',
+			'seerr.notifyMe4k' => 'Me prévenir de la disponibilité en 4K',
+			'seerr.notificationsOn' => 'Alerte de disponibilité activée',
+			'seerr.notificationsEnabled' => 'Nous vous préviendrons dès que ce sera disponible',
+			'seerr.notificationsDisabled' => 'Alerte de disponibilité désactivée',
+			'seerr.notificationFailed' => 'Impossible de mettre à jour l’alerte de disponibilité',
 			'services.libraryFilter.modeBlacklist' => 'Liste noire',
 			'services.libraryFilter.libraries' => 'Médiathèques',
 			'addServer.username' => 'Nom d\'utilisateur',
@@ -1798,6 +1812,8 @@ extension on TranslationsFrCa {
 			'romm.controls' => 'Controls',
 			'romm.resetControls' => 'Reset controls',
 			'romm.playerOne' => 'Player 1',
+			_ => null,
+		} ?? switch (path) {
 			'romm.select' => 'Select',
 			'romm.start' => 'Start',
 			'romm.up' => 'Up',
@@ -1805,8 +1821,6 @@ extension on TranslationsFrCa {
 			'romm.left' => 'Left',
 			'romm.right' => 'Right',
 			'romm.connectingStream' => 'Waiting for the server emulator…',
-			_ => null,
-		} ?? switch (path) {
 			'romm.saveFailed' => 'Saving did not finish. Keep this session open and try again.',
 			'romm.httpHelp' => 'This server uses unencrypted HTTP. Connect on a network you trust.',
 			'romm.invalidAddress' => 'Enter an HTTP or HTTPS server address without a password, query or fragment.',

@@ -1,3 +1,6 @@
+import '../utils/video_player_navigation.dart';
+import '../utils/trailer_urls.dart';
+import '../media/primary_trailer.dart';
 import '../profiles/active_profile_provider.dart';
 import '../extras/extras_models.dart';
 import '../extras/extras_session.dart';
@@ -15,7 +18,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../focus/focusable_action_bar.dart';
 import '../focus/focusable_button.dart';
@@ -43,6 +45,7 @@ import '../services/catalog/catalog_library_matcher.dart';
 import '../services/catalog/catalog_source.dart';
 import '../services/catalog/community_ratings.dart';
 import '../services/catalog/seerr_catalog_source.dart';
+import '../services/seerr/seerr_request_intent_store.dart';
 import '../services/remote_streams/remote_stream_models.dart';
 import '../services/remote_streams/remote_streaming_provider.dart';
 import '../services/data_aggregation_service.dart';
@@ -53,6 +56,7 @@ import '../models/transcode_quality_preset.dart';
 import '../utils/app_logger.dart';
 import '../utils/catalog_navigation_helper.dart';
 import '../utils/desktop_window_padding.dart';
+import '../utils/external_url.dart';
 import '../utils/formatters.dart';
 import '../utils/country_codes.dart';
 import '../utils/language_codes.dart';
@@ -63,6 +67,7 @@ import '../utils/rating_utils.dart';
 import '../utils/snackbar_helper.dart';
 import 'remote_streams/remote_stream_picker_screen.dart';
 import 'settings/remote_streaming_settings_screen.dart';
+import '../widgets/seerr_title_action.dart';
 import '../widgets/app_bar_back_button.dart';
 import '../widgets/app_icon.dart';
 import '../widgets/backend_badge.dart';
@@ -72,7 +77,6 @@ import '../widgets/focusable_list_tile.dart';
 import '../widgets/hub_section.dart';
 import '../widgets/optimized_media_image.dart';
 import '../widgets/overlay_sheet.dart';
-import '../widgets/seerr_request_sheet.dart';
 import '../widgets/settings_section.dart';
 import '../widgets/stat_chip.dart';
 import 'external_access_screen.dart';
@@ -143,6 +147,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   final Map<String, FocusNode> _libraryMatchNodesByKey = {};
   List<FocusNode> _libraryMatchFocusNodes = const [];
   CatalogSource? _watchlistSource;
+  SeerrRequestIntentStore? _intentStore;
   bool _mutatingWatchlist = false;
 
   CatalogItem? _detailItem;
@@ -153,6 +158,11 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
 
   /// Library items matching this catalog item; null while resolving.
   List<MediaItem>? _matches;
+  MediaItem? _libraryTrailer;
+  bool _lookingUpLibraryTrailer = false;
+  final Set<String> _trailerCheckedCopies = {};
+  bool _youTubeAppInstalled = false;
+
   Set<String> _verifiedOfflineCopies = const {};
   Map<String, PlaybackCopyRank> _copyRanks = const {};
   MultiServerProvider? _copyServers;
@@ -191,7 +201,10 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
     _syncDetailCollections(widget.item);
     unawaited(_resolveMatches(widget.item));
     unawaited(_loadDetail());
+    if (isTvosRunner) unawaited(_checkYouTubeApp());
     final sources = context.read<CatalogSourcesProvider>();
+    _bindIntentStore(sources.seerrSource);
+    _warmIntent(widget.item);
     _watchlistSource = sources.watchlistSourceFor(widget.item);
     final source = _watchlistSource;
     if (source != null) {
@@ -209,7 +222,33 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bindIntentStore(context.watch<CatalogSourcesProvider>().seerrSource);
+    _warmIntent(_item);
+  }
+
+  void _bindIntentStore(SeerrCatalogSource? source) {
+    final next = source?.client.intents;
+    if (identical(next, _intentStore)) return;
+    _intentStore?.removeListener(_onIntentChanged);
+    _intentStore = next;
+    next?.addListener(_onIntentChanged);
+  }
+
+  void _onIntentChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _warmIntent(CatalogItem item) {
+    if (item.ids.tmdb case final id? when _requestSource != null) {
+      unawaited(_intentStore?.load(item.kind, id));
+    }
+  }
+
+  @override
   void dispose() {
+    _intentStore?.removeListener(_onIntentChanged);
     _extras?.dispose();
     _copyServers?.removeListener(_onPlaybackEnvironmentChanged);
     _copyNetwork?.removeListener(_onPlaybackEnvironmentChanged);
@@ -348,6 +387,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
         ),
     ];
     setState(() => _matches = merged);
+    unawaited(_resolveLibraryTrailer());
     final extras = _extras;
     if (extras != null && extras.subject.watched != merged.any((item) => item.isWatched)) {
       _syncExtras(_detailItem ?? widget.item, extras.catalog);
@@ -363,6 +403,57 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
     }
   }
 
+  /// Walk the library copies for one with a trailer among its extras. Each
+  /// merge can add a copy from another server, so later passes pick up where
+  /// the last stopped instead of fetching the same extras again.
+  Future<void> _resolveLibraryTrailer() async {
+    if (_lookingUpLibraryTrailer) return;
+    _lookingUpLibraryTrailer = true;
+    try {
+      while (_libraryTrailer == null) {
+        if (!mounted) return;
+        final manager = context.read<MultiServerProvider>().serverManager;
+        // Offline copies may come online later; do not permanently mark them
+        // checked before there is a client that can answer the extras lookup.
+        final match = _matches?.firstWhereOrNull((copy) {
+          final server = serverIdOrNull(copy.serverId);
+          return !_trailerCheckedCopies.contains(copy.globalKey) &&
+              server != null &&
+              manager.isClientOnline(server) &&
+              manager.getClient(server) != null;
+        });
+        if (match == null) return;
+        final serverId = serverIdOrNull(match.serverId);
+        final client = serverId != null && manager.isClientOnline(serverId) ? manager.getClient(serverId) : null;
+        if (client == null) return;
+        _trailerCheckedCopies.add(match.globalKey);
+        try {
+          final trailer = primaryTrailer(match, await client.fetchExtras(match.id));
+          if (trailer != null &&
+              mounted &&
+              manager.isClientOnline(serverId!) &&
+              identical(manager.getClient(serverId), client)) {
+            // The player resolves its client from the extra's own server.
+            setState(() => _libraryTrailer = trailer.copyWith(serverId: match.serverId, serverName: match.serverName));
+          }
+        } catch (e) {
+          appLogger.d('Catalog library trailer lookup failed for ${match.globalKey}', error: e);
+        }
+      }
+    } finally {
+      _lookingUpLibraryTrailer = false;
+    }
+  }
+
+  Future<void> _checkYouTubeApp() async {
+    try {
+      final installed = await tvosCanOpenUrl(Uri.parse('youtube://'));
+      if (mounted && installed != _youTubeAppInstalled) setState(() => _youTubeAppInstalled = installed);
+    } catch (e) {
+      appLogger.d('Catalog YouTube app check failed', error: e);
+    }
+  }
+
   CatalogSource? get _ownSource =>
       context.read<CatalogSourcesProvider>().connectedSources.firstWhereOrNull((s) => s.id == widget.item.source);
 
@@ -375,7 +466,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
     ]..sort((a, b) => (b.rank ?? -1).compareTo(a.rank ?? -1));
     final streamingLinks = <CatalogLink>[];
     final otherLinks = <CatalogLink>[];
-    for (final link in item.links ?? const <CatalogLink>[]) {
+    for (final link in isTvosRunner ? const <CatalogLink>[] : item.links ?? const <CatalogLink>[]) {
       if (link.label.trim().isEmpty || link.url.trim().isEmpty) continue;
       if (ExternalAccessDirectory.isExcludedStreamingLink(label: link.label, url: link.url)) continue;
       (link.isStreaming ? streamingLinks : otherLinks).add(link);
@@ -417,6 +508,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
           _relationEntries = relationEntries;
           _episodes = detail.episodes;
         });
+        _warmIntent(detail.item);
         _syncExtras(detail.item, detail.extras);
         if (!hadActions && _hasActions) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -470,7 +562,18 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
     ];
   }
 
-  bool get _hasTrailer => _item.trailerUrl?.trim().isNotEmpty ?? false;
+  /// The provider trailer as something this device can open: the web link,
+  /// or on tvOS, which has no browser, a YouTube-app link once the app is
+  /// known to be installed (#2877).
+  Uri? get _externalTrailerUri {
+    final url = _item.trailerUrl?.trim();
+    if (url == null || url.isEmpty) return null;
+    if (isTvosRunner) return _youTubeAppInstalled ? youTubeAppUrl(url) : null;
+    final uri = Uri.tryParse(url);
+    return uri != null && uri.hasScheme ? uri : null;
+  }
+
+  bool get _hasTrailer => _libraryTrailer != null || _externalTrailerUri != null;
 
   /// The Seerr source when the signed-in user may request this kind. Read
   /// live rather than captured in initState: the account provider adopts
@@ -481,7 +584,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   /// tracks grants and revocations.
   SeerrCatalogSource? get _requestSource {
     final seerr = context.read<CatalogSourcesProvider>().seerrSource;
-    return seerr != null && seerr.canRequest(widget.item.kind) ? seerr : null;
+    return seerr != null && seerr.supportsTitleActions(_item.kind) ? seerr : null;
   }
 
   /// Whether the Request action can actually render: the tmdb id may only
@@ -490,7 +593,19 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   /// Fribb mapping at row time, but Plex Discover's hub/search/related
   /// endpoints ignore includeGuids, so a Plex item's tmdb id only arrives
   /// with the detail fetch (issue #1959).
-  bool get _canRequest => _requestSource != null && _item.ids.tmdb != null;
+  List<SeerrTitleAction> get _requestActions {
+    final source = _requestSource;
+    final id = _item.ids.tmdb;
+    if (source == null || id == null) return const [];
+    return seerrTitleActions(
+      source,
+      _item.kind,
+      _intentStore?.peek(_item.kind, id),
+      seasonNumber: _item.season?.agreedSeason,
+    );
+  }
+
+  bool get _canRequest => _requestActions.isNotEmpty;
 
   String? _streamLookupId(CatalogItem item) =>
       item.ids.imdb ??
@@ -994,16 +1109,21 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
 
   Future<void> _openExternalUrl(String value) async {
     final uri = Uri.tryParse(value);
-    if (uri == null || !uri.hasScheme) {
-      appLogger.d('Catalog external URL is invalid: $value');
+    if (uri != null && uri.hasScheme && await openExternalUrl(uri)) return;
+    appLogger.d('Catalog external URL could not be opened: $value');
+    if (mounted) showErrorSnackBar(context, t.explore.detail.linkUnavailable);
+  }
+
+  /// A library copy's trailer plays in the player; otherwise the provider's
+  /// link goes to another app, and a refusal says so instead of doing nothing.
+  Future<void> _playTrailer() async {
+    if (_libraryTrailer case final trailer?) {
+      await navigateToVideoPlayer(context, metadata: trailer, isLaunchCurrent: () => mounted);
       return;
     }
-    try {
-      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!opened) appLogger.d('Catalog external URL could not be opened: $value');
-    } catch (e) {
-      appLogger.d('Catalog external URL failed to open: $value', error: e);
-    }
+    final uri = _externalTrailerUri;
+    if (uri == null || await openExternalUrl(uri)) return;
+    if (mounted) showErrorSnackBar(context, t.explore.detail.trailerUnavailable);
   }
 
   bool? get _isOnWatchlist => _watchlistSource?.isOnWatchlist(_item.kind, _item.ids);
@@ -1259,9 +1379,10 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
     final locale = LocalePreferences.formattingLocaleName;
     final compact = NumberFormat.compact(locale: locale);
     final chips = <Widget>[];
+    final labels = <String>{};
     void add(String? label, {IconData? icon, Color? iconColor}) {
-      if (label?.trim().isNotEmpty ?? false) {
-        chips.add(StatChip(icon: icon, iconColor: iconColor, label: label!));
+      if (label != null && label.trim().isNotEmpty && labels.add(label)) {
+        chips.add(StatChip(icon: icon, iconColor: iconColor, label: label));
       }
     }
 
@@ -1325,6 +1446,20 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
       if (server.request4k case final request?) add(requestStateLabel(request, is4k: true));
       if (server.availableSeasons case final available? when server.totalSeasons != null) {
         add(t.explore.badge.seasonsAvailable(available: available, total: server.totalSeasons!));
+      }
+    }
+
+    if (item.ids.tmdb case final tmdbId?) {
+      final intent = _intentStore?.peek(item.kind, tmdbId);
+      if (intent != null) {
+        if (intent.own4k != null) {
+          add(t.explore.badge.requested4k, icon: Symbols.schedule_rounded);
+        } else if (intent.own != null) {
+          add(t.seerr.statusRequested, icon: Symbols.schedule_rounded);
+        } else if (intent.hasOtherRequest) {
+          add(t.seerr.requestInProgress, icon: Symbols.schedule_rounded);
+        }
+        if (intent.subscribed) add(t.seerr.notificationsOn, icon: Symbols.notifications_active_rounded);
       }
     }
 
@@ -2063,20 +2198,29 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
                                                 ),
                                               ),
                                             if (_requestSource case final SeerrCatalogSource seerr when tmdbId != null)
-                                              FocusableAction(
-                                                debugLabel: 'catalog_request',
-                                                icon: Symbols.download_rounded,
-                                                tooltip: t.seerr.request,
-                                                onPressed: () => unawaited(
-                                                  showSeerrRequestSheet(
-                                                    hostContext,
-                                                    source: seerr,
-                                                    kind: item.kind,
-                                                    tmdbId: tmdbId,
-                                                    title: item.title,
+                                              for (final action in _requestActions)
+                                                FocusableAction(
+                                                  debugLabel: action.kind == SeerrTitleActionKind.notificationsOn
+                                                      ? 'catalog_availability_alert'
+                                                      : 'catalog_request',
+                                                  icon: action.icon,
+                                                  tooltip: action.tooltip(
+                                                    quickRequest:
+                                                        item.kind == MediaKind.movie &&
+                                                        _intentStore?.peek(item.kind, tmdbId)?.quickRequest == true,
+                                                  ),
+                                                  onPressed: () => unawaited(
+                                                    performSeerrTitleAction(
+                                                      hostContext,
+                                                      source: seerr,
+                                                      kind: item.kind,
+                                                      tmdbId: tmdbId,
+                                                      title: item.title,
+                                                      action: action,
+                                                      seasonNumber: item.season?.agreedSeason,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
                                             if (_canWatchWithServices)
                                               FocusableAction(
                                                 debugLabel: 'catalog_watch_with_services',
@@ -2091,12 +2235,12 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
                                                 tooltip: t.streaming.chooseEpisode,
                                                 onPressed: () => _requestEpisodeFocus(0),
                                               ),
-                                            if (item.trailerUrl?.trim() case final trailer? when trailer.isNotEmpty)
+                                            if (_hasTrailer)
                                               FocusableAction(
                                                 debugLabel: 'catalog_trailer',
                                                 icon: Symbols.play_circle_rounded,
                                                 tooltip: t.explore.detail.watchTrailer,
-                                                onPressed: () => unawaited(_openExternalUrl(trailer)),
+                                                onPressed: () => unawaited(_playTrailer()),
                                               ),
                                           ],
                                         ),

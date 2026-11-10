@@ -1,6 +1,6 @@
 pkgname=pleazyng-bin
 pkgver=2.24.1
-pkgrel=2
+pkgrel=3
 pkgdesc='Plex client with Jellyfin and Emby support, offline downloads, and HDR'
 arch=('x86_64' 'aarch64')
 url='https://github.com/snapetech-org/pleazyng'
@@ -8,14 +8,17 @@ license=('GPL-3.0-only')
 # Preserve the released native engines and provider binaries.
 options=('!strip' '!debug')
 depends=('alsa-lib' 'glib2' 'gtk3' 'webkit2gtk-4.1' 'libsecret' 'libdrm' 'libepoxy' 'libevdev' 'libglvnd' 'libva' 'libvdpau' 'vulkan-icd-loader' 'libx11' 'libxcb' 'libxext' 'mesa' 'wayland')
+depends+=('bubblewrap' 'xdg-dbus-proxy')
+makedepends=('python' 'binutils' 'zstd' 'gdk-pixbuf2' 'pkgconf')
 provides=('pleazyng')
-source=('pleazyng.desktop' 'LICENSE')
-source_x86_64=("$pkgname-$pkgver-linux-x64.tar.gz::https://github.com/snapetech-org/pleazyng/releases/download/$pkgver/pleazyng-linux-x64.tar.gz")
-source_aarch64=("$pkgname-$pkgver-linux-arm64.tar.gz::https://github.com/snapetech-org/pleazyng/releases/download/$pkgver/pleazyng-linux-arm64.tar.gz")
-sha256sums=('SKIP' 'SKIP')
-sha256sums_x86_64=('SKIP')
-sha256sums_aarch64=('SKIP')
-noextract=("$pkgname-$pkgver-linux-x64.tar.gz" "$pkgname-$pkgver-linux-arm64.tar.gz")
+_webkit_version=2.52.6-0ubuntu0.24.04.1
+source=('pleazyng.desktop' 'LICENSE' 'install-webkit-helpers.py' 'webkit-runtime.json' 'rebuild-pixbuf-cache.py')
+source_x86_64=("$pkgname-$pkgver-linux-x64.tar.gz::https://github.com/snapetech-org/pleazyng/releases/download/$pkgver/pleazyng-linux-x64.tar.gz" "webkit-x64.deb::https://security.ubuntu.com/ubuntu/pool/main/w/webkit2gtk/libwebkit2gtk-4.1-0_${_webkit_version}_amd64.deb")
+source_aarch64=("$pkgname-$pkgver-linux-arm64.tar.gz::https://github.com/snapetech-org/pleazyng/releases/download/$pkgver/pleazyng-linux-arm64.tar.gz" "webkit-arm64.deb::https://ports.ubuntu.com/ubuntu-ports/pool/main/w/webkit2gtk/libwebkit2gtk-4.1-0_${_webkit_version}_arm64.deb")
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums_x86_64=('SKIP' '3b3f7e2c36c679fd60392f6526b8c5659d6c5db324ebe792003831dc8108ac03')
+sha256sums_aarch64=('SKIP' '508f97ca47c45464c0e43480ebe983a0b4b484dd1a76031272f762662943b7c9')
+noextract=("$pkgname-$pkgver-linux-x64.tar.gz" "$pkgname-$pkgver-linux-arm64.tar.gz" 'webkit-x64.deb' 'webkit-arm64.deb')
 
 package() {
   local archive
@@ -27,6 +30,14 @@ package() {
 
   install -d "$pkgdir/opt/pleazyng"
   tar --no-same-owner -xzf "$archive" -C "$pkgdir/opt/pleazyng"
+  case "$CARCH" in
+    x86_64) local runtime_arch=x64 ;;
+    aarch64) local runtime_arch=arm64 ;;
+  esac
+  python3 "$srcdir/install-webkit-helpers.py" --bundle "$pkgdir/opt/pleazyng" \
+    --deb "$srcdir/webkit-${runtime_arch}.deb" --root "$pkgdir" --arch "$runtime_arch" \
+    --metadata "$srcdir/webkit-runtime.json"
+  python3 "$srcdir/rebuild-pixbuf-cache.py" "$pkgdir/opt/pleazyng" --runtime-prefix /opt/pleazyng
   install -Dm755 "$pkgdir/opt/pleazyng/pleazyng.sh" "$pkgdir/usr/bin/pleazyng"
   sed -i 's|INSTALL_DIR="/opt/pleazyng"|INSTALL_DIR="/opt/pleazyng"|' "$pkgdir/usr/bin/pleazyng"
   install -Dm644 "$srcdir/pleazyng.desktop" "$pkgdir/usr/share/applications/org.snapetech.pleazyng.desktop"

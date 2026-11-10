@@ -720,6 +720,7 @@ class _Translations$settings$sv extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Uppspelningshastighet';
 	@override String get scopeShaderPreset => 'Förinställning för shader';
 	@override String get scopeAspectRatio => 'Bildförhållande';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Synkronisering av ljud och undertexter';
 	@override String get playerScopeOff => 'Spara inte';
 	@override String get playerScopeGlobal => 'Överallt';
@@ -2738,6 +2739,13 @@ class _Translations$seerr$sv extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng glömmer den här Seerr-instansen. Återanslut när som helst.';
 	@override String get request => 'Begär';
 	@override String get request4k => 'Begär i 4K';
+	@override String get requestSeasons => 'Begär saknade säsonger';
+	@override String get notifyMe => 'Meddela mig när den blir tillgänglig';
+	@override String get notifyMe4k => 'Meddela mig när 4K blir tillgängligt';
+	@override String get notificationsOn => 'Tillgänglighetsavisering på';
+	@override String get notificationsEnabled => 'Vi meddelar dig när den blir tillgänglig';
+	@override String get notificationsDisabled => 'Tillgänglighetsavisering av';
+	@override String get notificationFailed => 'Det gick inte att uppdatera tillgänglighetsaviseringen';
 	@override String get seasons => 'Säsonger';
 	@override String get allSeasons => 'Alla säsonger';
 	@override String get advancedOptions => 'Avancerat';
@@ -4293,6 +4301,10 @@ class _Translations$musicTools$sv extends Translations$musicTools$en {
 	@override String get preamp => 'Förförstärkning';
 	@override String get ratingPending => 'Sparat på den här enheten; väntar på synkronisering';
 	@override String get lyricsOffset => 'Tidsförskjutning för sångtext';
+	@override String get anniversaries => 'Albumjubileer';
+	@override String get outputPreset => 'EQ för denna utgång';
+	@override String get outputPresetHint => 'Använd denna EQ automatiskt när denna utgång väljs.';
+	@override String get eqApproximation => 'Hörlursprofiler är approximationer för EQ med tio band.';
 }
 
 // Path: appIcon.names
@@ -5035,6 +5047,8 @@ class _Translations$explore$detail$sv extends Translations$explore$detail$en {
 	@override String get watchOn => 'Titta på';
 	@override String get watchTrailer => 'Titta på trailer';
 	@override String openOn({required Object site}) => 'Öppna på ${site}';
+	@override String get trailerUnavailable => 'Det gick inte att öppna trailern på den här enheten';
+	@override String get linkUnavailable => 'Det gick inte att öppna länken på den här enheten';
 	@override String get crew => 'Besättning';
 	@override String get ratings => 'Betyg';
 	@override String get schedule => 'Schema';
@@ -5990,6 +6004,7 @@ extension on TranslationsSv {
 			'settings.scopePlaybackSpeed' => 'Uppspelningshastighet',
 			'settings.scopeShaderPreset' => 'Förinställning för shader',
 			'settings.scopeAspectRatio' => 'Bildförhållande',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Synkronisering av ljud och undertexter',
 			'settings.playerScopeOff' => 'Spara inte',
 			'settings.playerScopeGlobal' => 'Överallt',
@@ -6433,9 +6448,9 @@ extension on TranslationsSv {
 			'videoControls.addBookmark' => 'Lägg till bookmark',
 			'videoControls.bookmarkName' => 'Bookmark namn',
 			'videoControls.bookmarkNameHint' => 'Till exempel öppna scenen',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmärke ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmärke ${n}',
 			'videoControls.bookmarkNameRequired' => 'Skriv in ett namn för denna bokmärke.',
 			'videoControls.deleteBookmark' => 'Ta bort bokmärke',
 			'videoControls.bookmarkLimitReached' => 'Den här artikeln har redan 100 bokmärken.',
@@ -6947,9 +6962,9 @@ extension on TranslationsSv {
 			'libraries.content' => 'bibliotekets innehåll',
 			'libraries.selectLibrary' => 'Välj bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
-			'libraries.noRecommendations' => 'Inga rekommendationer tillgängliga',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Inga rekommendationer tillgängliga',
 			'libraries.noCollections' => 'Inga samlingar i det här biblioteket',
 			'libraries.noFoldersFound' => 'Inga mappar hittades',
 			'libraries.folders' => 'mappar',
@@ -7242,6 +7257,8 @@ extension on TranslationsSv {
 			'explore.detail.watchOn' => 'Titta på',
 			'explore.detail.watchTrailer' => 'Titta på trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Öppna på ${site}',
+			'explore.detail.trailerUnavailable' => 'Det gick inte att öppna trailern på den här enheten',
+			'explore.detail.linkUnavailable' => 'Det gick inte att öppna länken på den här enheten',
 			'explore.detail.crew' => 'Besättning',
 			'explore.detail.ratings' => 'Betyg',
 			'explore.detail.schedule' => 'Schema',
@@ -7459,11 +7476,11 @@ extension on TranslationsSv {
 			'watchTogether.copyCode' => 'Kopiera kod',
 			'watchTogether.codeCopied' => 'Rumskod kopierad',
 			'watchTogether.shareInvite' => 'Dela inbjudan',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Gå med i mitt Titta tillsammans-rum i Pleazyng: öppna Titta tillsammans, välj Gå med i rum och ange ${code}.',
 			'watchTogether.openSessionControls' => 'Öppna sessionskontroller för Titta tillsammans',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Återansluter...',
 			'watchTogether.reconnectingDescription' => 'Anslutningen bröts. Du går automatiskt med i rummet igen.',
 			'watchTogether.connected' => 'Ansluten',
@@ -7973,11 +7990,11 @@ extension on TranslationsSv {
 			'metadataEdit.imageUrl' => 'Bild-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata har uppdaterats',
 			'metadataEdit.metadataUpdateFailed' => 'Det gick inte att uppdatera metadata',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Bildmaterialet har uppdaterats',
 			'metadataEdit.artworkUpdateFailed' => 'Det gick inte att uppdatera bildmaterialet',
 			'metadataEdit.noArtworkAvailable' => 'Inget bildmaterial är tillgängligt',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Bildalternativ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Bildalternativ ${index}, valt',
 			'metadataEdit.notSet' => 'Inte angiven',
@@ -8064,6 +8081,13 @@ extension on TranslationsSv {
 			'seerr.disconnectConfirmBody' => 'Pleazyng glömmer den här Seerr-instansen. Återanslut när som helst.',
 			'seerr.request' => 'Begär',
 			'seerr.request4k' => 'Begär i 4K',
+			'seerr.requestSeasons' => 'Begär saknade säsonger',
+			'seerr.notifyMe' => 'Meddela mig när den blir tillgänglig',
+			'seerr.notifyMe4k' => 'Meddela mig när 4K blir tillgängligt',
+			'seerr.notificationsOn' => 'Tillgänglighetsavisering på',
+			'seerr.notificationsEnabled' => 'Vi meddelar dig när den blir tillgänglig',
+			'seerr.notificationsDisabled' => 'Tillgänglighetsavisering av',
+			'seerr.notificationFailed' => 'Det gick inte att uppdatera tillgänglighetsaviseringen',
 			'seerr.seasons' => 'Säsonger',
 			'seerr.allSeasons' => 'Alla säsonger',
 			'seerr.advancedOptions' => 'Avancerat',
@@ -8480,6 +8504,8 @@ extension on TranslationsSv {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('sv'))(n, one: 'Skipped ${count} understödda eller osäkra spellistan ingång.', other: 'Skipped ${count} ounderstödda eller osäkra spellistor entréer.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresser',
 			'universalMedia.playlistAddressHelp' => 'Öppna en M3U, M3u8 eller PLS-spellista från en webbadress. Direct stream länkar sparar inte spellistan.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Välj Playlist fil',
 			'universalMedia.openPlaylist' => 'Öppna Playlist',
 			'universalMedia.playlistFormatsHelp' => 'En spellista kan innehålla upp till 1000 objekt och 2 MB. HLS manifesterar sig öppen som strömmar så att spelaren kan välja en kvalitet.',
@@ -8490,8 +8516,6 @@ extension on TranslationsSv {
 			'universalMedia.noFavorites' => 'Inga spara ström favorit än. Favoriter stannar i denna profil.',
 			'universalMedia.removeFavorite' => 'Ta bort stream favorit',
 			'universalMedia.filesHelp' => 'Välj ljud, video eller ISO-filer för en tillfällig spårning. filer och URL-adresser läggs inte till i bibliotekshistorik.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Välj filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('sv'))(n, one: '1 Utvalda filer', other: '${count} valda filer', ), 
 			'universalMedia.wifiTransfer' => 'Skicka filer via Wi-Fi',
@@ -8994,6 +9018,8 @@ extension on TranslationsSv {
 			'sourceSetup.optionalUsername' => 'Kontots användarnamn (valfritt)',
 			'sourceSetup.optionalPassword' => 'Kontots lösenord (valfritt)',
 			'sourceSetup.subtitlePrivacy' => 'Hämta en API-nyckel från opensubtitles.com. Sökningen skickar videons titel och tillgängliga IMDb/TMDB-ID:n, aldrig videofilen. Nyckeln och valfria kontouppgifter krypteras tillsammans med den här källan.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Automatiska videometadata från nätet',
 			'sourceSetup.metadataPrivacy' => 'Skickar endast titel/år från filnamnet och avsnittsnummer eller ett NFO-ID, aldrig medier eller inloggningsuppgifter. NFO-fälten behåller företräde.',
 			'sourceSetup.nfsEncryptionFailure' => 'För krypterad NFS: kontrollera stöd för RFC 9289 och TLS 1.3 i båda NAS-tjänsterna, certifikatnamnet och delningens UID/GID. Pleazyng försöker inte ansluta igen utan kryptering.',
@@ -9004,8 +9030,6 @@ extension on TranslationsSv {
 			'sourceSetup.metadataNoMatches' => 'Inga matchande titlar hittades på nätet. Försök med en annan titel.',
 			'sourceSetup.metadataSearch' => 'Sök metadata på nätet',
 			'sourceSetup.metadataLoading' => 'Söker efter film- och serieinformation på nätet…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadata från Trakt på nätet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Ingen automatisk titelträff hittades. Sök efter titeln för att välja en träff.',
 			'sourceSetup.metadataFailed' => 'Metadata från nätet kunde inte läsas in. Uppspelning och lokal information är fortfarande tillgängliga.',
@@ -9415,6 +9439,10 @@ extension on TranslationsSv {
 			'musicTools.preamp' => 'Förförstärkning',
 			'musicTools.ratingPending' => 'Sparat på den här enheten; väntar på synkronisering',
 			'musicTools.lyricsOffset' => 'Tidsförskjutning för sångtext',
+			'musicTools.anniversaries' => 'Albumjubileer',
+			'musicTools.outputPreset' => 'EQ för denna utgång',
+			'musicTools.outputPresetHint' => 'Använd denna EQ automatiskt när denna utgång väljs.',
+			'musicTools.eqApproximation' => 'Hörlursprofiler är approximationer för EQ med tio band.',
 			_ => null,
 		};
 	}

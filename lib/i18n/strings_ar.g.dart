@@ -728,6 +728,7 @@ class _Translations$settings$ar extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'سرعة التشغيل';
 	@override String get scopeShaderPreset => 'شاتر Preset';
 	@override String get scopeAspectRatio => 'نسبة العرض إلى الارتفاع';
+	@override String get scopeZoom => 'التكبير';
 	@override String get scopeSyncOffsets => 'الصوت و Subtitle Sync';
 	@override String get playerScopeOff => 'لا ينقذ';
 	@override String get playerScopeGlobal => 'في كل مكان';
@@ -2814,6 +2815,13 @@ class _Translations$seerr$ar extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng سوف تنسى هذه الحالة Seerr.';
 	@override String get request => 'طلب';
 	@override String get request4k => 'طلب في 4K';
+	@override String get requestSeasons => 'اطلب المواسم المفقودة';
+	@override String get notifyMe => 'أخبرني عند التوفر';
+	@override String get notifyMe4k => 'أخبرني عند توفر 4K';
+	@override String get notificationsOn => 'تنبيه التوفر مفعّل';
+	@override String get notificationsEnabled => 'سنخطرك عند توفره';
+	@override String get notificationsDisabled => 'تم إيقاف تنبيه التوفر';
+	@override String get notificationFailed => 'تعذّر تحديث تنبيه التوفر';
 	@override String get seasons => 'المواسم';
 	@override String get allSeasons => 'جميع الموسم';
 	@override String get advancedOptions => 'متقدم';
@@ -4385,6 +4393,10 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String get preamp => 'التضخيم المسبق';
 	@override String get ratingPending => 'حُفظ على هذا الجهاز؛ بانتظار المزامنة';
 	@override String get lyricsOffset => 'إزاحة توقيت الكلمات';
+	@override String get anniversaries => 'ذكرى إصدار الألبومات';
+	@override String get outputPreset => 'معادل الصوت لهذا المخرج';
+	@override String get outputPresetHint => 'استخدم معادل الصوت هذا تلقائيًا عند اختيار هذا المخرج.';
+	@override String get eqApproximation => 'ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات.';
 }
 
 // Path: appIcon.names
@@ -5131,6 +5143,8 @@ class _Translations$explore$detail$ar extends Translations$explore$detail$en {
 	@override String get watchOn => 'انظر إلى';
 	@override String get watchTrailer => 'مشاهدة trailer';
 	@override String openOn({required Object site}) => 'مفتوحة على ${site}';
+	@override String get trailerUnavailable => 'تعذر فتح المقطع الدعائي على هذا الجهاز';
+	@override String get linkUnavailable => 'تعذر فتح هذا الرابط على هذا الجهاز';
 	@override String get crew => 'الطاقم';
 	@override String get ratings => 'تصنيف';
 	@override String get schedule => 'جدولة';
@@ -6090,6 +6104,7 @@ extension on TranslationsAr {
 			'settings.scopePlaybackSpeed' => 'سرعة التشغيل',
 			'settings.scopeShaderPreset' => 'شاتر Preset',
 			'settings.scopeAspectRatio' => 'نسبة العرض إلى الارتفاع',
+			'settings.scopeZoom' => 'التكبير',
 			'settings.scopeSyncOffsets' => 'الصوت و Subtitle Sync',
 			'settings.playerScopeOff' => 'لا ينقذ',
 			'settings.playerScopeGlobal' => 'في كل مكان',
@@ -6533,9 +6548,9 @@ extension on TranslationsAr {
 			'videoControls.addBookmark' => 'إضافة bookmark',
 			'videoControls.bookmarkName' => 'Bookmark الاسم',
 			'videoControls.bookmarkNameHint' => 'على سبيل المثال، فتح المشهد',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'الكتابة ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'الكتابة ${n}',
 			'videoControls.bookmarkNameRequired' => 'أدخل اسمًا لهذا الكتاب.',
 			'videoControls.deleteBookmark' => 'إلغاء Bookmark',
 			'videoControls.bookmarkLimitReached' => 'هذا البند يحتوي بالفعل على 100 علامة كتابية.',
@@ -7047,9 +7062,9 @@ extension on TranslationsAr {
 			'libraries.content' => 'مكتبة المحتوى',
 			'libraries.selectLibrary' => 'اختيار المكتبة',
 			'libraries.filtersWithCount' => ({required Object count}) => 'الفلاتر (${count})',
-			'libraries.noRecommendations' => 'لا توجد توصيات متاحة',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'لا توجد توصيات متاحة',
 			'libraries.noCollections' => 'لا توجد مجموعات في هذه المكتبة',
 			'libraries.noFoldersFound' => 'لا توجد ملفات',
 			'libraries.folders' => 'المجلدات',
@@ -7342,6 +7357,8 @@ extension on TranslationsAr {
 			'explore.detail.watchOn' => 'انظر إلى',
 			'explore.detail.watchTrailer' => 'مشاهدة trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'مفتوحة على ${site}',
+			'explore.detail.trailerUnavailable' => 'تعذر فتح المقطع الدعائي على هذا الجهاز',
+			'explore.detail.linkUnavailable' => 'تعذر فتح هذا الرابط على هذا الجهاز',
 			'explore.detail.crew' => 'الطاقم',
 			'explore.detail.ratings' => 'تصنيف',
 			'explore.detail.schedule' => 'جدولة',
@@ -7559,11 +7576,11 @@ extension on TranslationsAr {
 			'watchTogether.copyCode' => 'نسخ الرمز',
 			'watchTogether.codeCopied' => 'رمز الغرفة نسخة',
 			'watchTogether.shareInvite' => 'مشاركة دعوة',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'إرسال الرسالة - إرسال الرسالة إلى الرسالة',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'انضم إلى غرفة Watch Together في Pleazyng: افتح غرفة Watch Together واختر انضم إلى غرفة وانضم إلى ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch معا مراقبة الجلسة',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'إعادة الاتصال...',
 			'watchTogether.reconnectingDescription' => 'انقطع الاتصال.تصل إلى الغرفة تلقائيًا.',
 			'watchTogether.connected' => 'متصلة',
@@ -8073,11 +8090,11 @@ extension on TranslationsAr {
 			'metadataEdit.imageUrl' => 'صورة URL',
 			'metadataEdit.metadataUpdated' => 'متاجدات تحديثات',
 			'metadataEdit.metadataUpdateFailed' => 'فشل في تحديث البيانات الميتا',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'الفنون المحدثة',
 			'metadataEdit.artworkUpdateFailed' => 'فشل في تحديث أعمال الفن',
 			'metadataEdit.noArtworkAvailable' => 'لا توجد أعمال فنية متاحة',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'الخيارات الفنية ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'الخيار الفن ${index}، اختياري',
 			'metadataEdit.notSet' => 'لا تضع',
@@ -8164,6 +8181,13 @@ extension on TranslationsAr {
 			'seerr.disconnectConfirmBody' => 'Pleazyng سوف تنسى هذه الحالة Seerr.',
 			'seerr.request' => 'طلب',
 			'seerr.request4k' => 'طلب في 4K',
+			'seerr.requestSeasons' => 'اطلب المواسم المفقودة',
+			'seerr.notifyMe' => 'أخبرني عند التوفر',
+			'seerr.notifyMe4k' => 'أخبرني عند توفر 4K',
+			'seerr.notificationsOn' => 'تنبيه التوفر مفعّل',
+			'seerr.notificationsEnabled' => 'سنخطرك عند توفره',
+			'seerr.notificationsDisabled' => 'تم إيقاف تنبيه التوفر',
+			'seerr.notificationFailed' => 'تعذّر تحديث تنبيه التوفر',
 			'seerr.seasons' => 'المواسم',
 			'seerr.allSeasons' => 'جميع الموسم',
 			'seerr.advancedOptions' => 'متقدم',
@@ -8580,6 +8604,8 @@ extension on TranslationsAr {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', one: 'إدخال ${count} غير مدعوم أو غير آمن.', two: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', few: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', many: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', other: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', ), 
 			'universalMedia.playlistAddress' => 'العنوان Playlist',
 			'universalMedia.playlistAddressHelp' => 'افتح قائمة تشغيل M3U أو M3 U8 أو PLS من عنوان ويب. لنقرات البث المباشر لا تخزن قائمة التشغيل.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'اختيار ملف Playlist',
 			'universalMedia.openPlaylist' => 'قائمة ألعاب مفتوحة',
 			'universalMedia.playlistFormatsHelp' => 'يمكن أن يحتوي قائمة التشغيل على ما يصل إلى 1000 عنصر و 2 ميغابايت.HLS يظهر مفتوحا مثل التدفقات بحيث يمكن للاعب اختيار نوعية.',
@@ -8590,8 +8616,6 @@ extension on TranslationsAr {
 			'universalMedia.noFavorites' => 'لم يتم تخزين المفضلة حتى الآن.المفضلة تبقى في هذا الملف الشخصي.',
 			'universalMedia.removeFavorite' => 'إزالة البث المفضل',
 			'universalMedia.filesHelp' => 'حدد الملفات الصوتية أو الفيديوية أو ملفات ISO لفترة مؤقتة.لا يتم إضافة الملفين أو عناوين URL إلى تاريخ المكتبة.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'اختيار الملفات',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ), 
 			'universalMedia.wifiTransfer' => 'إرسال الملفات عبر Wi-Fi',
@@ -9094,6 +9118,8 @@ extension on TranslationsAr {
 			'sourceSetup.optionalUsername' => 'اسم مستخدم الحساب (اختياري)',
 			'sourceSetup.optionalPassword' => 'كلمة مرور الحساب (اختيارية)',
 			'sourceSetup.subtitlePrivacy' => 'احصل على مفتاح API من opensubtitles.com. يرسل البحث عنوان الفيديو ومعرّفات IMDb/TMDB المتاحة، ولا يرسل ملف الفيديو مطلقًا. يُحفظ المفتاح وبيانات الحساب الاختيارية بشكل مشفّر مع هذا المصدر.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'جلب بيانات الفيديو الوصفية من الإنترنت تلقائيًا',
 			'sourceSetup.metadataPrivacy' => 'يُرسل فقط العنوان والسنة وأرقام الحلقات المستخرجة من اسم الملف، أو معرّف NFO، ولا يرسل الوسائط أو بيانات الاعتماد مطلقًا. تظل الأولوية لحقول NFO.',
 			'sourceSetup.nfsEncryptionFailure' => 'لاتصال NFS المشفّر، تحقّق من دعم RFC 9289 وTLS 1.3 في خدمتي NAS، ومن اسم الشهادة ومعرّفات UID/GID للتصدير. لن يعيد Pleazyng محاولة هذا الاتصال دون تشفير.',
@@ -9104,8 +9130,6 @@ extension on TranslationsAr {
 			'sourceSetup.metadataNoMatches' => 'لم يُعثر على عناوين مطابقة على الإنترنت. جرّب عنوانًا آخر.',
 			'sourceSetup.metadataSearch' => 'البحث عن بيانات وصفية على الإنترنت',
 			'sourceSetup.metadataLoading' => 'جارٍ البحث عن معلومات الأفلام والمسلسلات على الإنترنت…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'بيانات وصفية من Trakt عبر الإنترنت',
 			'sourceSetup.metadataNoAutomaticMatch' => 'لم يُعثر على تطابق تلقائي للعنوان. ابحث عن العنوان لاختيار نتيجة مطابقة.',
 			'sourceSetup.metadataFailed' => 'تعذّر تحميل البيانات الوصفية من الإنترنت. لا يزال التشغيل والمعلومات المحلية متاحين.',
@@ -9515,6 +9539,10 @@ extension on TranslationsAr {
 			'musicTools.preamp' => 'التضخيم المسبق',
 			'musicTools.ratingPending' => 'حُفظ على هذا الجهاز؛ بانتظار المزامنة',
 			'musicTools.lyricsOffset' => 'إزاحة توقيت الكلمات',
+			'musicTools.anniversaries' => 'ذكرى إصدار الألبومات',
+			'musicTools.outputPreset' => 'معادل الصوت لهذا المخرج',
+			'musicTools.outputPresetHint' => 'استخدم معادل الصوت هذا تلقائيًا عند اختيار هذا المخرج.',
+			'musicTools.eqApproximation' => 'ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات.',
 			_ => null,
 		};
 	}

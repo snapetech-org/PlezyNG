@@ -722,6 +722,7 @@ class Translations$settings$pt extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Velocidade de reprodução';
 	@override String get scopeShaderPreset => 'Predefinição de shader';
 	@override String get scopeAspectRatio => 'Proporção da tela';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Sincronização de áudio e legendas';
 	@override String get playerScopeOff => 'Não salvar';
 	@override String get playerScopeGlobal => 'Em todos os lugares';
@@ -2741,6 +2742,13 @@ class Translations$seerr$pt extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'O Pleazyng esquecerá esta instância do Seerr. Reconecte quando quiser.';
 	@override String get request => 'Solicitar';
 	@override String get request4k => 'Solicitar em 4K';
+	@override String get requestSeasons => 'Solicitar temporadas em falta';
+	@override String get notifyMe => 'Avise-me quando estiver disponível';
+	@override String get notifyMe4k => 'Avise-me quando 4K estiver disponível';
+	@override String get notificationsOn => 'Alerta de disponibilidade ativado';
+	@override String get notificationsEnabled => 'Avisaremos quando estiver disponível';
+	@override String get notificationsDisabled => 'Alerta de disponibilidade desativado';
+	@override String get notificationFailed => 'Não foi possível atualizar o alerta de disponibilidade';
 	@override String get seasons => 'Temporadas';
 	@override String get allSeasons => 'Todas as temporadas';
 	@override String get advancedOptions => 'Avançado';
@@ -4300,6 +4308,10 @@ class Translations$musicTools$pt extends Translations$musicTools$en {
 	@override String get preamp => 'Pré-amplificação';
 	@override String get ratingPending => 'Salvo neste dispositivo; aguardando sincronização';
 	@override String get lyricsOffset => 'Deslocamento da letra';
+	@override String get anniversaries => 'Aniversários de álbuns';
+	@override String get outputPreset => 'Equalizador desta saída';
+	@override String get outputPresetHint => 'Usar automaticamente este equalizador quando esta saída for selecionada.';
+	@override String get eqApproximation => 'Os perfis de auscultadores são aproximados para o equalizador de dez bandas.';
 }
 
 // Path: appIcon.names
@@ -5042,6 +5054,8 @@ class Translations$explore$detail$pt extends Translations$explore$detail$en {
 	@override String get watchOn => 'Assistir em';
 	@override String get watchTrailer => 'Ver trailer';
 	@override String openOn({required Object site}) => 'Abrir em ${site}';
+	@override String get trailerUnavailable => 'Não foi possível abrir o trailer neste dispositivo';
+	@override String get linkUnavailable => 'Não foi possível abrir o link neste dispositivo';
 	@override String get crew => 'Equipe';
 	@override String get ratings => 'Avaliações';
 	@override String get schedule => 'Programação';
@@ -5997,6 +6011,7 @@ extension on TranslationsPt {
 			'settings.scopePlaybackSpeed' => 'Velocidade de reprodução',
 			'settings.scopeShaderPreset' => 'Predefinição de shader',
 			'settings.scopeAspectRatio' => 'Proporção da tela',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Sincronização de áudio e legendas',
 			'settings.playerScopeOff' => 'Não salvar',
 			'settings.playerScopeGlobal' => 'Em todos os lugares',
@@ -6440,9 +6455,9 @@ extension on TranslationsPt {
 			'videoControls.addBookmark' => 'Adicionar Bookmark',
 			'videoControls.bookmarkName' => 'Nome do Bookmark',
 			'videoControls.bookmarkNameHint' => 'Por exemplo, a cena de abertura',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarcação ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarcação ${n}',
 			'videoControls.bookmarkNameRequired' => 'Digite um nome para este livro.',
 			'videoControls.deleteBookmark' => 'Eliminar o Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Este item já tem 100 bookmarks.',
@@ -6954,9 +6969,9 @@ extension on TranslationsPt {
 			'libraries.content' => 'conteúdo da biblioteca',
 			'libraries.selectLibrary' => 'Selecionar biblioteca',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtros (${count})',
-			'libraries.noRecommendations' => 'Nenhuma recomendação disponível',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Nenhuma recomendação disponível',
 			'libraries.noCollections' => 'Nenhuma coleção nesta biblioteca',
 			'libraries.noFoldersFound' => 'Nenhuma pasta encontrada',
 			'libraries.folders' => 'pastas',
@@ -7249,6 +7264,8 @@ extension on TranslationsPt {
 			'explore.detail.watchOn' => 'Assistir em',
 			'explore.detail.watchTrailer' => 'Ver trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Abrir em ${site}',
+			'explore.detail.trailerUnavailable' => 'Não foi possível abrir o trailer neste dispositivo',
+			'explore.detail.linkUnavailable' => 'Não foi possível abrir o link neste dispositivo',
 			'explore.detail.crew' => 'Equipe',
 			'explore.detail.ratings' => 'Avaliações',
 			'explore.detail.schedule' => 'Programação',
@@ -7466,11 +7483,11 @@ extension on TranslationsPt {
 			'watchTogether.copyCode' => 'Copiar código',
 			'watchTogether.codeCopied' => 'Código da sala copiado',
 			'watchTogether.shareInvite' => 'Compartilhar convite',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'Convite copiado. Cole-o em uma mensagem.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Entre na minha sala do Assistir Juntos no Pleazyng: abra "Assistir Juntos", escolha "Entrar na sala" e insira ${code}.',
 			'watchTogether.openSessionControls' => 'Abrir os controles da sessão Assistir Juntos',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Reconectando...',
 			'watchTogether.reconnectingDescription' => 'A conexão caiu. Você voltará à sala automaticamente.',
 			'watchTogether.connected' => 'Conectado',
@@ -7980,11 +7997,11 @@ extension on TranslationsPt {
 			'metadataEdit.imageUrl' => 'URL da Imagem',
 			'metadataEdit.metadataUpdated' => 'Metadados atualizados',
 			'metadataEdit.metadataUpdateFailed' => 'Falha ao atualizar metadados',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Arte atualizada',
 			'metadataEdit.artworkUpdateFailed' => 'Falha ao atualizar arte',
 			'metadataEdit.noArtworkAvailable' => 'Nenhuma arte disponível',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opção de arte ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opção de arte ${index}, selecionada',
 			'metadataEdit.notSet' => 'Não definido',
@@ -8071,6 +8088,13 @@ extension on TranslationsPt {
 			'seerr.disconnectConfirmBody' => 'O Pleazyng esquecerá esta instância do Seerr. Reconecte quando quiser.',
 			'seerr.request' => 'Solicitar',
 			'seerr.request4k' => 'Solicitar em 4K',
+			'seerr.requestSeasons' => 'Solicitar temporadas em falta',
+			'seerr.notifyMe' => 'Avise-me quando estiver disponível',
+			'seerr.notifyMe4k' => 'Avise-me quando 4K estiver disponível',
+			'seerr.notificationsOn' => 'Alerta de disponibilidade ativado',
+			'seerr.notificationsEnabled' => 'Avisaremos quando estiver disponível',
+			'seerr.notificationsDisabled' => 'Alerta de disponibilidade desativado',
+			'seerr.notificationFailed' => 'Não foi possível atualizar o alerta de disponibilidade',
 			'seerr.seasons' => 'Temporadas',
 			'seerr.allSeasons' => 'Todas as temporadas',
 			'seerr.advancedOptions' => 'Avançado',
@@ -8487,6 +8511,8 @@ extension on TranslationsPt {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Escapou ${count} entrada de playlist não suportada ou insegura.', many: 'Escapou ${count} entradas de lista de reprodução não suportadas ou inseguras.', other: 'Escapou ${count} entradas de lista de reprodução não suportadas ou inseguras.', ), 
 			'universalMedia.playlistAddress' => 'Endereço Playlist',
 			'universalMedia.playlistAddressHelp' => 'Abra uma lista de reprodução M3U, M3u8, ou PLS a partir de um endereço web. links de streaming direto não salvam a lista.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Escolha o arquivo de playlist',
 			'universalMedia.openPlaylist' => 'Playlist aberta',
 			'universalMedia.playlistFormatsHelp' => 'Uma lista de reprodução pode conter até 1.000 itens e 2 MB. HLS manifesta-se aberta como fluxos para que o jogador possa escolher uma qualidade.',
@@ -8497,8 +8523,6 @@ extension on TranslationsPt {
 			'universalMedia.noFavorites' => 'Não foram salvos favoritos ainda. favoritos permanecem neste perfil.',
 			'universalMedia.removeFavorite' => 'Remover streaming favorito',
 			'universalMedia.filesHelp' => 'Escolha arquivos de áudio, vídeo ou ISO para uma quebra temporária. arquivos e URLs não são adicionados ao histórico da biblioteca.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Escolha arquivos',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '1 arquivo selecionado', many: '${count} arquivos selecionados', other: '${count} arquivos selecionados', ), 
 			'universalMedia.wifiTransfer' => 'Enviar arquivos por Wi-Fi',
@@ -9001,6 +9025,8 @@ extension on TranslationsPt {
 			'sourceSetup.optionalUsername' => 'Nome de usuário da conta (opcional)',
 			'sourceSetup.optionalPassword' => 'Senha da conta (opcional)',
 			'sourceSetup.subtitlePrivacy' => 'Obtenha uma chave API em opensubtitles.com. A busca envia o título do vídeo e os IDs de IMDb/TMDB disponíveis, nunca o arquivo de vídeo. A chave e as credenciais opcionais da conta são criptografadas junto com esta fonte.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Metadados de vídeo online automáticos',
 			'sourceSetup.metadataPrivacy' => 'Envia apenas título/ano do nome do arquivo e números dos episódios, ou um ID NFO; nunca envia mídia ou credenciais. Os campos NFO mantêm a prioridade.',
 			'sourceSetup.nfsEncryptionFailure' => 'Para NFS criptografado, verifique o suporte a RFC 9289 e TLS 1.3 nos dois serviços do NAS, o nome no certificado e os UID/GID do compartilhamento. Pleazyng não tentará esta conexão novamente sem criptografia.',
@@ -9011,8 +9037,6 @@ extension on TranslationsPt {
 			'sourceSetup.metadataNoMatches' => 'Nenhum título correspondente encontrado online. Tente outro título.',
 			'sourceSetup.metadataSearch' => 'Buscar metadados online',
 			'sourceSetup.metadataLoading' => 'Buscando detalhes de filmes e séries online…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadados online do Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nenhuma correspondência automática encontrada para o título. Pesquise o título para escolher uma correspondência.',
 			'sourceSetup.metadataFailed' => 'Não foi possível carregar os metadados online. A reprodução e os detalhes locais continuam disponíveis.',
@@ -9422,6 +9446,10 @@ extension on TranslationsPt {
 			'musicTools.preamp' => 'Pré-amplificação',
 			'musicTools.ratingPending' => 'Salvo neste dispositivo; aguardando sincronização',
 			'musicTools.lyricsOffset' => 'Deslocamento da letra',
+			'musicTools.anniversaries' => 'Aniversários de álbuns',
+			'musicTools.outputPreset' => 'Equalizador desta saída',
+			'musicTools.outputPresetHint' => 'Usar automaticamente este equalizador quando esta saída for selecionada.',
+			'musicTools.eqApproximation' => 'Os perfis de auscultadores são aproximados para o equalizador de dez bandas.',
 			_ => null,
 		};
 	}

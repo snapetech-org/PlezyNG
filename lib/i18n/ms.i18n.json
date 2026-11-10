@@ -629,6 +629,7 @@
     "scopePlaybackSpeed": "Kelajuan Playback",
     "scopeShaderPreset": "Perbincangan Shader Preset",
     "scopeAspectRatio": "Nisbah aspek",
+    "scopeZoom": "Zum",
     "scopeSyncOffsets": "Audio dan Subtitle Sync",
     "playerScopeOff": "Jangan menyelamatkan",
     "playerScopeGlobal": "Di mana-mana sahaja",
@@ -2239,6 +2240,8 @@
       "watchOn": "Lihatlah",
       "watchTrailer": "Lihat trailer",
       "openOn": "Terbuka pada ${site}",
+      "trailerUnavailable": "Treler tidak dapat dibuka pada peranti ini",
+      "linkUnavailable": "Pautan ini tidak dapat dibuka pada peranti ini",
       "crew": "Pasukan",
       "ratings": "Penilaian",
       "schedule": "Jadual",
@@ -3258,6 +3261,13 @@
     "disconnectConfirmBody": "Pleazyng akan melupakan instans Seerr ini. sambungkan semula pada bila-bila masa.",
     "request": "Permintaan",
     "request4k": "Permintaan dalam 4K",
+    "requestSeasons": "Minta musim yang belum tersedia",
+    "notifyMe": "Beritahu saya apabila tersedia",
+    "notifyMe4k": "Beritahu saya apabila tersedia dalam 4K",
+    "notificationsOn": "Amaran ketersediaan dihidupkan",
+    "notificationsEnabled": "Kami akan memaklumkan anda apabila tersedia",
+    "notificationsDisabled": "Amaran ketersediaan dimatikan",
+    "notificationFailed": "Tidak dapat mengemas kini amaran ketersediaan",
     "seasons": "Musim",
     "allSeasons": "Semua musim",
     "advancedOptions": "Kemajuan",
@@ -5489,6 +5499,10 @@
     "exclusiveOutput": "Output audio eksklusif",
     "preamp": "Prapenguat",
     "ratingPending": "Disimpan pada peranti ini; menunggu penyegerakan",
-    "lyricsOffset": "Anjakan masa lirik"
+    "lyricsOffset": "Anjakan masa lirik",
+    "anniversaries": "Ulang tahun album",
+    "outputPreset": "EQ untuk output ini",
+    "outputPresetHint": "Gunakan EQ ini secara automatik apabila output ini dipilih.",
+    "eqApproximation": "Profil fon kepala dianggarkan untuk EQ sepuluh jalur."
   }
 }

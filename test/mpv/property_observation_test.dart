@@ -131,7 +131,7 @@ void main() {
       dispose: () => player.dispose(),
     );
 
-    expect(names(observations), {'time-pos', 'duration', 'pause', 'eof-reached', 'playlist-pos'});
+    expect(names(observations), {'time-pos', 'duration', 'pause', 'eof-reached', 'audio-device', 'playlist-pos'});
     final playlistPos = observations.singleWhere((call) => (call.arguments as Map)['name'] == 'playlist-pos');
     expect((playlistPos.arguments as Map)['format'], Platform.isAndroid ? 'string' : 'node');
   });

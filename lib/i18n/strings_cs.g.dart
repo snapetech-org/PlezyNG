@@ -724,6 +724,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Rychlost přehrávání';
 	@override String get scopeShaderPreset => 'Shader představení';
 	@override String get scopeAspectRatio => 'Poměr stran';
+	@override String get scopeZoom => 'Přiblížení';
 	@override String get scopeSyncOffsets => 'Audio a subtitle synchronizace';
 	@override String get playerScopeOff => 'Nenechte se zachránit';
 	@override String get playerScopeGlobal => 'Všude všude';
@@ -2772,6 +2773,13 @@ class _Translations$seerr$cs extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng bude zapomenout na tento příklad Seerr.';
 	@override String get request => 'Žádost';
 	@override String get request4k => 'Vyžádání v 4K';
+	@override String get requestSeasons => 'Vyžádat chybějící sezóny';
+	@override String get notifyMe => 'Upozornit, až bude dostupné';
+	@override String get notifyMe4k => 'Upozornit, až bude dostupné ve 4K';
+	@override String get notificationsOn => 'Upozornění na dostupnost je zapnuté';
+	@override String get notificationsEnabled => 'Upozorníme vás, až bude dostupné';
+	@override String get notificationsDisabled => 'Upozornění na dostupnost bylo vypnuto';
+	@override String get notificationFailed => 'Upozornění na dostupnost se nepodařilo aktualizovat';
 	@override String get seasons => 'Série';
 	@override String get allSeasons => 'Všechny sezóny';
 	@override String get advancedOptions => 'Pokročilé';
@@ -4335,6 +4343,10 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get preamp => 'Předzesílení';
 	@override String get ratingPending => 'Uloženo v tomto zařízení; čeká na synchronizaci';
 	@override String get lyricsOffset => 'Časový posun textu';
+	@override String get anniversaries => 'Výročí alb';
+	@override String get outputPreset => 'Ekvalizér pro tento výstup';
+	@override String get outputPresetHint => 'Při výběru tohoto výstupu automaticky použít tento ekvalizér.';
+	@override String get eqApproximation => 'Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér.';
 }
 
 // Path: appIcon.names
@@ -5079,6 +5091,8 @@ class _Translations$explore$detail$cs extends Translations$explore$detail$en {
 	@override String get watchOn => 'Podívejte se';
 	@override String get watchTrailer => 'Podívejte se trailer';
 	@override String openOn({required Object site}) => 'Otevřeno na ${site}';
+	@override String get trailerUnavailable => 'Na tomto zařízení se nepodařilo otevřít upoutávku';
+	@override String get linkUnavailable => 'Na tomto zařízení se nepodařilo otevřít tento odkaz';
 	@override String get crew => 'Posádka';
 	@override String get ratings => 'Hodnocení';
 	@override String get schedule => 'Plánované nahrávání';
@@ -6034,6 +6048,7 @@ extension on TranslationsCs {
 			'settings.scopePlaybackSpeed' => 'Rychlost přehrávání',
 			'settings.scopeShaderPreset' => 'Shader představení',
 			'settings.scopeAspectRatio' => 'Poměr stran',
+			'settings.scopeZoom' => 'Přiblížení',
 			'settings.scopeSyncOffsets' => 'Audio a subtitle synchronizace',
 			'settings.playerScopeOff' => 'Nenechte se zachránit',
 			'settings.playerScopeGlobal' => 'Všude všude',
@@ -6477,9 +6492,9 @@ extension on TranslationsCs {
 			'videoControls.addBookmark' => 'Přidat bookmark',
 			'videoControls.bookmarkName' => 'Bookmark jméno',
 			'videoControls.bookmarkNameHint' => 'Například otevírací scény',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarková ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarková ${n}',
 			'videoControls.bookmarkNameRequired' => 'Zadejte jméno pro tuto knižní značku.',
 			'videoControls.deleteBookmark' => 'Odstranit bookmark',
 			'videoControls.bookmarkLimitReached' => 'Tato položka má již 100 bookmarků.',
@@ -6991,9 +7006,9 @@ extension on TranslationsCs {
 			'libraries.content' => 'Obsah knihovny',
 			'libraries.selectLibrary' => 'Vyberte knihovnu',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
-			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			'libraries.noCollections' => 'Žádné sbírky v této knihovně',
 			'libraries.noFoldersFound' => 'Žádné složky nenajdete',
 			'libraries.folders' => 'Složky',
@@ -7286,6 +7301,8 @@ extension on TranslationsCs {
 			'explore.detail.watchOn' => 'Podívejte se',
 			'explore.detail.watchTrailer' => 'Podívejte se trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Otevřeno na ${site}',
+			'explore.detail.trailerUnavailable' => 'Na tomto zařízení se nepodařilo otevřít upoutávku',
+			'explore.detail.linkUnavailable' => 'Na tomto zařízení se nepodařilo otevřít tento odkaz',
 			'explore.detail.crew' => 'Posádka',
 			'explore.detail.ratings' => 'Hodnocení',
 			'explore.detail.schedule' => 'Plánované nahrávání',
@@ -7503,11 +7520,11 @@ extension on TranslationsCs {
 			'watchTogether.copyCode' => 'Kopírování kódu',
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
 			'watchTogether.openSessionControls' => 'Otevřete sledování Session Controls',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Připojení...',
 			'watchTogether.reconnectingDescription' => 'Připojení je zrušené. automaticky se připojíte k místnosti.',
 			'watchTogether.connected' => 'připojené',
@@ -8017,11 +8034,11 @@ extension on TranslationsCs {
 			'metadataEdit.imageUrl' => 'obrázek URL',
 			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
 			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Umělecká aktualizace',
 			'metadataEdit.artworkUpdateFailed' => 'Nedokázal aktualizovat umělecké dílo',
 			'metadataEdit.noArtworkAvailable' => 'K dispozici žádné umělecké dílo',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Umělecká volba ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Možnost umělecké práce ${index}, vybraná',
 			'metadataEdit.notSet' => 'Není nastaven',
@@ -8108,6 +8125,13 @@ extension on TranslationsCs {
 			'seerr.disconnectConfirmBody' => 'Pleazyng bude zapomenout na tento příklad Seerr.',
 			'seerr.request' => 'Žádost',
 			'seerr.request4k' => 'Vyžádání v 4K',
+			'seerr.requestSeasons' => 'Vyžádat chybějící sezóny',
+			'seerr.notifyMe' => 'Upozornit, až bude dostupné',
+			'seerr.notifyMe4k' => 'Upozornit, až bude dostupné ve 4K',
+			'seerr.notificationsOn' => 'Upozornění na dostupnost je zapnuté',
+			'seerr.notificationsEnabled' => 'Upozorníme vás, až bude dostupné',
+			'seerr.notificationsDisabled' => 'Upozornění na dostupnost bylo vypnuto',
+			'seerr.notificationFailed' => 'Upozornění na dostupnost se nepodařilo aktualizovat',
 			'seerr.seasons' => 'Série',
 			'seerr.allSeasons' => 'Všechny sezóny',
 			'seerr.advancedOptions' => 'Pokročilé',
@@ -8524,6 +8548,8 @@ extension on TranslationsCs {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Přepadl ${count} nepodporovaný nebo nebezpečný playlist vstup.', few: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', many: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', other: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', ), 
 			'universalMedia.playlistAddress' => 'Playlistová adresa',
 			'universalMedia.playlistAddressHelp' => 'Otevřete playlist M3U, M3u8 nebo PLS z webové adresy. Přímé streamovací odkazy nezachovávají playlist.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Vyberte soubor playlist',
 			'universalMedia.openPlaylist' => 'Otevřená playlist',
 			'universalMedia.playlistFormatsHelp' => 'Přehrávač může obsahovat až 1000 položek a 2 MB. HLS se otevírají jako toky, takže hráč si může vybrat kvalitu.',
@@ -8534,8 +8560,6 @@ extension on TranslationsCs {
 			'universalMedia.noFavorites' => 'Není zachráněno stream oblíbené zatím. Oblíbené zůstanou v tomto profilu.',
 			'universalMedia.removeFavorite' => 'Odstranit stream oblíbené',
 			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Vyberte soubory',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
 			'universalMedia.wifiTransfer' => 'Odesílání souborů přes Wi-Fi',
@@ -9038,6 +9062,8 @@ extension on TranslationsCs {
 			'sourceSetup.optionalUsername' => 'Uživatelské jméno účtu (nepovinné)',
 			'sourceSetup.optionalPassword' => 'Heslo účtu (nepovinné)',
 			'sourceSetup.subtitlePrivacy' => 'Získejte klíč API na opensubtitles.com. Hledání odesílá název videa a dostupná ID IMDb/TMDB, nikdy videosoubor. Klíč a volitelné přihlašovací údaje účtu jsou šifrovány spolu s tímto zdrojem.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Automatická online metadata videa',
 			'sourceSetup.metadataPrivacy' => 'Odesílá pouze název/rok z názvu souboru a čísla epizod nebo ID NFO, nikdy média ani přihlašovací údaje. Pole NFO mají nadále přednost.',
 			'sourceSetup.nfsEncryptionFailure' => 'U šifrovaného NFS ověřte podporu RFC 9289 a TLS 1.3 u obou služeb NAS, název v certifikátu a UID/GID exportu. Pleazyng se nepokusí toto spojení zopakovat bez šifrování.',
@@ -9048,8 +9074,6 @@ extension on TranslationsCs {
 			'sourceSetup.metadataNoMatches' => 'Online nebyl nalezen odpovídající název. Zkuste jiný název.',
 			'sourceSetup.metadataSearch' => 'Hledat online metadata',
 			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',
 			'sourceSetup.metadataFailed' => 'Online metadata se nepodařilo načíst. Přehrávání i místní informace jsou stále dostupné.',
@@ -9459,6 +9483,10 @@ extension on TranslationsCs {
 			'musicTools.preamp' => 'Předzesílení',
 			'musicTools.ratingPending' => 'Uloženo v tomto zařízení; čeká na synchronizaci',
 			'musicTools.lyricsOffset' => 'Časový posun textu',
+			'musicTools.anniversaries' => 'Výročí alb',
+			'musicTools.outputPreset' => 'Ekvalizér pro tento výstup',
+			'musicTools.outputPresetHint' => 'Při výběru tohoto výstupu automaticky použít tento ekvalizér.',
+			'musicTools.eqApproximation' => 'Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér.',
 			_ => null,
 		};
 	}

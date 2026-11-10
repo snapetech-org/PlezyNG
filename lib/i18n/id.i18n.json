@@ -629,6 +629,7 @@
     "scopePlaybackSpeed": "Kecepatan Pemutaran",
     "scopeShaderPreset": "Shader Preset yang",
     "scopeAspectRatio": "Rasio perbandingan",
+    "scopeZoom": "Zoom",
     "scopeSyncOffsets": "Audio dan Subtitle Sync",
     "playerScopeOff": "Jangan Menyelamatkan",
     "playerScopeGlobal": "di mana-mana",
@@ -2239,6 +2240,8 @@
       "watchOn": "Lihatlah",
       "watchTrailer": "Lihat Trailer",
       "openOn": "Terbuka pada ${site}",
+      "trailerUnavailable": "Cuplikan tidak dapat dibuka di perangkat ini",
+      "linkUnavailable": "Tautan ini tidak dapat dibuka di perangkat ini",
       "crew": "Kapal",
       "ratings": "Peringkat",
       "schedule": "Jadwal",
@@ -3258,6 +3261,13 @@
     "disconnectConfirmBody": "Pleazyng akan melupakan contoh Seerr ini. sambungkan kembali kapan saja.",
     "request": "Permintaan",
     "request4k": "Permintaan dalam 4K",
+    "requestSeasons": "Minta musim yang belum tersedia",
+    "notifyMe": "Beri tahu saya saat tersedia",
+    "notifyMe4k": "Beri tahu saya saat tersedia dalam 4K",
+    "notificationsOn": "Peringatan ketersediaan aktif",
+    "notificationsEnabled": "Kami akan memberi tahu Anda saat tersedia",
+    "notificationsDisabled": "Peringatan ketersediaan dinonaktifkan",
+    "notificationFailed": "Gagal memperbarui peringatan ketersediaan",
     "seasons": "Musim",
     "allSeasons": "Semua Musim",
     "advancedOptions": "Canggih",
@@ -5489,6 +5499,10 @@
     "exclusiveOutput": "Keluaran audio eksklusif",
     "preamp": "Prapenguatan",
     "ratingPending": "Disimpan di perangkat ini; menunggu sinkronisasi",
-    "lyricsOffset": "Pergeseran waktu lirik"
+    "lyricsOffset": "Pergeseran waktu lirik",
+    "anniversaries": "Ulang tahun album",
+    "outputPreset": "EQ untuk keluaran ini",
+    "outputPresetHint": "Gunakan EQ ini secara otomatis saat keluaran ini dipilih.",
+    "eqApproximation": "Profil headphone diperkirakan untuk EQ sepuluh pita."
   }
 }

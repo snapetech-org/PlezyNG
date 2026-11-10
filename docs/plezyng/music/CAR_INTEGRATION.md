@@ -135,3 +135,22 @@ The existing [media-controls dependency](https://github.com/edde746/media_contro
 is vendored at its former dependency pin with its license. Pleazyng independently
 adds the browse bridge; the upstream maintainer did not contribute to or endorse
 this fork. See [UPSTREAM_ATTRIBUTION.md](../../../UPSTREAM_ATTRIBUTION.md#music-media-session-integration).
+
+## Independent Android Automotive media build
+
+Run `scripts/build_automotive_music.sh --release` to build the shared application
+as an AAOS audio-category target. The script sets only this invocation's Gradle
+property; the normal phone/TV/video manifest remains the default. The media
+manifest requires Automotive hardware, exposes the existing MusicBrowserService,
+and has no launcher/video deep-link entry. The host renders browse and playback.
+An APPLICATION_PREFERENCES activity offers parked setup with the existing account
+bootstrap and music home. OAuth callbacks are retained. Do not label setup as
+distraction optimized. The native build identity is delivered through both
+foreground and headless device channels. Only this target permits music while
+restrictions are active; all video playback and normal app distributions keep
+the parked-only gate. AAOS browser unbinding is not physical audio-output loss.
+
+The source follows Android's [media manifest](https://developer.android.com/training/cars/media/configure-manifest)
+and [Automotive media](https://developer.android.com/training/cars/media/automotive-os)
+contracts. Store approval, OEM behavior and native/device qualification are
+separate from this source implementation.

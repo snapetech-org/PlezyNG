@@ -631,6 +631,7 @@
     "scopePlaybackSpeed": "سرعت پخش",
     "scopeShaderPreset": "شیراز پیش بینی",
     "scopeAspectRatio": "نسبت تصویر",
+    "scopeZoom": "بزرگ‌نمایی",
     "scopeSyncOffsets": "Audio & Subtitle همگام سازی",
     "playerScopeOff": "نجات ندهید",
     "playerScopeGlobal": "همه جا",
@@ -2250,6 +2251,8 @@
       "watchOn": "نگاهی به",
       "watchTrailer": "تماشای تریلر",
       "openOn": "باز شده در ${site}",
+      "trailerUnavailable": "باز کردن پیش‌نمایش در این دستگاه ممکن نشد",
+      "linkUnavailable": "باز کردن این پیوند در این دستگاه ممکن نشد",
       "crew": "خدمه",
       "ratings": "رتبه بندی",
       "schedule": "برنامه زمانی",
@@ -3279,6 +3282,13 @@
     "disconnectConfirmBody": "Pleazyng این مثال را فراموش خواهد کرد.در هر زمان دوباره اتصال.",
     "request": "درخواست",
     "request4k": "درخواست در 4K",
+    "requestSeasons": "درخواست فصل‌های جاافتاده",
+    "notifyMe": "هنگام در دسترس بودن به من اطلاع بده",
+    "notifyMe4k": "هنگام در دسترس بودن نسخهٔ 4K به من اطلاع بده",
+    "notificationsOn": "هشدار در دسترس شدن روشن است",
+    "notificationsEnabled": "وقتی در دسترس باشد به شما اطلاع می‌دهیم",
+    "notificationsDisabled": "هشدار در دسترس شدن خاموش شد",
+    "notificationFailed": "به‌روزرسانی هشدار در دسترس شدن انجام نشد",
     "seasons": "فصل ها",
     "allSeasons": "همه فصل ها",
     "advancedOptions": "پیشرفته",
@@ -5516,6 +5526,10 @@
     "exclusiveOutput": "خروجی صدای انحصاری",
     "preamp": "پیش‌تقویت",
     "ratingPending": "در این دستگاه ذخیره شد؛ در انتظار همگام‌سازی",
-    "lyricsOffset": "جابجایی زمان متن آهنگ"
+    "lyricsOffset": "جابجایی زمان متن آهنگ",
+    "anniversaries": "سالگرد انتشار آلبوم‌ها",
+    "outputPreset": "اکولایزر این خروجی",
+    "outputPresetHint": "هنگام انتخاب این خروجی، این اکولایزر به‌طور خودکار اعمال شود.",
+    "eqApproximation": "پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند."
   }
 }

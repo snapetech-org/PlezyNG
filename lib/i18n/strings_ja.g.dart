@@ -718,6 +718,7 @@ class _Translations$settings$ja extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => '再生速度';
 	@override String get scopeShaderPreset => 'シェーダープリセット';
 	@override String get scopeAspectRatio => 'アスペクト比';
+	@override String get scopeZoom => 'ズーム';
 	@override String get scopeSyncOffsets => '音声と字幕の同期';
 	@override String get playerScopeOff => '保存しない';
 	@override String get playerScopeGlobal => 'すべて';
@@ -2734,6 +2735,13 @@ class _Translations$seerr$ja extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng はこの Seerr インスタンスの情報を削除します。いつでも再接続できます。';
 	@override String get request => 'リクエスト';
 	@override String get request4k => '4K でリクエスト';
+	@override String get requestSeasons => '未配信のシーズンをリクエスト';
+	@override String get notifyMe => '配信開始時に通知';
+	@override String get notifyMe4k => '4Kで配信開始時に通知';
+	@override String get notificationsOn => '配信通知オン';
+	@override String get notificationsEnabled => '配信開始時にお知らせします';
+	@override String get notificationsDisabled => '配信通知をオフにしました';
+	@override String get notificationFailed => '配信通知を更新できませんでした';
 	@override String get seasons => 'シーズン';
 	@override String get allSeasons => '全シーズン';
 	@override String get advancedOptions => '詳細';
@@ -4288,6 +4296,10 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	@override String get preamp => 'プリアンプ';
 	@override String get ratingPending => 'この端末に保存済み・同期待ち';
 	@override String get lyricsOffset => '歌詞のタイミング調整';
+	@override String get anniversaries => 'アルバムの発売記念日';
+	@override String get outputPreset => 'この出力のEQ';
+	@override String get outputPresetHint => 'この出力が選択されたときに、このEQを自動的に使用します。';
+	@override String get eqApproximation => 'ヘッドホンのプロファイルは10バンドEQ向けに近似されています。';
 }
 
 // Path: appIcon.names
@@ -5030,6 +5042,8 @@ class _Translations$explore$detail$ja extends Translations$explore$detail$en {
 	@override String get watchOn => '視聴先';
 	@override String get watchTrailer => '予告編を見る';
 	@override String openOn({required Object site}) => '${site}で開く';
+	@override String get trailerUnavailable => 'この端末では予告編を開けませんでした';
+	@override String get linkUnavailable => 'この端末ではリンクを開けませんでした';
 	@override String get crew => 'スタッフ';
 	@override String get ratings => '評価';
 	@override String get schedule => '放送予定';
@@ -5985,6 +5999,7 @@ extension on TranslationsJa {
 			'settings.scopePlaybackSpeed' => '再生速度',
 			'settings.scopeShaderPreset' => 'シェーダープリセット',
 			'settings.scopeAspectRatio' => 'アスペクト比',
+			'settings.scopeZoom' => 'ズーム',
 			'settings.scopeSyncOffsets' => '音声と字幕の同期',
 			'settings.playerScopeOff' => '保存しない',
 			'settings.playerScopeGlobal' => 'すべて',
@@ -6428,9 +6443,9 @@ extension on TranslationsJa {
 			'videoControls.addBookmark' => 'ブックマーク追加',
 			'videoControls.bookmarkName' => 'Bookmark 名称',
 			'videoControls.bookmarkNameHint' => 'たとえば、オープンシーン。',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'ブックマーク ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'ブックマーク ${n}',
 			'videoControls.bookmarkNameRequired' => 'このブックマークの名前を入力します。',
 			'videoControls.deleteBookmark' => 'ブックマーク削除',
 			'videoControls.bookmarkLimitReached' => 'この項目にはすでに100本のブックマークがあります。',
@@ -6942,9 +6957,9 @@ extension on TranslationsJa {
 			'libraries.content' => 'ライブラリコンテンツ',
 			'libraries.selectLibrary' => 'ライブラリを選択',
 			'libraries.filtersWithCount' => ({required Object count}) => 'フィルター (${count})',
-			'libraries.noRecommendations' => 'おすすめがありません',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'おすすめがありません',
 			'libraries.noCollections' => 'このライブラリにコレクションがありません',
 			'libraries.noFoldersFound' => 'フォルダが見つかりません',
 			'libraries.folders' => 'フォルダ',
@@ -7237,6 +7252,8 @@ extension on TranslationsJa {
 			'explore.detail.watchOn' => '視聴先',
 			'explore.detail.watchTrailer' => '予告編を見る',
 			'explore.detail.openOn' => ({required Object site}) => '${site}で開く',
+			'explore.detail.trailerUnavailable' => 'この端末では予告編を開けませんでした',
+			'explore.detail.linkUnavailable' => 'この端末ではリンクを開けませんでした',
 			'explore.detail.crew' => 'スタッフ',
 			'explore.detail.ratings' => '評価',
 			'explore.detail.schedule' => '放送予定',
@@ -7454,11 +7471,11 @@ extension on TranslationsJa {
 			'watchTogether.copyCode' => 'コードをコピー',
 			'watchTogether.codeCopied' => 'ルームコードをコピーしました',
 			'watchTogether.shareInvite' => '招待を共有',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Plezyの「一緒に見る」ルームに参加しませんか？「一緒に見る」を開いて「ルームに参加」を選び、${code}を入力してください。',
 			'watchTogether.openSessionControls' => '「一緒に見る」セッションのコントロールを開く',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => '再接続中…',
 			'watchTogether.reconnectingDescription' => '接続が切断されました。自動的にルームに再参加します。',
 			'watchTogether.connected' => '接続済み',
@@ -7968,11 +7985,11 @@ extension on TranslationsJa {
 			'metadataEdit.imageUrl' => '画像URL',
 			'metadataEdit.metadataUpdated' => 'メタデータを更新しました',
 			'metadataEdit.metadataUpdateFailed' => 'メタデータの更新に失敗しました',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'アートワークを更新しました',
 			'metadataEdit.artworkUpdateFailed' => 'アートワークの更新に失敗しました',
 			'metadataEdit.noArtworkAvailable' => 'アートワークがありません',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}、選択済み',
 			'metadataEdit.notSet' => '未設定',
@@ -8059,6 +8076,13 @@ extension on TranslationsJa {
 			'seerr.disconnectConfirmBody' => 'Pleazyng はこの Seerr インスタンスの情報を削除します。いつでも再接続できます。',
 			'seerr.request' => 'リクエスト',
 			'seerr.request4k' => '4K でリクエスト',
+			'seerr.requestSeasons' => '未配信のシーズンをリクエスト',
+			'seerr.notifyMe' => '配信開始時に通知',
+			'seerr.notifyMe4k' => '4Kで配信開始時に通知',
+			'seerr.notificationsOn' => '配信通知オン',
+			'seerr.notificationsEnabled' => '配信開始時にお知らせします',
+			'seerr.notificationsDisabled' => '配信通知をオフにしました',
+			'seerr.notificationFailed' => '配信通知を更新できませんでした',
 			'seerr.seasons' => 'シーズン',
 			'seerr.allSeasons' => '全シーズン',
 			'seerr.advancedOptions' => '詳細',
@@ -8475,6 +8499,8 @@ extension on TranslationsJa {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${count} 未サポートまたは不安全なプレイリストの入力。', other: '${count} 未サポートまたは不安全なプレイリストのエントリーを削除しました。', ), 
 			'universalMedia.playlistAddress' => 'Playlist アドレス',
 			'universalMedia.playlistAddressHelp' => 'ウェブアドレスから M3U、M3U8 または PLS プレーリストを開きます。',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'プレイリストファイルを選択',
 			'universalMedia.openPlaylist' => 'オープンプレイリスト',
 			'universalMedia.playlistFormatsHelp' => 'プレイリストには最大1000項目と2MBが含まれます HLSはストリームとして開きますので、プレイヤーは品質を選択できます。',
@@ -8485,8 +8511,6 @@ extension on TranslationsJa {
 			'universalMedia.noFavorites' => 'まだお気に入りのストリームを保存していません お気に入りはこのプロフィールに留まります。',
 			'universalMedia.removeFavorite' => 'お気に入りの流れを削除する',
 			'universalMedia.filesHelp' => 'オーディオ、ビデオ、またはISOファイルを選択して一時的なスイッチを選択します. ファイルやURLは図書館の歴史に追加されません。',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'ファイルを選択',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
 			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
@@ -8989,6 +9013,8 @@ extension on TranslationsJa {
 			'sourceSetup.optionalUsername' => 'アカウントのユーザー名（任意）',
 			'sourceSetup.optionalPassword' => 'アカウントのパスワード（任意）',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com から API キーを取得してください。検索では動画のタイトルと利用可能な IMDb/TMDB ID を送信しますが、動画ファイルは一切送信しません。キーと任意のアカウント認証情報は、このソースとともに暗号化して保存されます。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => '動画のオンラインメタデータを自動取得',
 			'sourceSetup.metadataPrivacy' => '送信するのはファイル名のタイトル・年・エピソード番号、または NFO ID のみです。メディアや認証情報は一切送信しません。NFO の項目が常に優先されます。',
 			'sourceSetup.nfsEncryptionFailure' => '暗号化された NFS では、NAS の両サービスが RFC 9289 と TLS 1.3 に対応しているか、証明書の名前とエクスポートの UID/GID が正しいかを確認してください。Pleazyng が暗号化なしでこの接続を再試行することはありません。',
@@ -8999,8 +9025,6 @@ extension on TranslationsJa {
 			'sourceSetup.metadataNoMatches' => 'オンラインで一致するタイトルが見つかりませんでした。別のタイトルをお試しください。',
 			'sourceSetup.metadataSearch' => 'オンラインメタデータを検索',
 			'sourceSetup.metadataLoading' => '映画や番組の情報をオンラインで検索中…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt のオンラインメタデータ',
 			'sourceSetup.metadataNoAutomaticMatch' => 'タイトルの自動照合で一致が見つかりませんでした。タイトルを検索して、一致する作品を選択してください。',
 			'sourceSetup.metadataFailed' => 'オンラインメタデータを読み込めませんでした。再生とローカルの情報は引き続き利用できます。',
@@ -9410,6 +9434,10 @@ extension on TranslationsJa {
 			'musicTools.preamp' => 'プリアンプ',
 			'musicTools.ratingPending' => 'この端末に保存済み・同期待ち',
 			'musicTools.lyricsOffset' => '歌詞のタイミング調整',
+			'musicTools.anniversaries' => 'アルバムの発売記念日',
+			'musicTools.outputPreset' => 'この出力のEQ',
+			'musicTools.outputPresetHint' => 'この出力が選択されたときに、このEQを自動的に使用します。',
+			'musicTools.eqApproximation' => 'ヘッドホンのプロファイルは10バンドEQ向けに近似されています。',
 			_ => null,
 		};
 	}

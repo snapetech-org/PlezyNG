@@ -718,6 +718,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => '播放速度';
 	@override String get scopeShaderPreset => '着色器预设';
 	@override String get scopeAspectRatio => '宽高比';
+	@override String get scopeZoom => '缩放';
 	@override String get scopeSyncOffsets => '音频和字幕同步';
 	@override String get playerScopeOff => '不保存';
 	@override String get playerScopeGlobal => '所有位置';
@@ -2734,6 +2735,13 @@ class Translations$seerr$zh extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng 将忘记此 Seerr 实例。可随时重新连接。';
 	@override String get request => '请求';
 	@override String get request4k => '请求 4K';
+	@override String get requestSeasons => '请求缺少的季';
+	@override String get notifyMe => '有资源时通知我';
+	@override String get notifyMe4k => '有 4K 资源时通知我';
+	@override String get notificationsOn => '可用性提醒已开启';
+	@override String get notificationsEnabled => '有资源时我们会通知你';
+	@override String get notificationsDisabled => '可用性提醒已关闭';
+	@override String get notificationFailed => '无法更新可用性提醒';
 	@override String get seasons => '季';
 	@override String get allSeasons => '全部季';
 	@override String get advancedOptions => '高级';
@@ -4288,6 +4296,10 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	@override String get preamp => '前置放大';
 	@override String get ratingPending => '已保存在此设备；等待同步';
 	@override String get lyricsOffset => '歌词时间偏移';
+	@override String get anniversaries => '专辑发行纪念日';
+	@override String get outputPreset => '此输出的均衡器';
+	@override String get outputPresetHint => '选择此输出时自动使用此均衡器。';
+	@override String get eqApproximation => '耳机配置已近似转换为十段均衡器设置。';
 }
 
 // Path: appIcon.names
@@ -5030,6 +5042,8 @@ class Translations$explore$detail$zh extends Translations$explore$detail$en {
 	@override String get watchOn => '观看平台';
 	@override String get watchTrailer => '观看预告片';
 	@override String openOn({required Object site}) => '在 ${site} 打开';
+	@override String get trailerUnavailable => '无法在此设备上打开预告片';
+	@override String get linkUnavailable => '无法在此设备上打开链接';
 	@override String get crew => '演职人员';
 	@override String get ratings => '评分';
 	@override String get schedule => '播出时间';
@@ -5985,6 +5999,7 @@ extension on TranslationsZh {
 			'settings.scopePlaybackSpeed' => '播放速度',
 			'settings.scopeShaderPreset' => '着色器预设',
 			'settings.scopeAspectRatio' => '宽高比',
+			'settings.scopeZoom' => '缩放',
 			'settings.scopeSyncOffsets' => '音频和字幕同步',
 			'settings.playerScopeOff' => '不保存',
 			'settings.playerScopeGlobal' => '所有位置',
@@ -6428,9 +6443,9 @@ extension on TranslationsZh {
 			'videoControls.addBookmark' => '添加 Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark 名称',
 			'videoControls.bookmarkNameHint' => '例如,开幕式',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => '图标 ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => '图标 ${n}',
 			'videoControls.bookmarkNameRequired' => '请输入本书标志的名称。',
 			'videoControls.deleteBookmark' => '删除 Bookmark',
 			'videoControls.bookmarkLimitReached' => '这个项目已经有100个字符。',
@@ -6942,9 +6957,9 @@ extension on TranslationsZh {
 			'libraries.content' => '媒体库内容',
 			'libraries.selectLibrary' => '选择媒体库',
 			'libraries.filtersWithCount' => ({required Object count}) => '筛选器（${count}）',
-			'libraries.noRecommendations' => '暂无推荐',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => '暂无推荐',
 			'libraries.noCollections' => '此媒体库中没有合集',
 			'libraries.noFoldersFound' => '未找到文件夹',
 			'libraries.folders' => '文件夹',
@@ -7237,6 +7252,8 @@ extension on TranslationsZh {
 			'explore.detail.watchOn' => '观看平台',
 			'explore.detail.watchTrailer' => '观看预告片',
 			'explore.detail.openOn' => ({required Object site}) => '在 ${site} 打开',
+			'explore.detail.trailerUnavailable' => '无法在此设备上打开预告片',
+			'explore.detail.linkUnavailable' => '无法在此设备上打开链接',
 			'explore.detail.crew' => '演职人员',
 			'explore.detail.ratings' => '评分',
 			'explore.detail.schedule' => '播出时间',
@@ -7454,11 +7471,11 @@ extension on TranslationsZh {
 			'watchTogether.copyCode' => '复制代码',
 			'watchTogether.codeCopied' => '房间代码已复制',
 			'watchTogether.shareInvite' => '分享邀请',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
 			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
 			'watchTogether.openSessionControls' => '打开“一起看”会话控制',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => '正在重新连接…',
 			'watchTogether.reconnectingDescription' => '连接已中断。你将自动重新加入房间。',
 			'watchTogether.connected' => '已连接',
@@ -7968,11 +7985,11 @@ extension on TranslationsZh {
 			'metadataEdit.imageUrl' => '图片 URL',
 			'metadataEdit.metadataUpdated' => '元数据已更新',
 			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => '封面图片已更新',
 			'metadataEdit.artworkUpdateFailed' => '封面图片更新失败',
 			'metadataEdit.noArtworkAvailable' => '没有可用的封面图片',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => '封面图片选项 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '封面图片选项 ${index}，已选择',
 			'metadataEdit.notSet' => '未设置',
@@ -8059,6 +8076,13 @@ extension on TranslationsZh {
 			'seerr.disconnectConfirmBody' => 'Pleazyng 将忘记此 Seerr 实例。可随时重新连接。',
 			'seerr.request' => '请求',
 			'seerr.request4k' => '请求 4K',
+			'seerr.requestSeasons' => '请求缺少的季',
+			'seerr.notifyMe' => '有资源时通知我',
+			'seerr.notifyMe4k' => '有 4K 资源时通知我',
+			'seerr.notificationsOn' => '可用性提醒已开启',
+			'seerr.notificationsEnabled' => '有资源时我们会通知你',
+			'seerr.notificationsDisabled' => '可用性提醒已关闭',
+			'seerr.notificationFailed' => '无法更新可用性提醒',
 			'seerr.seasons' => '季',
 			'seerr.allSeasons' => '全部季',
 			'seerr.advancedOptions' => '高级',
@@ -8475,6 +8499,8 @@ extension on TranslationsZh {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支持或不安全的播放列表输入。', other: '${count} 不受支持或不安全的播放列表输入。', ), 
 			'universalMedia.playlistAddress' => 'Playlist 地址',
 			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會保存播放名單。',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => '选择 Playlist 文件',
 			'universalMedia.openPlaylist' => '开放播放列表',
 			'universalMedia.playlistFormatsHelp' => '一张播放列表可以包含最多1000个项目和2MB的HLS显示为流,所以玩家可以选择质量。',
@@ -8485,8 +8511,6 @@ extension on TranslationsZh {
 			'universalMedia.noFavorites' => '尚未存储流喜爱. 喜爱留在此个人资料中。',
 			'universalMedia.removeFavorite' => '删除流喜爱',
 			'universalMedia.filesHelp' => '选择音频、视频或ISO文件,以便进行临时记录. 文件和URL不添加到图书馆历史。',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => '选择文件',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 选择的文件', other: '${count} 已选择的文件', ), 
 			'universalMedia.wifiTransfer' => '通过 Wi-Fi 发送文件',
@@ -8989,6 +9013,8 @@ extension on TranslationsZh {
 			'sourceSetup.optionalUsername' => '账户用户名（可选）',
 			'sourceSetup.optionalPassword' => '账户密码（可选）',
 			'sourceSetup.subtitlePrivacy' => '请从 opensubtitles.com 获取 API 密钥。搜索会发送视频标题和可用的 IMDb/TMDB ID，绝不会发送视频文件。密钥和可选的账户凭据会随此来源加密保存。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => '自动获取在线视频元数据',
 			'sourceSetup.metadataPrivacy' => '仅发送文件名中的标题、年份和集数，或 NFO ID，绝不发送媒体文件或凭据。NFO 字段始终优先。',
 			'sourceSetup.nfsEncryptionFailure' => '对于加密 NFS，请检查 NAS 的两项服务是否支持 RFC 9289 和 TLS 1.3，并核对证书名称以及导出 UID/GID。Pleazyng 不会在不加密的情况下重试此连接。',
@@ -8999,8 +9025,6 @@ extension on TranslationsZh {
 			'sourceSetup.metadataNoMatches' => '未找到在线标题匹配结果。请尝试其他标题。',
 			'sourceSetup.metadataSearch' => '搜索在线元数据',
 			'sourceSetup.metadataLoading' => '正在查询在线电影和剧集信息…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => '来自 Trakt 的在线元数据',
 			'sourceSetup.metadataNoAutomaticMatch' => '未找到自动匹配的标题。请搜索标题并选择匹配结果。',
 			'sourceSetup.metadataFailed' => '无法加载在线元数据。仍可播放媒体和查看本地信息。',
@@ -9410,6 +9434,10 @@ extension on TranslationsZh {
 			'musicTools.preamp' => '前置放大',
 			'musicTools.ratingPending' => '已保存在此设备；等待同步',
 			'musicTools.lyricsOffset' => '歌词时间偏移',
+			'musicTools.anniversaries' => '专辑发行纪念日',
+			'musicTools.outputPreset' => '此输出的均衡器',
+			'musicTools.outputPresetHint' => '选择此输出时自动使用此均衡器。',
+			'musicTools.eqApproximation' => '耳机配置已近似转换为十段均衡器设置。',
 			_ => null,
 		};
 	}

@@ -633,6 +633,7 @@
     "scopePlaybackSpeed": "Velocidad de reproducción",
     "scopeShaderPreset": "Preajuste de sombreado",
     "scopeAspectRatio": "Relación de aspecto",
+    "scopeZoom": "Zoom",
     "scopeSyncOffsets": "Sincronización de audio y subtítulos",
     "playerScopeOff": "No guardar",
     "playerScopeGlobal": "En todas partes",
@@ -2252,6 +2253,8 @@
       "watchOn": "Ver en",
       "watchTrailer": "Ver tráiler",
       "openOn": "Abrir en ${site}",
+      "trailerUnavailable": "No se pudo abrir el tráiler en este dispositivo",
+      "linkUnavailable": "No se pudo abrir el enlace en este dispositivo",
       "crew": "Equipo",
       "ratings": "Valoraciones",
       "schedule": "Programación",
@@ -3282,6 +3285,13 @@
     "disconnectConfirmBody": "Pleazyng olvidará esta instancia de Seerr. Reconecta cuando quieras.",
     "request": "Solicitar",
     "request4k": "Solicitar en 4K",
+    "requestSeasons": "Solicitar las temporadas que faltan",
+    "notifyMe": "Avísame cuando esté disponible",
+    "notifyMe4k": "Avísame cuando esté disponible en 4K",
+    "notificationsOn": "Alerta de disponibilidad activada",
+    "notificationsEnabled": "Te avisaremos cuando esté disponible",
+    "notificationsDisabled": "Alerta de disponibilidad desactivada",
+    "notificationFailed": "No se pudo actualizar la alerta de disponibilidad",
     "seasons": "Temporadas",
     "allSeasons": "Todas las temporadas",
     "advancedOptions": "Avanzado",
@@ -5525,6 +5535,10 @@
     "exclusiveOutput": "Salida de audio exclusiva",
     "preamp": "Preamplificación",
     "ratingPending": "Guardado en este dispositivo; pendiente de sincronización",
-    "lyricsOffset": "Desfase de la letra"
+    "lyricsOffset": "Desfase de la letra",
+    "anniversaries": "Aniversarios de álbumes",
+    "outputPreset": "Ecualizador de esta salida",
+    "outputPresetHint": "Usar este ecualizador automáticamente al seleccionar esta salida.",
+    "eqApproximation": "Los perfiles de auriculares se aproximan al ecualizador de diez bandas."
   }
 }

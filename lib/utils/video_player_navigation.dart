@@ -153,6 +153,9 @@ class VideoPlayerActiveRouteGuard {
 
   String? get activeGlobalKey => _identity?.globalKey;
 
+  /// The state that owns the active player route, if any.
+  Object? get owner => _owner;
+
   VideoPlayerLaunchIdentity? identityFor(Object owner) => identical(_owner, owner) ? _identity : null;
 
   bool blocks(VideoPlayerLaunchIdentity identity) => _identity == identity;
@@ -339,6 +342,7 @@ Future<bool?> navigateToVideoPlayer(
   bool strictMediaSelection = false,
   bool explicitStartPolicy = false,
   PlaybackLaunchObserver? launchObserver,
+  VoidCallback? onLaunched,
   bool skipCinemaExtras = false,
   bool skipPreroll = false,
   bool isPreroll = false,
@@ -603,6 +607,7 @@ Future<bool?> navigateToVideoPlayer(
 
     pushFuture = route.push(navigator, replaceCurrent: usePushReplacement);
     launchObserver?.mark('opening');
+    onLaunched?.call();
   } finally {
     if (markedInFlight) _inFlightLaunches.remove(launchIdentity);
   }

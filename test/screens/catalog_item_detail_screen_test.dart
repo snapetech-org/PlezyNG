@@ -1,3 +1,6 @@
+import 'package:plezy/media/server_capabilities.dart';
+import 'package:plezy/media/media_server_client.dart';
+import 'package:plezy/media/ids.dart';
 import '../utils/display_text_finder.dart';
 
 import 'dart:async';
@@ -35,6 +38,7 @@ import 'package:plezy/services/seerr/seerr_auth_service.dart';
 import 'package:plezy/services/seerr/seerr_constants.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
+import 'package:plezy/utils/external_url.dart';
 import 'package:plezy/utils/platform_detector.dart';
 import 'package:plezy/widgets/overlay_sheet.dart';
 import 'package:plezy/widgets/hub_section.dart';
@@ -175,6 +179,7 @@ class _FakeCatalogSourcesProvider extends CatalogSourcesProvider {
 /// grant or revocation through the provider's own refresh path.
 Future<SeerrAccountProvider> _seerrAccount(int Function() permissions) async {
   final mock = MockClient((request) async {
+    if (request.url.path == '/api/v1/request/intent/state') return http.Response('Legacy instance', 404);
     if (request.url.path != '/api/v1/auth/me') return http.Response('unexpected Seerr request', 500);
     return http.Response(
       jsonEncode({'id': 1, 'displayName': 'Alice', 'permissions': permissions()}),
@@ -204,7 +209,7 @@ Future<SeerrAccountProvider> _seerrAccount(int Function() permissions) async {
 /// A real [SeerrCatalogSource]: the Request gate reads the session's
 /// permission bitmask through [SeerrCatalogSource.canRequest]. None of these
 /// tests open the request sheet, so no Seerr HTTP is expected.
-SeerrCatalogSource _seerrSource({int permissions = SeerrPermission.request}) {
+SeerrCatalogSource _seerrSource({int permissions = SeerrPermission.request, Map<String, Object?>? intent}) {
   final client = SeerrClient(
     SeerrSession(
       baseUrl: 'https://seerr.example.com',
@@ -219,7 +224,18 @@ SeerrCatalogSource _seerrSource({int permissions = SeerrPermission.request}) {
       createdAt: 0,
     ),
     onSessionInvalidated: () {},
-    httpClient: MockClient((request) async => http.Response('unexpected Seerr request', 500)),
+    httpClient: MockClient((request) async {
+      if (request.url.path == '/api/v1/request/intent/state' && intent != null) {
+        return http.Response(
+          jsonEncode({
+            'items': [intent],
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      return http.Response('Not found', 404);
+    }),
   );
   final source = SeerrCatalogSource(client);
   addTearDown(() {
@@ -309,10 +325,37 @@ const _item = CatalogItem(
   ids: CatalogItemIds(tmdb: 1),
 );
 
+/// Answers [fetchExtras] for `server-1`, enough for the library trailer lookup.
+class _ExtrasClient implements MediaServerClient {
+  _ExtrasClient(this.extras);
+
+  final List<MediaItem> extras;
+  final fetchedIds = <String>[];
+
+  @override
+  ServerId get serverId => ServerId('server-1');
+
+  @override
+  ServerCapabilities get capabilities => ServerCapabilities.plex;
+
+  @override
+  Future<List<MediaItem>> fetchExtras(String id) async {
+    fetchedIds.add(id);
+    return extras;
+  }
+
+  @override
+  void close() {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 Future<void> _pumpDetail(
   WidgetTester tester,
   _FakeCatalogSource source, {
   List<MediaItem> matches = const [],
+  List<MediaServerClient> clients = const [],
   bool pushedRoute = false,
   CatalogItem item = _item,
   CatalogLibraryMatcher Function(MultiServerProvider multiServer)? matcherBuilder,
@@ -323,6 +366,9 @@ Future<void> _pumpDetail(
   final sources = _FakeCatalogSourcesProvider(source, seerr: seerr);
   if (account != null) sources.followAccount(account);
   final serverManager = MultiServerManager();
+  for (final client in clients) {
+    serverManager.debugRegisterClientForTesting(client);
+  }
   final multiServer = testMultiServerProvider(serverManager);
   final matcher = matcherBuilder?.call(multiServer) ?? _FakeCatalogLibraryMatcher(multiServer, matches);
   addTearDown(sources.dispose);
@@ -494,12 +540,12 @@ void main() {
       final source = _FakeCatalogSource(detailCompleter: detailCompleter);
 
       await _pumpDetail(tester, source, item: _bareRow, seerr: _seerrSource());
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
 
       detailCompleter.complete(const CatalogDetail(item: _enrichedRow));
       await tester.pumpAndSettle();
 
-      expect(find.byTooltip(t.seerr.request), findsOneWidget);
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
     });
 
     testWidgets('appears immediately when the row item already carries a tmdb id', (tester) async {
@@ -507,7 +553,38 @@ void main() {
 
       await _pumpDetail(tester, source, seerr: _seerrSource());
 
-      expect(find.byTooltip(t.seerr.request), findsOneWidget);
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
+    });
+
+    testWidgets('vanilla Seerr offers a 4K request when that is the only account grant', (tester) async {
+      await _pumpDetail(tester, _FakeCatalogSource(), seerr: _seerrSource(permissions: SeerrPermission.request4kMovie));
+
+      expect(find.byTooltip(t.seerr.request4kHint), findsOneWidget);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
+    });
+
+    testWidgets('request and existing alert have separate, descriptive controls', (tester) async {
+      final intent = <String, Object?>{
+        'mediaType': 'movie',
+        'tmdbId': 1,
+        'status': 2,
+        'status4k': 5,
+        'standard': {'own': null, 'other': null},
+        'fourK': {'own': null, 'other': null},
+        'subscribed': true,
+        'subscriptionScope': {'is4k': true, 'seasonNumber': null},
+        'canRequest': true,
+        'canRequest4k': false,
+        'quickRequest': false,
+        'seasons': <Object>[],
+      };
+      await _pumpDetail(tester, _FakeCatalogSource(), seerr: _seerrSource(intent: intent));
+
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
+      expect(find.byTooltip(t.seerr.turnOffAlert), findsOneWidget);
+      expect(find.text(t.seerr.notificationsOn), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 50));
     });
 
     testWidgets('stays hidden without the request permission', (tester) async {
@@ -515,7 +592,7 @@ void main() {
 
       await _pumpDetail(tester, source, seerr: _seerrSource(permissions: 0));
 
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
     });
 
     testWidgets('follows a permission grant and revocation the account adopts while open', (tester) async {
@@ -527,29 +604,29 @@ void main() {
       final account = (await tester.runAsync(() => _seerrAccount(() => permissions)))!;
 
       await _pumpDetail(tester, _FakeCatalogSource(), account: account);
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
 
       permissions = SeerrPermission.request;
       await tester.runAsync(account.refreshUser);
-      await tester.pump();
-      expect(find.byTooltip(t.seerr.request), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
 
       permissions = 0;
       await tester.runAsync(account.refreshUser);
-      await tester.pump();
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      await tester.pumpAndSettle();
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
     });
 
     testWidgets('disappears when the account disconnects while open', (tester) async {
       final account = (await tester.runAsync(() => _seerrAccount(() => SeerrPermission.request)))!;
 
       await _pumpDetail(tester, _FakeCatalogSource(), account: account);
-      expect(find.byTooltip(t.seerr.request), findsOneWidget);
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
 
       await tester.runAsync(account.disconnect);
       await tester.pump();
 
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
     });
   });
 
@@ -1050,6 +1127,181 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byTooltip(t.explore.detail.watchTrailer), findsOneWidget);
+  });
+
+  testWidgets('says so when an outbound link cannot be opened', (tester) async {
+    const urlLauncherChannel = MethodChannel('plugins.flutter.io/url_launcher');
+    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    final launched = <String>[];
+    messenger.setMockMethodCallHandler(urlLauncherChannel, (call) async {
+      if (call.method != 'launch') return null;
+      launched.add((call.arguments as Map)['url'] as String);
+      return false;
+    });
+    addTearDown(() => messenger.setMockMethodCallHandler(urlLauncherChannel, null));
+    const item = CatalogItem(
+      source: CatalogSourceId.trakt,
+      kind: MediaKind.movie,
+      title: 'Linked Movie',
+      ids: CatalogItemIds(tmdb: 41),
+      links: [CatalogLink(label: 'StreamCo', url: 'https://example.com/watch', isStreaming: true)],
+    );
+
+    await _pumpDetail(
+      tester,
+      _FakeCatalogSource(detail: const CatalogDetail(item: item)),
+      item: item,
+    );
+    await tester.tap(find.text('Open on StreamCo'));
+    await tester.pumpAndSettle();
+
+    expect(launched, ['https://example.com/watch']);
+    expect(find.text(t.explore.detail.linkUnavailable), findsOneWidget);
+  });
+
+  testWidgets('says so when the trailer cannot be opened', (tester) async {
+    const urlLauncherChannel = MethodChannel('plugins.flutter.io/url_launcher');
+    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(urlLauncherChannel, (call) async => call.method == 'launch' ? false : null);
+    addTearDown(() => messenger.setMockMethodCallHandler(urlLauncherChannel, null));
+    const item = CatalogItem(
+      source: CatalogSourceId.trakt,
+      kind: MediaKind.movie,
+      title: 'Trailer Movie',
+      ids: CatalogItemIds(tmdb: 51),
+      trailerUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    );
+
+    await _pumpDetail(
+      tester,
+      _FakeCatalogSource(detail: const CatalogDetail(item: item)),
+      item: item,
+    );
+    await tester.tap(find.byTooltip(t.explore.detail.watchTrailer));
+    await tester.pumpAndSettle();
+
+    expect(find.text(t.explore.detail.trailerUnavailable), findsOneWidget);
+  });
+
+  group('tvOS runner', () {
+    const handoffChannel = MethodChannel('com.plezy/external_player');
+    const trailerItem = CatalogItem(
+      source: CatalogSourceId.trakt,
+      kind: MediaKind.movie,
+      title: 'Trailer Movie',
+      ids: CatalogItemIds(tmdb: 51),
+      trailerUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    );
+    late bool youTubeInstalled;
+    late bool openSucceeds;
+    late List<String> opened;
+
+    setUp(() {
+      debugTvosRunnerOverride = true;
+      youTubeInstalled = true;
+      openSucceeds = true;
+      opened = [];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(handoffChannel, (
+        call,
+      ) async {
+        final url = (call.arguments as Map)['url'] as String;
+        switch (call.method) {
+          case 'canOpenUrl':
+            return url == 'youtube://' && youTubeInstalled;
+          case 'openUrl':
+            opened.add(url);
+            return openSucceeds;
+        }
+        return null;
+      });
+    });
+
+    tearDown(() {
+      debugTvosRunnerOverride = null;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(handoffChannel, null);
+    });
+
+    testWidgets('hides outbound links, which have no browser to open in', (tester) async {
+      const item = CatalogItem(
+        source: CatalogSourceId.trakt,
+        kind: MediaKind.movie,
+        title: 'Linked Movie',
+        ids: CatalogItemIds(tmdb: 41),
+        links: [
+          CatalogLink(label: 'StreamCo', url: 'https://example.com/watch', isStreaming: true),
+          CatalogLink(label: 'Official Site', url: 'https://example.com'),
+        ],
+      );
+
+      await _pumpDetail(
+        tester,
+        _FakeCatalogSource(detail: const CatalogDetail(item: item)),
+        item: item,
+      );
+
+      expect(find.text(t.explore.detail.watchOn), findsNothing);
+      expect(find.text(t.explore.detail.links), findsNothing);
+      expect(find.text('Open on StreamCo'), findsNothing);
+    });
+
+    testWidgets('hands a YouTube trailer to the YouTube app', (tester) async {
+      await _pumpDetail(
+        tester,
+        _FakeCatalogSource(detail: const CatalogDetail(item: trailerItem)),
+        item: trailerItem,
+      );
+      await tester.tap(find.byTooltip(t.explore.detail.watchTrailer));
+      await tester.pumpAndSettle();
+
+      expect(opened, ['youtube://www.youtube.com/watch?v=dQw4w9WgXcQ']);
+      expect(find.text(t.explore.detail.trailerUnavailable), findsNothing);
+    });
+
+    testWidgets('says so when the YouTube app does not open the trailer', (tester) async {
+      openSucceeds = false;
+
+      await _pumpDetail(
+        tester,
+        _FakeCatalogSource(detail: const CatalogDetail(item: trailerItem)),
+        item: trailerItem,
+      );
+      await tester.tap(find.byTooltip(t.explore.detail.watchTrailer));
+      await tester.pumpAndSettle();
+
+      expect(find.text(t.explore.detail.trailerUnavailable), findsOneWidget);
+    });
+
+    testWidgets('hides the trailer without the YouTube app or a library trailer', (tester) async {
+      youTubeInstalled = false;
+
+      await _pumpDetail(
+        tester,
+        _FakeCatalogSource(detail: const CatalogDetail(item: trailerItem)),
+        item: trailerItem,
+      );
+
+      expect(find.byTooltip(t.explore.detail.watchTrailer), findsNothing);
+    });
+
+    testWidgets("offers a library copy's own trailer without the YouTube app", (tester) async {
+      youTubeInstalled = false;
+      final client = _ExtrasClient([
+        testMediaItem(id: 'featurette-1', serverId: 'server-1', raw: const {'ExtraType': 'Featurette'}),
+        testMediaItem(id: 'trailer-1', serverId: 'server-1', raw: const {'ExtraType': 'Trailer'}),
+      ]);
+
+      await _pumpDetail(
+        tester,
+        _FakeCatalogSource(detail: const CatalogDetail(item: trailerItem)),
+        item: trailerItem,
+        matches: [_libraryCopy(id: 'copy-1', libraryTitle: 'Movies')],
+        clients: [client],
+      );
+
+      expect(client.fetchedIds, ['copy-1']);
+      expect(find.byTooltip(t.explore.detail.watchTrailer), findsOneWidget);
+      expect(opened, isEmpty);
+    });
   });
 
   testWidgets('background prose renders as its own section', (tester) async {

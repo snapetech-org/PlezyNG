@@ -1879,6 +1879,9 @@ class Translations$settings$en {
 	/// en: 'Aspect Ratio'
 	String get scopeAspectRatio => 'Aspect Ratio';
 
+	/// en: 'Zoom'
+	String get scopeZoom => 'Zoom';
+
 	/// en: 'Audio & Subtitle Sync'
 	String get scopeSyncOffsets => 'Audio & Subtitle Sync';
 
@@ -7839,8 +7842,62 @@ class Translations$seerr$en {
 	/// en: 'Request in 4K'
 	String get request4k => 'Request in 4K';
 
+	/// en: 'Request missing seasons'
+	String get requestSeasons => 'Request missing seasons';
+
+	/// en: 'Choose request options in Seerr'
+	String get requestHint => 'Choose request options in Seerr';
+
+	/// en: 'Request in Seerr now using default settings'
+	String get quickRequestHint => 'Request in Seerr now using default settings';
+
+	/// en: 'Choose seasons to request in Seerr'
+	String get chooseSeasonsHint => 'Choose seasons to request in Seerr';
+
+	/// en: 'Choose a 4K request in Seerr'
+	String get request4kHint => 'Choose a 4K request in Seerr';
+
+	/// en: 'This account can request the 4K version only.'
+	String get only4kAvailable => 'This account can request the 4K version only.';
+
+	/// en: 'Open the card menu for Seerr request options'
+	String get cardActionHint => 'Open the card menu for Seerr request options';
+
+	/// en: 'Request in progress'
+	String get requestInProgress => 'Request in progress';
+
+	/// en: 'Notify me when available'
+	String get notifyMe => 'Notify me when available';
+
+	/// en: 'Notify me when 4K is available'
+	String get notifyMe4k => 'Notify me when 4K is available';
+
+	/// en: 'Availability alert on'
+	String get notificationsOn => 'Availability alert on';
+
+	/// en: 'Turn off availability alert'
+	String get turnOffAlert => 'Turn off availability alert';
+
+	/// en: 'We'll notify you when it's available'
+	String get notificationsEnabled => 'We\'ll notify you when it\'s available';
+
+	/// en: 'We'll notify you when the 4K version is available'
+	String get notificationsEnabled4k => 'We\'ll notify you when the 4K version is available';
+
+	/// en: 'We'll notify you when season ${season} is available'
+	String notificationsEnabledSeason({required Object season}) => 'We\'ll notify you when season ${season} is available';
+
+	/// en: 'Availability alert turned off'
+	String get notificationsDisabled => 'Availability alert turned off';
+
+	/// en: 'Couldn't update the availability alert'
+	String get notificationFailed => 'Couldn\'t update the availability alert';
+
 	/// en: 'Seasons'
 	String get seasons => 'Seasons';
+
+	/// en: 'Seerr handles approval and tracks your request.'
+	String get requestSheetHint => 'Seerr handles approval and tracks your request.';
 
 	/// en: 'All seasons'
 	String get allSeasons => 'All seasons';
@@ -10592,6 +10649,9 @@ class Translations$sourceSetup$en {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+
+	/// en: 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.'
+	String get bookorbitHelp => 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.';
 
 	/// en: 'Saved server certificate'
 	String get savedCertificate => 'Saved server certificate';
@@ -14674,6 +14734,18 @@ class Translations$musicTools$en {
 
 	/// en: 'Lyrics timing offset'
 	String get lyricsOffset => 'Lyrics timing offset';
+
+	/// en: 'Album anniversaries'
+	String get anniversaries => 'Album anniversaries';
+
+	/// en: 'EQ for this output'
+	String get outputPreset => 'EQ for this output';
+
+	/// en: 'Automatically use this EQ when this output is selected.'
+	String get outputPresetHint => 'Automatically use this EQ when this output is selected.';
+
+	/// en: 'Headphone profiles are approximated for the ten-band EQ.'
+	String get eqApproximation => 'Headphone profiles are approximated for the ten-band EQ.';
 }
 
 // Path: appIcon.names
@@ -16460,6 +16532,12 @@ class Translations$explore$detail$en {
 	/// en: 'Open on ${site}'
 	String openOn({required Object site}) => 'Open on ${site}';
 
+	/// en: 'Couldn't open the trailer on this device'
+	String get trailerUnavailable => 'Couldn\'t open the trailer on this device';
+
+	/// en: 'Couldn't open this link on this device'
+	String get linkUnavailable => 'Couldn\'t open this link on this device';
+
 	/// en: 'Crew'
 	String get crew => 'Crew';
 
@@ -17876,6 +17954,7 @@ extension on Translations {
 			'settings.scopePlaybackSpeed' => 'Playback Speed',
 			'settings.scopeShaderPreset' => 'Shader Preset',
 			'settings.scopeAspectRatio' => 'Aspect Ratio',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle Sync',
 			'settings.playerScopeOff' => 'Don\'t save',
 			'settings.playerScopeGlobal' => 'Everywhere',
@@ -18292,9 +18371,9 @@ extension on Translations {
 			'videoControls.sleepTimerEndOfVideo' => 'End of current video',
 			'videoControls.sleepTimerStopAtHeader' => 'Stop at',
 			'videoControls.sleepTimerDurationHeader' => 'Timer',
-			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
 			'videoControls.stillWatching' => 'Still watching?',
 			'videoControls.pausingIn' => ({required Object seconds}) => 'Pausing in ${seconds}s',
 			'videoControls.continueWatching' => 'Continue',
@@ -18806,9 +18885,9 @@ extension on Translations {
 			'accountPreferences.subtitleAccessibilityOptions.onlySdhDescription' => 'Use SDH subtitles only; do not fall back to standard subtitles.',
 			'accountPreferences.subtitleAccessibilityOptions.onlyNonSdhDescription' => 'Use standard subtitles only; exclude SDH subtitles.',
 			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
-			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
 			_ => null,
 		} ?? switch (path) {
+			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferForced' => 'Prefer forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyForced' => 'Only forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForced' => 'Only non-forced subtitles',
@@ -19320,9 +19399,9 @@ extension on Translations {
 			'explore.creditRole.writer' => 'Writer',
 			'explore.creditRole.producer' => 'Producer',
 			'explore.creditRole.creator' => 'Creator',
-			'explore.creditRole.composer' => 'Composer',
 			_ => null,
 		} ?? switch (path) {
+			'explore.creditRole.composer' => 'Composer',
 			'explore.relation.prequel' => 'Prequel',
 			'explore.relation.sequel' => 'Sequel',
 			'explore.relation.sideStory' => 'Side story',
@@ -19353,6 +19432,8 @@ extension on Translations {
 			'explore.detail.watchOn' => 'Watch on',
 			'explore.detail.watchTrailer' => 'Watch trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Open on ${site}',
+			'explore.detail.trailerUnavailable' => 'Couldn\'t open the trailer on this device',
+			'explore.detail.linkUnavailable' => 'Couldn\'t open this link on this device',
 			'explore.detail.crew' => 'Crew',
 			'explore.detail.ratings' => 'Ratings',
 			'explore.detail.schedule' => 'Schedule',
@@ -19832,11 +19913,11 @@ extension on Translations {
 			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ), 
 			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ), 
 			'downloads.errorFileNotFound' => 'File not found (404)',
+			_ => null,
+		} ?? switch (path) {
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
 			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
-			_ => null,
-		} ?? switch (path) {
 			'downloads.convertingOnServer' => 'Converting on server…',
 			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			'downloads.errorHttpStatus' => ({required Object status}) => 'Download failed (HTTP ${status})',
@@ -20299,7 +20380,25 @@ extension on Translations {
 			'seerr.disconnectConfirmBody' => 'Pleazyng will forget this Seerr instance. Reconnect any time.',
 			'seerr.request' => 'Request',
 			'seerr.request4k' => 'Request in 4K',
+			'seerr.requestSeasons' => 'Request missing seasons',
+			'seerr.requestHint' => 'Choose request options in Seerr',
+			'seerr.quickRequestHint' => 'Request in Seerr now using default settings',
+			'seerr.chooseSeasonsHint' => 'Choose seasons to request in Seerr',
+			'seerr.request4kHint' => 'Choose a 4K request in Seerr',
+			'seerr.only4kAvailable' => 'This account can request the 4K version only.',
+			'seerr.cardActionHint' => 'Open the card menu for Seerr request options',
+			'seerr.requestInProgress' => 'Request in progress',
+			'seerr.notifyMe' => 'Notify me when available',
+			'seerr.notifyMe4k' => 'Notify me when 4K is available',
+			'seerr.notificationsOn' => 'Availability alert on',
+			'seerr.turnOffAlert' => 'Turn off availability alert',
+			'seerr.notificationsEnabled' => 'We\'ll notify you when it\'s available',
+			'seerr.notificationsEnabled4k' => 'We\'ll notify you when the 4K version is available',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'We\'ll notify you when season ${season} is available',
+			'seerr.notificationsDisabled' => 'Availability alert turned off',
+			'seerr.notificationFailed' => 'Couldn\'t update the availability alert',
 			'seerr.seasons' => 'Seasons',
+			'seerr.requestSheetHint' => 'Seerr handles approval and tracks your request.',
 			'seerr.allSeasons' => 'All seasons',
 			'seerr.advancedOptions' => 'Advanced',
 			'seerr.destinationServer' => 'Destination server',
@@ -20328,6 +20427,8 @@ extension on Translations {
 			'seerr.noPlexTokenForReauth' => 'No Plex token is available to sign in again',
 			'seerr.noStoredCredentials' => 'No stored credentials are available to sign in again',
 			'seerr.signInRejected' => 'Sign-in was rejected',
+			_ => null,
+		} ?? switch (path) {
 			'seerr.noSessionCookie' => 'Seerr did not issue a session cookie',
 			'seerr.freshCookieRejected' => 'Seerr rejected the new session cookie',
 			'seerr.noUserInformation' => 'Seerr did not return user information',
@@ -20349,8 +20450,6 @@ extension on Translations {
 			'services.scrobbleDescription' => 'Update your list when you finish an episode or movie.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Disconnect ${service}?',
 			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng will stop updating ${service}. Reconnect any time.',
-			_ => null,
-		} ?? switch (path) {
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -20842,6 +20941,8 @@ extension on Translations {
 			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
 			'universalMedia.captureSource' => 'Screen or camera',
 			'universalMedia.captureScreen' => 'Screen',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.captureAudioSource' => 'Audio input (optional)',
 			'universalMedia.captureAudioHelp' => 'Add audio from a microphone or available input. Device choices depend on FFmpeg and system permissions.',
 			'universalMedia.captureAudioNone' => 'No audio',
@@ -20863,8 +20964,6 @@ extension on Translations {
 			'universalMedia.captureMode' => 'Capture',
 			'universalMedia.shareMode' => 'Share',
 			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
 			'universalMedia.shareChooseFile' => 'Choose media file',
 			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
@@ -21202,6 +21301,7 @@ extension on Translations {
 			'audiobook.recoveryImportConfirm' => 'Merge this encrypted recovery file with current reading positions and notes? Existing history will be retained. Shared library and item IDs are not included; set matching IDs on every device before importing.',
 			'audiobook.recoveryExported' => 'Encrypted recovery file saved.',
 			'audiobook.recoveryImported' => 'Recovery data merged.',
+			'sourceSetup.bookorbitHelp' => 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.',
 			'sourceSetup.savedCertificate' => 'Saved server certificate',
 			'sourceSetup.projectGutenberg' => 'Project Gutenberg',
 			'sourceSetup.nfsEndpointInvalid' => 'Enter an NFS URL such as nfs://nas:2049/export.',
@@ -21355,6 +21455,8 @@ extension on Translations {
 			'games.noMatches' => 'No games match this search.',
 			'games.favorite' => 'Save favorite',
 			'games.unfavorite' => 'Remove favorite',
+			_ => null,
+		} ?? switch (path) {
 			'games.forget' => 'Forget computer',
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
@@ -21377,8 +21479,6 @@ extension on Translations {
 			'games.helpBody' => 'Your library brings Steam games from your account and paired computers together. Link Steam to browse your account catalog; pair a computer to play from it. These are separate connections. In Connections, find computers on your local network or add an address manually. Each computer must approve its first pairing.\n\nOpen game details to choose a computer, set a preferred route or see the last reported installation status. An installed game may still need its computer to be switched on and reachable. Achievements, news and friends information load only when you request them.\n\nStreaming settings apply to new sessions. Extra picture, sound and input features depend on the receiver, host and display. Away-from-home Steam play requires the optional internet service to be configured and enabled, or a reachable VPN address. Local discovery does not search the internet.\n\nOn supported phones and tablets, Use as controller sends your input while the game stays on the computer. Disconnecting a stream leaves the game running there.',
 			'games.cancel' => 'Cancel',
 			'games.saveShortcut' => 'Save shortcut',
-			_ => null,
-		} ?? switch (path) {
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
@@ -21869,6 +21969,8 @@ extension on Translations {
 			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
 			'subtitleAiUi.alignsTheWatchedPortionAgainstAnExistingSubtitle' => 'Aligns the watched portion against an existing subtitle',
 			'subtitleAiUi.repairCutsFromCapturedPlayback' => 'Repair cuts from captured playback',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.preservesCueTimingOutsideSpeechMatchedEvidence' => 'Preserves cue timing outside speech-matched evidence',
 			'subtitleAiUi.translateDetectedSpeechToEnglish' => 'Translate detected speech to English',
 			'subtitleAiUi.usedOnlyForGenerationSyncAlwaysTrans_5a1e6651' => 'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.',
@@ -21891,8 +21993,6 @@ extension on Translations {
 			'subtitleAiUi.showTheOriginalLineFollowedByItsTran_912a8201' => 'Show the original line followed by its translation in each cue',
 			'subtitleAiUi.translationGlossaryJSON' => 'Translation glossary (JSON)',
 			'subtitleAiUi.tARDISTARDISTheDoctorElDoctor' => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.saveGlossary' => 'Save glossary',
 			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
 			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
@@ -22383,6 +22483,8 @@ extension on Translations {
 			'karaokeUi.searchSongs' => 'Search songs',
 			'bonusExtras.title' => 'Extras',
 			'bonusExtras.seeAll' => 'See all extras',
+			_ => null,
+		} ?? switch (path) {
 			'bonusExtras.findMore' => 'Find more',
 			'bonusExtras.empty' => 'No verified extras found for this title.',
 			'bonusExtras.search' => 'Search extras or a topic',
@@ -22405,8 +22507,6 @@ extension on Translations {
 			'bonusExtras.unknownLanguage' => 'Language not specified',
 			'bonusExtras.spoilers' => 'Show extras that may contain spoilers',
 			'bonusExtras.spoilerHint' => 'Unwatched titles hide extras unless their spoiler status is verified.',
-			_ => null,
-		} ?? switch (path) {
 			'bonusExtras.externalEnabled' => 'Discover verified online extras',
 			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
 			'bonusExtras.serviceUrl' => 'Discovery server address',
@@ -22522,6 +22622,10 @@ extension on Translations {
 			'musicTools.preamp' => 'Preamp',
 			'musicTools.ratingPending' => 'Saved on this device; waiting to sync',
 			'musicTools.lyricsOffset' => 'Lyrics timing offset',
+			'musicTools.anniversaries' => 'Album anniversaries',
+			'musicTools.outputPreset' => 'EQ for this output',
+			'musicTools.outputPresetHint' => 'Automatically use this EQ when this output is selected.',
+			'musicTools.eqApproximation' => 'Headphone profiles are approximated for the ten-band EQ.',
 			_ => null,
 		};
 	}

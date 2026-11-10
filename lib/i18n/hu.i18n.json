@@ -631,6 +631,7 @@
     "scopePlaybackSpeed": "Lejátszási sebesség",
     "scopeShaderPreset": "Shader-előbeállítás",
     "scopeAspectRatio": "Képarány",
+    "scopeZoom": "Nagyítás",
     "scopeSyncOffsets": "Hang- és feliratszinkronizálás",
     "playerScopeOff": "Ne mentse",
     "playerScopeGlobal": "Mindenhol",
@@ -2250,6 +2251,8 @@
       "watchOn": "Megnézhető itt",
       "watchTrailer": "Előzetes megtekintése",
       "openOn": "Megnyitás itt: ${site}",
+      "trailerUnavailable": "Ezen az eszközön nem sikerült megnyitni az előzetest",
+      "linkUnavailable": "Ezen az eszközön nem sikerült megnyitni a hivatkozást",
       "crew": "Stáb",
       "ratings": "Értékelések",
       "schedule": "Műsorrend",
@@ -3279,6 +3282,13 @@
     "disconnectConfirmBody": "A Pleazyng elfelejti ezt a Seerr példányt. Bármikor újracsatlakozhatsz.",
     "request": "Igénylés",
     "request4k": "Igénylés 4K-ban",
+    "requestSeasons": "Hiányzó évadok igénylése",
+    "notifyMe": "Értesíts, amikor elérhető",
+    "notifyMe4k": "Értesíts, amikor 4K-ban elérhető",
+    "notificationsOn": "Elérhetőségi értesítés bekapcsolva",
+    "notificationsEnabled": "Értesítünk, amint elérhető",
+    "notificationsDisabled": "Elérhetőségi értesítés kikapcsolva",
+    "notificationFailed": "Nem sikerült frissíteni az elérhetőségi értesítést",
     "seasons": "Évadok",
     "allSeasons": "Minden évad",
     "advancedOptions": "Haladó",
@@ -5516,6 +5526,10 @@
     "exclusiveOutput": "Kizárólagos hangkimenet",
     "preamp": "Előerősítés",
     "ratingPending": "Ezen az eszközön mentve; szinkronizálásra vár",
-    "lyricsOffset": "Dalszöveg időeltolása"
+    "lyricsOffset": "Dalszöveg időeltolása",
+    "anniversaries": "Albumévfordulók",
+    "outputPreset": "EQ ehhez a kimenethez",
+    "outputPresetHint": "A kimenet kiválasztásakor automatikusan ezt az EQ-t használja.",
+    "eqApproximation": "A fejhallgatóprofilok a tízsávos EQ-hoz igazított közelítések."
   }
 }

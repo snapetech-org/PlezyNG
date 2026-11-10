@@ -720,6 +720,7 @@ class _Translations$settings$fa extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'سرعت پخش';
 	@override String get scopeShaderPreset => 'شیراز پیش بینی';
 	@override String get scopeAspectRatio => 'نسبت تصویر';
+	@override String get scopeZoom => 'بزرگ‌نمایی';
 	@override String get scopeSyncOffsets => 'Audio & Subtitle همگام سازی';
 	@override String get playerScopeOff => 'نجات ندهید';
 	@override String get playerScopeGlobal => 'همه جا';
@@ -2738,6 +2739,13 @@ class _Translations$seerr$fa extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng این مثال را فراموش خواهد کرد.در هر زمان دوباره اتصال.';
 	@override String get request => 'درخواست';
 	@override String get request4k => 'درخواست در 4K';
+	@override String get requestSeasons => 'درخواست فصل‌های جاافتاده';
+	@override String get notifyMe => 'هنگام در دسترس بودن به من اطلاع بده';
+	@override String get notifyMe4k => 'هنگام در دسترس بودن نسخهٔ 4K به من اطلاع بده';
+	@override String get notificationsOn => 'هشدار در دسترس شدن روشن است';
+	@override String get notificationsEnabled => 'وقتی در دسترس باشد به شما اطلاع می‌دهیم';
+	@override String get notificationsDisabled => 'هشدار در دسترس شدن خاموش شد';
+	@override String get notificationFailed => 'به‌روزرسانی هشدار در دسترس شدن انجام نشد';
 	@override String get seasons => 'فصل ها';
 	@override String get allSeasons => 'همه فصل ها';
 	@override String get advancedOptions => 'پیشرفته';
@@ -4293,6 +4301,10 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get preamp => 'پیش‌تقویت';
 	@override String get ratingPending => 'در این دستگاه ذخیره شد؛ در انتظار همگام‌سازی';
 	@override String get lyricsOffset => 'جابجایی زمان متن آهنگ';
+	@override String get anniversaries => 'سالگرد انتشار آلبوم‌ها';
+	@override String get outputPreset => 'اکولایزر این خروجی';
+	@override String get outputPresetHint => 'هنگام انتخاب این خروجی، این اکولایزر به‌طور خودکار اعمال شود.';
+	@override String get eqApproximation => 'پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند.';
 }
 
 // Path: appIcon.names
@@ -5035,6 +5047,8 @@ class _Translations$explore$detail$fa extends Translations$explore$detail$en {
 	@override String get watchOn => 'نگاهی به';
 	@override String get watchTrailer => 'تماشای تریلر';
 	@override String openOn({required Object site}) => 'باز شده در ${site}';
+	@override String get trailerUnavailable => 'باز کردن پیش‌نمایش در این دستگاه ممکن نشد';
+	@override String get linkUnavailable => 'باز کردن این پیوند در این دستگاه ممکن نشد';
 	@override String get crew => 'خدمه';
 	@override String get ratings => 'رتبه بندی';
 	@override String get schedule => 'برنامه زمانی';
@@ -5990,6 +6004,7 @@ extension on TranslationsFa {
 			'settings.scopePlaybackSpeed' => 'سرعت پخش',
 			'settings.scopeShaderPreset' => 'شیراز پیش بینی',
 			'settings.scopeAspectRatio' => 'نسبت تصویر',
+			'settings.scopeZoom' => 'بزرگ‌نمایی',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle همگام سازی',
 			'settings.playerScopeOff' => 'نجات ندهید',
 			'settings.playerScopeGlobal' => 'همه جا',
@@ -6433,9 +6448,9 @@ extension on TranslationsFa {
 			'videoControls.addBookmark' => 'اضافه کردن Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark نام',
 			'videoControls.bookmarkNameHint' => 'به عنوان مثال، صحنه باز',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'برچسب ها ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'برچسب ها ${n}',
 			'videoControls.bookmarkNameRequired' => 'نام این کتاب را وارد کنید.',
 			'videoControls.deleteBookmark' => 'حذف Bookmark',
 			'videoControls.bookmarkLimitReached' => 'این مقاله در حال حاضر دارای 100 دفترچه یادداشت است.',
@@ -6947,9 +6962,9 @@ extension on TranslationsFa {
 			'libraries.content' => 'محتوای کتابخانه',
 			'libraries.selectLibrary' => 'انتخاب کتابخانه',
 			'libraries.filtersWithCount' => ({required Object count}) => 'فیلترها (${count})',
-			'libraries.noRecommendations' => 'بدون توصیه در دسترس',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'بدون توصیه در دسترس',
 			'libraries.noCollections' => 'هیچ مجموعه ای در این کتابخانه وجود ندارد',
 			'libraries.noFoldersFound' => 'هیچ پوشه ای یافت نشد',
 			'libraries.folders' => 'پوشه‌ها',
@@ -7242,6 +7257,8 @@ extension on TranslationsFa {
 			'explore.detail.watchOn' => 'نگاهی به',
 			'explore.detail.watchTrailer' => 'تماشای تریلر',
 			'explore.detail.openOn' => ({required Object site}) => 'باز شده در ${site}',
+			'explore.detail.trailerUnavailable' => 'باز کردن پیش‌نمایش در این دستگاه ممکن نشد',
+			'explore.detail.linkUnavailable' => 'باز کردن این پیوند در این دستگاه ممکن نشد',
 			'explore.detail.crew' => 'خدمه',
 			'explore.detail.ratings' => 'رتبه بندی',
 			'explore.detail.schedule' => 'برنامه زمانی',
@@ -7459,11 +7476,11 @@ extension on TranslationsFa {
 			'watchTogether.copyCode' => 'کپی کد',
 			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
 			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'به اتاق Watch Together من در Pleazyng بپیوندید، اتاق Watch Together را انتخاب کنید و به اتاق Watch Together ${code} وارد شوید.',
 			'watchTogether.openSessionControls' => 'Open Watch با هم کنترل جلسه',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'دوباره اتصال...',
 			'watchTogether.reconnectingDescription' => 'اتصال قطع شده است شما به طور خودکار به اتاق می روید.',
 			'watchTogether.connected' => 'اتصال',
@@ -7973,11 +7990,11 @@ extension on TranslationsFa {
 			'metadataEdit.imageUrl' => 'تصویر URL',
 			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
 			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'هنر به روز شده',
 			'metadataEdit.artworkUpdateFailed' => 'به روز رسانی هنرهای هنری',
 			'metadataEdit.noArtworkAvailable' => 'هیچ هنری در دسترس نیست',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'گزینه هنری ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'گزینه هنری ${index} انتخاب شده',
 			'metadataEdit.notSet' => 'نه تنظیم',
@@ -8064,6 +8081,13 @@ extension on TranslationsFa {
 			'seerr.disconnectConfirmBody' => 'Pleazyng این مثال را فراموش خواهد کرد.در هر زمان دوباره اتصال.',
 			'seerr.request' => 'درخواست',
 			'seerr.request4k' => 'درخواست در 4K',
+			'seerr.requestSeasons' => 'درخواست فصل‌های جاافتاده',
+			'seerr.notifyMe' => 'هنگام در دسترس بودن به من اطلاع بده',
+			'seerr.notifyMe4k' => 'هنگام در دسترس بودن نسخهٔ 4K به من اطلاع بده',
+			'seerr.notificationsOn' => 'هشدار در دسترس شدن روشن است',
+			'seerr.notificationsEnabled' => 'وقتی در دسترس باشد به شما اطلاع می‌دهیم',
+			'seerr.notificationsDisabled' => 'هشدار در دسترس شدن خاموش شد',
+			'seerr.notificationFailed' => 'به‌روزرسانی هشدار در دسترس شدن انجام نشد',
 			'seerr.seasons' => 'فصل ها',
 			'seerr.allSeasons' => 'همه فصل ها',
 			'seerr.advancedOptions' => 'پیشرفته',
@@ -8480,6 +8504,8 @@ extension on TranslationsFa {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${count} بدون پشتیبانی یا ورود نامناسب به لیست پخش.', other: '${count} بدون پشتیبانی و یا ورود نامناسب به لیست پخش.', ), 
 			'universalMedia.playlistAddress' => 'آدرس Playlist',
 			'universalMedia.playlistAddressHelp' => 'یک لیست پخش M3U، M3u8 یا PLS را از یک آدرس وب باز کنید لینک های جریان مستقیم لیست پخش را ذخیره نمی کنند.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'انتخاب فایل playlist',
 			'universalMedia.openPlaylist' => 'باز کردن playlist',
 			'universalMedia.playlistFormatsHelp' => 'یک لیست پخش می تواند حاوی حداکثر 1000 آیتم و 2 مگابایت باشد.HLS به عنوان جریان ها باز می شود تا بازیکن بتواند کیفیت را انتخاب کند.',
@@ -8490,8 +8516,6 @@ extension on TranslationsFa {
 			'universalMedia.noFavorites' => 'در حال حاضر هیچ مورد علاقه ذخیره نشده است.Favorites در این پروفایل باقی بماند.',
 			'universalMedia.removeFavorite' => 'حذف جریان مورد علاقه',
 			'universalMedia.filesHelp' => 'فایل های صوتی، ویدئویی یا ISO را برای یک دوره موقت انتخاب کنید.فایلهای و URL ها به تاریخچه کتابخانه اضافه نمی شوند.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'انتخاب فایل ها',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ), 
 			'universalMedia.wifiTransfer' => 'ارسال فایل ها از طریق Wi-Fi',
@@ -8994,6 +9018,8 @@ extension on TranslationsFa {
 			'sourceSetup.optionalUsername' => 'نام کاربری حساب (اختیاری)',
 			'sourceSetup.optionalPassword' => 'گذرواژهٔ حساب (اختیاری)',
 			'sourceSetup.subtitlePrivacy' => 'کلید API را از opensubtitles.com بگیرید. جست‌وجو، عنوان ویدیو و شناسه‌های موجود IMDb/TMDB را ارسال می‌کند، اما هرگز فایل ویدیو را نمی‌فرستد. کلید و اطلاعات ورود اختیاری حساب، همراه این منبع به‌صورت رمزگذاری‌شده ذخیره می‌شوند.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'دریافت خودکار فرادادهٔ آنلاین ویدیو',
 			'sourceSetup.metadataPrivacy' => 'فقط عنوان، سال و شمارهٔ قسمت از نام فایل یا شناسهٔ NFO ارسال می‌شود؛ رسانه و اطلاعات ورود هرگز ارسال نمی‌شوند. فیلدهای NFO همیشه اولویت دارند.',
 			'sourceSetup.nfsEncryptionFailure' => 'برای NFS رمزگذاری‌شده، پشتیبانی هر دو سرویس NAS از RFC 9289 و TLS 1.3، نام گواهی و UID/GID اشتراک را بررسی کنید. Pleazyng این اتصال را بدون رمزگذاری دوباره امتحان نمی‌کند.',
@@ -9004,8 +9030,6 @@ extension on TranslationsFa {
 			'sourceSetup.metadataNoMatches' => 'عنوان مطابقی در اینترنت پیدا نشد. عنوان دیگری را امتحان کنید.',
 			'sourceSetup.metadataSearch' => 'جست‌وجوی فرادادهٔ آنلاین',
 			'sourceSetup.metadataLoading' => 'در حال جست‌وجوی آنلاین اطلاعات فیلم و سریال…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'فرادادهٔ آنلاین از Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'عنوان مطابقی به‌صورت خودکار پیدا نشد. عنوان را جست‌وجو کنید تا نتیجهٔ مطابق را انتخاب کنید.',
 			'sourceSetup.metadataFailed' => 'فرادادهٔ آنلاین بارگیری نشد. پخش و اطلاعات محلی همچنان در دسترس هستند.',
@@ -9415,6 +9439,10 @@ extension on TranslationsFa {
 			'musicTools.preamp' => 'پیش‌تقویت',
 			'musicTools.ratingPending' => 'در این دستگاه ذخیره شد؛ در انتظار همگام‌سازی',
 			'musicTools.lyricsOffset' => 'جابجایی زمان متن آهنگ',
+			'musicTools.anniversaries' => 'سالگرد انتشار آلبوم‌ها',
+			'musicTools.outputPreset' => 'اکولایزر این خروجی',
+			'musicTools.outputPresetHint' => 'هنگام انتخاب این خروجی، این اکولایزر به‌طور خودکار اعمال شود.',
+			'musicTools.eqApproximation' => 'پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند.',
 			_ => null,
 		};
 	}

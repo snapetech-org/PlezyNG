@@ -720,6 +720,7 @@ class _Translations$settings$da extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Afspilningshastighed';
 	@override String get scopeShaderPreset => 'Shader-forudindstilling';
 	@override String get scopeAspectRatio => 'Billedformat';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Synkronisering af lyd og undertekster';
 	@override String get playerScopeOff => 'Gem ikke';
 	@override String get playerScopeGlobal => 'Overalt';
@@ -2738,6 +2739,13 @@ class _Translations$seerr$da extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng glemmer denne Seerr-instans. Du kan altid oprette forbindelse igen.';
 	@override String get request => 'Anmod';
 	@override String get request4k => 'Anmod i 4K';
+	@override String get requestSeasons => 'Anmod om manglende sæsoner';
+	@override String get notifyMe => 'Giv mig besked, når det er tilgængeligt';
+	@override String get notifyMe4k => 'Giv mig besked, når det er tilgængeligt i 4K';
+	@override String get notificationsOn => 'Tilgængelighedsadvarsel er slået til';
+	@override String get notificationsEnabled => 'Vi giver dig besked, når det er tilgængeligt';
+	@override String get notificationsDisabled => 'Tilgængelighedsadvarsel er slået fra';
+	@override String get notificationFailed => 'Tilgængelighedsadvarslen kunne ikke opdateres';
 	@override String get seasons => 'Sæsoner';
 	@override String get allSeasons => 'Alle sæsoner';
 	@override String get advancedOptions => 'Avanceret';
@@ -4293,6 +4301,10 @@ class _Translations$musicTools$da extends Translations$musicTools$en {
 	@override String get preamp => 'Forforstærkning';
 	@override String get ratingPending => 'Gemt på denne enhed; afventer synkronisering';
 	@override String get lyricsOffset => 'Tidsforskydning af sangtekst';
+	@override String get anniversaries => 'Albumjubilæer';
+	@override String get outputPreset => 'EQ til denne udgang';
+	@override String get outputPresetHint => 'Brug automatisk denne EQ, når denne udgang vælges.';
+	@override String get eqApproximation => 'Hovedtelefonprofiler er tilnærmet til en EQ med ti bånd.';
 }
 
 // Path: appIcon.names
@@ -5035,6 +5047,8 @@ class _Translations$explore$detail$da extends Translations$explore$detail$en {
 	@override String get watchOn => 'Se på';
 	@override String get watchTrailer => 'Se trailer';
 	@override String openOn({required Object site}) => 'Åbn på ${site}';
+	@override String get trailerUnavailable => 'Kunne ikke åbne traileren på denne enhed';
+	@override String get linkUnavailable => 'Kunne ikke åbne linket på denne enhed';
 	@override String get crew => 'Stab';
 	@override String get ratings => 'Bedømmelser';
 	@override String get schedule => 'Program';
@@ -5990,6 +6004,7 @@ extension on TranslationsDa {
 			'settings.scopePlaybackSpeed' => 'Afspilningshastighed',
 			'settings.scopeShaderPreset' => 'Shader-forudindstilling',
 			'settings.scopeAspectRatio' => 'Billedformat',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Synkronisering af lyd og undertekster',
 			'settings.playerScopeOff' => 'Gem ikke',
 			'settings.playerScopeGlobal' => 'Overalt',
@@ -6433,9 +6448,9 @@ extension on TranslationsDa {
 			'videoControls.addBookmark' => 'Tilføj Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark navn',
 			'videoControls.bookmarkNameHint' => 'For eksempel åbningsscenen',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bogmærke ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bogmærke ${n}',
 			'videoControls.bookmarkNameRequired' => 'Indtast et navn til denne bogmærke.',
 			'videoControls.deleteBookmark' => 'Fjern bookmark',
 			'videoControls.bookmarkLimitReached' => 'Denne artikel har allerede 100 bogmærker.',
@@ -6947,9 +6962,9 @@ extension on TranslationsDa {
 			'libraries.content' => 'biblioteksindhold',
 			'libraries.selectLibrary' => 'Vælg bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtre (${count})',
-			'libraries.noRecommendations' => 'Ingen anbefalinger tilgængelige',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Ingen anbefalinger tilgængelige',
 			'libraries.noCollections' => 'Ingen samlinger i dette bibliotek',
 			'libraries.noFoldersFound' => 'Ingen mapper fundet',
 			'libraries.folders' => 'mapper',
@@ -7242,6 +7257,8 @@ extension on TranslationsDa {
 			'explore.detail.watchOn' => 'Se på',
 			'explore.detail.watchTrailer' => 'Se trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Åbn på ${site}',
+			'explore.detail.trailerUnavailable' => 'Kunne ikke åbne traileren på denne enhed',
+			'explore.detail.linkUnavailable' => 'Kunne ikke åbne linket på denne enhed',
 			'explore.detail.crew' => 'Stab',
 			'explore.detail.ratings' => 'Bedømmelser',
 			'explore.detail.schedule' => 'Program',
@@ -7459,11 +7476,11 @@ extension on TranslationsDa {
 			'watchTogether.copyCode' => 'Kopiér kode',
 			'watchTogether.codeCopied' => 'Rumkode kopieret',
 			'watchTogether.shareInvite' => 'Del invitation',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'Invitation kopieret. Indsæt den i en besked.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Deltag i mit Se sammen-rum i Pleazyng: Åbn "Se sammen", vælg "Deltag i rum", og indtast ${code}.',
 			'watchTogether.openSessionControls' => 'Åbn sessionsstyring for Se sammen',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Genopretter forbindelse...',
 			'watchTogether.reconnectingDescription' => 'Forbindelsen blev afbrudt. Du kommer automatisk ind i rummet igen.',
 			'watchTogether.connected' => 'Forbundet',
@@ -7973,11 +7990,11 @@ extension on TranslationsDa {
 			'metadataEdit.imageUrl' => 'Billed-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata opdateret',
 			'metadataEdit.metadataUpdateFailed' => 'Kunne ikke opdatere metadata',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Grafik opdateret',
 			'metadataEdit.artworkUpdateFailed' => 'Kunne ikke opdatere grafik',
 			'metadataEdit.noArtworkAvailable' => 'Ingen grafik tilgængelig',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Grafikvalg ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Grafikvalg ${index}, valgt',
 			'metadataEdit.notSet' => 'Ikke indstillet',
@@ -8064,6 +8081,13 @@ extension on TranslationsDa {
 			'seerr.disconnectConfirmBody' => 'Pleazyng glemmer denne Seerr-instans. Du kan altid oprette forbindelse igen.',
 			'seerr.request' => 'Anmod',
 			'seerr.request4k' => 'Anmod i 4K',
+			'seerr.requestSeasons' => 'Anmod om manglende sæsoner',
+			'seerr.notifyMe' => 'Giv mig besked, når det er tilgængeligt',
+			'seerr.notifyMe4k' => 'Giv mig besked, når det er tilgængeligt i 4K',
+			'seerr.notificationsOn' => 'Tilgængelighedsadvarsel er slået til',
+			'seerr.notificationsEnabled' => 'Vi giver dig besked, når det er tilgængeligt',
+			'seerr.notificationsDisabled' => 'Tilgængelighedsadvarsel er slået fra',
+			'seerr.notificationFailed' => 'Tilgængelighedsadvarslen kunne ikke opdateres',
 			'seerr.seasons' => 'Sæsoner',
 			'seerr.allSeasons' => 'Alle sæsoner',
 			'seerr.advancedOptions' => 'Avanceret',
@@ -8480,6 +8504,8 @@ extension on TranslationsDa {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('da'))(n, one: 'Skiftede ${count} ustøttet eller usikre playlist indgang.', other: 'Skiftede ${count} uafhængige eller usikre playlist-indtægter.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresser',
 			'universalMedia.playlistAddressHelp' => 'Åbn en M3U, M3u8 eller PLS playlist fra en webadresse. direkte streaming links gemmer ikke playlisten.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Vælg Playlist fil',
 			'universalMedia.openPlaylist' => 'Åbent playlist',
 			'universalMedia.playlistFormatsHelp' => 'En playlist kan indeholde op til 1.000 elementer og 2 MB. HLS manifesterer sig åbent som strømme, så spilleren kan vælge en kvalitet.',
@@ -8490,8 +8516,6 @@ extension on TranslationsDa {
 			'universalMedia.noFavorites' => 'Der er endnu ingen gemt streaming favoritter. Favoritter forbliver i denne profil.',
 			'universalMedia.removeFavorite' => 'Fjern streaming favorit',
 			'universalMedia.filesHelp' => 'Vælg lyd, video eller ISO-filer for en midlertidig kue. filer og URL\'er tilføjes ikke til bibliotekets historie.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Vælg filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('da'))(n, one: '1 udvalgte filer', other: '${count} udvalgte filer', ), 
 			'universalMedia.wifiTransfer' => 'Send filer via Wi-Fi',
@@ -8994,6 +9018,8 @@ extension on TranslationsDa {
 			'sourceSetup.optionalUsername' => 'Kontoens brugernavn (valgfrit)',
 			'sourceSetup.optionalPassword' => 'Kontoens adgangskode (valgfri)',
 			'sourceSetup.subtitlePrivacy' => 'Hent en API-nøgle på opensubtitles.com. Søgning sender videotitlen og tilgængelige IMDb/TMDB-ID’er, aldrig videofilen. Nøglen og valgfrie kontooplysninger krypteres sammen med denne kilde.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Automatiske videometadata fra nettet',
 			'sourceSetup.metadataPrivacy' => 'Sender kun titel/år fra filnavnet og afsnitsnumre eller et NFO-ID, aldrig medier eller legitimationsoplysninger. NFO-felter har fortsat forrang.',
 			'sourceSetup.nfsEncryptionFailure' => 'Ved krypteret NFS skal du kontrollere understøttelse af RFC 9289 og TLS 1.3 på begge NAS-tjenester, certifikatnavnet og delingens UID/GID. Pleazyng forsøger ikke denne forbindelse igen uden kryptering.',
@@ -9004,8 +9030,6 @@ extension on TranslationsDa {
 			'sourceSetup.metadataNoMatches' => 'Ingen matchende titler fundet online. Prøv en anden titel.',
 			'sourceSetup.metadataSearch' => 'Søg efter metadata online',
 			'sourceSetup.metadataLoading' => 'Henter film- og serieoplysninger online…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Onlinemetadata fra Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Der blev ikke fundet et automatisk titelmatch. Søg efter titlen for at vælge et match.',
 			'sourceSetup.metadataFailed' => 'Onlinemetadata kunne ikke indlæses. Afspilning og lokale oplysninger er stadig tilgængelige.',
@@ -9415,6 +9439,10 @@ extension on TranslationsDa {
 			'musicTools.preamp' => 'Forforstærkning',
 			'musicTools.ratingPending' => 'Gemt på denne enhed; afventer synkronisering',
 			'musicTools.lyricsOffset' => 'Tidsforskydning af sangtekst',
+			'musicTools.anniversaries' => 'Albumjubilæer',
+			'musicTools.outputPreset' => 'EQ til denne udgang',
+			'musicTools.outputPresetHint' => 'Brug automatisk denne EQ, når denne udgang vælges.',
+			'musicTools.eqApproximation' => 'Hovedtelefonprofiler er tilnærmet til en EQ med ti bånd.',
 			_ => null,
 		};
 	}

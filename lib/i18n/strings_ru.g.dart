@@ -724,6 +724,7 @@ class _Translations$settings$ru extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Скорость воспроизведения';
 	@override String get scopeShaderPreset => 'Предустановка шейдера';
 	@override String get scopeAspectRatio => 'Соотношение сторон';
+	@override String get scopeZoom => 'Масштаб';
 	@override String get scopeSyncOffsets => 'Синхронизация аудио и субтитров';
 	@override String get playerScopeOff => 'Не сохранять';
 	@override String get playerScopeGlobal => 'Везде';
@@ -2776,6 +2777,13 @@ class _Translations$seerr$ru extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng забудет этот экземпляр Seerr. Подключитесь снова в любое время.';
 	@override String get request => 'Запросить';
 	@override String get request4k => 'Запросить в 4K';
+	@override String get requestSeasons => 'Запросить недостающие сезоны';
+	@override String get notifyMe => 'Уведомить меня о появлении';
+	@override String get notifyMe4k => 'Уведомить меня о появлении в 4K';
+	@override String get notificationsOn => 'Оповещение о доступности включено';
+	@override String get notificationsEnabled => 'Мы сообщим, когда станет доступно';
+	@override String get notificationsDisabled => 'Оповещение о доступности выключено';
+	@override String get notificationFailed => 'Не удалось обновить оповещение о доступности';
 	@override String get seasons => 'Сезоны';
 	@override String get allSeasons => 'Все сезоны';
 	@override String get advancedOptions => 'Дополнительно';
@@ -4339,6 +4347,10 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	@override String get preamp => 'Предусиление';
 	@override String get ratingPending => 'Сохранено на устройстве; ожидает синхронизации';
 	@override String get lyricsOffset => 'Смещение текста песни';
+	@override String get anniversaries => 'Годовщины альбомов';
+	@override String get outputPreset => 'Эквалайзер для этого выхода';
+	@override String get outputPresetHint => 'Автоматически применять этот эквалайзер при выборе этого выхода.';
+	@override String get eqApproximation => 'Профили наушников приближённо адаптированы к десятиполосному эквалайзеру.';
 }
 
 // Path: appIcon.names
@@ -5083,6 +5095,8 @@ class _Translations$explore$detail$ru extends Translations$explore$detail$en {
 	@override String get watchOn => 'Смотреть на';
 	@override String get watchTrailer => 'Смотреть трейлер';
 	@override String openOn({required Object site}) => 'Открыть на ${site}';
+	@override String get trailerUnavailable => 'Не удалось открыть трейлер на этом устройстве';
+	@override String get linkUnavailable => 'Не удалось открыть ссылку на этом устройстве';
 	@override String get crew => 'Съёмочная группа';
 	@override String get ratings => 'Рейтинги';
 	@override String get schedule => 'Расписание';
@@ -6040,6 +6054,7 @@ extension on TranslationsRu {
 			'settings.scopePlaybackSpeed' => 'Скорость воспроизведения',
 			'settings.scopeShaderPreset' => 'Предустановка шейдера',
 			'settings.scopeAspectRatio' => 'Соотношение сторон',
+			'settings.scopeZoom' => 'Масштаб',
 			'settings.scopeSyncOffsets' => 'Синхронизация аудио и субтитров',
 			'settings.playerScopeOff' => 'Не сохранять',
 			'settings.playerScopeGlobal' => 'Везде',
@@ -6483,9 +6498,9 @@ extension on TranslationsRu {
 			'videoControls.addBookmark' => 'Добавить Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark имя',
 			'videoControls.bookmarkNameHint' => 'Например, сцены открытия',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
 			'videoControls.bookmarkNameRequired' => 'Введите имя для этой книжной марки.',
 			'videoControls.deleteBookmark' => 'Удаление букмекеры',
 			'videoControls.bookmarkLimitReached' => 'Эта статья уже имеет 100 книжных знаков.',
@@ -6997,9 +7012,9 @@ extension on TranslationsRu {
 			'libraries.content' => 'содержимое библиотеки',
 			'libraries.selectLibrary' => 'Выбрать библиотеку',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтры (${count})',
-			'libraries.noRecommendations' => 'Рекомендации недоступны',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Рекомендации недоступны',
 			'libraries.noCollections' => 'В этой библиотеке нет коллекций',
 			'libraries.noFoldersFound' => 'Папки не найдены',
 			'libraries.folders' => 'папки',
@@ -7292,6 +7307,8 @@ extension on TranslationsRu {
 			'explore.detail.watchOn' => 'Смотреть на',
 			'explore.detail.watchTrailer' => 'Смотреть трейлер',
 			'explore.detail.openOn' => ({required Object site}) => 'Открыть на ${site}',
+			'explore.detail.trailerUnavailable' => 'Не удалось открыть трейлер на этом устройстве',
+			'explore.detail.linkUnavailable' => 'Не удалось открыть ссылку на этом устройстве',
 			'explore.detail.crew' => 'Съёмочная группа',
 			'explore.detail.ratings' => 'Рейтинги',
 			'explore.detail.schedule' => 'Расписание',
@@ -7509,11 +7526,11 @@ extension on TranslationsRu {
 			'watchTogether.copyCode' => 'Скопировать код',
 			'watchTogether.codeCopied' => 'Код комнаты скопирован',
 			'watchTogether.shareInvite' => 'Поделиться приглашением',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'Приглашение скопировано. Вставьте его в сообщение.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Присоединяйтесь к совместному просмотру в Pleazyng: откройте «Смотреть вместе», выберите «Войти в комнату» и введите ${code}.',
 			'watchTogether.openSessionControls' => 'Открыть управление сессией «Смотреть вместе»',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Переподключение...',
 			'watchTogether.reconnectingDescription' => 'Соединение прервалось. Вы автоматически вернётесь в комнату.',
 			'watchTogether.connected' => 'Подключено',
@@ -8023,11 +8040,11 @@ extension on TranslationsRu {
 			'metadataEdit.imageUrl' => 'URL изображения',
 			'metadataEdit.metadataUpdated' => 'Метаданные обновлены',
 			'metadataEdit.metadataUpdateFailed' => 'Не удалось обновить метаданные',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Обложка обновлена',
 			'metadataEdit.artworkUpdateFailed' => 'Не удалось обновить обложку',
 			'metadataEdit.noArtworkAvailable' => 'Обложки недоступны',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант обложки ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вариант обложки ${index}, выбран',
 			'metadataEdit.notSet' => 'Не задано',
@@ -8114,6 +8131,13 @@ extension on TranslationsRu {
 			'seerr.disconnectConfirmBody' => 'Pleazyng забудет этот экземпляр Seerr. Подключитесь снова в любое время.',
 			'seerr.request' => 'Запросить',
 			'seerr.request4k' => 'Запросить в 4K',
+			'seerr.requestSeasons' => 'Запросить недостающие сезоны',
+			'seerr.notifyMe' => 'Уведомить меня о появлении',
+			'seerr.notifyMe4k' => 'Уведомить меня о появлении в 4K',
+			'seerr.notificationsOn' => 'Оповещение о доступности включено',
+			'seerr.notificationsEnabled' => 'Мы сообщим, когда станет доступно',
+			'seerr.notificationsDisabled' => 'Оповещение о доступности выключено',
+			'seerr.notificationFailed' => 'Не удалось обновить оповещение о доступности',
 			'seerr.seasons' => 'Сезоны',
 			'seerr.allSeasons' => 'Все сезоны',
 			'seerr.advancedOptions' => 'Дополнительно',
@@ -8530,6 +8554,8 @@ extension on TranslationsRu {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Скинутый ${count} не поддерживаемый или безопасный вход списка игр.', few: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', many: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', other: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', ), 
 			'universalMedia.playlistAddress' => 'Адрес Playlist',
 			'universalMedia.playlistAddressHelp' => 'Откройте перечень M3U, М3U8 или PLS с веб-адреса. прямые ссылки потока не сохраняют перечень просмотров.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Выберите файл playlist',
 			'universalMedia.openPlaylist' => 'Открытый playlist',
 			'universalMedia.playlistFormatsHelp' => 'Список игр может содержать не более 1000 элементов и 2 Мб. HLS открывается как потоки, чтобы игрок мог выбрать качество.',
@@ -8540,8 +8566,6 @@ extension on TranslationsRu {
 			'universalMedia.noFavorites' => 'До сих пор не сохранились любимые потоки.Фавориты остаются в этом профиле.',
 			'universalMedia.removeFavorite' => 'Удаление любимого потока',
 			'universalMedia.filesHelp' => 'Выберите аудио, видео или файлы ISO для временного перевода.Файлы и URL не добавляются в историю библиотеки.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Выберите файлы',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '1 Выбранный файл', few: '${count} выбранные файлы', many: '${count} выбранные файлы', other: '${count} выбранные файлы', ), 
 			'universalMedia.wifiTransfer' => 'Передача файлов через Wi-Fi',
@@ -9044,6 +9068,8 @@ extension on TranslationsRu {
 			'sourceSetup.optionalUsername' => 'Имя пользователя аккаунта (необязательно)',
 			'sourceSetup.optionalPassword' => 'Пароль аккаунта (необязательно)',
 			'sourceSetup.subtitlePrivacy' => 'Получите ключ API на opensubtitles.com. Поиск отправляет название видео и доступные ID IMDb/TMDB, но никогда не отправляет видеофайл. Ключ и необязательные учётные данные аккаунта шифруются вместе с этим источником.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Автоматические метаданные видео из интернета',
 			'sourceSetup.metadataPrivacy' => 'Отправляет только название/год из имени файла и номера эпизодов либо ID NFO, но никогда не отправляет медиафайлы или учётные данные. Поля NFO сохраняют приоритет.',
 			'sourceSetup.nfsEncryptionFailure' => 'Для зашифрованного NFS проверьте поддержку RFC 9289 и TLS 1.3 обеими службами NAS, имя в сертификате и UID/GID экспорта. Pleazyng не будет повторять это подключение без шифрования.',
@@ -9054,8 +9080,6 @@ extension on TranslationsRu {
 			'sourceSetup.metadataNoMatches' => 'Совпадающих названий в интернете не найдено. Попробуйте другое название.',
 			'sourceSetup.metadataSearch' => 'Поиск метаданных в интернете',
 			'sourceSetup.metadataLoading' => 'Поиск сведений о фильмах и сериалах в интернете…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Метаданные из Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматическое совпадение названия не найдено. Найдите название, чтобы выбрать совпадение.',
 			'sourceSetup.metadataFailed' => 'Не удалось загрузить метаданные из интернета. Воспроизведение и локальные сведения по-прежнему доступны.',
@@ -9465,6 +9489,10 @@ extension on TranslationsRu {
 			'musicTools.preamp' => 'Предусиление',
 			'musicTools.ratingPending' => 'Сохранено на устройстве; ожидает синхронизации',
 			'musicTools.lyricsOffset' => 'Смещение текста песни',
+			'musicTools.anniversaries' => 'Годовщины альбомов',
+			'musicTools.outputPreset' => 'Эквалайзер для этого выхода',
+			'musicTools.outputPresetHint' => 'Автоматически применять этот эквалайзер при выборе этого выхода.',
+			'musicTools.eqApproximation' => 'Профили наушников приближённо адаптированы к десятиполосному эквалайзеру.',
 			_ => null,
 		};
 	}

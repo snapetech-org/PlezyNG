@@ -633,6 +633,7 @@
     "scopePlaybackSpeed": "Velocità di riproduzione",
     "scopeShaderPreset": "Preimpostazione shader",
     "scopeAspectRatio": "Proporzioni",
+    "scopeZoom": "Zoom",
     "scopeSyncOffsets": "Sincronizzazione audio e sottotitoli",
     "playerScopeOff": "Non salvare",
     "playerScopeGlobal": "Ovunque",
@@ -2252,6 +2253,8 @@
       "watchOn": "Guarda su",
       "watchTrailer": "Guarda trailer",
       "openOn": "Apri su ${site}",
+      "trailerUnavailable": "Impossibile aprire il trailer su questo dispositivo",
+      "linkUnavailable": "Impossibile aprire il link su questo dispositivo",
       "crew": "Cast tecnico",
       "ratings": "Valutazioni",
       "schedule": "Programmazione",
@@ -3282,6 +3285,13 @@
     "disconnectConfirmBody": "Pleazyng rimuoverà questa istanza Seerr. Potrai riconnetterla in qualsiasi momento.",
     "request": "Richiedi",
     "request4k": "Richiedi in 4K",
+    "requestSeasons": "Richiedi le stagioni mancanti",
+    "notifyMe": "Avvisami quando disponibile",
+    "notifyMe4k": "Avvisami quando disponibile in 4K",
+    "notificationsOn": "Avviso di disponibilità attivo",
+    "notificationsEnabled": "Ti avviseremo quando sarà disponibile",
+    "notificationsDisabled": "Avviso di disponibilità disattivato",
+    "notificationFailed": "Impossibile aggiornare l’avviso di disponibilità",
     "seasons": "Stagioni",
     "allSeasons": "Tutte le stagioni",
     "advancedOptions": "Avanzate",
@@ -5525,6 +5535,10 @@
     "exclusiveOutput": "Uscita audio esclusiva",
     "preamp": "Preamplificazione",
     "ratingPending": "Salvato sul dispositivo; sincronizzazione in attesa",
-    "lyricsOffset": "Sfasamento del testo"
+    "lyricsOffset": "Sfasamento del testo",
+    "anniversaries": "Anniversari degli album",
+    "outputPreset": "Equalizzatore per questa uscita",
+    "outputPresetHint": "Usa automaticamente questo equalizzatore quando viene selezionata questa uscita.",
+    "eqApproximation": "I profili delle cuffie sono approssimati per l’equalizzatore a dieci bande."
   }
 }

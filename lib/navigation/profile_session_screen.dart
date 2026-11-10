@@ -1,3 +1,4 @@
+import '../utils/platform_detector.dart';
 import '../services/music/music_car_host.dart';
 import '../services/music/music_experience.dart';
 import '../services/music/music_library_store.dart';
@@ -36,6 +37,7 @@ import '../multiview/workspace_controller.dart';
 import '../multiview/workspace_overlay.dart';
 import '../multiview/workspace_persistence.dart';
 import '../screens/main_screen.dart';
+import '../screens/music/music_home_screen.dart';
 import '../screens/sources/source_player_screen.dart';
 import '../screens/video_player_screen.dart';
 import '../services/api_cache.dart';
@@ -540,11 +542,13 @@ class _ProfileSessionNavigatorState extends State<_ProfileSessionNavigator> {
       settings: settings,
       builder: (context) =>
           widget.profileShellBuilder?.call(context) ??
-          MainScreen(
-            isOfflineMode: widget.isOfflineMode,
-            initialPromptHandled: widget.initialPromptHandled,
-            initialSourceLibrary: widget.initialSourceLibrary,
-          ),
+          (PlatformDetector.isAutomotiveMedia()
+              ? const MusicHomeScreen()
+              : MainScreen(
+                  isOfflineMode: widget.isOfflineMode,
+                  initialPromptHandled: widget.initialPromptHandled,
+                  initialSourceLibrary: widget.initialSourceLibrary,
+                )),
     );
   }
 }

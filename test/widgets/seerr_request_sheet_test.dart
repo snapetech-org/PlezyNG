@@ -162,6 +162,8 @@ Future<void> _pumpSheet(
   required String title,
   SeerrAccountProvider? account,
   bool minimal = false,
+  int? seasonNumber,
+  bool prefer4k = false,
 }) async {
   final app = MaterialApp(
     theme: ThemeData(extensions: const [testMonoTokens]),
@@ -184,6 +186,8 @@ Future<void> _pumpSheet(
                             tmdbId: tmdbId,
                             title: title,
                             minimal: minimal,
+                            seasonNumber: seasonNumber,
+                            prefer4k: prefer4k,
                           ),
                           child: const Text('request'),
                         ),
@@ -262,6 +266,44 @@ void main() {
 
   setUp(() {
     LocaleSettings.setLocaleSync(AppLocale.en);
+  });
+
+  testWidgets('a verified catalog season opens selected without including other seasons', (tester) async {
+    Map<String, dynamic>? posted;
+    final source = _source(
+      MockClient((request) async {
+        switch (request.url.path) {
+          case '/api/v1/settings/public':
+            return _json(_publicSettings());
+          case '/api/v1/tv/1396':
+            return _json({
+              'id': 1396,
+              'name': 'Show',
+              'seasons': [
+                {'seasonNumber': 1, 'episodeCount': 8},
+                {'seasonNumber': 2, 'episodeCount': 8},
+              ],
+              'mediaInfo': {'status': 1, 'seasons': [], 'requests': []},
+            });
+          case '/api/v1/request':
+            posted = jsonDecode(request.body) as Map<String, dynamic>;
+            return _json({'id': 15, 'status': 1}, status: 201);
+        }
+        fail('Unexpected ${request.url.path}');
+      }),
+    );
+    await _pumpSheet(tester, source: source, kind: MediaKind.show, tmdbId: 1396, title: 'Show', seasonNumber: 2);
+    final first = tester.widget<CheckboxListTile>(
+      find.ancestor(of: find.text('Season 1'), matching: find.byType(CheckboxListTile)),
+    );
+    final second = tester.widget<CheckboxListTile>(
+      find.ancestor(of: find.text('Season 2'), matching: find.byType(CheckboxListTile)),
+    );
+    expect(first.value, false);
+    expect(second.value, true);
+    await tester.tap(find.widgetWithText(FilledButton, 'Request'));
+    await tester.pumpAndSettle();
+    expect(posted?['seasons'], [2]);
   });
 
   testWidgets('TV: disables unavailable seasons, drops specials, posts selected seasons', (tester) async {
@@ -375,6 +417,40 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Request'));
     await tester.pumpAndSettle();
     expect(posted, {'mediaType': 'movie', 'mediaId': 603, 'is4k': false});
+  });
+
+  testWidgets('a 4K-only vanilla Seerr account can submit in its permitted quality', (tester) async {
+    Map<String, dynamic>? posted;
+    final source = _source(
+      MockClient((request) async {
+        switch (request.url.path) {
+          case '/api/v1/settings/public':
+            return _json({..._publicSettings(), 'movie4kEnabled': true});
+          case '/api/v1/movie/603':
+            return _json({
+              'id': 603,
+              'title': 'The Matrix',
+              'mediaInfo': {'status': 1, 'status4k': 1},
+            });
+          case '/api/v1/request':
+            posted = jsonDecode(request.body) as Map<String, dynamic>;
+            return _json({'id': 2, 'status': 1});
+          default:
+            fail('Unexpected endpoint for vanilla Seerr: ${request.url.path}');
+        }
+      }),
+      permissions: SeerrPermission.request4kMovie,
+    );
+
+    await _pumpSheet(tester, source: source, kind: MediaKind.movie, tmdbId: 603, title: 'The Matrix', prefer4k: true);
+
+    expect(find.text(t.seerr.only4kAvailable), findsOneWidget);
+    expect(find.text(t.seerr.permissionRevoked), findsNothing);
+    final submit = find.widgetWithText(FilledButton, t.seerr.request);
+    expect(tester.widget<FilledButton>(submit).onPressed, isNotNull);
+    await tester.tap(submit);
+    await tester.pumpAndSettle();
+    expect(posted, {'mediaType': 'movie', 'mediaId': 603, 'is4k': true});
   });
 
   testWidgets('movie that is already available offers nothing to request', (tester) async {

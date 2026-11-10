@@ -719,6 +719,7 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get scopePlaybackSpeed => '播放速度';
 	@override String get scopeShaderPreset => '著色器預設';
 	@override String get scopeAspectRatio => '顯示比例';
+	@override String get scopeZoom => '縮放';
 	@override String get scopeSyncOffsets => '音訊與字幕同步';
 	@override String get playerScopeOff => '不要儲存';
 	@override String get playerScopeGlobal => '全部';
@@ -2735,6 +2736,13 @@ class _Translations$seerr$zh_Hant extends Translations$seerr$zh {
 	@override String get disconnectConfirmBody => 'Pleazyng 將忘記此 Seerr 連線資訊。您可以隨時重新連線。';
 	@override String get request => '請求';
 	@override String get request4k => '請求 4K 版本';
+	@override String get requestSeasons => '要求缺少的季度';
+	@override String get notifyMe => '有片源時通知我';
+	@override String get notifyMe4k => '有 4K 片源時通知我';
+	@override String get notificationsOn => '可用性通知已開啟';
+	@override String get notificationsEnabled => '有片源時我們會通知你';
+	@override String get notificationsDisabled => '可用性通知已關閉';
+	@override String get notificationFailed => '無法更新可用性通知';
 	@override String get seasons => '季';
 	@override String get allSeasons => '所有季數';
 	@override String get advancedOptions => '進階設定';
@@ -4289,6 +4297,10 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String get preamp => '前置放大';
 	@override String get ratingPending => '已儲存在此裝置；等待同步';
 	@override String get lyricsOffset => '歌詞時間偏移';
+	@override String get anniversaries => '專輯發行紀念日';
+	@override String get outputPreset => '此輸出的等化器';
+	@override String get outputPresetHint => '選取此輸出時自動使用此等化器。';
+	@override String get eqApproximation => '耳機設定檔已近似轉換為十段等化器設定。';
 }
 
 // Path: appIcon.names
@@ -5031,6 +5043,8 @@ class _Translations$explore$detail$zh_Hant extends Translations$explore$detail$z
 	@override String get watchOn => '觀看平台';
 	@override String get watchTrailer => '觀看預告片';
 	@override String openOn({required Object site}) => '在 ${site} 開啟';
+	@override String get trailerUnavailable => '無法在這部裝置上開啟預告片';
+	@override String get linkUnavailable => '無法在這部裝置上開啟連結';
 	@override String get crew => '幕後團隊';
 	@override String get ratings => '評分';
 	@override String get schedule => '播出時間';
@@ -5986,6 +6000,7 @@ extension on TranslationsZhHant {
 			'settings.scopePlaybackSpeed' => '播放速度',
 			'settings.scopeShaderPreset' => '著色器預設',
 			'settings.scopeAspectRatio' => '顯示比例',
+			'settings.scopeZoom' => '縮放',
 			'settings.scopeSyncOffsets' => '音訊與字幕同步',
 			'settings.playerScopeOff' => '不要儲存',
 			'settings.playerScopeGlobal' => '全部',
@@ -6429,9 +6444,9 @@ extension on TranslationsZhHant {
 			'videoControls.addBookmark' => '新增 Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark 名稱',
 			'videoControls.bookmarkNameHint' => '例如,開幕式',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => '圖示 ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => '圖示 ${n}',
 			'videoControls.bookmarkNameRequired' => '請輸入本書標誌的名稱。',
 			'videoControls.deleteBookmark' => '刪除 Bookmark',
 			'videoControls.bookmarkLimitReached' => '這個專案已經有100個字元。',
@@ -6943,9 +6958,9 @@ extension on TranslationsZhHant {
 			'libraries.content' => '媒體庫內容',
 			'libraries.selectLibrary' => '選擇媒體庫',
 			'libraries.filtersWithCount' => ({required Object count}) => '篩選器（${count}）',
-			'libraries.noRecommendations' => '目前沒有推薦',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => '目前沒有推薦',
 			'libraries.noCollections' => '此媒體庫中沒有收藏集',
 			'libraries.noFoldersFound' => '找不到資料夾',
 			'libraries.folders' => '資料夾',
@@ -7238,6 +7253,8 @@ extension on TranslationsZhHant {
 			'explore.detail.watchOn' => '觀看平台',
 			'explore.detail.watchTrailer' => '觀看預告片',
 			'explore.detail.openOn' => ({required Object site}) => '在 ${site} 開啟',
+			'explore.detail.trailerUnavailable' => '無法在這部裝置上開啟預告片',
+			'explore.detail.linkUnavailable' => '無法在這部裝置上開啟連結',
 			'explore.detail.crew' => '幕後團隊',
 			'explore.detail.ratings' => '評分',
 			'explore.detail.schedule' => '播出時間',
@@ -7455,11 +7472,11 @@ extension on TranslationsZhHant {
 			'watchTogether.copyCode' => '複製代碼',
 			'watchTogether.codeCopied' => '房間代碼已複製',
 			'watchTogether.shareInvite' => '分享邀請',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => '已複製邀請。請將其貼到訊息中。',
 			'watchTogether.inviteMessage' => ({required Object code}) => '來 Pleazyng 加入我的「一起看」房間：開啟「一起看」，選擇「加入房間」，然後輸入 ${code}。',
 			'watchTogether.openSessionControls' => '開啟「一起看」工作階段控制面板',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => '正在重新連線…',
 			'watchTogether.reconnectingDescription' => '連線已中斷。您將自動重新加入房間。',
 			'watchTogether.connected' => '已連線',
@@ -7969,11 +7986,11 @@ extension on TranslationsZhHant {
 			'metadataEdit.imageUrl' => '圖片 URL',
 			'metadataEdit.metadataUpdated' => '中繼資料已更新',
 			'metadataEdit.metadataUpdateFailed' => '中繼資料更新失敗',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => '封面圖片已更新',
 			'metadataEdit.artworkUpdateFailed' => '封面圖片更新失敗',
 			'metadataEdit.noArtworkAvailable' => '沒有可用的封面圖片',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => '封面圖片選項 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '封面圖片選項 ${index}，已選擇',
 			'metadataEdit.notSet' => '未設定',
@@ -8060,6 +8077,13 @@ extension on TranslationsZhHant {
 			'seerr.disconnectConfirmBody' => 'Pleazyng 將忘記此 Seerr 連線資訊。您可以隨時重新連線。',
 			'seerr.request' => '請求',
 			'seerr.request4k' => '請求 4K 版本',
+			'seerr.requestSeasons' => '要求缺少的季度',
+			'seerr.notifyMe' => '有片源時通知我',
+			'seerr.notifyMe4k' => '有 4K 片源時通知我',
+			'seerr.notificationsOn' => '可用性通知已開啟',
+			'seerr.notificationsEnabled' => '有片源時我們會通知你',
+			'seerr.notificationsDisabled' => '可用性通知已關閉',
+			'seerr.notificationFailed' => '無法更新可用性通知',
 			'seerr.seasons' => '季',
 			'seerr.allSeasons' => '所有季數',
 			'seerr.advancedOptions' => '進階設定',
@@ -8476,6 +8500,8 @@ extension on TranslationsZhHant {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支援或不安全的播放列表輸入。', other: '${count} 不受支援或不安全的播放列表輸入。', ), 
 			'universalMedia.playlistAddress' => 'Playlist 地址',
 			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會儲存播放名單。',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => '選擇 Playlist 檔案',
 			'universalMedia.openPlaylist' => '開放播放列表',
 			'universalMedia.playlistFormatsHelp' => '一張播放列表可以包含最多1000個專案和2MB的HLS顯示為流,所以玩家可以選擇質量。',
@@ -8486,8 +8512,6 @@ extension on TranslationsZhHant {
 			'universalMedia.noFavorites' => '尚未儲存流喜愛. 喜愛留在此個人資料中。',
 			'universalMedia.removeFavorite' => '刪除流喜愛',
 			'universalMedia.filesHelp' => '選擇音訊、影片或ISO檔案,以便進行臨時記錄. 檔案和URL不新增到圖書館歷史。',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => '選擇檔案',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 選擇的檔案', other: '${count} 已選擇的檔案', ), 
 			'universalMedia.wifiTransfer' => '透過 Wi-Fi 傳送檔案',
@@ -8990,6 +9014,8 @@ extension on TranslationsZhHant {
 			'sourceSetup.optionalUsername' => '帳戶使用者名稱（選填）',
 			'sourceSetup.optionalPassword' => '帳戶密碼（選填）',
 			'sourceSetup.subtitlePrivacy' => '請從 opensubtitles.com 取得 API 金鑰。搜尋會傳送影片標題和可用的 IMDb/TMDB ID，絕不傳送影片檔案。金鑰和選填的帳戶認證資料會與此來源一同加密儲存。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => '自動取得線上影片中繼資料',
 			'sourceSetup.metadataPrivacy' => '只傳送檔名中的標題、年份和集數，或 NFO ID，絕不傳送媒體或認證資料。NFO 欄位始終優先。',
 			'sourceSetup.nfsEncryptionFailure' => '使用加密 NFS 時，請確認 NAS 的兩項服務皆支援 RFC 9289 和 TLS 1.3，並核對憑證名稱及匯出 UID/GID。Pleazyng 不會在未加密的情況下重試此連線。',
@@ -9000,8 +9026,6 @@ extension on TranslationsZhHant {
 			'sourceSetup.metadataNoMatches' => '找不到符合的線上標題。請嘗試其他標題。',
 			'sourceSetup.metadataSearch' => '搜尋線上中繼資料',
 			'sourceSetup.metadataLoading' => '正在查詢線上電影與影集資訊…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => '來自 Trakt 的線上中繼資料',
 			'sourceSetup.metadataNoAutomaticMatch' => '找不到自動符合的標題。請搜尋標題並選擇符合的結果。',
 			'sourceSetup.metadataFailed' => '無法載入線上中繼資料。仍可播放媒體及查看本機資訊。',
@@ -9411,6 +9435,10 @@ extension on TranslationsZhHant {
 			'musicTools.preamp' => '前置放大',
 			'musicTools.ratingPending' => '已儲存在此裝置；等待同步',
 			'musicTools.lyricsOffset' => '歌詞時間偏移',
+			'musicTools.anniversaries' => '專輯發行紀念日',
+			'musicTools.outputPreset' => '此輸出的等化器',
+			'musicTools.outputPresetHint' => '選取此輸出時自動使用此等化器。',
+			'musicTools.eqApproximation' => '耳機設定檔已近似轉換為十段等化器設定。',
 			_ => null,
 		};
 	}

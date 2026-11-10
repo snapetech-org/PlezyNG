@@ -10,14 +10,21 @@ import 'package:path_provider/path_provider.dart';
 
 import 'visualizer_catalog_entry.dart';
 import 'visualizer_release_trust.dart';
+import 'visualizer_sigstore_verifier.dart';
 
 /// All platforms compile the same reviewed public root. Build environment and
 /// downloaded envelopes cannot replace it. Rotation requires an app release.
 class VisualizerCatalogTrust {
-  const VisualizerCatalogTrust({required this.keys, this.threshold = 1, this.minimumSequence = 1});
+  const VisualizerCatalogTrust({
+    required this.keys,
+    this.threshold = 1,
+    this.minimumSequence = 1,
+    this.keylessPublisher = false,
+  });
   final Map<String, List<int>> keys;
   final int threshold;
   final int minimumSequence;
+  final bool keylessPublisher;
 
   static VisualizerCatalogTrust release() {
     final sourceRevision = visualizerReleaseTrustRevision;
@@ -42,7 +49,9 @@ class VisualizerCatalogTrust {
         minimumSequence > 9007199254740991) {
       throw const FormatException('Invalid release catalog trust root');
     }
-    if (data.isEmpty) return const VisualizerCatalogTrust(keys: {});
+    if (data.isEmpty) {
+      return VisualizerCatalogTrust(keys: const {}, keylessPublisher: true, minimumSequence: minimumSequence);
+    }
     final keys = <String, List<int>>{};
     for (final item in data.entries) {
       if (!RegExp(r'^[a-z0-9_-]{1,64}$').hasMatch(item.key) || item.value is! String) {
@@ -56,7 +65,12 @@ class VisualizerCatalogTrust {
       throw const FormatException('Catalog key IDs must pin distinct public keys');
     }
     if (threshold < 1 || threshold > keys.length) throw const FormatException('Invalid catalog signature quorum');
-    return VisualizerCatalogTrust(keys: Map.unmodifiable(keys), threshold: threshold, minimumSequence: minimumSequence);
+    return VisualizerCatalogTrust(
+      keys: Map.unmodifiable(keys),
+      threshold: threshold,
+      minimumSequence: minimumSequence,
+      keylessPublisher: true,
+    );
   }
 }
 
@@ -90,10 +104,10 @@ class VisualizerCatalogVerifier {
   static const domain = 'MilkRust.catalog.v1\n';
 
   Future<VisualizerCatalogSnapshot> verify(List<int> bytes, DateTime now, {bool allowExpired = false}) async {
-    if (trust.keys.isEmpty ||
+    if ((!trust.keylessPublisher && trust.keys.isEmpty) ||
         trust.keys.length > 16 ||
         trust.threshold < 1 ||
-        trust.threshold > trust.keys.length ||
+        (trust.keys.isNotEmpty && trust.threshold > trust.keys.length) ||
         trust.minimumSequence < 1 ||
         trust.minimumSequence > 9007199254740991 ||
         trust.keys.values.any((key) => key.length != 32) ||
@@ -105,10 +119,8 @@ class VisualizerCatalogVerifier {
     }
     final wrapper = jsonDecode(utf8.decode(bytes));
     if (wrapper is! Map<String, dynamic> ||
-        wrapper['schemaVersion'] != 1 ||
-        wrapper['payload'] is! String ||
-        wrapper['signatures'] is! List ||
-        (wrapper['signatures'] as List).length > 16) {
+        (wrapper['schemaVersion'] != 1 && wrapper['schemaVersion'] != 2) ||
+        wrapper['payload'] is! String) {
       throw const FormatException('Invalid signed catalog envelope');
     }
     final payload = base64Decode(wrapper['payload'] as String);
@@ -116,23 +128,36 @@ class VisualizerCatalogVerifier {
       throw const FormatException('Catalog payload exceeds its limit');
     }
     final message = [...utf8.encode(domain), ...payload];
-    final accepted = <String>{};
-    for (final signature in wrapper['signatures'] as List) {
-      if (signature is! Map || signature['keyId'] is! String || signature['signature'] is! String) {
-        throw const FormatException('Malformed catalog signature');
+    if (wrapper['schemaVersion'] == 2) {
+      if (!trust.keylessPublisher || wrapper.containsKey('signatures')) {
+        throw const FormatException('Untrusted keyless catalog publisher');
       }
-      final keyId = signature['keyId'] as String, key = trust.keys[keyId];
-      if (key == null || accepted.contains(keyId)) continue;
-      final raw = base64Decode(signature['signature'] as String);
-      if (raw.length != 64) continue;
-      if (await Ed25519().verify(
-        message,
-        signature: Signature(raw, publicKey: SimplePublicKey(key, type: KeyPairType.ed25519)),
-      )) {
-        accepted.add(keyId);
+      VisualizerSigstoreVerifier.verify(wrapper['sigstoreBundle'], message, now);
+    } else {
+      if (trust.keys.isEmpty ||
+          wrapper.containsKey('sigstoreBundle') ||
+          wrapper['signatures'] is! List ||
+          (wrapper['signatures'] as List).length > 16) {
+        throw const FormatException('Invalid catalog signature set');
       }
+      final accepted = <String>{};
+      for (final signature in wrapper['signatures'] as List) {
+        if (signature is! Map || signature['keyId'] is! String || signature['signature'] is! String) {
+          throw const FormatException('Malformed catalog signature');
+        }
+        final keyId = signature['keyId'] as String, key = trust.keys[keyId];
+        if (key == null || accepted.contains(keyId)) continue;
+        final raw = base64Decode(signature['signature'] as String);
+        if (raw.length != 64) continue;
+        if (await Ed25519().verify(
+          message,
+          signature: Signature(raw, publicKey: SimplePublicKey(key, type: KeyPairType.ed25519)),
+        )) {
+          accepted.add(keyId);
+        }
+      }
+      if (accepted.length < trust.threshold) throw const FormatException('Catalog signature quorum was not met');
     }
-    if (accepted.length < trust.threshold) throw const FormatException('Catalog signature quorum was not met');
     final data = jsonDecode(utf8.decode(payload));
     if (data is! Map<String, dynamic> ||
         data['schemaVersion'] != 1 ||
@@ -210,7 +235,7 @@ class VisualizerSignedCatalog {
        _clock = clock ?? DateTime.now,
        endpoint =
            endpoint ??
-           Uri.parse('https://raw.githubusercontent.com/snapetech-org/MilkRust/catalog/visualizer-catalog.json');
+           Uri.parse('https://raw.githubusercontent.com/snapetech-org/pleazyng/main/content/visualizer-catalog.json');
 
   static final shared = VisualizerSignedCatalog();
   final VisualizerCatalogVerifier verifier;
@@ -225,7 +250,7 @@ class VisualizerSignedCatalog {
   String? _cacheError;
   final Map<String, VisualizerCatalogSnapshot> _checkpoints = {};
   final Map<String, VisualizerPackCatalogEntry> _history = {};
-  bool get configured => verifier.trust.keys.isNotEmpty;
+  bool get configured => verifier.trust.keys.isNotEmpty || verifier.trust.keylessPublisher;
   bool get fresh => snapshot?.freshAt(_clock()) ?? false;
   String get status => !configured
       ? 'Remote pack updates are not configured in this build.'

@@ -629,6 +629,7 @@
     "scopePlaybackSpeed": "재생 속도",
     "scopeShaderPreset": "셰이더 프리셋",
     "scopeAspectRatio": "화면 비율",
+    "scopeZoom": "확대/축소",
     "scopeSyncOffsets": "오디오 및 자막 동기화",
     "playerScopeOff": "저장하지 않음",
     "playerScopeGlobal": "모든 곳",
@@ -2248,6 +2249,8 @@
       "watchOn": "시청처",
       "watchTrailer": "예고편 보기",
       "openOn": "${site}에서 열기",
+      "trailerUnavailable": "이 기기에서 예고편을 열 수 없습니다",
+      "linkUnavailable": "이 기기에서 링크를 열 수 없습니다",
       "crew": "제작진",
       "ratings": "평점",
       "schedule": "방영 일정",
@@ -3275,6 +3278,13 @@
     "disconnectConfirmBody": "Plezy가 이 Seerr 인스턴스를 삭제합니다. 언제든 다시 연결할 수 있습니다.",
     "request": "요청",
     "request4k": "4K로 요청",
+    "requestSeasons": "누락된 시즌 요청",
+    "notifyMe": "이용 가능해지면 알림 받기",
+    "notifyMe4k": "4K로 이용 가능해지면 알림 받기",
+    "notificationsOn": "이용 가능 알림 켜짐",
+    "notificationsEnabled": "이용 가능해지면 알려드릴게요",
+    "notificationsDisabled": "이용 가능 알림이 꺼졌습니다",
+    "notificationFailed": "이용 가능 알림을 업데이트하지 못했습니다",
     "seasons": "시즌",
     "allSeasons": "모든 시즌",
     "advancedOptions": "고급",
@@ -5511,6 +5521,10 @@
     "exclusiveOutput": "독점 오디오 출력",
     "preamp": "프리앰프",
     "ratingPending": "이 기기에 저장됨; 동기화 대기 중",
-    "lyricsOffset": "가사 타이밍 조정"
+    "lyricsOffset": "가사 타이밍 조정",
+    "anniversaries": "앨범 발매 기념일",
+    "outputPreset": "이 출력의 EQ",
+    "outputPresetHint": "이 출력이 선택되면 이 EQ를 자동으로 사용합니다.",
+    "eqApproximation": "헤드폰 프로필은 10밴드 EQ에 맞게 근사치로 변환됩니다."
   }
 }

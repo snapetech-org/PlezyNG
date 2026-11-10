@@ -631,6 +631,7 @@
     "scopePlaybackSpeed": "গতি Playback",
     "scopeShaderPreset": "শারীরিক প্রসেস্ট",
     "scopeAspectRatio": "এস্পেক্ট রেসিও",
+    "scopeZoom": "জুম",
     "scopeSyncOffsets": "অডিও & Subtitle Sync",
     "playerScopeOff": "বাঁচান না",
     "playerScopeGlobal": "যেখানে",
@@ -2250,6 +2251,8 @@
       "watchOn": "দেখুন",
       "watchTrailer": "ট্র্যালার দেখুন",
       "openOn": "খোলা ${site}",
+      "trailerUnavailable": "এই ডিভাইসে ট্রেলার খোলা যায়নি",
+      "linkUnavailable": "এই ডিভাইসে এই লিঙ্ক খোলা যায়নি",
       "crew": "ক্লাব",
       "ratings": "রেটিং",
       "schedule": "পরিকল্পনা",
@@ -3279,6 +3282,13 @@
     "disconnectConfirmBody": "Pleazyng এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.",
     "request": "অনুরোধ",
     "request4k": "4K অনুসন্ধান",
+    "requestSeasons": "অনুপস্থিত মৌসুমগুলোর জন্য অনুরোধ করুন",
+    "notifyMe": "পাওয়া গেলে আমাকে জানান",
+    "notifyMe4k": "4K-তে পাওয়া গেলে আমাকে জানান",
+    "notificationsOn": "পাওয়ার বিজ্ঞপ্তি চালু আছে",
+    "notificationsEnabled": "পাওয়া গেলে আমরা আপনাকে জানাব",
+    "notificationsDisabled": "পাওয়ার বিজ্ঞপ্তি বন্ধ করা হয়েছে",
+    "notificationFailed": "পাওয়ার বিজ্ঞপ্তি আপডেট করা যায়নি",
     "seasons": "সপ্তাহ",
     "allSeasons": "সব সপ্তাহ",
     "advancedOptions": "উন্নত",
@@ -5516,6 +5526,10 @@
     "exclusiveOutput": "একচেটিয়া অডিও আউটপুট",
     "preamp": "প্রিঅ্যাম্প",
     "ratingPending": "এই ডিভাইসে সংরক্ষিত; সিঙ্কের অপেক্ষায়",
-    "lyricsOffset": "গানের কথার সময়ের ব্যবধান"
+    "lyricsOffset": "গানের কথার সময়ের ব্যবধান",
+    "anniversaries": "অ্যালবামের বর্ষপূর্তি",
+    "outputPreset": "এই আউটপুটের ইকুয়ালাইজার",
+    "outputPresetHint": "এই আউটপুট বেছে নিলে স্বয়ংক্রিয়ভাবে এই ইকুয়ালাইজার ব্যবহার করুন।",
+    "eqApproximation": "হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।"
   }
 }

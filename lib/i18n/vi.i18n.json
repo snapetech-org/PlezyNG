@@ -629,6 +629,7 @@
     "scopePlaybackSpeed": "Tốc Độ Phát",
     "scopeShaderPreset": "Shader Preset Đánh giá",
     "scopeAspectRatio": "Tỷ Lệ Khung Hình",
+    "scopeZoom": "Thu phóng",
     "scopeSyncOffsets": "Audio & Subtitle đồng bộ",
     "playerScopeOff": "Đừng tiết kiệm",
     "playerScopeGlobal": "khắp nơi",
@@ -2239,6 +2240,8 @@
       "watchOn": "Xem tại",
       "watchTrailer": "Xem trailer",
       "openOn": "Khởi mở tại ${site}",
+      "trailerUnavailable": "Không thể mở đoạn giới thiệu trên thiết bị này",
+      "linkUnavailable": "Không thể mở liên kết này trên thiết bị này",
       "crew": "phi hành đoàn",
       "ratings": "Đánh giá",
       "schedule": "Lên lịch",
@@ -3258,6 +3261,13 @@
     "disconnectConfirmBody": "Pleazyng sẽ quên ví dụ này Seerr. nối lại bất cứ lúc nào.",
     "request": "yêu cầu",
     "request4k": "yêu cầu 4K",
+    "requestSeasons": "Yêu cầu các mùa còn thiếu",
+    "notifyMe": "Thông báo cho tôi khi có sẵn",
+    "notifyMe4k": "Thông báo cho tôi khi có bản 4K",
+    "notificationsOn": "Đã bật thông báo tình trạng khả dụng",
+    "notificationsEnabled": "Chúng tôi sẽ thông báo khi có sẵn",
+    "notificationsDisabled": "Đã tắt thông báo tình trạng khả dụng",
+    "notificationFailed": "Không thể cập nhật thông báo tình trạng khả dụng",
     "seasons": "Phần",
     "allSeasons": "Tất cả mùa",
     "advancedOptions": "Nâng cao",
@@ -5489,6 +5499,10 @@
     "exclusiveOutput": "Đầu ra âm thanh độc quyền",
     "preamp": "Tiền khuếch đại",
     "ratingPending": "Đã lưu trên thiết bị này; đang chờ đồng bộ",
-    "lyricsOffset": "Độ lệch thời gian lời bài hát"
+    "lyricsOffset": "Độ lệch thời gian lời bài hát",
+    "anniversaries": "Kỷ niệm phát hành album",
+    "outputPreset": "EQ cho đầu ra này",
+    "outputPresetHint": "Tự động dùng EQ này khi đầu ra này được chọn.",
+    "eqApproximation": "Hồ sơ tai nghe được xấp xỉ cho EQ mười dải."
   }
 }

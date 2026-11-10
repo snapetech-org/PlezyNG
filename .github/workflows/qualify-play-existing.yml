@@ -1,0 +1,103 @@
+# Existing-artifact qualification only. No AAB upload or store-state mutation.
+name: Qualify existing Play artifacts
+run-name: qualify-play:${{ inputs.release_tag }}:code:${{ inputs.version_code }}
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing published release used for the first Play upload
+        type: string
+        required: true
+        default: v3.0.7
+      version_code:
+        description: Existing uploaded Play version code; never uploads another AAB
+        type: string
+        required: true
+        default: '166'
+      review_grant_test:
+        description: Test expired-trial reviewer grant in a fresh isolated native emulator
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+  attestations: read
+concurrency:
+  group: qualify-play-${{ inputs.version_code }}
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Validate protected publication context
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          PLAY_VERSION_CODE: ${{ inputs.version_code }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$PLAY_VERSION_CODE" =~ ^[1-9][0-9]*$ ]]
+          test "$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = false
+          mkdir -p "$RUNNER_TEMP/play-qualification"
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/play-qualification"
+          python3 scripts/verify_release_attestation.py "$RUNNER_TEMP/play-qualification/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY"
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Fetch Google-generated signed APKs without changing the release
+        env:
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          PLAY_VERSION_CODE: ${{ inputs.version_code }}
+          PLAY_QUALIFICATION_OUTPUT: ${{ runner.temp }}/play-qualification
+          PLAY_FETCH_EMULATOR_SPLITS: ${{ inputs.review_grant_test }}
+        run: bundle exec ruby scripts/stores/fetch_play_qualification.rb
+      - name: Verify APK identity and signing certificate
+        env:
+          PLAY_VERSION_CODE: ${{ inputs.version_code }}
+        run: |
+          set -euo pipefail
+          apksigner=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          apkanalyzer=$(find "$ANDROID_HOME/cmdline-tools" -name apkanalyzer -type f | sort -V | tail -1)
+          test -x "$apksigner"
+          test -x "$apkanalyzer"
+          for apk in "$RUNNER_TEMP/play-qualification/"*.apk; do
+            test "$("$apkanalyzer" manifest application-id "$apk")" = org.snapetech.pleazyng
+            test "$("$apkanalyzer" manifest version-code "$apk")" = "$PLAY_VERSION_CODE"
+            "$apksigner" verify --verbose --print-certs "$apk" > "$apk.signing.txt"
+          done
+          python3 scripts/stores/verify_play_certificate.py "$RUNNER_TEMP/play-qualification"
+      - name: Qualify reviewer access on a fresh native Android emulator
+        if: inputs.review_grant_test
+        env:
+          STORE_REVIEW_ACCESS_CODE: ${{ secrets.STORE_REVIEW_ACCESS_CODE }}
+        run: |
+          set -euo pipefail
+          test -n "$STORE_REVIEW_ACCESS_CODE"
+          export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          test -c /dev/kvm
+          sudo chmod a+rw /dev/kvm
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install 'platform-tools' 'emulator' 'system-images;android-36;google_apis;x86_64'
+          printf 'no\n' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd \
+            --name pleazyng-play-qualification --package 'system-images;android-36;google_apis;x86_64' \
+            --path "$RUNNER_TEMP/pleazyng-play-avd" --device pixel_6
+          "$ANDROID_HOME/emulator/emulator" -avd pleazyng-play-qualification \
+            -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect \
+            -memory 4096 -cores 4 -port 5586 > "$RUNNER_TEMP/pleazyng-review-emulator.log" 2>&1 &
+          emulator_pid=$!
+          trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
+          adb -s emulator-5586 wait-for-device
+          python3 scripts/stores/qualify_review_access.py --serial emulator-5586 \
+            --artifacts "$RUNNER_TEMP/play-qualification"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: play-existing-${{ inputs.version_code }}-qualification
+          path: ${{ runner.temp }}/play-qualification
+          retention-days: 14

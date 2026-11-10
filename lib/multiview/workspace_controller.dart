@@ -62,6 +62,96 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   final WorkspaceSnapshotPersistence? _persistence;
   final String? _profileId;
   Timer? _persistenceTimer;
+  Timer? _recoveryTimer;
+  final Map<Object, WorkspaceSessionDescriptor? Function()> _recoverySources = {};
+  final Map<Object, WorkspaceSessionDescriptor> _activeRecovery = {};
+  final Map<String, WorkspaceSessionDescriptor> _pendingRecovery = {};
+  final Map<String, Object> _recoveryOperations = {};
+
+  /// Lifetime fence for asynchronous reauthorization and launched owners.
+  bool get active => !_disposed;
+  List<WorkspaceSessionDescriptor> get recoverableSessions {
+    final activeIds = _activeRecovery.values.map((value) => value.id).toSet();
+    return List.unmodifiable(
+      _pendingRecovery.values.where((value) => !_sessions.containsKey(value.id) && !activeIds.contains(value.id)),
+    );
+  }
+
+  bool recoveryPending(String id) => _recoveryOperations.containsKey(id);
+
+  /// Checkpoints use the existing owner, including full-screen playback.
+  /// No hidden player or route is created merely to record recovery state.
+  void watchRecovery(Object owner, WorkspaceSessionDescriptor? Function() read) {
+    if (_disposed ||
+        (!_recoverySources.containsKey(owner) && _recoverySources.length >= WorkspaceSnapshot.maxSessions)) {
+      return;
+    }
+    _recoverySources[owner] = read;
+    _captureRecovery();
+    _recoveryTimer ??= Timer.periodic(const Duration(seconds: 10), (_) {
+      final persistence = _persistence;
+      final profileId = _profileId;
+      if (!_disposed && _hydrated && persistence != null && profileId != null) {
+        _persistSnapshot(persistence, profileId, snapshot());
+      }
+    });
+    _publish();
+  }
+
+  void unwatchRecovery(Object owner) {
+    if (_disposed) return;
+    _recoverySources.remove(owner);
+    final previous = _activeRecovery.remove(owner);
+    if (previous != null) _pendingRecovery.remove(previous.id);
+    if (_recoverySources.isEmpty) {
+      _recoveryTimer?.cancel();
+      _recoveryTimer = null;
+    }
+    _publish();
+  }
+
+  void _captureRecovery() {
+    for (final entry in _recoverySources.entries) {
+      try {
+        final value = entry.value();
+        if (value?.resume == null) {
+          _activeRecovery.remove(entry.key);
+        } else {
+          _activeRecovery[entry.key] = value!;
+        }
+      } catch (_) {
+        // A retiring owner must not prevent other sessions being checkpointed.
+      }
+    }
+  }
+
+  bool dismissRecovery(String id) {
+    if (_disposed || _pendingRecovery.remove(id) == null) return false;
+    _recoveryOperations.remove(id);
+    _publish();
+    return true;
+  }
+
+  Future<bool> recover(String id, Future<bool> Function(WorkspaceSessionDescriptor, bool Function()) open) async {
+    final descriptor = _pendingRecovery[id];
+    if (_disposed || descriptor == null || recoveryPending(id)) return false;
+    final token = Object();
+    _recoveryOperations[id] = token;
+    bool current() => !_disposed && identical(_recoveryOperations[id], token) && _pendingRecovery.containsKey(id);
+    _publish();
+    try {
+      final opened = await open(descriptor, current);
+      if (!current()) return false;
+      if (opened) _pendingRecovery.remove(id);
+      return opened;
+    } catch (_) {
+      return false;
+    } finally {
+      if (identical(_recoveryOperations[id], token)) _recoveryOperations.remove(id);
+      if (!_disposed) _publish();
+    }
+  }
+
   Future<void> _persistenceQueue = Future<void>.value();
   WorkspaceSnapshot? _pendingSnapshot;
   bool _hydrated;
@@ -199,6 +289,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     } finally {
       _hydrating = false;
       _hydrated = true;
+      if (!_disposed) _publish();
     }
   }
 
@@ -254,7 +345,10 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// cannot replace the adapter currently driving a visible pane.
   bool register(WorkspaceSurfaceRegistration registration) {
     final descriptor = registration.descriptor;
-    if (descriptor.id.trim().isEmpty || descriptor.title.trim().isEmpty) {
+    if (_disposed ||
+        _sessions.length >= WorkspaceSnapshot.maxSessions ||
+        descriptor.id.trim().isEmpty ||
+        descriptor.title.trim().isEmpty) {
       return false;
     }
     if (descriptor.hasAudio && registration.onAudioOwnershipChanged == null) {
@@ -1170,21 +1264,37 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     return true;
   }
 
-  WorkspaceSnapshot snapshot() => WorkspaceSnapshot(
-    sessions: _sessions.values.map((session) => session.descriptor).toList(growable: false),
-    placements: Map<String, WorkspacePlacement>.unmodifiable(_placements),
-    layoutMode: _layoutMode,
-    focusedSessionId: _focusedSessionId,
-    audibleSessionId: _hasExplicitAudioSelection ? _requestedAudibleSessionId : null,
-    inputSessionId: _requestedInputSessionId,
-    audioSelectionExplicit: _hasExplicitAudioSelection,
-  );
+  WorkspaceSnapshot snapshot() {
+    _captureRecovery();
+    final descriptors = <String, WorkspaceSessionDescriptor>{
+      for (final value in _pendingRecovery.values) value.id: value,
+      for (final session in _sessions.values) session.descriptor.id: session.descriptor,
+      for (final value in _activeRecovery.values) value.id: value,
+    };
+    // Prefer the most recent active owners if stale recovery records fill the cap.
+    final retained = descriptors.values.toList();
+    return WorkspaceSnapshot(
+      sessions: retained
+          .skip((retained.length - WorkspaceSnapshot.maxSessions).clamp(0, retained.length).toInt())
+          .toList(growable: false),
+      placements: Map<String, WorkspacePlacement>.unmodifiable(_placements),
+      layoutMode: _layoutMode,
+      focusedSessionId: _focusedSessionId,
+      audibleSessionId: _hasExplicitAudioSelection ? _requestedAudibleSessionId : null,
+      inputSessionId: _requestedInputSessionId,
+      audioSelectionExplicit: _hasExplicitAudioSelection,
+    );
+  }
 
   void restoreLayout(WorkspaceSnapshot snapshot) {
     if (_positioningSessionId != null) {
       finishPositioning(cancel: true);
     }
     _pendingSnapshot = snapshot;
+    for (final descriptor in snapshot.sessions) {
+      if (descriptor.resume != null) _pendingRecovery[descriptor.id] = descriptor;
+    }
+    if (recoverableSessions.isNotEmpty) _sessionTrayVisible = true;
     _layoutMode = snapshot.layoutMode;
     _placements.addAll(snapshot.placements);
     _prunePlacements();
@@ -1208,6 +1318,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   @override
   void dispose() {
     _persistenceTimer?.cancel();
+    _recoveryTimer?.cancel();
     PlaybackCoordinator.instance
       ..setWorkspaceRetainsMusic(false)
       ..setWorkspaceVideoSessionCount(0)
@@ -1219,6 +1330,10 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       _persistSnapshot(persistence, profileId, snapshot());
     }
     _disposed = true;
+    _recoverySources.clear();
+    _activeRecovery.clear();
+    _pendingRecovery.clear();
+    _recoveryOperations.clear();
     ++_audioRevision;
     ++_inputRevision;
     final audibleHandler = _audibleHandler;

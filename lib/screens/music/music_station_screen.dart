@@ -38,7 +38,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
   String? _libraryKey;
   List<LibraryFilter> _filters = [];
   String _sort = 'random';
-  bool _albums = false, _busy = false, _wifiOnly = true;
+  bool _albums = false, _busy = false, _wifiOnly = true, _descending = true;
   int _refreshHours = 0;
   bool get _current => mounted && context.read<ActiveProfileProvider>().activeId == _experience.store.profileId;
   String? _error;
@@ -57,6 +57,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     _wifiOnly = rule?.wifiOnly ?? true;
     _filters = rule?.filters ?? [];
     _sort = rule?.sort ?? 'random';
+    _descending = rule?.descending ?? true;
     _albums = rule?.albums ?? false;
   }
 
@@ -92,6 +93,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
       libraryId: library.id,
       filters: _filters,
       sort: _sort,
+      descending: _descending,
       albums: _albums,
       refreshHours: _refreshHours,
       wifiOnly: _wifiOnly,
@@ -250,15 +252,16 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
             child: Text('${t.musicTools.rules} (${_filters.length})'),
           ),
           DropdownButton<String>(
+            isExpanded: true,
             value: _sort,
             items: [
               DropdownMenuItem(value: 'random', child: Text(t.common.shuffle)),
-              DropdownMenuItem(value: 'title', child: Text(t.common.mediaKind.track)),
-              DropdownMenuItem(value: 'addedAt', child: Text(t.musicTools.recent)),
-              DropdownMenuItem(value: 'viewCount', child: Text(t.musicTools.charts)),
-              DropdownMenuItem(value: 'lastViewedAt', child: Text(t.musicTools.rediscover)),
+              DropdownMenuItem(value: 'title', child: Text(t.libraries.sortLabels.title)),
+              DropdownMenuItem(value: 'addedAt', child: Text(t.libraries.sortLabels.dateAdded)),
+              DropdownMenuItem(value: 'viewCount', child: Text(t.libraries.sortLabels.playCount)),
+              DropdownMenuItem(value: 'lastViewedAt', child: Text(t.libraries.sortLabels.datePlayed)),
               DropdownMenuItem(value: 'rating', child: Text(t.libraries.sortLabels.rating)),
-              DropdownMenuItem(value: 'originallyAvailableAt', child: Text(t.libraries.filterCategories.year)),
+              DropdownMenuItem(value: 'originallyAvailableAt', child: Text(t.libraries.sortLabels.releaseDate)),
             ],
             onChanged: _busy
                 ? null
@@ -267,6 +270,20 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
                     _preview = [];
                   }),
           ),
+          if (_sort != 'random')
+            SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(value: false, label: Text('0 → 9')),
+                ButtonSegment(value: true, label: Text('9 → 0')),
+              ],
+              selected: {_descending},
+              onSelectionChanged: _busy
+                  ? null
+                  : (value) => setState(() {
+                      _descending = value.single;
+                      _preview = [];
+                    }),
+            ),
           SwitchListTile(
             title: Text(t.musicTools.albumBlocks),
             value: _albums,

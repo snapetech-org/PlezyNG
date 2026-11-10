@@ -19,6 +19,9 @@
 #ifdef PLEZY_RETRO_DESCRIPTOR_INPUTS
 #include "retro_input_files.h"
 #endif
+#ifdef PLEZY_RETRO_DESCRIPTOR_SANDBOX
+#include "retro_descriptor_sandbox.h"
+#endif
 #ifndef PLEZY_RETRO_REMOTE_AUDIO
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
@@ -39,9 +42,21 @@ static void module_close(Module m) { FreeLibrary(m); }
 #include <dlfcn.h>
 #define API extern "C" __attribute__((visibility("default")))
 using Module = void*;
-static Module module_open(const char* path) { return dlopen(path,RTLD_NOW|RTLD_LOCAL); }
+static Module module_open(const char* path) {
+#ifdef PLEZY_RETRO_DESCRIPTOR_SANDBOX
+  return path == plezy::retro::descriptorCorePath ? plezy::retro::descriptorCoreModule : nullptr;
+#else
+  return dlopen(path,RTLD_NOW|RTLD_LOCAL);
+#endif
+}
 static void* symbol(Module m, const char* n) { return dlsym(m,n); }
-static void module_close(Module m) { dlclose(m); }
+static void module_close(Module m) {
+#ifndef PLEZY_RETRO_DESCRIPTOR_SANDBOX
+  dlclose(m);
+#else
+  (void)m; // Pinned preload stays mapped until OS-confirmed worker exit.
+#endif
+}
 #endif
 namespace {
 struct Host {

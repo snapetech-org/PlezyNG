@@ -1,0 +1,15 @@
+// Public trust material from Sigstore root-signing, immutable revision
+// f22ebe7cea5352c2c3b675aa211f730e279c7b78/targets/trusted_root.json.
+// Rotation requires a reviewed app release; envelopes cannot replace these pins.
+const catalogFulcioAuthority =
+    'MIICGjCCAaGgAwIBAgIUALnViVfnU0brJasmRkHrn/UnfaQwCgYIKoZIzj0EAwMwKjEVMBMGA1UEChMMc2lnc3RvcmUuZGV2MREwDwYDVQQDEwhzaWdzdG9yZTAeFw0yMjA0MTMyMDA2MTVaFw0zMTEwMDUxMzU2NThaMDcxFTATBgNVBAoTDHNpZ3N0b3JlLmRldjEeMBwGA1UEAxMVc2lnc3RvcmUtaW50ZXJtZWRpYXRlMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8RVS/ysH+NOvuDZyPIZtilgUF9NlarYpAd9HP1vBBH1U5CV77LSS7s0ZiH4nE7Hv7ptS6LvvR/STk798LVgMzLlJ4HeIfF3tHSaexLcYpSASr1kS0N/RgBJz/9jWCiXno3sweTAOBgNVHQ8BAf8EBAMCAQYwEwYDVR0lBAwwCgYIKwYBBQUHAwMwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQU39Ppz1YkEZb5qNjpKFWixi4YZD8wHwYDVR0jBBgwFoAUWMAeX5FFpWapesyQoZMi0CrFxfowCgYIKoZIzj0EAwMDZwAwZAIwPCsQK4DYiZYDPIaDi5HFKnfxXx6ASSVmERfsynYBiX2X6SJRnZU84/9DZdnFvvxmAjBOt6QpBlc4J/0DxvkTCqpclvziL6BCCPnjdlIB3Pu3BxsPmygUY7Ii2zbdCdliiow=';
+const catalogRekorPublicKey =
+    'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2G2Y+2tabdTV5BcGiBIx0a9fAFwrkBbmLSGtks4L3qX6yYY0zufBnhC8Ur/iy55GhWP/9A/bY2LhC30M9+RYtw==';
+const catalogRekorLogId = 'wNI9atQGlz+VWfO6LRygH4QUfY/8W4RFwiT5i5WRgB0=';
+const catalogPublisherIdentity =
+    'https://github.com/snapetech-org/pleazyng/.github/workflows/visualizer-catalog.yml@refs/heads/main';
+const catalogPublisherIssuer = 'https://token.actions.githubusercontent.com';
+
+// Immutable GitHub account/repository IDs prevent trust following a recycled name.
+const catalogPublisherRepositoryId = '1433487464';
+const catalogPublisherOwnerId = '342151964';

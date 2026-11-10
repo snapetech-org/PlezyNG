@@ -1,9 +1,11 @@
 import 'music_discovery.dart';
 import 'music_audio_policy.dart';
+import 'music_byte_cache.dart';
 import 'music_library_store.dart';
 import 'music_offline_bundle.dart';
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:math';
 
@@ -98,12 +100,83 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicKaraokeControls,
         MusicDiscoveryControls,
         MusicAudioControls,
+        MusicCacheControls,
         MusicSignalPathService {
   final MusicLibraryStore? _libraryStore;
+  late final MusicByteCache? _byteCache = _libraryStore == null ? null : MusicByteCache(scope: _libraryStore.profileId);
+
+  @override
+  Future<void> clearPrefetchCache() async {
+    await _byteCache?.clear();
+  }
+
+  bool Function() _cacheAuthority(MusicSource source) {
+    final client = source.reportingClient;
+    final authentication = client?.authenticationSessionId;
+    return () =>
+        !_disposed &&
+        _libraryStore?.active == true &&
+        client != null &&
+        identical(client.authenticationSessionId, authentication) &&
+        identical(_serverManager.getClient(client.serverId), client) &&
+        _serverManager.isServerVisible(client.serverId) &&
+        !client.isOfflineMode;
+  }
+
+  Future<MusicSource> _cachedSource(MusicSource source) async {
+    final cache = _byteCache;
+    if (cache == null || source.isOffline || source.playMethod != 'DirectPlay' || audioPolicy.prefetchMiB == 0) {
+      return source;
+    }
+    try {
+      final file = await cache.lookup(source.url, source.headers, current: _cacheAuthority(source));
+      return file == null ? source : source.prefetched(file.uri.toString());
+    } catch (_) {
+      return source;
+    }
+  }
+
+  void _prefetchTrack(_ArmedTrack armed, Player player, int generation, int request) {
+    final cache = _byteCache, source = armed.source;
+    if (cache == null || source.isOffline || source.playMethod != 'DirectPlay' || !source.url.startsWith('http')) {
+      return;
+    }
+    final current = _cacheAuthority(source);
+    unawaited(
+      cache
+          .prefetch(
+            source.url,
+            source.headers,
+            budgetBytes: audioPolicy.prefetchMiB * 1024 * 1024,
+            wifiOnly: audioPolicy.prefetchWifiOnly,
+            current: () => current() && _isCurrentArmRequest(player, generation, request) && identical(_armed, armed),
+          )
+          .then((file) async {
+            if (file == null ||
+                !current() ||
+                !_isCurrentArmRequest(player, generation, request) ||
+                !identical(_armed, armed)) {
+              return;
+            }
+            // Preserve the logical track/reporting source when replacing only its
+            // transport. A native transition racing this update remains adoptable.
+            final cached = _ArmedTrack(track: armed.track, source: source.prefetched(file.uri.toString()));
+            _rememberStaleArm();
+            _armed = cached;
+            if (!await _trySetNext(player, Media(cached.source.url)) && identical(_armed, cached)) _armed = null;
+          })
+          .catchError((Object _) {
+            /* Optional prefetch never interrupts playback. */
+          }),
+    );
+  }
+
   MusicAudioPolicy? _audioPolicy;
+  MusicAudioPolicy? _outputEqualizer;
+  String? _outputEqSignature;
   int _audioPolicyRevision = 0;
   final SerialFutureQueue _audioChanges = SerialFutureQueue();
-  double get _outputGain => _audioPolicy?.gain ?? 1;
+  double get _outputGain => (_outputEqualizer ?? _audioPolicy)?.gain ?? 1;
   @override
   MusicAudioPolicy get audioPolicy => _audioPolicy ?? const MusicAudioPolicy();
 
@@ -123,6 +196,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         }
         if (_disposed) return;
         _audioPolicy = policy;
+        _outputEqSignature = null;
+        if (player != null && !player.disposed) await _applyOutputEqualizerNow(player);
         _setMusicGain(_musicGain, force: true);
         await _libraryStore?.saveDocument('audio', 'active', policy.toJson());
         if (!_disposed) notifyListeners();
@@ -182,6 +257,102 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       if (value != null && value.isNotEmpty) result[property] = value;
     }
     return result;
+  }
+
+  @override
+  Future<Map<String, String>> availableAudioOutputs() async {
+    final player = _player;
+    if (player == null || player.playerType != 'mpv') return const {'auto': 'auto'};
+    final raw = await player.getProperty('audio-device-list');
+    if (_disposed || _player != player || raw == null) return const {'auto': 'auto'};
+    try {
+      final entries = jsonDecode(raw) as List;
+      return {
+        'auto': 'auto',
+        for (final entry in entries.whereType<Map>())
+          if (entry['name'] is String && (entry['name'] as String).isNotEmpty)
+            entry['name'] as String: entry['description'] as String? ?? entry['name'] as String,
+      };
+    } on FormatException {
+      return const {'auto': 'auto'};
+    } on TypeError {
+      return const {'auto': 'auto'};
+    }
+  }
+
+  @override
+  Future<MusicAudioPolicy?> outputEqualizer(String output) async {
+    final value = await _libraryStore?.document('outputEq', output);
+    if (value == null || _disposed) return null;
+    try {
+      final eq = MusicAudioPolicy.fromJson(value);
+      // An output assignment carries EQ only. A saved preset can never switch
+      // the route, resampler or exclusive mode while handling a route event.
+      return MusicAudioPolicy(bands: eq.bands, preampDb: eq.preampDb);
+    } on FormatException {
+      return null;
+    } on TypeError {
+      return null;
+    } on ArgumentError {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> setOutputEqualizer(String output, MusicAudioPolicy? policy) {
+    MusicAudioPolicy(output: output).validate();
+    policy?.validate();
+    final copy = policy == null ? null : MusicAudioPolicy(bands: List.of(policy.bands), preampDb: policy.preampDb);
+    return _audioChanges.run(() async {
+      final store = _libraryStore;
+      if (_disposed || store == null || !store.active) throw StateError('Music profile unavailable');
+      if (copy == null) {
+        await store.deleteDocument('outputEq', output);
+      } else {
+        await store.saveDocument('outputEq', output, copy.toJson());
+      }
+      _outputEqSignature = null;
+      final player = _player;
+      if (!_disposed && player != null && !player.disposed) await _applyOutputEqualizerNow(player);
+      if (!_disposed) notifyListeners();
+    });
+  }
+
+  Future<void> _applyOutputEqualizerNow(Player player) async {
+    if (_disposed || _player != player || player.disposed || player.playerType != 'mpv' || _libraryStore == null) {
+      return;
+    }
+    final output = await player.getProperty('audio-device') ?? 'auto';
+    final eq = await outputEqualizer(output);
+    if (_disposed || _player != player || player.disposed) return;
+    if (output != (await player.getProperty('audio-device') ?? 'auto')) return;
+    final signature = jsonEncode([output, eq?.toJson()]);
+    if (_outputEqSignature == signature) return;
+    final previous = _outputEqualizer;
+    final effective = eq ?? _audioPolicy;
+    if (eq != null || previous != null) {
+      if (player is! AudioEqualizerCapable) throw UnsupportedError('Output EQ unavailable');
+      final settings = SettingsService.instanceOrNull;
+      final bands =
+          effective?.bands ?? [for (final pref in SettingsService.audioEqualizerBandPrefs) settings?.read(pref) ?? 0.0];
+      if (bands.any((band) => band != 0) || (effective?.preampDb ?? 0) != 0) {
+        await player.setAudioPassthrough(false);
+      }
+      await (player as AudioEqualizerCapable).setAudioEqualizer(bands);
+    }
+    if (_disposed || _player != player || player.disposed) return;
+    _outputEqualizer = eq;
+    _outputEqSignature = signature;
+    _setMusicGain(_musicGain, force: true);
+  }
+
+  void _onAudioOutputChanged(Player player) {
+    unawaited(
+      _audioChanges.run(() => _applyOutputEqualizerNow(player)).catchError((Object error, StackTrace stack) {
+        appLogger.w('Music output EQ could not be applied', error: error, stackTrace: stack);
+        if (!_disposed) _errorsController.add(error);
+      }),
+    );
   }
 
   MediaItem? _continuationSeed;
@@ -520,7 +691,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final state = _player?.state;
     final failed = _status == MusicPlaybackStatus.error || _launchObserver?.failure != null;
     final ready = _observedReady;
-    final blocked = !automotivePlaybackAllowedNow();
+    final blocked = !automotiveMusicPlaybackAllowedNow();
     return {
       'stage': failed
           ? 'failed'
@@ -586,7 +757,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// Whether this vehicle reports its own driver-distraction state. Only then
   /// can audio outlive the activity: the restriction signal, not the app being
   /// on screen, is what stops playback for driving.
-  bool get _carBackgroundAudioAvailable => CarUxRestrictionsService.instance.state != CarUxRestrictionState.unknown;
+  bool get _carBackgroundAudioAvailable =>
+      PlatformDetector.isAutomotiveMedia() || CarUxRestrictionsService.instance.state != CarUxRestrictionState.unknown;
 
   Timer? _sleepTimer;
   Duration? _sleepTimerDuration;
@@ -875,7 +1047,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
       MusicSource source;
       try {
-        source = await _resolver.resolve(track, offline: offline);
+        source = await _cachedSource(await _resolver.resolve(track, offline: offline));
       } catch (e, st) {
         appLogger.w('Music source resolve failed for ${track.id}', error: e, stackTrace: st);
         if (launchCurrent()) {
@@ -900,7 +1072,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         return;
       }
 
-      final shouldPlay = play && automotivePlaybackAllowedNow();
+      final shouldPlay = play && automotiveMusicPlaybackAllowedNow();
       // A restored session's first open resumes at the persisted playhead;
       // any other open consumes (discards) a stale resume point.
       final restored = _consumePendingResume(track);
@@ -921,7 +1093,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         return;
       }
 
-      final playbackStarted = shouldPlay && automotivePlaybackAllowedNow();
+      final playbackStarted = shouldPlay && automotiveMusicPlaybackAllowedNow();
       if (shouldPlay && !playbackStarted) {
         await player.pause();
         if (generation != _generation || _player != player) {
@@ -998,7 +1170,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       source = _currentSource!;
     } else {
       try {
-        source = await _resolver.resolve(target);
+        source = await _cachedSource(await _resolver.resolve(target));
       } catch (e, st) {
         // Fail soft: with nothing armed, the completed event falls back to
         // an explicit open of the next track (which retries the resolve).
@@ -1016,6 +1188,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
     appLogger.d('Music: arming cursor $targetCursor "${target.title}"');
     final ok = await _trySetNext(player, Media(source.url, headers: source.headers));
+    if (ok && identical(_armed, armed)) _prefetchTrack(armed, player, generation, armRequest);
     if (!ok && identical(_armed, armed)) {
       // Nothing is armed natively; clear the record so the confirmed
       // completed fallback can advance explicitly instead of waiting for a
@@ -1033,7 +1206,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _requestArmNext() {
-    if (_disposed || !automotivePlaybackAllowedNow()) {
+    if (_disposed || !automotiveMusicPlaybackAllowedNow()) {
       return;
     }
     _armRequestGeneration++;
@@ -1085,7 +1258,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   Future<bool> _trySetNext(Player player, Media? media) async {
-    if (media != null && !automotivePlaybackAllowedNow()) {
+    if (media != null && !automotiveMusicPlaybackAllowedNow()) {
       return false;
     }
     try {
@@ -1116,6 +1289,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final player = existing == null || existing.disposed ? _audioPlayerFactory() : existing;
     if (isNew) {
       _player = player;
+      _outputEqSignature = null;
+      _outputEqualizer = null;
       _wirePlayerStreams(player);
     }
     if (Platform.isAndroid) {
@@ -1166,6 +1341,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final policy = _audioPolicy;
     if (policy != null) {
       await policy.apply(player, albumContext: !shuffled && _playContext?.kind == MusicPlayContextKind.album);
+      _outputEqSignature = null;
+      await _applyOutputEqualizerNow(player);
       return;
     }
     final settings = SettingsService.instanceOrNull;
@@ -1176,6 +1353,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         for (final pref in SettingsService.audioEqualizerBandPrefs) settings.read(pref),
       ]);
     }
+    _outputEqSignature = null;
+    await _applyOutputEqualizerNow(player);
   }
 
   Future<void> _applyAudioPassthrough(Player player) async {
@@ -1220,6 +1399,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       ..add(player.streams.trackTransition.listen(_onTrackTransition))
       ..add(player.streams.completed.listen(_onCompleted))
       ..add(player.streams.error.listen(_onPlayerError));
+    _playerSubs.add(player.streams.audioDevice.listen((_) => _onAudioOutputChanged(player)));
     if (_launchObserver != null) {
       _playerSubs
         ..add(
@@ -1271,7 +1451,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _onPlayingChanged(bool isPlaying) {
-    final playbackAllowed = automotivePlaybackAllowedNow();
+    final playbackAllowed = automotiveMusicPlaybackAllowedNow();
     final shouldBePlaying = isPlaying && playbackAllowed;
     if (isPlaying && !playbackAllowed) {
       unawaited(_player?.pause());
@@ -1362,7 +1542,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _consecutiveFailures = 0;
     appLogger.d('Music: transition received "${adopted.track.title}" → cursor ${_queue.cursor}');
     _persistSessionProgress(positionOverride: Duration.zero);
-    if (automotivePlaybackAllowedNow()) {
+    if (automotiveMusicPlaybackAllowedNow()) {
       _setStatus(MusicPlaybackStatus.playing, forceNotify: true);
     } else {
       unawaited(_player?.pause());
@@ -1915,7 +2095,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// unable to stop audio. Starting audio is gated inside [play] instead.
   late final _mediaControlRouter = MediaControlRouter(
     canControlPlayback: () => true,
-    canNavigateMediaItems: automotivePlaybackAllowedNow,
+    canNavigateMediaItems: automotiveMusicPlaybackAllowedNow,
     onPlay: () => unawaited(play()),
     onPause: () => unawaited(pause()),
     onTogglePlayPause: () => unawaited(togglePlayPause()),
@@ -1987,7 +2167,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<void> play() async {
     _continuationResumeRevision++;
-    if (!automotivePlaybackAllowedNow()) {
+    if (!automotiveMusicPlaybackAllowedNow()) {
       appLogger.d('Music play denied while automotive playback is restricted');
       return;
     }
@@ -2017,7 +2197,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       }
       _requestArmNext();
     }
-    if (!automotivePlaybackAllowedNow()) {
+    if (!automotiveMusicPlaybackAllowedNow()) {
       appLogger.d('Music play denied while automotive playback is restricted');
       return;
     }
@@ -2025,7 +2205,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (!_isCurrentTransport(player, generation)) {
       return;
     }
-    if (!automotivePlaybackAllowedNow()) {
+    if (!automotiveMusicPlaybackAllowedNow()) {
       await player.pause();
       if (_isCurrentTransport(player, generation)) {
         _setStatus(MusicPlaybackStatus.paused);
@@ -2144,7 +2324,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// to play — so those cars keep the previous, conservative behaviour.
   void _applyCarPlaybackRestrictions() {
     final vehicleReports = _carBackgroundAudioAvailable;
-    if (!automotivePlaybackAllowedNow()) {
+    if (!automotiveMusicPlaybackAllowedNow()) {
       _invalidateArmRequests();
       _rememberStaleArm();
       final player = _player;
@@ -2233,7 +2413,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _pausedByCarRestriction = false;
       return;
     }
-    if (!automotivePlaybackAllowedNow()) {
+    if (!automotiveMusicPlaybackAllowedNow()) {
       // The vehicle restricted again mid-resume: keep the claim and let the current
       // verdict decide what happens next.
       _applyCarPlaybackRestrictions();
@@ -2261,7 +2441,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       // for the same reason the caller checks it: the session reads `loading` while
       // a replacement source resolves, with the previous track still audible.
       final stillSounding = isPlaying || (_player?.state.playing ?? false);
-      if (!_disposed && !automotivePlaybackAllowedNow() && stillSounding) {
+      if (!_disposed && !automotiveMusicPlaybackAllowedNow() && stillSounding) {
         try {
           await stop();
         } catch (e, stackTrace) {
@@ -2271,7 +2451,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     } finally {
       _carPauseInFlight = false;
     }
-    if (_disposed || !automotivePlaybackAllowedNow()) {
+    if (_disposed || !automotiveMusicPlaybackAllowedNow()) {
       return;
     }
     _applyCarPlaybackRestrictions();
@@ -2935,6 +3115,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _generation++;
     _invalidateArmRequests();
     _disposed = true;
+    _byteCache?.dispose();
     if (_observesLifecycle) {
       WidgetsBinding.instance.removeObserver(this);
       _observesLifecycle = false;

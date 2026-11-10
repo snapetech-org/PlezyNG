@@ -718,6 +718,7 @@ class _Translations$settings$id extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Kecepatan Pemutaran';
 	@override String get scopeShaderPreset => 'Shader Preset yang';
 	@override String get scopeAspectRatio => 'Rasio perbandingan';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Audio dan Subtitle Sync';
 	@override String get playerScopeOff => 'Jangan Menyelamatkan';
 	@override String get playerScopeGlobal => 'di mana-mana';
@@ -2719,6 +2720,13 @@ class _Translations$seerr$id extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng akan melupakan contoh Seerr ini. sambungkan kembali kapan saja.';
 	@override String get request => 'Permintaan';
 	@override String get request4k => 'Permintaan dalam 4K';
+	@override String get requestSeasons => 'Minta musim yang belum tersedia';
+	@override String get notifyMe => 'Beri tahu saya saat tersedia';
+	@override String get notifyMe4k => 'Beri tahu saya saat tersedia dalam 4K';
+	@override String get notificationsOn => 'Peringatan ketersediaan aktif';
+	@override String get notificationsEnabled => 'Kami akan memberi tahu Anda saat tersedia';
+	@override String get notificationsDisabled => 'Peringatan ketersediaan dinonaktifkan';
+	@override String get notificationFailed => 'Gagal memperbarui peringatan ketersediaan';
 	@override String get seasons => 'Musim';
 	@override String get allSeasons => 'Semua Musim';
 	@override String get advancedOptions => 'Canggih';
@@ -4270,6 +4278,10 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	@override String get preamp => 'Prapenguatan';
 	@override String get ratingPending => 'Disimpan di perangkat ini; menunggu sinkronisasi';
 	@override String get lyricsOffset => 'Pergeseran waktu lirik';
+	@override String get anniversaries => 'Ulang tahun album';
+	@override String get outputPreset => 'EQ untuk keluaran ini';
+	@override String get outputPresetHint => 'Gunakan EQ ini secara otomatis saat keluaran ini dipilih.';
+	@override String get eqApproximation => 'Profil headphone diperkirakan untuk EQ sepuluh pita.';
 }
 
 // Path: appIcon.names
@@ -5011,6 +5023,8 @@ class _Translations$explore$detail$id extends Translations$explore$detail$en {
 	@override String get watchOn => 'Lihatlah';
 	@override String get watchTrailer => 'Lihat Trailer';
 	@override String openOn({required Object site}) => 'Terbuka pada ${site}';
+	@override String get trailerUnavailable => 'Cuplikan tidak dapat dibuka di perangkat ini';
+	@override String get linkUnavailable => 'Tautan ini tidak dapat dibuka di perangkat ini';
 	@override String get crew => 'Kapal';
 	@override String get ratings => 'Peringkat';
 	@override String get schedule => 'Jadwal';
@@ -5965,6 +5979,7 @@ extension on TranslationsId {
 			'settings.scopePlaybackSpeed' => 'Kecepatan Pemutaran',
 			'settings.scopeShaderPreset' => 'Shader Preset yang',
 			'settings.scopeAspectRatio' => 'Rasio perbandingan',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Audio dan Subtitle Sync',
 			'settings.playerScopeOff' => 'Jangan Menyelamatkan',
 			'settings.playerScopeGlobal' => 'di mana-mana',
@@ -6408,9 +6423,9 @@ extension on TranslationsId {
 			'videoControls.addBookmark' => 'Tambahkan Bookmark',
 			'videoControls.bookmarkName' => 'Nama Bookmark',
 			'videoControls.bookmarkNameHint' => 'Misalnya, adegan pembukaan',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark yang ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark yang ${n}',
 			'videoControls.bookmarkNameRequired' => 'Masukkan nama untuk buku ini.',
 			'videoControls.deleteBookmark' => 'Menghapus Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Item ini sudah memiliki 100 buku.',
@@ -6922,9 +6937,9 @@ extension on TranslationsId {
 			'libraries.content' => 'Perpustakaan konten',
 			'libraries.selectLibrary' => 'Pilih perpustakaan',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
-			'libraries.noRecommendations' => 'Tidak ada rekomendasi tersedia',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Tidak ada rekomendasi tersedia',
 			'libraries.noCollections' => 'Tidak ada koleksi di perpustakaan ini',
 			'libraries.noFoldersFound' => 'Tidak ditemukan folder',
 			'libraries.folders' => 'Folder',
@@ -7217,6 +7232,8 @@ extension on TranslationsId {
 			'explore.detail.watchOn' => 'Lihatlah',
 			'explore.detail.watchTrailer' => 'Lihat Trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Terbuka pada ${site}',
+			'explore.detail.trailerUnavailable' => 'Cuplikan tidak dapat dibuka di perangkat ini',
+			'explore.detail.linkUnavailable' => 'Tautan ini tidak dapat dibuka di perangkat ini',
 			'explore.detail.crew' => 'Kapal',
 			'explore.detail.ratings' => 'Peringkat',
 			'explore.detail.schedule' => 'Jadwal',
@@ -7434,11 +7451,11 @@ extension on TranslationsId {
 			'watchTogether.copyCode' => 'Kopi kode',
 			'watchTogether.codeCopied' => 'Kode kamar disalin',
 			'watchTogether.shareInvite' => 'Membagi Jemputan',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'Tuliskan pesan, masukkan ke dalam pesan.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Watch bersama saya di Pleazyng: buka Watch bersama, pilih Join Room dan masukkan ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kontrol sesi',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Menghubungkan kembali...',
 			'watchTogether.reconnectingDescription' => 'Koneksi terputus.Anda masuk ke ruangan secara otomatis.',
 			'watchTogether.connected' => 'terhubung',
@@ -7948,11 +7965,11 @@ extension on TranslationsId {
 			'metadataEdit.imageUrl' => 'Gambar URL',
 			'metadataEdit.metadataUpdated' => 'Metadata yang diperbarui',
 			'metadataEdit.metadataUpdateFailed' => 'Tidak dapat mengemas kini metadata',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Artwork dikemas kini',
 			'metadataEdit.artworkUpdateFailed' => 'gagal memperbarui karya seni',
 			'metadataEdit.noArtworkAvailable' => 'Tidak ada seni yang tersedia',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opsi seni ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opsi seni ${index}, dipilih',
 			'metadataEdit.notSet' => 'Tidak menetapkan',
@@ -8039,6 +8056,13 @@ extension on TranslationsId {
 			'seerr.disconnectConfirmBody' => 'Pleazyng akan melupakan contoh Seerr ini. sambungkan kembali kapan saja.',
 			'seerr.request' => 'Permintaan',
 			'seerr.request4k' => 'Permintaan dalam 4K',
+			'seerr.requestSeasons' => 'Minta musim yang belum tersedia',
+			'seerr.notifyMe' => 'Beri tahu saya saat tersedia',
+			'seerr.notifyMe4k' => 'Beri tahu saya saat tersedia dalam 4K',
+			'seerr.notificationsOn' => 'Peringatan ketersediaan aktif',
+			'seerr.notificationsEnabled' => 'Kami akan memberi tahu Anda saat tersedia',
+			'seerr.notificationsDisabled' => 'Peringatan ketersediaan dinonaktifkan',
+			'seerr.notificationFailed' => 'Gagal memperbarui peringatan ketersediaan',
 			'seerr.seasons' => 'Musim',
 			'seerr.allSeasons' => 'Semua Musim',
 			'seerr.advancedOptions' => 'Canggih',
@@ -8455,6 +8479,8 @@ extension on TranslationsId {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, other: '${count} masuk daftar main yang tidak didukung atau tidak aman.', ), 
 			'universalMedia.playlistAddress' => 'Alamat Playlist',
 			'universalMedia.playlistAddressHelp' => 'Buka daftar main M3U, M3u8, atau PLS dari alamat web. link streaming langsung tidak menyimpan daftar main.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Pilih file playlist',
 			'universalMedia.openPlaylist' => 'Pembukaan playlist',
 			'universalMedia.playlistFormatsHelp' => 'Daftar main dapat berisi lebih dari 1.000 item dan 2 MB. HLS terbuka sebagai arus sehingga pemain dapat memilih kualitas.',
@@ -8465,8 +8491,6 @@ extension on TranslationsId {
 			'universalMedia.noFavorites' => 'Belum disimpan streaming favorit sampai sekarang. favorit tetap di profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapus Stream Favorit',
 			'universalMedia.filesHelp' => 'Pilih file audio, video, atau ISO untuk catatan sementara.File dan URL tidak ditambahkan ke sejarah perpustakaan.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Pilih file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, other: '${count} file terpilih', ), 
 			'universalMedia.wifiTransfer' => 'Mengirim file melalui Wi-Fi',
@@ -8969,6 +8993,8 @@ extension on TranslationsId {
 			'sourceSetup.optionalUsername' => 'Nama pengguna akun (opsional)',
 			'sourceSetup.optionalPassword' => 'Kata sandi akun (opsional)',
 			'sourceSetup.subtitlePrivacy' => 'Dapatkan kunci API dari opensubtitles.com. Pencarian mengirim judul video dan ID IMDb/TMDB yang tersedia, tidak pernah mengirim file video. Kunci dan kredensial akun opsional dienkripsi bersama sumber ini.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Metadata video daring otomatis',
 			'sourceSetup.metadataPrivacy' => 'Hanya mengirim judul/tahun dari nama file dan nomor episode atau ID NFO, tidak pernah mengirim media atau kredensial. Kolom NFO tetap menjadi acuan utama.',
 			'sourceSetup.nfsEncryptionFailure' => 'Untuk NFS terenkripsi, periksa dukungan RFC 9289 dan TLS 1.3 pada kedua layanan NAS, nama sertifikat, serta UID/GID ekspor. Pleazyng tidak akan mencoba ulang koneksi ini tanpa enkripsi.',
@@ -8979,8 +9005,6 @@ extension on TranslationsId {
 			'sourceSetup.metadataNoMatches' => 'Tidak ditemukan judul yang cocok secara daring. Coba judul lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata daring',
 			'sourceSetup.metadataLoading' => 'Mencari detail film dan acara TV secara daring…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadata daring dari Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tidak ditemukan kecocokan judul otomatis. Cari judulnya untuk memilih kecocokan.',
 			'sourceSetup.metadataFailed' => 'Metadata daring tidak dapat dimuat. Pemutaran dan detail lokal tetap tersedia.',
@@ -9390,6 +9414,10 @@ extension on TranslationsId {
 			'musicTools.preamp' => 'Prapenguatan',
 			'musicTools.ratingPending' => 'Disimpan di perangkat ini; menunggu sinkronisasi',
 			'musicTools.lyricsOffset' => 'Pergeseran waktu lirik',
+			'musicTools.anniversaries' => 'Ulang tahun album',
+			'musicTools.outputPreset' => 'EQ untuk keluaran ini',
+			'musicTools.outputPresetHint' => 'Gunakan EQ ini secara otomatis saat keluaran ini dipilih.',
+			'musicTools.eqApproximation' => 'Profil headphone diperkirakan untuk EQ sepuluh pita.',
 			_ => null,
 		};
 	}

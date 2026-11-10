@@ -13,8 +13,10 @@ import '../../i18n/strings.g.dart';
 import '../../i18n/presentation_formats.dart';
 import '../../providers/trackers_provider.dart';
 import '../../sources/dlna_discovery.dart';
+import '../../sources/adapters/bookorbit_source.dart';
 import '../../sources/source_controller.dart';
 import '../../sources/source_models.dart';
+import '../../sources/source_transport.dart';
 import '../../sources/publication_shelf.dart';
 import '../../utils/platform_detector.dart';
 import '../../widgets/app_icon.dart';
@@ -433,6 +435,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
           FileSourceKind.nfs => const ['nfsTlsClientIdentity', 'nfsTlsClientIdentityPassword'],
           FileSourceKind.s3 => const ['accessKey', 'secretKey', 'sessionToken'],
           FileSourceKind.audiobookshelf => const ['token', 'username', 'password'],
+          FileSourceKind.bookorbit => const ['username', 'password'],
           FileSourceKind.openSubsonic => const ['username', 'password', 'apiKey'],
           FileSourceKind.komga => const ['username', 'password', 'token'],
           _ => const <String>[],
@@ -475,6 +478,15 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
       }
       controller.requireSession(epoch);
       if (!mounted) return;
+      if (_kind == FileSourceKind.bookorbit) {
+        final probe = BookOrbitSourceAdapter(source, SourceTransport(allowHttp: _allowHttp), () async => credentials);
+        try {
+          await probe.browse();
+        } finally {
+          probe.close();
+        }
+        controller.requireSession(epoch);
+      }
       await controller.add(source, credentials);
       // A reconnect must discard any cached adapter and authorization lease.
       await controller.reconnect(source.id);
@@ -549,6 +561,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                           FileSourceKind.dlna => 'http://192.168.1.20:8200/rootDesc.xml',
                           FileSourceKind.komga => 'https://komga.example.com',
                           FileSourceKind.openSubsonic => 'https://music.example.com',
+                          FileSourceKind.bookorbit => 'https://books.example.com',
                           FileSourceKind.podcastRss => 'https://podcast.example/feed.xml',
                           _ => null,
                         },
@@ -558,7 +571,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                             ? _validateSmbEndpoint
                             : _kind == FileSourceKind.podcastRss
                             ? _validatePodcastFeedUrl
-                            : _kind == FileSourceKind.openSubsonic
+                            : (_kind == FileSourceKind.openSubsonic || _kind == FileSourceKind.bookorbit)
                             ? _validateOpenSubsonicEndpoint
                             : null,
                       ),
@@ -612,6 +625,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                         child: Text(t.fileSources.localFolder),
                       ),
                     ] else if (_kind != FileSourceKind.audiobookshelf &&
+                        _kind != FileSourceKind.bookorbit &&
                         _kind != FileSourceKind.opds &&
                         _kind != FileSourceKind.komga &&
                         _kind != FileSourceKind.openSubsonic &&
@@ -647,6 +661,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                       FileSourceKind.opds,
                       FileSourceKind.komga,
                       FileSourceKind.audiobookshelf,
+                      FileSourceKind.bookorbit,
                       FileSourceKind.openSubsonic,
                       FileSourceKind.nfs,
                       FileSourceKind.smb,
@@ -658,13 +673,17 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                         input(
                           'username',
                           t.fileSources.username,
-                          required: _kind == FileSourceKind.sftp && widget.existing == null,
+                          required:
+                              const {FileSourceKind.sftp, FileSourceKind.bookorbit}.contains(_kind) &&
+                              widget.existing == null,
                         ),
                         input(
                           'password',
                           t.fileSources.password,
                           secret: true,
-                          validator: _kind == FileSourceKind.sftp && widget.existing == null
+                          validator: _kind == FileSourceKind.bookorbit && widget.existing == null
+                              ? (value) => value?.isNotEmpty == true ? null : t.fileSources.errorAuthentication
+                              : _kind == FileSourceKind.sftp && widget.existing == null
                               ? (value) => value?.isNotEmpty == true || field('privateKey').text.trim().isNotEmpty
                                     ? null
                                     : t.sourceSetup.passwordOrKey
@@ -849,6 +868,11 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                     ],
                     if (_kind == FileSourceKind.audiobookshelf)
                       input('token', t.fileSources.token, secret: true, validator: _validateAudiobookshelfCredentials),
+                    if (_kind == FileSourceKind.bookorbit)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(t.sourceSetup.bookorbitHelp, style: Theme.of(context).textTheme.bodySmall),
+                      ),
                     if (_kind == FileSourceKind.openSubsonic) ...[
                       input('apiKey', t.sourceSetup.apiKey, secret: true, validator: _validateOpenSubsonicCredentials),
                     ],
@@ -862,6 +886,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                     ],
                     if (_kind != FileSourceKind.opds &&
                         _kind != FileSourceKind.audiobookshelf &&
+                        _kind != FileSourceKind.bookorbit &&
                         _kind != FileSourceKind.komga &&
                         _kind != FileSourceKind.openSubsonic &&
                         _kind != FileSourceKind.podcastRss)
@@ -891,6 +916,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                       ),
                     if (_kind != FileSourceKind.opds &&
                         _kind != FileSourceKind.audiobookshelf &&
+                        _kind != FileSourceKind.bookorbit &&
                         _kind != FileSourceKind.komga &&
                         _kind != FileSourceKind.openSubsonic &&
                         _kind != FileSourceKind.podcastRss)
@@ -916,6 +942,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                       FileSourceKind.opds,
                       FileSourceKind.s3,
                       FileSourceKind.audiobookshelf,
+                      FileSourceKind.bookorbit,
                       FileSourceKind.dlna,
                       FileSourceKind.komga,
                       FileSourceKind.openSubsonic,

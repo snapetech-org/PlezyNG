@@ -631,6 +631,7 @@
     "scopePlaybackSpeed": "Avspillingshastighet",
     "scopeShaderPreset": "Forhåndsinnstilling for skyggelegging",
     "scopeAspectRatio": "Sideforhold",
+    "scopeZoom": "Zoom",
     "scopeSyncOffsets": "Synkronisering av lyd og undertekster",
     "playerScopeOff": "Ikke lagre",
     "playerScopeGlobal": "Overalt",
@@ -2250,6 +2251,8 @@
       "watchOn": "Se på",
       "watchTrailer": "Se trailer",
       "openOn": "Åpne på ${site}",
+      "trailerUnavailable": "Kunne ikke åpne traileren på denne enheten",
+      "linkUnavailable": "Kunne ikke åpne lenken på denne enheten",
       "crew": "Mannskap",
       "ratings": "Vurderinger",
       "schedule": "Sendeskjema",
@@ -3279,6 +3282,13 @@
     "disconnectConfirmBody": "Pleazyng glemmer denne Seerr-instansen. Koble til igjen når som helst.",
     "request": "Be om",
     "request4k": "Be om i 4K",
+    "requestSeasons": "Be om manglende sesonger",
+    "notifyMe": "Varsle meg når tilgjengelig",
+    "notifyMe4k": "Varsle meg når tilgjengelig i 4K",
+    "notificationsOn": "Tilgjengelighetsvarsel er på",
+    "notificationsEnabled": "Vi varsler deg når det blir tilgjengelig",
+    "notificationsDisabled": "Tilgjengelighetsvarselet er slått av",
+    "notificationFailed": "Kunne ikke oppdatere tilgjengelighetsvarselet",
     "seasons": "Sesonger",
     "allSeasons": "Alle sesonger",
     "advancedOptions": "Avansert",
@@ -5516,6 +5526,10 @@
     "exclusiveOutput": "Eksklusiv lydutgang",
     "preamp": "Forforsterkning",
     "ratingPending": "Lagret på denne enheten; venter på synkronisering",
-    "lyricsOffset": "Tidsforskyvning for sangtekst"
+    "lyricsOffset": "Tidsforskyvning for sangtekst",
+    "anniversaries": "Albumjubileer",
+    "outputPreset": "EQ for denne utgangen",
+    "outputPresetHint": "Bruk denne EQ-en automatisk når denne utgangen velges.",
+    "eqApproximation": "Hodetelefonprofiler er tilnærmet for EQ med ti bånd."
   }
 }

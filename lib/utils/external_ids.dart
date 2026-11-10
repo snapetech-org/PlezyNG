@@ -67,6 +67,23 @@ class ExternalIds {
 
   const ExternalIds({this.imdb, this.tmdb, this.tvdb, this.anidb});
 
+  /// Read only exact provider identifiers already attached to a library
+  /// item. A menu can use these even when its media server is unreachable.
+  static ExternalIds fromMediaMetadata(Map<String, Object?>? raw, String? guid) {
+    var ids = const ExternalIds();
+    final guids = raw?['Guid'];
+    if (guids is List) ids = ids.fillFrom(ExternalIds.fromGuids(guids));
+    final providerIds = raw?['ProviderIds'];
+    if (providerIds is Map) {
+      final normalized = <String, Object?>{};
+      for (final entry in providerIds.entries) {
+        if (entry.key is String) normalized[entry.key as String] = entry.value;
+      }
+      ids = ids.fillFrom(ExternalIds.fromJellyfinProviderIds(normalized));
+    }
+    return ids.fillFrom(ExternalIds.fromLegacyPlexGuid(guid));
+  }
+
   bool get hasAny => hasCatalogIds || anidb != null;
 
   /// The ids a title database can be queried with. Callers that can only search

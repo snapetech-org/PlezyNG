@@ -512,6 +512,8 @@ open class MpvPlayerPlugin(
       "updateFrame" -> handleUpdateFrame(result)
       "setVideoFrameRate" -> handleSetVideoFrameRate(call, result)
       "clearVideoFrameRate" -> handleClearVideoFrameRate(result)
+      "holdVideoDecoder" -> handleHoldVideoDecoder(call, result)
+      "releaseVideoDecoderHold" -> handleReleaseVideoDecoderHold(call, result)
       "setAudioFocusEnabled" -> handleSetAudioFocusEnabled(call, result)
       "requestAudioFocus" -> handleRequestAudioFocus(result)
       "getAudioSpdifCodecs" -> handleGetAudioSpdifCodecs(result)
@@ -1864,6 +1866,37 @@ open class MpvPlayerPlugin(
   private fun handleClearVideoFrameRate(result: MethodChannel.Result) {
     PlayerDebugLog.d(tag) { "clearVideoFrameRate" }
     playerCore?.clearVideoFrameRate()
+    result.success(null)
+  }
+
+  // Answered once mpv reaches the next file's on_preloaded (the demuxed video
+  // format) or with null when nothing was held; see MpvPlayerCore.holdVideoDecoder.
+  private fun handleHoldVideoDecoder(call: MethodCall, result: MethodChannel.Result) {
+    // Tokens are per Dart player. A predecessor's late arm/release cannot
+    // affect the successor's core, even when both used hold token 1.
+    if (call.argument<Number>("instanceId")?.toLong() != coreInstanceId) {
+      result.success(null)
+      return
+    }
+    val token = call.argument<Number>("token")?.toLong()
+    if (token == null) {
+      result.error("INVALID_ARGS", "Missing 'token'", null)
+      return
+    }
+    val core = playerCore
+    if (core == null) {
+      result.success(null)
+      return
+    }
+    core.holdVideoDecoder(token) { format -> result.success(format) }
+  }
+
+  private fun handleReleaseVideoDecoderHold(call: MethodCall, result: MethodChannel.Result) {
+    if (call.argument<Number>("instanceId")?.toLong() != coreInstanceId) {
+      result.success(null)
+      return
+    }
+    call.argument<Number>("token")?.toLong()?.let { playerCore?.releaseVideoDecoderHold(it) }
     result.success(null)
   }
 

@@ -718,6 +718,7 @@ class _Translations$settings$ko extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => '재생 속도';
 	@override String get scopeShaderPreset => '셰이더 프리셋';
 	@override String get scopeAspectRatio => '화면 비율';
+	@override String get scopeZoom => '확대/축소';
 	@override String get scopeSyncOffsets => '오디오 및 자막 동기화';
 	@override String get playerScopeOff => '저장하지 않음';
 	@override String get playerScopeGlobal => '모든 곳';
@@ -2734,6 +2735,13 @@ class _Translations$seerr$ko extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Plezy가 이 Seerr 인스턴스를 삭제합니다. 언제든 다시 연결할 수 있습니다.';
 	@override String get request => '요청';
 	@override String get request4k => '4K로 요청';
+	@override String get requestSeasons => '누락된 시즌 요청';
+	@override String get notifyMe => '이용 가능해지면 알림 받기';
+	@override String get notifyMe4k => '4K로 이용 가능해지면 알림 받기';
+	@override String get notificationsOn => '이용 가능 알림 켜짐';
+	@override String get notificationsEnabled => '이용 가능해지면 알려드릴게요';
+	@override String get notificationsDisabled => '이용 가능 알림이 꺼졌습니다';
+	@override String get notificationFailed => '이용 가능 알림을 업데이트하지 못했습니다';
 	@override String get seasons => '시즌';
 	@override String get allSeasons => '모든 시즌';
 	@override String get advancedOptions => '고급';
@@ -4288,6 +4296,10 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get preamp => '프리앰프';
 	@override String get ratingPending => '이 기기에 저장됨; 동기화 대기 중';
 	@override String get lyricsOffset => '가사 타이밍 조정';
+	@override String get anniversaries => '앨범 발매 기념일';
+	@override String get outputPreset => '이 출력의 EQ';
+	@override String get outputPresetHint => '이 출력이 선택되면 이 EQ를 자동으로 사용합니다.';
+	@override String get eqApproximation => '헤드폰 프로필은 10밴드 EQ에 맞게 근사치로 변환됩니다.';
 }
 
 // Path: appIcon.names
@@ -5030,6 +5042,8 @@ class _Translations$explore$detail$ko extends Translations$explore$detail$en {
 	@override String get watchOn => '시청처';
 	@override String get watchTrailer => '예고편 보기';
 	@override String openOn({required Object site}) => '${site}에서 열기';
+	@override String get trailerUnavailable => '이 기기에서 예고편을 열 수 없습니다';
+	@override String get linkUnavailable => '이 기기에서 링크를 열 수 없습니다';
 	@override String get crew => '제작진';
 	@override String get ratings => '평점';
 	@override String get schedule => '방영 일정';
@@ -5985,6 +5999,7 @@ extension on TranslationsKo {
 			'settings.scopePlaybackSpeed' => '재생 속도',
 			'settings.scopeShaderPreset' => '셰이더 프리셋',
 			'settings.scopeAspectRatio' => '화면 비율',
+			'settings.scopeZoom' => '확대/축소',
 			'settings.scopeSyncOffsets' => '오디오 및 자막 동기화',
 			'settings.playerScopeOff' => '저장하지 않음',
 			'settings.playerScopeGlobal' => '모든 곳',
@@ -6428,9 +6443,9 @@ extension on TranslationsKo {
 			'videoControls.addBookmark' => 'Bookmark 추가하기',
 			'videoControls.bookmarkName' => 'Bookmark 이름',
 			'videoControls.bookmarkNameHint' => '예를 들어, 개방 장면',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => '책표 ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => '책표 ${n}',
 			'videoControls.bookmarkNameRequired' => '이 책자에 대한 이름을 입력합니다.',
 			'videoControls.deleteBookmark' => 'Bookmark 삭제',
 			'videoControls.bookmarkLimitReached' => '이 항목은 이미 100 개의 책표를 가지고 있습니다.',
@@ -6942,9 +6957,9 @@ extension on TranslationsKo {
 			'libraries.content' => '미디어 라이브러리 콘텐츠',
 			'libraries.selectLibrary' => '미디어 라이브러리 선택',
 			'libraries.filtersWithCount' => ({required Object count}) => '필터 (${count})',
-			'libraries.noRecommendations' => '추천 없음',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => '추천 없음',
 			'libraries.noCollections' => '이 미디어 라이브러리에는 컬렉션이 없습니다',
 			'libraries.noFoldersFound' => '폴더를 찾을 수 없습니다',
 			'libraries.folders' => '폴더',
@@ -7237,6 +7252,8 @@ extension on TranslationsKo {
 			'explore.detail.watchOn' => '시청처',
 			'explore.detail.watchTrailer' => '예고편 보기',
 			'explore.detail.openOn' => ({required Object site}) => '${site}에서 열기',
+			'explore.detail.trailerUnavailable' => '이 기기에서 예고편을 열 수 없습니다',
+			'explore.detail.linkUnavailable' => '이 기기에서 링크를 열 수 없습니다',
 			'explore.detail.crew' => '제작진',
 			'explore.detail.ratings' => '평점',
 			'explore.detail.schedule' => '방영 일정',
@@ -7454,11 +7471,11 @@ extension on TranslationsKo {
 			'watchTogether.copyCode' => '코드 복사',
 			'watchTogether.codeCopied' => '방 코드가 복사되었습니다',
 			'watchTogether.shareInvite' => '초대 공유',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.',
 			'watchTogether.openSessionControls' => '함께 보기 세션 제어 열기',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => '재연결 중...',
 			'watchTogether.reconnectingDescription' => '연결이 끊어졌습니다. 자동으로 방에 다시 참여합니다.',
 			'watchTogether.connected' => '연결됨',
@@ -7968,11 +7985,11 @@ extension on TranslationsKo {
 			'metadataEdit.imageUrl' => '이미지 URL',
 			'metadataEdit.metadataUpdated' => '메타데이터가 업데이트되었습니다',
 			'metadataEdit.metadataUpdateFailed' => '메타데이터 업데이트 실패',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => '아트워크가 업데이트되었습니다',
 			'metadataEdit.artworkUpdateFailed' => '아트워크 업데이트 실패',
 			'metadataEdit.noArtworkAvailable' => '사용 가능한 아트워크 없음',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => '아트워크 옵션 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '아트워크 옵션 ${index}, 선택됨',
 			'metadataEdit.notSet' => '설정되지 않음',
@@ -8059,6 +8076,13 @@ extension on TranslationsKo {
 			'seerr.disconnectConfirmBody' => 'Plezy가 이 Seerr 인스턴스를 삭제합니다. 언제든 다시 연결할 수 있습니다.',
 			'seerr.request' => '요청',
 			'seerr.request4k' => '4K로 요청',
+			'seerr.requestSeasons' => '누락된 시즌 요청',
+			'seerr.notifyMe' => '이용 가능해지면 알림 받기',
+			'seerr.notifyMe4k' => '4K로 이용 가능해지면 알림 받기',
+			'seerr.notificationsOn' => '이용 가능 알림 켜짐',
+			'seerr.notificationsEnabled' => '이용 가능해지면 알려드릴게요',
+			'seerr.notificationsDisabled' => '이용 가능 알림이 꺼졌습니다',
+			'seerr.notificationFailed' => '이용 가능 알림을 업데이트하지 못했습니다',
 			'seerr.seasons' => '시즌',
 			'seerr.allSeasons' => '모든 시즌',
 			'seerr.advancedOptions' => '고급',
@@ -8475,6 +8499,8 @@ extension on TranslationsKo {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '스키피드 ${count} 지원되지 않거나 불안정한 플레이리스트 입력.', other: '${count} 지원되지 않거나 불안정한 플레이리스트 입력을 벗어났습니다.', ), 
 			'universalMedia.playlistAddress' => '플레이리스트 주소',
 			'universalMedia.playlistAddressHelp' => '웹 주소에서 M3U, M3u8 또는 PLS 플레이리스트를 열 수 있습니다.Direct stream 링크는 플레이 리스트를 저장하지 않습니다.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => '플레이리스트 파일 선택',
 			'universalMedia.openPlaylist' => '오픈 플레이리스트',
 			'universalMedia.playlistFormatsHelp' => '플레이리스트는 최대 1,000 개의 항목과 2 MB를 포함할 수 있습니다.HLS는 스트림으로 열려 있으므로 플레이어가 품질을 선택할 수 있도록합니다.',
@@ -8485,8 +8511,6 @@ extension on TranslationsKo {
 			'universalMedia.noFavorites' => '아직 좋아하는 스트림을 저장하지 않았습니다.Favorites 이 프로필에 남아 있습니다.',
 			'universalMedia.removeFavorite' => '좋아하는 스트림을 제거',
 			'universalMedia.filesHelp' => '오디오, 비디오 또는 ISO 파일을 일시적인 쿼드를 선택합니다.파일 및 URL은 도서관 역사에 추가되지 않습니다.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => '파일 선택',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi를 통해 파일을 보내기',
@@ -8989,6 +9013,8 @@ extension on TranslationsKo {
 			'sourceSetup.optionalUsername' => '계정 사용자 이름(선택 사항)',
 			'sourceSetup.optionalPassword' => '계정 비밀번호(선택 사항)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com에서 API 키를 받으세요. 검색 시 동영상 제목과 사용 가능한 IMDb/TMDB ID만 전송하며, 동영상 파일은 절대 전송하지 않습니다. 키와 선택적 계정 자격 증명은 이 소스와 함께 암호화하여 저장합니다.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => '온라인 동영상 메타데이터 자동 조회',
 			'sourceSetup.metadataPrivacy' => '파일명의 제목·연도·에피소드 번호 또는 NFO ID만 전송하며, 미디어나 자격 증명은 절대 전송하지 않습니다. NFO 필드가 항상 우선합니다.',
 			'sourceSetup.nfsEncryptionFailure' => '암호화된 NFS 연결에서는 NAS의 두 서비스가 RFC 9289와 TLS 1.3을 지원하는지, 인증서 이름과 내보내기 UID/GID가 올바른지 확인하세요. Pleazyng는 암호화 없이 이 연결을 다시 시도하지 않습니다.',
@@ -8999,8 +9025,6 @@ extension on TranslationsKo {
 			'sourceSetup.metadataNoMatches' => '일치하는 온라인 제목을 찾지 못했습니다. 다른 제목으로 검색하세요.',
 			'sourceSetup.metadataSearch' => '온라인 메타데이터 검색',
 			'sourceSetup.metadataLoading' => '온라인 영화 및 TV 프로그램 정보 조회 중…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt의 온라인 메타데이터',
 			'sourceSetup.metadataNoAutomaticMatch' => '자동으로 일치하는 제목을 찾지 못했습니다. 제목을 검색하여 일치하는 결과를 선택하세요.',
 			'sourceSetup.metadataFailed' => '온라인 메타데이터를 불러오지 못했습니다. 재생과 로컬 정보는 계속 사용할 수 있습니다.',
@@ -9410,6 +9434,10 @@ extension on TranslationsKo {
 			'musicTools.preamp' => '프리앰프',
 			'musicTools.ratingPending' => '이 기기에 저장됨; 동기화 대기 중',
 			'musicTools.lyricsOffset' => '가사 타이밍 조정',
+			'musicTools.anniversaries' => '앨범 발매 기념일',
+			'musicTools.outputPreset' => '이 출력의 EQ',
+			'musicTools.outputPresetHint' => '이 출력이 선택되면 이 EQ를 자동으로 사용합니다.',
+			'musicTools.eqApproximation' => '헤드폰 프로필은 10밴드 EQ에 맞게 근사치로 변환됩니다.',
 			_ => null,
 		};
 	}

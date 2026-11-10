@@ -720,6 +720,7 @@ class _Translations$settings$tr extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Oynatma hızı';
 	@override String get scopeShaderPreset => 'Gölgelendirici ön ayarı';
 	@override String get scopeAspectRatio => 'En-boy oranı';
+	@override String get scopeZoom => 'Yakınlaştırma';
 	@override String get scopeSyncOffsets => 'Ses ve altyazı senkronizasyonu';
 	@override String get playerScopeOff => 'Kaydetme';
 	@override String get playerScopeGlobal => 'Her yerde';
@@ -2738,6 +2739,13 @@ class _Translations$seerr$tr extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng bu Seerr örneğini unutacak. İstediğiniz zaman yeniden bağlanabilirsiniz.';
 	@override String get request => 'İstek Gönder';
 	@override String get request4k => '4K İstek Gönder';
+	@override String get requestSeasons => 'Eksik sezonları iste';
+	@override String get notifyMe => 'Kullanılabilir olduğunda bildir';
+	@override String get notifyMe4k => '4K kullanılabilir olduğunda bildir';
+	@override String get notificationsOn => 'Kullanılabilirlik bildirimi açık';
+	@override String get notificationsEnabled => 'Kullanılabilir olduğunda sana bildireceğiz';
+	@override String get notificationsDisabled => 'Kullanılabilirlik bildirimi kapalı';
+	@override String get notificationFailed => 'Kullanılabilirlik bildirimi güncellenemedi';
 	@override String get seasons => 'Sezonlar';
 	@override String get allSeasons => 'Tüm sezonlar';
 	@override String get advancedOptions => 'Gelişmiş';
@@ -4293,6 +4301,10 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get preamp => 'Ön yükseltme';
 	@override String get ratingPending => 'Bu cihaza kaydedildi; eşitleme bekleniyor';
 	@override String get lyricsOffset => 'Şarkı sözü zaman kaydırması';
+	@override String get anniversaries => 'Albüm yıl dönümleri';
+	@override String get outputPreset => 'Bu çıkış için ekolayzer';
+	@override String get outputPresetHint => 'Bu çıkış seçildiğinde bu ekolayzeri otomatik olarak kullan.';
+	@override String get eqApproximation => 'Kulaklık profilleri on bantlı ekolayzer için yaklaşık olarak uyarlanmıştır.';
 }
 
 // Path: appIcon.names
@@ -5035,6 +5047,8 @@ class _Translations$explore$detail$tr extends Translations$explore$detail$en {
 	@override String get watchOn => 'İzle';
 	@override String get watchTrailer => 'Fragmanı izle';
 	@override String openOn({required Object site}) => '${site}\'de aç';
+	@override String get trailerUnavailable => 'Bu cihazda fragman açılamadı';
+	@override String get linkUnavailable => 'Bu cihazda bağlantı açılamadı';
 	@override String get crew => 'Ekip';
 	@override String get ratings => 'Puanlar';
 	@override String get schedule => 'Yayın takvimi';
@@ -5990,6 +6004,7 @@ extension on TranslationsTr {
 			'settings.scopePlaybackSpeed' => 'Oynatma hızı',
 			'settings.scopeShaderPreset' => 'Gölgelendirici ön ayarı',
 			'settings.scopeAspectRatio' => 'En-boy oranı',
+			'settings.scopeZoom' => 'Yakınlaştırma',
 			'settings.scopeSyncOffsets' => 'Ses ve altyazı senkronizasyonu',
 			'settings.playerScopeOff' => 'Kaydetme',
 			'settings.playerScopeGlobal' => 'Her yerde',
@@ -6433,9 +6448,9 @@ extension on TranslationsTr {
 			'videoControls.addBookmark' => 'Bookmark ekleyin',
 			'videoControls.bookmarkName' => 'Bookmark Adı',
 			'videoControls.bookmarkNameHint' => 'Örneğin, açılan sahne',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Hakkında ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Hakkında ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu kitaplık için bir isim girin.',
 			'videoControls.deleteBookmark' => 'Bookmark Kaldır',
 			'videoControls.bookmarkLimitReached' => 'Bu bölümde zaten 100 kitaplık var.',
@@ -6947,9 +6962,9 @@ extension on TranslationsTr {
 			'libraries.content' => 'kitaplık içeriği',
 			'libraries.selectLibrary' => 'Kitaplık seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtreler (${count})',
-			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			'libraries.noCollections' => 'Bu kitaplıkta koleksiyon yok',
 			'libraries.noFoldersFound' => 'Klasör bulunamadı',
 			'libraries.folders' => 'klasörler',
@@ -7242,6 +7257,8 @@ extension on TranslationsTr {
 			'explore.detail.watchOn' => 'İzle',
 			'explore.detail.watchTrailer' => 'Fragmanı izle',
 			'explore.detail.openOn' => ({required Object site}) => '${site}\'de aç',
+			'explore.detail.trailerUnavailable' => 'Bu cihazda fragman açılamadı',
+			'explore.detail.linkUnavailable' => 'Bu cihazda bağlantı açılamadı',
 			'explore.detail.crew' => 'Ekip',
 			'explore.detail.ratings' => 'Puanlar',
 			'explore.detail.schedule' => 'Yayın takvimi',
@@ -7459,11 +7476,11 @@ extension on TranslationsTr {
 			'watchTogether.copyCode' => 'Kodu Kopyala',
 			'watchTogether.codeCopied' => 'Oda kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Daveti Paylaş',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng\'de Birlikte İzle odama katıl: Birlikte İzle\'yi aç, Odaya Katıl seçeneğini seç ve ${code} kodunu gir.',
 			'watchTogether.openSessionControls' => 'Birlikte İzle oturum kontrollerini aç',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Yeniden bağlanılıyor...',
 			'watchTogether.reconnectingDescription' => 'Bağlantı koptu. Odaya otomatik olarak yeniden katılacaksınız.',
 			'watchTogether.connected' => 'Bağlı',
@@ -7973,11 +7990,11 @@ extension on TranslationsTr {
 			'metadataEdit.imageUrl' => 'Görsel URL\'si',
 			'metadataEdit.metadataUpdated' => 'Meta veriler güncellendi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta veriler güncellenemedi',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Görseller güncellendi',
 			'metadataEdit.artworkUpdateFailed' => 'Görseller güncellenemedi',
 			'metadataEdit.noArtworkAvailable' => 'Görsel bulunmuyor',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}, seçildi',
 			'metadataEdit.notSet' => 'Ayarlanmadı',
@@ -8064,6 +8081,13 @@ extension on TranslationsTr {
 			'seerr.disconnectConfirmBody' => 'Pleazyng bu Seerr örneğini unutacak. İstediğiniz zaman yeniden bağlanabilirsiniz.',
 			'seerr.request' => 'İstek Gönder',
 			'seerr.request4k' => '4K İstek Gönder',
+			'seerr.requestSeasons' => 'Eksik sezonları iste',
+			'seerr.notifyMe' => 'Kullanılabilir olduğunda bildir',
+			'seerr.notifyMe4k' => '4K kullanılabilir olduğunda bildir',
+			'seerr.notificationsOn' => 'Kullanılabilirlik bildirimi açık',
+			'seerr.notificationsEnabled' => 'Kullanılabilir olduğunda sana bildireceğiz',
+			'seerr.notificationsDisabled' => 'Kullanılabilirlik bildirimi kapalı',
+			'seerr.notificationFailed' => 'Kullanılabilirlik bildirimi güncellenemedi',
 			'seerr.seasons' => 'Sezonlar',
 			'seerr.allSeasons' => 'Tüm sezonlar',
 			'seerr.advancedOptions' => 'Gelişmiş',
@@ -8480,6 +8504,8 @@ extension on TranslationsTr {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '${count} desteklenmemiş veya güvenli olmayan oynatma listesi girişini kaydırdı.', other: '${count} desteklenmemiş veya güvenli olmayan oynatma listesi girişleri kayboldu.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresi',
 			'universalMedia.playlistAddressHelp' => 'Bir web adresinden bir M3U, M3u8 veya PLS oynatma listesi açın.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Playlist dosyasını seçin',
 			'universalMedia.openPlaylist' => 'Açık Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Bir oynatma listesi en fazla 1000 öğe ve 2 MB içerebilir. HLS akışlar olarak açıktır, böylece oyuncu bir kaliteyi seçebilir.',
@@ -8490,8 +8516,6 @@ extension on TranslationsTr {
 			'universalMedia.noFavorites' => 'Hiç kaydedilmemiş akış favori henüz. Favoriler bu profilde kalır.',
 			'universalMedia.removeFavorite' => 'En sevdiğiniz akışları kaldırın',
 			'universalMedia.filesHelp' => 'Ses, video veya ISO dosyalarını geçici bir çerçeve için seçin. Dosyalar ve URL\'ler kütüphane geçmişine eklenmez.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Dosyaları seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '1 seçilmiş dosya', other: '${count} seçilmiş dosyalar', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi üzerinden dosyaları gönderin',
@@ -8994,6 +9018,8 @@ extension on TranslationsTr {
 			'sourceSetup.optionalUsername' => 'Hesap kullanıcı adı (isteğe bağlı)',
 			'sourceSetup.optionalPassword' => 'Hesap parolası (isteğe bağlı)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com adresinden API anahtarı alın. Arama, video başlığını ve mevcut IMDb/TMDB kimliklerini gönderir; video dosyasını asla göndermez. Anahtar ve isteğe bağlı hesap kimlik bilgileri bu kaynakla birlikte şifrelenir.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Otomatik çevrimiçi video meta verileri',
 			'sourceSetup.metadataPrivacy' => 'Yalnızca dosya adındaki başlık/yıl ve bölüm numaralarını veya bir NFO kimliğini gönderir; medyayı ya da kimlik bilgilerini asla göndermez. NFO alanları önceliğini korur.',
 			'sourceSetup.nfsEncryptionFailure' => 'Şifreli NFS için her iki NAS hizmetinde RFC 9289 ve TLS 1.3 desteğini, sertifika adını ve paylaşımın UID/GID değerlerini kontrol edin. Pleazyng bu bağlantıyı şifreleme olmadan yeniden denemeyecek.',
@@ -9004,8 +9030,6 @@ extension on TranslationsTr {
 			'sourceSetup.metadataNoMatches' => 'Çevrimiçi eşleşen başlık bulunamadı. Başka bir başlık deneyin.',
 			'sourceSetup.metadataSearch' => 'Çevrimiçi meta veri ara',
 			'sourceSetup.metadataLoading' => 'Çevrimiçi film ve dizi bilgileri aranıyor…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt’tan çevrimiçi meta veriler',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Otomatik başlık eşleşmesi bulunamadı. Eşleşme seçmek için başlığı arayın.',
 			'sourceSetup.metadataFailed' => 'Çevrimiçi meta veriler yüklenemedi. Oynatma ve yerel bilgiler hâlâ kullanılabilir.',
@@ -9415,6 +9439,10 @@ extension on TranslationsTr {
 			'musicTools.preamp' => 'Ön yükseltme',
 			'musicTools.ratingPending' => 'Bu cihaza kaydedildi; eşitleme bekleniyor',
 			'musicTools.lyricsOffset' => 'Şarkı sözü zaman kaydırması',
+			'musicTools.anniversaries' => 'Albüm yıl dönümleri',
+			'musicTools.outputPreset' => 'Bu çıkış için ekolayzer',
+			'musicTools.outputPresetHint' => 'Bu çıkış seçildiğinde bu ekolayzeri otomatik olarak kullan.',
+			'musicTools.eqApproximation' => 'Kulaklık profilleri on bantlı ekolayzer için yaklaşık olarak uyarlanmıştır.',
 			_ => null,
 		};
 	}

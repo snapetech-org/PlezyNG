@@ -16,11 +16,14 @@ class MusicAudioPolicy {
     this.output = 'auto',
     this.cacheMiB = 64,
     this.bufferSeconds = 120,
+    this.prefetchMiB = 256,
+    this.prefetchWifiOnly = true,
   });
   final MusicLeveling leveling;
   final double preampDb;
   final List<double> bands;
-  final int sampleRate, cacheMiB, bufferSeconds;
+  final int sampleRate, cacheMiB, bufferSeconds, prefetchMiB;
+  final bool prefetchWifiOnly;
   final bool exclusive;
   final String output;
   static const frequencies = [31.25, 62.5, 125.0, 250.0, 500.0, 1000.0, 2000.0, 4000.0, 8000.0, 16000.0];
@@ -32,6 +35,8 @@ class MusicAudioPolicy {
         preampDb < -24 ||
         preampDb > 0 ||
         !const [0, 44100, 48000, 88200, 96000, 176400, 192000].contains(sampleRate) ||
+        prefetchMiB < 0 ||
+        prefetchMiB > 2048 ||
         cacheMiB < 8 ||
         cacheMiB > 512 ||
         bufferSeconds < 5 ||
@@ -57,6 +62,8 @@ class MusicAudioPolicy {
     'output': output,
     'cacheMiB': cacheMiB,
     'bufferSeconds': bufferSeconds,
+    'prefetchMiB': prefetchMiB,
+    'prefetchWifiOnly': prefetchWifiOnly,
   };
   factory MusicAudioPolicy.fromJson(Map<String, dynamic> json) {
     if (json['version'] != 1) throw const FormatException('Unsupported audio policy');
@@ -69,6 +76,8 @@ class MusicAudioPolicy {
       output: json['output'] as String,
       cacheMiB: json['cacheMiB'] as int,
       bufferSeconds: json['bufferSeconds'] as int,
+      prefetchMiB: json['prefetchMiB'] as int? ?? 256,
+      prefetchWifiOnly: json['prefetchWifiOnly'] as bool? ?? true,
     );
     policy.validate();
     return policy;
@@ -131,4 +140,11 @@ abstract interface class MusicAudioControls {
   MusicAudioPolicy get audioPolicy;
   Future<void> setAudioPolicy(MusicAudioPolicy policy);
   Future<Map<String, String>> inspectAudioOutput();
+  Future<Map<String, String>> availableAudioOutputs();
+  Future<MusicAudioPolicy?> outputEqualizer(String output);
+  Future<void> setOutputEqualizer(String output, MusicAudioPolicy? policy);
+}
+
+abstract interface class MusicCacheControls {
+  Future<void> clearPrefetchCache();
 }

@@ -6,6 +6,7 @@ import '../../services/music/music_audio_policy.dart';
 import '../../services/music/music_experience.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../widgets/music/music_headphone_picker.dart';
 
 class MusicAudioScreen extends StatefulWidget {
   const MusicAudioScreen({super.key});
@@ -22,9 +23,12 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
   late double _preamp = _policy.preampDb;
   late int _rate = _policy.sampleRate, _cache = _policy.cacheMiB, _buffer = _policy.bufferSeconds;
   late bool _exclusive = _policy.exclusive;
+  late int _prefetch = _policy.prefetchMiB;
+  late bool _prefetchWifiOnly = _policy.prefetchWifiOnly;
   late final _output = TextEditingController(text: _policy.output);
   final _name = TextEditingController(), _graphicEq = TextEditingController();
   List<Map<String, dynamic>> _presets = [];
+  Map<String, String> _outputs = const {'auto': 'auto'};
   bool _busy = false, _loaded = false;
   @override
   void didChangeDependencies() {
@@ -37,7 +41,28 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
 
   Future<void> _load() async {
     final values = await context.read<MusicExperience>().store.documents('eqPreset');
-    if (mounted) setState(() => _presets = values);
+    final outputs = await _audio?.availableAudioOutputs() ?? const {'auto': 'auto'};
+    if (mounted) {
+      setState(() {
+        _presets = values;
+        _outputs = outputs;
+      });
+    }
+  }
+
+  Future<void> _assignOutput({bool remove = false}) async {
+    setState(() => _busy = true);
+    try {
+      await _audio?.setOutputEqualizer(
+        _output.text.trim(),
+        remove ? null : MusicAudioPolicy(bands: List.of(_bands), preampDb: _preamp),
+      );
+      if (mounted) showAppSnackBar(context, t.musicExperience.ready);
+    } catch (_) {
+      if (mounted) showAppSnackBar(context, t.musicExperience.error);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   @override
@@ -60,6 +85,8 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
         output: _output.text.trim(),
         cacheMiB: _cache,
         bufferSeconds: _buffer,
+        prefetchMiB: _prefetch,
+        prefetchWifiOnly: _prefetchWifiOnly,
       );
       await _audio?.setAudioPolicy(policy);
       if (!mounted) return;
@@ -88,6 +115,8 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
     _output.text = p.output;
     _cache = p.cacheMiB;
     _buffer = p.bufferSeconds;
+    _prefetch = p.prefetchMiB;
+    _prefetchWifiOnly = p.prefetchWifiOnly;
   });
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -152,6 +181,20 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
         TextButton(
           onPressed: _busy
               ? null
+              : () async {
+                  final preset = await pickMusicHeadphone(context);
+                  if (!mounted || preset == null) return;
+                  setState(() {
+                    _bands = List.of(preset.bands);
+                    _preamp = 0;
+                    _name.text = preset.name;
+                  });
+                },
+          child: const Text('AutoEq'),
+        ),
+        TextButton(
+          onPressed: _busy
+              ? null
               : () {
                   try {
                     setState(() => _bands = MusicAudioPolicy.parseGraphicEq(_graphicEq.text));
@@ -164,6 +207,52 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
         TextField(
           controller: _output,
           decoration: InputDecoration(labelText: t.videoSettings.audioOutput),
+        ),
+        if (_outputs.length > 1)
+          DropdownButton<String>(
+            isExpanded: true,
+            hint: Text(t.videoSettings.audioOutput),
+            items: [
+              for (final entry in _outputs.entries)
+                DropdownMenuItem(
+                  value: entry.key,
+                  child: Text(entry.value, overflow: TextOverflow.ellipsis),
+                ),
+            ],
+            onChanged: _busy
+                ? null
+                : (value) {
+                    if (value != null) _output.text = value;
+                  },
+          ),
+        Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(t.musicTools.outputPreset)),
+        Text(t.musicTools.outputPresetHint),
+        Wrap(
+          spacing: 12,
+          children: [
+            TextButton(onPressed: _busy || _audio == null ? null : () => _assignOutput(), child: Text(t.common.save)),
+            TextButton(
+              onPressed: _busy || _audio == null ? null : () => _assignOutput(remove: true),
+              child: Text(t.common.reset),
+            ),
+            TextButton(
+              onPressed: _busy || _audio == null
+                  ? null
+                  : () async {
+                      final eq = await _audio.outputEqualizer(_output.text.trim());
+                      if (!mounted || !context.mounted) return;
+                      if (eq == null) {
+                        showAppSnackBar(context, t.common.notAvailable);
+                        return;
+                      }
+                      setState(() {
+                        _bands = List.of(eq.bands);
+                        _preamp = eq.preampDb;
+                      });
+                    },
+              child: Text(t.common.preview),
+            ),
+          ],
         ),
         DropdownButton<int>(
           isExpanded: true,
@@ -191,6 +280,35 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
           divisions: 63,
           onChanged: _busy ? null : (v) => setState(() => _cache = v.round()),
         ),
+        Text('${t.performanceOverlay.cacheLimit}: $_prefetch MiB'),
+        Slider(
+          value: _prefetch.toDouble(),
+          min: 0,
+          max: 2048,
+          divisions: 32,
+          onChanged: _busy ? null : (v) => setState(() => _prefetch = v.round()),
+        ),
+        SwitchListTile(
+          title: Text(t.settings.downloadOnWifiOnly),
+          value: _prefetchWifiOnly,
+          onChanged: _busy ? null : (v) => setState(() => _prefetchWifiOnly = v),
+        ),
+        if (_music is MusicCacheControls)
+          TextButton(
+            onPressed: _busy
+                ? null
+                : () async {
+                    setState(() => _busy = true);
+                    try {
+                      await (_music as MusicCacheControls).clearPrefetchCache();
+                    } catch (_) {
+                      if (context.mounted) showAppSnackBar(context, t.musicExperience.error);
+                    } finally {
+                      if (mounted) setState(() => _busy = false);
+                    }
+                  },
+            child: Text('${t.common.clear} · ${t.performanceOverlay.cacheLimit}'),
+          ),
         Text('${t.settings.playbackBuffer}: $_buffer s'),
         Slider(
           value: _buffer.toDouble(),

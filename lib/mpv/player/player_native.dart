@@ -15,6 +15,7 @@ import '../mpv_path_list.dart';
 import 'audio_rendering_mode.dart';
 import 'audio_spectrum.dart';
 import 'player_base.dart';
+import 'video_decoder_hold.dart';
 import 'video_rect_support.dart';
 import 'subtitle_pcm_capture_source.dart';
 import 'mpv_certificate_trust.dart';
@@ -525,13 +526,13 @@ class PlayerNative extends PlayerBase
       if (audioOnly) {
         // Only what the music service consumes (position/duration/playing/
         // completed). Every observation costs an initial notification plus a
-        // channel event per edge; the video set's track-list,
-        // demuxer-cache-state, and audio-device-list decode structured nodes
-        // into models nobody on the music path reads.
+        // channel event per edge. Music observes routes for output-specific EQ,
+        // but still omits the video track-list and demuxer-cache-state payloads.
         await observeProperty('time-pos', 'double');
         await observeProperty('duration', 'double');
         await observeProperty('pause', 'flag');
         await observeProperty('eof-reached', 'flag');
+        await observeProperty('audio-device', 'string');
         // Debug aid plus the freeze point for the outgoing track's final
         // position (see handlePropertyChange). Gapless advance DETECTION
         // rides the file-loaded event instead — see _handleAudioFileLoaded
@@ -1405,6 +1406,40 @@ class PlayerNative extends PlayerBase
     }
     await _ensureInitialized();
     await invoke('awaitDisplayModeSwitch', {'extraDelayMs': extraDelayMs});
+  }
+
+  /// Tells this player's holds apart, so a superseded open's late release
+  /// cannot let go of a newer open's hold.
+  int _decoderHoldTokens = 0;
+
+  @override
+  VideoDecoderHold? holdVideoDecoderAtPreload() {
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid || !initialized) return null;
+    final token = ++_decoderHoldTokens;
+    final format = invoke<Map<Object?, Object?>>('holdVideoDecoder', {'token': token, 'instanceId': nativeInstanceId})
+        .then<DemuxedVideoFormat?>(
+          (answer) => answer == null
+              ? null
+              : (
+                  fps: (answer['fps'] as num?)?.toDouble(),
+                  width: (answer['width'] as num?)?.toInt() ?? 0,
+                  height: (answer['height'] as num?)?.toInt() ?? 0,
+                ),
+          onError: (Object e, StackTrace stackTrace) {
+            appLogger.w('Video decoder hold failed', error: e, stackTrace: stackTrace);
+            return null;
+          },
+        );
+    return VideoDecoderHold(
+      format: format,
+      release: () async {
+        try {
+          await invoke<void>('releaseVideoDecoderHold', {'token': token, 'instanceId': nativeInstanceId});
+        } catch (e, stackTrace) {
+          appLogger.w('Video decoder hold release failed', error: e, stackTrace: stackTrace);
+        }
+      },
+    );
   }
 
   @override

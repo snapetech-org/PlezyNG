@@ -2,6 +2,7 @@ import 'dart:convert';
 import '../games/steam_stream_preferences.dart';
 import '../media/ids.dart';
 import '../media/playback_rate.dart';
+import '../media/video_zoom.dart';
 import '../media/media_version_preference.dart';
 import '../media/media_source_info.dart' show PlaybackExtras;
 import 'dart:io';
@@ -408,8 +409,11 @@ class _EpisodePosterModePref extends EnumPref<EpisodePosterMode> {
 class PlayerSettingScopePref extends EnumPref<PlayerSettingScope> {
   final List<Pref<Object?>> globals;
 
-  const PlayerSettingScopePref(super.key, this.globals)
-    : super(values: PlayerSettingScope.values, defaultValue: PlayerSettingScope.global);
+  const PlayerSettingScopePref(
+    super.key,
+    this.globals, {
+    PlayerSettingScope super.defaultValue = PlayerSettingScope.global,
+  }) : super(values: PlayerSettingScope.values);
 
   @override
   Future<void> writeTo(BaseSharedPreferencesService svc, PlayerSettingScope value) async {
@@ -1530,6 +1534,16 @@ class SettingsService extends BaseSharedPreferencesService {
   );
   static final defaultBoxFitMode = IntPref('default_box_fit_mode', transform: (v) => v.clamp(0, 2));
 
+  /// Custom zoom layered on fit mode; separate scope defaults to session-only.
+  static final defaultVideoZoom = DoublePref(
+    'default_video_zoom',
+    defaultValue: 1.0,
+    transform: (v) => v.isFinite ? v.clamp(minimumVideoZoom, maximumVideoZoom) : 1.0,
+  );
+  static final videoZoomScope = PlayerSettingScopePref('video_zoom_scope', [
+    defaultVideoZoom,
+  ], defaultValue: PlayerSettingScope.off);
+
   // Where a change made in the player's settings sheet persists (see
   // [PlayerSettingScope]). Defaults preserve the pre-existing behavior:
   // every change updates the global default.
@@ -1878,7 +1892,7 @@ class SettingsService extends BaseSharedPreferencesService {
     if (prefs.containsKey(_playerScopeGlobalsResetKey)) {
       return;
     }
-    for (final scope in [playbackSpeedScope, shaderPresetScope, boxFitScope, syncOffsetScope]) {
+    for (final scope in [playbackSpeedScope, shaderPresetScope, boxFitScope, videoZoomScope, syncOffsetScope]) {
       if (read(scope).keysEntries) {
         await scope.resetGlobals(this);
       }
@@ -2315,9 +2329,11 @@ class SettingsService extends BaseSharedPreferencesService {
     subtitleAnchorToScreen,
     defaultPlaybackSpeed,
     defaultBoxFitMode,
+    defaultVideoZoom,
     playbackSpeedScope,
     shaderPresetScope,
     boxFitScope,
+    videoZoomScope,
     syncOffsetScope,
     scopedPlayerPrefValues,
     themeMode,
@@ -2454,6 +2470,7 @@ class SettingsService extends BaseSharedPreferencesService {
     'downmix_center_boost' => (0, 12),
     'default_playback_speed' => (minimumPlaybackRate, maximumPlaybackRate),
     'default_box_fit_mode' => (0, 2),
+    'default_video_zoom' => (minimumVideoZoom, maximumVideoZoom),
     'library_density' => (LibraryDensity.min, LibraryDensity.max),
     'automotive_ui_scale' => (AutomotiveUiScale.min, AutomotiveUiScale.max),
     'remembered_brightness_level' => (-1, 1),

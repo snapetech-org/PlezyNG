@@ -12,6 +12,7 @@
 #include <bcrypt.h>
 #else
 #include <spawn.h>
+#include <sys/resource.h>
 #include <sys/wait.h>
 
 #include <csignal>
@@ -21,6 +22,9 @@
 #include <mach-o/dyld.h>
 #else
 #include <sys/syscall.h>
+#if defined(PLEZY_PROCESS_LEGACY_LINUX)
+#include <sys/prctl.h>
+#endif
 extern char** environ;
 #endif
 #endif
@@ -73,7 +77,7 @@ class Control {
   HANDLE process = nullptr, job = nullptr;
 #else
   pid_t pid = 0;
-#if defined(__linux__)
+#if defined(__linux__) && !defined(PLEZY_PROCESS_LEGACY_LINUX)
   int pidfd = -1;
 #endif
 #endif
@@ -83,7 +87,7 @@ class Control {
 #if defined(_WIN32)
     if (process) CloseHandle(process);
     if (job) CloseHandle(job);
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(PLEZY_PROCESS_LEGACY_LINUX)
     if (pidfd >= 0) close(pidfd);
 #endif
   }
@@ -135,7 +139,7 @@ class Control {
       pid = 0;
       return;
     }
-#if defined(__linux__)
+#if defined(__linux__) && !defined(PLEZY_PROCESS_LEGACY_LINUX)
     if (pidfd >= 0) {
       syscall(SYS_pidfd_send_signal, pidfd, SIGKILL, nullptr, 0);
       return;
@@ -299,6 +303,38 @@ inline std::unique_ptr<BytePipe> Spawn(
     throw std::runtime_error("Could not restrict worker descriptors.");
   OwnedFd child(fcntl(original_child.Get(), F_DUPFD_CLOEXEC, 10));
   if (child.Get() < 0) throw std::runtime_error("Could not reserve worker IPC descriptor.");
+#if defined(PLEZY_PROCESS_LEGACY_LINUX)
+  // Old TV libc/kernel pairs have neither spawn-closefrom nor pidfds. Only
+  // async-signal-safe operations occur between fork and exec. Control owns
+  // waitpid exclusively and serializes it with kill; its unreaped child keeps
+  // the PID reserved. A global SIGCHLD handler must not reap owned workers.
+  rlimit descriptorLimit{};
+  if (getrlimit(RLIMIT_NOFILE, &descriptorLimit) || descriptorLimit.rlim_max > 1048576)
+    throw std::runtime_error("Cannot bound helper descriptor inheritance.");
+  const std::string executable = path.string();
+  char mode[] = "--plezy-retro-pipe", descriptor[] = "3";
+  char* args[] = {const_cast<char*>(executable.c_str()), mode, descriptor, nullptr};
+  char locale[] = "LANG=C", timezone[] = "TZ=UTC";
+  char* environment[] = {locale, timezone, nullptr};
+  const int inherited = child.Get();
+  const auto owner = getpid();
+  control->pid = fork();
+  if (control->pid < 0) {
+    control->pid = 0;
+    throw std::runtime_error("Cannot launch emulator worker.");
+  }
+  if (!control->pid) {
+    if (prctl(PR_SET_PDEATHSIG, SIGKILL) || getppid() != owner) _exit(126);
+    if (dup2(inherited, 3) < 0) _exit(126);
+    for (int fd = 4; fd < static_cast<int>(descriptorLimit.rlim_max); ++fd) close(fd);
+    for (int fd = 0; fd < 3; ++fd) {
+      close(fd);
+      if (open("/dev/null", fd == 0 ? O_RDONLY : O_WRONLY) != fd) _exit(126);
+    }
+    execve(executable.c_str(), args, environment);
+    _exit(127);
+  }
+#else
   posix_spawn_file_actions_t actions;
   posix_spawnattr_t attributes;
   if (posix_spawn_file_actions_init(&actions) != 0)
@@ -344,6 +380,7 @@ inline std::unique_ptr<BytePipe> Spawn(
     }
   }).detach();
 #endif
+#endif  // PLEZY_PROCESS_LEGACY_LINUX
   return std::make_unique<BytePipe>(parent.Release());
 #endif
 }

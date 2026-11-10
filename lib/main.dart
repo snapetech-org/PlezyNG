@@ -54,6 +54,7 @@ import 'services/settings_service.dart';
 import 'services/agent_control_service.dart';
 import 'widgets/agent_control_scope.dart';
 import 'widgets/settings_builder.dart';
+import 'utils/iphone_duo.dart';
 import 'utils/platform_detector.dart';
 import 'utils/pointer_scroll_axis.dart';
 import 'services/apple_tv_remote_touch_service.dart';
@@ -116,6 +117,7 @@ import 'i18n/app_locale_utils.dart';
 import 'i18n/locale_preferences.dart';
 import 'i18n/strings.g.dart';
 import 'widgets/app_icon.dart';
+import 'widgets/app_system_ui_style.dart';
 import 'focus/input_mode_tracker.dart';
 import 'focus/navigator_back_handler.dart';
 
@@ -182,7 +184,10 @@ void main([List<String> args = const <String>[]]) {
   final carBootstrap = args.contains('--pleazyng-car-host');
   if (carBootstrap || Platform.isAndroid) {
     // Warm phone engines can later become the car's background engine too.
-    MusicBackgroundFrames(binding, active: () => carBootstrap || MusicBackgroundFrames.carConnected).install();
+    MusicBackgroundFrames(
+      binding,
+      active: () => carBootstrap || PlatformDetector.isAutomotiveMedia() || MusicBackgroundFrames.carConnected,
+    ).install();
   }
   if (args.contains('--plezy-preparation-worker')) {
     unawaited(runDesktopPreparationWorker());
@@ -970,6 +975,7 @@ class _StartupBootstrapState<T> extends State<StartupBootstrap<T>> {
             theme: resolved?.lightTheme ?? widget.lightTheme,
             darkTheme: resolved?.darkTheme ?? widget.darkTheme,
             themeMode: resolved?.themeMode ?? widget.themeMode,
+            builder: (context, child) => AppSystemUiStyle(child: child!),
             home: Builder(builder: _buildBootstrapHome),
           ),
         ),
@@ -1380,6 +1386,9 @@ FutureOr<SentryEvent?> _beforeSend(SentryEvent event, Hint _) {
 void _registerAppLicenses() {
   _registerShaderLicenses();
   LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks(const [
+      'AutoEq headphone equalization (Jaakko Pasanen)',
+    ], await rootBundle.loadString('assets/licenses/AutoEq_MIT.txt'));
     yield LicenseEntryWithLineBreaks(const [
       'MilkRust native integration (AGPL-3.0)',
     ], await rootBundle.loadString('assets/licenses/MilkRust_Native.txt'));
@@ -2368,10 +2377,14 @@ class _AppShell extends StatelessWidget {
 /// below would leave global snackbars at the car's native density while the rest of the
 /// interface grew.
 Widget rootShell(Widget? child) {
-  return FormFactorScale(
-    child: ScaffoldMessenger(
-      key: rootScaffoldMessengerKey,
-      child: Scaffold(backgroundColor: Colors.transparent, body: child),
+  return AppSystemUiStyle(
+    child: IphoneDuoScope(
+      child: FormFactorScale(
+        child: ScaffoldMessenger(
+          key: rootScaffoldMessengerKey,
+          child: Scaffold(backgroundColor: Colors.transparent, body: child),
+        ),
+      ),
     ),
   );
 }

@@ -629,6 +629,7 @@
     "scopePlaybackSpeed": "再生速度",
     "scopeShaderPreset": "シェーダープリセット",
     "scopeAspectRatio": "アスペクト比",
+    "scopeZoom": "ズーム",
     "scopeSyncOffsets": "音声と字幕の同期",
     "playerScopeOff": "保存しない",
     "playerScopeGlobal": "すべて",
@@ -2248,6 +2249,8 @@
       "watchOn": "視聴先",
       "watchTrailer": "予告編を見る",
       "openOn": "${site}で開く",
+      "trailerUnavailable": "この端末では予告編を開けませんでした",
+      "linkUnavailable": "この端末ではリンクを開けませんでした",
       "crew": "スタッフ",
       "ratings": "評価",
       "schedule": "放送予定",
@@ -3275,6 +3278,13 @@
     "disconnectConfirmBody": "Pleazyng はこの Seerr インスタンスの情報を削除します。いつでも再接続できます。",
     "request": "リクエスト",
     "request4k": "4K でリクエスト",
+    "requestSeasons": "未配信のシーズンをリクエスト",
+    "notifyMe": "配信開始時に通知",
+    "notifyMe4k": "4Kで配信開始時に通知",
+    "notificationsOn": "配信通知オン",
+    "notificationsEnabled": "配信開始時にお知らせします",
+    "notificationsDisabled": "配信通知をオフにしました",
+    "notificationFailed": "配信通知を更新できませんでした",
     "seasons": "シーズン",
     "allSeasons": "全シーズン",
     "advancedOptions": "詳細",
@@ -5511,6 +5521,10 @@
     "exclusiveOutput": "排他オーディオ出力",
     "preamp": "プリアンプ",
     "ratingPending": "この端末に保存済み・同期待ち",
-    "lyricsOffset": "歌詞のタイミング調整"
+    "lyricsOffset": "歌詞のタイミング調整",
+    "anniversaries": "アルバムの発売記念日",
+    "outputPreset": "この出力のEQ",
+    "outputPresetHint": "この出力が選択されたときに、このEQを自動的に使用します。",
+    "eqApproximation": "ヘッドホンのプロファイルは10バンドEQ向けに近似されています。"
   }
 }

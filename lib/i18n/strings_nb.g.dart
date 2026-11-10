@@ -720,6 +720,7 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Avspillingshastighet';
 	@override String get scopeShaderPreset => 'Forhåndsinnstilling for skyggelegging';
 	@override String get scopeAspectRatio => 'Sideforhold';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Synkronisering av lyd og undertekster';
 	@override String get playerScopeOff => 'Ikke lagre';
 	@override String get playerScopeGlobal => 'Overalt';
@@ -2738,6 +2739,13 @@ class _Translations$seerr$nb extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng glemmer denne Seerr-instansen. Koble til igjen når som helst.';
 	@override String get request => 'Be om';
 	@override String get request4k => 'Be om i 4K';
+	@override String get requestSeasons => 'Be om manglende sesonger';
+	@override String get notifyMe => 'Varsle meg når tilgjengelig';
+	@override String get notifyMe4k => 'Varsle meg når tilgjengelig i 4K';
+	@override String get notificationsOn => 'Tilgjengelighetsvarsel er på';
+	@override String get notificationsEnabled => 'Vi varsler deg når det blir tilgjengelig';
+	@override String get notificationsDisabled => 'Tilgjengelighetsvarselet er slått av';
+	@override String get notificationFailed => 'Kunne ikke oppdatere tilgjengelighetsvarselet';
 	@override String get seasons => 'Sesonger';
 	@override String get allSeasons => 'Alle sesonger';
 	@override String get advancedOptions => 'Avansert';
@@ -4293,6 +4301,10 @@ class _Translations$musicTools$nb extends Translations$musicTools$en {
 	@override String get preamp => 'Forforsterkning';
 	@override String get ratingPending => 'Lagret på denne enheten; venter på synkronisering';
 	@override String get lyricsOffset => 'Tidsforskyvning for sangtekst';
+	@override String get anniversaries => 'Albumjubileer';
+	@override String get outputPreset => 'EQ for denne utgangen';
+	@override String get outputPresetHint => 'Bruk denne EQ-en automatisk når denne utgangen velges.';
+	@override String get eqApproximation => 'Hodetelefonprofiler er tilnærmet for EQ med ti bånd.';
 }
 
 // Path: appIcon.names
@@ -5035,6 +5047,8 @@ class _Translations$explore$detail$nb extends Translations$explore$detail$en {
 	@override String get watchOn => 'Se på';
 	@override String get watchTrailer => 'Se trailer';
 	@override String openOn({required Object site}) => 'Åpne på ${site}';
+	@override String get trailerUnavailable => 'Kunne ikke åpne traileren på denne enheten';
+	@override String get linkUnavailable => 'Kunne ikke åpne lenken på denne enheten';
 	@override String get crew => 'Mannskap';
 	@override String get ratings => 'Vurderinger';
 	@override String get schedule => 'Sendeskjema';
@@ -5990,6 +6004,7 @@ extension on TranslationsNb {
 			'settings.scopePlaybackSpeed' => 'Avspillingshastighet',
 			'settings.scopeShaderPreset' => 'Forhåndsinnstilling for skyggelegging',
 			'settings.scopeAspectRatio' => 'Sideforhold',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Synkronisering av lyd og undertekster',
 			'settings.playerScopeOff' => 'Ikke lagre',
 			'settings.playerScopeGlobal' => 'Overalt',
@@ -6433,9 +6448,9 @@ extension on TranslationsNb {
 			'videoControls.addBookmark' => 'Legg til bookmark',
 			'videoControls.bookmarkName' => 'Bookmark navn',
 			'videoControls.bookmarkNameHint' => 'For eksempel åpne scenen',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmerke ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmerke ${n}',
 			'videoControls.bookmarkNameRequired' => 'Skriv inn et navn for dette bokmerket.',
 			'videoControls.deleteBookmark' => 'Fjern bokmerke',
 			'videoControls.bookmarkLimitReached' => 'Denne artikkelen har allerede 100 bokmerker.',
@@ -6947,9 +6962,9 @@ extension on TranslationsNb {
 			'libraries.content' => 'bibliotekinnhold',
 			'libraries.selectLibrary' => 'Velg bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtre (${count})',
-			'libraries.noRecommendations' => 'Ingen anbefalinger tilgjengelig',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Ingen anbefalinger tilgjengelig',
 			'libraries.noCollections' => 'Ingen samlinger i dette biblioteket',
 			'libraries.noFoldersFound' => 'Ingen mapper funnet',
 			'libraries.folders' => 'mapper',
@@ -7242,6 +7257,8 @@ extension on TranslationsNb {
 			'explore.detail.watchOn' => 'Se på',
 			'explore.detail.watchTrailer' => 'Se trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Åpne på ${site}',
+			'explore.detail.trailerUnavailable' => 'Kunne ikke åpne traileren på denne enheten',
+			'explore.detail.linkUnavailable' => 'Kunne ikke åpne lenken på denne enheten',
 			'explore.detail.crew' => 'Mannskap',
 			'explore.detail.ratings' => 'Vurderinger',
 			'explore.detail.schedule' => 'Sendeskjema',
@@ -7459,11 +7476,11 @@ extension on TranslationsNb {
 			'watchTogether.copyCode' => 'Kopier kode',
 			'watchTogether.codeCopied' => 'Romkode kopiert',
 			'watchTogether.shareInvite' => 'Del invitasjon',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'Invitasjon kopiert. Lim den inn i en melding.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bli med i Se sammen-rommet mitt i Pleazyng: åpne Se sammen, velg «Bli med i rom» og skriv inn ${code}.',
 			'watchTogether.openSessionControls' => 'Åpne øktkontroller for Se sammen',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Kobler til på nytt...',
 			'watchTogether.reconnectingDescription' => 'Tilkoblingen ble brutt. Du blir automatisk med i rommet igjen.',
 			'watchTogether.connected' => 'Tilkoblet',
@@ -7973,11 +7990,11 @@ extension on TranslationsNb {
 			'metadataEdit.imageUrl' => 'Bilde-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata oppdatert',
 			'metadataEdit.metadataUpdateFailed' => 'Kunne ikke oppdatere metadata',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Grafikk oppdatert',
 			'metadataEdit.artworkUpdateFailed' => 'Kunne ikke oppdatere grafikken',
 			'metadataEdit.noArtworkAvailable' => 'Ingen grafikk tilgjengelig',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Grafikkalternativ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Grafikkalternativ ${index}, valgt',
 			'metadataEdit.notSet' => 'Ikke angitt',
@@ -8064,6 +8081,13 @@ extension on TranslationsNb {
 			'seerr.disconnectConfirmBody' => 'Pleazyng glemmer denne Seerr-instansen. Koble til igjen når som helst.',
 			'seerr.request' => 'Be om',
 			'seerr.request4k' => 'Be om i 4K',
+			'seerr.requestSeasons' => 'Be om manglende sesonger',
+			'seerr.notifyMe' => 'Varsle meg når tilgjengelig',
+			'seerr.notifyMe4k' => 'Varsle meg når tilgjengelig i 4K',
+			'seerr.notificationsOn' => 'Tilgjengelighetsvarsel er på',
+			'seerr.notificationsEnabled' => 'Vi varsler deg når det blir tilgjengelig',
+			'seerr.notificationsDisabled' => 'Tilgjengelighetsvarselet er slått av',
+			'seerr.notificationFailed' => 'Kunne ikke oppdatere tilgjengelighetsvarselet',
 			'seerr.seasons' => 'Sesonger',
 			'seerr.allSeasons' => 'Alle sesonger',
 			'seerr.advancedOptions' => 'Avansert',
@@ -8480,6 +8504,8 @@ extension on TranslationsNb {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: 'Skipet ${count} ustøttet eller usikkert playlist inngang.', other: 'Skipede ${count} ustøttet eller usikre playlist-inntekter.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresser',
 			'universalMedia.playlistAddressHelp' => 'Åpne en M3U, M3u8, eller PLS-spillliste fra en nettadresse. direkte strømlinjer sparer ikke spilllisten.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Velg Playlist filer',
 			'universalMedia.openPlaylist' => 'Åpne playlist',
 			'universalMedia.playlistFormatsHelp' => 'En spillliste kan inneholde opptil 1000 elementer og 2 MB. HLS manifesterer seg åpent som strømmer slik at spilleren kan velge en kvalitet.',
@@ -8490,8 +8516,6 @@ extension on TranslationsNb {
 			'universalMedia.noFavorites' => 'Ingen sparte stream favoritter ennå. Favoritter forblir i denne profilen.',
 			'universalMedia.removeFavorite' => 'Fjern stream favoritt',
 			'universalMedia.filesHelp' => 'Velg audio, video eller ISO-filer for en midlertidig kue. filer og URL\'er er ikke lagt til bibliotekets historie.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Velg filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: '1 utvalgte filer', other: '${count} utvalgte filer', ), 
 			'universalMedia.wifiTransfer' => 'Send filer via Wi-Fi',
@@ -8994,6 +9018,8 @@ extension on TranslationsNb {
 			'sourceSetup.optionalUsername' => 'Kontoens brukernavn (valgfritt)',
 			'sourceSetup.optionalPassword' => 'Kontoens passord (valgfritt)',
 			'sourceSetup.subtitlePrivacy' => 'Hent en API-nøkkel fra opensubtitles.com. Søk sender videotittelen og tilgjengelige IMDb/TMDB-ID-er, aldri videofilen. Nøkkelen og valgfri kontoinformasjon krypteres sammen med denne kilden.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Automatiske videometadata fra nettet',
 			'sourceSetup.metadataPrivacy' => 'Sender bare tittel/år fra filnavnet og episodenumre eller en NFO-ID, aldri medier eller påloggingsinformasjon. NFO-feltene beholder forrang.',
 			'sourceSetup.nfsEncryptionFailure' => 'For kryptert NFS må du kontrollere støtte for RFC 9289 og TLS 1.3 på begge NAS-tjenestene, sertifikatnavnet og delingens UID/GID. Pleazyng prøver ikke denne tilkoblingen på nytt uten kryptering.',
@@ -9004,8 +9030,6 @@ extension on TranslationsNb {
 			'sourceSetup.metadataNoMatches' => 'Ingen samsvarende titler funnet på nettet. Prøv en annen tittel.',
 			'sourceSetup.metadataSearch' => 'Søk etter metadata på nettet',
 			'sourceSetup.metadataLoading' => 'Søker etter film- og serieinformasjon på nettet…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadata fra Trakt på nettet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Fant ikke et automatisk titteltreff. Søk etter tittelen for å velge et treff.',
 			'sourceSetup.metadataFailed' => 'Kunne ikke laste metadata fra nettet. Avspilling og lokal informasjon er fortsatt tilgjengelig.',
@@ -9415,6 +9439,10 @@ extension on TranslationsNb {
 			'musicTools.preamp' => 'Forforsterkning',
 			'musicTools.ratingPending' => 'Lagret på denne enheten; venter på synkronisering',
 			'musicTools.lyricsOffset' => 'Tidsforskyvning for sangtekst',
+			'musicTools.anniversaries' => 'Albumjubileer',
+			'musicTools.outputPreset' => 'EQ for denne utgangen',
+			'musicTools.outputPresetHint' => 'Bruk denne EQ-en automatisk når denne utgangen velges.',
+			'musicTools.eqApproximation' => 'Hodetelefonprofiler er tilnærmet for EQ med ti bånd.',
 			_ => null,
 		};
 	}

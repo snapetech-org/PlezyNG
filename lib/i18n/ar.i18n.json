@@ -639,6 +639,7 @@
     "scopePlaybackSpeed": "سرعة التشغيل",
     "scopeShaderPreset": "شاتر Preset",
     "scopeAspectRatio": "نسبة العرض إلى الارتفاع",
+    "scopeZoom": "التكبير",
     "scopeSyncOffsets": "الصوت و Subtitle Sync",
     "playerScopeOff": "لا ينقذ",
     "playerScopeGlobal": "في كل مكان",
@@ -2294,6 +2295,8 @@
       "watchOn": "انظر إلى",
       "watchTrailer": "مشاهدة trailer",
       "openOn": "مفتوحة على ${site}",
+      "trailerUnavailable": "تعذر فتح المقطع الدعائي على هذا الجهاز",
+      "linkUnavailable": "تعذر فتح هذا الرابط على هذا الجهاز",
       "crew": "الطاقم",
       "ratings": "تصنيف",
       "schedule": "جدولة",
@@ -3363,6 +3366,13 @@
     "disconnectConfirmBody": "Pleazyng سوف تنسى هذه الحالة Seerr.",
     "request": "طلب",
     "request4k": "طلب في 4K",
+    "requestSeasons": "اطلب المواسم المفقودة",
+    "notifyMe": "أخبرني عند التوفر",
+    "notifyMe4k": "أخبرني عند توفر 4K",
+    "notificationsOn": "تنبيه التوفر مفعّل",
+    "notificationsEnabled": "سنخطرك عند توفره",
+    "notificationsDisabled": "تم إيقاف تنبيه التوفر",
+    "notificationFailed": "تعذّر تحديث تنبيه التوفر",
     "seasons": "المواسم",
     "allSeasons": "جميع الموسم",
     "advancedOptions": "متقدم",
@@ -5624,6 +5634,10 @@
     "exclusiveOutput": "إخراج صوت حصري",
     "preamp": "التضخيم المسبق",
     "ratingPending": "حُفظ على هذا الجهاز؛ بانتظار المزامنة",
-    "lyricsOffset": "إزاحة توقيت الكلمات"
+    "lyricsOffset": "إزاحة توقيت الكلمات",
+    "anniversaries": "ذكرى إصدار الألبومات",
+    "outputPreset": "معادل الصوت لهذا المخرج",
+    "outputPresetHint": "استخدم معادل الصوت هذا تلقائيًا عند اختيار هذا المخرج.",
+    "eqApproximation": "ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات."
   }
 }

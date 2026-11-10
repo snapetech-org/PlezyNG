@@ -324,6 +324,7 @@ class PlezyActivity : FlutterActivity() {
       // diagnostics, but never let them promote a vehicle to the TV experience.
       "isTv" to (!isAutomotive && reasons.isNotEmpty()),
       "isAutomotive" to isAutomotive,
+      "isAutomotiveMedia" to (isAutomotive && BuildConfig.AUTOMOTIVE_MEDIA),
       "reasons" to reasons,
       "isTelevisionUiMode" to isTelevisionUiMode,
       "hasTelevisionFeature" to hasTelevisionFeature,
@@ -691,6 +692,10 @@ class PlezyActivity : FlutterActivity() {
   }
 
   private fun handleDeepLinkIntent(intent: Intent?) {
+    if (BuildConfig.AUTOMOTIVE_MEDIA) {
+      val uri = intent?.data
+      if (uri?.scheme != "pleazyng-source" || uri.host != "oauth") return
+    }
     DeepLinkPlugin.linkFrom(intent)?.let(deepLinkPlugin::notifyLink)
   }
 
@@ -757,8 +762,7 @@ class PlezyActivity : FlutterActivity() {
       manufacturer = Build.MANUFACTURER,
       isAndroidTv = isAndroidTv,
       sdkInt = Build.VERSION.SDK_INT,
-      supportsVulkan11 = isAndroidTv &&
-        packageManager.hasSystemFeature(PackageManager.FEATURE_VULKAN_HARDWARE_VERSION, vulkan11),
+      supportsVulkan11 = packageManager.hasSystemFeature(PackageManager.FEATURE_VULKAN_HARDWARE_VERSION, vulkan11),
       is64Bit = Process.is64Bit()
     )
   }

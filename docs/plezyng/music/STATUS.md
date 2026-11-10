@@ -42,10 +42,14 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 - iOS phone/CarPlay scenes share one explicit engine. Android headless startup
   supplies device and restriction channels, and warm phone engines settle dirty
   profile builds while serving the car. Siri uses the same catalog/queue boundary.
+- Album anniversaries scan authorized album libraries with date-precision checks
+  and a daily account-qualified cache. Music Audio includes an offline searchable
+  catalog of 6,029 AutoEq profiles and profile-owned output EQ assignments;
+  [AUTOEQ.md](AUTOEQ.md) records the pinned source, license and approximation.
 - This is additional implemented scope, **not all code-level work completed**.
-  True overlapping fades, a bounded byte cache, remaining discovery families,
-  headphone datasets/automatic output mapping, music storage quotas, widgets/NFC,
-  remote transfer/group synchronization, a Pi endpoint and an AAOS audio target
+  True overlapping fades, remaining discovery families,
+  music storage quotas, widgets/NFC,
+  remote transfer/group synchronization, a Pi endpoint
   remain code work, in addition to platform provisioning and device qualification.
 
 ## Scope ledger
@@ -61,11 +65,11 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 | B07 | Smart playlists and filter editing | Saved dynamic station rules reuse the existing filter editor, sort, count/time budgets, whole albums and preview. These remain explicit local rules, not falsely advertised server smart playlists. Full server smart-playlist write/share semantics remain. | Rule serialization, cancellation, unknown-filter rejection, deduplication and album-budget tests pass. |
 | B08 | Collections, sharing and artwork | Existing mechanisms retained; music-specific authorization and artwork completeness remain. | Not newly qualified. |
 | B09 | Customizable music home | Music home is linked from Discover and Now Playing, with ordered/hidden recent, rediscovery, charts, recipes, stations and download shelves. Additional reference shelf families and pins remain. | Profile persistence and 320px/200% text layout tests pass. |
-| B10 | Anniversaries and rediscovery | Listening-based rediscovery of tracks last heard more than 90 days ago added. Full-library album anniversary generation with date-precision handling remains. | History aggregation and rediscovery cutoff tests pass. |
+| B10 | Anniversaries and rediscovery | Listening-based rediscovery and full-library album anniversaries are integrated into Music home. Anniversary scans reject incomplete/invalid dates, preserve calendar dates across timezones, page with bounded work, and cache by day/account/library revision. | History, precise-date/leap-year, pagination, cache, authorization-revocation and corrupt-pagination tests pass. |
 | P01 | Gapless playback | Existing arming/transition engine retained. PCM continuity and encoder-delay fixture evidence remain. | Playback transition regressions pass; no acoustic proof. |
 | P02 | Sweet Fades behavior | Existing volume envelopes retained. True overlapping native playback and reference timing/album equivalence are not implemented. | Existing fade tests pass; not Sweet Fades parity. |
 | P03 | Loudness leveling | Music policy now selects ReplayGain track/album/automatic, disables video compression, prevents tag-based clipping and applies conservative EQ/preamp headroom. Missing tags use zero fallback. Analysis-derived absolute loudness and measured equivalence remain. | Policy/gain tests pass; acoustic measurement pending. |
-| P04 | Advanced pre-caching | Existing next-source resolution retained; a new bounded byte cache and network-budget policy are not implemented. | Existing arming tests only. |
+| P04 | Advanced pre-caching | Complete DirectPlay files can be prefetched into a separate profile cache, with a 0–2048 MiB quota, Wi-Fi policy, total request deadline, atomic promotion, hashed credential-qualified keys and LRU eviction. Current account visibility is rechecked before promotion/use; pinned downloads are separate. Transcodes and playlists retain streaming. | Quota/LRU, malformed/partial/oversized responses, network policy, authorization revocation and clear tests pass. |
 | P05 | Streaming and conversion quality | Existing source resolver/settings retained. All network/download policy distinctions and output equivalence remain. | No new format/device matrix. |
 | P06 | Queue edits, shuffle and repeat | Existing edits retained; continuation respects manual inserts, removals and clear-upcoming. Full reference gesture/Back To inventory remains. | Queue and playback tests pass. |
 | P07 | Persistent large queues | Full queue, order, cursor and continuation metadata persist; no 1,000-track truncation. Live queue still resides in RAM and shape edits rewrite its rows. Paged live history remains. | 10,000-track round trip, duplicate occurrences, serialized writes, legacy restore, corrupt-state rejection and v35→v36 migration pass. |
@@ -74,7 +78,7 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 | P10 | Waveform/seek-print navigation | Seek-print analysis now persists in a versioned, at-most-512-sample profile document and is enriched during downloads when the selected cached source exposes Plex analysis. Unknown/invalid analysis remains absent. | Bounded bundle, stale-account and invalid-analysis tests pass; live server/device evidence pending. |
 | P11 | Sleep timer | Existing timer/end-of-track behavior retained. Remote/reference-preset comparison remains. | Existing playback timer regressions pass. |
 | P12 | Ten-band EQ | Dedicated music ten-band EQ, preamp, saved presets and GraphicEQ text import are connected to the real player. Imports are explicitly ten-band approximations. | Validation, headroom and import tests pass; native response measurement pending. |
-| P13 | Headphone/output EQ presets | Profile-owned named EQ presets and user-supplied GraphicEQ import added. Searchable bundled headphone dataset, provenance and automatic per-output assignment remain. | Preset serialization/import tests pass; no dataset-equivalence claim. |
+| P13 | Headphone/output EQ presets | Profile-owned presets, GraphicEQ import and 6,029 searchable bundled AutoEq profiles are integrated. Output assignments apply bands/preamp when an engine route is selected and restore general EQ on other routes. Curves are explicitly ten-band approximations; physical devices hidden behind the OS auto route are not independently identified. | Output-change, removal, profile-isolation and transport-preservation tests pass; pinned dataset reproduces deterministically. Hardware response measurement remains. |
 | P14 | Sample-rate matching and DAC output | Explicit engine sample-rate, exclusive-output and device preferences added, with absent-device fallback to automatic output. Actual DAC matching and bit-perfect qualification remain; iOS retains nonmixing media-session behavior. | Engine policy and unplugged-output tests pass; hardware format remains unmeasured. |
 | P15 | Formats, multichannel and DSD | Existing player format support retained; full codec/channel/DSD reference matrix remains. | No new native format qualification. |
 | P16 | Signal-path and quality information | Signal-path sheet reads native decoder/output rate, channels, format, engine device and DSP properties. It separately identifies hardware output as unmeasured. | Dart analysis and policy tests pass; physical output evidence pending. |
@@ -107,7 +111,7 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 | R05 | Interoperability/grouping | No new synchronized grouping/protocol equivalence. | Pending. |
 | C01 | Apple CarPlay | CarPlay lists/Now Playing share the explicit phone/headless engine; pagination updates the current template. Siri media intents use the same catalog. Entitlement activation, native artwork, native compilation and physical qualification remain. | Plist parses; Dart catalog/voice loaders pass. No new Xcode/device result claimed. |
 | C02 | Android Auto | Native media browser/session retained; cold engine adds platform identity and vehicle restrictions. Warm phone engines can continue rebuilding profile state while attached to the car in background. | Dart bridge/bootstrap tests pass. New Kotlin compile and trusted-host/process-recreation qualification pending. |
-| C03 | Android Automotive OS | Existing parked-only restrictions deliberately remain. Separate compliant media distribution target and moving-vehicle audio policy are not implemented. | Existing automotive restriction tests pass; no AAOS parity claim. |
+| C03 | Android Automotive OS | Added a separate audio-category manifest selected by `pleazyngAutomotiveMedia`, host-rendered browsing/playback, parked setup, and media-only music allowance during restrictions. Normal distributions retain parked-only behavior. The native build attests target identity to Dart; the same profile/player/queue is reused. | Moving-vehicle music advancement and preserved video restriction tests pass. Native packaging, store acceptance and physical AAOS qualification remain. |
 | C04 | Phone driving view | Manual route plus configurable foreground entry from projection; large controls and automatic-route exit added. Favorites/offline shortcuts and selected Bluetooth car routes remain. | Narrow-screen/large-text and connection tests pass. |
 | C05 | Voice commands | Siri INPlayMediaIntent resolution/confirmation/handling added for exact track/artist/album and named saved station/recipe, with shuffle/repeat and next/later. Native server playlist browsing and selection use the existing authorized API. Ambiguity requires selection. | Catalog playlist expansion and stale-auth tests pass. Native Siri/Android assistant tests remain. |
 | C06 | Car lifecycle | Connection never autoplays; detach pauses/closes automatic route. Session-scoped opaque IDs and queue-shape revisions reject stale commands. Cold/warm engine boot retains profile/PIN and AAOS restriction gates. | Dart connection/profile/background tests pass; wired/wireless, interruption and physical vehicle matrix remain. |
@@ -184,3 +188,12 @@ before native compilation: Java could not reach the pinned Gradle distribution
 (`Network is unreachable`). Toolchain pins/checksums were retained. Xcode and
 Swift compilation/formatting are unavailable in this Linux workspace. No native/vehicle/DAC result is
 inferred from Dart tests, plist parsing or source registration.
+
+## Recovered continuation validation, 2026-11-09
+
+The recovered branch and current-main integration pass **840** selected database,
+music, car policy, profile, deep-link, scheduler, download, mpv bridge and Discover
+regressions. This includes the additional prefetch/cache and AAOS media-policy
+tests. The headphone picker now has an independently scrolling result list and
+a large-text/keyboard selection regression. Additional native changes after the
+previous Android artifact are not represented as a successful native build.

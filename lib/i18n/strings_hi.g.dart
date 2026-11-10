@@ -720,6 +720,7 @@ class _Translations$settings$hi extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Playback गति';
 	@override String get scopeShaderPreset => 'शेर प्रीसेट';
 	@override String get scopeAspectRatio => 'आस्पेक्ट अनुपात';
+	@override String get scopeZoom => 'ज़ूम';
 	@override String get scopeSyncOffsets => 'Audio & Subtitle सिंक्रनाइज़ेशन';
 	@override String get playerScopeOff => 'बचाओ नहीं';
 	@override String get playerScopeGlobal => 'हर जगह';
@@ -2738,6 +2739,13 @@ class _Translations$seerr$hi extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng इस Seerr उदाहरण को भूल जाएगा. किसी भी समय फिर से कनेक्ट करें.';
 	@override String get request => 'अनुरोध';
 	@override String get request4k => '4K में अनुरोध';
+	@override String get requestSeasons => 'छूटे हुए सीज़न का अनुरोध करें';
+	@override String get notifyMe => 'उपलब्ध होने पर मुझे सूचित करें';
+	@override String get notifyMe4k => '4K में उपलब्ध होने पर मुझे सूचित करें';
+	@override String get notificationsOn => 'उपलब्धता अलर्ट चालू है';
+	@override String get notificationsEnabled => 'उपलब्ध होने पर हम आपको सूचित करेंगे';
+	@override String get notificationsDisabled => 'उपलब्धता अलर्ट बंद कर दिया गया';
+	@override String get notificationFailed => 'उपलब्धता अलर्ट अपडेट नहीं हो सका';
 	@override String get seasons => 'मौसम';
 	@override String get allSeasons => 'सभी मौसम';
 	@override String get advancedOptions => 'उन्नत';
@@ -4293,6 +4301,10 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get preamp => 'प्रीएम्प';
 	@override String get ratingPending => 'इस डिवाइस पर सहेजा गया; सिंक की प्रतीक्षा में';
 	@override String get lyricsOffset => 'गीत के बोल का समय अंतर';
+	@override String get anniversaries => 'एल्बम की वर्षगाँठ';
+	@override String get outputPreset => 'इस आउटपुट का इक्वलाइज़र';
+	@override String get outputPresetHint => 'यह आउटपुट चुने जाने पर यह इक्वलाइज़र अपने आप इस्तेमाल करें।';
+	@override String get eqApproximation => 'हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।';
 }
 
 // Path: appIcon.names
@@ -5035,6 +5047,8 @@ class _Translations$explore$detail$hi extends Translations$explore$detail$en {
 	@override String get watchOn => 'देखें';
 	@override String get watchTrailer => 'ट्रेलर देखें';
 	@override String openOn({required Object site}) => 'पर खोला गया ${site}';
+	@override String get trailerUnavailable => 'इस डिवाइस पर ट्रेलर नहीं खुल सका';
+	@override String get linkUnavailable => 'इस डिवाइस पर यह लिंक नहीं खुल सका';
 	@override String get crew => 'चालक दल';
 	@override String get ratings => 'रेटिंग';
 	@override String get schedule => 'कार्यक्रम';
@@ -5990,6 +6004,7 @@ extension on TranslationsHi {
 			'settings.scopePlaybackSpeed' => 'Playback गति',
 			'settings.scopeShaderPreset' => 'शेर प्रीसेट',
 			'settings.scopeAspectRatio' => 'आस्पेक्ट अनुपात',
+			'settings.scopeZoom' => 'ज़ूम',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle सिंक्रनाइज़ेशन',
 			'settings.playerScopeOff' => 'बचाओ नहीं',
 			'settings.playerScopeGlobal' => 'हर जगह',
@@ -6433,9 +6448,9 @@ extension on TranslationsHi {
 			'videoControls.addBookmark' => 'Bookmark जोड़ें',
 			'videoControls.bookmarkName' => 'Bookmark नाम',
 			'videoControls.bookmarkNameHint' => 'उदाहरण के लिए, खोलने की दृश्य',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'बुकमार्क ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'बुकमार्क ${n}',
 			'videoControls.bookmarkNameRequired' => 'इस पुस्तक के लिए एक नाम दर्ज करें।',
 			'videoControls.deleteBookmark' => 'Bookmark को हटा दें',
 			'videoControls.bookmarkLimitReached' => 'इस लेख में पहले से ही 100 किताबें हैं।',
@@ -6947,9 +6962,9 @@ extension on TranslationsHi {
 			'libraries.content' => 'पुस्तकालय सामग्री',
 			'libraries.selectLibrary' => 'पुस्तकालय चुनें',
 			'libraries.filtersWithCount' => ({required Object count}) => 'फ़िल्टर (${count})',
-			'libraries.noRecommendations' => 'कोई प्रस्ताव उपलब्ध नहीं है',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'कोई प्रस्ताव उपलब्ध नहीं है',
 			'libraries.noCollections' => 'इस पुस्तकालय में कोई संग्रह नहीं',
 			'libraries.noFoldersFound' => 'कोई फ़ोल्डर नहीं मिला',
 			'libraries.folders' => 'फ़ोल्डर',
@@ -7242,6 +7257,8 @@ extension on TranslationsHi {
 			'explore.detail.watchOn' => 'देखें',
 			'explore.detail.watchTrailer' => 'ट्रेलर देखें',
 			'explore.detail.openOn' => ({required Object site}) => 'पर खोला गया ${site}',
+			'explore.detail.trailerUnavailable' => 'इस डिवाइस पर ट्रेलर नहीं खुल सका',
+			'explore.detail.linkUnavailable' => 'इस डिवाइस पर यह लिंक नहीं खुल सका',
 			'explore.detail.crew' => 'चालक दल',
 			'explore.detail.ratings' => 'रेटिंग',
 			'explore.detail.schedule' => 'कार्यक्रम',
@@ -7459,11 +7476,11 @@ extension on TranslationsHi {
 			'watchTogether.copyCode' => 'कॉपी कोड',
 			'watchTogether.codeCopied' => 'कमरे का कोड कॉपी',
 			'watchTogether.shareInvite' => 'आमंत्रण साझा',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'इसे कॉपी करें. इसे एक संदेश में डालें.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng में मेरे घड़ी एक साथ कमरे में शामिल हों: घड़ी एक साथ खोलें, शामिल कमरे का चयन करें और ${code} में प्रवेश करें।',
 			'watchTogether.openSessionControls' => 'Open Watch एक साथ सत्र नियंत्रण',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'फिर से कनेक्ट...',
 			'watchTogether.reconnectingDescription' => 'कनेक्शन बंद हो गया. आप स्वचालित रूप से कमरे में प्रवेश करते हैं.',
 			'watchTogether.connected' => 'कनेक्ट',
@@ -7973,11 +7990,11 @@ extension on TranslationsHi {
 			'metadataEdit.imageUrl' => 'इमेज URL',
 			'metadataEdit.metadataUpdated' => 'मेटाडेटा अपडेट',
 			'metadataEdit.metadataUpdateFailed' => 'मेटाडेटा अपडेट करने में असफल',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Artwork अद्यतन',
 			'metadataEdit.artworkUpdateFailed' => 'कला के काम को अपडेट करने में विफलता',
 			'metadataEdit.noArtworkAvailable' => 'कोई कला उपलब्ध नहीं है',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'आर्टवर्क विकल्प ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'आर्टवर्क विकल्प ${index}, चुना गया',
 			'metadataEdit.notSet' => 'सेट नहीं',
@@ -8064,6 +8081,13 @@ extension on TranslationsHi {
 			'seerr.disconnectConfirmBody' => 'Pleazyng इस Seerr उदाहरण को भूल जाएगा. किसी भी समय फिर से कनेक्ट करें.',
 			'seerr.request' => 'अनुरोध',
 			'seerr.request4k' => '4K में अनुरोध',
+			'seerr.requestSeasons' => 'छूटे हुए सीज़न का अनुरोध करें',
+			'seerr.notifyMe' => 'उपलब्ध होने पर मुझे सूचित करें',
+			'seerr.notifyMe4k' => '4K में उपलब्ध होने पर मुझे सूचित करें',
+			'seerr.notificationsOn' => 'उपलब्धता अलर्ट चालू है',
+			'seerr.notificationsEnabled' => 'उपलब्ध होने पर हम आपको सूचित करेंगे',
+			'seerr.notificationsDisabled' => 'उपलब्धता अलर्ट बंद कर दिया गया',
+			'seerr.notificationFailed' => 'उपलब्धता अलर्ट अपडेट नहीं हो सका',
 			'seerr.seasons' => 'मौसम',
 			'seerr.allSeasons' => 'सभी मौसम',
 			'seerr.advancedOptions' => 'उन्नत',
@@ -8480,6 +8504,8 @@ extension on TranslationsHi {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n, one: '${count} अपरिवर्तित या असुरक्षित प्लेलिस्ट इनपुट से बाहर निकल गया।', other: '${count} अपरिवर्तित या असुरक्षित प्लेलिस्ट इनपुट को छोड़ दिया।', ), 
 			'universalMedia.playlistAddress' => 'प्लेलिस्ट पता',
 			'universalMedia.playlistAddressHelp' => 'एक वेब पते से M3U, M3u8, या PLS प्लेलिस्ट खोलें. सीधे स्ट्रीम लिंक प्ले लिस्ट को नहीं बचाते हैं.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Playlist फ़ाइल का चयन करें',
 			'universalMedia.openPlaylist' => 'खुली प्लेलिस्ट',
 			'universalMedia.playlistFormatsHelp' => 'एक प्लेलिस्ट में अधिकतम 1,000 आइटम और 2 एमबी शामिल हो सकते हैं. एचएलएस प्रवाह के रूप में खुलता है ताकि खिलाड़ी गुणवत्ता का चयन कर सके.',
@@ -8490,8 +8516,6 @@ extension on TranslationsHi {
 			'universalMedia.noFavorites' => 'अभी तक कोई स्ट्रीम पसंदीदा नहीं बचाया गया है. इस प्रोफ़ाइल में रहें।',
 			'universalMedia.removeFavorite' => 'पसंदीदा स्ट्रीम को हटा दें',
 			'universalMedia.filesHelp' => 'ऑडियो, वीडियो, या आईएसओ फ़ाइलों का चयन करें एक अस्थायी कवच के लिए. फ़ाइलें और यूआरएल लाइब्रेरी इतिहास में जोड़ा नहीं जाता है.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'फ़ाइल चुनें',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n, one: '1 चयनित फ़ाइल', other: '${count} चयनित फ़ाइलें', ), 
 			'universalMedia.wifiTransfer' => 'फ़ाइलों को Wi-Fi के माध्यम से भेजें',
@@ -8994,6 +9018,8 @@ extension on TranslationsHi {
 			'sourceSetup.optionalUsername' => 'खाते का उपयोगकर्ता नाम (वैकल्पिक)',
 			'sourceSetup.optionalPassword' => 'खाते का पासवर्ड (वैकल्पिक)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com से API कुंजी लें। खोज में वीडियो का शीर्षक और उपलब्ध IMDb/TMDB ID भेजे जाते हैं, वीडियो फ़ाइल कभी नहीं भेजी जाती। कुंजी और वैकल्पिक खाते के क्रेडेंशियल इस स्रोत के साथ एन्क्रिप्ट करके सहेजे जाते हैं।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'ऑनलाइन वीडियो मेटाडेटा अपने-आप पाएँ',
 			'sourceSetup.metadataPrivacy' => 'केवल फ़ाइलनाम से शीर्षक, वर्ष और एपिसोड नंबर या NFO ID भेजा जाता है; मीडिया या क्रेडेंशियल कभी नहीं भेजे जाते। NFO फ़ील्ड को हमेशा प्राथमिकता मिलती है।',
 			'sourceSetup.nfsEncryptionFailure' => 'एन्क्रिप्टेड NFS के लिए NAS की दोनों सेवाओं में RFC 9289 और TLS 1.3 का समर्थन, प्रमाणपत्र का नाम तथा एक्सपोर्ट UID/GID जाँचें। Pleazyng बिना एन्क्रिप्शन के इस कनेक्शन की फिर कोशिश नहीं करेगा।',
@@ -9004,8 +9030,6 @@ extension on TranslationsHi {
 			'sourceSetup.metadataNoMatches' => 'कोई मेल खाता ऑनलाइन शीर्षक नहीं मिला। कोई दूसरा शीर्षक आज़माएँ।',
 			'sourceSetup.metadataSearch' => 'ऑनलाइन मेटाडेटा खोजें',
 			'sourceSetup.metadataLoading' => 'फ़िल्म और टीवी कार्यक्रम की जानकारी ऑनलाइन खोजी जा रही है…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt से ऑनलाइन मेटाडेटा',
 			'sourceSetup.metadataNoAutomaticMatch' => 'अपने-आप कोई मेल खाता शीर्षक नहीं मिला। शीर्षक खोजकर सही परिणाम चुनें।',
 			'sourceSetup.metadataFailed' => 'ऑनलाइन मेटाडेटा लोड नहीं हो सका। प्लेबैक और स्थानीय जानकारी अब भी उपलब्ध हैं।',
@@ -9415,6 +9439,10 @@ extension on TranslationsHi {
 			'musicTools.preamp' => 'प्रीएम्प',
 			'musicTools.ratingPending' => 'इस डिवाइस पर सहेजा गया; सिंक की प्रतीक्षा में',
 			'musicTools.lyricsOffset' => 'गीत के बोल का समय अंतर',
+			'musicTools.anniversaries' => 'एल्बम की वर्षगाँठ',
+			'musicTools.outputPreset' => 'इस आउटपुट का इक्वलाइज़र',
+			'musicTools.outputPresetHint' => 'यह आउटपुट चुने जाने पर यह इक्वलाइज़र अपने आप इस्तेमाल करें।',
+			'musicTools.eqApproximation' => 'हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।',
 			_ => null,
 		};
 	}

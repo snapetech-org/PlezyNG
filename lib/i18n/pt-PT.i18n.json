@@ -484,7 +484,14 @@
     "seasons": "Temporadas",
     "advancedOptions": "Definições avançadas",
     "tags": "Etiquetas",
-    "statusAvailable": "Disponível"
+    "statusAvailable": "Disponível",
+    "requestSeasons": "Solicitar temporadas em falta",
+    "notifyMe": "Avisar quando estiver disponível",
+    "notifyMe4k": "Avisar quando estiver disponível em 4K",
+    "notificationsOn": "Alerta de disponibilidade ativado",
+    "notificationsEnabled": "Avisaremos quando estiver disponível",
+    "notificationsDisabled": "Alerta de disponibilidade desativado",
+    "notificationFailed": "Não foi possível atualizar o alerta de disponibilidade"
   },
   "services": {
     "libraryFilter": {

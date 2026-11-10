@@ -46,6 +46,7 @@ import '../utils/external_ids.dart';
 import '../utils/provider_extensions.dart';
 import '../utils/plex_season_display.dart';
 import '../media/media_item.dart';
+import '../media/primary_trailer.dart';
 import '../media/episode_collection.dart';
 import '../media/media_item_types.dart';
 import '../media/media_kind.dart';
@@ -77,6 +78,10 @@ import '../services/watch_actions.dart';
 import '../widgets/settings_builder.dart';
 import '../utils/layout_constants.dart';
 import '../providers/catalog_sources_provider.dart';
+import '../providers/seerr_account_provider.dart';
+import '../services/catalog/seerr_catalog_source.dart';
+import '../services/seerr/seerr_request_intent_store.dart';
+import '../widgets/seerr_title_action.dart';
 import '../providers/download_provider.dart';
 import '../providers/multi_server_provider.dart';
 import '../providers/offline_watch_provider.dart';
@@ -374,6 +379,76 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   /// Public input alias — used as the live source of truth until the detail
   /// fetch returns. Holds backend-neutral [MediaItem] data.
   MediaItem get _metadata => _fullMetadata ?? widget.metadata;
+  SeerrRequestIntentStore? _seerrIntentStore;
+  int? _seerrTmdbId;
+  String? _seerrResolvedKey;
+  bool _seerrHasNewSeason = false;
+  String? _seerrSeasonsKey;
+
+  void _onSeerrIntentChanged() => setStateIfMounted(() {});
+
+  void _bindSeerrIntent() {
+    final source = context.watch<CatalogSourcesProvider?>()?.seerrSource;
+    final next = source?.client.intents;
+    if (!identical(_seerrIntentStore, next)) {
+      _seerrIntentStore?.removeListener(_onSeerrIntentChanged);
+      _seerrIntentStore = next;
+      next?.addListener(_onSeerrIntentChanged);
+      _seerrResolvedKey = null;
+      _seerrTmdbId = null;
+      _seerrSeasonsKey = null;
+      _seerrHasNewSeason = false;
+    }
+    if (next == null || widget.isOffline || !source!.supportsTitleActions(_metadata.kind)) return;
+    final item = _metadata;
+    final exactId = _externalIdsForAvailability(item).tmdb;
+    final key = '${item.serverId}/${item.id}/${exactId ?? ''}';
+    if (_seerrResolvedKey == key) return;
+    _seerrResolvedKey = key;
+    _seerrTmdbId = null;
+    _seerrHasNewSeason = false;
+    _seerrSeasonsKey = null;
+    final id = exactId;
+    if (id != null) {
+      _seerrTmdbId = id;
+      unawaited(next.load(item.kind, id));
+      _loadSeerrNewSeason(source, next, item.kind, id);
+      return;
+    }
+    unawaited(() async {
+      try {
+        final resolved = await _getMediaClientForMetadata(context)?.fetchExternalIds(item.id);
+        if (!mounted || !identical(next, _seerrIntentStore) || _seerrResolvedKey != key) return;
+        final id = resolved?.tmdb;
+        if (id != null) {
+          setState(() => _seerrTmdbId = id);
+          unawaited(next.load(item.kind, id));
+          _loadSeerrNewSeason(source, next, item.kind, id);
+        }
+      } catch (e) {
+        appLogger.d('Seerr: library title id unavailable', error: e);
+      }
+    }());
+  }
+
+  void _loadSeerrNewSeason(SeerrCatalogSource source, SeerrRequestIntentStore store, MediaKind kind, int id) {
+    if (kind != MediaKind.show) return;
+    final key = '${identityHashCode(store)}:$id';
+    if (_seerrSeasonsKey == key) return;
+    _seerrSeasonsKey = key;
+    unawaited(() async {
+      try {
+        final details = await source.client.getTv(id);
+        await store.load(kind, id);
+        if (!mounted || !identical(store, _seerrIntentStore) || _seerrTmdbId != id || _seerrSeasonsKey != key) return;
+        final state = store.peek(kind, id);
+        if (state != null) setState(() => _seerrHasNewSeason = hasNewSeerrSeason(state, details));
+      } catch (e) {
+        appLogger.d('Seerr: TV season detail unavailable', error: e);
+      }
+    }());
+  }
+
   List<MediaItem> _seasons = [];
   bool _isLoadingSeasons = false;
   bool _seasonsLoadFailed = false; // the seasons fetch threw (vs. a genuinely empty show)
@@ -1142,6 +1217,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _bindSeerrIntent();
     if (_curatedExtras == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_canUseDetail && _curatedExtras == null) unawaited(_syncCuratedExtras());
@@ -1292,6 +1368,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
 
   @override
   void dispose() {
+    _seerrIntentStore?.removeListener(_onSeerrIntentChanged);
     _curatedExtras?.removeListener(_extrasChanged);
     _curatedExtras?.dispose();
     _themeLifecycle?.dispose();
@@ -3644,6 +3721,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
         ),
       );
     }
+    _bindSeerrIntent();
     // Session-fresh hero: server snapshot resolved against the watch-state
     // store (onWatchStateChanged rebuilds on relevant events).
     final metadata = _fresh(_metadata);
@@ -5156,38 +5234,10 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     );
   }
 
-  /// Get the primary trailer from the extras list.
+  /// Get the primary trailer from the extras list; null hides the button.
   MediaItem? _getPrimaryTrailer() {
-    if (_extras == null || _extras!.isEmpty) return null;
-
-    // If there's a trailerKey (Plex `primaryExtraKey`), try to find that specific trailer
-    final metadata = _metadata;
-    if (metadata case PlexMediaItem(:final trailerKey?)) {
-      // Extract rating key from trailerKey (e.g., "/library/metadata/52601" -> "52601")
-      final primaryKey = trailerKey.split('/').last;
-      try {
-        return _extras!.firstWhere((extra) => extra.id == primaryKey);
-      } catch (_) {
-        // Primary key not found, fall through to find any trailer
-      }
-    }
-
-    try {
-      return _extras!.firstWhere(_isTrailerExtra);
-    } catch (_) {
-      // No trailer found, return null (button won't appear)
-      return null;
-    }
-  }
-
-  bool _isTrailerExtra(MediaItem extra) {
-    if (extra case PlexMediaItem(:final subtype?)) {
-      return subtype.toLowerCase() == 'trailer';
-    }
-    final raw = extra.raw;
-    final extraType = raw?['ExtraType'] as String?;
-    final type = raw?['Type'] as String?;
-    return extraType?.toLowerCase() == 'trailer' || type?.toLowerCase() == 'trailer';
+    final extras = _extras;
+    return extras == null ? null : primaryTrailer(_metadata, extras);
   }
 
   /// Build the cast section with locked focus pattern for D-pad navigation

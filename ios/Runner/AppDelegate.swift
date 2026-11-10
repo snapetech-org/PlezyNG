@@ -432,7 +432,7 @@ final class MusicPhoneSceneDelegate: UIResponder, UIWindowSceneDelegate, Flutter
       return
     }
     let window = UIWindow(windowScene: windowScene)
-    window.rootViewController = FlutterViewController(engine: engine, nibName: nil, bundle: nil)
+    window.rootViewController = PlezyFlutterViewController(engine: engine, nibName: nil, bundle: nil)
     self.window = window
     sceneLifeCycleDelegate.scene(scene, willConnectTo: session, options: connectionOptions)
     window.makeKeyAndVisible()

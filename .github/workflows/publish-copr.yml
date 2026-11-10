@@ -26,6 +26,7 @@ env:
 
 permissions:
   contents: read
+  attestations: read
 
 jobs:
   publish:
@@ -106,6 +107,7 @@ jobs:
             --pattern SHA256SUMS.txt \
             --dir "$RUNNER_TEMP/pleazyng-copr/assets"
           cd "$RUNNER_TEMP/pleazyng-copr/assets"
+          python3 "$GITHUB_WORKSPACE/scripts/verify_release_attestation.py" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY"
           for asset in pleazyng-linux-x64.tar.gz pleazyng-linux-arm64.tar.gz; do
             expected="$(awk -v name="$asset" '$2 == name { print $1; count++ } END { if (count != 1) exit 1 }' SHA256SUMS.txt)"
             actual="$(sha256sum "$asset" | cut -d ' ' -f 1)"
@@ -131,6 +133,8 @@ jobs:
           cp LICENSE "$top/SOURCES/LICENSE"
           cp linux/packaging/normalize-bundle-rpaths.py "$top/SOURCES/normalize-bundle-rpaths.py"
           cp linux/packaging/flatpak/relocate-caches.py "$top/SOURCES/relocate-caches.py"
+          cp linux/packaging/install-webkit-helpers.py linux/packaging/webkit-runtime.json linux/packaging/rebuild-pixbuf-cache.py "$top/SOURCES/"
+          python3 linux/packaging/fetch-webkit-runtime.py --output "$top/SOURCES"
           sed "s/^Version:.*/Version:        $RELEASE_VERSION/" linux/packaging/copr/pleazyng.spec > "$top/SPECS/pleazyng.spec"
           rpmbuild --define "_topdir $top" -bs "$top/SPECS/pleazyng.spec"
 

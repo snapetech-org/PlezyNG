@@ -720,6 +720,7 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'গতি Playback';
 	@override String get scopeShaderPreset => 'শারীরিক প্রসেস্ট';
 	@override String get scopeAspectRatio => 'এস্পেক্ট রেসিও';
+	@override String get scopeZoom => 'জুম';
 	@override String get scopeSyncOffsets => 'অডিও & Subtitle Sync';
 	@override String get playerScopeOff => 'বাঁচান না';
 	@override String get playerScopeGlobal => 'যেখানে';
@@ -2738,6 +2739,13 @@ class _Translations$seerr$bn extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.';
 	@override String get request => 'অনুরোধ';
 	@override String get request4k => '4K অনুসন্ধান';
+	@override String get requestSeasons => 'অনুপস্থিত মৌসুমগুলোর জন্য অনুরোধ করুন';
+	@override String get notifyMe => 'পাওয়া গেলে আমাকে জানান';
+	@override String get notifyMe4k => '4K-তে পাওয়া গেলে আমাকে জানান';
+	@override String get notificationsOn => 'পাওয়ার বিজ্ঞপ্তি চালু আছে';
+	@override String get notificationsEnabled => 'পাওয়া গেলে আমরা আপনাকে জানাব';
+	@override String get notificationsDisabled => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করা হয়েছে';
+	@override String get notificationFailed => 'পাওয়ার বিজ্ঞপ্তি আপডেট করা যায়নি';
 	@override String get seasons => 'সপ্তাহ';
 	@override String get allSeasons => 'সব সপ্তাহ';
 	@override String get advancedOptions => 'উন্নত';
@@ -4293,6 +4301,10 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String get preamp => 'প্রিঅ্যাম্প';
 	@override String get ratingPending => 'এই ডিভাইসে সংরক্ষিত; সিঙ্কের অপেক্ষায়';
 	@override String get lyricsOffset => 'গানের কথার সময়ের ব্যবধান';
+	@override String get anniversaries => 'অ্যালবামের বর্ষপূর্তি';
+	@override String get outputPreset => 'এই আউটপুটের ইকুয়ালাইজার';
+	@override String get outputPresetHint => 'এই আউটপুট বেছে নিলে স্বয়ংক্রিয়ভাবে এই ইকুয়ালাইজার ব্যবহার করুন।';
+	@override String get eqApproximation => 'হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।';
 }
 
 // Path: appIcon.names
@@ -5035,6 +5047,8 @@ class _Translations$explore$detail$bn extends Translations$explore$detail$en {
 	@override String get watchOn => 'দেখুন';
 	@override String get watchTrailer => 'ট্র্যালার দেখুন';
 	@override String openOn({required Object site}) => 'খোলা ${site}';
+	@override String get trailerUnavailable => 'এই ডিভাইসে ট্রেলার খোলা যায়নি';
+	@override String get linkUnavailable => 'এই ডিভাইসে এই লিঙ্ক খোলা যায়নি';
 	@override String get crew => 'ক্লাব';
 	@override String get ratings => 'রেটিং';
 	@override String get schedule => 'পরিকল্পনা';
@@ -5990,6 +6004,7 @@ extension on TranslationsBn {
 			'settings.scopePlaybackSpeed' => 'গতি Playback',
 			'settings.scopeShaderPreset' => 'শারীরিক প্রসেস্ট',
 			'settings.scopeAspectRatio' => 'এস্পেক্ট রেসিও',
+			'settings.scopeZoom' => 'জুম',
 			'settings.scopeSyncOffsets' => 'অডিও & Subtitle Sync',
 			'settings.playerScopeOff' => 'বাঁচান না',
 			'settings.playerScopeGlobal' => 'যেখানে',
@@ -6433,9 +6448,9 @@ extension on TranslationsBn {
 			'videoControls.addBookmark' => 'Bookmark যোগ করুন',
 			'videoControls.bookmarkName' => 'Bookmark নাম',
 			'videoControls.bookmarkNameHint' => 'উদাহরণস্বরূপ, দৃশ্য খোলা',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'বইমার্ক ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'বইমার্ক ${n}',
 			'videoControls.bookmarkNameRequired' => 'এ বইয়ের জন্য একটি নাম লিখুন।',
 			'videoControls.deleteBookmark' => 'বুকমার্ক 삭제',
 			'videoControls.bookmarkLimitReached' => 'এই পণ্যটি এখন 100 বইমেলা আছে।',
@@ -6947,9 +6962,9 @@ extension on TranslationsBn {
 			'libraries.content' => 'লাইব্রেরি বিষয়বস্তু',
 			'libraries.selectLibrary' => 'লাইব্রেরি নির্বাচন',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ফিল্টার (${count})',
-			'libraries.noRecommendations' => 'উপলব্ধি নেই',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'উপলব্ধি নেই',
 			'libraries.noCollections' => 'এই লাইব্রেরিতে কোন সংগ্রহ নেই',
 			'libraries.noFoldersFound' => 'কোন ফাইল পাওয়া যায়নি',
 			'libraries.folders' => 'ফোল্ডার',
@@ -7242,6 +7257,8 @@ extension on TranslationsBn {
 			'explore.detail.watchOn' => 'দেখুন',
 			'explore.detail.watchTrailer' => 'ট্র্যালার দেখুন',
 			'explore.detail.openOn' => ({required Object site}) => 'খোলা ${site}',
+			'explore.detail.trailerUnavailable' => 'এই ডিভাইসে ট্রেলার খোলা যায়নি',
+			'explore.detail.linkUnavailable' => 'এই ডিভাইসে এই লিঙ্ক খোলা যায়নি',
 			'explore.detail.crew' => 'ক্লাব',
 			'explore.detail.ratings' => 'রেটিং',
 			'explore.detail.schedule' => 'পরিকল্পনা',
@@ -7459,11 +7476,11 @@ extension on TranslationsBn {
 			'watchTogether.copyCode' => 'কপি কোড',
 			'watchTogether.codeCopied' => 'রুম কোড কপি',
 			'watchTogether.shareInvite' => 'বিতর্ক invitaciones',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
 			'watchTogether.openSessionControls' => 'Open Watch Together সেশন কন্ট্রোল',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'আবার সংযোগ...',
 			'watchTogether.reconnectingDescription' => 'সংযোগ বন্ধ হয়ে গেছে. আপনি স্বয়ংক্রিয়ভাবে রুমে যোগ দেবেন।',
 			'watchTogether.connected' => 'সংযুক্ত',
@@ -7973,11 +7990,11 @@ extension on TranslationsBn {
 			'metadataEdit.imageUrl' => 'ইমেজ URL',
 			'metadataEdit.metadataUpdated' => 'মেটাদাডেট আপডেট',
 			'metadataEdit.metadataUpdateFailed' => 'মেটাদাটা আপডেট করতে পারেনি',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
 			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
 			'metadataEdit.noArtworkAvailable' => 'কোন শিল্প কাজ পাওয়া যায় না',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'শিল্প বিকল্প ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ছবির বিকল্প ${index}, নির্বাচিত',
 			'metadataEdit.notSet' => 'সিস্টেম না',
@@ -8064,6 +8081,13 @@ extension on TranslationsBn {
 			'seerr.disconnectConfirmBody' => 'Pleazyng এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.',
 			'seerr.request' => 'অনুরোধ',
 			'seerr.request4k' => '4K অনুসন্ধান',
+			'seerr.requestSeasons' => 'অনুপস্থিত মৌসুমগুলোর জন্য অনুরোধ করুন',
+			'seerr.notifyMe' => 'পাওয়া গেলে আমাকে জানান',
+			'seerr.notifyMe4k' => '4K-তে পাওয়া গেলে আমাকে জানান',
+			'seerr.notificationsOn' => 'পাওয়ার বিজ্ঞপ্তি চালু আছে',
+			'seerr.notificationsEnabled' => 'পাওয়া গেলে আমরা আপনাকে জানাব',
+			'seerr.notificationsDisabled' => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করা হয়েছে',
+			'seerr.notificationFailed' => 'পাওয়ার বিজ্ঞপ্তি আপডেট করা যায়নি',
 			'seerr.seasons' => 'সপ্তাহ',
 			'seerr.allSeasons' => 'সব সপ্তাহ',
 			'seerr.advancedOptions' => 'উন্নত',
@@ -8480,6 +8504,8 @@ extension on TranslationsBn {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${count} অসহায় বা নিরাপদ Playlist প্রবেশ।', other: '${count} সমর্থিত বা নিরাপদ Playlist অন্তর্ভুক্ত।', ), 
 			'universalMedia.playlistAddress' => 'Playlist ঠিকানা',
 			'universalMedia.playlistAddressHelp' => 'একটি ওয়েব ঠিকানা থেকে একটি M3U, M3u8, বা PLS প্লেলিস্ট খোঁজ করুন. সরাসরি প্রদর্শন লিঙ্কগুলি প্লেলেস্ট সংরক্ষণ করে না।',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Playlist ফাইল নির্বাচন করুন',
 			'universalMedia.openPlaylist' => 'খোলা Playlist',
 			'universalMedia.playlistFormatsHelp' => 'একটি খেলা লিস্টে সর্বাধিক 1,000 পণ্য এবং 2 মিবি রয়েছে. HLS স্ট্রিম হিসাবে খোলা হয়, তাই খেলোয়াড় একটি মান নির্বাচন করতে পারেন।',
@@ -8490,8 +8516,6 @@ extension on TranslationsBn {
 			'universalMedia.noFavorites' => 'এখনো কোন প্রেমের পছন্দ সংরক্ষণ করা হয় না. পছন্দের এই प्रोফাইলে থাকুন।',
 			'universalMedia.removeFavorite' => 'প্রিয় স্ট্রিম মুছে ফেলুন',
 			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
@@ -8994,6 +9018,8 @@ extension on TranslationsBn {
 			'sourceSetup.optionalUsername' => 'অ্যাকাউন্টের ব্যবহারকারীর নাম (ঐচ্ছিক)',
 			'sourceSetup.optionalPassword' => 'অ্যাকাউন্টের পাসওয়ার্ড (ঐচ্ছিক)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com থেকে API কী নিন। অনুসন্ধানে ভিডিওর শিরোনাম ও উপলব্ধ IMDb/TMDB ID পাঠানো হয়, ভিডিও ফাইল কখনোই পাঠানো হয় না। কী ও ঐচ্ছিক অ্যাকাউন্টের প্রবেশতথ্য এই উৎসের সঙ্গে এনক্রিপ্ট করে রাখা হয়।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'স্বয়ংক্রিয়ভাবে অনলাইন ভিডিও মেটাডেটা পান',
 			'sourceSetup.metadataPrivacy' => 'শুধু ফাইলের নাম থেকে শিরোনাম, বছর ও পর্বের নম্বর অথবা NFO ID পাঠানো হয়; মিডিয়া বা প্রবেশতথ্য কখনো পাঠানো হয় না। NFO ফিল্ড সবসময় অগ্রাধিকার পায়।',
 			'sourceSetup.nfsEncryptionFailure' => 'এনক্রিপ্ট করা NFS-এর জন্য NAS-এর দুই সেবায় RFC 9289 ও TLS 1.3 সমর্থন, সার্টিফিকেটের নাম এবং এক্সপোর্টের UID/GID পরীক্ষা করুন। Pleazyng এনক্রিপশন ছাড়া এই সংযোগ আবার চেষ্টা করবে না।',
@@ -9004,8 +9030,6 @@ extension on TranslationsBn {
 			'sourceSetup.metadataNoMatches' => 'অনলাইনে মিলে যায় এমন কোনো শিরোনাম পাওয়া যায়নি। অন্য শিরোনাম দিয়ে চেষ্টা করুন।',
 			'sourceSetup.metadataSearch' => 'অনলাইন মেটাডেটা খুঁজুন',
 			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
 			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',
 			'sourceSetup.metadataFailed' => 'অনলাইন মেটাডেটা লোড করা যায়নি। প্লেব্যাক ও স্থানীয় তথ্য এখনো পাওয়া যাবে।',
@@ -9415,6 +9439,10 @@ extension on TranslationsBn {
 			'musicTools.preamp' => 'প্রিঅ্যাম্প',
 			'musicTools.ratingPending' => 'এই ডিভাইসে সংরক্ষিত; সিঙ্কের অপেক্ষায়',
 			'musicTools.lyricsOffset' => 'গানের কথার সময়ের ব্যবধান',
+			'musicTools.anniversaries' => 'অ্যালবামের বর্ষপূর্তি',
+			'musicTools.outputPreset' => 'এই আউটপুটের ইকুয়ালাইজার',
+			'musicTools.outputPresetHint' => 'এই আউটপুট বেছে নিলে স্বয়ংক্রিয়ভাবে এই ইকুয়ালাইজার ব্যবহার করুন।',
+			'musicTools.eqApproximation' => 'হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।',
 			_ => null,
 		};
 	}

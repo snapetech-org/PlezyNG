@@ -2,11 +2,55 @@
 
 ## [Unreleased]
 
+- Add a quota-bounded, authorization-scoped music prefetch cache with Wi-Fi policy and partial-file cleanup. Separate the AAOS host-rendered media build from parked video restrictions, retain one player session, and make headphone search usable with large text and a keyboard.
+
+- Add full-library album anniversaries, per-output music EQ assignments, and 6,029 offline-searchable headphone profiles derived from [AutoEq](https://github.com/jaakkopasanen/AutoEq) by Jaakko Pasanen and contributors under the MIT license. Explicitly identify ten-band approximations, retain source provenance and display the license in-app. Preserve station sort direction and clarify sort labels.
 - Integrate a configurable Music home, device-local listening history/charts, six Guest DJ modes, saved filter-based stations with scheduled downloads, opt-in prompt playlists, music ReplayGain/EQ/preamp/output controls and named presets. Reuse existing profiles, library filters, playlists, downloads and Now Playing; protect pending work across account changes.
 - Retain authorized lyrics and bounded seek-print analysis with downloaded music, add per-track lyric timing, durable music links and queued rating/favorite edits. Keep offline station playback limited to the active profile's completed downloads.
 - Add shared iOS phone/CarPlay engine startup, Siri media intents, Android headless device/restriction handling and background profile-frame scheduling; expand native playlist browsing and prevent pagination from consuming CarPlay navigation levels. Native signing/build/device qualification and remaining parity code are tracked in `docs/plezyng/music/STATUS.md`.
+- More reliable iOS speed-change qualification: test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage. Independently adapted from [upstream 48926474](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
-- Close Linux emulator sandbox gaps in shared IPC and newer metadata syscalls, including when compiled with older kernel headers. Preserve thread-creation fallbacks and add regressions using private file, semaphore and message-queue fixtures.
+- Keep the descriptor-worker integration check in its dedicated native isolation lane, using its required verified headers, instead of accidentally invoking it as an argument-free Python unit test.
+
+- Translate the seven new Seerr request and availability-alert messages across all supported locales, removing their temporary English fallbacks and reducing the fallback budget to its prior ceiling.
+
+- Actionable tvOS trailers and external links: play library trailers internally, offer YouTube handoff only when its app is installed, hide unsupported browser links and report failed handoffs; preserve Seerr actions and block unsafe provider URI schemes. Independently adapted from [upstream 16d5b404](https://github.com/edde746/plezy/commit/16d5b404cb14163a776b701265e55b6f66cdfc34), contributed upstream by [@moust4ki](https://github.com/moust4ki); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Sheet safe areas beside a vertical system bar: remove the opposite status-bar inset and align hosted and modal sheets with the mobile content edge while retaining keyboard insets and back handling. Independently adapted from [upstream 04ec8506](https://github.com/edde746/plezy/commit/04ec8506c78dc29b4dfc18f751943fb6ecb89eec), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Adaptive fold and vertical-bar mobile layout: place navigation in the system bar, keep hosted sheets on one side of a fold and retain player ownership across route replacement; preserve the fork’s scrollable navigation and system-bar styling. Independently adapted from [upstream b4192d6f](https://github.com/edde746/plezy/commit/b4192d6f355921aa9dbdd89b000012e7c4496fa7), contributed upstream by [@v-vincere](https://github.com/v-vincere); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+- Publish and natively qualify Pleazyng v3.0.7 channel repacks on AUR, Fedora COPR and the maintained Nix flake; submit the Nixpkgs package for review. Publish and install the signed Homebrew Cask, and activate the Google Play lifetime product while retaining the remaining store-review qualification gates. Replace pending installation text with the verified Pleazyng channel commands.
+
+- Keep the descriptor-worker integration probe in its provisioned native workflow instead of executing it as an argument-free unit guard, and normalize the shared worker header so repository checks remain green.
+
+- Switch Android mpv display mode before decoder creation: hold VOD decoding at demux preload while display matching settles, bound and cancel stale holds, reject predecessor-player tokens, and retain first-frame Live TV matching, Dolby/FEL routing and motion-processing output targets. Independently adapted from [upstream c577edda](https://github.com/edde746/plezy/commit/c577edda5cdf4b0a0c3d5dd0d543e432c5bed0d8), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+- Translate the new Seerr availability-alert copy across all 32 base locales (with regional inheritance), and keep unexpected quick-request failures localized instead of exposing raw exception text.
+
+- System certificate authorities for GitHub asset redirects: retain system-only certificate trust through githubusercontent.com redirects on Android and dart:io, without enabling the upstream anime-feed migration. Independently adapted from [upstream cbd9205f](https://github.com/edde746/plezy/commit/cbd9205f2cef71973dd7cadf568477c448cb3787), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Stable package publication metadata guard: reject GitHub pre-releases even when their tags look like stable versions, retaining manual publication and the fork publisher. Independently adapted from [upstream 1dd75b3e](https://github.com/edde746/plezy/commit/1dd75b3e5e95913cdaa5b8c22911490e72dfb7c5), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Windows pending-resize engine correction: pin the checksum-verified +2 engine for the existing Flutter ABI, retaining DirectComposition and x64/arm64 cache layouts; native Windows qualification remains separate. Independently adapted from [upstream 90b7ccca](https://github.com/edde746/plezy/commit/90b7ccca68cffcfe51fc8994c3463fcbf769ec18), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Hold playback beneath the resume profile picker: pause the covered player and refuse native, media-session, Watch Together and Play Next resume intents until profile selection finishes, preserving Automotive restrictions and active PiP. Independently adapted from [upstream 9fe138ab](https://github.com/edde746/plezy/commit/9fe138aba39414e38099cc17cfd4296f47059778), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Add optional title, library and global persistence for custom video zoom, retaining session-only defaults and bounded values. Independently adapted from [upstream e90973fb](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Allow trusted immutable version tags to run the same hosted hybrid CI and release matrix as `main`, so exact release-source validation and publication cannot race concurrent main-branch work.
+
+- Repair AUR, COPR and Nix repacks of v3.0.7 with byte-matched WebKit helper processes, required sandbox tools and regenerated GTK image-loader caches. Qualify Nix WebView rendering and JavaScript with the WebKit process sandbox enabled. Existing GitHub release assets remain immutable.
+
+- Pin hosted Apple jobs to the installed Xcode 26.5 toolchain and retry the exact locked nested Dolby Vision build once after Xcode's package-model abort, retaining verified task-owned checkouts while discarding partial build products.
+
+- Keep focus visible on light surfaces, remove gray scrim bands and declare transparent status-bar styling for pages without app bars. Independently adapted from upstream commits [4eabc30c](https://github.com/edde746/plezy/commit/4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb), [13426a00](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598), [c7f86ab8](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Debounce artwork resize requests and retain resolution on shrink, keep Watch Together guests synchronized after version changes, and select Skia on Android devices without Vulkan 1.1. Independently integrated upstream contributions by [@strata-scribe](https://github.com/strata-scribe) ([38c48f14](https://github.com/edde746/plezy/commit/38c48f14ac4107cc94b2ab2f41444f0448d64da0)) and [@edde746](https://github.com/edde746) ([6c87210c](https://github.com/edde746/plezy/commit/6c87210c6162ecaf5e9a77560353a7948e1e93bd), [d2424018](https://github.com/edde746/plezy/commit/d2424018297a00fe1f8bc97ef2bb207f6a515499)); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Retain newly-online Continue Watching copies, reconcile artwork through the authoritative on-deck fetch, and undo display switches that finish after fullscreen playback has ended. Independently adapted from upstream commits [119ce59d](https://github.com/edde746/plezy/commit/119ce59def9eacef8ac70e2b8c0d7fdfe771e0a4), [f2985a7b](https://github.com/edde746/plezy/commit/f2985a7b06b1190507946cde824779880d7d2af8), [ddcfda3c](https://github.com/edde746/plezy/commit/ddcfda3c4e349ec315f1c5496a5a0e95128b6997), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Preserve companion-remote controls across reconnect, restore TV focus to newly opened pages and avoid a flaky diagnostic counter-order assertion. Independently adapted from upstream commits [e871d095](https://github.com/edde746/plezy/commit/e871d095171855914d8f0634b3507a80e67bedce), [5076836a](https://github.com/edde746/plezy/commit/5076836a5dbb2f54b8316fdcb9d94330c1ddbf01) and [55ef954e](https://github.com/edde746/plezy/commit/55ef954e23bbcb6fac81b15a84ff7442c87c6d58), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Close Linux emulator sandbox gaps in shared IPC, descriptor signal ownership and newer metadata syscalls, including when compiled with older kernel headers. Remove inherited capabilities, preserve thread-creation fallbacks and add regressions using private file, semaphore and message-queue fixtures.
 
 - Apply the repository's native Kotlin and Swift formatters to the integrated Android isolation, car adapter, and iOS application changes before release validation.
 
@@ -26,7 +70,7 @@
 
 - Isolate Android RomM cores in a permissionless service with a distinct UID. Pass only read-only game/firmware descriptors through a bounded virtual filesystem, retain audio and saves in the app, and wait for Android's process-death notification before releasing a session. Add device-runtime fault and access-boundary tests.
 
-- Remove aerynOS from supported release channels and packaging at the owner's request.
+- Restore aerynOS release-bundle packaging for downstream review, with checksum-pinned WebKit helpers, corrected Boulder archive extraction and support-file layout, and private ELF search paths for the app and embedded Dolby Vision tool runtime. Native aerynOS build, installation and Jellyfin sign-in pass; the published v3.0.7 bundle still fails video playback QA because it predates the native-aperture repair.
 
 - Retry the nested Dolby Vision Swift package resolution once from clean task-owned state when Xcode 26 aborts inside its package-graph model; ordinary resolver failures still fail immediately.
 

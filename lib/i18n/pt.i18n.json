@@ -633,6 +633,7 @@
     "scopePlaybackSpeed": "Velocidade de reprodução",
     "scopeShaderPreset": "Predefinição de shader",
     "scopeAspectRatio": "Proporção da tela",
+    "scopeZoom": "Zoom",
     "scopeSyncOffsets": "Sincronização de áudio e legendas",
     "playerScopeOff": "Não salvar",
     "playerScopeGlobal": "Em todos os lugares",
@@ -2252,6 +2253,8 @@
       "watchOn": "Assistir em",
       "watchTrailer": "Ver trailer",
       "openOn": "Abrir em ${site}",
+      "trailerUnavailable": "Não foi possível abrir o trailer neste dispositivo",
+      "linkUnavailable": "Não foi possível abrir o link neste dispositivo",
       "crew": "Equipe",
       "ratings": "Avaliações",
       "schedule": "Programação",
@@ -3282,6 +3285,13 @@
     "disconnectConfirmBody": "O Pleazyng esquecerá esta instância do Seerr. Reconecte quando quiser.",
     "request": "Solicitar",
     "request4k": "Solicitar em 4K",
+    "requestSeasons": "Solicitar temporadas em falta",
+    "notifyMe": "Avise-me quando estiver disponível",
+    "notifyMe4k": "Avise-me quando 4K estiver disponível",
+    "notificationsOn": "Alerta de disponibilidade ativado",
+    "notificationsEnabled": "Avisaremos quando estiver disponível",
+    "notificationsDisabled": "Alerta de disponibilidade desativado",
+    "notificationFailed": "Não foi possível atualizar o alerta de disponibilidade",
     "seasons": "Temporadas",
     "allSeasons": "Todas as temporadas",
     "advancedOptions": "Avançado",
@@ -5525,6 +5535,10 @@
     "exclusiveOutput": "Saída de áudio exclusiva",
     "preamp": "Pré-amplificação",
     "ratingPending": "Salvo neste dispositivo; aguardando sincronização",
-    "lyricsOffset": "Deslocamento da letra"
+    "lyricsOffset": "Deslocamento da letra",
+    "anniversaries": "Aniversários de álbuns",
+    "outputPreset": "Equalizador desta saída",
+    "outputPresetHint": "Usar automaticamente este equalizador quando esta saída for selecionada.",
+    "eqApproximation": "Os perfis de auscultadores são aproximados para o equalizador de dez bandas."
   }
 }

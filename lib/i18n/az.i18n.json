@@ -631,6 +631,7 @@
     "scopePlaybackSpeed": "Oxutma sürəti",
     "scopeShaderPreset": "Şader ön ayarı",
     "scopeAspectRatio": "Tərəf nisbəti",
+    "scopeZoom": "Miqyas",
     "scopeSyncOffsets": "Audio və subtitr sinxronizasiyası",
     "playerScopeOff": "Saxlama",
     "playerScopeGlobal": "Hər yerdə",
@@ -2250,6 +2251,8 @@
       "watchOn": "İzlə",
       "watchTrailer": "Treyleri izlə",
       "openOn": "${site} saytında aç",
+      "trailerUnavailable": "Bu cihazda treyler açıla bilmədi",
+      "linkUnavailable": "Bu cihazda bu keçid açıla bilmədi",
       "crew": "Heyət",
       "ratings": "Reytinq",
       "schedule": "Cədvəl",
@@ -3279,6 +3282,13 @@
     "disconnectConfirmBody": "Pleazyng bu Seerr serverini unudacaq. İstənilən vaxt yenidən qoşula bilərsiniz.",
     "request": "Sorğu göndər",
     "request4k": "4K sorğu göndər",
+    "requestSeasons": "Çatışmayan mövsümlər üçün sorğu göndər",
+    "notifyMe": "Əlçatan olduqda mənə bildir",
+    "notifyMe4k": "4K əlçatan olduqda mənə bildir",
+    "notificationsOn": "Əlçatanlıq bildirişi aktivdir",
+    "notificationsEnabled": "Əlçatan olduqda sizə xəbər verəcəyik",
+    "notificationsDisabled": "Əlçatanlıq bildirişi söndürüldü",
+    "notificationFailed": "Əlçatanlıq bildirişini yeniləmək mümkün olmadı",
     "seasons": "Mövsümlər",
     "allSeasons": "Bütün mövsümlər",
     "advancedOptions": "Təkmilləşdirilmiş",
@@ -5516,6 +5526,10 @@
     "exclusiveOutput": "Eksklüziv səs çıxışı",
     "preamp": "Ön gücləndirmə",
     "ratingPending": "Bu cihazda saxlanıldı; sinxronizasiya gözlənilir",
-    "lyricsOffset": "Mahnı sözlərinin vaxt fərqi"
+    "lyricsOffset": "Mahnı sözlərinin vaxt fərqi",
+    "anniversaries": "Albomların ildönümləri",
+    "outputPreset": "Bu çıxış üçün ekvalayzer",
+    "outputPresetHint": "Bu çıxış seçildikdə bu ekvalayzeri avtomatik tətbiq et.",
+    "eqApproximation": "Qulaqlıq profilləri onzolaqlı ekvalayzer üçün təxmini uyğunlaşdırılıb."
   }
 }

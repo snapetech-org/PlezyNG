@@ -635,6 +635,7 @@
     "scopePlaybackSpeed": "Rychlost přehrávání",
     "scopeShaderPreset": "Shader představení",
     "scopeAspectRatio": "Poměr stran",
+    "scopeZoom": "Přiblížení",
     "scopeSyncOffsets": "Audio a subtitle synchronizace",
     "playerScopeOff": "Nenechte se zachránit",
     "playerScopeGlobal": "Všude všude",
@@ -2268,6 +2269,8 @@
       "watchOn": "Podívejte se",
       "watchTrailer": "Podívejte se trailer",
       "openOn": "Otevřeno na ${site}",
+      "trailerUnavailable": "Na tomto zařízení se nepodařilo otevřít upoutávku",
+      "linkUnavailable": "Na tomto zařízení se nepodařilo otevřít tento odkaz",
       "crew": "Posádka",
       "ratings": "Hodnocení",
       "schedule": "Plánované nahrávání",
@@ -3315,6 +3318,13 @@
     "disconnectConfirmBody": "Pleazyng bude zapomenout na tento příklad Seerr.",
     "request": "Žádost",
     "request4k": "Vyžádání v 4K",
+    "requestSeasons": "Vyžádat chybějící sezóny",
+    "notifyMe": "Upozornit, až bude dostupné",
+    "notifyMe4k": "Upozornit, až bude dostupné ve 4K",
+    "notificationsOn": "Upozornění na dostupnost je zapnuté",
+    "notificationsEnabled": "Upozorníme vás, až bude dostupné",
+    "notificationsDisabled": "Upozornění na dostupnost bylo vypnuto",
+    "notificationFailed": "Upozornění na dostupnost se nepodařilo aktualizovat",
     "seasons": "Série",
     "allSeasons": "Všechny sezóny",
     "advancedOptions": "Pokročilé",
@@ -5564,6 +5574,10 @@
     "exclusiveOutput": "Výhradní zvukový výstup",
     "preamp": "Předzesílení",
     "ratingPending": "Uloženo v tomto zařízení; čeká na synchronizaci",
-    "lyricsOffset": "Časový posun textu"
+    "lyricsOffset": "Časový posun textu",
+    "anniversaries": "Výročí alb",
+    "outputPreset": "Ekvalizér pro tento výstup",
+    "outputPresetHint": "Při výběru tohoto výstupu automaticky použít tento ekvalizér.",
+    "eqApproximation": "Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér."
   }
 }

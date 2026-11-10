@@ -21,6 +21,11 @@ import '../mixins/context_menu_tap_mixin.dart';
 import '../models/catalog/catalog_item.dart';
 import '../models/catalog/catalog_labels.dart';
 import '../models/catalog/catalog_metadata.dart';
+import '../models/seerr/seerr_request_intent.dart';
+import '../providers/catalog_sources_provider.dart';
+import '../services/seerr/seerr_request_intent_store.dart';
+import '../services/catalog/seerr_catalog_source.dart';
+import 'seerr_title_action.dart';
 import '../providers/download_provider.dart';
 import '../providers/watch_state_store.dart';
 import '../services/download_storage_service.dart';
@@ -315,6 +320,8 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
   }
 
   CatalogItem? _cachedCatalogItem;
+  SeerrRequestIntentStore? _intentStore;
+  SeerrCatalogSource? _intentSource;
   String? _cachedSemanticLabel;
   AppLocale? _cachedSemanticLocale;
   bool? _cachedSemanticIsWatched;
@@ -335,7 +342,39 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
     if (!identical(oldWidget.item, widget.item)) {
       _cacheCatalogItem(widget.item);
       _cachedSemanticLabel = null;
+      _warmIntent();
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _intentSource = context.watch<CatalogSourcesProvider?>()?.seerrSource;
+    final next = _intentSource?.client.intents;
+    if (!identical(next, _intentStore)) {
+      _intentStore?.removeListener(_onIntentChanged);
+      _intentStore = next;
+      next?.addListener(_onIntentChanged);
+    }
+    _warmIntent();
+  }
+
+  void _warmIntent() {
+    final item = _catalogItem;
+    if (item?.ids.tmdb case final id?
+        when !widget.isOffline && _intentStore != null && _intentSource?.supportsTitleActions(item!.kind) == true) {
+      unawaited(_intentStore!.load(item!.kind, id));
+    }
+  }
+
+  void _onIntentChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _intentStore?.removeListener(_onIntentChanged);
+    super.dispose();
   }
 
   void _cacheCatalogItem(Object item) {
@@ -470,7 +509,28 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
     final item = _effectiveItem(context);
     final viewMode = widget.viewModeOverride ?? SettingsService.instance.read(SettingsService.viewMode);
 
-    final semanticLabel = _semanticLabel(item);
+    final catalogItem = _catalogItem;
+    final tmdbId = catalogItem?.ids.tmdb;
+    final intent = tmdbId == null ? null : _intentStore?.peek(catalogItem!.kind, tmdbId);
+    final seerrStatus = intent == null
+        ? null
+        : <String>[
+            if (intent.own4k != null)
+              t.explore.badge.requested4k
+            else if (intent.own != null)
+              t.seerr.statusRequested
+            else if (intent.hasOtherRequest)
+              t.seerr.requestInProgress,
+            if (intent.subscribed) t.seerr.notificationsOn,
+          ].join(', ');
+    final semanticLabel = seerrStatus == null || seerrStatus.isEmpty
+        ? _semanticLabel(item)
+        : '${_semanticLabel(item)}, $seerrStatus';
+    final hasSeerrMenuAction =
+        !widget.isOffline &&
+        _intentSource != null &&
+        tmdbId != null &&
+        seerrTitleActions(_intentSource!, catalogItem!.kind, intent).isNotEmpty;
     final accessibleNavigation = MediaQuery.accessibleNavigationOf(context);
     final enableDetailLinks = widget.onTap == null;
     final preservePointerDetailSemantics = !PlatformDetector.isTV() || accessibleNavigation;
@@ -525,6 +585,7 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
       container: preserveDetailSemantics,
       explicitChildNodes: preserveDetailSemantics,
       label: semanticLabel,
+      hint: hasSeerrMenuAction ? t.seerr.cardActionHint : null,
       value: widget.semanticValue,
       button: widget.selected == null,
       checked: widget.selected,
@@ -569,7 +630,12 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
   }) {
     final catalogItem = _catalogItem;
     final now = catalogItem?.nextEpisode == null ? null : DateTime.now();
-    final badgeLabels = _buildCatalogBadgeLabels(catalogItem, now);
+    final id = catalogItem?.ids.tmdb;
+    final badgeLabels = _buildCatalogBadgeLabels(
+      catalogItem,
+      now,
+      intent: id == null ? null : _intentStore?.peek(catalogItem!.kind, id),
+    );
     final Widget card;
     if (widget.fullBleedImage) {
       card = LayoutBuilder(
@@ -1402,7 +1468,7 @@ String? _catalogEpisodeBadge(CatalogItem item) {
   return parts.isEmpty ? null : parts.join(' • ');
 }
 
-List<String> _buildCatalogBadgeLabels(CatalogItem? item, DateTime? now) {
+List<String> _buildCatalogBadgeLabels(CatalogItem? item, DateTime? now, {SeerrRequestIntent? intent}) {
   if (item == null) return const [];
   final labels = <String>[];
 
@@ -1414,7 +1480,15 @@ List<String> _buildCatalogBadgeLabels(CatalogItem? item, DateTime? now) {
   // own high-priority slot. This preserves cases such as HD available plus a
   // pending 4K request instead of collapsing them into one misleading ladder.
   add(_catalogAvailabilityBadge(item.serverState));
-  add(_catalogRequestBadge(item.serverState));
+  add(
+    intent?.own4k != null
+        ? t.explore.badge.requested4k
+        : intent?.own != null
+        ? t.seerr.statusRequested
+        : intent?.hasOtherRequest == true
+        ? t.seerr.requestInProgress
+        : _catalogRequestBadge(item.serverState),
+  );
   final recommendationCount = item.recommendationCount;
   if (recommendationCount != null && recommendationCount > 0) {
     add(t.explore.detail.recommendedByUsers(n: recommendationCount));

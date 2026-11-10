@@ -29,7 +29,12 @@ rest of the app.
 
 The Linux syscall filter also denies shared System V semaphore operations,
 POSIX message queues, extended-attribute reads and cross-process scheduling or
-memory controls. Syscalls beyond the reviewed legacy range (through `rseq` on
+memory controls. The worker removes effective, permitted, inheritable and
+ambient capabilities before loading a core. Device controls, filesystem watches,
+locks and descriptor ownership commands are denied; `fcntl` permits only
+descriptor duplication and ordinary descriptor/status flags. This prevents
+asynchronous descriptor notifications from targeting the parent through a path
+other than a signal syscall. Syscalls beyond the reviewed legacy range (through `rseq` on
 x86_64 and arm64) return `ENOSYS` unless explicitly rejected earlier. This keeps
 new metadata APIs, including `fchmodat2` and the `*xattrat` family, from bypassing
 restrictions when the app was compiled against older kernel headers. Library
@@ -101,3 +106,10 @@ stuck close, whole-process suspension and restart. All four Android ABIs compile
 and Android lint passed. Linux production CMake/CTest and real worker/protocol
 fault suites also passed. These are emulator/Linux results; signed packages,
 physical devices, Windows and macOS remain independently qualified lanes.
+
+Subsequently, [hosted run 42708996100](https://github.com/snapetech-org/pleazyng/actions/runs/42708996100)
+passed Linux, Windows and macOS containment/production builds and Android API-35
+service instrumentation, all four test ABI builds and lint. The final Linux
+syscall/descriptor/capability policy passed [job 129477197269](https://github.com/snapetech-org/pleazyng/actions/runs/42710141311/job/129477197269),
+including all four production CTest cases and packaging checks. These hosted
+results do not replace actual-core, signed-release or physical-device acceptance.

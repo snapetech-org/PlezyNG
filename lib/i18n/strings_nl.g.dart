@@ -720,6 +720,7 @@ class _Translations$settings$nl extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Afspeelsnelheid';
 	@override String get scopeShaderPreset => 'Shadervoorinstelling';
 	@override String get scopeAspectRatio => 'Beeldverhouding';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Audio- en ondertitelsynchronisatie';
 	@override String get playerScopeOff => 'Niet opslaan';
 	@override String get playerScopeGlobal => 'Overal';
@@ -2738,6 +2739,13 @@ class _Translations$seerr$nl extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng vergeet deze Seerr-instantie. Je kunt altijd opnieuw verbinden.';
 	@override String get request => 'Aanvragen';
 	@override String get request4k => 'Aanvragen in 4K';
+	@override String get requestSeasons => 'Ontbrekende seizoenen aanvragen';
+	@override String get notifyMe => 'Meld me wanneer beschikbaar';
+	@override String get notifyMe4k => 'Meld me wanneer beschikbaar in 4K';
+	@override String get notificationsOn => 'Beschikbaarheidsmelding staat aan';
+	@override String get notificationsEnabled => 'We laten je weten wanneer het beschikbaar is';
+	@override String get notificationsDisabled => 'Beschikbaarheidsmelding is uitgeschakeld';
+	@override String get notificationFailed => 'De beschikbaarheidsmelding kon niet worden bijgewerkt';
 	@override String get seasons => 'Seizoenen';
 	@override String get allSeasons => 'Alle seizoenen';
 	@override String get advancedOptions => 'Geavanceerd';
@@ -4293,6 +4301,10 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	@override String get preamp => 'Voorversterking';
 	@override String get ratingPending => 'Op dit apparaat opgeslagen; wacht op synchronisatie';
 	@override String get lyricsOffset => 'Tijdsverschuiving songtekst';
+	@override String get anniversaries => 'Albumjubilea';
+	@override String get outputPreset => 'EQ voor deze uitgang';
+	@override String get outputPresetHint => 'Gebruik deze EQ automatisch wanneer deze uitgang is geselecteerd.';
+	@override String get eqApproximation => 'Hoofdtelefoonprofielen worden benaderd voor de tienbands-EQ.';
 }
 
 // Path: appIcon.names
@@ -5035,6 +5047,8 @@ class _Translations$explore$detail$nl extends Translations$explore$detail$en {
 	@override String get watchOn => 'Bekijk op';
 	@override String get watchTrailer => 'Trailer bekijken';
 	@override String openOn({required Object site}) => 'Openen op ${site}';
+	@override String get trailerUnavailable => 'Kan de trailer niet openen op dit apparaat';
+	@override String get linkUnavailable => 'Kan de link niet openen op dit apparaat';
 	@override String get crew => 'Crew';
 	@override String get ratings => 'Beoordelingen';
 	@override String get schedule => 'Uitzendschema';
@@ -5990,6 +6004,7 @@ extension on TranslationsNl {
 			'settings.scopePlaybackSpeed' => 'Afspeelsnelheid',
 			'settings.scopeShaderPreset' => 'Shadervoorinstelling',
 			'settings.scopeAspectRatio' => 'Beeldverhouding',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Audio- en ondertitelsynchronisatie',
 			'settings.playerScopeOff' => 'Niet opslaan',
 			'settings.playerScopeGlobal' => 'Overal',
@@ -6433,9 +6448,9 @@ extension on TranslationsNl {
 			'videoControls.addBookmark' => 'Voeg Bookmark toe',
 			'videoControls.bookmarkName' => 'Bookmark naam',
 			'videoControls.bookmarkNameHint' => 'Bijvoorbeeld de openingsscène',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Boekmark ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Boekmark ${n}',
 			'videoControls.bookmarkNameRequired' => 'Voer een naam in voor dit boekmerk.',
 			'videoControls.deleteBookmark' => 'Verwijder Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Dit item heeft al 100 bookmarks.',
@@ -6947,9 +6962,9 @@ extension on TranslationsNl {
 			'libraries.content' => 'bibliotheekinhoud',
 			'libraries.selectLibrary' => 'Bibliotheek kiezen',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
-			'libraries.noRecommendations' => 'Geen aanbevelingen beschikbaar',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Geen aanbevelingen beschikbaar',
 			'libraries.noCollections' => 'Geen collecties in deze bibliotheek',
 			'libraries.noFoldersFound' => 'Geen mappen gevonden',
 			'libraries.folders' => 'mappen',
@@ -7242,6 +7257,8 @@ extension on TranslationsNl {
 			'explore.detail.watchOn' => 'Bekijk op',
 			'explore.detail.watchTrailer' => 'Trailer bekijken',
 			'explore.detail.openOn' => ({required Object site}) => 'Openen op ${site}',
+			'explore.detail.trailerUnavailable' => 'Kan de trailer niet openen op dit apparaat',
+			'explore.detail.linkUnavailable' => 'Kan de link niet openen op dit apparaat',
 			'explore.detail.crew' => 'Crew',
 			'explore.detail.ratings' => 'Beoordelingen',
 			'explore.detail.schedule' => 'Uitzendschema',
@@ -7459,11 +7476,11 @@ extension on TranslationsNl {
 			'watchTogether.copyCode' => 'Code kopiëren',
 			'watchTogether.codeCopied' => 'Kamercode gekopieerd',
 			'watchTogether.shareInvite' => 'Uitnodiging delen',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Neem deel aan mijn Samen kijken-kamer in Pleazyng: open Samen kijken, kies "Deelnemen aan kamer" en voer ${code} in.',
 			'watchTogether.openSessionControls' => 'Bediening voor Samen kijken openen',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Opnieuw verbinden...',
 			'watchTogether.reconnectingDescription' => 'De verbinding is verbroken. Je neemt automatisch weer deel aan de kamer.',
 			'watchTogether.connected' => 'Verbonden',
@@ -7973,11 +7990,11 @@ extension on TranslationsNl {
 			'metadataEdit.imageUrl' => 'Afbeeldings-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata bijgewerkt',
 			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'Illustraties bijgewerkt',
 			'metadataEdit.artworkUpdateFailed' => 'Illustraties bijwerken mislukt',
 			'metadataEdit.noArtworkAvailable' => 'Geen illustraties beschikbaar',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Illustratie ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Illustratie ${index}, geselecteerd',
 			'metadataEdit.notSet' => 'Niet ingesteld',
@@ -8064,6 +8081,13 @@ extension on TranslationsNl {
 			'seerr.disconnectConfirmBody' => 'Pleazyng vergeet deze Seerr-instantie. Je kunt altijd opnieuw verbinden.',
 			'seerr.request' => 'Aanvragen',
 			'seerr.request4k' => 'Aanvragen in 4K',
+			'seerr.requestSeasons' => 'Ontbrekende seizoenen aanvragen',
+			'seerr.notifyMe' => 'Meld me wanneer beschikbaar',
+			'seerr.notifyMe4k' => 'Meld me wanneer beschikbaar in 4K',
+			'seerr.notificationsOn' => 'Beschikbaarheidsmelding staat aan',
+			'seerr.notificationsEnabled' => 'We laten je weten wanneer het beschikbaar is',
+			'seerr.notificationsDisabled' => 'Beschikbaarheidsmelding is uitgeschakeld',
+			'seerr.notificationFailed' => 'De beschikbaarheidsmelding kon niet worden bijgewerkt',
 			'seerr.seasons' => 'Seizoenen',
 			'seerr.allSeasons' => 'Alle seizoenen',
 			'seerr.advancedOptions' => 'Geavanceerd',
@@ -8480,6 +8504,8 @@ extension on TranslationsNl {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: 'Skipped ${count} niet ondersteund of onveilig playlist ingang.', other: 'Skipped ${count} niet ondersteunde of onveilige playlist-inputs.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adres',
 			'universalMedia.playlistAddressHelp' => 'Open een M3U, M3u8 of PLS playlist vanuit een webadres. Direct stream links slaan de playlist niet op.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Kies een playlist bestand',
 			'universalMedia.openPlaylist' => 'Open playlist',
 			'universalMedia.playlistFormatsHelp' => 'Een playlist kan maximaal 1.000 items en 2 MB bevatten.HLS manifesteert open als stromen zodat de speler een kwaliteit kan kiezen.',
@@ -8490,8 +8516,6 @@ extension on TranslationsNl {
 			'universalMedia.noFavorites' => 'Er zijn nog geen favorieten opgeslagen.Favorites blijven in dit profiel.',
 			'universalMedia.removeFavorite' => 'Verwijder de favoriete stream',
 			'universalMedia.filesHelp' => 'Kies audio, video of ISO-bestanden voor een tijdelijke waaier. bestanden en URL\'s worden niet toegevoegd aan de bibliotheekgeschiedenis.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Kies bestanden',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: '1 geselecteerde bestanden', other: '${count} geselecteerde bestanden', ), 
 			'universalMedia.wifiTransfer' => 'Bestanden verzenden via Wi-Fi',
@@ -8994,6 +9018,8 @@ extension on TranslationsNl {
 			'sourceSetup.optionalUsername' => 'Gebruikersnaam van het account (optioneel)',
 			'sourceSetup.optionalPassword' => 'Wachtwoord van het account (optioneel)',
 			'sourceSetup.subtitlePrivacy' => 'Vraag een API-sleutel aan op opensubtitles.com. Zoeken verstuurt de videotitel en beschikbare IMDb/TMDB-ID’s, nooit het videobestand. De sleutel en optionele accountgegevens worden samen met deze bron versleuteld.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Automatische online videometadata',
 			'sourceSetup.metadataPrivacy' => 'Verstuurt alleen titel/jaar uit de bestandsnaam en afleveringsnummers, of een NFO-ID; nooit media of toegangsgegevens. NFO-velden blijven leidend.',
 			'sourceSetup.nfsEncryptionFailure' => 'Controleer voor versleutelde NFS de ondersteuning van RFC 9289 en TLS 1.3 bij beide NAS-services, de certificaatnaam en de UID/GID van de share. Pleazyng probeert deze verbinding niet opnieuw zonder versleuteling.',
@@ -9004,8 +9030,6 @@ extension on TranslationsNl {
 			'sourceSetup.metadataNoMatches' => 'Geen overeenkomende titels online gevonden. Probeer een andere titel.',
 			'sourceSetup.metadataSearch' => 'Online metadata zoeken',
 			'sourceSetup.metadataLoading' => 'Online informatie over films en series zoeken…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Online metadata van Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Geen automatische titelovereenkomst gevonden. Zoek naar de titel om een overeenkomst te kiezen.',
 			'sourceSetup.metadataFailed' => 'Online metadata konden niet worden geladen. Afspelen en lokale informatie blijven beschikbaar.',
@@ -9415,6 +9439,10 @@ extension on TranslationsNl {
 			'musicTools.preamp' => 'Voorversterking',
 			'musicTools.ratingPending' => 'Op dit apparaat opgeslagen; wacht op synchronisatie',
 			'musicTools.lyricsOffset' => 'Tijdsverschuiving songtekst',
+			'musicTools.anniversaries' => 'Albumjubilea',
+			'musicTools.outputPreset' => 'EQ voor deze uitgang',
+			'musicTools.outputPresetHint' => 'Gebruik deze EQ automatisch wanneer deze uitgang is geselecteerd.',
+			'musicTools.eqApproximation' => 'Hoofdtelefoonprofielen worden benaderd voor de tienbands-EQ.',
 			_ => null,
 		};
 	}

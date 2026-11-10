@@ -2,8 +2,10 @@
 // Exercise the production syscall filter without requiring Landlock support.
 #include <fcntl.h>
 #include <mqueue.h>
+#include <sys/ioctl.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
@@ -29,9 +31,33 @@ bool Denied(long result, const char* name, bool newer = false) {
 }
 
 bool Exercise(const char* file, int semaphore, mqd_t queue, const char* queueName) {
+  const int input = open(file, O_RDONLY | O_CLOEXEC);
+  int sockets[2]{};
+  if (input < 0 || socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, sockets)) return false;
   if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) return false;
   plezy::retro::RestrictLinuxSyscalls();
   bool ok = true;
+  __user_cap_header_struct capabilityHeader{_LINUX_CAPABILITY_VERSION_3, 0};
+  __user_cap_data_struct capabilities[2]{};
+  ok &= syscall(SYS_capget, &capabilityHeader, capabilities) == 0;
+  for (const auto& capability : capabilities)
+    ok &= !capability.effective && !capability.permitted && !capability.inheritable;
+  ok &= Denied(syscall(SYS_capset, &capabilityHeader, capabilities), "capset");
+  // Set only an owner in these probes; never enable asynchronous notifications.
+  // A failing old filter therefore cannot send a signal to the test parent.
+  int parent = getppid();
+  ok &= Denied(fcntl(sockets[0], F_SETOWN, parent), "fcntl F_SETOWN");
+  f_owner_ex owner{F_OWNER_PID, parent};
+  ok &= Denied(fcntl(sockets[0], F_SETOWN_EX, &owner), "fcntl F_SETOWN_EX");
+  ok &= Denied(ioctl(sockets[0], FIOSETOWN, &parent), "ioctl FIOSETOWN");
+  ok &= Denied(fcntl(input, F_SETLEASE, F_RDLCK), "fcntl F_SETLEASE");
+  ok &= Denied(syscall(SYS_flock, input, LOCK_EX | LOCK_NB), "flock");
+  ok &= Denied(syscall(SYS_inotify_add_watch, -1, file, 0), "inotify_add_watch");
+  const int flags = fcntl(sockets[0], F_GETFL);
+  ok &= flags >= 0 && fcntl(sockets[0], F_SETFL, flags | O_NONBLOCK) == 0;
+  close(input);
+  close(sockets[0]);
+  close(sockets[1]);
   sembuf decrement{0, -1, IPC_NOWAIT};
   timespec immediate{};
   ok &= Denied(semop(semaphore, &decrement, 1), "semop");
@@ -108,6 +134,7 @@ int main() {
     std::fprintf(stderr, "Linux syscall containment regression failed\n");
     return 1;
   }
-  std::puts("Linux syscall containment passed: shared IPC, metadata, parent controls and thread fallback");
+  std::puts(
+      "Linux syscall containment passed: capabilities, shared IPC, metadata, parent controls and thread fallback");
   return 0;
 }

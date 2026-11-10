@@ -168,3 +168,56 @@ _Attribution ledger refreshed 2026-11-09; 89 source records._
 ## Music media-session integration
 
 The music/car integration vendors the already pinned [edde746/media_controls commit a27208e](https://github.com/edde746/media_controls/commit/a27208e641790029ac54d825b97508575caee1a7), maintained by [@edde746](https://github.com/edde746), retaining its license and existing platform implementations. Pleazyng independently adds the music browser bridge. The sonic request contract was checked against [Python-PlexAPI](https://github.com/pkkid/python-plexapi)'s published `nearest` and `computePath` client implementation; no Python source was copied. Native qualification and full parity remain tracked in `docs/plezyng/music/STATUS.md`.
+
+## Reviewed upstream synchronization — 2026-11-09
+
+These authors contributed the changes to upstream Plezy; Pleazyng independently
+adapted and verified the behavior. This does not imply direct contribution or
+endorsement of this fork.
+
+- [Companion remote reconnect state](https://github.com/edde746/plezy/commit/e871d095171855914d8f0634b3507a80e67bedce), upstream commit by [@edde746](https://github.com/edde746): retain selected controls and scroll position during reconnect.
+- [Covered-route focus handoff](https://github.com/edde746/plezy/commit/5076836a5dbb2f54b8316fdcb9d94330c1ddbf01), upstream commit by [@edde746](https://github.com/edde746): let an unfocused page above the main screen receive remote navigation.
+- [Non-atomic RSS sampling regression](https://github.com/edde746/plezy/commit/55ef954e23bbcb6fac81b15a84ff7442c87c6d58), upstream commit by [@edde746](https://github.com/edde746): test independent OS counters without an unsupported ordering requirement.
+
+- [Newly-online Continue Watching version copies](https://github.com/edde746/plezy/commit/119ce59def9eacef8ac70e2b8c0d7fdfe771e0a4), upstream commit by [@edde746](https://github.com/edde746): independently adapted to the fork, retaining its profile/transport and failed-restore retry guards.
+
+- [Continue Watching artwork reconciliation](https://github.com/edde746/plezy/commit/f2985a7b06b1190507946cde824779880d7d2af8), upstream commit by [@edde746](https://github.com/edde746): independently adapted to the fork, retaining its profile/transport and failed-restore retry guards.
+
+- [Late display-switch restoration](https://github.com/edde746/plezy/commit/ddcfda3c4e349ec315f1c5496a5a0e95128b6997), upstream commit by [@edde746](https://github.com/edde746): independently adapted to the fork, retaining its profile/transport and failed-restore retry guards.
+
+- [Artwork resize debounce and resolution retention](https://github.com/edde746/plezy/commit/38c48f14ac4107cc94b2ab2f41444f0448d64da0), contributed upstream by [@strata-scribe](https://github.com/strata-scribe): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
+
+- [Watch Together guest version switching](https://github.com/edde746/plezy/commit/6c87210c6162ecaf5e9a77560353a7948e1e93bd), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
+
+- [Skia selection without Vulkan 1.1](https://github.com/edde746/plezy/commit/d2424018297a00fe1f8bc97ef2bb207f6a515499), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
+
+- [Theme-derived focus fills](https://github.com/edde746/plezy/commit/4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
+
+- [Light-theme scrim color interpolation](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
+
+- [Transparent status-bar styling](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
+
+- [Scoped custom video zoom](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted zoom persistence and finite bounds, retaining profile-keyed resets and agent validation. Zoom remains session-only by default.
+
+- [Hold playback beneath the resume profile picker](https://github.com/edde746/plezy/commit/9fe138aba39414e38099cc17cfd4296f47059778), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted pause the covered player and refuse native, media-session, Watch Together and Play Next resume intents until profile selection finishes, preserving Automotive restrictions and active PiP.
+
+- [Windows pending-resize engine correction](https://github.com/edde746/plezy/commit/90b7ccca68cffcfe51fc8994c3463fcbf769ec18), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted pin the checksum-verified +2 engine for the existing Flutter ABI, retaining DirectComposition and x64/arm64 cache layouts; native Windows qualification remains separate.
+
+- [Stable package publication metadata guard](https://github.com/edde746/plezy/commit/1dd75b3e5e95913cdaa5b8c22911490e72dfb7c5), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted reject GitHub pre-releases even when their tags look like stable versions, retaining manual publication and the fork publisher.
+
+- [System certificate authorities for GitHub asset redirects](https://github.com/edde746/plezy/commit/cbd9205f2cef71973dd7cadf568477c448cb3787), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted retain system-only certificate trust through githubusercontent.com redirects on Android and dart:io, without enabling the upstream anime-feed migration.
+
+- [Switch Android mpv display mode before decoder creation](https://github.com/edde746/plezy/commit/c577edda5cdf4b0a0c3d5dd0d543e432c5bed0d8), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted hold VOD decoding at demux preload while display matching settles, bound and cancel stale holds, reject predecessor-player tokens, and retain first-frame Live TV matching, Dolby/FEL routing and motion-processing output targets.
+
+- [Adaptive fold and vertical-bar mobile layout](https://github.com/edde746/plezy/commit/b4192d6f355921aa9dbdd89b000012e7c4496fa7), contributed upstream by [@v-vincere](https://github.com/v-vincere): Pleazyng independently adapted place navigation in the system bar, keep hosted sheets on one side of a fold and retain player ownership across route replacement; preserve the fork’s scrollable navigation and system-bar styling.
+
+- [Sheet safe areas beside a vertical system bar](https://github.com/edde746/plezy/commit/04ec8506c78dc29b4dfc18f751943fb6ecb89eec), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted remove the opposite status-bar inset and align hosted and modal sheets with the mobile content edge while retaining keyboard insets and back handling.
+
+- [Actionable tvOS trailers and external links](https://github.com/edde746/plezy/commit/16d5b404cb14163a776b701265e55b6f66cdfc34), contributed upstream by [@moust4ki](https://github.com/moust4ki): Pleazyng independently adapted play library trailers internally, offer YouTube handoff only when its app is installed, hide unsupported browser links and report failed handoffs; preserve Seerr actions and block unsafe provider URI schemes.
+
+- [More reliable iOS speed-change qualification](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage.
+
+
+## Flutter security engine build (2026-11-09)
+
+The security-engine builder uses [edde746/flutter-plezy](https://github.com/edde746/flutter-plezy/tree/06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2)'s existing Windows DirectComposition and resize patch series and build driver at immutable revision `06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2`. It applies those patches to Flutter 3.47.8 (`737ba8f885dc774b53b442759999a312c9461e4e`) with the upstream fixed Dart dependency for [GHSA-frr6-h895-5pxp](https://github.com/dart-lang/sdk/security/advisories/GHSA-frr6-h895-5pxp). The patch-source license and source revision receipt accompany the resulting archives. The orchestration script is original Pleazyng code. Built artifacts must pass verification before replacing the existing Windows engine pin.

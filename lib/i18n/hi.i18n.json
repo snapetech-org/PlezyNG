@@ -631,6 +631,7 @@
     "scopePlaybackSpeed": "Playback गति",
     "scopeShaderPreset": "शेर प्रीसेट",
     "scopeAspectRatio": "आस्पेक्ट अनुपात",
+    "scopeZoom": "ज़ूम",
     "scopeSyncOffsets": "Audio & Subtitle सिंक्रनाइज़ेशन",
     "playerScopeOff": "बचाओ नहीं",
     "playerScopeGlobal": "हर जगह",
@@ -2250,6 +2251,8 @@
       "watchOn": "देखें",
       "watchTrailer": "ट्रेलर देखें",
       "openOn": "पर खोला गया ${site}",
+      "trailerUnavailable": "इस डिवाइस पर ट्रेलर नहीं खुल सका",
+      "linkUnavailable": "इस डिवाइस पर यह लिंक नहीं खुल सका",
       "crew": "चालक दल",
       "ratings": "रेटिंग",
       "schedule": "कार्यक्रम",
@@ -3279,6 +3282,13 @@
     "disconnectConfirmBody": "Pleazyng इस Seerr उदाहरण को भूल जाएगा. किसी भी समय फिर से कनेक्ट करें.",
     "request": "अनुरोध",
     "request4k": "4K में अनुरोध",
+    "requestSeasons": "छूटे हुए सीज़न का अनुरोध करें",
+    "notifyMe": "उपलब्ध होने पर मुझे सूचित करें",
+    "notifyMe4k": "4K में उपलब्ध होने पर मुझे सूचित करें",
+    "notificationsOn": "उपलब्धता अलर्ट चालू है",
+    "notificationsEnabled": "उपलब्ध होने पर हम आपको सूचित करेंगे",
+    "notificationsDisabled": "उपलब्धता अलर्ट बंद कर दिया गया",
+    "notificationFailed": "उपलब्धता अलर्ट अपडेट नहीं हो सका",
     "seasons": "मौसम",
     "allSeasons": "सभी मौसम",
     "advancedOptions": "उन्नत",
@@ -5516,6 +5526,10 @@
     "exclusiveOutput": "विशेष ऑडियो आउटपुट",
     "preamp": "प्रीएम्प",
     "ratingPending": "इस डिवाइस पर सहेजा गया; सिंक की प्रतीक्षा में",
-    "lyricsOffset": "गीत के बोल का समय अंतर"
+    "lyricsOffset": "गीत के बोल का समय अंतर",
+    "anniversaries": "एल्बम की वर्षगाँठ",
+    "outputPreset": "इस आउटपुट का इक्वलाइज़र",
+    "outputPresetHint": "यह आउटपुट चुने जाने पर यह इक्वलाइज़र अपने आप इस्तेमाल करें।",
+    "eqApproximation": "हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।"
   }
 }

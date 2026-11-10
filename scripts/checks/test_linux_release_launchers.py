@@ -103,6 +103,13 @@ class LinuxReleaseLauncherTests(unittest.TestCase):
         assets.mkdir(parents=True)
         for arch in ("x64", "arm64"):
             shutil.make_archive(str(assets / f"pleazyng-linux-{arch}"), "gztar", self.bundle)
+        # This test checks SRPM input staging, not downloader integrity. Keep it
+        # offline; exact helper-package verification has its own native checks.
+        (self.packaging / "fetch-webkit-runtime.py").write_text(
+            "import argparse\nfrom pathlib import Path\np=argparse.ArgumentParser()\n"
+            "p.add_argument('--output',type=Path,required=True)\na=p.parse_args()\n"
+            "for arch in ('x64','arm64'): (a.output/f'webkit-{arch}.deb').write_bytes(b'fixture')\n"
+        )
         self.run_script(step_script("publish-copr.yml", "Build source RPM"),
                         RUNNER_TEMP=str(runner), RELEASE_TAG="v3.0.2", RELEASE_VERSION="3.0.2")
         top = runner / "pleazyng-rpmbuild"

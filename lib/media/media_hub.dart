@@ -77,7 +77,7 @@ class MediaHub {
     return hubIdentifier != null && matches(hubIdentifier);
   }
 
-  MediaHub copyWith({List<MediaItem>? items, int? size, bool? heroStyle, bool? heroAutoSlide}) {
+  MediaHub copyWith({List<MediaItem>? items, int? size, bool? more, bool? heroStyle, bool? heroAutoSlide}) {
     return MediaHub(
       id: id,
       identifier: identifier,
@@ -85,7 +85,7 @@ class MediaHub {
       type: type,
       items: items ?? this.items,
       size: size ?? this.size,
-      more: more,
+      more: more ?? this.more,
       libraryId: libraryId,
       serverId: serverId,
       serverName: serverName,

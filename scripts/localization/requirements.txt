@@ -1,0 +1,4 @@
+ctranslate2==4.6.0
+huggingface-hub==0.34.4
+sentencepiece==0.2.1
+opencc-python-reimplemented==0.1.7

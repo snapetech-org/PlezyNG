@@ -23,6 +23,37 @@ extension _VideoPlayerPipMethods on VideoPlayerScreenState {
   Future<void> _initVideoFilterAndPip() async {
     final currentPlayer = player;
     if (!mounted || currentPlayer == null) return;
+    _recoveryWorkspace ??= context.read<MultiviewWorkspaceController>();
+    _recoveryWorkspace!.watchRecovery(this, () {
+      final metadata = _currentMetadata;
+      final serverId = metadata.serverId;
+      if (!mounted ||
+          player == null ||
+          _shuttingDown ||
+          widget.isLive ||
+          widget.isPreroll ||
+          widget.isOffline ||
+          serverId == null ||
+          _activeExternalPlaybackSource != null) {
+        return null;
+      }
+      return WorkspaceSessionDescriptor(
+        id: 'video:${metadata.globalKey}',
+        kind: MultiviewMediaKind.video,
+        title: metadata.title?.trim().isNotEmpty == true ? metadata.title! : t.common.unknown,
+        mediaKey: metadata.globalKey,
+        progressOwner: metadata.globalKey,
+        hasAudio: true,
+        hasVideo: true,
+        openedAt: DateTime.now(),
+        resume: WorkspaceResumeTarget(
+          kind: WorkspaceResumeKind.library,
+          providerId: serverId,
+          itemId: metadata.id,
+          positionMs: (player!.state.position.inMilliseconds).clamp(0, 315360000000).toInt(),
+        ),
+      );
+    });
     if (_videoFilterManager != null && _pipInitialized) {
       _attachPipStateListener();
       return;
@@ -41,6 +72,7 @@ extension _VideoPlayerPipMethods on VideoPlayerScreenState {
         // passthrough.
         nativeVideoZoom: Platform.isIOS || Platform.isMacOS,
         initialBoxFitMode: ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.boxFitMode, _currentMetadata),
+        initialZoomScale: ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.videoZoom, _currentMetadata),
         initialPlayerSize: initialPlayerSize,
         // Reads _currentMetadata at invocation time so a cycle after an
         // in-place episode swap keys against the item actually on screen.

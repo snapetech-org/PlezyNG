@@ -26,6 +26,7 @@ env:
 
 permissions:
   contents: read
+  attestations: read
 
 jobs:
   update-aur:
@@ -96,7 +97,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
-        run: gh release download "$RELEASE_TAG" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/pleazyng-aur"
+        run: |
+          gh release download "$RELEASE_TAG" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/pleazyng-aur"
+          python3 scripts/verify_release_attestation.py "$RUNNER_TEMP/pleazyng-aur/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY"
 
       - name: Update and push AUR package recipe
         if: steps.settings.outputs.configured == 'true'
@@ -137,6 +140,7 @@ jobs:
           cp linux/packaging/aur/PKGBUILD "$aur_repo/PKGBUILD"
           cp linux/packaging/aur/pleazyng.desktop "$aur_repo/pleazyng.desktop"
           cp LICENSE "$aur_repo/LICENSE"
+          cp linux/packaging/install-webkit-helpers.py linux/packaging/webkit-runtime.json linux/packaging/rebuild-pixbuf-cache.py "$aur_repo/"
           sed -i "s/^pkgver=.*/pkgver=${RELEASE_VERSION}/" "$aur_repo/PKGBUILD"
           python3 - "$aur_repo/PKGBUILD" "$RELEASE_TAG" <<'PY'
           import re
@@ -154,12 +158,17 @@ jobs:
               raise SystemExit(f"Expected two versioned release URLs in PKGBUILD, found {count}.")
           recipe.write_text(text, encoding="utf-8")
           PY
-          sed -i "s/^sha256sums_x86_64=.*/sha256sums_x86_64=('${x64_sha}')/" "$aur_repo/PKGBUILD"
-          sed -i "s/^sha256sums_aarch64=.*/sha256sums_aarch64=('${arm64_sha}')/" "$aur_repo/PKGBUILD"
+          x64_webkit_sha=$(python3 -c 'import json; print(json.load(open("linux/packaging/webkit-runtime.json"))["x64"]["sha256"])')
+          arm64_webkit_sha=$(python3 -c 'import json; print(json.load(open("linux/packaging/webkit-runtime.json"))["arm64"]["sha256"])')
+          sed -i "s/^sha256sums_x86_64=.*/sha256sums_x86_64=('${x64_sha}' '${x64_webkit_sha}')/" "$aur_repo/PKGBUILD"
+          sed -i "s/^sha256sums_aarch64=.*/sha256sums_aarch64=('${arm64_sha}' '${arm64_webkit_sha}')/" "$aur_repo/PKGBUILD"
 
           desktop_sha="$(sha256sum "$aur_repo/pleazyng.desktop" | cut -d ' ' -f 1)"
           license_sha="$(sha256sum "$aur_repo/LICENSE" | cut -d ' ' -f 1)"
-          sed -i "s/^sha256sums=.*/sha256sums=('${desktop_sha}' '${license_sha}')/" "$aur_repo/PKGBUILD"
+          installer_sha="$(sha256sum "$aur_repo/install-webkit-helpers.py" | cut -d ' ' -f 1)"
+          pixbuf_sha="$(sha256sum "$aur_repo/rebuild-pixbuf-cache.py" | cut -d ' ' -f 1)"
+          metadata_sha="$(sha256sum "$aur_repo/webkit-runtime.json" | cut -d ' ' -f 1)"
+          sed -i "s/^sha256sums=.*/sha256sums=('${desktop_sha}' '${license_sha}' '${installer_sha}' '${metadata_sha}' '${pixbuf_sha}')/" "$aur_repo/PKGBUILD"
           # makepkg is authoritative for options, architecture scopes and the
           # unindented pkgname section required by AUR's package index.
           docker run --rm --network none --user "$(id -u):$(id -g)" \
@@ -170,7 +179,7 @@ jobs:
             cd "$aur_repo"
             git config user.name "Pleazyng Release Bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add PKGBUILD .SRCINFO pleazyng.desktop LICENSE
+            git add PKGBUILD .SRCINFO pleazyng.desktop LICENSE install-webkit-helpers.py webkit-runtime.json rebuild-pixbuf-cache.py
             if git diff --cached --quiet; then
               echo "AUR package is already current."
               exit 0

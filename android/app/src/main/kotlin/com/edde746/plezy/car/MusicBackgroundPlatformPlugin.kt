@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import com.edde746.plezy.BuildConfig
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodChannel
 
@@ -33,6 +34,7 @@ class MusicBackgroundPlatformPlugin : FlutterPlugin {
           mapOf(
             "isTv" to false,
             "isAutomotive" to automotive,
+            "isAutomotiveMedia" to (automotive && BuildConfig.AUTOMOTIVE_MEDIA),
             "reasons" to emptyList<String>()
           )
         )

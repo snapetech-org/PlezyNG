@@ -629,6 +629,7 @@
     "scopePlaybackSpeed": "播放速度",
     "scopeShaderPreset": "着色器预设",
     "scopeAspectRatio": "宽高比",
+    "scopeZoom": "缩放",
     "scopeSyncOffsets": "音频和字幕同步",
     "playerScopeOff": "不保存",
     "playerScopeGlobal": "所有位置",
@@ -2248,6 +2249,8 @@
       "watchOn": "观看平台",
       "watchTrailer": "观看预告片",
       "openOn": "在 ${site} 打开",
+      "trailerUnavailable": "无法在此设备上打开预告片",
+      "linkUnavailable": "无法在此设备上打开链接",
       "crew": "演职人员",
       "ratings": "评分",
       "schedule": "播出时间",
@@ -3275,6 +3278,13 @@
     "disconnectConfirmBody": "Pleazyng 将忘记此 Seerr 实例。可随时重新连接。",
     "request": "请求",
     "request4k": "请求 4K",
+    "requestSeasons": "请求缺少的季",
+    "notifyMe": "有资源时通知我",
+    "notifyMe4k": "有 4K 资源时通知我",
+    "notificationsOn": "可用性提醒已开启",
+    "notificationsEnabled": "有资源时我们会通知你",
+    "notificationsDisabled": "可用性提醒已关闭",
+    "notificationFailed": "无法更新可用性提醒",
     "seasons": "季",
     "allSeasons": "全部季",
     "advancedOptions": "高级",
@@ -5511,6 +5521,10 @@
     "exclusiveOutput": "独占音频输出",
     "preamp": "前置放大",
     "ratingPending": "已保存在此设备；等待同步",
-    "lyricsOffset": "歌词时间偏移"
+    "lyricsOffset": "歌词时间偏移",
+    "anniversaries": "专辑发行纪念日",
+    "outputPreset": "此输出的均衡器",
+    "outputPresetHint": "选择此输出时自动使用此均衡器。",
+    "eqApproximation": "耳机配置已近似转换为十段均衡器设置。"
   }
 }

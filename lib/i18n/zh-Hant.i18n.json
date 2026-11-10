@@ -629,6 +629,7 @@
     "scopePlaybackSpeed": "播放速度",
     "scopeShaderPreset": "著色器預設",
     "scopeAspectRatio": "顯示比例",
+    "scopeZoom": "縮放",
     "scopeSyncOffsets": "音訊與字幕同步",
     "playerScopeOff": "不要儲存",
     "playerScopeGlobal": "全部",
@@ -2248,6 +2249,8 @@
       "watchOn": "觀看平台",
       "watchTrailer": "觀看預告片",
       "openOn": "在 ${site} 開啟",
+      "trailerUnavailable": "無法在這部裝置上開啟預告片",
+      "linkUnavailable": "無法在這部裝置上開啟連結",
       "crew": "幕後團隊",
       "ratings": "評分",
       "schedule": "播出時間",
@@ -3275,6 +3278,13 @@
     "disconnectConfirmBody": "Pleazyng 將忘記此 Seerr 連線資訊。您可以隨時重新連線。",
     "request": "請求",
     "request4k": "請求 4K 版本",
+    "requestSeasons": "要求缺少的季度",
+    "notifyMe": "有片源時通知我",
+    "notifyMe4k": "有 4K 片源時通知我",
+    "notificationsOn": "可用性通知已開啟",
+    "notificationsEnabled": "有片源時我們會通知你",
+    "notificationsDisabled": "可用性通知已關閉",
+    "notificationFailed": "無法更新可用性通知",
     "seasons": "季",
     "allSeasons": "所有季數",
     "advancedOptions": "進階設定",
@@ -5511,6 +5521,10 @@
     "exclusiveOutput": "獨佔音訊輸出",
     "preamp": "前置放大",
     "ratingPending": "已儲存在此裝置；等待同步",
-    "lyricsOffset": "歌詞時間偏移"
+    "lyricsOffset": "歌詞時間偏移",
+    "anniversaries": "專輯發行紀念日",
+    "outputPreset": "此輸出的等化器",
+    "outputPresetHint": "選取此輸出時自動使用此等化器。",
+    "eqApproximation": "耳機設定檔已近似轉換為十段等化器設定。"
   }
 }

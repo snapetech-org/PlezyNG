@@ -7,7 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(PLEZY_TEST_DESCRIPTOR_CORE)
 #include <arpa/inet.h>
 #include <signal.h>
 #include <sys/socket.h>
@@ -63,6 +63,19 @@ RETRO_API bool retro_load_game(const retro_game_info* game) {
   std::getline(input, secret);
   if (!input) return false;
   behavior = mode;
+#ifdef PLEZY_TEST_DESCRIPTOR_CORE
+  if (socket(AF_INET, SOCK_STREAM, 0) >= 0 || fork() >= 0) return false;
+  retro_vfs_interface_info files{3, nullptr};
+  if (!environment(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &files) || !files.iface) return false;
+  auto* bios = files.iface->open("/system/bios.bin", RETRO_VFS_FILE_ACCESS_READ, 0);
+  if (!bios) return false;
+  char data[32]{};
+  const auto bytes = files.iface->read(bios, data, sizeof(data));
+  files.iface->close(bios);
+  if (bytes != 14 || std::string(data, bytes) != "DUMMY-FIRMWARE" ||
+      files.iface->open("/system/bios.bin", RETRO_VFS_FILE_ACCESS_WRITE, 0) ||
+      files.iface->open(secret.c_str(), RETRO_VFS_FILE_ACCESS_READ, 0)) return false;
+#endif
 #ifdef __ANDROID__
   if (!isolatedConstructor) return false;
   std::string port;
@@ -103,12 +116,12 @@ RETRO_API bool retro_load_game(const retro_game_info* game) {
   return true;
 }
 RETRO_API void retro_unload_game() {
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(PLEZY_TEST_DESCRIPTOR_CORE)
   while (behavior == "D") std::this_thread::sleep_for(std::chrono::milliseconds(50));
 #endif
 }
 RETRO_API void retro_run() {
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(PLEZY_TEST_DESCRIPTOR_CORE)
   if (behavior == "C") std::abort();
   if (behavior == "S") raise(SIGSTOP);
   while (behavior == "H") std::this_thread::sleep_for(std::chrono::milliseconds(50));

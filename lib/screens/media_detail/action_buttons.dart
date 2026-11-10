@@ -16,23 +16,8 @@ class _DownloadButtonSpec {
 }
 
 extension _MediaDetailActionButtons on _MediaDetailScreenState {
-  ExternalIds _externalIdsForAvailability(MediaItem metadata) {
-    var ids = const ExternalIds();
-    final raw = metadata.raw;
-    final guids = raw?['Guid'];
-    if (guids is List) ids = ids.fillFrom(ExternalIds.fromGuids(guids));
-
-    final providerIds = raw?['ProviderIds'];
-    if (providerIds is Map) {
-      final normalized = <String, Object?>{};
-      for (final entry in providerIds.entries) {
-        final key = entry.key;
-        if (key is String) normalized[key] = entry.value;
-      }
-      ids = ids.fillFrom(ExternalIds.fromJellyfinProviderIds(normalized));
-    }
-    return ids.fillFrom(ExternalIds.fromLegacyPlexGuid(metadata.guid));
-  }
+  ExternalIds _externalIdsForAvailability(MediaItem metadata) =>
+      ExternalIds.fromMediaMetadata(metadata.raw, metadata.guid);
 
   Widget _buildActionButtons(MediaItem metadata) {
     // Tie asynchronous playback prompts to the actionable subtree, not the
@@ -41,6 +26,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
   }
 
   Widget _buildAvailableActionButtons(BuildContext context, MediaItem metadata) {
+    context.watch<SeerrAccountProvider?>();
     final isTv = PlatformDetector.isTV();
     final tvScale = TvLayoutConstants.scaleOf(context);
     final actionSize = isTv ? _tvDetailActionSize * tvScale : 48.0;
@@ -463,6 +449,49 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
           )
         : null;
 
+    // A library title already has Play. Offer Seerr only for a useful next
+    // step: a missing TV season or a separate 4K request. Never infer a TMDB
+    // match from a title string.
+    final seerr = context.watch<CatalogSourcesProvider?>()?.seerrSource;
+    final seerrId = _seerrTmdbId;
+    final intent = seerrId == null ? null : _seerrIntentStore?.peek(metadata.kind, seerrId);
+    final seerrActions = seerr == null || widget.isOffline
+        ? const <SeerrTitleAction>[]
+        : librarySeerrTitleActions(seerr, metadata.kind, intent, hasNewSeason: _seerrHasNewSeason);
+    final seerrRequestActions = <FocusableAction>[
+      for (final action in seerrActions)
+        FocusableAction(
+          debugLabel: action.kind == SeerrTitleActionKind.notificationsOn
+              ? 'detail_seerr_availability_alert'
+              : 'detail_seerr_request',
+          onPressed: () => unawaited(
+            performSeerrTitleAction(
+              context,
+              source: seerr!,
+              kind: metadata.kind,
+              tmdbId: seerrId!,
+              title: metadata.title ?? '',
+              action: action,
+            ),
+          ),
+          builder: (context, state) => iconActionButton(
+            state,
+            icon: AppIcon(action.icon),
+            tooltip: action.tooltip(),
+            onPressed: () => unawaited(
+              performSeerrTitleAction(
+                context,
+                source: seerr!,
+                kind: metadata.kind,
+                tmdbId: seerrId!,
+                title: metadata.title ?? '',
+                action: action,
+              ),
+            ),
+          ),
+        ),
+    ];
+
     final downloadAction = !widget.isOffline && !PlatformDetector.isAppleTV()
         ? FocusableAction(
             debugLabel: 'detail_download',
@@ -547,6 +576,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
         ),
       ?castAction,
       ?shuffleAction,
+      ...seerrRequestActions,
       ?downloadAction,
       watchedAction,
       ?watchlistAction,
@@ -590,6 +620,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
         ?versionAction,
         ?castAction,
         ?remoteStreamAction,
+        if (seerrRequestActions.isNotEmpty) seerrRequestActions.first,
         ?downloadAction,
         watchedAction,
         ?moreActionsAction,

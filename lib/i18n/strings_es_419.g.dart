@@ -702,6 +702,13 @@ class _Translations$seerr$es_419 extends Translations$seerr$es {
 	@override String get advancedOptions => 'Avanzado';
 	@override String get tags => 'Etiquetas';
 	@override String get statusAvailable => 'Disponible';
+	@override String get requestSeasons => 'Solicitar temporadas que faltan';
+	@override String get notifyMe => 'Avisarme cuando esté disponible';
+	@override String get notifyMe4k => 'Avisarme cuando esté disponible en 4K';
+	@override String get notificationsOn => 'Aviso de disponibilidad activado';
+	@override String get notificationsEnabled => 'Te avisaremos cuando esté disponible';
+	@override String get notificationsDisabled => 'Aviso de disponibilidad desactivado';
+	@override String get notificationFailed => 'No se pudo actualizar el aviso de disponibilidad';
 }
 
 // Path: services
@@ -1665,6 +1672,13 @@ extension on TranslationsEs419 {
 			'seerr.advancedOptions' => 'Avanzado',
 			'seerr.tags' => 'Etiquetas',
 			'seerr.statusAvailable' => 'Disponible',
+			'seerr.requestSeasons' => 'Solicitar temporadas que faltan',
+			'seerr.notifyMe' => 'Avisarme cuando esté disponible',
+			'seerr.notifyMe4k' => 'Avisarme cuando esté disponible en 4K',
+			'seerr.notificationsOn' => 'Aviso de disponibilidad activado',
+			'seerr.notificationsEnabled' => 'Te avisaremos cuando esté disponible',
+			'seerr.notificationsDisabled' => 'Aviso de disponibilidad desactivado',
+			'seerr.notificationFailed' => 'No se pudo actualizar el aviso de disponibilidad',
 			'services.libraryFilter.modeBlacklist' => 'Lista negra',
 			'services.libraryFilter.modeWhitelist' => 'Lista blanca',
 			'services.libraryFilter.libraries' => 'Bibliotecas',
@@ -1827,6 +1841,8 @@ extension on TranslationsEs419 {
 			'romm.exitConfirm' => 'Finish this game session?',
 			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
 			'romm.starting' => 'Starting game…',
+			_ => null,
+		} ?? switch (path) {
 			'romm.connecting' => 'Connecting…',
 			'romm.busy' => 'The streaming computer is occupied.',
 			'romm.streamEnded' => 'The streaming session ended.',
@@ -1834,8 +1850,6 @@ extension on TranslationsEs419 {
 			'romm.disc' => 'Change disc',
 			'romm.memoryCard' => 'Memory card',
 			'romm.multiplayer' => 'Allow players to join',
-			_ => null,
-		} ?? switch (path) {
 			'romm.join' => 'Join game',
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',

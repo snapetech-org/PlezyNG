@@ -1,0 +1,33 @@
+name: Flutter security engine
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/flutter/build_security_engine.py', '.github/workflows/flutter-security-engine.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, arm64]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Build pinned fixed SDK with existing DComp and resize patches
+        shell: pwsh
+        env:
+          ENGINE_ARCH: ${{ matrix.arch }}
+        run: |
+          git config --global core.longpaths true
+          python scripts/flutter/build_security_engine.py --workspace "$env:RUNNER_TEMP\pleazyng-security-engine" --arch "$env:ENGINE_ARCH" --output build/security-engine
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: flutter-security-engine-${{ matrix.arch }}
+          path: build/security-engine/*
+          if-no-files-found: error
+          retention-days: 30

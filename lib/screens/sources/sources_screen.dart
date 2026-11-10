@@ -66,6 +66,7 @@ String sourceTransportLabel(FileSource source) {
     FileSourceKind.dlna ||
     FileSourceKind.s3 ||
     FileSourceKind.audiobookshelf ||
+    FileSourceKind.bookorbit ||
     FileSourceKind.komga ||
     FileSourceKind.openSubsonic ||
     FileSourceKind.podcastRss =>

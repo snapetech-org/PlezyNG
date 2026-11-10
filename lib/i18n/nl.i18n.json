@@ -631,6 +631,7 @@
     "scopePlaybackSpeed": "Afspeelsnelheid",
     "scopeShaderPreset": "Shadervoorinstelling",
     "scopeAspectRatio": "Beeldverhouding",
+    "scopeZoom": "Zoom",
     "scopeSyncOffsets": "Audio- en ondertitelsynchronisatie",
     "playerScopeOff": "Niet opslaan",
     "playerScopeGlobal": "Overal",
@@ -2250,6 +2251,8 @@
       "watchOn": "Bekijk op",
       "watchTrailer": "Trailer bekijken",
       "openOn": "Openen op ${site}",
+      "trailerUnavailable": "Kan de trailer niet openen op dit apparaat",
+      "linkUnavailable": "Kan de link niet openen op dit apparaat",
       "crew": "Crew",
       "ratings": "Beoordelingen",
       "schedule": "Uitzendschema",
@@ -3279,6 +3282,13 @@
     "disconnectConfirmBody": "Pleazyng vergeet deze Seerr-instantie. Je kunt altijd opnieuw verbinden.",
     "request": "Aanvragen",
     "request4k": "Aanvragen in 4K",
+    "requestSeasons": "Ontbrekende seizoenen aanvragen",
+    "notifyMe": "Meld me wanneer beschikbaar",
+    "notifyMe4k": "Meld me wanneer beschikbaar in 4K",
+    "notificationsOn": "Beschikbaarheidsmelding staat aan",
+    "notificationsEnabled": "We laten je weten wanneer het beschikbaar is",
+    "notificationsDisabled": "Beschikbaarheidsmelding is uitgeschakeld",
+    "notificationFailed": "De beschikbaarheidsmelding kon niet worden bijgewerkt",
     "seasons": "Seizoenen",
     "allSeasons": "Alle seizoenen",
     "advancedOptions": "Geavanceerd",
@@ -5516,6 +5526,10 @@
     "exclusiveOutput": "Exclusieve audio-uitvoer",
     "preamp": "Voorversterking",
     "ratingPending": "Op dit apparaat opgeslagen; wacht op synchronisatie",
-    "lyricsOffset": "Tijdsverschuiving songtekst"
+    "lyricsOffset": "Tijdsverschuiving songtekst",
+    "anniversaries": "Albumjubilea",
+    "outputPreset": "EQ voor deze uitgang",
+    "outputPresetHint": "Gebruik deze EQ automatisch wanneer deze uitgang is geselecteerd.",
+    "eqApproximation": "Hoofdtelefoonprofielen worden benaderd voor de tienbands-EQ."
   }
 }

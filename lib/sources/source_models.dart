@@ -17,6 +17,7 @@ enum FileSourceKind {
   s3,
   opds,
   audiobookshelf,
+  bookorbit,
   komga,
 
   /// A virtual source backed by one profile-scoped debrid account. Its

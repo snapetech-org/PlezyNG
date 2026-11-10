@@ -718,6 +718,7 @@ class _Translations$settings$th extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'ความเร็ว Playback';
 	@override String get scopeShaderPreset => 'โซเดอร์ Preset';
 	@override String get scopeAspectRatio => 'อัตราส่วน';
+	@override String get scopeZoom => 'ซูม';
 	@override String get scopeSyncOffsets => 'Audio & Subtitle ซิงค์';
 	@override String get playerScopeOff => 'อย่าบันทึก';
 	@override String get playerScopeGlobal => 'ทุกที่';
@@ -2719,6 +2720,13 @@ class _Translations$seerr$th extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng จะลืมตัวอย่าง Seerr นี้ ติดต่ออีกครั้งตลอดเวลา';
 	@override String get request => 'คําขอ';
 	@override String get request4k => 'คําขอใน 4K';
+	@override String get requestSeasons => 'ขอซีซันที่ขาดหายไป';
+	@override String get notifyMe => 'แจ้งเตือนเมื่อพร้อมใช้งาน';
+	@override String get notifyMe4k => 'แจ้งเตือนเมื่อมีเวอร์ชัน 4K';
+	@override String get notificationsOn => 'เปิดการแจ้งเตือนเมื่อพร้อมใช้งาน';
+	@override String get notificationsEnabled => 'เราจะแจ้งให้ทราบเมื่อพร้อมใช้งาน';
+	@override String get notificationsDisabled => 'ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน';
+	@override String get notificationFailed => 'อัปเดตการแจ้งเตือนเมื่อพร้อมใช้งานไม่สำเร็จ';
 	@override String get seasons => 'ฤดูกาล';
 	@override String get allSeasons => 'ทุกฤดูกาล';
 	@override String get advancedOptions => 'ขั้นสูง';
@@ -4270,6 +4278,10 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get preamp => 'ปรีแอมป์';
 	@override String get ratingPending => 'บันทึกบนอุปกรณ์นี้แล้ว รอซิงค์';
 	@override String get lyricsOffset => 'ปรับเวลาเนื้อเพลง';
+	@override String get anniversaries => 'ครบรอบการออกอัลบั้ม';
+	@override String get outputPreset => 'EQ สำหรับเอาต์พุตนี้';
+	@override String get outputPresetHint => 'ใช้ EQ นี้โดยอัตโนมัติเมื่อเลือกเอาต์พุตนี้';
+	@override String get eqApproximation => 'โปรไฟล์หูฟังถูกปรับโดยประมาณสำหรับ EQ สิบย่านความถี่';
 }
 
 // Path: appIcon.names
@@ -5011,6 +5023,8 @@ class _Translations$explore$detail$th extends Translations$explore$detail$en {
 	@override String get watchOn => 'ดูเพิ่มเติม';
 	@override String get watchTrailer => 'ดู trailer';
 	@override String openOn({required Object site}) => 'เปิดที่ ${site}';
+	@override String get trailerUnavailable => 'ไม่สามารถเปิดตัวอย่างบนอุปกรณ์นี้ได้';
+	@override String get linkUnavailable => 'ไม่สามารถเปิดลิงก์นี้บนอุปกรณ์นี้ได้';
 	@override String get crew => 'พันธมิตร';
 	@override String get ratings => 'คะแนน';
 	@override String get schedule => 'ตั้งเวลา';
@@ -5965,6 +5979,7 @@ extension on TranslationsTh {
 			'settings.scopePlaybackSpeed' => 'ความเร็ว Playback',
 			'settings.scopeShaderPreset' => 'โซเดอร์ Preset',
 			'settings.scopeAspectRatio' => 'อัตราส่วน',
+			'settings.scopeZoom' => 'ซูม',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle ซิงค์',
 			'settings.playerScopeOff' => 'อย่าบันทึก',
 			'settings.playerScopeGlobal' => 'ทุกที่',
@@ -6408,9 +6423,9 @@ extension on TranslationsTh {
 			'videoControls.addBookmark' => 'เพิ่ม Bookmark',
 			'videoControls.bookmarkName' => 'ชื่อ Bookmark',
 			'videoControls.bookmarkNameHint' => 'ตัวอย่างเช่น ฉากเปิด',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'บัญชี ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'บัญชี ${n}',
 			'videoControls.bookmarkNameRequired' => 'ใส่ชื่อสําหรับจดหมายนี้',
 			'videoControls.deleteBookmark' => 'ลบหนังสือพิมพ์',
 			'videoControls.bookmarkLimitReached' => 'รายการนี้มี 100 บัญชี',
@@ -6922,9 +6937,9 @@ extension on TranslationsTh {
 			'libraries.content' => 'วัสดุห้องสมุด',
 			'libraries.selectLibrary' => 'เลือกห้องสมุด',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ตัวกรอง (${count})',
-			'libraries.noRecommendations' => 'ไม่มีคําแนะนําที่มีอยู่',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'ไม่มีคําแนะนําที่มีอยู่',
 			'libraries.noCollections' => 'ไม่มีคอลเลกชันในห้องสมุดนี้',
 			'libraries.noFoldersFound' => 'ไม่พบโฟลเดอร์',
 			'libraries.folders' => 'โฟลเดอร์',
@@ -7217,6 +7232,8 @@ extension on TranslationsTh {
 			'explore.detail.watchOn' => 'ดูเพิ่มเติม',
 			'explore.detail.watchTrailer' => 'ดู trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'เปิดที่ ${site}',
+			'explore.detail.trailerUnavailable' => 'ไม่สามารถเปิดตัวอย่างบนอุปกรณ์นี้ได้',
+			'explore.detail.linkUnavailable' => 'ไม่สามารถเปิดลิงก์นี้บนอุปกรณ์นี้ได้',
 			'explore.detail.crew' => 'พันธมิตร',
 			'explore.detail.ratings' => 'คะแนน',
 			'explore.detail.schedule' => 'ตั้งเวลา',
@@ -7434,11 +7451,11 @@ extension on TranslationsTh {
 			'watchTogether.copyCode' => 'รหัสคัดลอก',
 			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
 			'watchTogether.shareInvite' => 'คู่มือ',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'เข้าร่วมห้องของ Watch Together ที่ Pleazyng: เปิดห้องของ Watch Together, เลือกห้องของ Join และเข้าสู่ระบบ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch ร่วมกันเซสชันควบคุม',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'การเชื่อมต่อ...',
 			'watchTogether.reconnectingDescription' => 'การเชื่อมต่อถูกปิดแล้ว คุณจะเข้าสู่ห้องโดยอัตโนมัติ',
 			'watchTogether.connected' => 'เชื่อมต่อ',
@@ -7948,11 +7965,11 @@ extension on TranslationsTh {
 			'metadataEdit.imageUrl' => 'ภาพ URL',
 			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
 			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkUpdated' => 'อัพเดทศิลปะ',
 			'metadataEdit.artworkUpdateFailed' => 'ไม่สามารถปรับปรุงงานศิลปะได้',
 			'metadataEdit.noArtworkAvailable' => 'ไม่มีงานศิลปะ',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}, เลือก',
 			'metadataEdit.notSet' => 'ไม่ตั้งค่า',
@@ -8039,6 +8056,13 @@ extension on TranslationsTh {
 			'seerr.disconnectConfirmBody' => 'Pleazyng จะลืมตัวอย่าง Seerr นี้ ติดต่ออีกครั้งตลอดเวลา',
 			'seerr.request' => 'คําขอ',
 			'seerr.request4k' => 'คําขอใน 4K',
+			'seerr.requestSeasons' => 'ขอซีซันที่ขาดหายไป',
+			'seerr.notifyMe' => 'แจ้งเตือนเมื่อพร้อมใช้งาน',
+			'seerr.notifyMe4k' => 'แจ้งเตือนเมื่อมีเวอร์ชัน 4K',
+			'seerr.notificationsOn' => 'เปิดการแจ้งเตือนเมื่อพร้อมใช้งาน',
+			'seerr.notificationsEnabled' => 'เราจะแจ้งให้ทราบเมื่อพร้อมใช้งาน',
+			'seerr.notificationsDisabled' => 'ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน',
+			'seerr.notificationFailed' => 'อัปเดตการแจ้งเตือนเมื่อพร้อมใช้งานไม่สำเร็จ',
 			'seerr.seasons' => 'ฤดูกาล',
 			'seerr.allSeasons' => 'ทุกฤดูกาล',
 			'seerr.advancedOptions' => 'ขั้นสูง',
@@ -8455,6 +8479,8 @@ extension on TranslationsTh {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} เข้าสู่ระบบรายการเล่นที่ไม่ได้สนับสนุนหรือไม่ปลอดภัย', ), 
 			'universalMedia.playlistAddress' => 'ที่อยู่ Playlist',
 			'universalMedia.playlistAddressHelp' => 'เปิดรายการเล่น M3U, M3u8 หรือ PLS จากที่อยู่อาศัยเว็บ เชื่อมโยง Stream Direct ไม่บันทึกรายการเล่น',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'เลือกไฟล์ Playlist',
 			'universalMedia.openPlaylist' => 'รายการเล่นเปิด',
 			'universalMedia.playlistFormatsHelp' => 'รายการการเล่นสามารถมีรายการสูงสุด 1,000 และ 2 MB HLS จะเปิดเป็น Streams เพื่อให้ผู้เล่นสามารถเลือกคุณภาพ',
@@ -8465,8 +8491,6 @@ extension on TranslationsTh {
 			'universalMedia.noFavorites' => 'ไม่ได้บันทึก Stream Favorites ยังคงอยู่ในโปรไฟล์นี้',
 			'universalMedia.removeFavorite' => 'ลบ Stream Favorite',
 			'universalMedia.filesHelp' => 'เลือกไฟล์เสียงวิดีโอหรือไฟล์ ISO สําหรับแบบชั่วคราว ไฟล์และ URLs ไม่มีการเพิ่มไปยังประวัติของห้องสมุด',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'เลือกไฟล์',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ), 
 			'universalMedia.wifiTransfer' => 'ส่งไฟล์ผ่าน Wi-Fi',
@@ -8969,6 +8993,8 @@ extension on TranslationsTh {
 			'sourceSetup.optionalUsername' => 'ชื่อผู้ใช้ของบัญชี (ไม่บังคับ)',
 			'sourceSetup.optionalPassword' => 'รหัสผ่านบัญชี (ไม่บังคับ)',
 			'sourceSetup.subtitlePrivacy' => 'รับคีย์ API จาก opensubtitles.com การค้นหาจะส่งชื่อวิดีโอและ ID ของ IMDb/TMDB ที่มี แต่จะไม่ส่งไฟล์วิดีโอ คีย์และข้อมูลรับรองบัญชีที่ระบุเพิ่มเติมจะเข้ารหัสพร้อมกับแหล่งข้อมูลนี้',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'ข้อมูลกำกับวิดีโอออนไลน์อัตโนมัติ',
 			'sourceSetup.metadataPrivacy' => 'ส่งเฉพาะชื่อเรื่อง/ปีจากชื่อไฟล์และหมายเลขตอน หรือ ID ของ NFO โดยไม่ส่งสื่อหรือข้อมูลรับรอง ช่องข้อมูล NFO ยังคงมีลำดับความสำคัญสูงสุด',
 			'sourceSetup.nfsEncryptionFailure' => 'สำหรับ NFS ที่เข้ารหัส ให้ตรวจสอบว่าบริการทั้งสองของ NAS รองรับ RFC 9289 และ TLS 1.3 ตรวจสอบชื่อในใบรับรองและ UID/GID ของส่วนแบ่งปัน Pleazyng จะไม่ลองเชื่อมต่อใหม่โดยไม่มีการเข้ารหัส',
@@ -8979,8 +9005,6 @@ extension on TranslationsTh {
 			'sourceSetup.metadataNoMatches' => 'ไม่พบชื่อเรื่องที่ตรงกันออนไลน์ ลองใช้ชื่อเรื่องอื่น',
 			'sourceSetup.metadataSearch' => 'ค้นหาข้อมูลกำกับออนไลน์',
 			'sourceSetup.metadataLoading' => 'กำลังค้นหาข้อมูลภาพยนตร์และรายการทีวีออนไลน์…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'ข้อมูลกำกับออนไลน์จาก Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'ไม่พบชื่อเรื่องที่ตรงกันโดยอัตโนมัติ ค้นหาชื่อเรื่องเพื่อเลือกผลลัพธ์ที่ตรงกัน',
 			'sourceSetup.metadataFailed' => 'โหลดข้อมูลกำกับออนไลน์ไม่ได้ แต่ยังเล่นวิดีโอและดูข้อมูลในเครื่องได้',
@@ -9390,6 +9414,10 @@ extension on TranslationsTh {
 			'musicTools.preamp' => 'ปรีแอมป์',
 			'musicTools.ratingPending' => 'บันทึกบนอุปกรณ์นี้แล้ว รอซิงค์',
 			'musicTools.lyricsOffset' => 'ปรับเวลาเนื้อเพลง',
+			'musicTools.anniversaries' => 'ครบรอบการออกอัลบั้ม',
+			'musicTools.outputPreset' => 'EQ สำหรับเอาต์พุตนี้',
+			'musicTools.outputPresetHint' => 'ใช้ EQ นี้โดยอัตโนมัติเมื่อเลือกเอาต์พุตนี้',
+			'musicTools.eqApproximation' => 'โปรไฟล์หูฟังถูกปรับโดยประมาณสำหรับ EQ สิบย่านความถี่',
 			_ => null,
 		};
 	}

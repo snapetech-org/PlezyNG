@@ -635,6 +635,7 @@
     "scopePlaybackSpeed": "Швидкість відтворення",
     "scopeShaderPreset": "Шейдер Пресет",
     "scopeAspectRatio": "Співвідношення сторін",
+    "scopeZoom": "Масштаб",
     "scopeSyncOffsets": "Audio & Subtitle Співвідношення",
     "playerScopeOff": "Не врятуйте",
     "playerScopeGlobal": "всюди",
@@ -2268,6 +2269,8 @@
       "watchOn": "Дивіться на",
       "watchTrailer": "Дивитись трейлер",
       "openOn": "Відкритий на ${site}",
+      "trailerUnavailable": "Не вдалося відкрити трейлер на цьому пристрої",
+      "linkUnavailable": "Не вдалося відкрити це посилання на цьому пристрої",
       "crew": "Екіпаж",
       "ratings": "Рейтинг",
       "schedule": "Розклад",
@@ -3315,6 +3318,13 @@
     "disconnectConfirmBody": "Pleazyng забуде цей приклад Seerr. Зв'яжіться в будь-який час.",
     "request": "Запрошення",
     "request4k": "Заявка в 4K",
+    "requestSeasons": "Замовити відсутні сезони",
+    "notifyMe": "Повідомити, коли стане доступним",
+    "notifyMe4k": "Повідомити, коли стане доступним у 4K",
+    "notificationsOn": "Сповіщення про доступність увімкнено",
+    "notificationsEnabled": "Ми повідомимо, коли стане доступним",
+    "notificationsDisabled": "Сповіщення про доступність вимкнено",
+    "notificationFailed": "Не вдалося оновити сповіщення про доступність",
     "seasons": "Сезони",
     "allSeasons": "Всі сезони",
     "advancedOptions": "Розширені",
@@ -5564,6 +5574,10 @@
     "exclusiveOutput": "Монопольний аудіовихід",
     "preamp": "Попереднє підсилення",
     "ratingPending": "Збережено на пристрої; очікує синхронізації",
-    "lyricsOffset": "Зсув тексту пісні"
+    "lyricsOffset": "Зсув тексту пісні",
+    "anniversaries": "Річниці альбомів",
+    "outputPreset": "Еквалайзер для цього виходу",
+    "outputPresetHint": "Автоматично застосовувати цей еквалайзер, коли вибрано цей вихід.",
+    "eqApproximation": "Профілі навушників наближено адаптовані до десятисмугового еквалайзера."
   }
 }

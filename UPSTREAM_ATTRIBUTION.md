@@ -163,7 +163,7 @@ this ledger for source disposition. The author links credit work or suggestions
 made to Plezy; Pleazyng adaptation remains independent. A related feature
 request is context, not proof that its entire scope is implemented.
 
-_Attribution ledger refreshed 2026-11-09; 89 source records._
+_Attribution ledger refreshed 2026-11-09; see the linked per-record dispositions below._
 
 ## Music media-session integration
 
@@ -217,7 +217,34 @@ endorsement of this fork.
 
 - [More reliable iOS speed-change qualification](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage.
 
+- [AppImage update metadata and verified zsync sidecars](https://github.com/edde746/plezy/commit/d832b4212ceabc68bfee6785177f40bd2a724723), contributed upstream by [@nataloko](https://github.com/nataloko): Pleazyng independently adapted build x64 AppImages with fork-specific update information, verify control-file names, blocks and digests, checksum and attest both artifacts, and preserve immutable legacy images without update metadata.
 
 ## Flutter security engine build (2026-11-09)
 
 The security-engine builder uses [edde746/flutter-plezy](https://github.com/edde746/flutter-plezy/tree/06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2)'s existing Windows DirectComposition and resize patch series and build driver at immutable revision `06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2`. It applies those patches to Flutter 3.47.8 (`737ba8f885dc774b53b442759999a312c9461e4e`) with the upstream fixed Dart dependency for [GHSA-frr6-h895-5pxp](https://github.com/dart-lang/sdk/security/advisories/GHSA-frr6-h895-5pxp). The patch-source license and source revision receipt accompany the resulting archives. The orchestration script is original Pleazyng code. Built artifacts must pass verification before replacing the existing Windows engine pin.
+
+
+## Complete reviewed commit dispositions — Plezy 2.26
+
+The [64-commit review](docs/maintainers/upstream-sync-2026-11-09.md) and
+[machine-readable records](docs/maintainers/upstream-sync-2026-11-09.json) link
+every originating upstream commit and its upstream author's GitHub account.
+Those people contributed to upstream Plezy; Pleazyng independently adapted or
+verified the scope recorded there. Excluded and retained records remain review
+sources, without claims of direct contribution to or endorsement of this fork.
+
+### Planned native compatibility work — not yet shipped
+
+- [Upstream 63f8cd5a05](https://github.com/edde746/plezy/commit/63f8cd5a054e2ecc5c28dd30fe8066f4356a10c4) by [@edde746](https://github.com/edde746): Not shipped: Amlogic transparent letterbox control needs vo-mediacodec-letterbox-fill, absent from the active fork engine patch. Keep existing output behavior until its engine implementation is integrated.
+- [Upstream 2e1654b316](https://github.com/edde746/plezy/commit/2e1654b316150f59cbc4774602ed4f02a3515527) by [@edde746](https://github.com/edde746): Not shipped: the active fork AVFoundation patch lacks the GLSL stage. Keep the platform capability gate until that native implementation is packaged and validated.
+- [Upstream 6cc283a7da](https://github.com/edde746/plezy/commit/6cc283a7da3d75ed90ec232dd7f5da1f25681b4f) by [@edde746](https://github.com/edde746): Not shipped: the fork exposes the delay option but lacks the active per-video-frame repeat patch required to avoid Amlogic judder. Do not enable the delay from app code alone.
+
+The fork's native asset pins, normal FEL/HDR/NPU components and runtime opt-ins
+remain intact. Upstream ancestry alone is not proof that an implementation is
+active in the fork's package.
+
+The Windows patch-source/build-driver record above originates at
+[commit 06654fe6](https://github.com/edde746/flutter-plezy/commit/06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2),
+contributed to the upstream engine project by [@edde746](https://github.com/edde746).
+Pleazyng independently reuses that source in its security-engine orchestration;
+artifact verification remains distinct from source credit.

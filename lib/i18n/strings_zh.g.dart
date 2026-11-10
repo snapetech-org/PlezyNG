@@ -640,6 +640,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get dvConversionDv81Description => '强制内联 RPU 转换为 Dolby Vision Profile 8.1';
 	@override String get dvConversionHevcStripDescription => '移除 Dolby Vision RPU/EL 层并呈现普通 HEVC';
 	@override String get experimentalDolbyVision => '实验性 Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => '自动尝试 Dolby Vision/FEL，不可用时回退到兼容播放。默认开启；实际输出取决于设备。';
 	@override String get dvCompatibilityFallback => '兼容性回退';
 	@override String get dvCompatibilityFallbackDescription => '如果实验无法启动，则使用标准渲染器。FEL 数据可能会丢失。';
 	@override String get dvExperimentDiagnostics => '视频实验日志';
@@ -5919,6 +5920,7 @@ extension on TranslationsZh {
 			'settings.dvConversionDv81Description' => '强制内联 RPU 转换为 Dolby Vision Profile 8.1',
 			'settings.dvConversionHevcStripDescription' => '移除 Dolby Vision RPU/EL 层并呈现普通 HEVC',
 			'settings.experimentalDolbyVision' => '实验性 Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => '自动尝试 Dolby Vision/FEL，不可用时回退到兼容播放。默认开启；实际输出取决于设备。',
 			'settings.dvCompatibilityFallback' => '兼容性回退',
 			'settings.dvCompatibilityFallbackDescription' => '如果实验无法启动，则使用标准渲染器。FEL 数据可能会丢失。',
 			'settings.dvExperimentDiagnostics' => '视频实验日志',
@@ -5928,9 +5930,9 @@ extension on TranslationsZh {
 			'settings.hdrSdrConversion' => 'HDR 转 SDR',
 			'settings.hdrSdrConversionDescription' => '选择在显示器无法显示 HDR 时由谁转换 HDR 视频。',
 			'settings.hdrSdrConversionAuto' => '自动',
-			'settings.hdrSdrConversionAutoDescription' => 'Android 9 及更高版本使用设备，更早版本使用播放器',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Android 9 及更高版本使用设备，更早版本使用播放器',
 			'settings.hdrSdrConversionDevice' => '设备',
 			'settings.hdrSdrConversionDeviceDescription' => '由设备的视频硬件转换。速度最快，但色彩取决于设备',
 			'settings.hdrSdrConversionPlayer' => '播放器',
@@ -6442,9 +6444,9 @@ extension on TranslationsZh {
 			'videoControls.segmentLoop' => '分区路径',
 			'videoControls.addBookmark' => '添加 Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark 名称',
-			'videoControls.bookmarkNameHint' => '例如,开幕式',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => '例如,开幕式',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => '图标 ${n}',
 			'videoControls.bookmarkNameRequired' => '请输入本书标志的名称。',
 			'videoControls.deleteBookmark' => '删除 Bookmark',
@@ -6956,9 +6958,9 @@ extension on TranslationsZh {
 			'libraries.libraryOptions' => '媒体库选项',
 			'libraries.content' => '媒体库内容',
 			'libraries.selectLibrary' => '选择媒体库',
-			'libraries.filtersWithCount' => ({required Object count}) => '筛选器（${count}）',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => '筛选器（${count}）',
 			'libraries.noRecommendations' => '暂无推荐',
 			'libraries.noCollections' => '此媒体库中没有合集',
 			'libraries.noFoldersFound' => '未找到文件夹',
@@ -7470,9 +7472,9 @@ extension on TranslationsZh {
 			'watchTogether.noCodeInClipboard' => '剪贴板中没有房间代码',
 			'watchTogether.copyCode' => '复制代码',
 			'watchTogether.codeCopied' => '房间代码已复制',
-			'watchTogether.shareInvite' => '分享邀请',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => '分享邀请',
 			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
 			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
 			'watchTogether.openSessionControls' => '打开“一起看”会话控制',
@@ -7984,9 +7986,9 @@ extension on TranslationsZh {
 			'metadataEdit.enterImageUrl' => '输入图片 URL',
 			'metadataEdit.imageUrl' => '图片 URL',
 			'metadataEdit.metadataUpdated' => '元数据已更新',
-			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
 			'metadataEdit.artworkUpdated' => '封面图片已更新',
 			'metadataEdit.artworkUpdateFailed' => '封面图片更新失败',
 			'metadataEdit.noArtworkAvailable' => '没有可用的封面图片',
@@ -8498,9 +8500,9 @@ extension on TranslationsZh {
 			'universalMedia.favoriteSaved' => '流喜爱保存到此个人资料',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支持或不安全的播放列表输入。', other: '${count} 不受支持或不安全的播放列表输入。', ), 
 			'universalMedia.playlistAddress' => 'Playlist 地址',
-			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會保存播放名單。',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會保存播放名單。',
 			'universalMedia.choosePlaylist' => '选择 Playlist 文件',
 			'universalMedia.openPlaylist' => '开放播放列表',
 			'universalMedia.playlistFormatsHelp' => '一张播放列表可以包含最多1000个项目和2MB的HLS显示为流,所以玩家可以选择质量。',
@@ -9012,9 +9014,9 @@ extension on TranslationsZh {
 			'sourceSetup.apiKey' => 'API 密钥',
 			'sourceSetup.optionalUsername' => '账户用户名（可选）',
 			'sourceSetup.optionalPassword' => '账户密码（可选）',
-			'sourceSetup.subtitlePrivacy' => '请从 opensubtitles.com 获取 API 密钥。搜索会发送视频标题和可用的 IMDb/TMDB ID，绝不会发送视频文件。密钥和可选的账户凭据会随此来源加密保存。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => '请从 opensubtitles.com 获取 API 密钥。搜索会发送视频标题和可用的 IMDb/TMDB ID，绝不会发送视频文件。密钥和可选的账户凭据会随此来源加密保存。',
 			'sourceSetup.automaticMetadata' => '自动获取在线视频元数据',
 			'sourceSetup.metadataPrivacy' => '仅发送文件名中的标题、年份和集数，或 NFO ID，绝不发送媒体文件或凭据。NFO 字段始终优先。',
 			'sourceSetup.nfsEncryptionFailure' => '对于加密 NFS，请检查 NAS 的两项服务是否支持 RFC 9289 和 TLS 1.3，并核对证书名称以及导出 UID/GID。Pleazyng 不会在不加密的情况下重试此连接。',

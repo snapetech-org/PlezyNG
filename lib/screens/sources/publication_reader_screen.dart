@@ -123,12 +123,41 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
     _scheduleWorkspaceAutoJoin();
   }
 
+  Future<void> _watchReaderRecovery() async {
+    final sources = _sources;
+    final profile = _profile;
+    final workspace = _observedWorkspaceController;
+    if (!valid || !_ready || _previewOnly || sources == null || profile == null || workspace == null) return;
+    try {
+      final identity = await sources.repository.recoveryIdentity(profile, widget.entry);
+      if (!mounted || !valid || workspace != _observedWorkspaceController || identity == null) return;
+      workspace.watchRecovery(this, () {
+        if (!mounted || !valid || !_ready || _previewOnly) return null;
+        return WorkspaceSessionDescriptor(
+          id: 'publication:${sourceDigest('${widget.entry.key}:${widget.file.fingerprint}')}',
+          kind: widget.file.kind == SourceItemKind.comic ? MultiviewMediaKind.comic : MultiviewMediaKind.publication,
+          title: _readerTitle.isEmpty ? widget.file.name : _readerTitle,
+          openedAt: DateTime.now(),
+          resume: WorkspaceResumeTarget(
+            kind: WorkspaceResumeKind.source,
+            providerId: widget.entry.sourceId,
+            itemId: identity,
+            fileId: widget.file.fingerprint,
+          ),
+        );
+      });
+    } catch (_) {
+      // Failed identity lookup must not interrupt reading.
+    }
+  }
+
   void _markReaderReady({List<Map<String, dynamic>>? toc}) {
     if (!mounted) return;
     setState(() {
       _ready = true;
       if (toc != null) _toc = toc;
     });
+    unawaited(_watchReaderRecovery());
     _scheduleWorkspaceAutoJoin();
   }
 
@@ -190,8 +219,8 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
       kind: widget.file.kind == SourceItemKind.comic ? MultiviewMediaKind.comic : MultiviewMediaKind.publication,
       title: widget.entry.title.trim().isEmpty ? t.common.unknown : widget.entry.title,
       subtitle: widget.file.name,
-      mediaKey: idSeed,
-      progressOwner: '${_profile ?? 'profile'}:${widget.entry.key}:${widget.file.fingerprint}',
+      mediaKey: sourceDigest(idSeed),
+      progressOwner: sourceDigest('${_profile ?? 'profile'}:${widget.entry.key}:${widget.file.fingerprint}'),
       hasAudio: _speaking || _readAlong,
       hasVideo: false,
       openedAt: DateTime.now(),
@@ -948,6 +977,7 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
 
   @override
   void dispose() {
+    _observedWorkspaceController?.unwatchRecovery(this);
     final workspaceSessionId = _workspaceSessionId;
     if (workspaceSessionId != null) {
       _workspaceController?.unregister(workspaceSessionId);

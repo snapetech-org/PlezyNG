@@ -642,6 +642,7 @@ class _Translations$settings$fa extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'تبدیل RPU به پروفایل Dolby Vision 8.1';
 	@override String get dvConversionHevcStripDescription => 'نوار Dolby Vision لایه های RPU/EL و سطح فعلی HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision آزمایشی';
+	@override String get experimentalDolbyVisionDescription => 'Dolby Vision/FEL را خودکار امتحان می‌کند و در صورت در دسترس نبودن به پخش سازگار برمی‌گردد. به‌طور پیش‌فرض روشن است؛ خروجی واقعی به دستگاه بستگی دارد.';
 	@override String get dvCompatibilityFallback => 'گزینهٔ جایگزین سازگار';
 	@override String get dvCompatibilityFallbackDescription => 'اگر آزمایش شروع نشد، از رندرکنندهٔ استاندارد استفاده شود. ممکن است داده‌های FEL از دست بروند.';
 	@override String get dvExperimentDiagnostics => 'ثبت رویدادهای آزمایش ویدیو';
@@ -5924,6 +5925,7 @@ extension on TranslationsFa {
 			'settings.dvConversionDv81Description' => 'تبدیل RPU به پروفایل Dolby Vision 8.1',
 			'settings.dvConversionHevcStripDescription' => 'نوار Dolby Vision لایه های RPU/EL و سطح فعلی HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision آزمایشی',
+			'settings.experimentalDolbyVisionDescription' => 'Dolby Vision/FEL را خودکار امتحان می‌کند و در صورت در دسترس نبودن به پخش سازگار برمی‌گردد. به‌طور پیش‌فرض روشن است؛ خروجی واقعی به دستگاه بستگی دارد.',
 			'settings.dvCompatibilityFallback' => 'گزینهٔ جایگزین سازگار',
 			'settings.dvCompatibilityFallbackDescription' => 'اگر آزمایش شروع نشد، از رندرکنندهٔ استاندارد استفاده شود. ممکن است داده‌های FEL از دست بروند.',
 			'settings.dvExperimentDiagnostics' => 'ثبت رویدادهای آزمایش ویدیو',
@@ -5933,9 +5935,9 @@ extension on TranslationsFa {
 			'settings.hdrSdrConversion' => 'HDR به SDR تبدیل',
 			'settings.hdrSdrConversionDescription' => 'انتخاب کنید که چه چیزی ویدئو HDR را تبدیل می کند زمانی که صفحه نمایش نمی تواند HDR را نشان دهد.',
 			'settings.hdrSdrConversionAuto' => 'خودکار',
-			'settings.hdrSdrConversionAutoDescription' => 'دستگاه در Android 9 و بالاتر، پخش کننده در نسخه های قدیمی تر',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'دستگاه در Android 9 و بالاتر، پخش کننده در نسخه های قدیمی تر',
 			'settings.hdrSdrConversionDevice' => 'دستگاه',
 			'settings.hdrSdrConversionDeviceDescription' => 'سخت افزار ویدئویی دستگاه شما آن را تبدیل می کند سریع ترین، اما رنگ ها بستگی به دستگاه دارد',
 			'settings.hdrSdrConversionPlayer' => 'پخش‌کننده',
@@ -6447,9 +6449,9 @@ extension on TranslationsFa {
 			'videoControls.segmentLoop' => 'بخش لوله',
 			'videoControls.addBookmark' => 'اضافه کردن Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark نام',
-			'videoControls.bookmarkNameHint' => 'به عنوان مثال، صحنه باز',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'به عنوان مثال، صحنه باز',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'برچسب ها ${n}',
 			'videoControls.bookmarkNameRequired' => 'نام این کتاب را وارد کنید.',
 			'videoControls.deleteBookmark' => 'حذف Bookmark',
@@ -6961,9 +6963,9 @@ extension on TranslationsFa {
 			'libraries.libraryOptions' => 'گزینه های کتابخانه',
 			'libraries.content' => 'محتوای کتابخانه',
 			'libraries.selectLibrary' => 'انتخاب کتابخانه',
-			'libraries.filtersWithCount' => ({required Object count}) => 'فیلترها (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'فیلترها (${count})',
 			'libraries.noRecommendations' => 'بدون توصیه در دسترس',
 			'libraries.noCollections' => 'هیچ مجموعه ای در این کتابخانه وجود ندارد',
 			'libraries.noFoldersFound' => 'هیچ پوشه ای یافت نشد',
@@ -7475,9 +7477,9 @@ extension on TranslationsFa {
 			'watchTogether.noCodeInClipboard' => 'این صفحه شامل کد اتاق نیست.',
 			'watchTogether.copyCode' => 'کپی کد',
 			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
-			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
 			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'به اتاق Watch Together من در Pleazyng بپیوندید، اتاق Watch Together را انتخاب کنید و به اتاق Watch Together ${code} وارد شوید.',
 			'watchTogether.openSessionControls' => 'Open Watch با هم کنترل جلسه',
@@ -7989,9 +7991,9 @@ extension on TranslationsFa {
 			'metadataEdit.enterImageUrl' => 'URL تصویر را وارد کنید',
 			'metadataEdit.imageUrl' => 'تصویر URL',
 			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
-			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
 			'metadataEdit.artworkUpdated' => 'هنر به روز شده',
 			'metadataEdit.artworkUpdateFailed' => 'به روز رسانی هنرهای هنری',
 			'metadataEdit.noArtworkAvailable' => 'هیچ هنری در دسترس نیست',
@@ -8503,9 +8505,9 @@ extension on TranslationsFa {
 			'universalMedia.favoriteSaved' => 'جریان محبوب به این پروفایل ذخیره شده است',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${count} بدون پشتیبانی یا ورود نامناسب به لیست پخش.', other: '${count} بدون پشتیبانی و یا ورود نامناسب به لیست پخش.', ), 
 			'universalMedia.playlistAddress' => 'آدرس Playlist',
-			'universalMedia.playlistAddressHelp' => 'یک لیست پخش M3U، M3u8 یا PLS را از یک آدرس وب باز کنید لینک های جریان مستقیم لیست پخش را ذخیره نمی کنند.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'یک لیست پخش M3U، M3u8 یا PLS را از یک آدرس وب باز کنید لینک های جریان مستقیم لیست پخش را ذخیره نمی کنند.',
 			'universalMedia.choosePlaylist' => 'انتخاب فایل playlist',
 			'universalMedia.openPlaylist' => 'باز کردن playlist',
 			'universalMedia.playlistFormatsHelp' => 'یک لیست پخش می تواند حاوی حداکثر 1000 آیتم و 2 مگابایت باشد.HLS به عنوان جریان ها باز می شود تا بازیکن بتواند کیفیت را انتخاب کند.',
@@ -9017,9 +9019,9 @@ extension on TranslationsFa {
 			'sourceSetup.apiKey' => 'کلید API',
 			'sourceSetup.optionalUsername' => 'نام کاربری حساب (اختیاری)',
 			'sourceSetup.optionalPassword' => 'گذرواژهٔ حساب (اختیاری)',
-			'sourceSetup.subtitlePrivacy' => 'کلید API را از opensubtitles.com بگیرید. جست‌وجو، عنوان ویدیو و شناسه‌های موجود IMDb/TMDB را ارسال می‌کند، اما هرگز فایل ویدیو را نمی‌فرستد. کلید و اطلاعات ورود اختیاری حساب، همراه این منبع به‌صورت رمزگذاری‌شده ذخیره می‌شوند.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'کلید API را از opensubtitles.com بگیرید. جست‌وجو، عنوان ویدیو و شناسه‌های موجود IMDb/TMDB را ارسال می‌کند، اما هرگز فایل ویدیو را نمی‌فرستد. کلید و اطلاعات ورود اختیاری حساب، همراه این منبع به‌صورت رمزگذاری‌شده ذخیره می‌شوند.',
 			'sourceSetup.automaticMetadata' => 'دریافت خودکار فرادادهٔ آنلاین ویدیو',
 			'sourceSetup.metadataPrivacy' => 'فقط عنوان، سال و شمارهٔ قسمت از نام فایل یا شناسهٔ NFO ارسال می‌شود؛ رسانه و اطلاعات ورود هرگز ارسال نمی‌شوند. فیلدهای NFO همیشه اولویت دارند.',
 			'sourceSetup.nfsEncryptionFailure' => 'برای NFS رمزگذاری‌شده، پشتیبانی هر دو سرویس NAS از RFC 9289 و TLS 1.3، نام گواهی و UID/GID اشتراک را بررسی کنید. Pleazyng این اتصال را بدون رمزگذاری دوباره امتحان نمی‌کند.',

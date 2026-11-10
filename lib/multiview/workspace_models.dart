@@ -101,6 +101,7 @@ class WorkspaceResumeTarget {
     required this.providerId,
     required this.itemId,
     this.fileId,
+    this.fileIds = const [],
     this.positionMs = 0,
   });
 
@@ -108,6 +109,7 @@ class WorkspaceResumeTarget {
   final String providerId;
   final String itemId;
   final String? fileId;
+  final List<String> fileIds;
   final int positionMs;
 
   Map<String, Object?> toJson() => {
@@ -115,6 +117,7 @@ class WorkspaceResumeTarget {
     'providerId': providerId,
     'itemId': itemId,
     if (fileId != null) 'fileId': fileId,
+    if (fileIds.isNotEmpty) 'fileIds': fileIds,
     'positionMs': positionMs,
   };
 
@@ -136,11 +139,19 @@ class WorkspaceResumeTarget {
     if (kind.isEmpty || position is! int || position < 0 || position > 315360000000) {
       throw const FormatException('Invalid workspace recovery target');
     }
+    final fileIds = json['fileIds'];
+    if (fileIds != null &&
+        (fileIds is! List ||
+            fileIds.length > 256 ||
+            fileIds.any((value) => value is! String || !RegExp(r'^[0-9a-f]{64}$').hasMatch(value)))) {
+      throw const FormatException('Invalid workspace recovery edition');
+    }
     return WorkspaceResumeTarget(
       kind: kind.single,
       providerId: identity('providerId'),
       itemId: identity('itemId'),
       fileId: json['fileId'] == null ? null : identity('fileId'),
+      fileIds: fileIds == null ? const [] : List<String>.unmodifiable(fileIds as List),
       positionMs: position,
     );
   }

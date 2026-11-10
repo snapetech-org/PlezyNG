@@ -8,6 +8,19 @@
 - Integrate a configurable Music home, device-local listening history/charts, six Guest DJ modes, saved filter-based stations with scheduled downloads, opt-in prompt playlists, music ReplayGain/EQ/preamp/output controls and named presets. Reuse existing profiles, library filters, playlists, downloads and Now Playing; protect pending work across account changes.
 - Retain authorized lyrics and bounded seek-print analysis with downloaded music, add per-track lyric timing, durable music links and queued rating/favorite edits. Keep offline station playback limited to the active profile's completed downloads.
 - Add shared iOS phone/CarPlay engine startup, Siri media intents, Android headless device/restriction handling and background profile-frame scheduling; expand native playlist browsing and prevent pagination from consuming CarPlay navigation levels. Native signing/build/device qualification and remaining parity code are tracked in `docs/plezyng/music/STATUS.md`.
+- Record the complete review of 64 upstream commits through Plezy 2.26, with originating commit and contributor links, retained fork behavior and explicit unshipped native dependencies. Pleazyng keeps its name, logo, native components and GPL license file; the upstream trademark policy is excluded. See the [review and source credits](docs/maintainers/upstream-sync-2026-11-09.md).
+
+- Run post-publication catalog verification through a read-only reusable workflow, preserving automatic validation while removing the privileged workflow-run trigger rejected by repository policy.
+
+- AppImage update metadata and verified zsync sidecars: build x64 AppImages with fork-specific update information, verify control-file names, blocks and digests, checksum and attest both artifacts, and preserve immutable legacy images without update metadata. Independently adapted from [upstream d832b421](https://github.com/edde746/plezy/commit/d832b4212ceabc68bfee6785177f40bd2a724723), contributed upstream by [@nataloko](https://github.com/nataloko); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+- Restore interrupted source audio, books and readers from the media-session tray using current profile authorization and the exact saved edition. Keep source URLs out of workspace snapshots, preserve background audio checkpoints, and prevent delayed resume requests from replacing a newer player.
+- Repair the TV containment workflow after its integration script was renamed.
+- Prepare the Flutter 3.47.8 security engine while retaining the Windows presentation fixes independently adapted from [@edde746's upstream patch series](https://github.com/edde746/flutter-plezy/commit/06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2). Build validation and release SDK migration are pending; see [source credit](UPSTREAM_ATTRIBUTION.md).
+
+- Restore downstream aerynOS recipe preparation and isolated native qualification under the owner’s subsequent explicit restore-and-continue instruction. Public availability remains conditional on qualified artifacts; no official repository entry is implied.
+
+- Enable automatic Dolby Vision/Profile 7 FEL routing and compatibility fallback by default. Preserve explicit Off and manual conversion choices, try implemented local Android/Apple/desktop paths before server conversion, and retain ordinary Apple playback when the bundled DV runtime cannot initialize. Keep qualification and actual layer use explicit; neural motion smoothing remains separately opt-in.
+
 - More reliable iOS speed-change qualification: test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage. Independently adapted from [upstream 48926474](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
 - Keep the descriptor-worker integration check in its dedicated native isolation lane, using its required verified headers, instead of accidentally invoking it as an argument-free Python unit test.
@@ -70,7 +83,6 @@
 
 - Isolate Android RomM cores in a permissionless service with a distinct UID. Pass only read-only game/firmware descriptors through a bounded virtual filesystem, retain audio and saves in the app, and wait for Android's process-death notification before releasing a session. Add device-runtime fault and access-boundary tests.
 
-- Restore aerynOS release-bundle packaging for downstream review, with checksum-pinned WebKit helpers, corrected Boulder archive extraction and support-file layout, and private ELF search paths for the app and embedded Dolby Vision tool runtime. Native aerynOS build, installation and Jellyfin sign-in pass; the published v3.0.7 bundle still fails video playback QA because it predates the native-aperture repair.
 
 - Retry the nested Dolby Vision Swift package resolution once from clean task-owned state when Xcode 26 aborts inside its package-graph model; ordinary resolver failures still fail immediately.
 

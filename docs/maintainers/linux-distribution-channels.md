@@ -92,10 +92,11 @@ The matching helpers and cache repair apply to channel repacks; immutable
 GitHub binary packages are unchanged.
 For complete desktop/device qualification, verify fonts, TLS, desktop/URI launch, file
 chooser, Wayland video, GPU drivers/hardware decoding, audio, offline downloads,
-and persisted opt-in experimental settings with packaged native components.
+and persisted automatic-DV and optional neural settings with packaged native components.
 Inspect every bundled ELF and provider, including dynamically loaded libraries;
 resolve dependency and duplicate-provider conflicts without silently deleting
-experimental engines or substituting a system mpv. Keep Off as the default.
+experimental engines or substituting a system mpv. Keep automatic DV/FEL and compatibility fallback enabled by default; neural
+motion processing remains off by default.
 
 Repository submission must include a maintainer, license/provenance review and
 the tested native outputs. Confirm whether each community requires source

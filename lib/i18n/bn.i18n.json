@@ -552,7 +552,7 @@
     "dvConversionDv81Description": "শক্তি ইনলাইন RPU পৃষ্ঠা Dolby Vision প্রোফাইল 8.1",
     "dvConversionHevcStripDescription": "স্ট্রিপ Dolby Vision RPU/EL layers এবং বর্তমান প্লাইন HEVC",
     "experimentalDolbyVision": "পরীক্ষামূলক Dolby Vision",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "স্বয়ংক্রিয়ভাবে Dolby Vision/FEL চেষ্টা করে এবং উপলভ্য না হলে সামঞ্জস্যপূর্ণ প্লেব্যাকে ফিরে যায়। ডিফল্টভাবে চালু; প্রকৃত আউটপুট ডিভাইসের ওপর নির্ভর করে।",
     "dvCompatibilityFallback": "সামঞ্জস্যপূর্ণ বিকল্প",
     "dvCompatibilityFallbackDescription": "পরীক্ষা শুরু না হলে সাধারণ রেন্ডারার ব্যবহার করুন। FEL তথ্য হারিয়ে যেতে পারে।",
     "dvExperimentDiagnostics": "ভিডিও পরীক্ষার লগ",

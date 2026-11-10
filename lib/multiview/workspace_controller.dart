@@ -118,6 +118,11 @@ class MultiviewWorkspaceController extends ChangeNotifier {
           _activeRecovery.remove(entry.key);
         } else {
           _activeRecovery[entry.key] = value!;
+          // Opening the same item independently also fulfils its recovery.
+          // Keep an explicit operation alive until its handoff completes.
+          if (!_recoveryOperations.containsKey(value.id)) {
+            _pendingRecovery.remove(value.id);
+          }
         }
       } catch (_) {
         // A retiring owner must not prevent other sessions being checkpointed.

@@ -71,7 +71,7 @@ class MpvPlayerCore private constructor(
     hardwareDecoding: Boolean = true,
     osdRenderScale: Float = 1f,
     initialLogLevel: String = "warn",
-    experimentalDolbyVision: Boolean = false
+    experimentalDolbyVision: Boolean = true
   ) : this(context, audioOnly, hardwareDecoding, osdRenderScale, initialLogLevel, experimentalDolbyVision, null, null, false)
 
   internal constructor(

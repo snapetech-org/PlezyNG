@@ -124,6 +124,12 @@ Browser research can combine demuxed RPU, two WebCodecs decoders and a WebGPU co
 
 # Automatic compatibility fallback
 
+Implemented DV/FEL playback is requested automatically by default under the
+2026-11-09 owner directive. Persist explicit Off/manual conversion choices, use
+normal bundled components, and downgrade to a supported route when a capability
+or initialization step fails. Automatic selection is not a qualification claim.
+
+
 **Recommendation confidence: high.** Auto should choose the best verified route that meets the current playback budget. Use a companion result when it is available or can keep up; avoid making ordinary playback wait indefinitely for an offline bake. Preserve a fidelity preference for users willing to wait. Switching routes must flush frame and metadata state and preserve audio/subtitle timing.
 
 | Route | What the user receives |

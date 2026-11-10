@@ -640,6 +640,7 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Kuasa dalam rangkaian RPU penukaran kepada Dolby Vision profil 8.1';
 	@override String get dvConversionHevcStripDescription => 'Strip Dolby Vision lapisan RPU/EL dan rata semasa HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision eksperimen';
+	@override String get experimentalDolbyVisionDescription => 'Mencuba Dolby Vision/FEL secara automatik dan beralih kepada main balik serasi jika tidak tersedia. Dihidupkan secara lalai; output sebenar bergantung pada peranti.';
 	@override String get dvCompatibilityFallback => 'Pilihan sandaran keserasian';
 	@override String get dvCompatibilityFallbackDescription => 'Gunakan pemapar standard jika eksperimen tidak dapat dimulakan. Data FEL mungkin hilang.';
 	@override String get dvExperimentDiagnostics => 'Pengelogan eksperimen video';
@@ -5899,6 +5900,7 @@ extension on TranslationsMs {
 			'settings.dvConversionDv81Description' => 'Kuasa dalam rangkaian RPU penukaran kepada Dolby Vision profil 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Strip Dolby Vision lapisan RPU/EL dan rata semasa HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision eksperimen',
+			'settings.experimentalDolbyVisionDescription' => 'Mencuba Dolby Vision/FEL secara automatik dan beralih kepada main balik serasi jika tidak tersedia. Dihidupkan secara lalai; output sebenar bergantung pada peranti.',
 			'settings.dvCompatibilityFallback' => 'Pilihan sandaran keserasian',
 			'settings.dvCompatibilityFallbackDescription' => 'Gunakan pemapar standard jika eksperimen tidak dapat dimulakan. Data FEL mungkin hilang.',
 			'settings.dvExperimentDiagnostics' => 'Pengelogan eksperimen video',
@@ -5908,9 +5910,9 @@ extension on TranslationsMs {
 			'settings.hdrSdrConversion' => 'HDR kepada SDR Konversi',
 			'settings.hdrSdrConversionDescription' => 'Pilih apa yang menukar video HDR apabila paparan tidak boleh menunjukkan HDR.',
 			'settings.hdrSdrConversionAuto' => 'Kereta',
-			'settings.hdrSdrConversionAutoDescription' => 'Peranti pada Android 9 dan seterusnya, pemain pada versi yang lebih tua',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Peranti pada Android 9 dan seterusnya, pemain pada versi yang lebih tua',
 			'settings.hdrSdrConversionDevice' => 'peranti',
 			'settings.hdrSdrConversionDeviceDescription' => 'Perkakasan video peranti anda menukarnya. paling cepat, tetapi warna bergantung kepada peranti',
 			'settings.hdrSdrConversionPlayer' => 'Pemain',
@@ -6422,9 +6424,9 @@ extension on TranslationsMs {
 			'videoControls.segmentLoop' => 'Perbezaan segmen',
 			'videoControls.addBookmark' => 'Menambah Bookmark',
 			'videoControls.bookmarkName' => 'Nama Bookmark',
-			'videoControls.bookmarkNameHint' => 'Sebagai contoh, adegan pembukaan',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Sebagai contoh, adegan pembukaan',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Perpustakaan ${n}',
 			'videoControls.bookmarkNameRequired' => 'Masukkan nama untuk buku ini.',
 			'videoControls.deleteBookmark' => 'Menghapuskan Bookmark',
@@ -6936,9 +6938,9 @@ extension on TranslationsMs {
 			'libraries.libraryOptions' => 'Pilihan Perpustakaan',
 			'libraries.content' => 'Perpustakaan kandungan',
 			'libraries.selectLibrary' => 'Pilih Perpustakaan',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			'libraries.noRecommendations' => 'Tiada cadangan yang tersedia',
 			'libraries.noCollections' => 'Tiada koleksi dalam perpustakaan ini',
 			'libraries.noFoldersFound' => 'Tiada folder yang ditemui',
@@ -7450,9 +7452,9 @@ extension on TranslationsMs {
 			'watchTogether.noCodeInClipboard' => 'Klipboard tidak mengandungi kod bilik',
 			'watchTogether.copyCode' => 'Kode salinan',
 			'watchTogether.codeCopied' => 'Kod bilik disalin',
-			'watchTogether.shareInvite' => 'Memberi jemputan',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Memberi jemputan',
 			'watchTogether.inviteCopied' => 'Sila rujuk. masukkan ke dalam mesej.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di Pleazyng: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kawalan sesi',
@@ -7964,9 +7966,9 @@ extension on TranslationsMs {
 			'metadataEdit.enterImageUrl' => 'Masukkan URL imej',
 			'metadataEdit.imageUrl' => 'imej URL',
 			'metadataEdit.metadataUpdated' => 'Metadata dikemaskini',
-			'metadataEdit.metadataUpdateFailed' => 'Kegagalan Mengemas kini Metadata',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Kegagalan Mengemas kini Metadata',
 			'metadataEdit.artworkUpdated' => 'Seni yang dikemaskini',
 			'metadataEdit.artworkUpdateFailed' => 'Kegagalan untuk mengemas kini karya seni',
 			'metadataEdit.noArtworkAvailable' => 'Tiada karya seni yang tersedia',
@@ -8478,9 +8480,9 @@ extension on TranslationsMs {
 			'universalMedia.favoriteSaved' => 'Stream favorit disimpan ke profil ini',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} masuk senarai main yang tidak disokong atau tidak selamat.', ), 
 			'universalMedia.playlistAddress' => 'Alamat Playlist',
-			'universalMedia.playlistAddressHelp' => 'Buka senarai m3U, M3U8, atau PLS daripada alamat web. pautan siaran langsung tidak menyimpan senarai main.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Buka senarai m3U, M3U8, atau PLS daripada alamat web. pautan siaran langsung tidak menyimpan senarai main.',
 			'universalMedia.choosePlaylist' => 'Pilih fail playlist',
 			'universalMedia.openPlaylist' => 'Senarai Permainan Terbuka',
 			'universalMedia.playlistFormatsHelp' => 'Senarai main boleh mengandungi sehingga 1,000 item dan 2 MB. HLS terbuka sebagai aliran supaya pemain boleh memilih kualiti.',
@@ -8992,9 +8994,9 @@ extension on TranslationsMs {
 			'sourceSetup.apiKey' => 'Kunci API',
 			'sourceSetup.optionalUsername' => 'Nama pengguna akaun (pilihan)',
 			'sourceSetup.optionalPassword' => 'Kata laluan akaun (pilihan)',
-			'sourceSetup.subtitlePrivacy' => 'Dapatkan kunci API daripada opensubtitles.com. Carian menghantar tajuk video dan ID IMDb/TMDB yang tersedia, bukan fail video sama sekali. Kunci dan bukti kelayakan akaun pilihan disulitkan bersama sumber ini.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'Dapatkan kunci API daripada opensubtitles.com. Carian menghantar tajuk video dan ID IMDb/TMDB yang tersedia, bukan fail video sama sekali. Kunci dan bukti kelayakan akaun pilihan disulitkan bersama sumber ini.',
 			'sourceSetup.automaticMetadata' => 'Metadata video dalam talian automatik',
 			'sourceSetup.metadataPrivacy' => 'Hanya menghantar tajuk/tahun daripada nama fail dan nombor episod atau ID NFO; tidak sekali-kali menghantar media atau bukti kelayakan. Medan NFO kekal sebagai rujukan utama.',
 			'sourceSetup.nfsEncryptionFailure' => 'Untuk NFS disulitkan, semak sokongan RFC 9289 dan TLS 1.3 pada kedua-dua perkhidmatan NAS, nama sijil dan UID/GID perkongsian. Pleazyng tidak akan mencuba semula sambungan ini tanpa penyulitan.',

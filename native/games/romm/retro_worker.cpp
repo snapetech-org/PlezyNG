@@ -37,7 +37,11 @@ int RommWorkerMain(BytePipe::Handle channel) {
         switch (command) {
           case Command::Probe: {
             Check(!opened && sequence == 1);
-            const auto core = reader.Text();
+            auto core = reader.Text();
+#ifdef PLEZY_RETRO_APPLE_EXTENSION
+            Check(std::filesystem::path(core).filename() == std::filesystem::path(inputs::core).filename());
+            core = inputs::core;
+#endif
             reader.End();
             RestrictCore(core, "", "", "");
             U32(reply, plezy_retro_has_core(core.c_str()));
@@ -45,7 +49,12 @@ int RommWorkerMain(BytePipe::Handle channel) {
           }
           case Command::Open: {
             Check(!opened && sequence == 1);
-            const auto core = reader.Text(), rom = reader.Text(), system = reader.Text(), saves = reader.Text();
+            auto core = reader.Text();
+            const auto rom = reader.Text(), system = reader.Text(), saves = reader.Text();
+#ifdef PLEZY_RETRO_APPLE_EXTENSION
+            Check(std::filesystem::path(core).filename() == std::filesystem::path(inputs::core).filename());
+            core = inputs::core;
+#endif
             reader.End();
             Check(!core.empty() && !rom.empty() && !system.empty() && !saves.empty());
             RestrictCore(core, rom, system, saves);
@@ -155,7 +164,7 @@ int RommWorkerMain(BytePipe::Handle channel) {
     std::_Exit(2);
   }
 }
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) && !defined(PLEZY_RETRO_APPLE_EXTENSION)
 int main(int argc, char** argv) {
   try {
     Check(argc == 3 && std::string(argv[1]) == "--plezy-retro-pipe");

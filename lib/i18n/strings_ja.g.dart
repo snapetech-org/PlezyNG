@@ -640,6 +640,7 @@ class _Translations$settings$ja extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision プロファイル 8.1 へのインライン RPU 変換を強制します';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision の RPU/EL レイヤーを削除し、通常の HEVC として扱います';
 	@override String get experimentalDolbyVision => '実験的なDolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Dolby Vision/FEL を自動で試し、利用できない場合は互換性のある再生に切り替えます。既定でオンです。実際の出力はデバイスによって異なります。';
 	@override String get dvCompatibilityFallback => '互換性フォールバック';
 	@override String get dvCompatibilityFallbackDescription => '実験を開始できない場合は標準レンダラーを使用します。FELデータが失われる可能性があります。';
 	@override String get dvExperimentDiagnostics => '動画実験のログ記録';
@@ -5919,6 +5920,7 @@ extension on TranslationsJa {
 			'settings.dvConversionDv81Description' => 'Dolby Vision プロファイル 8.1 へのインライン RPU 変換を強制します',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision の RPU/EL レイヤーを削除し、通常の HEVC として扱います',
 			'settings.experimentalDolbyVision' => '実験的なDolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Dolby Vision/FEL を自動で試し、利用できない場合は互換性のある再生に切り替えます。既定でオンです。実際の出力はデバイスによって異なります。',
 			'settings.dvCompatibilityFallback' => '互換性フォールバック',
 			'settings.dvCompatibilityFallbackDescription' => '実験を開始できない場合は標準レンダラーを使用します。FELデータが失われる可能性があります。',
 			'settings.dvExperimentDiagnostics' => '動画実験のログ記録',
@@ -5928,9 +5930,9 @@ extension on TranslationsJa {
 			'settings.hdrSdrConversion' => 'HDRからSDRへの変換',
 			'settings.hdrSdrConversionDescription' => 'ディスプレイがHDRを表示できないときに、HDR映像を何で変換するかを選択します。',
 			'settings.hdrSdrConversionAuto' => '自動',
-			'settings.hdrSdrConversionAutoDescription' => 'Android 9以降はデバイス、それより前のバージョンではプレーヤー',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Android 9以降はデバイス、それより前のバージョンではプレーヤー',
 			'settings.hdrSdrConversionDevice' => 'デバイス',
 			'settings.hdrSdrConversionDeviceDescription' => 'デバイスの映像ハードウェアで変換します。最も高速ですが、色はデバイスによって異なります',
 			'settings.hdrSdrConversionPlayer' => 'プレーヤー',
@@ -6442,9 +6444,9 @@ extension on TranslationsJa {
 			'videoControls.segmentLoop' => 'セグメントループ',
 			'videoControls.addBookmark' => 'ブックマーク追加',
 			'videoControls.bookmarkName' => 'Bookmark 名称',
-			'videoControls.bookmarkNameHint' => 'たとえば、オープンシーン。',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'たとえば、オープンシーン。',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'ブックマーク ${n}',
 			'videoControls.bookmarkNameRequired' => 'このブックマークの名前を入力します。',
 			'videoControls.deleteBookmark' => 'ブックマーク削除',
@@ -6956,9 +6958,9 @@ extension on TranslationsJa {
 			'libraries.libraryOptions' => 'ライブラリオプション',
 			'libraries.content' => 'ライブラリコンテンツ',
 			'libraries.selectLibrary' => 'ライブラリを選択',
-			'libraries.filtersWithCount' => ({required Object count}) => 'フィルター (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'フィルター (${count})',
 			'libraries.noRecommendations' => 'おすすめがありません',
 			'libraries.noCollections' => 'このライブラリにコレクションがありません',
 			'libraries.noFoldersFound' => 'フォルダが見つかりません',
@@ -7470,9 +7472,9 @@ extension on TranslationsJa {
 			'watchTogether.noCodeInClipboard' => 'クリップボードにルームコードがありません',
 			'watchTogether.copyCode' => 'コードをコピー',
 			'watchTogether.codeCopied' => 'ルームコードをコピーしました',
-			'watchTogether.shareInvite' => '招待を共有',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => '招待を共有',
 			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Plezyの「一緒に見る」ルームに参加しませんか？「一緒に見る」を開いて「ルームに参加」を選び、${code}を入力してください。',
 			'watchTogether.openSessionControls' => '「一緒に見る」セッションのコントロールを開く',
@@ -7984,9 +7986,9 @@ extension on TranslationsJa {
 			'metadataEdit.enterImageUrl' => '画像URLを入力',
 			'metadataEdit.imageUrl' => '画像URL',
 			'metadataEdit.metadataUpdated' => 'メタデータを更新しました',
-			'metadataEdit.metadataUpdateFailed' => 'メタデータの更新に失敗しました',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'メタデータの更新に失敗しました',
 			'metadataEdit.artworkUpdated' => 'アートワークを更新しました',
 			'metadataEdit.artworkUpdateFailed' => 'アートワークの更新に失敗しました',
 			'metadataEdit.noArtworkAvailable' => 'アートワークがありません',
@@ -8498,9 +8500,9 @@ extension on TranslationsJa {
 			'universalMedia.favoriteSaved' => 'ストリーム お気に入り このプロフィールに保存',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${count} 未サポートまたは不安全なプレイリストの入力。', other: '${count} 未サポートまたは不安全なプレイリストのエントリーを削除しました。', ), 
 			'universalMedia.playlistAddress' => 'Playlist アドレス',
-			'universalMedia.playlistAddressHelp' => 'ウェブアドレスから M3U、M3U8 または PLS プレーリストを開きます。',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'ウェブアドレスから M3U、M3U8 または PLS プレーリストを開きます。',
 			'universalMedia.choosePlaylist' => 'プレイリストファイルを選択',
 			'universalMedia.openPlaylist' => 'オープンプレイリスト',
 			'universalMedia.playlistFormatsHelp' => 'プレイリストには最大1000項目と2MBが含まれます HLSはストリームとして開きますので、プレイヤーは品質を選択できます。',
@@ -9012,9 +9014,9 @@ extension on TranslationsJa {
 			'sourceSetup.apiKey' => 'API キー',
 			'sourceSetup.optionalUsername' => 'アカウントのユーザー名（任意）',
 			'sourceSetup.optionalPassword' => 'アカウントのパスワード（任意）',
-			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com から API キーを取得してください。検索では動画のタイトルと利用可能な IMDb/TMDB ID を送信しますが、動画ファイルは一切送信しません。キーと任意のアカウント認証情報は、このソースとともに暗号化して保存されます。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com から API キーを取得してください。検索では動画のタイトルと利用可能な IMDb/TMDB ID を送信しますが、動画ファイルは一切送信しません。キーと任意のアカウント認証情報は、このソースとともに暗号化して保存されます。',
 			'sourceSetup.automaticMetadata' => '動画のオンラインメタデータを自動取得',
 			'sourceSetup.metadataPrivacy' => '送信するのはファイル名のタイトル・年・エピソード番号、または NFO ID のみです。メディアや認証情報は一切送信しません。NFO の項目が常に優先されます。',
 			'sourceSetup.nfsEncryptionFailure' => '暗号化された NFS では、NAS の両サービスが RFC 9289 と TLS 1.3 に対応しているか、証明書の名前とエクスポートの UID/GID が正しいかを確認してください。Pleazyng が暗号化なしでこの接続を再試行することはありません。',

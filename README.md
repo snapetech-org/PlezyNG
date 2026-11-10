@@ -135,9 +135,10 @@ Pleazyng has developed genuine Profile 7 FEL reconstruction alongside native and
 compatibility playback. The isolated Linux engine has rendered the FEL mark in a
 real P7 sample through standalone mpv and embedded libmpv; full app playback and
 independent reference-pixel accuracy still need qualification. Linux users can
-opt in under **Settings → Playback**, with a separate compatibility fallback and
-video experiment logging switch. Implemented experiments ship in normal
-compatible builds and are off by default; a separate app build is not required.
+use automatic DV/FEL routing by default under **Settings → Playback**, with an
+explicit Off override, compatibility fallback and optional diagnostic logging.
+Implemented paths ship in normal compatible builds; a separate app build is not
+required.
 
 An experimental Android AAR now passes a synthetic FEL-on versus explicit
 EL-dropped pixel comparison through mpv's real `gpu-next` Surface output on an
@@ -468,7 +469,7 @@ This list covers the current Pleazyng codebase, including additions since the fo
 ### Experimental playback and workspace
 
 - **Neural motion processing:** opt-in desktop PME, Android LiteRT/QNN and Apple paths, on-demand verified model packs with progress, live Performance/Balanced/Quality switching where supported, capability diagnostics and smoothing/normal-playback fallbacks. Real-time device and presentation qualification remains separate; see [motion processing](docs/plezyng/motion-processing.md).
-- **Dolby Vision FEL:** Linux reconstruction engine, Android synthetic experiment, Apple dual-layer host and offline FEL-to-HDR/SDR pipeline. Implemented paths are included in normal compatible builds with persisted Settings opt-in, off by default. Platform/display qualification remains separate; see [Dolby Vision experiments](#dolby-vision-experiments).
+- **Dolby Vision FEL:** Linux reconstruction engine, Android synthetic experiment, Apple dual-layer host and offline FEL-to-HDR/SDR pipeline. Implemented paths are included in normal compatible builds and requested automatically by default, with compatibility fallback and a persisted Off override. Platform/display qualification remains separate; see [Dolby Vision experiments](#dolby-vision-experiments).
 - **Multiview:** app-owned floating/side-by-side media workspace with session tray, move/resize/return controls, separate audio/input ownership and capability-gated video, reading, music and Steam surfaces. Concurrent decoding, native composition and platform/device acceptance remain open; desktop detached windows are unfinished. See the [workspace delivery record](docs/plezyng/multiview/DELIVERY.md).
 - Native preset visualization has its own [runtime requirements](docs/plezyng/visualizations/USER_GUIDE.md); provider-gated lending, Watchmode availability and the Apple MusicKit pilot retain their separate activation requirements. The optional full Discord client remains a deferred design.
 
@@ -613,7 +614,7 @@ lacks music, subtitles, recommendations or file playback in general.
 | [Live caption/transcript capture and search](docs/plezyng/subtitles/LIVE_CAPTURE.md) | **—** | **—** | **Partial**<br>*(native capture/backend support required; webOS needs supplied audio)* |
 | [Motion & clarity presets, blending and motion-compensated frame generation](docs/plezyng/motion-clarity/guide.md) | **—**<br>*(TV/driver processing is external)* | **—** | **Yes on compatible MPV paths**<br>*(platform limits apply)* |
 | [Neural / NPU motion processing](docs/plezyng/motion-processing.md) | **—** | **—** | **Experimental**<br>*(included on compatible platforms; Settings opt-in, off by default)* |
-| [Dolby Vision Profile 7 FEL reconstruction experiments](docs/maintainers/dv-platform-buildout.md) | **Native DV playback is not a general FEL reconstruction control** | **—** | **Experimental**<br>*(normal compatible builds; Settings opt-in, off by default)* |
+| [Dolby Vision Profile 7 FEL reconstruction experiments](docs/maintainers/dv-platform-buildout.md) | **Native DV playback is not a general FEL reconstruction control** | **—** | **Experimental**<br>*(normal compatible builds; automatic by default with compatibility fallback)* |
 | [Offline FEL-to-HDR/SDR processing tools](docs/maintainers/dv-platform-buildout.md) | **—** | **—** | **Experimental**<br>*(packaged compatible tools; output qualification remains separate)* |
 | [Importable projectM/MilkRust visualizer preset packs](docs/plezyng/visualizations/USER_GUIDE.md) | **Built-in Plexamp visuals, not this preset-pack workflow** | **—** | **Experimental**<br>*(native engine/PCM/runtime requirements apply)* |
 | [Embedded GameStream/Moonlight game receiver](docs/games/ARCHITECTURE.md) | **Plex Arcade retired**<br>*(not a GameStream client)* | **—** | **Experimental**<br>*(Android and compatible hosts)* |
@@ -665,7 +666,7 @@ remote streaming, Downloads, DVR and server analysis. Neither client grants
 Plex Pass or replaces server hardware transcoding. Provider-gated
 [OverDrive lending](docs/LENDING_SETUP.md), [Watchmode/MusicKit pilots](docs/plezyng/service-integrations/README.md)
 and the [deferred full Discord client](docs/plezyng/discord/DELIVERY.md) are not
-counted as generally available features. Runtime experiments remain opt-in;
+counted as generally available features. Dolby Vision/FEL routing is automatic by default with compatibility fallback; neural motion processing remains opt-in;
 see the linked qualification records before assuming a particular device works.
 
 ## pleazyng:// links

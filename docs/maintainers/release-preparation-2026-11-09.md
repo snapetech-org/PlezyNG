@@ -87,8 +87,9 @@ paths and their existing adapter tests.
 - Use compatible hosted runners in the hybrid profile, including Apple.
   Storage-heavy webOS remains private JIT; inspect its compatible live capacity
   without interrupting active guests. CodeQL execution remains disabled.
-- Preserve the default-off experimental runtime controls and all corresponding
-  native components. Source tests do not claim device or provider qualification.
+- Enable automatic DV/FEL routing and compatibility fallback by default, preserve
+  explicit runtime overrides, and include all corresponding native components.
+  Neural motion processing remains off by default. Source tests do not claim device or provider qualification.
 - Keep GitHub core publication separate from channel/store delivery retries.
   Existing AUR/COPR delivery runs use immutable published artifacts and do not
   justify another all-platform build.

@@ -31,6 +31,8 @@ import 'stat_chip.dart';
 /// Why the sheet closed itself; a caller surfaces it on its own scaffold
 /// since the sheet is unmounting.
 enum SeerrRequestSheetClose {
+  submitted,
+
   /// The signed-in user lost permission to request this kind while open.
   permissionRevoked,
 }
@@ -47,6 +49,7 @@ Future<void> showSeerrRequestSheet(
   bool minimal = false,
   int? seasonNumber,
   bool prefer4k = false,
+  VoidCallback? onSubmitted,
 }) async {
   final close = await OverlaySheetController.showAdaptive<SeerrRequestSheetClose>(
     context,
@@ -65,6 +68,7 @@ Future<void> showSeerrRequestSheet(
   if (close == SeerrRequestSheetClose.permissionRevoked && context.mounted) {
     showErrorSnackBar(context, t.seerr.permissionRevoked);
   }
+  if (close == SeerrRequestSheetClose.submitted && context.mounted) onSubmitted?.call();
 }
 
 /// The full Seerr request flow, mirroring the web UI: per-season selection
@@ -558,7 +562,7 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
       if (!mounted || !_connected) return;
       // The sheet may be hosted by an OverlaySheetHost (no route of its own),
       // so a bare Navigator.pop would pop the screen underneath instead.
-      OverlaySheetController.closeAdaptive(context);
+      OverlaySheetController.closeAdaptive(context, SeerrRequestSheetClose.submitted);
       showSuccessSnackBar(context, t.seerr.requestSubmitted);
       return;
     } on SeerrApiException catch (e) {

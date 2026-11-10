@@ -550,7 +550,7 @@
     "dvConversionDv81Description": "Kuasa dalam rangkaian RPU penukaran kepada Dolby Vision profil 8.1",
     "dvConversionHevcStripDescription": "Strip Dolby Vision lapisan RPU/EL dan rata semasa HEVC",
     "experimentalDolbyVision": "Dolby Vision eksperimen",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Mencuba Dolby Vision/FEL secara automatik dan beralih kepada main balik serasi jika tidak tersedia. Dihidupkan secara lalai; output sebenar bergantung pada peranti.",
     "dvCompatibilityFallback": "Pilihan sandaran keserasian",
     "dvCompatibilityFallbackDescription": "Gunakan pemapar standard jika eksperimen tidak dapat dimulakan. Data FEL mungkin hilang.",
     "dvExperimentDiagnostics": "Pengelogan eksperimen video",

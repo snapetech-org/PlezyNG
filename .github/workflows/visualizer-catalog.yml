@@ -62,3 +62,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/visualizer/publish_catalog.py publish
+
+  verify-published-catalog:
+    needs: publish
+    permissions:
+      contents: read
+    uses: ./.github/workflows/visualizer-keyless-validation.yml

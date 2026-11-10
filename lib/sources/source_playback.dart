@@ -696,6 +696,8 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     SourceEntry item,
     List<PublicationFile> selected, {
     PublicationMode? playbackMode,
+    bool onlyIfIdle = false,
+    bool Function()? isStartCurrent,
     Map<String, Uri> localOverrides = const {},
     Map<String, Map<String, String>> localOverrideHeaders = const {},
     bool persistProgress = true,
@@ -707,7 +709,9 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     Map<String, String> directPlayerAddresses = const {},
     Map<String, String> localPlayerOptions = const {},
   }) => _serialize(() async {
+    if ((onlyIfIdle && active) || !(isStartCurrent?.call() ?? true)) return;
     await _stop();
+    if (!(isStartCurrent?.call() ?? true)) return;
     try {
       sources.requireSession();
       if (selected.isEmpty) {
@@ -850,7 +854,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       smartRewind = settings['smartRewind'] as bool? ?? true;
       backwardSeconds = (sourceInt(settings['backwardSeconds']) ?? 15).clamp(5, 120);
       forwardSeconds = (sourceInt(settings['forwardSeconds']) ?? 30).clamp(5, 120);
-      if (!_valid) {
+      if (!_valid || !(isStartCurrent?.call() ?? true)) {
         await _stop();
         return;
       }
@@ -1042,7 +1046,11 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
           );
         }),
       );
-      await _openFile(_fileIndex, localPosition);
+      await _openFile(_fileIndex, localPosition, isLaunchCurrent: isStartCurrent);
+      if (!(isStartCurrent?.call() ?? true)) {
+        await _stop();
+        return;
+      }
       _saveTimer = Timer.periodic(const Duration(seconds: 5), (_) {
         if (_valid && active && failure == null && !opening) {
           unawaited(_persist());
@@ -2215,8 +2223,8 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     return _queueOrder.isEmpty ? 0 : _queueOrder.last;
   }
 
-  Future<void> _openFile(int index, int localPosition, {bool play = true}) async {
-    if (!_valid || player == null) {
+  Future<void> _openFile(int index, int localPosition, {bool play = true, bool Function()? isLaunchCurrent}) async {
+    if (!_valid || player == null || !(isLaunchCurrent?.call() ?? true)) {
       return;
     }
     _subtitleMuteGeneration += 1;
@@ -2272,7 +2280,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       uri = resolvedUri;
       mediaAddress = resolvedUri.toString();
     }
-    if (!_valid || player != native) {
+    if (!_valid || player != native || !(isLaunchCurrent?.call() ?? true)) {
       return;
     }
     if (uri != null &&
@@ -2287,6 +2295,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     for (final option in _localPlayerOptions.entries) {
       await native.setProperty('file-local-options/${option.key}', option.value);
     }
+    if (!_valid || player != native || !(isLaunchCurrent?.call() ?? true)) return;
     await native.open(
       Media(mediaAddress, start: Duration(milliseconds: math.max(0, localPosition))),
       play: play && automotivePlaybackAllowedNow(),

@@ -49,6 +49,10 @@ import 'package:plezy/services/multi_server_manager.dart';
 import 'package:plezy/services/plex_api_cache.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/services/catalog/catalog_source.dart';
+import 'package:plezy/services/catalog/seerr_catalog_source.dart';
+import 'package:plezy/services/seerr/seerr_client.dart';
+import 'package:plezy/services/seerr/seerr_constants.dart';
+import 'package:plezy/models/seerr/seerr_session.dart';
 import 'package:plezy/utils/deletion_notifier.dart';
 import 'package:plezy/utils/formatters.dart';
 import 'package:plezy/utils/external_ids.dart';
@@ -1717,6 +1721,112 @@ void main() {
       expect(find.text(t.explore.removedFromWatchlist), findsOneWidget);
     });
   });
+
+  testWidgets('library menu keeps a 4K request and its alert switch separate', (tester) async {
+    var alertDeletes = 0;
+    final client = SeerrClient(
+      const SeerrSession(
+        baseUrl: 'https://seerr.example.com',
+        method: SeerrAuthMethod.local,
+        identifier: 'alice',
+        secret: 'pw',
+        cookie: 'session',
+        userId: 1,
+        permissions: SeerrPermission.request4kMovie,
+        displayName: 'Alice',
+        instanceLabel: 'Seerr',
+        createdAt: 0,
+      ),
+      onSessionInvalidated: () {},
+      httpClient: MockClient((request) async {
+        if (request.url.path == '/api/v1/request/intent/state') {
+          return jsonResponse({
+            'items': [
+              {
+                'mediaType': 'movie',
+                'tmdbId': 603,
+                'status': 5,
+                'status4k': 1,
+                'standard': {'own': null, 'other': null},
+                'fourK': {'own': null, 'other': null},
+                'canRequest': false,
+                'canRequest4k': true,
+                'subscribed': true,
+                'subscriptionScope': {'is4k': false, 'seasonNumber': null},
+                'seasons': <Object>[],
+              },
+            ],
+          });
+        }
+        if (request.method == 'DELETE' && request.url.path == '/api/v1/user/1/availability-subscriptions/movie/603') {
+          alertDeletes++;
+          return jsonResponse({});
+        }
+        fail('Unexpected Seerr request: ${request.method} ${request.url.path}');
+      }),
+    );
+    addTearDown(client.dispose);
+    final source = SeerrCatalogSource(client);
+    final harness = await _pumpWatchlistMenu(tester, sources: const [], guids: ['tmdb://603'], seerr: source);
+
+    harness.menuKey.currentState!.showContextMenu(tester.element(find.text('watchlist target')));
+    await tester.pumpAndSettle();
+
+    expect(find.text(t.seerr.request4k), findsOneWidget);
+    expect(find.text(t.seerr.turnOffAlert), findsOneWidget);
+    expect(find.text(t.seerr.statusRequested), findsNothing);
+    await tester.tap(find.text(t.seerr.turnOffAlert));
+    await tester.pumpAndSettle();
+    expect(alertDeletes, 1);
+  });
+
+  testWidgets('plain Seerr library menu offers 4K through standard title detail', (tester) async {
+    var detailReads = 0;
+    final client = SeerrClient(
+      const SeerrSession(
+        baseUrl: 'https://seerr.example.com',
+        method: SeerrAuthMethod.local,
+        identifier: 'alice',
+        secret: 'pw',
+        cookie: 'session',
+        userId: 1,
+        permissions: SeerrPermission.request4kMovie,
+        displayName: 'Alice',
+        instanceLabel: 'Seerr',
+        createdAt: 0,
+      ),
+      onSessionInvalidated: () {},
+      httpClient: MockClient((request) async {
+        if (request.url.path == '/api/v1/request/intent/state') return http.Response('not found', 404);
+        if (request.url.path == '/api/v1/movie/603') {
+          detailReads++;
+          return jsonResponse({
+            'id': 603,
+            'mediaInfo': {'status': 5, 'status4k': 1, 'requests': <Object>[]},
+          });
+        }
+        if (request.url.path == '/api/v1/settings/public') {
+          return jsonResponse({'movie4kEnabled': true, 'mediaServerType': 1});
+        }
+        fail('Unexpected Seerr request: ${request.method} ${request.url.path}');
+      }),
+    );
+    addTearDown(client.dispose);
+    final harness = await _pumpWatchlistMenu(
+      tester,
+      sources: const [],
+      guids: ['tmdb://603'],
+      seerr: SeerrCatalogSource(client),
+    );
+    expect(detailReads, 0);
+
+    harness.menuKey.currentState!.showContextMenu(tester.element(find.text('watchlist target')));
+    await tester.pumpAndSettle();
+
+    expect(detailReads, 1);
+    expect(find.text(t.seerr.request4k), findsOneWidget);
+    expect(find.text(t.seerr.turnOffAlert), findsNothing);
+  });
 }
 
 Future<GlobalKey<MediaContextMenuState>> _pumpPlexMovieMenu(
@@ -2337,12 +2447,16 @@ class _MenuWatchlistSource implements CatalogSource {
 }
 
 class _WatchlistSourcesProvider extends CatalogSourcesProvider {
-  _WatchlistSourcesProvider(this.sources);
+  _WatchlistSourcesProvider(this.sources, {this.seerr});
 
   final List<CatalogSource> sources;
+  final SeerrCatalogSource? seerr;
 
   @override
   List<CatalogSource> get connectedSources => sources;
+
+  @override
+  SeerrCatalogSource? get seerrSource => seerr;
 }
 
 class _SeedIdsClient implements MediaServerClient {
@@ -2361,7 +2475,12 @@ class _SeedIdsClient implements MediaServerClient {
 /// sources. The Plex MockClient answers the external-id metadata fetch with
 /// [guids] (empty: the item carries no external ids).
 Future<({GlobalKey<MediaContextMenuState> menuKey, MediaItem item, CatalogSourcesProvider catalogSources})>
-_pumpWatchlistMenu(WidgetTester tester, {required List<CatalogSource> sources, List<String> guids = const []}) async {
+_pumpWatchlistMenu(
+  WidgetTester tester, {
+  required List<CatalogSource> sources,
+  List<String> guids = const [],
+  SeerrCatalogSource? seerr,
+}) async {
   LocaleSettings.setLocaleSync(AppLocale.en);
   TvDetectionService.debugSetAppleTVOverride(true);
   addTearDown(() => TvDetectionService.debugSetAppleTVOverride(null));
@@ -2394,7 +2513,7 @@ _pumpWatchlistMenu(WidgetTester tester, {required List<CatalogSource> sources, L
   final manager = MultiServerManager()..debugRegisterClientForTesting(client);
   final multiServerProvider = testMultiServerProvider(manager);
   final offlineMode = OfflineModeProvider(manager);
-  final catalogSources = _WatchlistSourcesProvider(sources);
+  final catalogSources = _WatchlistSourcesProvider(sources, seerr: seerr);
   final stack = await ProfileStack.create(db: db, withStorage: false);
   addTearDown(() async {
     await stack.dispose();

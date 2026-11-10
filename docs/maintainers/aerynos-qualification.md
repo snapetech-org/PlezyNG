@@ -3,6 +3,10 @@
 **Result: package build and installation pass; video playback fails.** Do not
 advertise this candidate as a qualified aerynOS release.
 
+This record describes immutable v3.0.7, including its historical Off default.
+Subsequent source builds enable automatic DV/FEL by default with compatibility
+fallback; that directive does not change the tested release bytes below.
+
 ## Tested inputs
 
 - Pleazyng `v3.0.7` x64 release archive, SHA-256

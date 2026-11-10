@@ -552,7 +552,7 @@
     "dvConversionDv81Description": "Dolby Vision profile 8.1 форматына түрлендіру",
     "dvConversionHevcStripDescription": "Dolby Vision қабаттарын алып тастап, HEVC ретінде көрсету",
     "experimentalDolbyVision": "Тәжірибелік Dolby Vision",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Dolby Vision/FEL автоматты түрде сыналады, қолжетімсіз болса, үйлесімді ойнатуға ауысады. Әдепкіде қосулы; нақты шығыс құрылғыға байланысты.",
     "dvCompatibilityFallback": "Үйлесімді қосалқы режим",
     "dvCompatibilityFallbackDescription": "Тәжірибе басталмаса, стандартты рендерерді пайдалану. FEL деректері жоғалуы мүмкін.",
     "dvExperimentDiagnostics": "Бейне тәжірибесін журналға жазу",

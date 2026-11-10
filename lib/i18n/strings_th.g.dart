@@ -640,6 +640,7 @@ class _Translations$settings$th extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'แปลง RPU ในร่องรัดไป Dolby Vision โปรไฟล์ 8.1';
 	@override String get dvConversionHevcStripDescription => 'เกรด Dolby Vision ชั้น RPU/EL และแบนปัจจุบัน HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision แบบทดลอง';
+	@override String get experimentalDolbyVisionDescription => 'ลองใช้ Dolby Vision/FEL โดยอัตโนมัติ และเปลี่ยนไปใช้การเล่นที่เข้ากันได้เมื่อไม่พร้อมใช้งาน เปิดไว้ตามค่าเริ่มต้น ผลลัพธ์จริงขึ้นอยู่กับอุปกรณ์';
 	@override String get dvCompatibilityFallback => 'ทางเลือกเพื่อความเข้ากันได้';
 	@override String get dvCompatibilityFallbackDescription => 'ใช้ตัวเรนเดอร์มาตรฐานหากเริ่มการทดลองไม่ได้ ข้อมูล FEL อาจสูญหาย';
 	@override String get dvExperimentDiagnostics => 'บันทึกการทดลองวิดีโอ';
@@ -5899,6 +5900,7 @@ extension on TranslationsTh {
 			'settings.dvConversionDv81Description' => 'แปลง RPU ในร่องรัดไป Dolby Vision โปรไฟล์ 8.1',
 			'settings.dvConversionHevcStripDescription' => 'เกรด Dolby Vision ชั้น RPU/EL และแบนปัจจุบัน HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision แบบทดลอง',
+			'settings.experimentalDolbyVisionDescription' => 'ลองใช้ Dolby Vision/FEL โดยอัตโนมัติ และเปลี่ยนไปใช้การเล่นที่เข้ากันได้เมื่อไม่พร้อมใช้งาน เปิดไว้ตามค่าเริ่มต้น ผลลัพธ์จริงขึ้นอยู่กับอุปกรณ์',
 			'settings.dvCompatibilityFallback' => 'ทางเลือกเพื่อความเข้ากันได้',
 			'settings.dvCompatibilityFallbackDescription' => 'ใช้ตัวเรนเดอร์มาตรฐานหากเริ่มการทดลองไม่ได้ ข้อมูล FEL อาจสูญหาย',
 			'settings.dvExperimentDiagnostics' => 'บันทึกการทดลองวิดีโอ',
@@ -5908,9 +5910,9 @@ extension on TranslationsTh {
 			'settings.hdrSdrConversion' => 'การแปลง HDR ไปยัง SDR',
 			'settings.hdrSdrConversionDescription' => 'เลือกสิ่งที่แปลงวิดีโอ HDR เมื่อหน้าจอไม่สามารถแสดง HDR',
 			'settings.hdrSdrConversionAuto' => 'อัตโนมัติ',
-			'settings.hdrSdrConversionAutoDescription' => 'อุปกรณ์บน Android 9 และภายหลังผู้เล่นบนรุ่นเก่า',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'อุปกรณ์บน Android 9 และภายหลังผู้เล่นบนรุ่นเก่า',
 			'settings.hdrSdrConversionDevice' => 'อุปกรณ์',
 			'settings.hdrSdrConversionDeviceDescription' => 'อุปกรณ์วิดีโอฮาร์ดแวร์จะแปลงได้เร็วที่สุด แต่สีขึ้นอยู่กับอุปกรณ์',
 			'settings.hdrSdrConversionPlayer' => 'ตัวเล่น',
@@ -6422,9 +6424,9 @@ extension on TranslationsTh {
 			'videoControls.segmentLoop' => 'ชิ้นส่วน',
 			'videoControls.addBookmark' => 'เพิ่ม Bookmark',
 			'videoControls.bookmarkName' => 'ชื่อ Bookmark',
-			'videoControls.bookmarkNameHint' => 'ตัวอย่างเช่น ฉากเปิด',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'ตัวอย่างเช่น ฉากเปิด',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'บัญชี ${n}',
 			'videoControls.bookmarkNameRequired' => 'ใส่ชื่อสําหรับจดหมายนี้',
 			'videoControls.deleteBookmark' => 'ลบหนังสือพิมพ์',
@@ -6936,9 +6938,9 @@ extension on TranslationsTh {
 			'libraries.libraryOptions' => 'ตัวเลือกห้องสมุด',
 			'libraries.content' => 'วัสดุห้องสมุด',
 			'libraries.selectLibrary' => 'เลือกห้องสมุด',
-			'libraries.filtersWithCount' => ({required Object count}) => 'ตัวกรอง (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'ตัวกรอง (${count})',
 			'libraries.noRecommendations' => 'ไม่มีคําแนะนําที่มีอยู่',
 			'libraries.noCollections' => 'ไม่มีคอลเลกชันในห้องสมุดนี้',
 			'libraries.noFoldersFound' => 'ไม่พบโฟลเดอร์',
@@ -7450,9 +7452,9 @@ extension on TranslationsTh {
 			'watchTogether.noCodeInClipboard' => 'แผ่นคลิปไม่ได้มีรหัสห้อง',
 			'watchTogether.copyCode' => 'รหัสคัดลอก',
 			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
-			'watchTogether.shareInvite' => 'คู่มือ',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'คู่มือ',
 			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'เข้าร่วมห้องของ Watch Together ที่ Pleazyng: เปิดห้องของ Watch Together, เลือกห้องของ Join และเข้าสู่ระบบ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch ร่วมกันเซสชันควบคุม',
@@ -7964,9 +7966,9 @@ extension on TranslationsTh {
 			'metadataEdit.enterImageUrl' => 'หมายเลข URL',
 			'metadataEdit.imageUrl' => 'ภาพ URL',
 			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
-			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
 			'metadataEdit.artworkUpdated' => 'อัพเดทศิลปะ',
 			'metadataEdit.artworkUpdateFailed' => 'ไม่สามารถปรับปรุงงานศิลปะได้',
 			'metadataEdit.noArtworkAvailable' => 'ไม่มีงานศิลปะ',
@@ -8478,9 +8480,9 @@ extension on TranslationsTh {
 			'universalMedia.favoriteSaved' => 'Stream Favorite ที่บันทึกไว้ในโปรไฟล์นี้',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} เข้าสู่ระบบรายการเล่นที่ไม่ได้สนับสนุนหรือไม่ปลอดภัย', ), 
 			'universalMedia.playlistAddress' => 'ที่อยู่ Playlist',
-			'universalMedia.playlistAddressHelp' => 'เปิดรายการเล่น M3U, M3u8 หรือ PLS จากที่อยู่อาศัยเว็บ เชื่อมโยง Stream Direct ไม่บันทึกรายการเล่น',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'เปิดรายการเล่น M3U, M3u8 หรือ PLS จากที่อยู่อาศัยเว็บ เชื่อมโยง Stream Direct ไม่บันทึกรายการเล่น',
 			'universalMedia.choosePlaylist' => 'เลือกไฟล์ Playlist',
 			'universalMedia.openPlaylist' => 'รายการเล่นเปิด',
 			'universalMedia.playlistFormatsHelp' => 'รายการการเล่นสามารถมีรายการสูงสุด 1,000 และ 2 MB HLS จะเปิดเป็น Streams เพื่อให้ผู้เล่นสามารถเลือกคุณภาพ',
@@ -8992,9 +8994,9 @@ extension on TranslationsTh {
 			'sourceSetup.apiKey' => 'คีย์ API',
 			'sourceSetup.optionalUsername' => 'ชื่อผู้ใช้ของบัญชี (ไม่บังคับ)',
 			'sourceSetup.optionalPassword' => 'รหัสผ่านบัญชี (ไม่บังคับ)',
-			'sourceSetup.subtitlePrivacy' => 'รับคีย์ API จาก opensubtitles.com การค้นหาจะส่งชื่อวิดีโอและ ID ของ IMDb/TMDB ที่มี แต่จะไม่ส่งไฟล์วิดีโอ คีย์และข้อมูลรับรองบัญชีที่ระบุเพิ่มเติมจะเข้ารหัสพร้อมกับแหล่งข้อมูลนี้',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'รับคีย์ API จาก opensubtitles.com การค้นหาจะส่งชื่อวิดีโอและ ID ของ IMDb/TMDB ที่มี แต่จะไม่ส่งไฟล์วิดีโอ คีย์และข้อมูลรับรองบัญชีที่ระบุเพิ่มเติมจะเข้ารหัสพร้อมกับแหล่งข้อมูลนี้',
 			'sourceSetup.automaticMetadata' => 'ข้อมูลกำกับวิดีโอออนไลน์อัตโนมัติ',
 			'sourceSetup.metadataPrivacy' => 'ส่งเฉพาะชื่อเรื่อง/ปีจากชื่อไฟล์และหมายเลขตอน หรือ ID ของ NFO โดยไม่ส่งสื่อหรือข้อมูลรับรอง ช่องข้อมูล NFO ยังคงมีลำดับความสำคัญสูงสุด',
 			'sourceSetup.nfsEncryptionFailure' => 'สำหรับ NFS ที่เข้ารหัส ให้ตรวจสอบว่าบริการทั้งสองของ NAS รองรับ RFC 9289 และ TLS 1.3 ตรวจสอบชื่อในใบรับรองและ UID/GID ของส่วนแบ่งปัน Pleazyng จะไม่ลองเชื่อมต่อใหม่โดยไม่มีการเข้ารหัส',

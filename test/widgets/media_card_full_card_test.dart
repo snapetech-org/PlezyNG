@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:ui' as ui;
 
 import 'package:cached_network_image_ce/cached_network_image.dart';
@@ -6,6 +7,8 @@ import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/focus/focus_glow_overlay.dart';
 import 'package:plezy/focus/focus_theme.dart';
@@ -18,6 +21,10 @@ import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/models/catalog/catalog_item.dart';
 import 'package:plezy/models/catalog/catalog_metadata.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
+import 'package:plezy/providers/catalog_sources_provider.dart';
+import 'package:plezy/models/seerr/seerr_session.dart';
+import 'package:plezy/services/catalog/seerr_catalog_source.dart';
+import 'package:plezy/services/seerr/seerr_client.dart';
 import 'package:plezy/services/plex_api_cache.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
@@ -45,6 +52,75 @@ void main() {
     resetSharedPreferencesForTest();
     SettingsService.resetForTesting();
     await SettingsService.getInstance();
+  });
+
+  testWidgets('catalog card announces request and alert state with a menu hint', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final item = CatalogItem(
+      source: CatalogSourceId.seerr,
+      kind: MediaKind.movie,
+      title: 'Requested Film',
+      ids: const CatalogItemIds(tmdb: 61),
+    ).toMediaItem();
+    final client = SeerrClient(
+      const SeerrSession(
+        baseUrl: 'https://seerr.example.com',
+        method: SeerrAuthMethod.local,
+        identifier: 'alice',
+        secret: 'pw',
+        cookie: 'session',
+        userId: 1,
+        permissions: 0,
+        displayName: 'Alice',
+        instanceLabel: 'Seerr',
+        createdAt: 0,
+      ),
+      onSessionInvalidated: () {},
+      httpClient: MockClient((request) async {
+        expect(request.url.path, '/api/v1/request/intent/state');
+        return http.Response(
+          jsonEncode({
+            'items': [
+              {
+                'mediaType': 'movie',
+                'tmdbId': 61,
+                'status': 2,
+                'status4k': 1,
+                'standard': {'own': null, 'other': 'approved'},
+                'fourK': {'own': null, 'other': null},
+                'subscribed': true,
+                'subscriptionScope': {'is4k': false, 'seasonNumber': null},
+                'canSubscribe': true,
+                'canRequest': false,
+                'canRequest4k': false,
+                'seasons': <Object>[],
+              },
+            ],
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      }),
+    );
+    final sources = _SeerrCardSources(SeerrCatalogSource(client));
+    addTearDown(() {
+      sources.dispose();
+      client.dispose();
+    });
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider<CatalogSourcesProvider>.value(
+        value: sources,
+        child: _catalogGridHarness(item, isOffline: false),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final expected = '${mediaCardSemanticLabel(item)}, ${t.seerr.requestInProgress}, ${t.seerr.notificationsOn}';
+    final data = tester.getSemantics(find.bySemanticsLabel(expected)).getSemanticsData();
+    expect(data.hint, t.seerr.cardActionHint);
+    expect(data.hasAction(ui.SemanticsAction.longPress), isTrue);
+    semantics.dispose();
   });
 
   tearDown(() {
@@ -865,6 +941,14 @@ Widget _catalogGridHarness(MediaItem item, {Key? key, double width = 220, bool i
       ),
     ),
   );
+}
+
+class _SeerrCardSources extends CatalogSourcesProvider {
+  _SeerrCardSources(this.seerr);
+  final SeerrCatalogSource seerr;
+
+  @override
+  SeerrCatalogSource get seerrSource => seerr;
 }
 
 class _ReadCountingMap extends MapBase<String, Object?> {

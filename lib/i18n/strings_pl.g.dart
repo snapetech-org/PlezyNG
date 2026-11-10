@@ -646,6 +646,7 @@ class _Translations$settings$pl extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Wymuś wbudowaną konwersję RPU do profilu Dolby Vision 8.1';
 	@override String get dvConversionHevcStripDescription => 'Usuń warstwy Dolby Vision RPU/EL i przedstaw zwykłe HEVC';
 	@override String get experimentalDolbyVision => 'Eksperymentalny Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Automatycznie próbuje Dolby Vision/FEL i przechodzi na zgodne odtwarzanie, jeśli jest niedostępne. Domyślnie włączone; rzeczywisty sygnał zależy od urządzenia.';
 	@override String get dvCompatibilityFallback => 'Tryb zgodności w razie błędu';
 	@override String get dvCompatibilityFallbackDescription => 'Użyj standardowego renderera, jeśli eksperyment nie może się uruchomić. Dane FEL mogą zostać utracone.';
 	@override String get dvExperimentDiagnostics => 'Rejestrowanie eksperymentu wideo';
@@ -5974,6 +5975,7 @@ extension on TranslationsPl {
 			'settings.dvConversionDv81Description' => 'Wymuś wbudowaną konwersję RPU do profilu Dolby Vision 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Usuń warstwy Dolby Vision RPU/EL i przedstaw zwykłe HEVC',
 			'settings.experimentalDolbyVision' => 'Eksperymentalny Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Automatycznie próbuje Dolby Vision/FEL i przechodzi na zgodne odtwarzanie, jeśli jest niedostępne. Domyślnie włączone; rzeczywisty sygnał zależy od urządzenia.',
 			'settings.dvCompatibilityFallback' => 'Tryb zgodności w razie błędu',
 			'settings.dvCompatibilityFallbackDescription' => 'Użyj standardowego renderera, jeśli eksperyment nie może się uruchomić. Dane FEL mogą zostać utracone.',
 			'settings.dvExperimentDiagnostics' => 'Rejestrowanie eksperymentu wideo',
@@ -5983,9 +5985,9 @@ extension on TranslationsPl {
 			'settings.hdrSdrConversion' => 'Konwersja HDR do SDR',
 			'settings.hdrSdrConversionDescription' => 'Wybierz, co konwertuje wideo HDR, gdy wyświetlacz nie obsługuje HDR.',
 			'settings.hdrSdrConversionAuto' => 'Automatycznie',
-			'settings.hdrSdrConversionAutoDescription' => 'Urządzenie na Androidzie 9 i nowszym, odtwarzacz na starszych wersjach',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Urządzenie na Androidzie 9 i nowszym, odtwarzacz na starszych wersjach',
 			'settings.hdrSdrConversionDevice' => 'Urządzenie',
 			'settings.hdrSdrConversionDeviceDescription' => 'Konwersję wykonuje sprzęt wideo urządzenia. Najszybciej, ale kolory zależą od urządzenia',
 			'settings.hdrSdrConversionPlayer' => 'Odtwarzacz',
@@ -6497,9 +6499,9 @@ extension on TranslationsPl {
 			'videoControls.segmentLoop' => 'Segmentacja Loop',
 			'videoControls.addBookmark' => 'Dodaj Bookmark',
 			'videoControls.bookmarkName' => 'Nazwa Bookmark',
-			'videoControls.bookmarkNameHint' => 'Na przykład scena otwarcia',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Na przykład scena otwarcia',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Zakładka ${n}',
 			'videoControls.bookmarkNameRequired' => 'Wprowadź nazwę dla tego znaku.',
 			'videoControls.deleteBookmark' => 'Usunąć Bookmark',
@@ -7011,9 +7013,9 @@ extension on TranslationsPl {
 			'libraries.libraryOptions' => 'Opcje biblioteki',
 			'libraries.content' => 'zawartość biblioteki',
 			'libraries.selectLibrary' => 'Wybierz bibliotekę',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			'libraries.noRecommendations' => 'Brak dostępnych rekomendacji',
 			'libraries.noCollections' => 'Brak kolekcji w tej bibliotece',
 			'libraries.noFoldersFound' => 'Nie znaleziono folderów',
@@ -7525,9 +7527,9 @@ extension on TranslationsPl {
 			'watchTogether.noCodeInClipboard' => 'Schowek nie zawiera kodu pokoju',
 			'watchTogether.copyCode' => 'Kopiuj kod',
 			'watchTogether.codeCopied' => 'Skopiowano kod pokoju',
-			'watchTogether.shareInvite' => 'Udostępnij zaproszenie',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Udostępnij zaproszenie',
 			'watchTogether.inviteCopied' => 'Skopiowano zaproszenie. Wklej je do wiadomości.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Dołącz do mojego pokoju „Oglądaj razem” w Pleazyng: otwórz „Oglądaj razem”, wybierz „Dołącz do pokoju” i wpisz kod ${code}.',
 			'watchTogether.openSessionControls' => 'Otwórz sterowanie sesją „Oglądaj razem”',
@@ -8039,9 +8041,9 @@ extension on TranslationsPl {
 			'metadataEdit.enterImageUrl' => 'Wprowadź URL obrazu',
 			'metadataEdit.imageUrl' => 'URL obrazu',
 			'metadataEdit.metadataUpdated' => 'Metadane zaktualizowane',
-			'metadataEdit.metadataUpdateFailed' => 'Nie udało się zaktualizować metadanych',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Nie udało się zaktualizować metadanych',
 			'metadataEdit.artworkUpdated' => 'Grafika zaktualizowana',
 			'metadataEdit.artworkUpdateFailed' => 'Nie udało się zaktualizować grafiki',
 			'metadataEdit.noArtworkAvailable' => 'Brak dostępnej grafiki',
@@ -8553,9 +8555,9 @@ extension on TranslationsPl {
 			'universalMedia.favoriteSaved' => 'Strumień ulubionych zapisany do tego profilu',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pl'))(n, one: 'Skryty ${count} niepotrzebny lub niebezpieczny wpis listy odtwarzania.', few: 'Wpisy z listy odtwarzania ${count} nie są obsługiwane lub niebezpieczne.', many: 'Wpisy z listy odtwarzania ${count} nie są obsługiwane lub niebezpieczne.', other: 'Wpisy z listy odtwarzania ${count} nie są obsługiwane lub niebezpieczne.', ), 
 			'universalMedia.playlistAddress' => 'Adres Playlist',
-			'universalMedia.playlistAddressHelp' => 'Otwórz listę odtwarzania M3U, M3u8 lub PLS z adresu internetowego. linki strumieniowe bezpośrednio nie przechowują listy odtwarzania.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Otwórz listę odtwarzania M3U, M3u8 lub PLS z adresu internetowego. linki strumieniowe bezpośrednio nie przechowują listy odtwarzania.',
 			'universalMedia.choosePlaylist' => 'Wybierz plik playlist',
 			'universalMedia.openPlaylist' => 'Otwarta playlist',
 			'universalMedia.playlistFormatsHelp' => 'Lista odtwarzania może zawierać maksymalnie 1000 elementów i 2 MB. HLS otwiera się jako strumienia, dzięki czemu gracz może wybrać jakość.',
@@ -9067,9 +9069,9 @@ extension on TranslationsPl {
 			'sourceSetup.apiKey' => 'Klucz API',
 			'sourceSetup.optionalUsername' => 'Nazwa użytkownika konta (opcjonalnie)',
 			'sourceSetup.optionalPassword' => 'Hasło konta (opcjonalnie)',
-			'sourceSetup.subtitlePrivacy' => 'Uzyskaj klucz API na opensubtitles.com. Wyszukiwanie wysyła tytuł wideo i dostępne ID IMDb/TMDB, nigdy plik wideo. Klucz i opcjonalne dane logowania do konta są szyfrowane wraz z tym źródłem.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'Uzyskaj klucz API na opensubtitles.com. Wyszukiwanie wysyła tytuł wideo i dostępne ID IMDb/TMDB, nigdy plik wideo. Klucz i opcjonalne dane logowania do konta są szyfrowane wraz z tym źródłem.',
 			'sourceSetup.automaticMetadata' => 'Automatyczne metadane wideo z internetu',
 			'sourceSetup.metadataPrivacy' => 'Wysyła tylko tytuł/rok z nazwy pliku i numery odcinków lub ID NFO, nigdy multimedia ani dane uwierzytelniające. Pola NFO zachowują pierwszeństwo.',
 			'sourceSetup.nfsEncryptionFailure' => 'Dla szyfrowanego NFS sprawdź obsługę RFC 9289 i TLS 1.3 przez obie usługi NAS, nazwę w certyfikacie i UID/GID eksportu. Pleazyng nie ponowi tego połączenia bez szyfrowania.',

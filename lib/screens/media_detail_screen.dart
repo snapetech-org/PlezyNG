@@ -383,6 +383,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   int? _seerrTmdbId;
   String? _seerrResolvedKey;
   bool _seerrHasNewSeason = false;
+  SeerrLegacyLibraryOpportunity? _seerrLegacyOpportunity;
   String? _seerrSeasonsKey;
 
   void _onSeerrIntentChanged() => setStateIfMounted(() {});
@@ -398,6 +399,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       _seerrTmdbId = null;
       _seerrSeasonsKey = null;
       _seerrHasNewSeason = false;
+      _seerrLegacyOpportunity = null;
     }
     if (next == null || widget.isOffline || !source!.supportsTitleActions(_metadata.kind)) return;
     final item = _metadata;
@@ -407,12 +409,13 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     _seerrResolvedKey = key;
     _seerrTmdbId = null;
     _seerrHasNewSeason = false;
+    _seerrLegacyOpportunity = null;
     _seerrSeasonsKey = null;
     final id = exactId;
     if (id != null) {
       _seerrTmdbId = id;
       unawaited(next.load(item.kind, id));
-      _loadSeerrNewSeason(source, next, item.kind, id);
+      _loadSeerrLibraryOpportunity(source, next, item.kind, id);
       return;
     }
     unawaited(() async {
@@ -423,7 +426,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
         if (id != null) {
           setState(() => _seerrTmdbId = id);
           unawaited(next.load(item.kind, id));
-          _loadSeerrNewSeason(source, next, item.kind, id);
+          _loadSeerrLibraryOpportunity(source, next, item.kind, id);
         }
       } catch (e) {
         appLogger.d('Seerr: library title id unavailable', error: e);
@@ -431,22 +434,38 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     }());
   }
 
-  void _loadSeerrNewSeason(SeerrCatalogSource source, SeerrRequestIntentStore store, MediaKind kind, int id) {
-    if (kind != MediaKind.show) return;
+  void _loadSeerrLibraryOpportunity(SeerrCatalogSource source, SeerrRequestIntentStore store, MediaKind kind, int id) {
     final key = '${identityHashCode(store)}:$id';
     if (_seerrSeasonsKey == key) return;
     _seerrSeasonsKey = key;
     unawaited(() async {
       try {
-        final details = await source.client.getTv(id);
         await store.load(kind, id);
+        if (kind != MediaKind.show && !store.unsupported) return;
+        final details = kind == MediaKind.show ? await source.client.getTv(id) : await source.client.getMovie(id);
         if (!mounted || !identical(store, _seerrIntentStore) || _seerrTmdbId != id || _seerrSeasonsKey != key) return;
         final state = store.peek(kind, id);
-        if (state != null) setState(() => _seerrHasNewSeason = hasNewSeerrSeason(state, details));
+        if (state != null) {
+          if (kind == MediaKind.show) setState(() => _seerrHasNewSeason = hasNewSeerrSeason(state, details));
+        } else if (store.unsupported) {
+          final settings = await source.client.getPublicSettings();
+          if (!mounted || !identical(store, _seerrIntentStore) || _seerrTmdbId != id || _seerrSeasonsKey != key) return;
+          setState(
+            () => _seerrLegacyOpportunity = SeerrLegacyLibraryOpportunity.fromDetails(source, kind, details, settings),
+          );
+        }
       } catch (e) {
-        appLogger.d('Seerr: TV season detail unavailable', error: e);
+        appLogger.d('Seerr: library request opportunity unavailable', error: e);
       }
     }());
+  }
+
+  void _refreshSeerrLibraryOpportunity(SeerrCatalogSource source, MediaKind kind, int id) {
+    final store = source.client.intents;
+    if (!mounted || !identical(store, _seerrIntentStore) || _seerrTmdbId != id) return;
+    setState(() => _seerrLegacyOpportunity = null);
+    _seerrSeasonsKey = null;
+    _loadSeerrLibraryOpportunity(source, store, kind, id);
   }
 
   List<MediaItem> _seasons = [];

@@ -85,9 +85,9 @@ class PlaybackInitializationOptions {
   /// sources through the server's SDR compatibility route.
   final Set<int> supportedNativeDolbyVisionProfiles;
 
-  /// Let an explicit Windows/Linux FEL experiment keep Profile 7 local. The
-  /// experiment remains opt-in and unqualified; production defaults use the
-  /// server rendition on those targets.
+  /// Keep Profile 7 local while automatic DV/FEL routing is enabled on an
+  /// implemented player backend. A forced video-compatibility retry overrides
+  /// this request; route selection alone does not qualify FEL reconstruction.
   final bool allowExperimentalDolbyVisionProfile7;
 
   /// Keep a downloaded copy from intercepting an automatic server-rendition
@@ -98,8 +98,10 @@ class PlaybackInitializationOptions {
   bool requestsCompatibleDolbyVisionRendition(MediaSourceInfo? source) => shouldRequestCompatibleDolbyVisionRendition(
     requested: requestCompatibleDolbyVisionRendition,
     source: source?.displayCriteria,
-    supportedNativeProfiles: supportedNativeDolbyVisionProfiles,
-    allowExperimentalProfile7: allowExperimentalDolbyVisionProfile7,
+    supportedNativeProfiles: forceServerPlayback && !forceAudioConversion
+        ? const {}
+        : supportedNativeDolbyVisionProfiles,
+    allowExperimentalProfile7: allowExperimentalDolbyVisionProfile7 && !(forceServerPlayback && !forceAudioConversion),
   );
 
   bool hasServerDolbyVisionSdrRoute(MediaSourceInfo? source, {required DolbyVisionSdrBackend backend}) =>

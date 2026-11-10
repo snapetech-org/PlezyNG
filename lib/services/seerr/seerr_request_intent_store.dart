@@ -22,6 +22,10 @@ class SeerrRequestIntentStore extends ChangeNotifier {
   bool _unsupported = false;
   bool _closed = false;
 
+  /// Vanilla Seerr has no batch intent endpoint. Only detail/menu callers
+  /// should use its individual title APIs as a fallback; cards stay batched.
+  bool get unsupported => _unsupported;
+
   static String key(MediaKind kind, int id) => '${kind.id}:$id';
 
   SeerrRequestIntent? peek(MediaKind kind, int id) => _states[key(kind, id)]?.$1;

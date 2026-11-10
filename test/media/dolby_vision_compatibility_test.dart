@@ -2,8 +2,35 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/dolby_vision_compatibility.dart';
 import 'package:plezy/media/media_display_criteria.dart';
 import 'package:plezy/mpv/models.dart';
+import 'package:plezy/media/media_source_info.dart';
+import 'package:plezy/services/playback_initialization_types.dart';
+
+import '../test_helpers/media_items.dart';
 
 void main() {
+  test('forced video fallback overrides automatic P7 and advertised native support', () {
+    final source = MediaSourceInfo(
+      videoUrl: 'https://example.test/p7.mkv',
+      audioTracks: const [],
+      subtitleTracks: const [],
+      chapters: const [],
+      displayCriteria: const MediaDisplayCriteria(doviProfile: 7, doviCompatibilityId: 6),
+    );
+    PlaybackInitializationOptions options({bool forceServer = false, bool audioOnly = false}) =>
+        PlaybackInitializationOptions(
+          metadata: testMediaItem(),
+          selectedMediaIndex: 0,
+          requestCompatibleDolbyVisionRendition: true,
+          supportedNativeDolbyVisionProfiles: const {7},
+          allowExperimentalDolbyVisionProfile7: true,
+          forceServerPlayback: forceServer,
+          forceAudioConversion: audioOnly,
+        );
+    expect(options().requestsCompatibleDolbyVisionRendition(source), isFalse);
+    expect(options(forceServer: true).requestsCompatibleDolbyVisionRendition(source), isTrue);
+    expect(options(forceServer: true, audioOnly: true).requestsCompatibleDolbyVisionRendition(source), isFalse);
+  });
+
   test('compatibility rendition routing requires an identified DV profile and an adapter request', () {
     const dolbyVision = MediaDisplayCriteria(doviProfile: 7, doviCompatibilityId: 6);
     const hdr10 = MediaDisplayCriteria(transfer: 'smpte2084', primaries: 'bt2020');

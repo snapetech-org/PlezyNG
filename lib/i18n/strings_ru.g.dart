@@ -646,6 +646,7 @@ class _Translations$settings$ru extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Принудительно выполнять inline-конвертацию RPU в Dolby Vision профиль 8.1';
 	@override String get dvConversionHevcStripDescription => 'Удалять слои Dolby Vision RPU/EL и передавать обычный HEVC';
 	@override String get experimentalDolbyVision => 'Экспериментальный Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Автоматически пробует Dolby Vision/FEL и переключается на совместимое воспроизведение, если оно недоступно. Включено по умолчанию; фактический вывод зависит от устройства.';
 	@override String get dvCompatibilityFallback => 'Резервный режим совместимости';
 	@override String get dvCompatibilityFallbackDescription => 'Использовать стандартный рендерер, если эксперимент не запускается. Данные FEL могут быть потеряны.';
 	@override String get dvExperimentDiagnostics => 'Журнал видеоэксперимента';
@@ -5974,6 +5975,7 @@ extension on TranslationsRu {
 			'settings.dvConversionDv81Description' => 'Принудительно выполнять inline-конвертацию RPU в Dolby Vision профиль 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Удалять слои Dolby Vision RPU/EL и передавать обычный HEVC',
 			'settings.experimentalDolbyVision' => 'Экспериментальный Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Автоматически пробует Dolby Vision/FEL и переключается на совместимое воспроизведение, если оно недоступно. Включено по умолчанию; фактический вывод зависит от устройства.',
 			'settings.dvCompatibilityFallback' => 'Резервный режим совместимости',
 			'settings.dvCompatibilityFallbackDescription' => 'Использовать стандартный рендерер, если эксперимент не запускается. Данные FEL могут быть потеряны.',
 			'settings.dvExperimentDiagnostics' => 'Журнал видеоэксперимента',
@@ -5983,9 +5985,9 @@ extension on TranslationsRu {
 			'settings.hdrSdrConversion' => 'Преобразование HDR в SDR',
 			'settings.hdrSdrConversionDescription' => 'Выберите, что преобразует HDR-видео, если дисплей не поддерживает HDR.',
 			'settings.hdrSdrConversionAuto' => 'Авто',
-			'settings.hdrSdrConversionAutoDescription' => 'Устройство на Android 9 и новее, проигрыватель на более старых версиях',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Устройство на Android 9 и новее, проигрыватель на более старых версиях',
 			'settings.hdrSdrConversionDevice' => 'Устройство',
 			'settings.hdrSdrConversionDeviceDescription' => 'Преобразует видеооборудование устройства. Быстрее всего, но цвета зависят от устройства',
 			'settings.hdrSdrConversionPlayer' => 'Проигрыватель',
@@ -6497,9 +6499,9 @@ extension on TranslationsRu {
 			'videoControls.segmentLoop' => 'Сегмент Лоуп',
 			'videoControls.addBookmark' => 'Добавить Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark имя',
-			'videoControls.bookmarkNameHint' => 'Например, сцены открытия',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Например, сцены открытия',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
 			'videoControls.bookmarkNameRequired' => 'Введите имя для этой книжной марки.',
 			'videoControls.deleteBookmark' => 'Удаление букмекеры',
@@ -7011,9 +7013,9 @@ extension on TranslationsRu {
 			'libraries.libraryOptions' => 'Параметры библиотеки',
 			'libraries.content' => 'содержимое библиотеки',
 			'libraries.selectLibrary' => 'Выбрать библиотеку',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтры (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтры (${count})',
 			'libraries.noRecommendations' => 'Рекомендации недоступны',
 			'libraries.noCollections' => 'В этой библиотеке нет коллекций',
 			'libraries.noFoldersFound' => 'Папки не найдены',
@@ -7525,9 +7527,9 @@ extension on TranslationsRu {
 			'watchTogether.noCodeInClipboard' => 'В буфере обмена нет кода комнаты',
 			'watchTogether.copyCode' => 'Скопировать код',
 			'watchTogether.codeCopied' => 'Код комнаты скопирован',
-			'watchTogether.shareInvite' => 'Поделиться приглашением',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Поделиться приглашением',
 			'watchTogether.inviteCopied' => 'Приглашение скопировано. Вставьте его в сообщение.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Присоединяйтесь к совместному просмотру в Pleazyng: откройте «Смотреть вместе», выберите «Войти в комнату» и введите ${code}.',
 			'watchTogether.openSessionControls' => 'Открыть управление сессией «Смотреть вместе»',
@@ -8039,9 +8041,9 @@ extension on TranslationsRu {
 			'metadataEdit.enterImageUrl' => 'Введите URL изображения',
 			'metadataEdit.imageUrl' => 'URL изображения',
 			'metadataEdit.metadataUpdated' => 'Метаданные обновлены',
-			'metadataEdit.metadataUpdateFailed' => 'Не удалось обновить метаданные',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Не удалось обновить метаданные',
 			'metadataEdit.artworkUpdated' => 'Обложка обновлена',
 			'metadataEdit.artworkUpdateFailed' => 'Не удалось обновить обложку',
 			'metadataEdit.noArtworkAvailable' => 'Обложки недоступны',
@@ -8553,9 +8555,9 @@ extension on TranslationsRu {
 			'universalMedia.favoriteSaved' => 'Любимые потоки сохранились в этом профиле',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Скинутый ${count} не поддерживаемый или безопасный вход списка игр.', few: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', many: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', other: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', ), 
 			'universalMedia.playlistAddress' => 'Адрес Playlist',
-			'universalMedia.playlistAddressHelp' => 'Откройте перечень M3U, М3U8 или PLS с веб-адреса. прямые ссылки потока не сохраняют перечень просмотров.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Откройте перечень M3U, М3U8 или PLS с веб-адреса. прямые ссылки потока не сохраняют перечень просмотров.',
 			'universalMedia.choosePlaylist' => 'Выберите файл playlist',
 			'universalMedia.openPlaylist' => 'Открытый playlist',
 			'universalMedia.playlistFormatsHelp' => 'Список игр может содержать не более 1000 элементов и 2 Мб. HLS открывается как потоки, чтобы игрок мог выбрать качество.',
@@ -9067,9 +9069,9 @@ extension on TranslationsRu {
 			'sourceSetup.apiKey' => 'Ключ API',
 			'sourceSetup.optionalUsername' => 'Имя пользователя аккаунта (необязательно)',
 			'sourceSetup.optionalPassword' => 'Пароль аккаунта (необязательно)',
-			'sourceSetup.subtitlePrivacy' => 'Получите ключ API на opensubtitles.com. Поиск отправляет название видео и доступные ID IMDb/TMDB, но никогда не отправляет видеофайл. Ключ и необязательные учётные данные аккаунта шифруются вместе с этим источником.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'Получите ключ API на opensubtitles.com. Поиск отправляет название видео и доступные ID IMDb/TMDB, но никогда не отправляет видеофайл. Ключ и необязательные учётные данные аккаунта шифруются вместе с этим источником.',
 			'sourceSetup.automaticMetadata' => 'Автоматические метаданные видео из интернета',
 			'sourceSetup.metadataPrivacy' => 'Отправляет только название/год из имени файла и номера эпизодов либо ID NFO, но никогда не отправляет медиафайлы или учётные данные. Поля NFO сохраняют приоритет.',
 			'sourceSetup.nfsEncryptionFailure' => 'Для зашифрованного NFS проверьте поддержку RFC 9289 и TLS 1.3 обеими службами NAS, имя в сертификате и UID/GID экспорта. Pleazyng не будет повторять это подключение без шифрования.',

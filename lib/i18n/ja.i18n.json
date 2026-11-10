@@ -550,7 +550,7 @@
     "dvConversionDv81Description": "Dolby Vision プロファイル 8.1 へのインライン RPU 変換を強制します",
     "dvConversionHevcStripDescription": "Dolby Vision の RPU/EL レイヤーを削除し、通常の HEVC として扱います",
     "experimentalDolbyVision": "実験的なDolby Vision",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Dolby Vision/FEL を自動で試し、利用できない場合は互換性のある再生に切り替えます。既定でオンです。実際の出力はデバイスによって異なります。",
     "dvCompatibilityFallback": "互換性フォールバック",
     "dvCompatibilityFallbackDescription": "実験を開始できない場合は標準レンダラーを使用します。FELデータが失われる可能性があります。",
     "dvExperimentDiagnostics": "動画実験のログ記録",

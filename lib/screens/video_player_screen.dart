@@ -2231,8 +2231,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
               requestCompatibleDolbyVisionRendition: true,
               supportedNativeDolbyVisionProfiles: VideoDecodeCapabilities.supportedNativeDolbyVisionProfiles,
               allowExperimentalDolbyVisionProfile7:
-                  (Platform.isWindows || Platform.isLinux) &&
-                  !PlatformDetector.isWebOSBuild() &&
+                  (!Platform.isAndroid || !SettingsService.instance.read(SettingsService.useExoPlayer)) &&
+                  !PlatformDetector.usesNativeTvMedia() &&
+                  !SettingsService.instance.read(SettingsService.disableDolbyVision) &&
                   settingsService.read(SettingsService.experimentalDolbyVision),
               // The same resume the open will land on (see
               // _resolveOpenResumePosition): a stacked item opens the file

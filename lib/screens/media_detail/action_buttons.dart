@@ -457,7 +457,17 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
     final intent = seerrId == null ? null : _seerrIntentStore?.peek(metadata.kind, seerrId);
     final seerrActions = seerr == null || widget.isOffline
         ? const <SeerrTitleAction>[]
-        : librarySeerrTitleActions(seerr, metadata.kind, intent, hasNewSeason: _seerrHasNewSeason);
+        : librarySeerrTitleActions(
+            seerr,
+            metadata.kind,
+            intent,
+            hasNewSeason: _seerrHasNewSeason,
+            legacy: _seerrLegacyOpportunity,
+          );
+    void refreshLibraryOpportunity() {
+      if (seerr != null && seerrId != null) _refreshSeerrLibraryOpportunity(seerr, metadata.kind, seerrId);
+    }
+
     final seerrRequestActions = <FocusableAction>[
       for (final action in seerrActions)
         FocusableAction(
@@ -472,6 +482,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
               tmdbId: seerrId!,
               title: metadata.title ?? '',
               action: action,
+              onRequestSubmitted: refreshLibraryOpportunity,
             ),
           ),
           builder: (context, state) => iconActionButton(
@@ -486,6 +497,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
                 tmdbId: seerrId!,
                 title: metadata.title ?? '',
                 action: action,
+                onRequestSubmitted: refreshLibraryOpportunity,
               ),
             ),
           ),

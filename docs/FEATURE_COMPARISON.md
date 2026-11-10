@@ -209,8 +209,9 @@ limits instead of turning every source implementation into an unqualified Yes.
 Use canonical `pleazyng://` in examples. Legacy fork schemes are compatibility
 aliases, not the generated scheme, and the upstream scheme is not registered.
 Implemented Dolby Vision/FEL and NPU experiments belong in normal compatible
-builds with persisted Settings opt-in, off by default; device qualification is
-reported separately. Do not reintroduce a separate experimental-app build gate.
+builds. Dolby Vision/FEL routing is enabled automatically by default with
+compatibility fallback and a persisted Off override. Neural motion processing
+remains opt-in and off by default; device qualification is reported separately. Do not reintroduce a separate experimental-app build gate.
 
 ## Upstream sources
 

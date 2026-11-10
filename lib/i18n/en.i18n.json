@@ -552,7 +552,7 @@
     "dvConversionDv81Description": "Force inline RPU conversion to Dolby Vision profile 8.1",
     "dvConversionHevcStripDescription": "Strip Dolby Vision RPU/EL layers and present plain HEVC",
     "experimentalDolbyVision": "Experimental Dolby Vision",
-    "experimentalDolbyVisionDescription": "Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.",
+    "experimentalDolbyVisionDescription": "Try Dolby Vision/FEL automatically and fall back to compatible playback when unavailable. On by default; actual output depends on the device.",
     "dvCompatibilityFallback": "Compatibility fallback",
     "dvCompatibilityFallbackDescription": "Use the standard renderer if the experiment cannot start. FEL data may be lost.",
     "dvExperimentDiagnostics": "Video experiment logging",
@@ -4258,7 +4258,9 @@
     "recoveryImported": "Recovery data merged."
   },
   "sourceSetup": {
-    "bookorbitHelp": "Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.",
+    "bookorbitHelp": "Sign in with your own BookOrbit account. Pleazyng opens EPUB, KEPUB, PDF, CBZ, M4B, MP3, M4A, OPUS, OGG, and FLAC files in its existing readers and player, with audiobook progress synced to BookOrbit. Other BookOrbit formats remain available in BookOrbit. Requests for missing titles still go through your connected SeerrNG instance.",
+    "bookorbitOpen": "Open in BookOrbit",
+    "bookorbitDetailHelp": "View this title in BookOrbit to manage its library details and any formats Pleazyng cannot open. Listening progress syncs with your BookOrbit account.",
     "savedCertificate": "Saved server certificate",
     "projectGutenberg": "Project Gutenberg",
     "nfsEndpointInvalid": "Enter an NFS URL such as nfs://nas:2049/export.",

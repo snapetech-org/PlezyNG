@@ -560,7 +560,7 @@
     "dvConversionDv81Description": "تحويل قوة RPU إلى Dolby Vision ملف تعريف 8.1",
     "dvConversionHevcStripDescription": "شريط Dolby Vision طبقات RPU/EL والطابق الحالي HEVC",
     "experimentalDolbyVision": "Dolby Vision التجريبي",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "جرّب Dolby Vision/FEL تلقائيًا وارجع إلى تشغيل متوافق عند عدم توفره. مفعّل افتراضيًا؛ يعتمد الإخراج الفعلي على الجهاز.",
     "dvCompatibilityFallback": "الرجوع للتوافق",
     "dvCompatibilityFallbackDescription": "استخدم العارض القياسي إذا تعذر بدء التجربة. قد تُفقد بيانات FEL.",
     "dvExperimentDiagnostics": "تسجيل تجربة الفيديو",

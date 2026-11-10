@@ -554,7 +554,7 @@
     "dvConversionDv81Description": "Forza la conversione RPU diretta al profilo Dolby Vision 8.1",
     "dvConversionHevcStripDescription": "Rimuove i livelli RPU/EL di Dolby Vision e riproduce il video come semplice HEVC",
     "experimentalDolbyVision": "Dolby Vision sperimentale",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Prova automaticamente Dolby Vision/FEL e usa una riproduzione compatibile se non disponibile. Attivo per impostazione predefinita; l’uscita effettiva dipende dal dispositivo.",
     "dvCompatibilityFallback": "Alternativa di compatibilità",
     "dvCompatibilityFallbackDescription": "Usa il renderer standard se l’esperimento non si avvia. I dati FEL potrebbero andare persi.",
     "dvExperimentDiagnostics": "Registro dell’esperimento video",

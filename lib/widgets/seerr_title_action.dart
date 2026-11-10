@@ -8,6 +8,8 @@ import '../media/media_kind.dart';
 import '../models/seerr/seerr_request_intent.dart';
 import '../models/seerr/seerr_request.dart';
 import '../models/seerr/seerr_details.dart';
+import '../models/seerr/seerr_media.dart';
+import '../models/seerr/seerr_public_settings.dart';
 import '../services/catalog/seerr_catalog_source.dart';
 import '../services/seerr/seerr_exceptions.dart';
 import '../utils/app_logger.dart';
@@ -152,8 +154,8 @@ List<SeerrTitleAction> seerrTitleActions(
 }
 
 /// Library titles already have Play; only missing seasons and an independent
-/// 4K variant are useful there. The server state is required before showing
-/// either option, so an unresolved identity never becomes a false request.
+/// 4K variant are useful there. An exact identity and server detail are
+/// required before offering either action.
 bool hasNewSeerrSeason(SeerrRequestIntent state, SeerrDetails details, {DateTime? now}) {
   final today = now ?? DateTime.now();
   final known = state.seasons.map((season) => season.number).toSet();
@@ -164,13 +166,86 @@ bool hasNewSeerrSeason(SeerrRequestIntent state, SeerrDetails details, {DateTime
   });
 }
 
+/// A conservative opportunity computed from vanilla Seerr's standard title
+/// detail. It has no viewer-specific claims or alert scope, so it must never
+/// be used as a card badge or as quick-request authority.
+class SeerrLegacyLibraryOpportunity {
+  final bool missingSeasons;
+  final bool request4k;
+
+  const SeerrLegacyLibraryOpportunity({this.missingSeasons = false, this.request4k = false});
+
+  factory SeerrLegacyLibraryOpportunity.fromDetails(
+    SeerrCatalogSource source,
+    MediaKind kind,
+    SeerrDetails details,
+    SeerrPublicSettings settings, {
+    DateTime? now,
+  }) {
+    final info = details.mediaInfo;
+    final product = source.client.session.product;
+    final overall = info?.status(product) ?? SeerrMediaStatus.unknown;
+    if (overall == SeerrMediaStatus.blocklisted) return const SeerrLegacyLibraryOpportunity();
+    final active = (info?.requests ?? const <SeerrRequest>[]).where(
+      (request) => request.status == SeerrRequestStatus.pending || request.status == SeerrRequestStatus.approved,
+    );
+    final today = now ?? DateTime.now();
+    // A fully available show with no season rows gives no evidence of a
+    // missing season. Partial availability is enough to open the selector;
+    // the sheet itself resolves the precise missing coverage before submit.
+    final hasSeasonEvidence = (info?.seasons?.isNotEmpty ?? false) || overall == SeerrMediaStatus.partiallyAvailable;
+    final missingSeasons =
+        info != null &&
+        hasSeasonEvidence &&
+        kind == MediaKind.show &&
+        source.canRequest(kind) &&
+        (details.seasons ?? const <SeerrSeason>[]).any((season) {
+          if (season.seasonNumber < 1 || (season.episodeCount ?? 0) < 1) return false;
+          final aired = DateTime.tryParse(season.airDate ?? '');
+          if (aired == null || aired.isAfter(today)) return false;
+          final stored = info.seasons?.where((entry) => entry.seasonNumber == season.seasonNumber).firstOrNull;
+          final status = stored?.status(product) ?? SeerrMediaStatus.unknown;
+          if (status == SeerrMediaStatus.available ||
+              status == SeerrMediaStatus.blocklisted ||
+              status == SeerrMediaStatus.pending ||
+              status == SeerrMediaStatus.processing) {
+            return false;
+          }
+          return !active.any(
+            (request) =>
+                request.is4k != true &&
+                (request.seasons == null ||
+                    request.seasons!.isEmpty ||
+                    request.seasons!.any((entry) => entry.seasonNumber == season.seasonNumber)),
+          );
+        });
+    final qualityEnabled = kind == MediaKind.movie ? settings.movie4kEnabled : settings.series4kEnabled;
+    final qualityStatus = info?.status4k(product) ?? SeerrMediaStatus.unknown;
+    final request4k =
+        source.canRequest4k(kind) &&
+        qualityEnabled &&
+        qualityStatus != SeerrMediaStatus.available &&
+        qualityStatus != SeerrMediaStatus.blocklisted &&
+        qualityStatus != SeerrMediaStatus.pending &&
+        qualityStatus != SeerrMediaStatus.processing &&
+        !active.any((request) => request.is4k == true);
+    return SeerrLegacyLibraryOpportunity(missingSeasons: missingSeasons, request4k: request4k);
+  }
+}
+
 SeerrTitleAction? librarySeerrTitleAction(
   SeerrCatalogSource source,
   MediaKind kind,
   SeerrRequestIntent? state, {
   bool hasNewSeason = false,
+  SeerrLegacyLibraryOpportunity? legacy,
 }) {
-  if (state == null || !source.supportsTitleActions(kind)) return null;
+  if (!source.supportsTitleActions(kind)) return null;
+  if (state == null) {
+    if (legacy?.missingSeasons == true) return const SeerrTitleAction(SeerrTitleActionKind.requestSeasons);
+    if (legacy?.request4k == true) return const SeerrTitleAction(SeerrTitleActionKind.request4k);
+    return null;
+  }
   if (state.status == 6) return null;
   if (kind == MediaKind.show &&
       source.canRequest(kind) &&
@@ -199,8 +274,9 @@ List<SeerrTitleAction> librarySeerrTitleActions(
   MediaKind kind,
   SeerrRequestIntent? state, {
   bool hasNewSeason = false,
+  SeerrLegacyLibraryOpportunity? legacy,
 }) {
-  final primary = librarySeerrTitleAction(source, kind, state, hasNewSeason: hasNewSeason);
+  final primary = librarySeerrTitleAction(source, kind, state, hasNewSeason: hasNewSeason, legacy: legacy);
   final actions = <SeerrTitleAction>[if (primary != null && primary.interactive) primary];
   if (state?.subscribed == true && primary?.kind != SeerrTitleActionKind.notificationsOn) {
     actions.add(const SeerrTitleAction(SeerrTitleActionKind.notificationsOn));
@@ -216,6 +292,7 @@ Future<void> performSeerrTitleAction(
   required String title,
   required SeerrTitleAction action,
   int? seasonNumber,
+  VoidCallback? onRequestSubmitted,
 }) async {
   if (!action.interactive) return;
   if (action.kind == SeerrTitleActionKind.notify ||
@@ -258,6 +335,7 @@ Future<void> performSeerrTitleAction(
       await source.client.createRequest(SeerrRequestPayload(mediaType: 'movie', mediaId: tmdbId));
       if (context.mounted) {
         unawaited(source.client.intents.load(kind, tmdbId));
+        onRequestSubmitted?.call();
         showSuccessSnackBar(context, t.seerr.requestSubmitted);
       }
     } on SeerrApiException catch (e) {
@@ -281,5 +359,6 @@ Future<void> performSeerrTitleAction(
     title: title,
     seasonNumber: seasonNumber,
     prefer4k: action.kind == SeerrTitleActionKind.request4k,
+    onSubmitted: onRequestSubmitted,
   );
 }

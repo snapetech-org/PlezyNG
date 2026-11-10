@@ -552,7 +552,7 @@
     "dvConversionDv81Description": "Tvinga direkt RPU-konvertering till Dolby Vision-profil 8.1",
     "dvConversionHevcStripDescription": "Ta bort Dolby Visions RPU-/EL-lager och använd vanlig HEVC",
     "experimentalDolbyVision": "Experimentell Dolby Vision",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Provar Dolby Vision/FEL automatiskt och använder kompatibel uppspelning när det inte är tillgängligt. På som standard; den faktiska utmatningen beror på enheten.",
     "dvCompatibilityFallback": "Kompatibilitetsreserv",
     "dvCompatibilityFallbackDescription": "Använd standardrenderaren om experimentet inte kan starta. FEL-data kan gå förlorade.",
     "dvExperimentDiagnostics": "Loggning av videoexperiment",

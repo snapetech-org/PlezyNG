@@ -1140,9 +1140,10 @@ class SettingsService extends BaseSharedPreferencesService {
   /// Android.
   static const disableDolbyVision = BoolPref('disable_dolby_vision');
 
-  /// Device-local, next-session experiments. A renderer request is not FEL
-  /// qualification; it never installs or replaces an engine.
-  static const experimentalDolbyVision = BoolPref('experimental_dolby_vision');
+  /// Device-local automatic DV/FEL routing, enabled unless explicitly disabled.
+  /// A requested route is not FEL qualification; native capability checks and
+  /// compatibility fallback still determine what the device can play.
+  static const experimentalDolbyVision = BoolPref('experimental_dolby_vision', defaultValue: true);
   static const dvCompatibilityFallback = BoolPref('dv_compatibility_fallback', defaultValue: true);
   static const dvExperimentDiagnostics = BoolPref('dv_experiment_diagnostics');
   static const hdrSdrConversion = EnumPref<HdrSdrConversion>(

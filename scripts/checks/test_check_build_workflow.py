@@ -53,7 +53,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         original = self._workflow()
         start = original.index("  build-tvos:\n")
         end = original.index("  build-macos:\n", start)
-        incompatible = (original[:start] + original[start:end].replace("&& 'macos-26' ||", "&& 'macos-26-intel' ||")
+        incompatible = (original[:start] + original[start:end].replace("&& 'macos-15' ||", "&& 'macos-15-intel' ||")
                         + original[end:])
         skipped = original.replace("inputs.rebuild_tvos && needs.build-tvos.result == 'success'",
                                    "inputs.rebuild_tvos && needs.build-tvos.result == 'skipped'")
@@ -172,9 +172,9 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         ci_path = ROOT / '.github/workflows/ci.yml'
         original = Path.read_text
         ci = original(ci_path, encoding='utf-8')
-        selection = "inputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format("
+        selection = "inputs.execution_profile == 'hybrid' && 'macos-15' || fromJSON(format("
         self.assertIn(selection, ci)
-        invalid = ci.replace(selection, selection.replace("'macos-26'", "'macos-26-intel'"), 1)
+        invalid = ci.replace(selection, selection.replace("'macos-15'", "'macos-15-intel'"), 1)
 
         def read(path, *args, **kwargs):
             return invalid if path == ci_path else original(path, *args, **kwargs)

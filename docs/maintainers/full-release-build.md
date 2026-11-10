@@ -26,8 +26,11 @@ native app identity, permissions, and other metadata. Use the next unused
 version and build number; never move an existing tag. The shared commit/CI
 guards and release driver check this metadata before expensive work or tagging.
 
-After exact-main CI and platform canaries pass, run the complete release
-from an authenticated `gh` session. Compatible Linux, Android, Tizen, Windows
+Run the complete release from an authenticated `gh` session. The driver verifies
+native pins, freezes the selected source in the unused immutable version tag,
+then runs exact-tag CI and builds. Creating the tag does not publish a release;
+every CI, platform and artifact gate must pass before public promotion. Later
+commits on `main` belong to the next release and cannot change this cut. Compatible Linux, Android, Tizen, Windows
 x64, and native Windows ARM64 jobs use standard GitHub-hosted runners. Apple
 builds use compatible GitHub-hosted macOS runners; the storage-heavy WebOS
 candidate uses compatible private JIT runners.
@@ -35,6 +38,13 @@ The hybrid execution profile routes each job to the compatible runner class;
 the broker pool remains available for jobs that need private capacity.
 
 ## Apple native qualification
+
+ARM native CI and tvOS release AOT use the hosted `macos-15` ARM image with
+explicit Xcode 26.3 (build 17C529) and iOS/tvOS 26.2 SDK checks, avoiding the
+capacity-constrained macOS 26 ARM pool. The other Apple lanes retain their
+selected Xcode 26.5 toolchain. Every native test, genuine tvOS framework and
+real database startup gate remains required. macOS 15 native tests cover its
+compatibility paths; they do not establish execution of macOS 26-only EDR code.
 
 The hosted tvOS release job uses an ARM macOS host, matching the pinned
 ARM-host `gen_snapshot_arm64` cross-compiler. Simulator Debug/JIT tests do not
@@ -134,16 +144,17 @@ to exercise real load commands and source-cache preservation. For Apple
 blockers, retain task-owned incremental DerivedData until the complete app
 build and native test bundle pass before spending another full CI run.
 
-Release actions reuse an existing immutable version tag. If the tag is an
-ancestor of `main`, the workflow permits only release infrastructure, changelog,
-maintainer documentation, and the WebOS compatibility lock to differ from the
-tagged commit; application-source changes still require a new matching tag.
-Both the workflow and the local release driver enforce this allowlist, and the
-draft release remains tied to the existing tag. Only after that ancestry and exact
-changed-path check passes, the driver and workflow reuse the 13-job CI proof on
-the immutable tag's application source. Record `ci_source_commit` separately
-from the current build/workflow source. Any application code, native pin or
-version metadata change requires a new version and fresh exact-source CI.
+Normal releases and resumptions dispatch both CI and the complete build from
+that exact version tag. The driver checks the remote tag target and canonical
+`main` ancestry before dispatch and publication. The workflow, certificate,
+source SHA and artifact digest continue to identify the actual frozen source.
+Delivery workflows use current trusted `main` tooling against those immutable
+artifacts; their tooling SHA is recorded separately from product source.
+
+Explicit platform recovery retains its separate unchanged-product allowlist
+and source-run proof. It may use newer release infrastructure without changing
+the original product bytes. Do not add application source to that allowlist or
+reuse one product's qualification for another. Existing tags are never moved.
 
 Native dependency downloads are staged by `scripts/prepare_native_downloads.py`
 after locked Pub resolution and before Dart hooks run. SQLite assets retain the
@@ -185,7 +196,9 @@ python3 scripts/release_all_platforms.py --version 3.0.1 \
 The core command builds every required platform, verifies its artifacts and
 checksums, then publishes GitHub. After delivery checks, it runs
 `scripts/refresh_release_facts.py --tag vVERSION` and pushes only the generated
-README, capability ledger and independently fetched publication snapshot. The
+README, capability ledger and independently fetched publication snapshot from a
+fresh `main` worktree with an ordinary fast-forward push. It never pushes the
+frozen product checkout over later development. The
 immutable build tag remains unchanged. A metadata refresh failure is recorded
 as a separate follow-up, preserving the published release; retry the same helper
 rather than rebuilding binaries. The live CI check resolves the actual tag

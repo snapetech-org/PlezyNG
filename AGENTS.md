@@ -1,9 +1,11 @@
-## Runner policy — owner directive, 2026-11-03
+## Runner policy — owner directive, 2026-11-10
 
 Use compatible public GitHub-hosted runners by default, preserving each job's
-required OS and architecture. Use private ephemeral JIT runners only when a
-task requires private hardware, network, files, or other task-specific private
-resources. Public pull-request code must run without secrets and with minimal
+required OS and architecture. Reserve private ephemeral JIT runners for signed
+builds or work whose hardware, network, files, storage, or tooling requirements
+GitHub-hosted runners cannot meet. Signed builds may use the existing compatible
+hosted route; this directive does not require moving every signing job to JIT.
+Public pull-request code must run without secrets and with minimal
 permissions; use disposable isolated execution when the task requires tighter
 egress or environment controls. Preserve active builds and other agents' work.
 Do not restart the broker while it owns running guests. Validate each workflow

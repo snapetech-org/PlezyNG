@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Freeze each release in one immutable version tag before CI and platform builds, so later development cannot change a resumed release. Keep delivery tooling and publication metadata on current trusted main. Route Apple ARM qualification and tvOS AOT through a compatible hosted macOS 15/Xcode 26.3 image while retaining all native and artifact gates.
+
 - Deliver aerynOS packages automatically from complete published Pleazyng releases, retaining the original Linux artifacts and requiring native qualification before feed promotion. Wake delivery directly after core publication, with retries separate from core success. Retire the separate unreleased-source build lane and repair Search navigation in its native playback harness.
 
 - Keep queued music ratings and station retries bound to the correct account. Older pending rating records remain stored but no longer replay automatically.

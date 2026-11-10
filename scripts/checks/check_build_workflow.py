@@ -1329,7 +1329,8 @@ for apple_job_name in ("build-ios", "build-tvos"):
         f"{apple_job_name} signing archives and DerivedData must stay on local APFS",
     )
 require(
-    "inputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format(" in apple_native
+    "inputs.execution_profile == 'hybrid' && 'macos-15' || fromJSON(format(" in apple_native
+    and "hosted-xcode-version: '26.3'" in apple_native
     and "ARCHS=arm64" in apple_native,
     "Apple arm64 native qualification must select an Apple Silicon hosted runner",
 )
@@ -1627,7 +1628,8 @@ require(
     "iOS recovery must stage the locked device worker and require a successful fresh artifact",
 )
 require(
-    "&& 'macos-26' ||" in job("build-tvos").split("permissions:", 1)[0]
+    "&& 'macos-15' ||" in job("build-tvos").split("permissions:", 1)[0]
+    and "hosted-xcode-version: '26.3'" in job("build-tvos")
     and "(inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos)" in job("build-tvos")
     and "--rebuild-tvos" in recovery_gate and "--rebuild-tvos" in recovery_download
     and "inputs.rebuild_tvos && needs.build-tvos.result == 'success'" in release_condition

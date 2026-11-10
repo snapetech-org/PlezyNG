@@ -767,11 +767,19 @@ def recover_native_groups(checkout: Path, scratch: Path) -> list[str]:
     return recovered
 
 
-def create_plezy_worktree(scratch: Path) -> Path:
+def create_plezy_worktree(scratch: Path, *, source_ref: str = "origin/main") -> Path:
     worktree = scratch / "plezyng-main"
     command(["git", "fetch", "origin", "main"], cwd=ROOT)
-    command(["git", "worktree", "add", "--detach", worktree, "origin/main"], cwd=ROOT)
+    command(["git", "worktree", "add", "--detach", worktree, source_ref], cwd=ROOT)
     return worktree
+
+
+def validate_source_metadata(worktree: Path, version: str) -> None:
+    declared = command(["python3", "scripts/pubspec_version.py", "pubspec.yaml"],
+                       cwd=worktree, capture=True).stdout.strip().split("+", 1)[0]
+    if declared != version:
+        raise ReleaseError(f"Requested {version}, but selected source declares {declared}.")
+    command(["python3", "tools/webos/verify_package.py", "--project-metadata"], cwd=worktree)
 
 
 def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: str,
@@ -812,8 +820,10 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
     return command(["git", "rev-parse", "HEAD"], cwd=worktree, capture=True).stdout.strip()
 
 
-def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid") -> dict:
-    existing = matching_run(PLEZY_REPO, CI_WORKFLOW, commit_sha, ref="main")
+def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref: str = "main") -> dict:
+    if source_ref != "main":
+        ensure_frozen_release_source(source_ref, commit_sha)
+    existing = matching_run(PLEZY_REPO, CI_WORKFLOW, commit_sha, ref=source_ref)
     if existing:
         if existing.get("status") == "completed" and existing.get("conclusion") != "success":
             raise ReleaseError(f"CI for release commit {commit_sha[:12]} failed; refusing to tag it.")
@@ -831,7 +841,7 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid") -> dict:
     return dispatch(
         PLEZY_REPO,
         CI_WORKFLOW,
-        "main",
+        source_ref,
         {"action": "ci", "runner_pool": "private", "execution_profile": execution_profile,
          "build_linux_packages": "true"},
         "Pleazyng CI",
@@ -1020,6 +1030,39 @@ def refresh_published_facts(worktree: Path, tag: str, release_sha: str) -> str:
     return command(["git", "rev-parse", "HEAD"], cwd=worktree, capture=True).stdout.strip()
 
 
+def refresh_latest_published_facts(scratch: Path, tag: str, product_sha: str) -> str:
+    """Write availability on fresh main, never push the frozen product checkout."""
+    ensure_frozen_release_source(tag, product_sha)
+    command(["git", "fetch", "origin", "main"], cwd=ROOT)
+    checkout = scratch / "published-facts"
+    command(["git", "worktree", "add", "--detach", checkout, "origin/main"], cwd=ROOT)
+    removable = False
+    try:
+        latest_sha = command(["git", "rev-parse", "HEAD"], cwd=checkout, capture=True).stdout.strip()
+        result = refresh_published_facts(checkout, tag, latest_sha)
+        removable = True
+        return result
+    except Exception as error:
+        evidence = scratch / "published-facts-evidence"
+        evidence.mkdir()
+        for relative in ("README.md", "docs/maintainers/capability-manifest.json",
+                         f"docs/maintainers/releases/{tag}.json"):
+            source = checkout / relative
+            if source.is_file():
+                destination = evidence / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, destination)
+        head = command(["git", "rev-parse", "HEAD"], cwd=checkout, capture=True).stdout.strip()
+        (evidence / "retry.json").write_text(json.dumps(
+            {"tag": tag, "product_sha": product_sha, "metadata_commit": head, "error": str(error)},
+            indent=2) + "\n")
+        removable = True
+        raise
+    finally:
+        if removable:
+            command(["git", "worktree", "remove", "--force", checkout], cwd=ROOT, check=False)
+
+
 def ensure_release(
     tag: str,
     commit_sha: str,
@@ -1038,9 +1081,14 @@ def ensure_release(
     rebuild_ios: bool = False,
     reuse_repaired_run_id: int | None = None,
     reuse_webos_run_id: int | None = None,
+    source_ref: str = "main",
 ) -> dict:
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
+    if source_ref != "main":
+        if source_ref != tag:
+            raise ReleaseError("Release builds require their exact immutable version tag.")
+        ensure_frozen_release_source(tag, commit_sha)
     if not include_webos_release or not include_webos_build:
         raise ReleaseError("Every versioned release requires its successful webOS build and public artifact.")
     run_title = f"action:release:pool:private:tag:{tag}"
@@ -1075,7 +1123,7 @@ def ensure_release(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
         commit_sha,
-        ref="main",
+        ref=source_ref,
         expected_title=run_title,
     )
     if existing:
@@ -1113,7 +1161,12 @@ def ensure_release(
             f"Release run {existing['databaseId']} passed without all requested platform jobs; "
             "dispatching the required profile."
         )
-    ensure_remote_main_sha(commit_sha, f"dispatching the {tag} release build")
+    if source_ref == "main":
+        ensure_remote_main_sha(commit_sha, f"dispatching the {tag} release build")
+    else:
+        if source_ref != tag:
+            raise ReleaseError("Release builds require their exact immutable version tag.")
+        ensure_frozen_release_source(tag, commit_sha)
     fields = {
         "action": "release",
         "runner_pool": "private",
@@ -1147,7 +1200,7 @@ def ensure_release(
     return dispatch(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
-        "main",
+        source_ref,
         fields,
         f"Pleazyng {tag} all-platform release build",
         expected_title=run_title,
@@ -1182,6 +1235,23 @@ def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
         return compose_proof(source, android_run, include_webos_build, webos_run)
     except (RecoveryError, RuntimeError) as error:
         raise ReleaseError(f"Platform artifact recovery rejected: {error}") from error
+
+
+def ensure_frozen_release_source(tag: str, expected_sha: str) -> None:
+    """Bind the release to its remote tag while permitting later main development."""
+    if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
+        raise ReleaseError("Frozen releases require an exact vMAJOR.MINOR.PATCH tag.")
+    reference = gh_json("api", f"repos/{PLEZY_REPO}/git/ref/tags/{tag}")
+    target = reference.get("object", {})
+    if target.get("type") == "tag":
+        annotated = gh_json("api", f"repos/{PLEZY_REPO}/git/tags/{target.get('sha')}")
+        target = annotated.get("object", {})
+    if target.get("type") != "commit" or target.get("sha") != expected_sha:
+        raise ReleaseError(f"Immutable release tag {tag} does not resolve to {expected_sha}.")
+    ancestry = gh_json("api", f"repos/{PLEZY_REPO}/compare/{expected_sha}...main")
+    if (ancestry.get("status") not in ("ahead", "identical")
+            or ancestry.get("base_commit", {}).get("sha") != expected_sha):
+        raise ReleaseError(f"Frozen release {tag} is not an ancestor of canonical main.")
 
 
 def ensure_remote_main_sha(expected_sha: str, purpose: str) -> None:
@@ -1618,6 +1688,8 @@ def publish_configured_channels(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--version", required=True, help="Release version matching pubspec.yaml, such as 3.0.0")
+    parser.add_argument("--freeze-release", action=argparse.BooleanOptionalAction, default=True,
+                        help="Run normal release CI and builds from one immutable version tag; later main commits belong to the next release.")
     parser.add_argument(
         "--reuse-platform-run", type=int,
         help="Rebuild Android/WebOS and reuse other verified platform outputs after infrastructure-only fixes.",
@@ -1686,14 +1758,10 @@ def main() -> int:
         raise ReleaseError("--version must be MAJOR.MINOR.PATCH, without a leading v.")
     if args.execution_profile is None:
         args.execution_profile = "hybrid"
-    package_version = command(
-        ["python3", "scripts/pubspec_version.py", "pubspec.yaml"], cwd=ROOT, capture=True
-    ).stdout.strip().split("+", 1)[0]
-    if package_version != args.version:
-        raise ReleaseError(f"Requested {args.version}, but pubspec.yaml declares {package_version}.")
-    # Catch duplicated package metadata before spending CI minutes or creating
-    # an immutable tag. This is also a shared pre-commit/CI guard.
-    command(["python3", "tools/webos/verify_package.py", "--project-metadata"], cwd=ROOT)
+    if not getattr(args, "freeze_release", False):
+        # Preserve the legacy main/recovery preflight. Frozen resumptions must
+        # validate the selected tag instead of a later local main checkout.
+        validate_source_metadata(ROOT, args.version)
     if args.execution_profile != "hybrid":
         raise ReleaseError("Complete releases require the hybrid profile, including native Windows ARM64 CI.")
     if args.reuse_platform_run and (
@@ -1746,12 +1814,19 @@ def main() -> int:
 
     try:
         print(f"Release scratch: {scratch}", flush=True)
-        worktree = create_plezy_worktree(scratch)
+        frozen = bool(getattr(args, "freeze_release", False)) and not args.reuse_platform_run
+        tag = f"v{args.version}"
+        frozen_commit = existing_release_tag_commit(ROOT, tag) if frozen else None
+        worktree = (create_plezy_worktree(scratch, source_ref=f"refs/tags/{tag}")
+                    if frozen_commit else create_plezy_worktree(scratch))
+        validate_source_metadata(worktree, args.version)
         main_commit = command(
             ["git", "rev-parse", "HEAD"], cwd=worktree, capture=True, quiet=True
         ).stdout.strip()
-        ensure_remote_main_sha(main_commit, "starting the Pleazyng release")
-        tag = f"v{args.version}"
+        if frozen_commit:
+            ensure_frozen_release_source(tag, main_commit)
+        else:
+            ensure_remote_main_sha(main_commit, "starting the Pleazyng release")
         existing_tag_commit = existing_release_tag_commit(worktree, tag)
         tag_reused = existing_tag_commit is not None
         if args.reuse_platform_run and not tag_reused:
@@ -1760,7 +1835,13 @@ def main() -> int:
         ffmpeg_version = None
         ffmpeg_sha256 = None
 
-        if tag_reused:
+        if tag_reused and frozen:
+            pin_sha = existing_tag_commit
+            ci_source = pin_sha
+            progress["tag_commit"] = pin_sha
+            progress["immutable_tag_reused"] = True
+            print(f"Resuming frozen {tag} at {pin_sha}; later main changes do not alter this release.")
+        elif tag_reused:
             ci_source = release_ci_source(worktree, tag, main_commit, existing_tag_commit)
             pin_sha = main_commit
             progress["tag_commit"] = existing_tag_commit
@@ -1798,6 +1879,15 @@ def main() -> int:
         # Include immutable-tag reuse: that path otherwise skips native refresh.
         # Stale tagged native inputs require the next version, never a moved tag.
         command(["python3", "scripts/sync_native_revision.py", "--check"], cwd=worktree)
+        validate_source_metadata(worktree, args.version)
+        if frozen:
+            # Tag creation freezes source, not publication. Every CI and platform
+            # gate must still pass before the draft can become a public release.
+            if not tag_reused:
+                tag = ensure_tag(worktree, args.version, pin_sha)
+            ensure_frozen_release_source(tag, pin_sha)
+            progress["tag"] = tag
+            progress["frozen_source"] = True
         ci_source = ci_source if tag_reused else pin_sha
         progress["ci_source_commit"] = ci_source
         progress["plezyng_commit"] = pin_sha
@@ -1822,12 +1912,13 @@ def main() -> int:
             progress["platform_recovery"] = proof
             print(f"Verified unchanged product inputs and exact-source CI from run {proof['ci_run_id']}.")
         else:
-            ci = ensure_ci(ci_source, execution_profile=args.execution_profile)
+            ci = ensure_ci(ci_source, execution_profile=args.execution_profile,
+                           **({"source_ref": tag} if frozen else {}))
         progress["ci_run"] = ci["databaseId"]
         # Store variants are explicit preparation, never implied by publishing.
         include_apple_store_build = args.include_apple_store_build
         progress["include_apple_store_build"] = include_apple_store_build
-        if not tag_reused:
+        if not tag_reused and not frozen:
             # Exact-source CI runs first. Build every release package once after
             # tagging; never publish until the complete artifact checks pass.
             stage = "release tag"
@@ -1849,6 +1940,7 @@ def main() -> int:
             execution_profile=args.execution_profile,
             include_apple_store_build=include_apple_store_build,
             prepare_homebrew_cask=args.prepare_homebrew_cask,
+            **({"source_ref": tag} if frozen else {}),
             **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"rebuild_macos": True} if args.rebuild_macos else {}),
             **({"rebuild_tvos": True} if args.rebuild_tvos else {}),
@@ -1884,7 +1976,10 @@ def main() -> int:
         publication_facts_failures: list[str] = []
         release_published = False
         if args.publish or args.publish_github_only:
-            ensure_remote_main_sha(pin_sha, f"publishing Pleazyng {tag}")
+            if frozen:
+                ensure_frozen_release_source(tag, pin_sha)
+            else:
+                ensure_remote_main_sha(pin_sha, f"publishing Pleazyng {tag}")
             stage = "publish GitHub release"
             progress["stage"] = stage
             save_progress()
@@ -1895,11 +1990,19 @@ def main() -> int:
             progress["status"] = "success"
             progress["stage"] = "post-release followups"
             save_progress()
-            followups = post_release_actions(
-                tag, args.version, release_sha=pin_sha,
-                include_webos_release=args.include_webos_release,
-                publish_channels=args.publish,
-            )
+            try:
+                delivery_sha = (gh_json("api", f"repos/{PLEZY_REPO}/branches/main")["commit"]["sha"]
+                                if frozen else pin_sha)
+                progress["delivery_tooling_commit"] = delivery_sha
+                followups = post_release_actions(
+                    tag, args.version, release_sha=delivery_sha,
+                    include_webos_release=args.include_webos_release,
+                    publish_channels=args.publish,
+                )
+            except Exception as error:
+                followups = {"published_channels": [], "skipped_channels": [],
+                             "channel_failures": [f"Post-publication delivery: {error}"],
+                             "notification_failures": [], "aerynos_automation": []}
             published_channels = followups["published_channels"]
             skipped_channels = followups["skipped_channels"]
             channel_failures = followups["channel_failures"]
@@ -1910,7 +2013,8 @@ def main() -> int:
             if channel_failures or notification_failures:
                 print("GitHub release is published; post-release delivery needs a separate retry.")
             try:
-                publication_facts_commit = refresh_published_facts(worktree, tag, pin_sha)
+                publication_facts_commit = (refresh_latest_published_facts(scratch, tag, pin_sha)
+                                            if frozen else refresh_published_facts(worktree, tag, pin_sha))
             except Exception as error:
                 # Preserve core publication success; do not rebuild published
                 # binaries merely because documentation needs a separate retry.
@@ -1959,6 +2063,16 @@ def main() -> int:
         print(f"Evidence: {summary_path}")
         return 0
     except Exception as error:
+        if progress.get("release_published"):
+            # Remote core publication already succeeded. Unexpected follow-up
+            # failures must not invite another all-platform build.
+            progress["status"] = "success"
+            progress["stage"] = "post-release followups require retry"
+            progress.setdefault("channel_failures", []).append(str(error))
+            save_progress()
+            summary_path.write_text(json.dumps(progress, indent=2) + "\n", encoding="utf-8")
+            print(f"GitHub release is published; retry follow-ups against its immutable artifacts: {error}")
+            return 0
         progress["status"] = "failed"
         progress["stage"] = stage
         progress["error"] = str(error)

@@ -80,7 +80,7 @@ class SigningOptionsTests(unittest.TestCase):
                 for name in ("pleazyng-ios-appstore.ipa", "pleazyng-tvos-appstore.ipa", "snapetech-pleazyng.rb"):
                     self.assertEqual(name in str(raised.exception), enabled)
 
-    def test_github_only_main_propagates_flags_without_store_uploads(self):
+    def test_github_only_frozen_release_propagates_flags_without_store_uploads(self):
         with tempfile.TemporaryDirectory() as scratch, contextlib.ExitStack() as stack:
             stack.enter_context(patch.object(sys, "argv", ["release", "--version", "3.0.1", "--publish-github-only",
                 "--include-apple-store-build", "--prepare-homebrew-cask", "--scratch", scratch]))
@@ -91,6 +91,11 @@ class SigningOptionsTests(unittest.TestCase):
             stack.enter_context(patch.object(release, "existing_release_tag_commit", return_value="a" * 40))
             stack.enter_context(patch.object(release, "validate_immutable_release_tag"))
             stack.enter_context(patch.object(release, "ensure_remote_main_sha"))
+            stack.enter_context(patch.object(release, "ensure_frozen_release_source"))
+            stack.enter_context(patch.object(release, "gh_json", return_value={"commit": {"sha": "b" * 40}}))
+            stack.enter_context(patch.object(release, "refresh_latest_published_facts", return_value="b" * 40))
+            stack.enter_context(patch.object(release, "dispatch_automatic_play", return_value=None))
+            stack.enter_context(patch.object(release, "dispatch_aerynos_delivery", return_value={}))
             stack.enter_context(patch.object(release, "ensure_ci", return_value={"databaseId": 1}))
             build = stack.enter_context(patch.object(release, "ensure_release", return_value={"databaseId": 2}))
             validate = stack.enter_context(patch.object(release, "validate_release_outputs"))

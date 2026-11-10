@@ -538,6 +538,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           COMMIT_SHA: ${{ steps.release-tag.outputs.commit }}
           REPOSITORY: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_type == 'tag' && steps.request.outputs.release_tag || '' }}
         run: python3 scripts/verify_release_ci.py
 
       - name: Validate webOS package metadata
@@ -1316,7 +1317,7 @@ jobs:
     if: ${{ (inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build tvOS developer package (arm64)
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
     permissions:
       id-token: write
       attestations: write
@@ -1336,6 +1337,7 @@ jobs:
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter-apple
         with:
+          hosted-xcode-version: '26.3'
           flutter-version: ${{ env.TVOS_FLUTTER_VERSION }}
 
       - name: Cache Pub dependencies

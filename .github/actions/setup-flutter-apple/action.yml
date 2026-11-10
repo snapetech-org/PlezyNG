@@ -4,18 +4,31 @@ inputs:
   flutter-version:
     description: Exact Flutter stable version.
     required: true
+  hosted-xcode-version:
+    description: Exact Xcode version installed on the selected hosted image.
+    default: '26.5'
 runs:
   using: composite
   steps:
     - name: Select the stable hosted Xcode toolchain
       if: runner.environment == 'github-hosted'
       shell: bash
+      env:
+        HOSTED_XCODE_VERSION: ${{ inputs.hosted-xcode-version }}
       run: |
         set -euo pipefail
-        developer_dir=/Applications/Xcode_26.5.app/Contents/Developer
+        [[ "$HOSTED_XCODE_VERSION" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]
+        developer_dir="/Applications/Xcode_${HOSTED_XCODE_VERSION}.app/Contents/Developer"
         test -d "$developer_dir"
         echo "DEVELOPER_DIR=$developer_dir" >> "$GITHUB_ENV"
         DEVELOPER_DIR="$developer_dir" xcodebuild -version
+        if [[ "$HOSTED_XCODE_VERSION" == '26.3' ]]; then
+          test "$(uname -m)" = arm64
+          DEVELOPER_DIR="$developer_dir" xcodebuild -version | grep -Fx 'Build version 17C529'
+          for sdk in iphoneos appletvos iphonesimulator appletvsimulator; do
+            test "$(DEVELOPER_DIR="$developer_dir" xcrun --sdk "$sdk" --show-sdk-version)" = '26.2'
+          done
+        fi
 
     - name: Prepare the pinned Flutter SDK in local APFS cache
       shell: bash

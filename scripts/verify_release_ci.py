@@ -105,10 +105,26 @@ def _required_environment() -> tuple[str, str, str, str]:
 def _latest_run(token: str, repository: str, commit_sha: str, gate: dict) -> dict:
     owner, repo = repository.split("/", maxsplit=1)
     path = "/".join(urllib.parse.quote(value, safe="") for value in (owner, repo))
+    branch = gate["branch"]
+    release_tag = os.environ.get("RELEASE_TAG", "")
+    if release_tag:
+        if re.fullmatch(r"v\d+\.\d+\.\d+", release_tag) is None:
+            raise GateError("RELEASE_TAG must be an exact immutable version tag.")
+        reference = _request_json(f"{API_BASE}/repos/{path}/git/ref/tags/{release_tag}", token)
+        target = reference.get("object", {})
+        if target.get("type") == "tag":
+            target = _request_json(f"{API_BASE}/repos/{path}/git/tags/{target.get('sha')}", token).get("object", {})
+        if target.get("type") != "commit" or target.get("sha") != commit_sha:
+            raise GateError("Release tag does not resolve to the exact CI source commit.")
+        ancestry = _request_json(f"{API_BASE}/repos/{path}/compare/{commit_sha}...main", token)
+        if (ancestry.get("status") not in ("ahead", "identical")
+                or ancestry.get("base_commit", {}).get("sha") != commit_sha):
+            raise GateError("Release tag source must be an ancestor of canonical main.")
+        branch = release_tag
     query = urllib.parse.urlencode(
         {
             "head_sha": commit_sha,
-            "branch": gate["branch"],
+            "branch": branch,
             "event": gate["event"],
         }
     )
@@ -118,12 +134,12 @@ def _latest_run(token: str, repository: str, commit_sha: str, gate: dict) -> dic
         run
         for run in runs
         if run.get("head_sha") == commit_sha
-        and run.get("head_branch") == gate["branch"]
+        and run.get("head_branch") == branch
         and run.get("event") == gate["event"]
     ]
     if not candidates:
         raise GateError(
-            f"No {gate['event']} run for {gate['workflowName']} exists on {gate['branch']} at {commit_sha}."
+            f"No {gate['event']} run for {gate['workflowName']} exists on {branch} at {commit_sha}."
         )
     return max(
         candidates,

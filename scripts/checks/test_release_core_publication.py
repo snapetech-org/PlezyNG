@@ -89,8 +89,10 @@ class CorePublicationTests(unittest.TestCase):
                     return subprocess.CompletedProcess(args, 0, "3.0.1" if args[0] == "python3" else "a" * 40, "")
                 stack.enter_context(patch.object(release, "command", side_effect=command))
                 core = {}
-                for name in ("validate_immutable_release_tag", "ensure_remote_main_sha", "validate_release_outputs", "publish_github_release"):
+                for name in ("validate_immutable_release_tag", "ensure_remote_main_sha", "ensure_frozen_release_source", "refresh_latest_published_facts", "validate_release_outputs", "publish_github_release"):
                     core[name] = stack.enter_context(patch.object(release, name))
+                core["refresh_latest_published_facts"].return_value = "b" * 40
+                stack.enter_context(patch.object(release, "gh_json", return_value={"commit": {"sha": "b" * 40}}))
                 stack.enter_context(patch.object(release, "create_plezy_worktree", return_value=Path(scratch) / "plezyng-main"))
                 stack.enter_context(patch.object(release, "existing_release_tag_commit", return_value="a" * 40))
                 stack.enter_context(patch.object(release, "ensure_ci", return_value={"databaseId": 1}))
@@ -107,6 +109,7 @@ class CorePublicationTests(unittest.TestCase):
                     continue
                 self.assertEqual(release.main(), 0)
                 build.assert_called_once()
+                self.assertEqual(build.call_args.kwargs["source_ref"], "v3.0.1")
                 self.assertFalse(build.call_args.kwargs["include_apple_store_build"])
                 self.assertFalse(build.call_args.kwargs["prepare_homebrew_cask"])
                 self.assertEqual(channels.call_count, int(publish))
@@ -117,6 +120,8 @@ class CorePublicationTests(unittest.TestCase):
                 self.assertEqual(bool(report["channel_failures"]), publish)
                 progress = json.loads((Path(scratch) / "release-progress.json").read_text())
                 self.assertEqual(progress["status"], "success")
+                self.assertEqual(progress["plezyng_commit"], "a" * 40)
+                self.assertEqual(progress["delivery_tooling_commit"], "b" * 40)
 
     def test_bad_play_configuration_does_not_stop_another_channel(self):
         settings = {"GOOGLE_PLAY_TRACK": "production", "GOOGLE_PLAY_BOOTSTRAP_COMPLETE": "true",
@@ -132,6 +137,33 @@ class CorePublicationTests(unittest.TestCase):
             self.assertTrue(any("Google Play configuration" in error for error in failures))
             self.assertTrue(any(item["channel"] == "Amazon Appstore upload" for item in completed))
             self.assertTrue(all(call.args[2].get("channel") != "google-play" for call in dispatch.call_args_list))
+
+    def test_tooling_lookup_and_unexpected_followup_failure_preserve_published_core(self):
+        for failure in ('lookup', 'followup'):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as scratch, contextlib.ExitStack() as stack:
+                stack.enter_context(patch.object(sys, 'argv', ['release', '--version', '3.0.30',
+                    '--publish-github-only', '--scratch', scratch]))
+                stack.enter_context(patch.object(release, 'command', side_effect=lambda args, **kwargs:
+                    subprocess.CompletedProcess(args, 0, '3.0.30' if args[0] == 'python3' else 'a' * 40, '')))
+                for name in ('ensure_frozen_release_source', 'validate_release_outputs', 'publish_github_release'):
+                    stack.enter_context(patch.object(release, name))
+                stack.enter_context(patch.object(release, 'create_plezy_worktree', return_value=Path(scratch) / 'product'))
+                stack.enter_context(patch.object(release, 'existing_release_tag_commit', return_value='a' * 40))
+                stack.enter_context(patch.object(release, 'ensure_ci', return_value={'databaseId': 1}))
+                build = stack.enter_context(patch.object(release, 'ensure_release', return_value={'databaseId': 2}))
+                stack.enter_context(patch.object(release, 'refresh_latest_published_facts', return_value='b' * 40))
+                stack.enter_context(patch.object(release, 'gh_json',
+                    side_effect=release.ReleaseError('main temporarily unavailable') if failure == 'lookup' else None,
+                    return_value={'commit': {'sha': 'b' * 40}}))
+                stack.enter_context(patch.object(release, 'post_release_actions',
+                    side_effect=release.ReleaseError('unexpected delivery failure')))
+                self.assertEqual(release.main(), 0)
+                report = json.loads((Path(scratch) / 'release-summary.json').read_text())
+                progress = json.loads((Path(scratch) / 'release-progress.json').read_text())
+                self.assertTrue(report['release_published'])
+                self.assertEqual(progress['status'], 'success')
+                self.assertIn('Post-publication delivery:', report['channel_failures'][0])
+                build.assert_called_once()
 
 
 if __name__ == "__main__":

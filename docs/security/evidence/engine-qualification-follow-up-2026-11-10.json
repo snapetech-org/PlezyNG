@@ -1,12 +1,14 @@
 {
   "schemaVersion": 1,
-  "recordedAt": "2026-11-10T02:42:42Z",
+  "recordedAt": "2026-11-10T05:42:32.128Z",
   "sourceRevision": "1194b5785e3ce253c42af83139d205a3bedcb2f6",
   "codeChanges": {
     "enginePromotion": "f4890131207e87a9729eea23639c3857c8afc699",
     "sdkManifest": "c1676804ab2fde7a1d4cc7d608eca4749763ab66",
     "macosRecovery": "1194b5785e3ce253c42af83139d205a3bedcb2f6",
-    "translationReviewGate": "0b9242916269bc8b9917cf5be9958d09cf57676d"
+    "translationReviewGate": "0b9242916269bc8b9917cf5be9958d09cf57676d",
+    "qualifiedSdkPromotion": "98ed66b91b043686663c5c62821b4d87e4dce896",
+    "sourceBuildDocumentation": "20dc25bb1f8fa3b2e0e422f30c8c8e7760333095"
   },
   "localValidation": {
     "repositoryCheckers": {
@@ -48,12 +50,26 @@
     },
     "fixedWindowsEngineProducer": {
       "run": 42726273235,
-      "x64": "in_progress",
-      "arm64": "in_progress",
-      "artifactQualification": "not yet run",
-      "nativePatchedRuntimeQualification": "not yet run"
+      "x64": "passed",
+      "arm64": "passed",
+      "artifactQualification": "passed in publisher run 42761166784",
+      "nativePatchedRuntimeQualification": "passed for x64 and ARM64 in publisher run 42761166784"
+    },
+    "verifiedPublisher": {
+      "run": 42761166784,
+      "release": "https://github.com/snapetech-org/pleazyng/releases/tag/flutter-security-3.47.8",
+      "latestApplicationRelease": "v3.0.7",
+      "sha256": {
+        "x64": "409ec2ffd14f5d9c0de7964a43ec8cdcb6d9530775b909a6e973f4c7431f9126",
+        "arm64": "7c0d3a3679a05956c5c48ac5d04ceab83ad875a4bf2c5ed4fe760b1a806e86e9"
+      }
+    },
+    "promotedSdkCI": {
+      "run": 42763357691,
+      "sourceRevision": "98ed66b91b043686663c5c62821b4d87e4dce896",
+      "status": "in_progress"
     }
   },
-  "promotionBoundary": "Application SDK manifest remains 3.47.1 until both real architecture artifacts pass provenance/static checks and both native patched-runtime probes. Promotion atomically writes the SDK manifest and architecture SHA-256 pins, then explicitly dispatches CI. tvOS retains its separate custom-engine ABI.",
+  "promotionBoundary": "Qualified x64 and ARM64 artifacts passed source provenance, static archive and native patched-runtime probes; main atomically promoted Flutter 3.47.8 in scripts/flutter/sdk-pin.json and both exact architecture SHA-256 pins at 98ed66b91b. The CI run is in progress. tvOS retains its separately pinned custom 3.47.1 engine ABI. The component release is not a Pleazyng installer.",
   "externalAcceptance": "Native-speaker review, signed iOS devices, supported tvOS containment, device/provider/deployment and image-quality acceptance remain open."
 }

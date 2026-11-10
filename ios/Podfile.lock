@@ -144,6 +144,7 @@ PODS:
   - plezy_preparation (1.0.0):
     - Flutter
   - plezy_romm_ios (1.0.0)
+  - plezy_romm_worker (1.0.0)
   - plezy_torrent (1.0.0)
   - PromisesObjC (2.4.1)
   - PromisesSwift (2.4.1):
@@ -214,6 +215,7 @@ DEPENDENCIES:
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - plezy_preparation (from `.symlinks/plugins/plezy_preparation/ios`)
   - plezy_romm_ios (from `../native/games/romm/apple`)
+  - plezy_romm_worker (from `../native/games/romm/apple`)
   - plezy_torrent (from `.symlinks/plugins/plezy_torrent/ios`)
   - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
   - record_ios (from `.symlinks/plugins/record_ios/ios`)
@@ -303,6 +305,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/plezy_preparation/ios"
   plezy_romm_ios:
     :path: "../native/games/romm/apple"
+  plezy_romm_worker:
+    :path: "../native/games/romm/apple"
   plezy_torrent:
     :path: ".symlinks/plugins/plezy_torrent/ios"
   receive_sharing_intent:
@@ -366,6 +370,7 @@ SPEC CHECKSUMS:
   permission_handler_apple: 92d754bbaa7361d436db2d6c3c1c2a0fdcec462e
   plezy_preparation: 2c388d39a9dc34a207980f5f25b1ace3c1e0df09
   plezy_romm_ios: 877b8f9b7e0698312657e9b51fe51060902865f4
+  plezy_romm_worker: e0416e280b194476baddac384ec8ec651f79a23d
   plezy_torrent: a25cda38e3cf8fae9862ee60451eaaac5506cf01
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
@@ -383,6 +388,6 @@ SPEC CHECKSUMS:
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   wakelock_plus: 5aaa6a7ccaf4749a96a7d8ff0721d68061ad62cf
 
-PODFILE CHECKSUM: 0c516fb89ba6e27f460265842662f0f0bc77b005
+PODFILE CHECKSUM: e2aaf2e42192a6b8b9cef91a97141af0b4b76329
 
 COCOAPODS: 1.17.0

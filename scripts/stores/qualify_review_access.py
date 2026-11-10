@@ -50,6 +50,8 @@ def main():
         raise RuntimeError('Emulator did not finish booting')
     if adb('shell', 'getprop', 'ro.kernel.qemu') != '1':
         raise RuntimeError('Refusing expired-trial state injection outside an emulator')
+    adb('shell', 'input', 'keyevent', 'KEYCODE_WAKEUP')
+    adb('shell', 'wm', 'dismiss-keyguard')
     if adb('shell', 'pm', 'list', 'packages', PACKAGE):
         raise RuntimeError('Fresh emulator required; existing app data will not be replaced')
     root = args.artifacts
@@ -88,7 +90,7 @@ def main():
                         '-c', 'android.intent.category.LAUNCHER', '-p', PACKAGE).splitlines()[-1]
         if not component.startswith(PACKAGE + '/'):
             raise RuntimeError('Expected app launcher activity not found')
-        adb('shell', 'am', 'start', '-n', component)
+        adb('shell', 'am', 'start', '-W', '-n', component)
 
     def ui():
         # /dev/stdout streams directly through adb; no populated grant XML is
@@ -105,8 +107,14 @@ def main():
         return [node.get(key, '') for node in tree.iter('node') for key in ('text', 'content-desc')]
 
     def wait_for(predicate):
-        for _ in range(20):
-            tree = ui()
+        for _ in range(40):
+            try:
+                tree = ui()
+            except RuntimeError:
+                # Fresh-boot/Flutter transitions can temporarily expose no
+                # accessibility root. Retry without logging sensitive UI XML.
+                time.sleep(1)
+                continue
             if predicate(labels(tree)):
                 return tree
             time.sleep(1)
@@ -128,7 +136,12 @@ def main():
         adb('shell', 'input', 'tap', str(x), str(y))
 
     launch()
-    tree = wait_for(lambda values: any(EXPIRED in value for value in values))
+    try:
+        tree = wait_for(lambda values: any(EXPIRED in value for value in values))
+    except RuntimeError:
+        # This is strictly before opening or filling the review-code dialog.
+        (root / 'pre-grant-startup-failure.png').write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
+        raise
     if not any('Restore lifetime purchase' in value for value in labels(tree)):
         raise RuntimeError('Expired gate is missing purchase restore control')
     (root / 'expired-trial.png').write_bytes(adb('exec-out', 'screencap', '-p', binary=True))

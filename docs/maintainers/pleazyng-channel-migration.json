@@ -271,7 +271,7 @@
       "tester_list": "Pleazyng Alpha testers",
       "existing_members_preserved": 5,
       "feedback": "support@snape.tech",
-      "state": "Existing v3.0.7+166 AAB uploaded and release saved in Publishing overview, ready for review; not submitted or activated"
+      "state": "Existing166 retained in bundle explorer. Prior unpublished Alpha release configuration discarded to prepare internal qualification; countries and tester list preserved. Recreate Alpha release after native grant and purchase/restore qualification."
     },
     "organization_conversion": {
       "current_account_type": "Personal",
@@ -290,7 +290,15 @@
       "countries_regions": 174
     },
     "foreground_service_declaration": "Saved 2026-11-09: data sync network processing and media playback with existing demonstration videos",
-    "review_public_key_binary_check": "Configured public key found in all three v3.0.7 Play AAB libapp.so ABIs; actual expired-trial grant redemption remains required"
+    "review_public_key_binary_check": "Configured public key found in all three v3.0.7 Play AAB libapp.so ABIs; actual expired-trial grant redemption remains required",
+    "internal_qualification_2026_11_09": {
+      "version_code": 166,
+      "tester_list": "Pleazyng Alpha testers; five members preserved",
+      "staging_run": 42728878763,
+      "review_grant_run": 42728882845,
+      "state": "Google404 rejects archived166 track reference; exact original AAB redelivery into internal draft pending. Emulator boots/installs; accessibility startup retry added. No review or rollout submitted.",
+      "original_aab_redelivery_run": 42730459200
+    }
   },
   "copr": {
     "owner": "slskdn",

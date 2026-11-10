@@ -22,6 +22,10 @@ class CorePublicationTests(unittest.TestCase):
         aerynos = patch.object(release, 'dispatch_aerynos_delivery', return_value={})
         aerynos.start()
         self.addCleanup(aerynos.stop)
+        embedded = patch.object(release, 'embedded_ci_proof',
+                                return_value={'mode': 'embedded', 'run_id': 2, 'attempt': 1})
+        embedded.start()
+        self.addCleanup(embedded.stop)
 
     def test_only_channel_metadata_is_optional_and_collected_when_present(self):
         workflow = yaml.safe_load((Path(__file__).resolve().parents[2] / ".github/workflows/build.yml").read_text())
@@ -108,13 +112,16 @@ class CorePublicationTests(unittest.TestCase):
                     self.assertEqual(progress["status"], "failed")
                     continue
                 self.assertEqual(release.main(), 0)
-                build.assert_called_once()
-                self.assertEqual(build.call_args.kwargs["source_ref"], "v3.0.1")
+                self.assertEqual(build.call_count, 2)
+                self.assertTrue(build.call_args_list[0].kwargs['start_only'])
+                self.assertEqual(build.call_args.kwargs['candidate_ref'], 'v3.0.1-candidate.' + 'a' * 40)
+                self.assertNotIn('source_ref', build.call_args.kwargs)
                 self.assertFalse(build.call_args.kwargs["include_apple_store_build"])
                 self.assertFalse(build.call_args.kwargs["prepare_homebrew_cask"])
                 self.assertEqual(channels.call_count, int(publish))
                 report = json.loads((Path(scratch) / "release-summary.json").read_text())
                 self.assertTrue(report["release_published"])
+                self.assertEqual(report['ci_mode'], 'embedded')
                 self.assertEqual(report["aerynos_automation"], [{}])
                 self.assertTrue(report["notification_failures"])
                 self.assertEqual(bool(report["channel_failures"]), publish)
@@ -163,7 +170,7 @@ class CorePublicationTests(unittest.TestCase):
                 self.assertTrue(report['release_published'])
                 self.assertEqual(progress['status'], 'success')
                 self.assertIn('Post-publication delivery:', report['channel_failures'][0])
-                build.assert_called_once()
+                self.assertEqual(build.call_count, 2)
 
 
 if __name__ == "__main__":

@@ -202,11 +202,11 @@ def failed_build_has_drained(run: dict, jobs: list[dict]) -> bool:
     )
 
 
-def wait_for_run(repo: str, run: dict, purpose: str) -> dict:
+def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = True) -> dict:
     run_id = str(run["databaseId"])
     print(f"\n{purpose}: {run.get('url', f'https://github.com/{repo}/actions/runs/{run_id}')}", flush=True)
     apple_controller: subprocess.Popen[bytes] | None = None
-    if repo == PLEZY_REPO:
+    if repo == PLEZY_REPO and private_apple:
         if APPLE_JIT_EVIDENCE_ROOT is None:
             raise ReleaseError("No task scratch path is configured for Apple JIT evidence.")
         # Platform jobs appear only after the workflow's validation job passes.
@@ -268,7 +268,7 @@ def wait_for_run(repo: str, run: dict, purpose: str) -> dict:
 
 
 def dispatch(repo: str, workflow: str, ref: str, fields: dict[str, str], purpose: str,
-             *, expected_title: str | None = None, expected_sha: str | None = None) -> dict:
+             *, expected_title: str | None = None, expected_sha: str | None = None, wait: bool = True) -> dict:
     before = dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10)
     args = ["gh", "workflow", "run", workflow, "--repo", repo, "--ref", ref]
     for key, value in fields.items():
@@ -289,7 +289,12 @@ def dispatch(repo: str, workflow: str, ref: str, fields: dict[str, str], purpose
                     f"{run.get('headSha') or 'an unknown commit'} instead of expected "
                     f"{expected_sha}. The branch moved during dispatch; no other run was reused."
                 )
-            return wait_for_run(repo, run, purpose)
+            if not wait:
+                return run
+            private_apple = (fields.get("execution_profile") != "hybrid"
+                             or fields.get("apple_runner_pool") == "private"
+                             or fields.get("tvos_runner_pool") == "private")
+            return wait_for_run(repo, run, purpose, private_apple=private_apple)
         time.sleep(5)
     raise ReleaseError(f"Workflow dispatch succeeded, but its run was not visible: {repo}/{workflow} on {ref}")
 
@@ -820,7 +825,8 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
     return command(["git", "rev-parse", "HEAD"], cwd=worktree, capture=True).stdout.strip()
 
 
-def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref: str = "main") -> dict:
+def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref: str = "main",
+              apple_runner_pool: str = "hosted") -> dict:
     if source_ref != "main":
         ensure_frozen_release_source(source_ref, commit_sha)
     existing = matching_run(PLEZY_REPO, CI_WORKFLOW, commit_sha, ref=source_ref)
@@ -828,7 +834,8 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref:
         if existing.get("status") == "completed" and existing.get("conclusion") != "success":
             raise ReleaseError(f"CI for release commit {commit_sha[:12]} failed; refusing to tag it.")
         if existing.get("status") != "completed":
-            existing = wait_for_run(PLEZY_REPO, existing, "Pleazyng CI")
+            existing = wait_for_run(PLEZY_REPO, existing, "Pleazyng CI",
+                                    private_apple=execution_profile != "hybrid" or apple_runner_pool == "private")
         if execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Windows native reliability (arm64)"
         ):
@@ -838,12 +845,15 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref:
             f"CI run {existing['databaseId']} passed without the required Windows ARM64 job; "
             "dispatching the hybrid profile."
         )
+    fields = {"action": "ci", "runner_pool": "private", "execution_profile": execution_profile,
+              "build_linux_packages": "true"}
+    if apple_runner_pool == "private":
+        fields["apple_runner_pool"] = "private"
     return dispatch(
         PLEZY_REPO,
         CI_WORKFLOW,
         source_ref,
-        {"action": "ci", "runner_pool": "private", "execution_profile": execution_profile,
-         "build_linux_packages": "true"},
+        fields,
         "Pleazyng CI",
         expected_title="action:ci:pool:private",
         expected_sha=commit_sha,
@@ -880,7 +890,8 @@ def ensure_candidate_build(
             )
         if existing.get("status") != "completed":
             existing = wait_for_run(
-                PLEZY_REPO, existing, f"Pleazyng {version} all-platform release-mode candidate"
+                PLEZY_REPO, existing, f"Pleazyng {version} all-platform release-mode candidate",
+                private_apple=execution_profile != "hybrid",
             )
         complete = execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
@@ -1009,6 +1020,18 @@ def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
     return tag
 
 
+def ensure_candidate_tag(worktree: Path, version: str, commit_sha: str) -> str:
+    tag = f"v{version}-candidate.{commit_sha}"
+    existing = existing_release_tag_commit(worktree, tag)
+    if existing is not None and existing != commit_sha:
+        raise ReleaseError(f"Immutable candidate {tag} points to a different commit.")
+    if existing is None:
+        command(["git", "tag", "-a", tag, commit_sha, "-m", f"Pleazyng {version} validation candidate"], cwd=worktree)
+        command(["git", "push", "origin", f"refs/tags/{tag}"], cwd=worktree)
+    ensure_frozen_release_source(tag, commit_sha)
+    return tag
+
+
 def refresh_published_facts(worktree: Path, tag: str, release_sha: str) -> str:
     """Update public availability last, after publication and delivery checks."""
     ensure_remote_main_sha(release_sha, "recording published release facts")
@@ -1081,16 +1104,18 @@ def ensure_release(
     rebuild_ios: bool = False,
     reuse_repaired_run_id: int | None = None,
     reuse_webos_run_id: int | None = None,
-    source_ref: str = "main",
+    candidate_ref: str | None = None,
+    start_only: bool = False,
+    tvos_runner_pool: str = "hosted",
 ) -> dict:
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
-    if source_ref != "main":
-        if source_ref != tag:
-            raise ReleaseError("Release builds require their exact immutable version tag.")
-        ensure_frozen_release_source(tag, commit_sha)
     if not include_webos_release or not include_webos_build:
         raise ReleaseError("Every versioned release requires its successful webOS build and public artifact.")
+    if candidate_ref:
+        if candidate_ref != f"{tag}-candidate.{commit_sha}":
+            raise ReleaseError("A captured main build requires its exact version/SHA candidate reference.")
+        ensure_frozen_release_source(candidate_ref, commit_sha)
     run_title = f"action:release:pool:private:tag:{tag}"
     if reuse_platform_run_id:
         if execution_profile != "hybrid" or include_apple_store_build:
@@ -1123,7 +1148,7 @@ def ensure_release(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
         commit_sha,
-        ref=source_ref,
+        ref="main",
         expected_title=run_title,
     )
     if existing:
@@ -1133,7 +1158,10 @@ def ensure_release(
                 "it was not re-run to avoid duplicating publication side effects."
             )
         if existing.get("status") != "completed":
-            existing = wait_for_run(PLEZY_REPO, existing, f"Pleazyng {tag} all-platform release build")
+            if start_only:
+                return existing
+            existing = wait_for_run(PLEZY_REPO, existing, f"Pleazyng {tag} all-platform release build",
+                                    private_apple=execution_profile != "hybrid" or tvos_runner_pool == "private")
         complete = bool(reuse_platform_run_id) or execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
         )
@@ -1161,12 +1189,7 @@ def ensure_release(
             f"Release run {existing['databaseId']} passed without all requested platform jobs; "
             "dispatching the required profile."
         )
-    if source_ref == "main":
-        ensure_remote_main_sha(commit_sha, f"dispatching the {tag} release build")
-    else:
-        if source_ref != tag:
-            raise ReleaseError("Release builds require their exact immutable version tag.")
-        ensure_frozen_release_source(tag, commit_sha)
+    ensure_remote_main_sha(commit_sha, f"dispatching the {tag} release build")
     fields = {
         "action": "release",
         "runner_pool": "private",
@@ -1179,6 +1202,10 @@ def ensure_release(
         "include_apple_store_build": "true" if include_apple_store_build else "false",
         "prepare_homebrew_cask": "true" if prepare_homebrew_cask else "false",
     }
+    if candidate_ref:
+        fields["candidate_ref"] = candidate_ref
+    if tvos_runner_pool == "private":
+        fields["tvos_runner_pool"] = "private"
     if rebuild_linux:
         fields["rebuild_linux"] = "true"
     if rebuild_macos:
@@ -1200,11 +1227,12 @@ def ensure_release(
     return dispatch(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
-        source_ref,
+        "main",
         fields,
         f"Pleazyng {tag} all-platform release build",
         expected_title=run_title,
         expected_sha=commit_sha,
+        **({"wait": False} if start_only else {}),
     )
 
 
@@ -1239,8 +1267,9 @@ def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
 
 def ensure_frozen_release_source(tag: str, expected_sha: str) -> None:
     """Bind the release to its remote tag while permitting later main development."""
-    if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
-        raise ReleaseError("Frozen releases require an exact vMAJOR.MINOR.PATCH tag.")
+    match = re.fullmatch(r"v\d+\.\d+\.\d+(?:-candidate\.([0-9a-f]{40}))?", tag)
+    if match is None or (match.group(1) is not None and match.group(1) != expected_sha):
+        raise ReleaseError("Frozen releases require an exact version tag or its SHA-bound validation candidate.")
     reference = gh_json("api", f"repos/{PLEZY_REPO}/git/ref/tags/{tag}")
     target = reference.get("object", {})
     if target.get("type") == "tag":
@@ -1248,10 +1277,37 @@ def ensure_frozen_release_source(tag: str, expected_sha: str) -> None:
         target = annotated.get("object", {})
     if target.get("type") != "commit" or target.get("sha") != expected_sha:
         raise ReleaseError(f"Immutable release tag {tag} does not resolve to {expected_sha}.")
+    ensure_main_ancestor(expected_sha)
+
+
+def ensure_main_ancestor(expected_sha: str) -> None:
+    if re.fullmatch(r"[0-9a-f]{40}", expected_sha) is None:
+        raise ReleaseError("Release source must be an exact 40-character commit SHA.")
     ancestry = gh_json("api", f"repos/{PLEZY_REPO}/compare/{expected_sha}...main")
     if (ancestry.get("status") not in ("ahead", "identical")
             or ancestry.get("base_commit", {}).get("sha") != expected_sha):
-        raise ReleaseError(f"Frozen release {tag} is not an ancestor of canonical main.")
+        raise ReleaseError(f"Release source {expected_sha} is not an ancestor of canonical main.")
+
+
+def embedded_ci_proof(run_id: int, source_sha: str) -> dict:
+    from verify_embedded_release_ci import verify_jobs
+    run = gh_json("api", f"repos/{PLEZY_REPO}/actions/runs/{run_id}")
+    attempt = run.get("run_attempt")
+    if not isinstance(attempt, int) or attempt < 1:
+        raise ReleaseError("Captured build omitted its qualification attempt.")
+    pages = gh_json("api", "--paginate", "--slurp",
+                    f"repos/{PLEZY_REPO}/actions/runs/{run_id}/attempts/{attempt}/jobs?per_page=100")
+    if not isinstance(pages, list) or any(not isinstance(page, dict) or not isinstance(page.get("jobs"), list) for page in pages):
+        raise ReleaseError("Captured build omitted its qualification jobs.")
+    jobs = [job for page in pages for job in page["jobs"]]
+    manifest = json.loads(command(["git", "show", f"{source_sha}:docs/maintainers/capability-manifest.json"],
+                                  cwd=ROOT, capture=True).stdout)
+    required = manifest["release"]["releaseGate"]["requiredJobs"]
+    proof = verify_jobs(run, jobs, source_sha, run_id, attempt, required)
+    freeze = [job for job in jobs if job.get("name") == "Freeze qualified source"]
+    if len(freeze) != 1 or freeze[0].get("status") != "completed" or freeze[0].get("conclusion") != "success":
+        raise ReleaseError("Captured source was not successfully frozen after qualification.")
+    return proof
 
 
 def ensure_remote_main_sha(expected_sha: str, purpose: str) -> None:
@@ -1689,7 +1745,10 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--version", required=True, help="Release version matching pubspec.yaml, such as 3.0.0")
     parser.add_argument("--freeze-release", action=argparse.BooleanOptionalAction, default=True,
-                        help="Run normal release CI and builds from one immutable version tag; later main commits belong to the next release.")
+                        help="Capture one main source for reusable CI and builds; create its stable tag only after qualification.")
+    parser.add_argument("--source-commit", help="Resume a selected 40-character canonical-main ancestor without incorporating later development.")
+    parser.add_argument("--apple-arm-runner-pool", choices=("hosted", "private"), default="hosted",
+                        help="Select private ARM hardware only when hosted ARM capacity cannot meet qualification and tvOS build requirements.")
     parser.add_argument(
         "--reuse-platform-run", type=int,
         help="Rebuild Android/WebOS and reuse other verified platform outputs after infrastructure-only fixes.",
@@ -1817,16 +1876,26 @@ def main() -> int:
         frozen = bool(getattr(args, "freeze_release", False)) and not args.reuse_platform_run
         tag = f"v{args.version}"
         frozen_commit = existing_release_tag_commit(ROOT, tag) if frozen else None
-        worktree = (create_plezy_worktree(scratch, source_ref=f"refs/tags/{tag}")
-                    if frozen_commit else create_plezy_worktree(scratch))
-        validate_source_metadata(worktree, args.version)
+        selected_commit = getattr(args, "source_commit", None)
+        if selected_commit:
+            if not frozen or (frozen_commit is not None and frozen_commit != selected_commit):
+                raise ReleaseError("Selected source requires a normal frozen release and must match any existing version tag.")
+            ensure_main_ancestor(selected_commit)
+        if frozen_commit or selected_commit:
+            worktree = create_plezy_worktree(scratch,
+                source_ref=f"refs/tags/{tag}" if frozen_commit else selected_commit)
+        else:
+            worktree = create_plezy_worktree(scratch)
         main_commit = command(
             ["git", "rev-parse", "HEAD"], cwd=worktree, capture=True, quiet=True
         ).stdout.strip()
         if frozen_commit:
             ensure_frozen_release_source(tag, main_commit)
+        elif selected_commit:
+            ensure_main_ancestor(main_commit)
         else:
             ensure_remote_main_sha(main_commit, "starting the Pleazyng release")
+        validate_source_metadata(worktree, args.version)
         existing_tag_commit = existing_release_tag_commit(worktree, tag)
         tag_reused = existing_tag_commit is not None
         if args.reuse_platform_run and not tag_reused:
@@ -1841,6 +1910,10 @@ def main() -> int:
             progress["tag_commit"] = pin_sha
             progress["immutable_tag_reused"] = True
             print(f"Resuming frozen {tag} at {pin_sha}; later main changes do not alter this release.")
+        elif selected_commit:
+            pin_sha = main_commit
+            ci_source = pin_sha
+            progress["selected_source_commit"] = pin_sha
         elif tag_reused:
             ci_source = release_ci_source(worktree, tag, main_commit, existing_tag_commit)
             pin_sha = main_commit
@@ -1881,12 +1954,10 @@ def main() -> int:
         command(["python3", "scripts/sync_native_revision.py", "--check"], cwd=worktree)
         validate_source_metadata(worktree, args.version)
         if frozen:
-            # Tag creation freezes source, not publication. Every CI and platform
-            # gate must still pass before the draft can become a public release.
-            if not tag_reused:
-                tag = ensure_tag(worktree, args.version, pin_sha)
-            ensure_frozen_release_source(tag, pin_sha)
-            progress["tag"] = tag
+            # Candidate names include their source SHA. Failed validation can
+            # produce another candidate without consuming a stable version tag.
+            candidate_ref = ensure_candidate_tag(worktree, args.version, pin_sha)
+            progress["candidate_ref"] = candidate_ref
             progress["frozen_source"] = True
         ci_source = ci_source if tag_reused else pin_sha
         progress["ci_source_commit"] = ci_source
@@ -1894,7 +1965,21 @@ def main() -> int:
         stage = "Pleazyng CI"
         progress["stage"] = stage
         save_progress()
-        if args.reuse_platform_run:
+        apple_pool = getattr(args, "apple_arm_runner_pool", "hosted")
+        if frozen:
+            # One main workflow captures the source for reusable CI and every
+            # platform. Existing main-only private runner authorization remains
+            # unchanged; the stable tag is created inside only after CI passes.
+            captured = ensure_release(tag, pin_sha, include_webos_release=args.include_webos_release,
+                execution_profile=args.execution_profile, include_apple_store_build=args.include_apple_store_build,
+                prepare_homebrew_cask=args.prepare_homebrew_cask, candidate_ref=candidate_ref,
+                start_only=True, tvos_runner_pool=apple_pool)
+            ci = {"databaseId": captured["databaseId"]}
+            progress["release_run"] = captured["databaseId"]
+            progress["ci_mode"] = "embedded"
+            progress["apple_arm_runner_pool"] = apple_pool
+            save_progress()
+        elif args.reuse_platform_run:
             proof = verify_platform_recovery(
                 args.reuse_platform_run, pin_sha, args.version,
                 android_run=args.reuse_android_run, include_webos_build=not args.skip_webos_build,
@@ -1912,8 +1997,7 @@ def main() -> int:
             progress["platform_recovery"] = proof
             print(f"Verified unchanged product inputs and exact-source CI from run {proof['ci_run_id']}.")
         else:
-            ci = ensure_ci(ci_source, execution_profile=args.execution_profile,
-                           **({"source_ref": tag} if frozen else {}))
+            ci = ensure_ci(ci_source, execution_profile=args.execution_profile)
         progress["ci_run"] = ci["databaseId"]
         # Store variants are explicit preparation, never implied by publishing.
         include_apple_store_build = args.include_apple_store_build
@@ -1940,7 +2024,7 @@ def main() -> int:
             execution_profile=args.execution_profile,
             include_apple_store_build=include_apple_store_build,
             prepare_homebrew_cask=args.prepare_homebrew_cask,
-            **({"source_ref": tag} if frozen else {}),
+            **({"candidate_ref": candidate_ref, "tvos_runner_pool": apple_pool} if frozen else {}),
             **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"rebuild_macos": True} if args.rebuild_macos else {}),
             **({"rebuild_tvos": True} if args.rebuild_tvos else {}),
@@ -1954,6 +2038,11 @@ def main() -> int:
         )
         progress["release_run"] = release["databaseId"]
         progress["release_url"] = f"https://github.com/{PLEZY_REPO}/releases/tag/{tag}"
+        if frozen:
+            ensure_frozen_release_source(tag, pin_sha)
+            proof = embedded_ci_proof(release["databaseId"], pin_sha)
+            progress["embedded_ci"] = proof
+            (scratch / "embedded-ci-proof.json").write_text(json.dumps(proof, indent=2) + "\n")
 
         stage = "release asset validation"
         progress["stage"] = stage
@@ -2032,6 +2121,8 @@ def main() -> int:
             "ffmpeg_source_sha256": ffmpeg_sha256,
             "plezyng_commit": pin_sha,
             "ci_run": ci["databaseId"],
+            "ci_mode": progress.get("ci_mode", "standalone"),
+            "embedded_ci": progress.get("embedded_ci"),
             "release_run": release["databaseId"],
             "release_url": f"https://github.com/{PLEZY_REPO}/releases/tag/{tag}",
             "release_published": release_published,

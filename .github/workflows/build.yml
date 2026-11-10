@@ -42,6 +42,16 @@ on:
         description: Semantic version for artifact names; releases reuse a tag on main only when later commits contain allowlisted release infrastructure changes
         required: false
         type: string
+      candidate_ref:
+        description: Hold a captured main release until exact-source candidate CI passes and its stable tag exists
+        required: false
+        type: string
+      tvos_runner_pool:
+        description: Use private ARM hardware only when hosted ARM capacity cannot meet the build requirement
+        required: false
+        type: choice
+        options: [hosted, private]
+        default: hosted
       macos_compilation_job_id:
         description: Recover a verified same-product Mac compilation for signing-only macos-validation
         required: false
@@ -146,10 +156,83 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  capture-candidate:
+    name: Validate captured source
+    if: ${{ inputs.action == 'release' && inputs.candidate_ref != '' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Verify candidate source and version before qualification
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+          RELEASE_TAG: v${{ inputs.build_version }}
+          CANDIDATE_REF: ${{ inputs.candidate_ref }}
+          CAPTURE_MODE: ${{ inputs.mode }}
+          CAPTURE_PROFILE: ${{ inputs.execution_profile }}
+          CAPTURE_POOL: ${{ inputs.runner_pool }}
+        run: |
+          test "$CAPTURE_MODE" = release
+          test "$CAPTURE_PROFILE" = hybrid
+          test "$CAPTURE_POOL" = private
+          python3 scripts/verify_embedded_release_ci.py --candidate-only
+          python3 tools/webos/verify_package.py --project-metadata
+          python3 scripts/sync_native_revision.py --check
+
+  release-ci:
+    name: Release CI
+    needs: capture-candidate
+    if: ${{ needs.capture-candidate.result == 'success' }}
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      actions: read
+    with:
+      action: ci
+      runner_pool: private
+      execution_profile: hybrid
+      build_linux_packages: true
+      apple_runner_pool: ${{ inputs.tvos_runner_pool }}
+
+  freeze-qualified-source:
+    name: Freeze qualified source
+    needs: [capture-candidate, release-ci]
+    if: ${{ needs.capture-candidate.result == 'success' && needs.release-ci.result == 'success' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Require every exact-source CI job before creating the stable tag
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+          RELEASE_TAG: v${{ inputs.build_version }}
+          CANDIDATE_REF: ${{ inputs.candidate_ref }}
+        run: python3 scripts/verify_embedded_release_ci.py --create-tag --proof "$RUNNER_TEMP/release-source-qualification.json"
+      - name: Retain exact-source qualification proof
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: release-source-qualification-${{ github.run_id }}
+          path: ${{ runner.temp }}/release-source-qualification.json
+          if-no-files-found: error
+
   validate-trusted-ref:
     name: Validate release request
-    if: ${{ inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) }}
+    needs: freeze-qualified-source
+    if: ${{ always() && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && (inputs.candidate_ref == '' || needs.freeze-qualified-source.result == 'success') }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) }}
     outputs:
       action: ${{ steps.request.outputs.action }}
       runner_pool: ${{ steps.request.outputs.runner_pool }}
@@ -538,8 +621,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           COMMIT_SHA: ${{ steps.release-tag.outputs.commit }}
           REPOSITORY: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.ref_type == 'tag' && steps.request.outputs.release_tag || '' }}
-        run: python3 scripts/verify_release_ci.py
+          RELEASE_TAG: ${{ (inputs.candidate_ref != '' || github.ref_type == 'tag') && steps.request.outputs.release_tag || '' }}
+          CANDIDATE_REF: ${{ inputs.candidate_ref }}
+        run: |
+          if [[ -n "$CANDIDATE_REF" ]]; then
+            python3 scripts/verify_embedded_release_ci.py
+          else
+            python3 scripts/verify_release_ci.py
+          fi
 
       - name: Validate webOS package metadata
         if: ${{ steps.request.outputs.mode == 'release' }}
@@ -1317,7 +1406,7 @@ jobs:
     if: ${{ (inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build tvOS developer package (arm64)
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
     permissions:
       id-token: write
       attestations: write

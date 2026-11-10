@@ -5,6 +5,23 @@ run-name: ${{ format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }
 
 # Validation is opt-in: choose a ref from Actions and dispatch this workflow.
 on:
+  workflow_call:
+    inputs:
+      action:
+        type: string
+        default: ci
+      runner_pool:
+        type: string
+        default: private
+      execution_profile:
+        type: string
+        default: hybrid
+      build_linux_packages:
+        type: boolean
+        default: true
+      apple_runner_pool:
+        type: string
+        default: hosted
   workflow_dispatch:
     inputs:
       action:
@@ -29,6 +46,12 @@ on:
           This is separate from release assets and does not run on ordinary pushes.
         default: false
         type: boolean
+      apple_runner_pool:
+        description: Use private ARM hardware when hosted ARM capacity cannot meet native qualification requirements
+        required: false
+        type: choice
+        options: [hosted, private]
+        default: hosted
 
 env:
   GH_TOKEN: ${{ github.token }}
@@ -43,7 +66,7 @@ jobs:
   analyze:
     name: Code Analysis
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -684,7 +707,7 @@ jobs:
     name: Apple native reliability (${{ matrix.platform }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
     # Native tests and their simulator dependencies build arm64 on every platform.
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && inputs.apple_runner_pool != 'private' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     env:
@@ -974,39 +997,9 @@ jobs:
       - name: Select Apple test destination
         env:
           SIMULATOR_RUNTIME: ${{ matrix.simulator_runtime }}
-          SIMULATOR_PLATFORM: ${{ matrix.simulator_platform }}
+          SIMULATOR_SDK: ${{ matrix.pods_sdk }}
           STATIC_DESTINATION: ${{ matrix.static_destination }}
-        run: |
-          python3 - <<'PY'
-          import json
-          import os
-          import subprocess
-
-          destination = os.environ["STATIC_DESTINATION"]
-          if not destination:
-              runtime_name = os.environ["SIMULATOR_RUNTIME"]
-              payload = json.loads(
-                  subprocess.check_output(
-                      ["xcrun", "simctl", "list", "devices", "available", "-j"],
-                      text=True,
-                  )
-              )
-              devices = [
-                  device
-                  for runtime, candidates in payload["devices"].items()
-                  if f".{runtime_name}-" in runtime
-                  for device in candidates
-                  if device.get("isAvailable", False)
-              ]
-              if not devices:
-                  raise SystemExit(f"no available {runtime_name} simulator")
-              destination = (
-                  f"platform={os.environ['SIMULATOR_PLATFORM']} Simulator,"
-                  f"id={devices[0]['udid']}"
-              )
-          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
-              output.write(f"APPLE_TEST_DESTINATION={destination}\n")
-          PY
+        run: python3 scripts/apple/select_test_destination.py
 
       - name: Build CocoaPods aggregate framework
         if: matrix.platform != 'macOS'

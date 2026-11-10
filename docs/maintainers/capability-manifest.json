@@ -197,7 +197,7 @@
         ".github/workflows/build.yml",
         ".github/workflows/ci.yml"
       ],
-      "qualification": "The release workflow checks the newest manually dispatched CI run for the exact SHA on main or the explicitly verified immutable version tag and requires every named job, including each matrix expansion, to complete successfully. The changed workflow has not yet passed exact-SHA CI on the default hybrid route; negative-gate and successful-candidate evidence remain pending."
+      "qualification": "Normal releases capture one main build workflow and independently verify every required reusable-CI child from the same source and run attempt before creating the stable tag. Legacy qualification retains its exact-SHA standalone CI checks. The changed workflow has not yet passed exact-SHA CI on the default hybrid route; negative-gate and successful-candidate evidence remain pending."
     },
     {
       "id": "F03",

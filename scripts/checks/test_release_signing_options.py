@@ -92,6 +92,7 @@ class SigningOptionsTests(unittest.TestCase):
             stack.enter_context(patch.object(release, "validate_immutable_release_tag"))
             stack.enter_context(patch.object(release, "ensure_remote_main_sha"))
             stack.enter_context(patch.object(release, "ensure_frozen_release_source"))
+            stack.enter_context(patch.object(release, "embedded_ci_proof", return_value={"mode": "embedded", "run_id": 2, "attempt": 1}))
             stack.enter_context(patch.object(release, "gh_json", return_value={"commit": {"sha": "b" * 40}}))
             stack.enter_context(patch.object(release, "refresh_latest_published_facts", return_value="b" * 40))
             stack.enter_context(patch.object(release, "dispatch_automatic_play", return_value=None))

@@ -47,6 +47,34 @@ def failed_release():
 
 
 class AppleQueueTests(unittest.TestCase):
+    def test_reusable_ci_job_keeps_the_same_run_scoped_apple_identity(self):
+        job = apple_job()
+        job['name'] = 'Release CI / Apple native reliability (iOS)'
+        job['labels'][-1] = 'gha-42-0-apple-native-test'
+        self.assertTrue(queue.is_apple_job(job, '42'))
+        self.assertFalse(queue.is_apple_job(job, '43'))
+
+    def test_one_failed_ci_child_does_not_strand_the_remaining_apple_matrix(self):
+        pending = apple_job()
+        pending['name'] = 'Release CI / Apple native reliability (iOS)'
+        passed = {**pending, 'status': 'completed', 'conclusion': 'success'}
+        failed = {'name': 'Release CI / Code Analysis', 'status': 'completed', 'conclusion': 'failure'}
+        blocked = [{'name': 'Freeze qualified source', 'status': 'queued'},
+                   {'name': 'Validate release request', 'status': 'queued'}]
+        first = [failed, pending, *blocked]
+        self.assertFalse(queue.is_failed_release_build(failed_release(), first))
+        self.assertFalse(release.failed_build_has_drained(failed_release(), first))
+        final = [failed, passed, *[{**job, 'status': 'completed', 'conclusion': 'skipped'} for job in blocked]]
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(queue, 'get_run', side_effect=[failed_release(), {**failed_release(), 'status': 'completed'}]), \
+                patch.object(queue, 'get_jobs', side_effect=[first, final]), \
+                patch.object(queue, 'get_job', return_value=passed), \
+                patch.object(queue, 'active_run_scoped_apple_runner', return_value=False), \
+                patch.object(queue, 'launch_job', return_value=0) as launch, \
+                patch.object(queue, 'save_github_logs'):
+            self.assertEqual(queue.run_queue('42', Path(directory)), 0)
+        launch.assert_called_once()
+
     def test_transient_inventory_failure_recovers_without_abandoning_the_run(self):
         failed = subprocess.CompletedProcess([], 1, '', 'gh: Server Error (HTTP 503)')
         success = subprocess.CompletedProcess([], 0, '{"jobs": []}', '')
@@ -254,6 +282,18 @@ class AppleQueueTests(unittest.TestCase):
         self.assertTrue(popen.call_args_list[0].args[0][1].endswith("launch_queued_apple_jit_jobs.py"))
         self.assertEqual(popen.call_args_list[1].args[0][:3], ["gh", "run", "watch"])
         api.assert_called_once()
+
+    def test_hosted_apple_tag_run_never_starts_a_private_runner_controller(self):
+        watcher = Mock()
+        watcher.poll.return_value = 0
+        watcher.wait.return_value = 0
+        completed = {"status": "completed", "conclusion": "success"}
+        with patch.object(release.subprocess, "Popen", return_value=watcher) as popen, \
+                patch.object(release, "gh_json", return_value=completed):
+            self.assertEqual(release.wait_for_run(release.PLEZY_REPO,
+                {"databaseId": 42, "headBranch": "v3.0.31"}, "CI", private_apple=False), completed)
+        popen.assert_called_once()
+        self.assertEqual(popen.call_args.args[0][:3], ["gh", "run", "watch"])
 
 
 class DerivedDataCleanupTests(unittest.TestCase):

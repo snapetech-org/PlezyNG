@@ -34,6 +34,17 @@ STEAM_CMAKE = ROOT / "native/games/steam/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
+    def test_captured_release_cannot_skip_qualified_source_or_inherit_ci_secrets(self):
+        original = self._workflow()
+        variants = [original.replace("needs.release-ci.result == 'success'", "needs.release-ci.result == 'skipped'"),
+                    original.replace('    needs: freeze-qualified-source\n', '    needs: capture-candidate\n'),
+                    original.replace('    uses: ./.github/workflows/ci.yml\n',
+                                     '    uses: ./.github/workflows/ci.yml\n    secrets: inherit\n')]
+        for workflow in variants:
+            with self.subTest(workflow=workflow[:20]):
+                result = self._run(workflow)
+                self.assertNotEqual(result.returncode, 0)
+
     def test_ios_recovery_cannot_skip_fresh_success_or_locked_worker_prebuild(self):
         original = self._workflow()
         skipped = original.replace("inputs.rebuild_ios && needs.build-ios.result == 'success'",
@@ -172,7 +183,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         ci_path = ROOT / '.github/workflows/ci.yml'
         original = Path.read_text
         ci = original(ci_path, encoding='utf-8')
-        selection = "inputs.execution_profile == 'hybrid' && 'macos-15' || fromJSON(format("
+        selection = "inputs.execution_profile == 'hybrid' && inputs.apple_runner_pool != 'private' && 'macos-15' || fromJSON(format("
         self.assertIn(selection, ci)
         invalid = ci.replace(selection, selection.replace("'macos-15'", "'macos-15-intel'"), 1)
 

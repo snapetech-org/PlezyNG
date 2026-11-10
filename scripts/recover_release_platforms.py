@@ -127,12 +127,43 @@ def immutable_ci_source(repository, source_sha, version):
     return tag_sha
 
 
-def ci_proof(repository, source_sha, version=None):
+def embedded_source_ci(repository, source_sha, source_run):
+    """Verify qualification inside the original build, even if a platform failed."""
+    from verify_embedded_release_ci import PREFIX, verify_jobs
+    if repository != REPOSITORY or not str(source_run).isdigit():
+        raise RecoveryError("Embedded CI requires the original trusted build identity")
+    run = api(f"repos/{repository}/actions/runs/{source_run}")
+    attempt = run.get("run_attempt")
+    if not isinstance(attempt, int) or attempt < 1:
+        raise RecoveryError("Original build omitted its current attempt")
+    jobs = collection(f"repos/{repository}/actions/runs/{source_run}/attempts/{attempt}/jobs", "jobs")
+    if not any(str(job.get("name", "")).startswith(PREFIX) for job in jobs):
+        return None  # Legacy releases qualified in a separate ci.yml run.
+    manifest = json.loads(immutable_content(repository, source_sha, "docs/maintainers/capability-manifest.json"))
+    proof = verify_jobs(run, jobs, source_sha, int(source_run), attempt,
+                        manifest["release"]["releaseGate"]["requiredJobs"])
+    freeze = [job for job in jobs if job.get("name") == "Freeze qualified source"]
+    if len(freeze) != 1 or freeze[0].get("status") != "completed" or freeze[0].get("conclusion") != "success":
+        raise RecoveryError("Original source was not frozen after successful embedded CI")
+    ancestry = api(f"repos/{repository}/compare/{source_sha}...main")
+    if ancestry.get("status") not in ("ahead", "identical") or ancestry.get("base_commit", {}).get("sha") != source_sha:
+        raise RecoveryError("Embedded CI source is not an ancestor of canonical main")
+    return {"ci_mode": "embedded", "ci_run_id": run["id"], "ci_run_url": run["html_url"],
+            "ci_source_sha": source_sha, "embedded_ci": proof}
+
+
+def ci_proof(repository, source_sha, version=None, *, source_run=None):
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
         result = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True, check=True)
         token = result.stdout.strip()
     ci_source = immutable_ci_source(repository, source_sha, version) if version else source_sha
+    if source_run is not None:
+        if not version:
+            raise RecoveryError("Embedded qualification requires an immutable release version")
+        embedded = embedded_source_ci(repository, ci_source, source_run)
+        if embedded is not None:
+            return embedded
     gate = release_ci._manifest_gate()
     run = release_ci._latest_run(token, repository, ci_source, gate)
     if run.get("status") != "completed" or run.get("conclusion") != "success":
@@ -314,7 +345,7 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
             "platforms_complete": source.get("status") == "completed" and (not repaired or repaired["platforms_complete"]),
             "pending_jobs": pending_jobs + [f"repaired:{name}" for name in (repaired["pending_jobs"] if repaired else [])],
             **({"repaired_source": repaired} if repaired else {}),
-            **ci_proof(repository, source_sha, version)}
+            **ci_proof(repository, source_sha, version, source_run=run_id)}
 
 
 def verify_macos_packaging_recovery(run_id, macos_run, head_sha, version, repository=REPOSITORY):
@@ -384,7 +415,7 @@ def verify_macos_packaging_recovery(run_id, macos_run, head_sha, version, reposi
             "macos_source": {"source_run_id": int(macos_run), "source_sha": native["head_sha"],
                              "job_id": recovered_job["id"]},
             "android_source": {"source_run_id": int(run_id), "source_sha": source_sha},
-            **ci_proof(repository, source_sha, version)}
+            **ci_proof(repository, source_sha, version, source_run=run_id)}
 
 
 def verify_macos_receipt(receipt, proof):

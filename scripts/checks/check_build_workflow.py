@@ -1141,6 +1141,40 @@ require(
 )
 
 apple_native = job_block(ci_text, "apple-native-test")
+captured_ci = job("release-ci")
+freeze_source = job("freeze-qualified-source")
+capture_request = job("capture-candidate")
+trusted_gate = job("validate-trusted-ref")
+require(
+    "uses: ./.github/workflows/ci.yml" in captured_ci
+    and "name: Release CI" in captured_ci
+    and "needs: capture-candidate" in captured_ci
+    and "contents: read" in captured_ci and "actions: read" in captured_ci
+    and "secrets: inherit" not in captured_ci
+    and "build_linux_packages: true" in captured_ci
+    and "execution_profile: hybrid" in captured_ci
+    and "github.ref == 'refs/heads/main'" in capture_request
+    and "--candidate-only" in capture_request,
+    "Captured release CI must reuse the exact local suite on validated main with minimal permissions",
+)
+require(
+    "needs: [capture-candidate, release-ci]" in freeze_source
+    and "needs.release-ci.result == 'success'" in freeze_source
+    and "--create-tag" in freeze_source
+    and "contents: write" in freeze_source
+    and "COMMIT_SHA: ${{ github.sha }}" in freeze_source
+    and "needs: freeze-qualified-source" in trusted_gate
+    and "inputs.candidate_ref == '' || needs.freeze-qualified-source.result == 'success'" in trusted_gate
+    and "python3 scripts/verify_embedded_release_ci.py" in trusted_gate
+    and "python3 scripts/verify_release_ci.py" in trusted_gate,
+    "Stable tags and platform builds must remain gated by verified exact-source reusable CI",
+)
+require(
+    "scripts/apple/select_test_destination.py" in apple_native
+    and "SIMULATOR_SDK: ${{ matrix.pods_sdk }}" in apple_native
+    and "devices[0]" not in apple_native,
+    "Apple tests must select the intended SDK runtime instead of an older installed simulator",
+)
 require(
     "ruby scripts/check_podspec_locks.rb"
     in named_step(apple_native, "Check local CocoaPods lock checksums")
@@ -1329,7 +1363,7 @@ for apple_job_name in ("build-ios", "build-tvos"):
         f"{apple_job_name} signing archives and DerivedData must stay on local APFS",
     )
 require(
-    "inputs.execution_profile == 'hybrid' && 'macos-15' || fromJSON(format(" in apple_native
+    "inputs.execution_profile == 'hybrid' && inputs.apple_runner_pool != 'private' && 'macos-15' || fromJSON(format(" in apple_native
     and "hosted-xcode-version: '26.3'" in apple_native
     and "ARCHS=arm64" in apple_native,
     "Apple arm64 native qualification must select an Apple Silicon hosted runner",

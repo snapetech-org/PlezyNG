@@ -65,6 +65,7 @@ class FrozenSourceTests(unittest.TestCase):
                 patch.object(sys, 'argv', ['release', '--version', '3.0.30', '--scratch', directory]), \
                 patch.object(release, 'existing_release_tag_commit', return_value=None), \
                 patch.object(release, 'create_plezy_worktree', return_value=Path(directory) / 'product'), \
+                patch.object(release, 'ensure_remote_main_sha'), \
                 patch.object(release, 'command', side_effect=lambda args, **kwargs:
                     subprocess.CompletedProcess(args, 0, '3.0.31', '')), \
                 patch.object(release, 'prepare_native_checkout') as native, \

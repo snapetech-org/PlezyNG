@@ -85,6 +85,12 @@ def is_apple_job(job: dict, run_id: str) -> bool:
 
 
 def is_failed_release_build(run: dict, jobs: list[dict]) -> bool:
+    # Reusable qualification belongs to the captured build run, but its matrix
+    # must finish before ordinary failed-platform drainage applies. Otherwise
+    # one failed CI child could strand the remaining queued private CI jobs.
+    if any(str(job.get("name", "")).startswith("Release CI / ")
+           and job.get("status") != "completed" for job in jobs):
+        return False
     repository = run.get("head_repository") or {}
     path = run.get("path")
     title = run.get("display_title")

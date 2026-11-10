@@ -28,7 +28,9 @@
 
 - Add Friendgänger Guest DJ mixing across currently accessible friend-shared music libraries, preserving queue order and rejecting hidden, revoked, or account-switched sources.
 
-- Freeze each release in one immutable version tag before CI and platform builds, so later development cannot change a resumed release. Keep delivery tooling and publication metadata on current trusted main. Route Apple ARM qualification and tvOS AOT through a compatible hosted macOS 15/Xcode 26.3 image while retaining all native and artifact gates.
+- Correct maintained Dart, Kotlin import and Linux native formatting in the newly integrated music hosts. Include acknowledged paired music-queue transfer and stable Plex Home write scopes across token rotation.
+
+- Capture one main workflow for exact-source reusable CI and every platform build. Create the stable tag only after all required CI jobs pass, so failed preflight candidates do not consume release versions. Preserve main-only private-runner access, use private ARM hardware when hosted capacity is insufficient, and select the intended simulator SDK runtime. Keep all native and artifact gates and delivery tooling separate from frozen product source.
 
 - Deliver aerynOS packages automatically from complete published Pleazyng releases, retaining the original Linux artifacts and requiring native qualification before feed promotion. Wake delivery directly after core publication, with retries separate from core success. Retire the separate unreleased-source build lane and repair Search navigation in its native playback harness.
 
@@ -56,7 +58,7 @@
 
 - Fix Tizen ARM sandbox compilation by declaring the ELF architecture constants required by its older audit headers; retain the existing fail-closed syscall policy.
 
-- Prepare 3.0.30+189 as a fresh all-platform release from current source, including the shared native-video aperture clear and expired-trial review navigation repair. Supersede the v3.0.7 channel bootstrap for usable publication; preserve its original artifacts and failure evidence.
+- Prepare 3.0.31+190 as a fresh all-platform release from current source, including the shared native-video aperture clear and expired-trial review navigation repair. Supersede the v3.0.7 channel bootstrap for usable publication; preserve its original artifacts and failure evidence.
 
 - Fix store-review access after trial expiry: retain dialog navigation on the locked screen, dismiss the review dialog with Back, and restore normal application navigation after a valid grant.
 

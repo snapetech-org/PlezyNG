@@ -20,31 +20,55 @@ the live producer again. Published releases retain their original provenance.
 
 ## Release procedure
 
-Set a new version with `python3 scripts/set_release_version.py 3.0.30+189`.
+Set a new version with `python3 scripts/set_release_version.py 3.0.31+190`.
 This updates both `pubspec.yaml` and `webos/meta/appinfo.json`, preserving the
 native app identity, permissions, and other metadata. Use the next unused
 version and build number; never move an existing tag. The shared commit/CI
 guards and release driver check this metadata before expensive work or tagging.
 
 Run the complete release from an authenticated `gh` session. The driver verifies
-native pins, freezes the selected source in the unused immutable version tag,
-then runs exact-tag CI and builds. Creating the tag does not publish a release;
-every CI, platform and artifact gate must pass before public promotion. Later
-commits on `main` belong to the next release and cannot change this cut. Compatible Linux, Android, Tizen, Windows
-x64, and native Windows ARM64 jobs use standard GitHub-hosted runners. Apple
-builds use compatible GitHub-hosted macOS runners; the storage-heavy WebOS
-candidate uses compatible private JIT runners.
-The hybrid execution profile routes each job to the compatible runner class;
-the broker pool remains available for jobs that need private capacity.
+native pins, creates an immutable `vVERSION-candidate.FULL_SHA` reference, then
+captures one `build.yml` dispatch on `main` at that exact SHA. The run keeps its
+source even if `main` advances. Its local reusable `ci.yml` comes from the same
+commit. Every required CI child must pass before a separate job verifies the
+GitHub job records and creates the stable version tag. All platform jobs remain
+blocked until that qualification and tag binding succeed. A failed preflight
+consumes no stable version; a new source receives a different candidate name.
+
+Compatible Linux, Android, Tizen, Windows x64 and native Windows ARM64 jobs use
+GitHub-hosted runners. Storage-heavy webOS remains private JIT. The captured
+workflow retains its authorized `main` reference for private runners; neither
+runner-group access nor broker policy needs to admit tags. No broker restart
+or access expansion is part of this protocol. Source, compiler, final assembler
+and stable tag all retain the same SHA.
+
+Use `--source-commit FULL_SHA` to resume the recorded cut. Existing matching
+runs are reused; later main changes are not incorporated. Record `ci_mode`,
+`ci_run`, `candidate_ref`, `release_run` and `embedded-ci-proof.json` with the
+qualification and artifact evidence. Embedded CI is reported as children of the
+build run, not as a standalone `ci.yml` run.
+
+If a later platform fails, recovery verifies the original build's current-attempt
+embedded CI records, successful source freeze, immutable tag and source-bound
+job contract. The platform failure does not invalidate passing CI, but failed or
+missing CI never falls back to another run. Older releases retain their separate
+`ci.yml` proof. Reuse successful platform artifacts under the existing product
+equivalence checks; do not dispatch another complete build for a delivery error.
 
 ## Apple native qualification
 
-ARM native CI and tvOS release AOT use the hosted `macos-15` ARM image with
-explicit Xcode 26.3 (build 17C529) and iOS/tvOS 26.2 SDK checks, avoiding the
-capacity-constrained macOS 26 ARM pool. The other Apple lanes retain their
-selected Xcode 26.5 toolchain. Every native test, genuine tvOS framework and
-real database startup gate remains required. macOS 15 native tests cover its
-compatibility paths; they do not establish execution of macOS 26-only EDR code.
+ARM native CI and tvOS release AOT default to the hosted `macos-15` ARM image
+with explicit Xcode 26.3 (build 17C529) and iOS/tvOS 26.2 SDK checks. Select
+`--apple-arm-runner-pool private` only when hosted ARM capacity cannot meet the
+requirement. This uses the existing private ARM lane for native CI and tvOS;
+other compatible jobs retain their hosted routes. Check live architecture,
+Xcode, simulator runtimes, free APFS/NFS space and active consumers first.
+Private images use their installed compatible toolchain and must qualify it.
+The test selector requires an available simulator matching the selected SDK's
+major/minor version; it does not select the first installed older runtime.
+Every native test, genuine tvOS framework and real database startup gate remains
+required. Record the actual host/runtime qualification; software checks do not
+establish physical HDR, hardware decoding, NPU or FEL reference accuracy.
 
 The hosted tvOS release job uses an ARM macOS host, matching the pinned
 ARM-host `gen_snapshot_arm64` cross-compiler. Simulator Debug/JIT tests do not
@@ -144,12 +168,11 @@ to exercise real load commands and source-cache preservation. For Apple
 blockers, retain task-owned incremental DerivedData until the complete app
 build and native test bundle pass before spending another full CI run.
 
-Normal releases and resumptions dispatch both CI and the complete build from
-that exact version tag. The driver checks the remote tag target and canonical
-`main` ancestry before dispatch and publication. The workflow, certificate,
-source SHA and artifact digest continue to identify the actual frozen source.
-Delivery workflows use current trusted `main` tooling against those immutable
-artifacts; their tooling SHA is recorded separately from product source.
+Normal releases and resumptions reuse the captured main workflow at the frozen
+source SHA. The driver checks remote candidate/stable targets and canonical-main
+ancestry before publication. Later main application changes belong to a future
+cut. Delivery workflows use current trusted main tooling against immutable
+artifacts, with the tooling SHA recorded separately from product source.
 
 Explicit platform recovery retains its separate unchanged-product allowlist
 and source-run proof. It may use newer release infrastructure without changing
@@ -248,15 +271,13 @@ qualification may reuse a repaired Mac build only after its full compilation,
 notarization and Gatekeeper steps succeed, or qualify a fresh Mac rebuild;
 recovery never infers those checks from a DMG's presence alone.
 
-The command validates CI on the exact current `main` SHA, then runs the complete
-release build. When a version tag already exists, it reuses that immutable tag
-only if it is an ancestor of `main` and the intervening changes are on the
-release allowlist; the release workflow builds the full platform matrix. For a
-new version, it first verifies or refreshes native artifacts, updates their
-pins, validates all 13 CI jobs, creates the immutable tag, and builds the complete
-release matrix once. Publication waits for every platform and artifact check.
-If a product fix is needed after tagging, advance the patch version and build
-number; never move a tag or replace an already published release.
+The default frozen protocol captures CI and the complete platform build in one
+main workflow. It creates the stable tag only after authoritative exact-source
+CI proof, then compiles the release matrix once. Publication waits for every
+platform and artifact check. A product fix after stable tagging requires the
+next version; never move a tag or replace published assets. Explicit legacy
+main/recovery mode remains available with `--no-freeze-release` and preserves
+its unchanged-product source and CI checks.
 
 If the control-plane host cannot reach `ffmpeg.org`, pass
 `--ffmpeg-source-cache <directory>` with retained files named

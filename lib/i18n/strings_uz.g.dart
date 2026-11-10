@@ -116,6 +116,7 @@ class TranslationsUz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$uz subtitleCapture = _Translations$subtitleCapture$uz._(_root);
 	@override late final _Translations$musicExperience$uz musicExperience = _Translations$musicExperience$uz._(_root);
 	@override late final _Translations$musicTools$uz musicTools = _Translations$musicTools$uz._(_root);
+	@override late final _Translations$musicDevices$uz musicDevices = _Translations$musicDevices$uz._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$uz extends Translations$musicDevices$en {
+	_Translations$musicDevices$uz._(TranslationsUz root) : this._root = root, super.internal(root);
+
+	final TranslationsUz _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Shu qurilmada ijro etish';
+	@override String get thisDevice => 'Bu qurilma';
+	@override String playingOn({required Object device}) => '${device} qurilmasida ijro etilmoqda';
+	@override String get remembered => 'Saqlangan qurilmalar';
+	@override String get forget => 'Qurilmani unutish';
+	@override String get receive => 'Bu qurilmada ijroga ruxsat berish';
+	@override String get nearbyHint => 'Boshqa qurilmada qurilma tanlovini oching va ijroga ruxsat bering.';
+	@override String get receiverHint => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.';
+	@override String get moveFailed => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.';
+	@override String get uncertain => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsUz {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Shu qurilmada ijro etish',
+			'musicDevices.thisDevice' => 'Bu qurilma',
+			'musicDevices.playingOn' => ({required Object device}) => '${device} qurilmasida ijro etilmoqda',
+			'musicDevices.remembered' => 'Saqlangan qurilmalar',
+			'musicDevices.forget' => 'Qurilmani unutish',
+			'musicDevices.receive' => 'Bu qurilmada ijroga ruxsat berish',
+			'musicDevices.nearbyHint' => 'Boshqa qurilmada qurilma tanlovini oching va ijroga ruxsat bering.',
+			'musicDevices.receiverHint' => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.',
+			'musicDevices.moveFailed' => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.',
+			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
 			_ => null,
 		};
 	}

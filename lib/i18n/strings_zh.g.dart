@@ -116,6 +116,7 @@ class TranslationsZh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$subtitleCapture$zh subtitleCapture = Translations$subtitleCapture$zh.internal(_root);
 	@override late final Translations$musicExperience$zh musicExperience = Translations$musicExperience$zh.internal(_root);
 	@override late final Translations$musicTools$zh musicTools = Translations$musicTools$zh.internal(_root);
+	@override late final Translations$musicDevices$zh musicDevices = Translations$musicDevices$zh.internal(_root);
 }
 
 // Path: app
@@ -4330,6 +4331,25 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class Translations$musicDevices$zh extends Translations$musicDevices$en {
+	Translations$musicDevices$zh.internal(TranslationsZh root) : this._root = root, super.internal(root);
+
+	final TranslationsZh _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => '播放设备';
+	@override String get thisDevice => '此设备';
+	@override String playingOn({required Object device}) => '正在 ${device} 上播放';
+	@override String get remembered => '已保存的设备';
+	@override String get forget => '忘记设备';
+	@override String get receive => '允许在此设备上播放';
+	@override String get nearbyHint => '在另一台设备上打开播放设备菜单，并允许播放。';
+	@override String get receiverHint => '保持 Pleazyng 打开以接收音乐。使用此代码配对一次。';
+	@override String get moveFailed => '无法转移播放。请检查设备已唤醒、已配对并能访问音乐服务器。';
+	@override String get uncertain => '连接中断。请重新连接所选设备以检查播放状态。';
 }
 
 // Path: appIcon.names
@@ -9498,6 +9518,16 @@ extension on TranslationsZh {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => '播放设备',
+			'musicDevices.thisDevice' => '此设备',
+			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
+			'musicDevices.remembered' => '已保存的设备',
+			'musicDevices.forget' => '忘记设备',
+			'musicDevices.receive' => '允许在此设备上播放',
+			'musicDevices.nearbyHint' => '在另一台设备上打开播放设备菜单，并允许播放。',
+			'musicDevices.receiverHint' => '保持 Pleazyng 打开以接收音乐。使用此代码配对一次。',
+			'musicDevices.moveFailed' => '无法转移播放。请检查设备已唤醒、已配对并能访问音乐服务器。',
+			'musicDevices.uncertain' => '连接中断。请重新连接所选设备以检查播放状态。',
 			_ => null,
 		};
 	}

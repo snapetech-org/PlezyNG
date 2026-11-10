@@ -116,6 +116,7 @@ class TranslationsKk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$kk subtitleCapture = _Translations$subtitleCapture$kk._(_root);
 	@override late final _Translations$musicExperience$kk musicExperience = _Translations$musicExperience$kk._(_root);
 	@override late final _Translations$musicTools$kk musicTools = _Translations$musicTools$kk._(_root);
+	@override late final _Translations$musicDevices$kk musicDevices = _Translations$musicDevices$kk._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$kk extends Translations$musicDevices$en {
+	_Translations$musicDevices$kk._(TranslationsKk root) : this._root = root, super.internal(root);
+
+	final TranslationsKk _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Ойнату құрылғысы';
+	@override String get thisDevice => 'Осы құрылғы';
+	@override String playingOn({required Object device}) => '${device} құрылғысында ойнатылуда';
+	@override String get remembered => 'Сақталған құрылғылар';
+	@override String get forget => 'Құрылғыны ұмыту';
+	@override String get receive => 'Осы құрылғыда ойнатуға рұқсат беру';
+	@override String get nearbyHint => 'Басқа құрылғыда ойнату құрылғылары мәзірін ашып, ойнатуға рұқсат беріңіз.';
+	@override String get receiverHint => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.';
+	@override String get moveFailed => 'Ойнатуды көшіру мүмкін болмады. Құрылғының қосулы, жұптастырылған және музыка серверіне қолжетімді екенін тексеріңіз.';
+	@override String get uncertain => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsKk {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Ойнату құрылғысы',
+			'musicDevices.thisDevice' => 'Осы құрылғы',
+			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',
+			'musicDevices.remembered' => 'Сақталған құрылғылар',
+			'musicDevices.forget' => 'Құрылғыны ұмыту',
+			'musicDevices.receive' => 'Осы құрылғыда ойнатуға рұқсат беру',
+			'musicDevices.nearbyHint' => 'Басқа құрылғыда ойнату құрылғылары мәзірін ашып, ойнатуға рұқсат беріңіз.',
+			'musicDevices.receiverHint' => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.',
+			'musicDevices.moveFailed' => 'Ойнатуды көшіру мүмкін болмады. Құрылғының қосулы, жұптастырылған және музыка серверіне қолжетімді екенін тексеріңіз.',
+			'musicDevices.uncertain' => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.',
 			_ => null,
 		};
 	}

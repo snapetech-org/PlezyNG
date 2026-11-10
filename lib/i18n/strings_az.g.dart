@@ -116,6 +116,7 @@ class TranslationsAz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$az subtitleCapture = _Translations$subtitleCapture$az._(_root);
 	@override late final _Translations$musicExperience$az musicExperience = _Translations$musicExperience$az._(_root);
 	@override late final _Translations$musicTools$az musicTools = _Translations$musicTools$az._(_root);
+	@override late final _Translations$musicDevices$az musicDevices = _Translations$musicDevices$az._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$az extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$az extends Translations$musicDevices$en {
+	_Translations$musicDevices$az._(TranslationsAz root) : this._root = root, super.internal(root);
+
+	final TranslationsAz _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Burada səsləndir';
+	@override String get thisDevice => 'Bu cihaz';
+	@override String playingOn({required Object device}) => '${device} cihazında səsləndirilir';
+	@override String get remembered => 'Yadda saxlanmış cihazlar';
+	@override String get forget => 'Cihazı unut';
+	@override String get receive => 'Bu cihazda səsləndirməyə icazə ver';
+	@override String get nearbyHint => 'Digər cihazda səsləndirmə menyusunu açın və səsləndirməyə icazə verin.';
+	@override String get receiverHint => 'Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.';
+	@override String get moveFailed => 'Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.';
+	@override String get uncertain => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsAz {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Burada səsləndir',
+			'musicDevices.thisDevice' => 'Bu cihaz',
+			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',
+			'musicDevices.remembered' => 'Yadda saxlanmış cihazlar',
+			'musicDevices.forget' => 'Cihazı unut',
+			'musicDevices.receive' => 'Bu cihazda səsləndirməyə icazə ver',
+			'musicDevices.nearbyHint' => 'Digər cihazda səsləndirmə menyusunu açın və səsləndirməyə icazə verin.',
+			'musicDevices.receiverHint' => 'Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.',
+			'musicDevices.moveFailed' => 'Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.',
+			'musicDevices.uncertain' => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.',
 			_ => null,
 		};
 	}

@@ -116,6 +116,7 @@ class TranslationsCs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$cs subtitleCapture = _Translations$subtitleCapture$cs._(_root);
 	@override late final _Translations$musicExperience$cs musicExperience = _Translations$musicExperience$cs._(_root);
 	@override late final _Translations$musicTools$cs musicTools = _Translations$musicTools$cs._(_root);
+	@override late final _Translations$musicDevices$cs musicDevices = _Translations$musicDevices$cs._(_root);
 }
 
 // Path: app
@@ -4377,6 +4378,25 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$cs extends Translations$musicDevices$en {
+	_Translations$musicDevices$cs._(TranslationsCs root) : this._root = root, super.internal(root);
+
+	final TranslationsCs _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Přehrávat na';
+	@override String get thisDevice => 'Toto zařízení';
+	@override String playingOn({required Object device}) => 'Přehrává se na ${device}';
+	@override String get remembered => 'Zapamatovaná zařízení';
+	@override String get forget => 'Zapomenout zařízení';
+	@override String get receive => 'Povolit přehrávání na tomto zařízení';
+	@override String get nearbyHint => 'Na druhém zařízení otevřete nabídku zařízení a povolte tam přehrávání.';
+	@override String get receiverHint => 'Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.';
+	@override String get moveFailed => 'Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.';
+	@override String get uncertain => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.';
 }
 
 // Path: appIcon.names
@@ -9547,6 +9567,16 @@ extension on TranslationsCs {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Přehrávat na',
+			'musicDevices.thisDevice' => 'Toto zařízení',
+			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',
+			'musicDevices.remembered' => 'Zapamatovaná zařízení',
+			'musicDevices.forget' => 'Zapomenout zařízení',
+			'musicDevices.receive' => 'Povolit přehrávání na tomto zařízení',
+			'musicDevices.nearbyHint' => 'Na druhém zařízení otevřete nabídku zařízení a povolte tam přehrávání.',
+			'musicDevices.receiverHint' => 'Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.',
+			'musicDevices.moveFailed' => 'Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.',
+			'musicDevices.uncertain' => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.',
 			_ => null,
 		};
 	}

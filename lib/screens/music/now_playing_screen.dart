@@ -1,3 +1,4 @@
+import '../../widgets/music/music_device_picker.dart';
 import '../../widgets/music/music_seek_print.dart';
 import 'music_discovery_screen.dart';
 import 'music_driving_screen.dart';
@@ -606,6 +607,7 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
                               style: TextStyle(fontSize: 14, color: tk.textMuted),
                             ),
                     ),
+                    const MusicDeviceButton(),
                     _buildOverflowButton(track, focusable: true),
                   ],
                 ),
@@ -697,6 +699,7 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
               icon: AppIcon(Symbols.mic_rounded, color: tk.text),
               onPressed: () => unawaited(openKaraoke(context, media: track)),
             ),
+            const MusicDeviceButton(),
             _buildOverflowButton(track),
           ],
         ),

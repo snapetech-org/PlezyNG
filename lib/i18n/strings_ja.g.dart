@@ -116,6 +116,7 @@ class TranslationsJa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$ja subtitleCapture = _Translations$subtitleCapture$ja._(_root);
 	@override late final _Translations$musicExperience$ja musicExperience = _Translations$musicExperience$ja._(_root);
 	@override late final _Translations$musicTools$ja musicTools = _Translations$musicTools$ja._(_root);
+	@override late final _Translations$musicDevices$ja musicDevices = _Translations$musicDevices$ja._(_root);
 }
 
 // Path: app
@@ -4330,6 +4331,25 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$ja extends Translations$musicDevices$en {
+	_Translations$musicDevices$ja._(TranslationsJa root) : this._root = root, super.internal(root);
+
+	final TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => '再生先';
+	@override String get thisDevice => 'このデバイス';
+	@override String playingOn({required Object device}) => '${device} で再生中';
+	@override String get remembered => '保存済みデバイス';
+	@override String get forget => 'デバイスを削除';
+	@override String get receive => 'このデバイスでの再生を許可';
+	@override String get nearbyHint => 'もう一方のデバイスで再生先を開き、再生を許可してください。';
+	@override String get receiverHint => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。';
+	@override String get moveFailed => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。';
+	@override String get uncertain => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。';
 }
 
 // Path: appIcon.names
@@ -9498,6 +9518,16 @@ extension on TranslationsJa {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => '再生先',
+			'musicDevices.thisDevice' => 'このデバイス',
+			'musicDevices.playingOn' => ({required Object device}) => '${device} で再生中',
+			'musicDevices.remembered' => '保存済みデバイス',
+			'musicDevices.forget' => 'デバイスを削除',
+			'musicDevices.receive' => 'このデバイスでの再生を許可',
+			'musicDevices.nearbyHint' => 'もう一方のデバイスで再生先を開き、再生を許可してください。',
+			'musicDevices.receiverHint' => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。',
+			'musicDevices.moveFailed' => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。',
+			'musicDevices.uncertain' => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。',
 			_ => null,
 		};
 	}

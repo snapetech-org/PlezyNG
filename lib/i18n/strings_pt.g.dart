@@ -116,6 +116,7 @@ class TranslationsPt extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$subtitleCapture$pt subtitleCapture = Translations$subtitleCapture$pt.internal(_root);
 	@override late final Translations$musicExperience$pt musicExperience = Translations$musicExperience$pt.internal(_root);
 	@override late final Translations$musicTools$pt musicTools = Translations$musicTools$pt.internal(_root);
+	@override late final Translations$musicDevices$pt musicDevices = Translations$musicDevices$pt.internal(_root);
 }
 
 // Path: app
@@ -4342,6 +4343,25 @@ class Translations$musicTools$pt extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class Translations$musicDevices$pt extends Translations$musicDevices$en {
+	Translations$musicDevices$pt.internal(TranslationsPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Reproduzir em';
+	@override String get thisDevice => 'Este dispositivo';
+	@override String playingOn({required Object device}) => 'A reproduzir em ${device}';
+	@override String get remembered => 'Dispositivos guardados';
+	@override String get forget => 'Esquecer dispositivo';
+	@override String get receive => 'Permitir reprodução neste dispositivo';
+	@override String get nearbyHint => 'Abra o seletor de dispositivos no outro dispositivo e permita a reprodução.';
+	@override String get receiverHint => 'Mantenha o Pleazyng aberto para receber música. Emparelhe uma vez com este código.';
+	@override String get moveFailed => 'Não foi possível mover a reprodução. Verifique se o dispositivo está ativo, emparelhado e tem acesso ao servidor de música.';
+	@override String get uncertain => 'Ligação interrompida. Volte a ligar ao dispositivo selecionado para verificar a reprodução.';
 }
 
 // Path: appIcon.names
@@ -9510,6 +9530,16 @@ extension on TranslationsPt {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Reproduzir em',
+			'musicDevices.thisDevice' => 'Este dispositivo',
+			'musicDevices.playingOn' => ({required Object device}) => 'A reproduzir em ${device}',
+			'musicDevices.remembered' => 'Dispositivos guardados',
+			'musicDevices.forget' => 'Esquecer dispositivo',
+			'musicDevices.receive' => 'Permitir reprodução neste dispositivo',
+			'musicDevices.nearbyHint' => 'Abra o seletor de dispositivos no outro dispositivo e permita a reprodução.',
+			'musicDevices.receiverHint' => 'Mantenha o Pleazyng aberto para receber música. Emparelhe uma vez com este código.',
+			'musicDevices.moveFailed' => 'Não foi possível mover a reprodução. Verifique se o dispositivo está ativo, emparelhado e tem acesso ao servidor de música.',
+			'musicDevices.uncertain' => 'Ligação interrompida. Volte a ligar ao dispositivo selecionado para verificar a reprodução.',
 			_ => null,
 		};
 	}

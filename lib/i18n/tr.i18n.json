@@ -5560,5 +5560,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Şurada çal",
+    "thisDevice": "Bu cihaz",
+    "playingOn": "${device} üzerinde çalınıyor",
+    "remembered": "Kaydedilen cihazlar",
+    "forget": "Cihazı unut",
+    "receive": "Bu cihazda oynatmaya izin ver",
+    "nearbyHint": "Diğer cihazda cihaz seçiciyi açın ve orada oynatmaya izin verin.",
+    "receiverHint": "Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.",
+    "moveFailed": "Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.",
+    "uncertain": "Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın."
   }
 }

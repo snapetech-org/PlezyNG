@@ -27,6 +27,7 @@ class MusicDeviceEndpoint {
     final offer = session.offerTransfer();
     final volume = session.playback.volume;
     if (offer == null) {
+      if (session.playback.currentTrack != null) return const {'ok': false};
       return {'ok': true, 'empty': true, 'revision': 'idle', 'position': 0, 'playing': false, 'volume': volume};
     }
     final revision = musicDeviceRevision(offer);
@@ -40,7 +41,11 @@ class MusicDeviceEndpoint {
     };
   }
 
-  Future<MusicConnectMessage?> handle(MusicConnectMessage message) async {
+  Future<MusicConnectMessage?> handle(MusicConnectMessage message) => _handle(message, local: false);
+
+  Future<MusicConnectMessage?> handleLocal(MusicConnectMessage message) => _handle(message, local: true);
+
+  Future<MusicConnectMessage?> _handle(MusicConnectMessage message, {required bool local}) async {
     if (!current) return null;
     switch (message['op']) {
       case 'state':
@@ -50,12 +55,13 @@ class MusicDeviceEndpoint {
           message['queue'],
           itemLimit: MusicTransferSnapshot.maxTransferItems,
         );
-        if (snapshot == null || session.musicDeviceOutput != null) return const {'ok': false};
+        if (snapshot == null || (session.musicDeviceOutput != null && !local)) return const {'ok': false};
         final generation = ++_generation;
         _cancelPreparation();
         final commit = await session.prepareMusicDeviceTransfer(
           snapshot,
           current: () => current && generation == _generation,
+          allowRemoteOutput: local,
         );
         if (commit == null || !current || generation != _generation) return const {'ok': false};
         final ticket = newMusicConnectId();

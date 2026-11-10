@@ -5555,5 +5555,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "播放设备",
+    "thisDevice": "此设备",
+    "playingOn": "正在 ${device} 上播放",
+    "remembered": "已保存的设备",
+    "forget": "忘记设备",
+    "receive": "允许在此设备上播放",
+    "nearbyHint": "在另一台设备上打开播放设备菜单，并允许播放。",
+    "receiverHint": "保持 Pleazyng 打开以接收音乐。使用此代码配对一次。",
+    "moveFailed": "无法转移播放。请检查设备已唤醒、已配对并能访问音乐服务器。",
+    "uncertain": "连接中断。请重新连接所选设备以检查播放状态。"
   }
 }

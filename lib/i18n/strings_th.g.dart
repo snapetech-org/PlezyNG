@@ -116,6 +116,7 @@ class TranslationsTh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$th subtitleCapture = _Translations$subtitleCapture$th._(_root);
 	@override late final _Translations$musicExperience$th musicExperience = _Translations$musicExperience$th._(_root);
 	@override late final _Translations$musicTools$th musicTools = _Translations$musicTools$th._(_root);
+	@override late final _Translations$musicDevices$th musicDevices = _Translations$musicDevices$th._(_root);
 }
 
 // Path: app
@@ -4312,6 +4313,25 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$th extends Translations$musicDevices$en {
+	_Translations$musicDevices$th._(TranslationsTh root) : this._root = root, super.internal(root);
+
+	final TranslationsTh _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'เล่นบน';
+	@override String get thisDevice => 'อุปกรณ์นี้';
+	@override String playingOn({required Object device}) => 'กำลังเล่นบน ${device}';
+	@override String get remembered => 'อุปกรณ์ที่บันทึกไว้';
+	@override String get forget => 'ลืมอุปกรณ์';
+	@override String get receive => 'อนุญาตให้เล่นบนอุปกรณ์นี้';
+	@override String get nearbyHint => 'เปิดตัวเลือกอุปกรณ์บนอีกอุปกรณ์ แล้วอนุญาตให้เล่นที่นั่น';
+	@override String get receiverHint => 'เปิด Pleazyng ไว้เพื่อรับเพลง จับคู่ครั้งเดียวด้วยรหัสนี้';
+	@override String get moveFailed => 'ย้ายการเล่นไม่ได้ ตรวจสอบว่าอุปกรณ์เปิดอยู่ จับคู่แล้ว และเข้าถึงเซิร์ฟเวอร์เพลงได้';
+	@override String get uncertain => 'การเชื่อมต่อขัดข้อง เชื่อมต่ออุปกรณ์ที่เลือกอีกครั้งเพื่อตรวจสอบการเล่น';
 }
 
 // Path: appIcon.names
@@ -9478,6 +9498,16 @@ extension on TranslationsTh {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'เล่นบน',
+			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
+			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',
+			'musicDevices.remembered' => 'อุปกรณ์ที่บันทึกไว้',
+			'musicDevices.forget' => 'ลืมอุปกรณ์',
+			'musicDevices.receive' => 'อนุญาตให้เล่นบนอุปกรณ์นี้',
+			'musicDevices.nearbyHint' => 'เปิดตัวเลือกอุปกรณ์บนอีกอุปกรณ์ แล้วอนุญาตให้เล่นที่นั่น',
+			'musicDevices.receiverHint' => 'เปิด Pleazyng ไว้เพื่อรับเพลง จับคู่ครั้งเดียวด้วยรหัสนี้',
+			'musicDevices.moveFailed' => 'ย้ายการเล่นไม่ได้ ตรวจสอบว่าอุปกรณ์เปิดอยู่ จับคู่แล้ว และเข้าถึงเซิร์ฟเวอร์เพลงได้',
+			'musicDevices.uncertain' => 'การเชื่อมต่อขัดข้อง เชื่อมต่ออุปกรณ์ที่เลือกอีกครั้งเพื่อตรวจสอบการเล่น',
 			_ => null,
 		};
 	}

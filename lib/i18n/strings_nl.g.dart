@@ -116,6 +116,7 @@ class TranslationsNl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$nl subtitleCapture = _Translations$subtitleCapture$nl._(_root);
 	@override late final _Translations$musicExperience$nl musicExperience = _Translations$musicExperience$nl._(_root);
 	@override late final _Translations$musicTools$nl musicTools = _Translations$musicTools$nl._(_root);
+	@override late final _Translations$musicDevices$nl musicDevices = _Translations$musicDevices$nl._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$nl extends Translations$musicDevices$en {
+	_Translations$musicDevices$nl._(TranslationsNl root) : this._root = root, super.internal(root);
+
+	final TranslationsNl _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Afspelen op';
+	@override String get thisDevice => 'Dit apparaat';
+	@override String playingOn({required Object device}) => 'Wordt afgespeeld op ${device}';
+	@override String get remembered => 'Onthouden apparaten';
+	@override String get forget => 'Apparaat vergeten';
+	@override String get receive => 'Afspelen op dit apparaat toestaan';
+	@override String get nearbyHint => 'Open de apparaatkiezer op het andere apparaat en sta afspelen daar toe.';
+	@override String get receiverHint => 'Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.';
+	@override String get moveFailed => 'Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.';
+	@override String get uncertain => 'Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsNl {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Afspelen op',
+			'musicDevices.thisDevice' => 'Dit apparaat',
+			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',
+			'musicDevices.remembered' => 'Onthouden apparaten',
+			'musicDevices.forget' => 'Apparaat vergeten',
+			'musicDevices.receive' => 'Afspelen op dit apparaat toestaan',
+			'musicDevices.nearbyHint' => 'Open de apparaatkiezer op het andere apparaat en sta afspelen daar toe.',
+			'musicDevices.receiverHint' => 'Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.',
+			'musicDevices.moveFailed' => 'Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.',
+			'musicDevices.uncertain' => 'Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.',
 			_ => null,
 		};
 	}

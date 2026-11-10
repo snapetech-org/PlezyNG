@@ -85,6 +85,7 @@ class _Session extends StubMusicPlaybackService implements MusicDeviceSession {
   Future<PreparedMusicDeviceTransfer?> prepareMusicDeviceTransfer(
     MusicTransferSnapshot value, {
     required bool Function() current,
+    bool allowRemoteOutput = false,
   }) async {
     if (rejectPrepare || !current()) return null;
     final captured = revision;

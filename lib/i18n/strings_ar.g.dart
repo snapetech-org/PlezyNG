@@ -116,6 +116,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$ar subtitleCapture = _Translations$subtitleCapture$ar._(_root);
 	@override late final _Translations$musicExperience$ar musicExperience = _Translations$musicExperience$ar._(_root);
 	@override late final _Translations$musicTools$ar musicTools = _Translations$musicTools$ar._(_root);
+	@override late final _Translations$musicDevices$ar musicDevices = _Translations$musicDevices$ar._(_root);
 }
 
 // Path: app
@@ -4427,6 +4428,25 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$ar extends Translations$musicDevices$en {
+	_Translations$musicDevices$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'التشغيل على';
+	@override String get thisDevice => 'هذا الجهاز';
+	@override String playingOn({required Object device}) => 'يتم التشغيل على ${device}';
+	@override String get remembered => 'الأجهزة المحفوظة';
+	@override String get forget => 'نسيان الجهاز';
+	@override String get receive => 'السماح بالتشغيل على هذا الجهاز';
+	@override String get nearbyHint => 'افتح «التشغيل على» على الجهاز الآخر واسمح بالتشغيل عليه.';
+	@override String get receiverHint => 'أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.';
+	@override String get moveFailed => 'تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.';
+	@override String get uncertain => 'انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل.';
 }
 
 // Path: appIcon.names
@@ -9603,6 +9623,16 @@ extension on TranslationsAr {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'التشغيل على',
+			'musicDevices.thisDevice' => 'هذا الجهاز',
+			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',
+			'musicDevices.remembered' => 'الأجهزة المحفوظة',
+			'musicDevices.forget' => 'نسيان الجهاز',
+			'musicDevices.receive' => 'السماح بالتشغيل على هذا الجهاز',
+			'musicDevices.nearbyHint' => 'افتح «التشغيل على» على الجهاز الآخر واسمح بالتشغيل عليه.',
+			'musicDevices.receiverHint' => 'أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.',
+			'musicDevices.moveFailed' => 'تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.',
+			'musicDevices.uncertain' => 'انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل.',
 			_ => null,
 		};
 	}

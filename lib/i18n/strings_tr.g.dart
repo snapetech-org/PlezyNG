@@ -116,6 +116,7 @@ class TranslationsTr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$tr subtitleCapture = _Translations$subtitleCapture$tr._(_root);
 	@override late final _Translations$musicExperience$tr musicExperience = _Translations$musicExperience$tr._(_root);
 	@override late final _Translations$musicTools$tr musicTools = _Translations$musicTools$tr._(_root);
+	@override late final _Translations$musicDevices$tr musicDevices = _Translations$musicDevices$tr._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$tr extends Translations$musicDevices$en {
+	_Translations$musicDevices$tr._(TranslationsTr root) : this._root = root, super.internal(root);
+
+	final TranslationsTr _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Şurada çal';
+	@override String get thisDevice => 'Bu cihaz';
+	@override String playingOn({required Object device}) => '${device} üzerinde çalınıyor';
+	@override String get remembered => 'Kaydedilen cihazlar';
+	@override String get forget => 'Cihazı unut';
+	@override String get receive => 'Bu cihazda oynatmaya izin ver';
+	@override String get nearbyHint => 'Diğer cihazda cihaz seçiciyi açın ve orada oynatmaya izin verin.';
+	@override String get receiverHint => 'Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.';
+	@override String get moveFailed => 'Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.';
+	@override String get uncertain => 'Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsTr {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Şurada çal',
+			'musicDevices.thisDevice' => 'Bu cihaz',
+			'musicDevices.playingOn' => ({required Object device}) => '${device} üzerinde çalınıyor',
+			'musicDevices.remembered' => 'Kaydedilen cihazlar',
+			'musicDevices.forget' => 'Cihazı unut',
+			'musicDevices.receive' => 'Bu cihazda oynatmaya izin ver',
+			'musicDevices.nearbyHint' => 'Diğer cihazda cihaz seçiciyi açın ve orada oynatmaya izin verin.',
+			'musicDevices.receiverHint' => 'Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.',
+			'musicDevices.moveFailed' => 'Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.',
+			'musicDevices.uncertain' => 'Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.',
 			_ => null,
 		};
 	}

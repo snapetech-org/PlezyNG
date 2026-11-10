@@ -5569,5 +5569,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Lire sur",
+    "thisDevice": "Cet appareil",
+    "playingOn": "Lecture sur ${device}",
+    "remembered": "Appareils mémorisés",
+    "forget": "Oublier cet appareil",
+    "receive": "Autoriser la lecture sur cet appareil",
+    "nearbyHint": "Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.",
+    "receiverHint": "Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.",
+    "moveFailed": "Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.",
+    "uncertain": "Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture."
   }
 }

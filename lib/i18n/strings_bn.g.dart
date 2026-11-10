@@ -116,6 +116,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$bn subtitleCapture = _Translations$subtitleCapture$bn._(_root);
 	@override late final _Translations$musicExperience$bn musicExperience = _Translations$musicExperience$bn._(_root);
 	@override late final _Translations$musicTools$bn musicTools = _Translations$musicTools$bn._(_root);
+	@override late final _Translations$musicDevices$bn musicDevices = _Translations$musicDevices$bn._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$bn extends Translations$musicDevices$en {
+	_Translations$musicDevices$bn._(TranslationsBn root) : this._root = root, super.internal(root);
+
+	final TranslationsBn _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'এখানে চালান';
+	@override String get thisDevice => 'এই ডিভাইস';
+	@override String playingOn({required Object device}) => '${device}-এ চলছে';
+	@override String get remembered => 'মনে রাখা ডিভাইস';
+	@override String get forget => 'ডিভাইস ভুলে যান';
+	@override String get receive => 'এই ডিভাইসে প্লেব্যাকের অনুমতি দিন';
+	@override String get nearbyHint => 'অন্য ডিভাইসে প্লেব্যাক ডিভাইসের মেনু খুলে সেখানে প্লেব্যাকের অনুমতি দিন।';
+	@override String get receiverHint => 'গান গ্রহণ করতে Pleazyng খোলা রাখুন। এই কোড দিয়ে একবার জোড়া লাগান।';
+	@override String get moveFailed => 'প্লেব্যাক সরানো যায়নি। ডিভাইসটি চালু ও জোড়া লাগানো আছে এবং গান সার্ভারে প্রবেশ করতে পারে কিনা দেখুন।';
+	@override String get uncertain => 'সংযোগ বিচ্ছিন্ন হয়েছে। প্লেব্যাক দেখতে নির্বাচিত ডিভাইসে আবার সংযুক্ত হন।';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsBn {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'এখানে চালান',
+			'musicDevices.thisDevice' => 'এই ডিভাইস',
+			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',
+			'musicDevices.remembered' => 'মনে রাখা ডিভাইস',
+			'musicDevices.forget' => 'ডিভাইস ভুলে যান',
+			'musicDevices.receive' => 'এই ডিভাইসে প্লেব্যাকের অনুমতি দিন',
+			'musicDevices.nearbyHint' => 'অন্য ডিভাইসে প্লেব্যাক ডিভাইসের মেনু খুলে সেখানে প্লেব্যাকের অনুমতি দিন।',
+			'musicDevices.receiverHint' => 'গান গ্রহণ করতে Pleazyng খোলা রাখুন। এই কোড দিয়ে একবার জোড়া লাগান।',
+			'musicDevices.moveFailed' => 'প্লেব্যাক সরানো যায়নি। ডিভাইসটি চালু ও জোড়া লাগানো আছে এবং গান সার্ভারে প্রবেশ করতে পারে কিনা দেখুন।',
+			'musicDevices.uncertain' => 'সংযোগ বিচ্ছিন্ন হয়েছে। প্লেব্যাক দেখতে নির্বাচিত ডিভাইসে আবার সংযুক্ত হন।',
 			_ => null,
 		};
 	}

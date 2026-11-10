@@ -5560,5 +5560,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Shu qurilmada ijro etish",
+    "thisDevice": "Bu qurilma",
+    "playingOn": "${device} qurilmasida ijro etilmoqda",
+    "remembered": "Saqlangan qurilmalar",
+    "forget": "Qurilmani unutish",
+    "receive": "Bu qurilmada ijroga ruxsat berish",
+    "nearbyHint": "Boshqa qurilmada qurilma tanlovini oching va ijroga ruxsat bering.",
+    "receiverHint": "Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.",
+    "moveFailed": "Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.",
+    "uncertain": "Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning."
   }
 }

@@ -5533,5 +5533,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Putar di",
+    "thisDevice": "Perangkat ini",
+    "playingOn": "Diputar di ${device}",
+    "remembered": "Perangkat tersimpan",
+    "forget": "Lupakan perangkat",
+    "receive": "Izinkan pemutaran di perangkat ini",
+    "nearbyHint": "Buka pemilih perangkat di perangkat lain dan izinkan pemutaran di sana.",
+    "receiverHint": "Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.",
+    "moveFailed": "Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.",
+    "uncertain": "Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran."
   }
 }

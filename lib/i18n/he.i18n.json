@@ -5570,5 +5570,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "ניגון באמצעות",
+    "thisDevice": "מכשיר זה",
+    "playingOn": "מתנגן באמצעות ${device}",
+    "remembered": "מכשירים שמורים",
+    "forget": "שכח מכשיר",
+    "receive": "אפשר ניגון במכשיר זה",
+    "nearbyHint": "פתח את בורר מכשירי הניגון במכשיר האחר ואפשר בו ניגון.",
+    "receiverHint": "השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.",
+    "moveFailed": "לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.",
+    "uncertain": "החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון."
   }
 }

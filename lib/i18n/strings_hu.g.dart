@@ -116,6 +116,7 @@ class TranslationsHu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$hu subtitleCapture = _Translations$subtitleCapture$hu._(_root);
 	@override late final _Translations$musicExperience$hu musicExperience = _Translations$musicExperience$hu._(_root);
 	@override late final _Translations$musicTools$hu musicTools = _Translations$musicTools$hu._(_root);
+	@override late final _Translations$musicDevices$hu musicDevices = _Translations$musicDevices$hu._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$hu extends Translations$musicDevices$en {
+	_Translations$musicDevices$hu._(TranslationsHu root) : this._root = root, super.internal(root);
+
+	final TranslationsHu _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Lejátszás itt';
+	@override String get thisDevice => 'Ez az eszköz';
+	@override String playingOn({required Object device}) => 'Lejátszás ezen az eszközön · ${device}';
+	@override String get remembered => 'Megjegyzett eszközök';
+	@override String get forget => 'Eszköz elfelejtése';
+	@override String get receive => 'Lejátszás engedélyezése ezen az eszközön';
+	@override String get nearbyHint => 'Nyisd meg az eszközválasztót a másik eszközön, és engedélyezd ott a lejátszást.';
+	@override String get receiverHint => 'Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.';
+	@override String get moveFailed => 'Nem sikerült áthelyezni a lejátszást. Ellenőrizd, hogy az eszköz ébren van, párosítva van, és eléri a zenekiszolgálót.';
+	@override String get uncertain => 'A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsHu {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Lejátszás itt',
+			'musicDevices.thisDevice' => 'Ez az eszköz',
+			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',
+			'musicDevices.remembered' => 'Megjegyzett eszközök',
+			'musicDevices.forget' => 'Eszköz elfelejtése',
+			'musicDevices.receive' => 'Lejátszás engedélyezése ezen az eszközön',
+			'musicDevices.nearbyHint' => 'Nyisd meg az eszközválasztót a másik eszközön, és engedélyezd ott a lejátszást.',
+			'musicDevices.receiverHint' => 'Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.',
+			'musicDevices.moveFailed' => 'Nem sikerült áthelyezni a lejátszást. Ellenőrizd, hogy az eszköz ébren van, párosítva van, és eléri a zenekiszolgálót.',
+			'musicDevices.uncertain' => 'A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.',
 			_ => null,
 		};
 	}

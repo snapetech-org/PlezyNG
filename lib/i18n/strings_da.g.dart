@@ -116,6 +116,7 @@ class TranslationsDa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$da subtitleCapture = _Translations$subtitleCapture$da._(_root);
 	@override late final _Translations$musicExperience$da musicExperience = _Translations$musicExperience$da._(_root);
 	@override late final _Translations$musicTools$da musicTools = _Translations$musicTools$da._(_root);
+	@override late final _Translations$musicDevices$da musicDevices = _Translations$musicDevices$da._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$da extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$da extends Translations$musicDevices$en {
+	_Translations$musicDevices$da._(TranslationsDa root) : this._root = root, super.internal(root);
+
+	final TranslationsDa _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Afspil på';
+	@override String get thisDevice => 'Denne enhed';
+	@override String playingOn({required Object device}) => 'Afspiller på ${device}';
+	@override String get remembered => 'Huskede enheder';
+	@override String get forget => 'Glem enhed';
+	@override String get receive => 'Tillad afspilning på denne enhed';
+	@override String get nearbyHint => 'Åbn enhedsmenuen på den anden enhed, og tillad afspilning der.';
+	@override String get receiverHint => 'Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.';
+	@override String get moveFailed => 'Kunne ikke flytte afspilningen. Kontrollér, at enheden er vågen, parret og har adgang til din musikserver.';
+	@override String get uncertain => 'Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsDa {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Afspil på',
+			'musicDevices.thisDevice' => 'Denne enhed',
+			'musicDevices.playingOn' => ({required Object device}) => 'Afspiller på ${device}',
+			'musicDevices.remembered' => 'Huskede enheder',
+			'musicDevices.forget' => 'Glem enhed',
+			'musicDevices.receive' => 'Tillad afspilning på denne enhed',
+			'musicDevices.nearbyHint' => 'Åbn enhedsmenuen på den anden enhed, og tillad afspilning der.',
+			'musicDevices.receiverHint' => 'Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.',
+			'musicDevices.moveFailed' => 'Kunne ikke flytte afspilningen. Kontrollér, at enheden er vågen, parret og har adgang til din musikserver.',
+			'musicDevices.uncertain' => 'Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.',
 			_ => null,
 		};
 	}

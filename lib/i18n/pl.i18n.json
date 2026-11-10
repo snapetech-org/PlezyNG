@@ -5614,5 +5614,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Odtwarzaj na",
+    "thisDevice": "To urządzenie",
+    "playingOn": "Odtwarzanie na ${device}",
+    "remembered": "Zapamiętane urządzenia",
+    "forget": "Zapomnij urządzenie",
+    "receive": "Zezwól na odtwarzanie na tym urządzeniu",
+    "nearbyHint": "Otwórz wybór urządzeń na drugim urządzeniu i zezwól tam na odtwarzanie.",
+    "receiverHint": "Pozostaw Pleazyng otwarte, aby odbierać muzykę. Sparuj raz przy użyciu tego kodu.",
+    "moveFailed": "Nie udało się przenieść odtwarzania. Sprawdź, czy urządzenie jest aktywne, sparowane i ma dostęp do serwera muzyki.",
+    "uncertain": "Połączenie przerwane. Połącz się ponownie z wybranym urządzeniem, aby sprawdzić odtwarzanie."
   }
 }

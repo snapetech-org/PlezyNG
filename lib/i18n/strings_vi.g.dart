@@ -116,6 +116,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$vi subtitleCapture = _Translations$subtitleCapture$vi._(_root);
 	@override late final _Translations$musicExperience$vi musicExperience = _Translations$musicExperience$vi._(_root);
 	@override late final _Translations$musicTools$vi musicTools = _Translations$musicTools$vi._(_root);
+	@override late final _Translations$musicDevices$vi musicDevices = _Translations$musicDevices$vi._(_root);
 }
 
 // Path: app
@@ -4312,6 +4313,25 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$vi extends Translations$musicDevices$en {
+	_Translations$musicDevices$vi._(TranslationsVi root) : this._root = root, super.internal(root);
+
+	final TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Phát trên';
+	@override String get thisDevice => 'Thiết bị này';
+	@override String playingOn({required Object device}) => 'Đang phát trên ${device}';
+	@override String get remembered => 'Thiết bị đã lưu';
+	@override String get forget => 'Quên thiết bị';
+	@override String get receive => 'Cho phép phát trên thiết bị này';
+	@override String get nearbyHint => 'Mở trình chọn thiết bị trên thiết bị kia và cho phép phát ở đó.';
+	@override String get receiverHint => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.';
+	@override String get moveFailed => 'Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.';
+	@override String get uncertain => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.';
 }
 
 // Path: appIcon.names
@@ -9478,6 +9498,16 @@ extension on TranslationsVi {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Phát trên',
+			'musicDevices.thisDevice' => 'Thiết bị này',
+			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',
+			'musicDevices.remembered' => 'Thiết bị đã lưu',
+			'musicDevices.forget' => 'Quên thiết bị',
+			'musicDevices.receive' => 'Cho phép phát trên thiết bị này',
+			'musicDevices.nearbyHint' => 'Mở trình chọn thiết bị trên thiết bị kia và cho phép phát ở đó.',
+			'musicDevices.receiverHint' => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.',
+			'musicDevices.moveFailed' => 'Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.',
+			'musicDevices.uncertain' => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.',
 			_ => null,
 		};
 	}

@@ -119,6 +119,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$karaokeUi$fr karaokeUi = Translations$karaokeUi$fr.internal(_root);
 	@override late final Translations$musicExperience$fr musicExperience = Translations$musicExperience$fr.internal(_root);
 	@override late final Translations$musicTools$fr musicTools = Translations$musicTools$fr.internal(_root);
+	@override late final Translations$musicDevices$fr musicDevices = Translations$musicDevices$fr.internal(_root);
 }
 
 // Path: app
@@ -4396,6 +4397,25 @@ class Translations$musicTools$fr extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class Translations$musicDevices$fr extends Translations$musicDevices$en {
+	Translations$musicDevices$fr.internal(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Lire sur';
+	@override String get thisDevice => 'Cet appareil';
+	@override String playingOn({required Object device}) => 'Lecture sur ${device}';
+	@override String get remembered => 'Appareils mémorisés';
+	@override String get forget => 'Oublier cet appareil';
+	@override String get receive => 'Autoriser la lecture sur cet appareil';
+	@override String get nearbyHint => 'Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.';
+	@override String get receiverHint => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.';
+	@override String get moveFailed => 'Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.';
+	@override String get uncertain => 'Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.';
 }
 
 // Path: appIcon.names
@@ -9594,6 +9614,16 @@ extension on TranslationsFr {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Lire sur',
+			'musicDevices.thisDevice' => 'Cet appareil',
+			'musicDevices.playingOn' => ({required Object device}) => 'Lecture sur ${device}',
+			'musicDevices.remembered' => 'Appareils mémorisés',
+			'musicDevices.forget' => 'Oublier cet appareil',
+			'musicDevices.receive' => 'Autoriser la lecture sur cet appareil',
+			'musicDevices.nearbyHint' => 'Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.',
+			'musicDevices.receiverHint' => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.',
+			'musicDevices.moveFailed' => 'Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.',
+			'musicDevices.uncertain' => 'Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.',
 			_ => null,
 		};
 	}

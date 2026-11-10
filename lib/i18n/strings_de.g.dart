@@ -116,6 +116,7 @@ class TranslationsDe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$de subtitleCapture = _Translations$subtitleCapture$de._(_root);
 	@override late final _Translations$musicExperience$de musicExperience = _Translations$musicExperience$de._(_root);
 	@override late final _Translations$musicTools$de musicTools = _Translations$musicTools$de._(_root);
+	@override late final _Translations$musicDevices$de musicDevices = _Translations$musicDevices$de._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$de extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$de extends Translations$musicDevices$en {
+	_Translations$musicDevices$de._(TranslationsDe root) : this._root = root, super.internal(root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Wiedergeben auf';
+	@override String get thisDevice => 'Dieses Gerät';
+	@override String playingOn({required Object device}) => 'Wiedergabe auf ${device}';
+	@override String get remembered => 'Gespeicherte Geräte';
+	@override String get forget => 'Gerät vergessen';
+	@override String get receive => 'Wiedergabe auf diesem Gerät erlauben';
+	@override String get nearbyHint => 'Öffne die Geräteauswahl auf dem anderen Gerät und erlaube dort die Wiedergabe.';
+	@override String get receiverHint => 'Lass Pleazyng geöffnet, um Musik zu empfangen. Kopple einmal mit diesem Code.';
+	@override String get moveFailed => 'Wiedergabe konnte nicht verschoben werden. Prüfe, ob das Gerät aktiv und gekoppelt ist und deinen Musikserver erreicht.';
+	@override String get uncertain => 'Verbindung unterbrochen. Verbinde dich erneut mit dem gewählten Gerät, um die Wiedergabe zu prüfen.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsDe {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Wiedergeben auf',
+			'musicDevices.thisDevice' => 'Dieses Gerät',
+			'musicDevices.playingOn' => ({required Object device}) => 'Wiedergabe auf ${device}',
+			'musicDevices.remembered' => 'Gespeicherte Geräte',
+			'musicDevices.forget' => 'Gerät vergessen',
+			'musicDevices.receive' => 'Wiedergabe auf diesem Gerät erlauben',
+			'musicDevices.nearbyHint' => 'Öffne die Geräteauswahl auf dem anderen Gerät und erlaube dort die Wiedergabe.',
+			'musicDevices.receiverHint' => 'Lass Pleazyng geöffnet, um Musik zu empfangen. Kopple einmal mit diesem Code.',
+			'musicDevices.moveFailed' => 'Wiedergabe konnte nicht verschoben werden. Prüfe, ob das Gerät aktiv und gekoppelt ist und deinen Musikserver erreicht.',
+			'musicDevices.uncertain' => 'Verbindung unterbrochen. Verbinde dich erneut mit dem gewählten Gerät, um die Wiedergabe zu prüfen.',
 			_ => null,
 		};
 	}

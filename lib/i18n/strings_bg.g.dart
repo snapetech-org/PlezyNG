@@ -116,6 +116,7 @@ class TranslationsBg extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$bg subtitleCapture = _Translations$subtitleCapture$bg._(_root);
 	@override late final _Translations$musicExperience$bg musicExperience = _Translations$musicExperience$bg._(_root);
 	@override late final _Translations$musicTools$bg musicTools = _Translations$musicTools$bg._(_root);
+	@override late final _Translations$musicDevices$bg musicDevices = _Translations$musicDevices$bg._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$bg extends Translations$musicDevices$en {
+	_Translations$musicDevices$bg._(TranslationsBg root) : this._root = root, super.internal(root);
+
+	final TranslationsBg _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Възпроизвеждане на';
+	@override String get thisDevice => 'Това устройство';
+	@override String playingOn({required Object device}) => 'Възпроизвежда се на ${device}';
+	@override String get remembered => 'Запомнени устройства';
+	@override String get forget => 'Забравяне на устройството';
+	@override String get receive => 'Разрешаване на възпроизвеждане на това устройство';
+	@override String get nearbyHint => 'Отворете менюто за устройства на другото устройство и разрешете възпроизвеждането.';
+	@override String get receiverHint => 'Оставете Pleazyng отворен, за да получава музика. Сдвоете веднъж с този код.';
+	@override String get moveFailed => 'Възпроизвеждането не бе преместено. Проверете дали устройството е будно, сдвоено и има достъп до музикалния сървър.';
+	@override String get uncertain => 'Връзката прекъсна. Свържете се отново с избраното устройство, за да проверите възпроизвеждането.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsBg {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Възпроизвеждане на',
+			'musicDevices.thisDevice' => 'Това устройство',
+			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',
+			'musicDevices.remembered' => 'Запомнени устройства',
+			'musicDevices.forget' => 'Забравяне на устройството',
+			'musicDevices.receive' => 'Разрешаване на възпроизвеждане на това устройство',
+			'musicDevices.nearbyHint' => 'Отворете менюто за устройства на другото устройство и разрешете възпроизвеждането.',
+			'musicDevices.receiverHint' => 'Оставете Pleazyng отворен, за да получава музика. Сдвоете веднъж с този код.',
+			'musicDevices.moveFailed' => 'Възпроизвеждането не бе преместено. Проверете дали устройството е будно, сдвоено и има достъп до музикалния сървър.',
+			'musicDevices.uncertain' => 'Връзката прекъсна. Свържете се отново с избраното устройство, за да проверите възпроизвеждането.',
 			_ => null,
 		};
 	}

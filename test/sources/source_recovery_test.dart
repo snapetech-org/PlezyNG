@@ -145,15 +145,19 @@ void main() {
     );
     try {
       sources.localFiles.addAll(target.fileIds);
-      expect(await resolveRecoverySourceEntry(
-        sources: sources, cached: entry, target: target, isCurrent: () => true,
-      ), same(entry));
+      expect(
+        await resolveRecoverySourceEntry(sources: sources, cached: entry, target: target, isCurrent: () => true),
+        same(entry),
+      );
       expect(sources.hydrationCount, 0);
 
       sources.localFiles.remove(second.fingerprint);
       sources.refreshed = entry.copyWith(files: [first]);
       final refreshed = await resolveRecoverySourceEntry(
-        sources: sources, cached: entry, target: target, isCurrent: () => true,
+        sources: sources,
+        cached: entry,
+        target: target,
+        isCurrent: () => true,
       );
       expect(sources.hydrationCount, 1);
       expect(recoverySourceFiles(refreshed!, target), isNull);
@@ -161,7 +165,10 @@ void main() {
       sources.pendingLocal = Completer<bool>();
       var current = true;
       final pending = resolveRecoverySourceEntry(
-        sources: sources, cached: entry, target: target, isCurrent: () => current,
+        sources: sources,
+        cached: entry,
+        target: target,
+        isCurrent: () => current,
       );
       current = false;
       sources.pendingLocal!.complete(true);

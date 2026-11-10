@@ -47,7 +47,8 @@ class Guest:
             'root/.ssh/authorized_keys': (self.root / 'key.pub').read_text(),
             'etc/ssh/sshd_config.d/90-qa.conf': 'PermitRootLogin prohibit-password\nPasswordAuthentication no\n',
             'etc/hostname': 'aerynos-ci\n',
-            'etc/gdm/custom.conf': '[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=live\n',
+            'etc/gdm/custom.conf': '[daemon]\nAutomaticLoginEnable=False\n',
+            'var/lib/AccountsService/users/live': '[User]\nSystemAccount=false\n',
             'etc/systemd/system/qa-bootstrap.service': '''[Unit]
 After=network-online.target
 Wants=network-online.target
@@ -67,6 +68,8 @@ os.chmod(root/'root/.ssh',0o700);os.chmod(root/'root/.ssh/authorized_keys',0o600
 p=root/'etc/systemd/system/multi-user.target.wants/qa-bootstrap.service';p.parent.mkdir(parents=True,exist_ok=True);p.symlink_to('/etc/systemd/system/qa-bootstrap.service')
 '''
         run(['sudo', '-n', 'python3', '-c', edit, rootfs], input=json.dumps(payload), text=True)
+        password = run(['openssl', 'passwd', '-6', '-stdin'], input='maestro\n', text=True, capture_output=True).stdout.strip()
+        run(['sudo', '-n', 'chpasswd', '--encrypted', '--root', rootfs], input='live:' + password + '\n', text=True)
         disk_uuid = str(uuid.uuid4())
         run(['truncate', '-s', '40G', self.root / 'system.raw'])
         run(['sudo', '-n', 'mkfs.ext4', '-q', '-F', '-U', disk_uuid, '-d', rootfs, self.root / 'system.raw'])

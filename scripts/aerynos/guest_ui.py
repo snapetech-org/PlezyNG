@@ -22,9 +22,13 @@ def walk(node, depth=0):
 def main():
     desktop = Atspi.get_desktop(0)
     apps = [desktop.get_child_at_index(i) for i in range(desktop.get_child_count())]
-    nodes = [node for app in apps if 'pleazyng' in (app.get_name() or '').lower() for node in walk(app)]
     command = sys.argv[1]
-    if command == 'dump':
+    nodes = [node for app in apps if command == 'dump-all' or 'pleazyng' in (app.get_name() or '').lower() for node in walk(app)]
+    if command == 'window-state':
+        frames = [n for n in nodes if n.get_role_name() == 'frame']
+        print(json.dumps([{'active': n.get_state_set().contains(Atspi.StateType.ACTIVE), 'focused': n.get_state_set().contains(Atspi.StateType.FOCUSED)} for n in frames]))
+        return
+    if command in ('dump', 'dump-all'):
         print(json.dumps([{'name': n.get_name(), 'role': n.get_role_name()} for n in nodes]))
         return
     label = sys.argv[2]
@@ -32,17 +36,40 @@ def main():
     if not found:
         raise RuntimeError(f'Control not found: {label}')
     node = found[0]
-    if command == 'click':
-        result = node.get_action_iface().do_action(0)
+    if command == 'inspect':
+        result = []
+        current = node
+        for _ in range(6):
+            action = current.get_action_iface()
+            result.append({'name': current.get_name(), 'role': current.get_role_name(), 'actions': ([action.get_action_name(i) for i in range(action.get_n_actions())] if action else []), 'children': [{'name': current.get_child_at_index(i).get_name(), 'role': current.get_child_at_index(i).get_role_name()} for i in range(current.get_child_count())]})
+            current = current.get_parent()
+    elif command == 'actions':
+        action = node.get_action_iface()
+        result = [action.get_action_name(i) for i in range(action.get_n_actions())] if action else []
+    elif command == 'tap':
+        action = node.get_action_iface()
+        index = next(i for i in range(action.get_n_actions()) if action.get_action_name(i) == 'Tap')
+        result = action.do_action(index)
+    elif command == 'click':
+        result = False
+        for _ in range(10):
+            action = node.get_action_iface()
+            if action:
+                names = [action.get_action_name(i).lower() for i in range(action.get_n_actions())]
+                preferred = ('tap', 'click', 'press', 'activate', 'focus')
+                choices = [i for desired in preferred for i, name in enumerate(names) if name == desired]
+                if choices:
+                    result = action.do_action(choices[0])
+                    break
+            node = node.get_parent()
+            if node is None:
+                break
+        if not result:
+            raise RuntimeError('No activation action for ' + label)
     elif command == 'fill':
         result = node.get_editable_text_iface().set_text_contents(sys.argv[3])
-    elif command == 'focus':
-        result = node.get_component_iface().grab_focus()
     elif command == 'state':
         result = node.get_state_set().contains(Atspi.StateType.CHECKED)
-    elif command == 'rect':
-        r = node.get_component_iface().get_extents(Atspi.CoordType.SCREEN)
-        result = {'x': r.x, 'y': r.y, 'width': r.width, 'height': r.height}
     else:
         raise ValueError(command)
     print(json.dumps(result))

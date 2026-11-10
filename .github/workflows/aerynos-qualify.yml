@@ -1,0 +1,117 @@
+name: Qualify aerynOS source candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full canonical source SHA of the candidate
+        type: string
+        required: true
+      producer_run_id:
+        description: Candidate build run in the canonical repository
+        type: string
+        required: true
+      release:
+        description: Package release number (greater than 1)
+        type: number
+        default: 2
+  workflow_call:
+    inputs:
+      producer_run_id:
+        type: string
+        default: ""
+      source_sha:
+        type: string
+        required: true
+      release:
+        type: number
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  qualify:
+    name: Native aerynOS install and release-app QA
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: snapetech-org/pleazyng
+          ref: ${{ inputs.source_sha }}
+          path: source
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: snapetech-org/pleazyng
+          ref: main
+          path: tooling
+          persist-credentials: false
+          sparse-checkout: scripts/aerynos
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: aerynos-candidate-${{ inputs.source_sha }}
+          path: ${{ runner.temp }}/candidate
+          github-token: ${{ github.token }}
+          repository: ${{ inputs.producer_run_id && 'snapetech-org/pleazyng' || github.repository }}
+          run-id: ${{ inputs.producer_run_id || github.run_id }}
+      - name: Verify exact producer source
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          python3 - <<'PY'
+          import json,os,pathlib
+          data=json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'candidate/build.json').read_text())
+          if data['source_sha'] != os.environ['SOURCE_SHA']:
+              raise SystemExit('Producer artifact source mismatch')
+          PY
+      - name: Install native VM and fixture tools
+        run: |
+          sudo python3 source/scripts/configure_hosted_apt.py '${{ runner.environment }}'
+          sudo apt-get update -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::Retries=3 qemu-system-x86 ovmf systemd-boot-efi \
+            squashfs-tools libarchive-tools dosfstools mtools e2fsprogs openssh-client \
+            ffmpeg python3-pil python3-numpy tesseract-ocr
+          test -e /dev/kvm || { echo 'A KVM-compatible hosted runner is required'; exit 1; }
+          df -h . "$RUNNER_TEMP"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.cache/pleazyng-aerynos/iso
+          key: aerynos-iso-e348b88da07e5876d1e0fc50e156f0a062c58251ab6deb2a897155980fa6c419
+      - name: Fetch checksum-pinned official ISO
+        run: |
+          mkdir -p "$HOME/.cache/pleazyng-aerynos/iso"
+          iso="$HOME/.cache/pleazyng-aerynos/iso/aerynOS-2026.11-GNOME-live-x86_64.iso"
+          if [[ ! -f "$iso" ]]; then
+            curl -fL --retry 5 --retry-all-errors https://cdn.aerynos.dev/isos/aerynOS-2026.11-GNOME-live-x86_64.iso -o "$iso"
+          fi
+          echo "e348b88da07e5876d1e0fc50e156f0a062c58251ab6deb2a897155980fa6c419  $iso" | sha256sum --check
+      - name: Native build install and visible release playback
+        env:
+          PACKAGE_RELEASE: ${{ inputs.release }}
+        run: |
+          /usr/bin/python3 tooling/scripts/aerynos/qualify.py \
+            --source source --candidate "$RUNNER_TEMP/candidate" \
+            --output "$RUNNER_TEMP/qualified" --scratch "$RUNNER_TEMP/aerynos-qa" \
+            --iso "$HOME/.cache/pleazyng-aerynos/iso/aerynOS-2026.11-GNOME-live-x86_64.iso" \
+            --release "$PACKAGE_RELEASE"
+      - name: Retain qualified publication handoff
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: aerynos-qualified-${{ inputs.source_sha }}
+          path: ${{ runner.temp }}/qualified/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
+      - name: Retain native diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: aerynos-failure-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/qualified/evidence/
+            ${{ runner.temp }}/aerynos-qa/vm/serial.log
+            ${{ runner.temp }}/aerynos-qa/vm/qemu.log
+          retention-days: 7

@@ -621,13 +621,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// Validate *this receiver's* active server credentials before changing its
   /// queue. The sender's metadata never grants access or provides a stream URL.
   /// An open failure is not acknowledged, so the sender retains its playback.
-  Future<bool> acceptTransfer(MusicTransferSnapshot snapshot) async {
+  Future<bool> acceptTransfer(MusicTransferSnapshot snapshot, {bool Function()? current}) async {
+    bool active() => current?.call() ?? true;
     try {
       snapshot.toJson();
     } on StateError {
       return false;
     }
-    if (_disposed || (snapshot.playing && !automotiveMusicPlaybackAllowedNow())) return false;
+    if (_disposed || !active() || (snapshot.playing && !automotiveMusicPlaybackAllowedNow())) return false;
     final clients = <MediaServerClient, Object?>{};
     for (final item in snapshot.queue.items) {
       final serverId = serverIdOrNull(item.serverId);
@@ -652,7 +653,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         !identical(source.reportingClient, _serverManager.getClient(ServerId(track.serverId!)))) {
       return false;
     }
-    if (!isPlayIntentCurrent(intent) ||
+    if (!active() ||
+        !isPlayIntentCurrent(intent) ||
         generation != _generation ||
         edit != _queueEditRevision ||
         transport != _continuationResumeRevision ||
@@ -674,6 +676,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       restoredQueue: snapshot.queue,
       preparedSource: source,
     );
+    if (!active()) {
+      // The pairing disappeared or the request expired while opening. Leave
+      // newer local actions alone; retire only the queue this request opened.
+      if (!_disposed && _queueSessionRevision == expectedRevision && _generation == generation + 1) await stop();
+      return false;
+    }
     return !_disposed &&
         _queueSessionRevision == expectedRevision &&
         _queue.current?.globalKey == track.globalKey &&

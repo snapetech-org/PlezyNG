@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
-spec = importlib.util.spec_from_file_location('cache_helper', ROOT / 'linux/packaging/aerynos/rebuild-im-cache.py')
+spec = importlib.util.spec_from_file_location('cache_helper', ROOT / 'linux/packaging/rebuild-im-cache.py')
 helper = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(helper)
 

@@ -258,6 +258,59 @@ class SourceProofTests(unittest.TestCase):
                 recovery.ci_proof(recovery.REPOSITORY, "a" * 40)
 
 
+    def frozen(self, **options):
+        self.compare['files'] = [{'filename': 'tools/dv-engine/build_apple_runtime.py'}]
+        next(job for job in self.jobs if job['name'] == 'build-android')['conclusion'] = 'success'
+        return self.prove(packaging_source_sha='b' * 40, workflow_source_sha='c' * 40,
+                          include_apple_store_build=True, **options)
+
+    def test_frozen_exception_requires_independent_exact_approval(self):
+        with patch('verify_frozen_packaging_repair.verify_frozen_packaging_repair',
+                   side_effect=ValueError('unapproved blob')):
+            with self.assertRaisesRegex(recovery.RecoveryError, 'approval failed'):
+                self.frozen(rebuild_ios=True, rebuild_tvos=True)
+        with patch('verify_frozen_packaging_repair.verify_frozen_packaging_repair',
+                   return_value={'approved_files': {'reviewed': 'blob'}}) as verify:
+            proof = self.frozen(rebuild_ios=True, rebuild_tvos=True)
+        self.assertEqual(proof['product_source_sha'], 'a' * 40)
+        self.assertEqual(proof['packaging_source_sha'], 'b' * 40)
+        self.assertEqual(proof['workflow_source_sha'], 'c' * 40)
+        verify.assert_called_once()
+        with self.assertRaisesRegex(recovery.RecoveryError, 'inputs changed'):
+            self.prove()
+
+    def test_frozen_reuse_requires_actual_signed_store_steps(self):
+        with patch('verify_frozen_packaging_repair.verify_frozen_packaging_repair', return_value={}):
+            with self.assertRaisesRegex(recovery.RecoveryError, 'signed Store archive'):
+                self.frozen()
+            for name, step in [('build-ios', 'Build signed iOS App Store IPA'),
+                               ('Build tvOS developer package (arm64)', 'Build signed tvOS App Store IPA')]:
+                next(job for job in self.jobs if job['name'] == name)['steps'] = [
+                    {'name': step, 'conclusion': 'success', 'status': 'completed'}]
+            self.assertTrue(self.frozen()['include_apple_store_build'])
+            with self.assertRaisesRegex(recovery.RecoveryError, 'full signed Apple builds'):
+                self.frozen(rebuild_linux=True)
+
+    def test_frozen_aliases_keep_original_successful_android_and_webos_only(self):
+        proof = {'recovery_policy': 'frozen-apple-packaging-v1', 'source_run_id': 42,
+                 'source_sha': 'a' * 40, 'rebuilt_jobs': list(recovery.REBUILT_JOBS)}
+        jobs = [{'id': i, 'name': name, 'status': 'completed', 'conclusion': 'success'}
+                for i, name in enumerate(['build-android', 'Build WebOS TV package (ARMv7)'], 1)]
+        with patch.object(recovery, 'collection', return_value=jobs):
+            result = recovery.compose_proof(proof, android_run=42, webos_run=42)
+            self.assertEqual(result['android_source']['source_sha'], 'a' * 40)
+            self.assertEqual(result['webos_source']['job_id'], 2)
+            self.assertNotIn('build-android', result['rebuilt_jobs'])
+            for options in ({'android_run': 43, 'webos_run': 42},
+                            {'android_run': 42, 'webos_run': 43},
+                            {'android_run': 42, 'webos_run': 42, 'include_webos_build': False}):
+                with self.assertRaises(recovery.RecoveryError):
+                    recovery.compose_proof(proof, **options)
+            jobs[0]['conclusion'] = 'failure'
+            with self.assertRaisesRegex(recovery.RecoveryError, 'not uniquely successful'):
+                recovery.compose_proof(proof, android_run=42, webos_run=42)
+
+
 class ArtifactTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -367,6 +420,27 @@ class ArtifactTests(unittest.TestCase):
             result = recovery.download_platforms(proof, self.root)
         self.assertEqual(result["artifacts"][0]["source_run_id"], 84)
         self.assertEqual((self.root / "webos/payload.exe").read_bytes(), b"binary")
+
+    def test_frozen_assembly_binds_actual_checkout_workflow_run_and_linux_hash(self):
+        proof = {'source_run_id': 42, 'source_sha': 'a' * 40,
+                 'recovery_policy': 'frozen-apple-packaging-v1',
+                 'packaging_source_sha': 'b' * 40, 'workflow_source_sha': 'c' * 40}
+        linux = self.root / 'linux-x64/pleazyng-linux-x64.tar.gz'
+        linux.parent.mkdir(); linux.write_bytes(b'original immutable Linux archive')
+        with patch.object(recovery, 'ARTIFACTS', {}), \
+             patch.object(recovery, 'collection', return_value=[]), \
+             patch.object(recovery.subprocess, 'check_output', return_value='b' * 40), \
+             patch.dict('os.environ', {'GITHUB_SHA': 'c' * 40, 'GITHUB_RUN_ID': '84'}):
+            result = recovery.download_platforms(proof, self.root)
+            self.assertEqual(result['assembly_run_id'], 84)
+            self.assertEqual(result['actual_checkout_sha'], 'b' * 40)
+            self.assertEqual(result['linux_archive_sha256'], hashlib.sha256(linux.read_bytes()).hexdigest())
+            with patch.dict('os.environ', {'GITHUB_SHA': 'd' * 40}):
+                with self.assertRaisesRegex(recovery.RecoveryError, 'workflow identity'):
+                    recovery.download_platforms(proof, self.root)
+            with patch.object(recovery.subprocess, 'check_output', return_value='d' * 40):
+                with self.assertRaisesRegex(recovery.RecoveryError, 'did not check out'):
+                    recovery.download_platforms(proof, self.root)
 
     def test_verified_download_records_actual_source_and_digests(self):
         archive = self.archive()

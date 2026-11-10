@@ -34,6 +34,17 @@ STEAM_CMAKE = ROOT / "native/games/steam/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
+    def test_apple_architecture_and_public_source_credit_cannot_be_removed(self):
+        original = self._workflow()
+        for old, new in [('ARCHS = arm64', 'ARCHS = arm64 arm64e'),
+                         ('cat UPSTREAM_ATTRIBUTION.md >> release-notes.md', 'true'),
+                         ('"$COMPILE_SOURCE_SHA"', '"$GITHUB_SHA"')]:
+            with self.subTest(removed=old):
+                changed = original.replace(old, new)
+                self.assertNotEqual(changed, original)
+                result = self._run(changed)
+                self.assertNotEqual(result.returncode, 0)
+
     def test_linux_runtime_cannot_skip_registered_tests_or_unavailable_entropy(self):
         ci_path = ROOT / '.github/workflows/ci.yml'
         original = Path.read_text

@@ -11,6 +11,34 @@ import build_apple_runtime as runtime
 
 
 class AppleRuntimeEnvironmentTest(unittest.TestCase):
+    def test_copied_read_only_framework_becomes_signable_without_changing_bytes_or_symlink_targets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            framework = root / 'Fixture.framework'
+            framework.mkdir()
+            binary = framework / 'Fixture'
+            binary.write_bytes(b'unchanged Mach-O fixture')
+            binary.chmod(0o444)
+            outside = root / 'outside'
+            outside.write_bytes(b'not our copied framework')
+            outside.chmod(0o444)
+            (framework / 'external-link').symlink_to(outside)
+            framework.chmod(0o555)
+            runtime.make_framework_writable(framework)
+            self.assertEqual(binary.read_bytes(), b'unchanged Mach-O fixture')
+            self.assertEqual(binary.stat().st_mode & 0o777, 0o644)
+            self.assertEqual(framework.stat().st_mode & 0o777, 0o755)
+            self.assertEqual(outside.stat().st_mode & 0o777, 0o444)
+            self.assertTrue((framework / 'external-link').is_symlink())
+
+    def test_framework_root_symlink_is_refused(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'real').mkdir()
+            (root / 'alias').symlink_to(root / 'real', target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, 'owned copied'):
+                runtime.make_framework_writable(root / 'alias')
+
     def test_package_graph_abort_retries_build_once_with_cached_checkouts(self):
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)

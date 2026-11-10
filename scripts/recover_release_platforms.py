@@ -275,7 +275,7 @@ def verify_repaired_run(run_id, head_sha, version, repository, *, allow_pending=
             "platforms_complete": run.get("status") == "completed", "pending_jobs": pending_jobs}
 
 
-def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow_pending=False, rebuild_linux=False, rebuild_macos=False, rebuild_tvos=False, rebuild_ios=False, repaired_run=None, require_homebrew_cask=False):
+def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow_pending=False, rebuild_linux=False, rebuild_macos=False, rebuild_tvos=False, rebuild_ios=False, repaired_run=None, require_homebrew_cask=False, packaging_source_sha=None, workflow_source_sha=None, include_apple_store_build=False):
     if (rebuild_tvos or rebuild_ios) and repaired_run:
         raise RecoveryError("Apple device rebuilding cannot substitute repaired Linux/Mac outputs")
     if repository != REPOSITORY or not str(run_id).isdigit() or not re.fullmatch(r"[0-9a-f]{40}", head_sha):
@@ -296,10 +296,22 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
         or comparison.get("merge_base_commit", {}).get("sha") != source_sha
         or not isinstance(changed, list) or len(changed) >= 300):
         raise RecoveryError("Cannot prove that the source release is an ancestor with complete file evidence.")
+    frozen_repair = None
+    if packaging_source_sha or workflow_source_sha:
+        if (packaging_source_sha != head_sha or not workflow_source_sha
+                or not include_apple_store_build or rebuild_linux or repaired_run):
+            raise RecoveryError("Frozen Apple packaging requires approved source identities and full signed Apple builds")
+        from verify_frozen_packaging_repair import verify_frozen_packaging_repair
+        try:
+            frozen_repair = verify_frozen_packaging_repair(source_sha, head_sha, workflow_source_sha, api, repository=repository)
+        except (ValueError, RuntimeError) as error:
+            raise RecoveryError(f"Frozen packaging approval failed: {error}") from error
+    elif include_apple_store_build:
+        raise RecoveryError("Signed Apple recovery requires an explicitly approved frozen packaging source")
     blocked = sorted({path for entry in changed
                       for path in (entry.get("filename"), entry.get("previous_filename"))
                       if path and path not in RECOVERY_FILES})
-    if blocked:
+    if blocked and frozen_repair is None:
         raise RecoveryError("Application or pinned native inputs changed: " + ", ".join(blocked))
     verify_webos_link_patch(repository, source_sha, head_sha, changed)
     verify_webos_transport_patch(repository, source_sha, head_sha, changed)
@@ -317,6 +329,17 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
             continue
         if len(matches) != 1 or matches[0].get("status") != "completed" or matches[0].get("conclusion") != "success":
             raise RecoveryError(f"Source platform job is not uniquely successful: {name}")
+    if include_apple_store_build:
+        for name, rebuilt, step in (
+            ('build-ios', rebuild_ios, 'Build signed iOS App Store IPA'),
+            ('Build tvOS developer package (arm64)', rebuild_tvos, 'Build signed tvOS App Store IPA'),
+        ):
+            if rebuilt or name in pending_jobs:
+                continue
+            job = next(job for job in jobs if job.get('name') == name)
+            if not any(item.get('name') == step and item.get('conclusion') == 'success'
+                       and item.get('status') == 'completed' for item in job.get('steps', [])):
+                raise RecoveryError(f'Reusable Apple platform lacks its actual signed Store archive: {name}')
     failures = [job.get("name") for job in jobs
                 if job.get("conclusion") in {"failure", "cancelled", "timed_out"}
                 and job.get("name") not in rebuilt_jobs | set(repaired["reused_jobs"] if repaired else [])]
@@ -345,7 +368,11 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
             "platforms_complete": source.get("status") == "completed" and (not repaired or repaired["platforms_complete"]),
             "pending_jobs": pending_jobs + [f"repaired:{name}" for name in (repaired["pending_jobs"] if repaired else [])],
             **({"repaired_source": repaired} if repaired else {}),
-            **ci_proof(repository, source_sha, version, source_run=run_id)}
+            **ci_proof(repository, source_sha, version, source_run=run_id),
+            **({'schema_version': 2, 'recovery_policy': 'frozen-apple-packaging-v1',
+                'product_source_sha': source_sha, 'packaging_source_sha': head_sha,
+                'workflow_source_sha': workflow_source_sha, 'packaging_approval': frozen_repair,
+                'include_apple_store_build': True} if frozen_repair is not None else {})}
 
 
 def verify_macos_packaging_recovery(run_id, macos_run, head_sha, version, repository=REPOSITORY):
@@ -478,6 +505,22 @@ def verify_android_run(run_id, head_sha, version, repository=REPOSITORY, *, allo
 
 
 def compose_proof(proof, android_run=None, include_webos_build=True, webos_run=None):
+    if proof.get('recovery_policy') == 'frozen-apple-packaging-v1':
+        source_run = proof['source_run_id']
+        if (str(android_run) != str(source_run) or str(webos_run) != str(source_run)
+                or not include_webos_build):
+            raise RecoveryError('Frozen Apple repair must reuse the original Android and webOS outputs')
+        jobs = collection(f'repos/{REPOSITORY}/actions/runs/{source_run}/jobs', 'jobs')
+        aliases = {}
+        for key, name in (('android_source', 'build-android'), ('webos_source', 'Build WebOS TV package (ARMv7)')):
+            matches = [job for job in jobs if job.get('name') == name]
+            if (len(matches) != 1 or matches[0].get('status') != 'completed'
+                    or matches[0].get('conclusion') != 'success'):
+                raise RecoveryError(f'Original reused platform is not uniquely successful: {name}')
+            aliases[key] = {'source_run_id': source_run, 'source_sha': proof['source_sha'],
+                            'job_id': matches[0]['id'], 'platforms_complete': True}
+        rebuilt = set(proof['rebuilt_jobs']) - {'build-android', 'Build WebOS TV package (ARMv7)'}
+        return {**proof, **aliases, 'rebuilt_jobs': sorted(rebuilt), 'excluded_optional_jobs': []}
     if proof.get("profile") == "macos-packaging":
         if webos_run:
             raise RecoveryError("Signing-only recovery cannot substitute another webOS source")
@@ -583,6 +626,19 @@ def download_platforms(proof, destination, repository=REPOSITORY):
                         "source_run_id": artifact_run, "source_sha": source["source_sha"]})
         print(f"Recovered verified {name} from run {artifact_run}.", flush=True)
     proof = {**proof, "artifacts": records}
+    if proof.get('recovery_policy') == 'frozen-apple-packaging-v1':
+        actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+        if actual != proof['packaging_source_sha']:
+            raise RecoveryError('Assembler did not check out the approved packaging revision')
+        workflow = os.environ.get('GITHUB_SHA')
+        assembly = os.environ.get('GITHUB_RUN_ID', '')
+        if workflow != proof['workflow_source_sha'] or not assembly.isdigit():
+            raise RecoveryError('Assembler workflow identity is not bound to the frozen repair proof')
+        linux = destination / 'linux-x64/pleazyng-linux-x64.tar.gz'
+        with linux.open('rb') as stream:
+            linux_digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+        proof.update(assembly_run_id=int(assembly), actual_checkout_sha=actual,
+                     linux_archive_sha256=linux_digest)
     (destination / "platform-reuse-provenance.json").write_text(json.dumps(proof, indent=2) + "\n")
     return proof
 
@@ -592,6 +648,9 @@ def main():
     parser.add_argument("source_run")
     parser.add_argument("--head-sha", required=True)
     parser.add_argument("--version", required=True)
+    parser.add_argument('--packaging-source-sha')
+    parser.add_argument('--workflow-source-sha')
+    parser.add_argument('--include-apple-store-build', action='store_true')
     parser.add_argument("--download", type=Path)
     parser.add_argument("--macos-run", help="Reuse a qualified signing-only Mac recovery after every original platform succeeds.")
     parser.add_argument("--rebuild-linux", action="store_true", help="Rebuild both Linux architectures instead of reusing their artifacts")
@@ -616,11 +675,19 @@ def main():
         parser.error("--allow-building is only a preflight; downloads require completed successful platform jobs")
     if not 0 <= args.wait_for_source <= 10800:
         parser.error("--wait-for-source must be between 0 and 10800 seconds")
+    if bool(args.packaging_source_sha) != bool(args.workflow_source_sha):
+        parser.error('Frozen packaging requires both packaging and workflow identities')
+    if args.packaging_source_sha and (args.macos_run or args.repaired_run):
+        parser.error('Frozen packaging cannot substitute unrelated signing or repair runs')
+    frozen_options = ({'packaging_source_sha': args.packaging_source_sha,
+                       'workflow_source_sha': args.workflow_source_sha,
+                       'include_apple_store_build': args.include_apple_store_build}
+                      if args.packaging_source_sha else {})
     proof = (verify_macos_packaging_recovery(args.source_run, args.macos_run, args.head_sha, args.version)
              if args.macos_run else
-             wait_for_source_run(args.source_run, args.head_sha, args.version, args.wait_for_source, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, rebuild_tvos=args.rebuild_tvos, rebuild_ios=args.rebuild_ios, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask)
+             wait_for_source_run(args.source_run, args.head_sha, args.version, args.wait_for_source, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, rebuild_tvos=args.rebuild_tvos, rebuild_ios=args.rebuild_ios, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask, **frozen_options)
              if args.wait_for_source else
-             verify_source_run(args.source_run, args.head_sha, args.version, allow_pending=args.allow_building, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, rebuild_tvos=args.rebuild_tvos, rebuild_ios=args.rebuild_ios, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask))
+             verify_source_run(args.source_run, args.head_sha, args.version, allow_pending=args.allow_building, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, rebuild_tvos=args.rebuild_tvos, rebuild_ios=args.rebuild_ios, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask, **frozen_options))
     proof = compose_proof(proof, args.android_run, not args.skip_webos_build, args.webos_run)
     if args.download:
         proof = download_platforms(proof, args.download)

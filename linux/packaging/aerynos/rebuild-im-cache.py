@@ -29,7 +29,7 @@ def rebuild(bundle, query_tool=None, runtime_prefix=None):
                             env=env, check=True, capture_output=True, text=True)
     if result.stderr.strip():
         raise ValueError('GTK query reported module errors: ' + result.stderr.strip())
-    entries = re.findall(r'^"(?:[^"\\]|\\.)+\.so"$', result.stdout, flags=re.MULTILINE)
+    entries = re.findall(r'^("(?:[^"\\]|\\.)+\.so")[ \t]*$', result.stdout, flags=re.MULTILINE)
     found = [ast.literal_eval(entry) for entry in entries]
     if sorted(found) != sorted(str(path) for path in modules):
         raise ValueError('Generated cache does not describe every bundled input module exactly once')

@@ -30,7 +30,7 @@ class InputMethodCacheTests(unittest.TestCase):
                             'paths=sys.argv[1:]\n'
                             'if mode == "omit": paths=paths[:-1]\n'
                             'if mode == "empty": paths=[]\n'
-                            'for path in paths: print(json.dumps(path))\n')
+                            'for path in paths: print(json.dumps(path)+" \t")\n')
             tool.chmod(0o755)
             helper.rebuild(bundle, tool, Path('/opt/pleazyng'))
             cache = parent / 'immodules.cache'

@@ -14,14 +14,17 @@ void main() {
     expect(musicAccountScope(first), isNot(contains('direct-secret-a')));
   });
 
-  test('an identified Plex account keeps its scope when its token rotates', () {
+  test('Plex Home users sharing an account cannot replay each other\'s edits', () {
     final first = testPlexClient(token: 'old-token')..plexAccountId = 'account-a';
+    final sameUser = testPlexClient(token: 'old-token')..plexAccountId = 'account-a';
     final rotated = testPlexClient(token: 'new-token')..plexAccountId = 'account-a';
     final other = testPlexClient(token: 'other-token')..plexAccountId = 'account-b';
     addTearDown(first.close);
+    addTearDown(sameUser.close);
     addTearDown(rotated.close);
     addTearDown(other.close);
-    expect(musicAccountScope(first), musicAccountScope(rotated));
+    expect(musicAccountScope(first), musicAccountScope(sameUser));
+    expect(musicAccountScope(first), isNot(musicAccountScope(rotated)));
     expect(musicAccountScope(first), isNot(musicAccountScope(other)));
   });
 }

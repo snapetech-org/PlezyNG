@@ -5,6 +5,7 @@
 - Localize the new music audio and headphone controls across supported languages.
 - Complete translations for the new Seerr request actions and source setup guidance.
 - Backport the Swift 6.2 compatibility fix from [AetherEngine commit fa8cc48b](https://github.com/superuser404notfound/AetherEngine/commit/fa8cc48b93a5b9c83367bf4fb3d731fb3862a177), contributed upstream by [@superuser404notfound](https://github.com/superuser404notfound). This credits the upstream contribution, not a direct contribution to Pleazyng.
+- Qualify and publish an independent aerynOS preview from source 3.0.22+181: native install, visible video, automatic Profile 7 routing and renderer-startup fallback pass in the VM. Keep physical HDR/FEL accuracy unqualified and preserve the immutable v3.0.7 failure record.
 
 - Prepare aerynOS recipes independently from x64 checksums, and restore aerynOS as a downstream publication target subject to native qualification.
 - Record the complete review of 64 upstream commits through Plezy 2.26, with originating commit and contributor links, retained fork behavior and explicit unshipped native dependencies. Pleazyng keeps its name, logo, native components and GPL license file; the upstream trademark policy is excluded. See the [review and source credits](docs/maintainers/upstream-sync-2026-11-09.md).

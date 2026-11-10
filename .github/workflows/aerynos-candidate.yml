@@ -51,7 +51,11 @@ jobs:
           if comparison['status'] not in ('ahead','identical'):
               raise SystemExit('Source is not on canonical main')
           workflow=(root/'.github/workflows/build.yml').read_text()
-          version=re.search(r'^  FLUTTER_VERSION: "([^"]+)"',workflow,re.M).group(1)
+          pin=root/'scripts/flutter/sdk-pin.json'
+          if pin.exists():
+              version=json.loads(subprocess.check_output(['python3',str(root/'scripts/flutter/load_sdk_pin.py')],text=True))['version']
+          else:
+              version=re.search(r'^  FLUTTER_VERSION: "([^"]+)"',workflow,re.M).group(1)
           packages=re.search(r'^  LINUX_APT_PACKAGES: >\n((?:    .+\n)+)',workflow,re.M).group(1)
           pathlib.Path('apt-packages.txt').write_text(' '.join(packages.split())+'\n')
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write(f'flutter={version}\nsha={sha}\n')
@@ -63,6 +67,19 @@ jobs:
           flutter-version: ${{ steps.config.outputs.flutter }}
           cache: true
           pub-cache: false
+      - name: Verify reviewed SDK revision when the source pins it
+        run: |
+          if [[ -f source/scripts/flutter/sdk-pin.json ]]; then
+            flutter --version --machine > sdk-actual.json
+            python3 - <<'PYCODE'
+          import json,pathlib,subprocess
+          pin=json.loads(subprocess.check_output(['python3','source/scripts/flutter/load_sdk_pin.py'],text=True))
+          actual=json.loads(pathlib.Path('sdk-actual.json').read_text())
+          for key in ('frameworkRevision','engineRevision'):
+              if actual[key] != pin[key]:
+                  raise SystemExit('Flutter SDK revision mismatch: '+key)
+          PYCODE
+          fi
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           distribution: temurin

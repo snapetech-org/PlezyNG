@@ -701,7 +701,7 @@ On iOS, use the Open URLs action in Shortcuts.
 
 ```bash
 git clone https://github.com/snapetech-org/pleazyng.git
-cd Pleazyng
+cd pleazyng
 flutter pub get
 scripts/codegen.sh
 flutter run

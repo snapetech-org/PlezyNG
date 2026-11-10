@@ -51,7 +51,9 @@ def native_qualify(run_id, arch, workspace, output):
     environment['FLUTTER_WINDOWS_DCOMP'] = '1'
     probe = run(sys.executable, ROOT / 'scripts/checks/qualify_workspace_views.py',
                 'windows', '--arch', arch, cwd=ROOT, env=environment)
-    print(probe)
+    # Hosted Windows consoles may use CP1252 even though Flutter prints UTF-8.
+    # Escape only diagnostic non-ASCII so a successful native probe can report.
+    print(probe.encode('ascii', 'backslashreplace').decode('ascii'))
     if 'WORKSPACE_NATIVE_VIEWS_OK' not in probe:
         raise ValueError('The patched engine did not finish its native multiview lifecycle probe')
     receipt = {

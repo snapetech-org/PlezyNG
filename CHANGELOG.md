@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add independently negotiated music group endpoints with per-device clocks, departure and authorization guards, so one receiver can leave without pausing the leader or disconnecting other receivers.
+
 - Import paired-device listening history through bounded cursor pages, portable account matching and cumulative occurrence-ID reconciliation. Legacy unscoped events stay private, replay cannot add plays, and imported events never send server scrobbles.
 
 - Bind newly recorded listening occurrences to portable account identities, keep legacy unscoped history private, and reject conflicting occurrence IDs before cross-device reconciliation.

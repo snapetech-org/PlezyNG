@@ -115,12 +115,17 @@ class TvosNativeAssetTests(unittest.TestCase):
             (package / 'src/include').mkdir(parents=True)
             for name in ('bridge.c', 'bridge.m', 'include/dart_api_dl.c'):
                 (package / 'src' / name).write_text('source')
+            (package / 'src/bridge.m').write_text('@interface Bridge : NSObject\n@end\n')
             (package / 'lib/src').mkdir(parents=True)
             (package / 'lib/src/c_bindings_generated.dart').write_text("symbol: 'DOBJC_initializeApi'")
             (package / 'lib/src/objective_c_bindings_generated.dart').write_text(
                 "@ffi.Native<ffi.Void Function()>(symbol: 'native_trampoline') external void trampoline();\n"
                 r"@ffi.Native<ffi.Pointer<ffi.Void>>(symbol: 'OBJC_CLASS_\$_Bridge') external ffi.Pointer get bridge;"
+                "\n" + r"@ffi.Native<ffi.Pointer<ffi.Void>>(symbol: 'OBJC_CLASS_\$_NSArray') external ffi.Pointer get array;"
             )
+            symbols = assets.objective_symbols(package)
+            self.assertIn('OBJC_CLASS_$_Bridge', symbols)
+            self.assertNotIn('OBJC_CLASS_$_NSArray', symbols)
             pin = {'package': 'objective_c', 'version': '9.6.2',
                    'hookSha256': assets.digest(package / 'hook/build.dart'), 'archiveSha256': 'a' * 64}
             (root / 'tvos/native-asset-packages.lock.json').write_text(json.dumps({'objective_c': pin}))

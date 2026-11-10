@@ -18,6 +18,9 @@ versions, archive hashes and reviewed hook recipes. The Objective-C build retain
 ARC, C API-DL sources and generated protocol trampolines; the PDF gate retains its
 process-wide pthread synchronization. Every framework receives the actual tvOS
 target, CPU/export checks, source receipt and normal embedding/signing.
+Objective-C export checks distinguish bridge-owned classes from Foundation
+classes provided by the OS runtime; generated fallback bindings do not make
+system classes exports of the bridge.
 
 Both Debug and Release run staging after the Flutter asset build. Staging checks
 the CPU slices, genuine tvOS device/simulator load commands and required symbols.

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Embed the iOS game worker before Flutter/CocoaPods bundle postprocessing so Xcode can process the app's Info.plist without an extension-copy dependency cycle. Distinguish bridge-owned Objective-C exports from Foundation classes supplied by the OS during tvOS validation.
+
 - Include genuine tvOS builds of the Dart Objective-C bridge and process-wide PDFium gate alongside SQLite; verify their locked source recipes, native exports and platform metadata before embedding. Use the current SDK's optional Boolean Siri resume/shuffle properties directly.
 
 - Build and embed SQLite from checksum-pinned source for the actual tvOS device/simulator SDK, preserving the locked Dart package's compile options and FFI exports. Verify a real Dart database open and SQLite version during native qualification. Correct the iOS intent-handler override for the current Flutter SDK and allow Apple test queue barriers to tolerate startup work.

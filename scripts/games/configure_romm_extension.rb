@@ -31,6 +31,14 @@ phase.dst_path = '$(EXTENSIONS_FOLDER_PATH)'
 build_file = phase.files.find { |value| value.file_ref == worker.product_reference }
 build_file ||= phase.add_file_reference(worker.product_reference, true)
 build_file.settings = { 'ATTRIBUTES' => ['CodeSignOnCopy', 'RemoveHeadersOnCopy'] }
+# Processing the host Info.plist depends on the embedded extension. Flutter's
+# Thin Binary script consumes that plist; appending the copy after this script
+# or the CocoaPods embedding phases therefore creates a dependency cycle.
+host.build_phases.delete(phase)
+postprocess = host.build_phases.index do |value|
+  ['Thin Binary', '[CP] Embed Pods Frameworks', '[CP] Copy Pods Resources'].include?(value.display_name)
+end
+host.build_phases.insert(postprocess || host.build_phases.length, phase)
 
 host.build_configurations.each do |config|
   unless worker.build_configurations.any? { |value| value.name == config.name }

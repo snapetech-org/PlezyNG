@@ -161,6 +161,14 @@ def objective_symbols(package: Path) -> set[str]:
     ):
         if not re.search(r'\bsymbol\s*:', annotation):
             symbols.add(name)
+    # getClass() obtains Foundation classes from the Objective-C runtime first.
+    # Its generated addressOf fallback does not make those system classes
+    # definitions of this bridge. Require exports only for classes it owns.
+    source = '\n'.join(path.read_text() for path in (package / 'src').rglob('*') if path.suffix in {'.h', '.m'})
+    owned_classes = set(re.findall(r'@interface\s+([A-Za-z_]\w*)\s*:', source))
+    class_prefix = 'OBJC_CLASS_$_'
+    symbols = {symbol for symbol in symbols if not symbol.startswith(class_prefix)
+               or symbol.removeprefix(class_prefix) in owned_classes}
     symbols.add('Dart_InitializeApiDL')
     return symbols
 

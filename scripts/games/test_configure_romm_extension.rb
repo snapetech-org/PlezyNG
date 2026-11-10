@@ -17,6 +17,10 @@ class RommExtensionConfigurationTest < Minitest::Test
       project = Xcodeproj::Project.new(project_path)
       host = project.new_target(:application, 'Runner', :ios, '15.5')
       host.add_build_configuration('Profile', :release)
+      host.new_shell_script_build_phase('Flutter build')
+      host.new_shell_script_build_phase('Thin Binary')
+      host.new_shell_script_build_phase('[CP] Embed Pods Frameworks')
+      host.new_shell_script_build_phase('[CP] Copy Pods Resources')
       worker = project.new_target(:app_extension, 'RommWorker', :ios, '26.0')
       worker.build_configurations.each do |config|
         config.build_settings['OTHER_LDFLAGS'] = '-Wl,-dead_strip'
@@ -27,7 +31,14 @@ class RommExtensionConfigurationTest < Minitest::Test
       first = File.binread(File.join(project_path, 'project.pbxproj'))
       assert system(RbConfig.ruby, script, project_path)
       assert_equal first, File.binread(File.join(project_path, 'project.pbxproj'))
-      worker = Xcodeproj::Project.open(project_path).targets.find { |target| target.name == 'RommWorker' }
+      project = Xcodeproj::Project.open(project_path)
+      host = project.targets.find { |target| target.name == 'Runner' }
+      order = host.build_phases.map(&:display_name)
+      ['Thin Binary', '[CP] Embed Pods Frameworks', '[CP] Copy Pods Resources'].each do |name|
+        assert_operator order.index('Embed Romm Extension'), :<, order.index(name), name
+      end
+      assert_operator order.index('Flutter build'), :<, order.index('Embed Romm Extension')
+      worker = project.targets.find { |target| target.name == 'RommWorker' }
       assert_equal %w[Debug Profile Release], worker.build_configurations.map(&:name).sort
       worker.build_configurations.each do |config|
         flags = config.build_settings['OTHER_LDFLAGS']

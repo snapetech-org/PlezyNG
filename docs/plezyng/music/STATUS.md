@@ -77,6 +77,10 @@ acoustic qualification remain. No complete-parity claim is made.
   that checkpoint. The subsequent metadata and Cast stop changes passed their
   focused regressions; 19 reconciliation tests passed after the rating conflict
   revision fix. These results do not add live server or device qualification.
+- The same integrated suite passed **556 tests** at `e8a329f06`, including the
+  final credit, Cast stop and rating conflict changes. The maintained Dart
+  formatter, targeted fatal-info analysis and diff check also passed for those
+  changes. The full repository gate result above is from `222d97ae8`.
 
 ## Added and connected on main
 

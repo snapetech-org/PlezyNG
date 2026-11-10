@@ -22,6 +22,7 @@ import 'music_prompt_screen.dart';
 import 'music_station_screen.dart';
 import 'music_audio_screen.dart';
 import 'music_history_screen.dart';
+import 'music_smart_playlist_screen.dart';
 
 Future<void> openMusicHome(BuildContext context) =>
     Navigator.of(context).push<void>(MaterialPageRoute(builder: (_) => const MusicHomeScreen()));
@@ -350,6 +351,12 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
                   spacing: 12,
                   runSpacing: 8,
                   children: [
+                    FilledButton.tonal(
+                      onPressed: () => Navigator.of(
+                        context,
+                      ).push<void>(MaterialPageRoute(builder: (_) => const MusicSmartPlaylistScreen())),
+                      child: Text(t.playlists.smartPlaylist),
+                    ),
                     FilledButton.tonal(
                       onPressed: () => Navigator.of(context)
                           .push<void>(MaterialPageRoute(builder: (_) => const MusicStationScreen()))

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Create, preview, edit and copy Plex music smart playlists with ordered nested expressions, sorting and limits. Filter-form additions preserve existing expressions and writes retain server-side rules rather than fixed track lists.
+
 - Expose music performers, writers, producers and available composer/contributor credits alongside exact edition and media-variant details, with account-bound metadata loading rather than title-based recording merges.
 
 - Browse live, profile-owned music listening occurrences through bounded cursor pages, preserving repeated plays and deterministic ordering without loading all history.

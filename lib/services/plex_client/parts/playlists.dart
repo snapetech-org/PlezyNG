@@ -2,6 +2,57 @@ part of '../../plex_client.dart';
 
 mixin _PlexPlaylistMethods on _PlexClientInternals {
   static const int _defaultPlaylistContainerSize = 100;
+  Object get authenticationSessionId;
+
+  Future<LibraryPage<MediaItem>> previewSmartMusicPlaylist(MusicSmartPlaylistRules rules) async {
+    final result = await _fetchPaginatedList(
+      rules.searchPath,
+      start: 0,
+      size: 50,
+      librarySectionID: int.parse(rules.libraryId),
+    );
+    return LibraryPage(items: result.items.map(PlexMappers.mediaItem).toList(), totalCount: result.totalSize);
+  }
+
+  Future<MediaPlaylist?> saveSmartMusicPlaylist({
+    required String title,
+    required MusicSmartPlaylistRules rules,
+    MediaPlaylist? playlist,
+    bool Function()? isCurrent,
+  }) async {
+    if (title.trim().isEmpty ||
+        title.length > 255 ||
+        (playlist != null && (!playlist.smart || playlist.serverId != serverId || playlist.playlistType != 'audio')))
+      throw ArgumentError('Invalid smart playlist');
+    final authentication = authenticationSessionId;
+    bool current() => identical(authentication, authenticationSessionId) && (isCurrent?.call() ?? true);
+    if (!current()) throw StateError('Smart playlist source changed');
+    final root = Uri.parse(await buildMetadataUri(''));
+    if (!current()) throw StateError('Smart playlist source changed');
+    final uri = root
+        .replace(path: '/com.plexapp.plugins.library/library/sections/${rules.libraryId}/all', query: rules.query)
+        .toString();
+    final response = playlist == null
+        ? await _http.post(
+            '/playlists',
+            queryParameters: {'type': 'audio', 'title': title.trim(), 'smart': '1', 'uri': uri},
+          )
+        : await _http.put('/playlists/${playlist.id}/items', queryParameters: {'uri': uri});
+    throwIfHttpError(response);
+    if (!current()) throw StateError('Smart playlist source changed');
+    if (playlist != null) {
+      final updated = await fetchPlaylistMetadata(playlist.id);
+      if (!current()) throw StateError('Smart playlist source changed');
+      return updated;
+    }
+    final metadata = _getMediaContainer(response)?['Metadata'];
+    if (metadata is! List || metadata.isEmpty) return null;
+    return PlexMappers.mediaPlaylist(
+      PlexPlaylistDto.fromJson(
+        metadata.first as Map<String, dynamic>,
+      ).copyWith(serverId: serverId, serverName: serverName),
+    );
+  }
 
   ({List<PlexPlaylistDto> items, int totalSize}) _extractPlaylistListResult(
     MediaServerResponse response, {

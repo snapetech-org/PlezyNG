@@ -1414,6 +1414,7 @@ class PlexMappers {
       summary: dto.summary,
       guid: dto.guid,
       smart: dto.smart,
+      smartContent: dto.smart ? dto.content : null,
       playlistType: dto.playlistType,
       durationMs: dto.duration,
       leafCount: dto.leafCount,

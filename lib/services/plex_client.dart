@@ -89,6 +89,7 @@ import 'plex_api_cache.dart';
 import 'plex_constants.dart';
 import 'plex_lyrics_parser.dart';
 import 'plex_mappers.dart';
+import 'music/music_smart_playlist.dart';
 import 'plex_playback_mapper.dart';
 import 'playback_initialization_types.dart';
 import 'subtitle_preference.dart';

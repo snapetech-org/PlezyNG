@@ -33,6 +33,7 @@ import '../../widgets/listenable_selector.dart';
 import '../base_media_list_detail_screen.dart';
 import '../focusable_detail_screen_mixin.dart';
 import '../libraries/content_state_builder.dart';
+import '../music/music_smart_playlist_screen.dart';
 import '../../mixins/grid_focus_node_mixin.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/system_bottom_inset.dart';
@@ -192,6 +193,17 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
       (provider) => provider.isRepeatEnabledFor(widget.playlist.globalKey),
     );
     return [
+      if (_isAudioPlaylist && widget.playlist.smart)
+        FocusableAction(
+          icon: Symbols.edit_rounded,
+          tooltip: t.musicTools.rules,
+          onPressed: () async {
+            await Navigator.of(
+              context,
+            ).push<void>(MaterialPageRoute(builder: (_) => MusicSmartPlaylistScreen(playlist: widget.playlist)));
+            if (mounted) await loadItems();
+          },
+        ),
       if (items.isNotEmpty) ...[
         FocusableAction(
           debugLabel: 'playlist_play',

@@ -14,6 +14,7 @@ class MediaPlaylist {
 
   /// Plex smart-playlist marker; always false for Jellyfin (no equivalent).
   final bool smart;
+  final String? smartContent;
 
   /// `video`, `audio`, or `photo`. Drives default sort and rendering.
   final String playlistType;
@@ -43,6 +44,7 @@ class MediaPlaylist {
     this.summary,
     this.guid,
     this.smart = false,
+    this.smartContent,
     this.durationMs,
     this.leafCount,
     this.viewCount,

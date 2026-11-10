@@ -70,13 +70,13 @@
       "messages": 5268,
       "inheritedFrom": null,
       "sameAsEnglish": 418,
-      "englishFallbacks": 1241
+      "englishFallbacks": 1214
     },
     "fr-CA": {
       "messages": 5268,
       "inheritedFrom": "fr",
       "sameAsEnglish": 411,
-      "englishFallbacks": 1241
+      "englishFallbacks": 1214
     },
     "he": {
       "messages": 5268,

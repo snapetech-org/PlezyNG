@@ -3011,6 +3011,7 @@ class _Translations$cast$it extends Translations$cast$en {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Riporta la riproduzione su questo dispositivo';
 	@override String get transferQueue => 'Trasferisci la coda a Chromecast';
 	@override String get chooseDevice => 'Cattura a un dispositivo';
 	@override String get searching => 'Cercare i dispositivi di cast...';
@@ -8379,6 +8380,7 @@ extension on TranslationsIt {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} usa HTTP. Altre persone sulla rete potrebbero leggere o modificare la password, i token e i contenuti multimediali. Usa HTTPS quando disponibile. Continua solo se ti fidi di questa rete e accetti il rischio.',
 			'addServer.allowHttp' => 'Consenti HTTP',
 			'addServer.httpsRequired' => 'Utilizzare HTTPS o consentere esplicitamente una connessione non crittografata.',
+			'cast.returnPlayback' => 'Riporta la riproduzione su questo dispositivo',
 			'cast.transferQueue' => 'Trasferisci la coda a Chromecast',
 			'cast.chooseDevice' => 'Cattura a un dispositivo',
 			'cast.searching' => 'Cercare i dispositivi di cast...',
@@ -8539,9 +8541,9 @@ extension on TranslationsIt {
 			'universalMedia.playlist' => 'giocattoli',
 			'universalMedia.files' => 'Dispositivi di file',
 			'universalMedia.favorites' => 'Salva i tuoi preferiti',
-			'universalMedia.address' => 'Indirizzo Media',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'Indirizzo Media',
 			'universalMedia.addressHelp' => 'Gli URL con parametri di credenziale o di firma riconosciuti sono utilizzati solo per questa sessione e non possono essere salvati come preferiti.',
 			'universalMedia.displayName' => 'Nome di visualizzazione (opzionale)',
 			'universalMedia.displayNameHelp' => 'Scegli un nome corto per il giocatore e i controlli dei media del sistema.',
@@ -9053,9 +9055,9 @@ extension on TranslationsIt {
 			'sourceSetup.replaceTrustCertificate' => 'Sostituisci il certificato personalizzato salvato',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS usa le normali porte NFS e del servizio di montaggio e richiede che il NAS supporti RFC 9289. È necessario TLS 1.3. Il nome host o l’indirizzo IP deve corrispondere al certificato. Gli UID/GID AUTH_SYS restano validi anche nel canale crittografato.',
 			'sourceSetup.clientCertificate' => 'Certificato client (facoltativo)',
-			'sourceSetup.clientCertificateHelp' => 'Consente al NAS di autenticare questo client; gli ID AUTH_SYS dipendono comunque dai criteri della condivisione NFS del NAS.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'Consente al NAS di autenticare questo client; gli ID AUTH_SYS dipendono comunque dai criteri della condivisione NFS del NAS.',
 			'sourceSetup.savedIdentity' => 'Verrà usata un’identità client salvata.',
 			'sourceSetup.replaceIdentity' => 'Sostituisci l’identità client salvata',
 			'sourceSetup.chooseIdentity' => 'Scegli un’identità client PKCS#12',

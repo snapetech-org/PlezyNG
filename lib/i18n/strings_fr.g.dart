@@ -3027,6 +3027,7 @@ class Translations$cast$fr extends Translations$cast$en {
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Ramener la lecture sur cet appareil';
 	@override String get transferQueue => 'Transférer la file d’attente vers Chromecast';
 	@override String get chooseDevice => 'Coup sur un appareil';
 	@override String get searching => 'En recherche de dispositifs de châtiment...';
@@ -8443,6 +8444,7 @@ extension on TranslationsFr {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} utilise HTTP. Des personnes sur le réseau peuvent lire ou modifier votre mot de passe, vos jetons et vos médias. Utilisez HTTPS si possible. Ne continuez que si vous faites confiance à ce réseau et acceptez le risque.',
 			'addServer.allowHttp' => 'Autoriser HTTP',
 			'addServer.httpsRequired' => 'Utilisez HTTPS ou autorisez explicitement une connexion non cryptée.',
+			'cast.returnPlayback' => 'Ramener la lecture sur cet appareil',
 			'cast.transferQueue' => 'Transférer la file d’attente vers Chromecast',
 			'cast.chooseDevice' => 'Coup sur un appareil',
 			'cast.searching' => 'En recherche de dispositifs de châtiment...',
@@ -8596,9 +8598,9 @@ extension on TranslationsFr {
 			'platform.photoLibraryPermission' => 'Choisissez des images de votre photothèque pour illustrer vos médias.',
 			'platform.cameraPermission' => 'Scannez des codes QR pour associer une Companion Remote.',
 			'universalMedia.title' => 'Médias ouverts',
-			'universalMedia.shortcutHelp' => 'Jouez à un lien, une playlist ou un fichier pour cette session.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.shortcutHelp' => 'Jouez à un lien, une playlist ou un fichier pour cette session.',
 			'universalMedia.intro' => 'Ouvrez un lien, une liste de lecture ou un fichier. Playback utilise le lecteur standard de Pleazyng et n’ajoute pas d’historique à votre bibliothèque.',
 			'universalMedia.openWhat' => 'Que voudriez-vous ouvrir ?',
 			'universalMedia.stream' => 'Adresse de courant',
@@ -9110,9 +9112,9 @@ extension on TranslationsFr {
 			'sourceSetup.nfsUserIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsGroupId' => 'Identifiant de groupe NFS (AUTH_SYS)',
 			'sourceSetup.nfsGroupIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant de groupe autorisé par le partage NFS du NAS.',
-			'sourceSetup.nfsEncryption' => 'Exiger NFS chiffré (RPC-with-TLS)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.nfsEncryption' => 'Exiger NFS chiffré (RPC-with-TLS)',
 			'sourceSetup.nfsEncryptionHelp' => 'Exiger TLS 1.3 pour NFS et le service de montage. Si le NAS ne le prend pas en charge, la connexion est refusée.',
 			'sourceSetup.nfsTrustCertificate' => 'CA NFS personnalisée ou certificat du serveur (PEM, facultatif)',
 			'sourceSetup.nfsTrustHelp' => 'Laissez vide pour utiliser les certificats reconnus par cet appareil. Si nécessaire, ajoutez un certificat d’une CA privée ou un certificat de serveur autosigné ; ses noms doivent correspondre à l’hôte de l’URL NFS.',

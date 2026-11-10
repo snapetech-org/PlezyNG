@@ -3576,6 +3576,7 @@
     "httpsRequired": "HTTPS を使用するか、暗号化されていない接続を明示的に許可するか。"
   },
   "cast": {
+    "returnPlayback": "再生をこのデバイスに戻す",
     "transferQueue": "キューを Chromecast に転送",
     "chooseDevice": "デバイスに押し付ける",
     "searching": "キャストデバイスを探す...",

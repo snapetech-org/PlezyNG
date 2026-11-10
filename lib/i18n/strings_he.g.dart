@@ -3012,6 +3012,7 @@ class _Translations$cast$he extends Translations$cast$en {
 	final TranslationsHe _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'החזרת הניגון למכשיר הזה';
 	@override String get transferQueue => 'העברת התור ל-Chromecast';
 	@override String get chooseDevice => 'שידור למכשיר';
 	@override String get searching => 'מחפשים מכשירים לגידול...';
@@ -8380,6 +8381,7 @@ extension on TranslationsHe {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} משתמש ב-HTTP. אנשים ברשת עלולים לקרוא או לשנות את הסיסמה, האסימונים והמדיה שלך. יש להשתמש ב-HTTPS כשהוא זמין. יש להמשיך רק אם הרשת אמינה בעיניך והסיכון מקובל עליך.',
 			'addServer.allowHttp' => 'לאפשר HTTP',
 			'addServer.httpsRequired' => 'שימוש ב- HTTPS או מאפשר באופן מפורש חיבור לא מוצפן.',
+			'cast.returnPlayback' => 'החזרת הניגון למכשיר הזה',
 			'cast.transferQueue' => 'העברת התור ל-Chromecast',
 			'cast.chooseDevice' => 'שידור למכשיר',
 			'cast.searching' => 'מחפשים מכשירים לגידול...',
@@ -8540,9 +8542,9 @@ extension on TranslationsHe {
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'מכשיר קבצים',
 			'universalMedia.favorites' => 'זרם אחסון האהובים',
-			'universalMedia.address' => 'כתובת התקשורת',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'כתובת התקשורת',
 			'universalMedia.addressHelp' => 'כתובות URL עם פרמטרים של זיהוי או חתימה מוכרים משמשים רק עבור הפגישה הזו ולא ניתן לשמור אותם כפופולריים.',
 			'universalMedia.displayName' => 'שם התצוגה (אופציונלי)',
 			'universalMedia.displayNameHelp' => 'בחר שם קצר עבור השחקן ואת בקרת מדיה המערכת.',
@@ -9054,9 +9056,9 @@ extension on TranslationsHe {
 			'sourceSetup.replaceTrustCertificate' => 'החלפת האישור המותאם אישית השמור',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS משתמש ביציאות הרגילות של NFS ושירות ה־mount, ודורש תמיכה ב־RFC 9289 מצד ה־NAS. נדרש TLS 1.3. שם המארח או כתובת ה־IP חייבים להתאים לאישור. מזהי AUTH_SYS UID/GID עדיין חלים בתוך הערוץ המוצפן.',
 			'sourceSetup.clientCertificate' => 'אישור לקוח (רשות)',
-			'sourceSetup.clientCertificateHelp' => 'מאפשר ל־NAS לאמת את הלקוח הזה; מזהי AUTH_SYS עדיין כפופים למדיניות הייצוא של ה־NAS.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'מאפשר ל־NAS לאמת את הלקוח הזה; מזהי AUTH_SYS עדיין כפופים למדיניות הייצוא של ה־NAS.',
 			'sourceSetup.savedIdentity' => 'ייעשה שימוש בפרטי הזיהוי השמורים של הלקוח.',
 			'sourceSetup.replaceIdentity' => 'החלפת פרטי הזיהוי השמורים של הלקוח',
 			'sourceSetup.chooseIdentity' => 'בחירת פרטי זיהוי לקוח בפורמט PKCS#12',

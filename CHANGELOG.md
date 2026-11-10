@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Return a standalone Chromecast music queue to this device from Now Playing. Playback resumes at the receiver's current occurrence and position, keeping shuffle order and duplicate tracks.
+
 - Bind a detached Chromecast queue to its acknowledged media session and exact receiver occurrence before preparing a return to local playback.
 
 - Start a saved music station from shuffled tracks, shuffled albums, least played tracks, or oldest releases. The filter editor follows the station's track or album mode, and an invalid album block is skipped in full.

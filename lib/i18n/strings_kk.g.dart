@@ -3008,6 +3008,7 @@ class _Translations$cast$kk extends Translations$cast$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Ойнатуды осы құрылғыға қайтару';
 	@override String get transferQueue => 'Кезекті Chromecast құрылғысына тасымалдау';
 	@override String get chooseDevice => 'Ауыз ішінен';
 	@override String get searching => 'Қазіргі таңда қабырғалар үшін...';
@@ -8372,6 +8373,7 @@ extension on TranslationsKk {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} HTTP пайдаланады. Желідегі басқа адамдар құпиясөзіңізді, токендеріңізді және медиаңызды оқуы немесе өзгертуі мүмкін. Мүмкін болса, HTTPS пайдаланыңыз. Осы желіге сенсеңіз және тәуекелді қабылдасаңыз ғана жалғастырыңыз.',
 			'addServer.allowHttp' => 'HTTP-ге рұқсат беру',
 			'addServer.httpsRequired' => 'HTTPS пайдаланыңыз немесе шифрланбаған қосылымға нақты рұқсат беріңіз.',
+			'cast.returnPlayback' => 'Ойнатуды осы құрылғыға қайтару',
 			'cast.transferQueue' => 'Кезекті Chromecast құрылғысына тасымалдау',
 			'cast.chooseDevice' => 'Ауыз ішінен',
 			'cast.searching' => 'Қазіргі таңда қабырғалар үшін...',
@@ -8532,9 +8534,9 @@ extension on TranslationsKk {
 			'universalMedia.playlist' => 'Жүзілік',
 			'universalMedia.files' => 'Файлы',
 			'universalMedia.favorites' => 'Алдыңғы ең айқын көргенде',
-			'universalMedia.address' => 'Медыялық адресы',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'Медыялық адресы',
 			'universalMedia.addressHelp' => 'Өзі сүйікті жабдықтардан тұрып қара сөздерін, аудармаларын жазды.',
 			'universalMedia.displayName' => 'Алдыңғы қағидалар (опциональ)',
 			'universalMedia.displayNameHelp' => 'Қаланың ең айқын көрмесі ержеткен балалардың бір-бірімен танымал.',
@@ -9046,9 +9048,9 @@ extension on TranslationsKk {
 			'sourceSetup.replaceTrustCertificate' => 'Сақталған теңшелетін сертификатты ауыстыру',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS әдеттегі NFS және mount қызметінің порттарын пайдаланады және NAS-та RFC 9289 қолдауын талап етеді. TLS 1.3 қажет. Хост атауы немесе IP мекенжайы сертификатқа сәйкес болуы керек. Шифрланған арнада да AUTH_SYS UID/GID қолданылады.',
 			'sourceSetup.clientCertificate' => 'Клиент сертификаты (міндетті емес)',
-			'sourceSetup.clientCertificateHelp' => 'NAS-қа осы клиентті аутентификациялауға мүмкіндік береді; AUTH_SYS ID мәндері әлі де NAS-тағы NFS ортақ ресурсының ережелеріне тәуелді.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'NAS-қа осы клиентті аутентификациялауға мүмкіндік береді; AUTH_SYS ID мәндері әлі де NAS-тағы NFS ортақ ресурсының ережелеріне тәуелді.',
 			'sourceSetup.savedIdentity' => 'Сақталған клиенттің сәйкестендіру деректері пайдаланылады.',
 			'sourceSetup.replaceIdentity' => 'Сақталған клиенттің сәйкестендіру деректерін ауыстыру',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 клиент сәйкестендіру деректерін таңдау',

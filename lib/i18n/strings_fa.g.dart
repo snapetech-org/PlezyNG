@@ -3008,6 +3008,7 @@ class _Translations$cast$fa extends Translations$cast$en {
 	final TranslationsFa _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'بازگرداندن پخش به این دستگاه';
 	@override String get transferQueue => 'انتقال صف پخش به Chromecast';
 	@override String get chooseDevice => 'پخش روی دستگاه';
 	@override String get searching => 'در جستجوی دستگاه های...';
@@ -8372,6 +8373,7 @@ extension on TranslationsFa {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} از HTTP استفاده می‌کند. افراد حاضر در شبکه ممکن است گذرواژه، توکن‌ها و رسانه‌های شما را بخوانند یا تغییر دهند. در صورت امکان از HTTPS استفاده کنید. فقط اگر به این شبکه اعتماد دارید و خطر را می‌پذیرید ادامه دهید.',
 			'addServer.allowHttp' => 'اجازه دادن به HTTP',
 			'addServer.httpsRequired' => 'استفاده از HTTPS یا به صراحت اجازه یک اتصال غیر رمزگذاری شده.',
+			'cast.returnPlayback' => 'بازگرداندن پخش به این دستگاه',
 			'cast.transferQueue' => 'انتقال صف پخش به Chromecast',
 			'cast.chooseDevice' => 'پخش روی دستگاه',
 			'cast.searching' => 'در جستجوی دستگاه های...',
@@ -8532,9 +8534,9 @@ extension on TranslationsFa {
 			'universalMedia.playlist' => 'بازی لیست',
 			'universalMedia.files' => 'فایل های دستگاه',
 			'universalMedia.favorites' => 'ذخیره جریان مورد علاقه',
-			'universalMedia.address' => 'آدرس رسانه ها',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'آدرس رسانه ها',
 			'universalMedia.addressHelp' => 'URL ها با پارامترهای اعتباربخشی یا امضای شناخته شده تنها برای این جلسه مورد استفاده قرار می گیرند و نمی توانند به عنوان محبوب ذخیره شوند.',
 			'universalMedia.displayName' => 'نام نمایش (اختیاری)',
 			'universalMedia.displayNameHelp' => 'یک نام کوتاه برای بازیکن و کنترل های رسانه سیستم را انتخاب کنید.',
@@ -9046,9 +9048,9 @@ extension on TranslationsFa {
 			'sourceSetup.replaceTrustCertificate' => 'جایگزینی گواهی سفارشی ذخیره‌شده',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS از درگاه‌های معمول NFS و سرویس mount استفاده می‌کند و به پشتیبانی NAS از RFC 9289 نیاز دارد. TLS 1.3 الزامی است. نام میزبان یا IP باید با گواهی مطابقت داشته باشد. AUTH_SYS UID/GID در کانال رمزگذاری‌شده نیز اعمال می‌شوند.',
 			'sourceSetup.clientCertificate' => 'گواهی کارخواه (اختیاری)',
-			'sourceSetup.clientCertificateHelp' => 'به NAS اجازه می‌دهد هویت این کارخواه را تأیید کند؛ شناسه‌های AUTH_SYS همچنان تابع سیاست اشتراک‌گذاری NAS هستند.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'به NAS اجازه می‌دهد هویت این کارخواه را تأیید کند؛ شناسه‌های AUTH_SYS همچنان تابع سیاست اشتراک‌گذاری NAS هستند.',
 			'sourceSetup.savedIdentity' => 'از هویت ذخیره‌شدهٔ کارخواه استفاده می‌شود.',
 			'sourceSetup.replaceIdentity' => 'جایگزینی هویت ذخیره‌شدهٔ کارخواه',
 			'sourceSetup.chooseIdentity' => 'انتخاب هویت کارخواه PKCS#12',

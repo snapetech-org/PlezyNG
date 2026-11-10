@@ -3008,6 +3008,7 @@ class _Translations$cast$da extends Translations$cast$en {
 	final TranslationsDa _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Flyt afspilning tilbage til denne enhed';
 	@override String get transferQueue => 'Flyt køen til Chromecast';
 	@override String get chooseDevice => 'Sæt på en enhed';
 	@override String get searching => 'Søg efter enheder...';
@@ -8372,6 +8373,7 @@ extension on TranslationsDa {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} bruger HTTP. Andre på netværket kan læse eller ændre din adgangskode, dine tokens og dine medier. Brug HTTPS, når det er muligt. Fortsæt kun, hvis du stoler på netværket og accepterer risikoen.',
 			'addServer.allowHttp' => 'Tillad HTTP',
 			'addServer.httpsRequired' => 'Brug HTTPS eller udtrykkeligt tillade en ikke-krypteret forbindelse.',
+			'cast.returnPlayback' => 'Flyt afspilning tilbage til denne enhed',
 			'cast.transferQueue' => 'Flyt køen til Chromecast',
 			'cast.chooseDevice' => 'Sæt på en enhed',
 			'cast.searching' => 'Søg efter enheder...',
@@ -8532,9 +8534,9 @@ extension on TranslationsDa {
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Enheder filer',
 			'universalMedia.favorites' => 'Saved stream favoritter',
-			'universalMedia.address' => 'Medieadresse',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'Medieadresse',
 			'universalMedia.addressHelp' => 'URL\'er med anerkendte akkrediterings- eller underskriftsparametre bruges kun til denne session og kan ikke gemmes som favoritter.',
 			'universalMedia.displayName' => 'Navn på billedet (optional)',
 			'universalMedia.displayNameHelp' => 'Vælg et kort navn for spilleren og systemmediakontroller.',
@@ -9046,9 +9048,9 @@ extension on TranslationsDa {
 			'sourceSetup.replaceTrustCertificate' => 'Erstat gemt brugerdefineret certifikat',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS bruger de sædvanlige NFS- og monteringsporte og kræver, at NAS-enheden understøtter RFC 9289. TLS 1.3 er påkrævet. Værtsnavnet eller IP-adressen skal svare til certifikatet. AUTH_SYS UID/GID gælder stadig i den krypterede kanal.',
 			'sourceSetup.clientCertificate' => 'Klientcertifikat (valgfrit)',
-			'sourceSetup.clientCertificateHelp' => 'Lader NAS-enheden godkende denne klient; AUTH_SYS-ID’er afhænger stadig af reglerne for NAS-enhedens NFS-deling.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'Lader NAS-enheden godkende denne klient; AUTH_SYS-ID’er afhænger stadig af reglerne for NAS-enhedens NFS-deling.',
 			'sourceSetup.savedIdentity' => 'En gemt klientidentitet vil blive brugt.',
 			'sourceSetup.replaceIdentity' => 'Erstat gemt klientidentitet',
 			'sourceSetup.chooseIdentity' => 'Vælg PKCS#12-klientidentitet',

@@ -3580,6 +3580,7 @@
     "httpsRequired": "Brug HTTPS eller udtrykkeligt tillade en ikke-krypteret forbindelse."
   },
   "cast": {
+    "returnPlayback": "Flyt afspilning tilbage til denne enhed",
     "transferQueue": "Flyt køen til Chromecast",
     "chooseDevice": "Sæt på en enhed",
     "searching": "Søg efter enheder...",

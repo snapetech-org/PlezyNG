@@ -3583,6 +3583,7 @@
     "httpsRequired": "Utilisez HTTPS ou autorisez explicitement une connexion non cryptée."
   },
   "cast": {
+    "returnPlayback": "Ramener la lecture sur cet appareil",
     "transferQueue": "Transférer la file d’attente vers Chromecast",
     "chooseDevice": "Coup sur un appareil",
     "searching": "En recherche de dispositifs de châtiment...",

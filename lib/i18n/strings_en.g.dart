@@ -8607,6 +8607,9 @@ class Translations$cast$en {
 
 	// Translations
 
+	/// en: 'Return playback to this device'
+	String get returnPlayback => 'Return playback to this device';
+
 	/// en: 'Transfer queue to Chromecast'
 	String get transferQueue => 'Transfer queue to Chromecast';
 
@@ -20709,6 +20712,7 @@ extension on Translations {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} uses HTTP. People on the network may read or change your password, tokens and media. Use HTTPS when available. Only continue if you trust this network and accept the risk.',
 			'addServer.allowHttp' => 'Allow HTTP',
 			'addServer.httpsRequired' => 'Use HTTPS or explicitly allow an unencrypted connection.',
+			'cast.returnPlayback' => 'Return playback to this device',
 			'cast.transferQueue' => 'Transfer queue to Chromecast',
 			'cast.chooseDevice' => 'Cast to a device',
 			'cast.searching' => 'Searching for Cast devices…',
@@ -20991,9 +20995,9 @@ extension on Translations {
 			'universalMedia.mediaToolsIntro' => 'Choose a focused tool. Capture and stream-out use FFmpeg installed on this desktop. Extensions and CLI commands use bounded HTTPS requests and the existing Open media flow.',
 			'universalMedia.mediaToolsAccessibility' => 'Tool choices and controls work with touch, pointer, keyboard, and D-pad focus. Recording, sharing, and search status changes are announced.',
 			'universalMedia.mediaTool' => 'Media tool',
-			'universalMedia.captureIntro' => 'Record your screen or a camera to an MP4 file, or preview a live input in the player. FFmpeg must be installed and include the H.264 encoder for recording.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.captureIntro' => 'Record your screen or a camera to an MP4 file, or preview a live input in the player. FFmpeg must be installed and include the H.264 encoder for recording.',
 			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
 			'universalMedia.captureSource' => 'Screen or camera',
 			'universalMedia.captureScreen' => 'Screen',
@@ -21505,9 +21509,9 @@ extension on Translations {
 			'games.refreshGames' => 'Refresh games',
 			'games.play' => 'Play',
 			'games.recent' => 'Recently played',
-			'games.favorites' => 'Favorites',
 			_ => null,
 		} ?? switch (path) {
+			'games.favorites' => 'Favorites',
 			'games.allGames' => 'All games',
 			'games.search' => 'Find a game',
 			'games.noMatches' => 'No games match this search.',
@@ -22019,9 +22023,9 @@ extension on Translations {
 			'subtitleAiUi.inferenceBackend' => 'Inference backend',
 			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
-			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
 			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
 			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
 			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
@@ -22533,9 +22537,9 @@ extension on Translations {
 			'karaokeUi.hostExitPIN' => 'Host exit PIN',
 			'karaokeUi.unlock' => 'Unlock',
 			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
-			'karaokeUi.requestASong' => 'Request a song',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.requestASong' => 'Request a song',
 			'karaokeUi.hostUnlock' => 'Host unlock',
 			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
 			'karaokeUi.searchSongs' => 'Search songs',

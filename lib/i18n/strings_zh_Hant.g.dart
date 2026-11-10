@@ -3005,6 +3005,7 @@ class _Translations$cast$zh_Hant extends Translations$cast$zh {
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => '將播放轉回此裝置';
 	@override String get transferQueue => '將播放佇列轉移至 Chromecast';
 	@override String get chooseDevice => '點選一個裝置';
 	@override String get searching => '尋找卡片裝置';
@@ -8368,6 +8369,7 @@ extension on TranslationsZhHant {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} 使用 HTTP。網路中的其他人可能讀取或竄改您的密碼、權杖和媒體內容。請盡可能使用 HTTPS。只有在您信任此網路並接受風險時才繼續。',
 			'addServer.allowHttp' => '允許 HTTP',
 			'addServer.httpsRequired' => '使用 HTTPS 或明確允許未加密的連線。',
+			'cast.returnPlayback' => '將播放轉回此裝置',
 			'cast.transferQueue' => '將播放佇列轉移至 Chromecast',
 			'cast.chooseDevice' => '點選一個裝置',
 			'cast.searching' => '尋找卡片裝置',
@@ -8528,9 +8530,9 @@ extension on TranslationsZhHant {
 			'universalMedia.playlist' => '播放列表',
 			'universalMedia.files' => '裝置檔案',
 			'universalMedia.favorites' => '儲存流喜愛',
-			'universalMedia.address' => '媒體地址',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => '媒體地址',
 			'universalMedia.addressHelp' => 'HTTPS 是優先的. 有認可或簽名引數的 URL 僅用於此會議,並且不能儲存為喜愛。',
 			'universalMedia.displayName' => '顯示名稱(可選)',
 			'universalMedia.displayNameHelp' => '選擇玩家和系統媒體控制器的簡稱。',
@@ -9042,9 +9044,9 @@ extension on TranslationsZhHant {
 			'sourceSetup.replaceTrustCertificate' => '取代已儲存的自訂憑證',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用一般的 NFS 和掛載服務連接埠，並要求 NAS 支援 RFC 9289。必須使用 TLS 1.3。主機名稱或 IP 位址必須與憑證相符。加密通道內仍須使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '用戶端憑證（選填）',
-			'sourceSetup.clientCertificateHelp' => '讓 NAS 驗證此用戶端的身分；AUTH_SYS ID 仍受 NAS 匯出原則約束。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => '讓 NAS 驗證此用戶端的身分；AUTH_SYS ID 仍受 NAS 匯出原則約束。',
 			'sourceSetup.savedIdentity' => '將使用已儲存的用戶端身分憑證。',
 			'sourceSetup.replaceIdentity' => '取代已儲存的用戶端身分憑證',
 			'sourceSetup.chooseIdentity' => '選擇 PKCS#12 用戶端身分憑證',

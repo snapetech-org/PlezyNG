@@ -195,6 +195,9 @@ before pausing its own queue. Unavailable sources or oversized requests fail as
 a whole. The [Cast receiver owns the resulting queue](https://developers.google.com/cast/docs/android_sender/queueing)
 and can advance it without the sender as long as the stream URLs remain valid.
 Use the Cast controls in Now Playing to pause, resume or stop the owned queue.
+**Return playback to this device** opens the receiver's current occurrence at
+its acknowledged paused position and preserves the queue's playback order. If
+the local open fails, only the same still-owned receiver can resume.
 Detached playback does not produce local listening history. Restoring detached
 control after app restart, receiver codec/device qualification and Google Cast
 speaker-group management remain separate. Paired synchronization uses Pleazyng

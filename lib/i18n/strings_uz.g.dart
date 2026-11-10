@@ -3008,6 +3008,7 @@ class _Translations$cast$uz extends Translations$cast$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Ijroni shu qurilmaga qaytarish';
 	@override String get transferQueue => 'Navbatni Chromecast qurilmasiga o‘tkazish';
 	@override String get chooseDevice => 'Bir cihazda qurtlar';
 	@override String get searching => 'Tadiqlarga xiyimni xiyimlarga...';
@@ -8372,6 +8373,7 @@ extension on TranslationsUz {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} HTTP protokolidan foydalanadi. Tarmoqdagi boshqa odamlar parolingizni, tokenlaringizni va mediafayllaringizni oʻqishi yoki oʻzgartirishi mumkin. Imkon boʻlsa, HTTPS dan foydalaning. Faqat ushbu tarmoqqa ishonsangiz va xavfni qabul qilsangiz davom eting.',
 			'addServer.allowHttp' => 'HTTP ulanishiga ruxsat berish',
 			'addServer.httpsRequired' => 'HTTPS ya qizizga qizga qifififiyizga qihga qifida qifida.',
+			'cast.returnPlayback' => 'Ijroni shu qurilmaga qaytarish',
 			'cast.transferQueue' => 'Navbatni Chromecast qurilmasiga o‘tkazish',
 			'cast.chooseDevice' => 'Bir cihazda qurtlar',
 			'cast.searching' => 'Tadiqlarga xiyimni xiyimlarga...',
@@ -8532,9 +8534,9 @@ extension on TranslationsUz {
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Filmi',
 			'universalMedia.favorites' => 'Rashida rashida favoritlar',
-			'universalMedia.address' => 'Medya adresi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'Medya adresi',
 			'universalMedia.addressHelp' => 'HTTPS is preferred. identifyated credential o signature parametrisli URL\'lar yalnız bu sesyon için kullanılır və favoritlar olarak kaydılamaz.',
 			'universalMedia.displayName' => 'U‘zizni nom (opcional)',
 			'universalMedia.displayNameHelp' => 'O\'qiz o’qiz, sistem media kontrollar üçün bir shortname seçin.',
@@ -9046,9 +9048,9 @@ extension on TranslationsUz {
 			'sourceSetup.replaceTrustCertificate' => 'Saqlangan maxsus sertifikatni almashtirish',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS odatiy NFS va ulash xizmati portlaridan foydalanadi va NAS da RFC 9289 qo‘llab-quvvatlanishini talab qiladi. TLS 1.3 zarur. Host nomi yoki IP manzili sertifikatga mos kelishi kerak. Shifrlangan kanal ichida ham AUTH_SYS UID/GID amal qiladi.',
 			'sourceSetup.clientCertificate' => 'Klient sertifikati (ixtiyoriy)',
-			'sourceSetup.clientCertificateHelp' => 'NAS ga ushbu klientni autentifikatsiya qilish imkonini beradi; AUTH_SYS ID-lari baribir NAS dagi NFS umumiy katalogining qoidalariga bog‘liq.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'NAS ga ushbu klientni autentifikatsiya qilish imkonini beradi; AUTH_SYS ID-lari baribir NAS dagi NFS umumiy katalogining qoidalariga bog‘liq.',
 			'sourceSetup.savedIdentity' => 'Saqlangan klient identifikatsiya ma’lumotlari ishlatiladi.',
 			'sourceSetup.replaceIdentity' => 'Saqlangan klient identifikatsiya ma’lumotlarini almashtirish',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 klient identifikatsiya ma’lumotlarini tanlash',

@@ -2989,6 +2989,7 @@ class _Translations$cast$vi extends Translations$cast$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Chuyển phát lại về thiết bị này';
 	@override String get transferQueue => 'Chuyển hàng đợi sang Chromecast';
 	@override String get chooseDevice => 'Truyền đến thiết bị';
 	@override String get searching => 'Tìm kiếm các thiết bị Cast...';
@@ -8347,6 +8348,7 @@ extension on TranslationsVi {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} sử dụng HTTP. Người khác trên mạng có thể đọc hoặc thay đổi mật khẩu, mã thông báo và nội dung của bạn. Hãy dùng HTTPS nếu có. Chỉ tiếp tục nếu bạn tin tưởng mạng này và chấp nhận rủi ro.',
 			'addServer.allowHttp' => 'Cho phép HTTP',
 			'addServer.httpsRequired' => 'Sử dụng HTTPS hoặc rõ ràng cho phép kết nối không mã hóa.',
+			'cast.returnPlayback' => 'Chuyển phát lại về thiết bị này',
 			'cast.transferQueue' => 'Chuyển hàng đợi sang Chromecast',
 			'cast.chooseDevice' => 'Truyền đến thiết bị',
 			'cast.searching' => 'Tìm kiếm các thiết bị Cast...',
@@ -8507,9 +8509,9 @@ extension on TranslationsVi {
 			'universalMedia.playlist' => 'Danh sách Playlist',
 			'universalMedia.files' => 'Thiết bị file',
 			'universalMedia.favorites' => 'Save Stream yêu thích',
-			'universalMedia.address' => 'Địa chỉ Media',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'Địa chỉ Media',
 			'universalMedia.addressHelp' => 'URL với các thông số xác nhận hoặc ký tự được công nhận chỉ được sử dụng cho phiên này và không thể được lưu như là yêu thích.',
 			'universalMedia.displayName' => 'Tên hiển thị (tùy chọn)',
 			'universalMedia.displayNameHelp' => 'Chọn tên ngắn cho người chơi và hệ thống điều khiển phương tiện truyền thông.',
@@ -9021,9 +9023,9 @@ extension on TranslationsVi {
 			'sourceSetup.replaceTrustCertificate' => 'Thay chứng chỉ tùy chỉnh đã lưu',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS dùng các cổng thông thường của NFS và dịch vụ gắn kết, đồng thời yêu cầu NAS hỗ trợ RFC 9289. Bắt buộc dùng TLS 1.3. Tên máy chủ hoặc địa chỉ IP phải khớp với chứng chỉ. AUTH_SYS UID/GID vẫn áp dụng trong kênh được mã hóa.',
 			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
-			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
 			'sourceSetup.savedIdentity' => 'Sẽ dùng danh tính máy khách đã lưu.',
 			'sourceSetup.replaceIdentity' => 'Thay danh tính máy khách đã lưu',
 			'sourceSetup.chooseIdentity' => 'Chọn danh tính máy khách PKCS#12',

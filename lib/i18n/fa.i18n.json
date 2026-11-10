@@ -3580,6 +3580,7 @@
     "httpsRequired": "استفاده از HTTPS یا به صراحت اجازه یک اتصال غیر رمزگذاری شده."
   },
   "cast": {
+    "returnPlayback": "بازگرداندن پخش به این دستگاه",
     "transferQueue": "انتقال صف پخش به Chromecast",
     "chooseDevice": "پخش روی دستگاه",
     "searching": "در جستجوی دستگاه های...",

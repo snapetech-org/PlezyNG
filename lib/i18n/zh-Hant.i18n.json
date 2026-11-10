@@ -3576,6 +3576,7 @@
     "httpsRequired": "使用 HTTPS 或明確允許未加密的連線。"
   },
   "cast": {
+    "returnPlayback": "將播放轉回此裝置",
     "transferQueue": "將播放佇列轉移至 Chromecast",
     "chooseDevice": "點選一個裝置",
     "searching": "尋找卡片裝置",

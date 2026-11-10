@@ -57,6 +57,7 @@ enum DownloadBackupPolicy {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    RommAppleBroker.install()
     DownloadBackupPolicy.refreshExistingRoots()
     PlezyPreparationPlugin.registerBackgroundTasks { registry in
       GeneratedPluginRegistrant.register(with: registry)

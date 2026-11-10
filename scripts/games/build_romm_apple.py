@@ -19,6 +19,10 @@ SPECS = {
 }
 
 
+def framework_names(platform):
+    return FRAMEWORKS + (('PlezyRetroWorker',) if platform == 'ios' else ())
+
+
 def run(*args):
     subprocess.run([str(arg) for arg in args], check=True)
 
@@ -46,7 +50,7 @@ def cache_valid(destination, fingerprint, platform=None):
         receipt = json.loads((destination / 'build-receipt.json').read_text())
         if receipt['sourceSha256'] != fingerprint:
             return False
-        expected = {name + '.xcframework' for name in FRAMEWORKS} | {'notices'}
+        expected = {name + '.xcframework' for name in framework_names(platform)} | {'notices'}
         if platform == 'macos':
             expected.add('helpers')
         if receipt['artifacts'].keys() != expected:
@@ -66,6 +70,7 @@ def source_fingerprint(platform):
     inputs.extend(ROOT / 'scripts/games' / name for name in
                   ('install_macos_worker.sh', 'install_macos_romm_cores.py'))
     inputs.extend(sorted((PACKAGE / 'apple').glob('*.podspec')))
+    inputs.extend(path for path in sorted((PACKAGE / 'apple/extension').rglob('*')) if path.is_file())
     checksum = hashlib.sha256(platform.encode())
     for path in inputs:
         checksum.update(path.relative_to(ROOT).as_posix().encode() + b'\0')
@@ -93,7 +98,7 @@ def build(platform):
     if cache_valid(destination, fingerprint, platform):
         return
     work = ROOT / 'build/romm' / platform
-    frameworks = {name: [] for name in FRAMEWORKS}
+    frameworks = {name: [] for name in framework_names(platform)}
     notices = {}
     for sdk, arch in specs:
         out = work / sdk
@@ -107,9 +112,11 @@ def build(platform):
                    '-DFETCHCONTENT_BASE_DIR=' + str(out / 'dependencies')]
         if platform != 'macos':
             command += ['-DCMAKE_SYSTEM_NAME=' + ('iOS' if platform == 'ios' else 'tvOS')]
+        if platform == 'ios':
+            command += ['-DPLEZY_ROMM_APPLE_EXTENSION=ON']
         run(*command)
         run('cmake', '--build', out, '--config', 'Release', '--parallel', str(os.cpu_count() or 2))
-        for name in FRAMEWORKS:
+        for name in framework_names(platform):
             frameworks[name].append(find_framework(out, name, sdk))
         notices[sdk] = out / 'cores/notices'
         if not (notices[sdk] / 'romm-cores.json').is_file():

@@ -488,10 +488,14 @@ final class MusicCarBridge {
   private var channel: FlutterMethodChannel?
   private(set) var ready = false
   private var epoch = 0
+  private var widgetSnapshot: MusicWidgetSnapshot?
   private(set) var connected = false
   weak var scene: MusicCarSceneDelegate?
 
   func attach(_ messenger: FlutterBinaryMessenger) {
+    ready = false
+    epoch += 1
+    updateWidget(nil)
     channel = FlutterMethodChannel(name: "com.pleazyng/music_car", binaryMessenger: messenger)
     channel?.setMethodCallHandler { [weak self] call, result in
       guard let self else { result(nil); return }
@@ -499,19 +503,44 @@ final class MusicCarBridge {
       case "ready":
         self.ready = true
         self.epoch += 1
+        self.updateWidget(nil)
         if self.connected { self.connection(true) }
         self.scene?.refresh()
         result(nil)
       case "catalogChanged":
         self.scene?.refresh()
         result(nil)
-      case "snapshot": result(nil)
+      case "snapshot":
+        if self.ready { self.updateWidget(MusicWidgetSnapshot(message: call.arguments)) }
+        result(nil)
       case "close":
         self.ready = false
         self.epoch += 1
+        self.updateWidget(nil)
         self.scene?.refresh()
         result(nil)
       default: result(FlutterMethodNotImplemented)
+      }
+    }
+  }
+
+  private func updateWidget(_ snapshot: MusicWidgetSnapshot?) {
+    if let snapshot, let previous = widgetSnapshot,
+      snapshot.content == previous.content, previous.isFresh(at: snapshot.capturedAt),
+      snapshot.capturedAt.timeIntervalSince(previous.capturedAt) < MusicWidgetSnapshot.lifetime / 2
+    {
+      return
+    }
+    widgetSnapshot = snapshot
+    MusicWidgetStore.publish(snapshot)
+  }
+
+  @MainActor
+  func performWidgetTransport(_ command: String, scope: String, revision: Int) async {
+    guard ready, widgetSnapshot?.authorizes(command, scope: scope, revision: revision) == true else { return }
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      request("transport", ["command": command, "scope": scope, "revision": revision]) { _ in
+        continuation.resume()
       }
     }
   }

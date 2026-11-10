@@ -71,6 +71,27 @@ rejects intents from a previous profile or queue revision. No stream credentials
 or durable track metadata are stored by the widget. If the process has no live
 music session, tapping opens the app instead of silently restoring playback.
 
+## iOS widget
+
+Add the Pleazyng widget to the Home Screen in a signed build that includes it.
+Small and medium widgets show the current track and artist; interactive play,
+pause, previous and next controls require iOS 17 or newer. Tapping the widget
+body opens the app. Transport only controls a running, unlocked profile session
+with the same queue revision; it never starts playback from a cached queue.
+
+The shared widget snapshot contains display text and an opaque session/revision,
+not media URLs, server credentials, track IDs or profile identities. The app
+clears the snapshot on session close and startup, and displayed metadata expires
+after fifteen minutes without a refresh. iOS controls when timelines redraw.
+
+Signed Store archives embed `org.snapetech.pleazyng.MusicWidgetExtension` when
+`IOS_MUSIC_WIDGET_PROVISIONING_PROFILE_BASE64` is configured. The host and
+extension profiles must both include `group.org.snapetech.pleazyng`; the extension
+uses its own validated profile. Existing profiles without a widget profile still
+produce the normal app without the widget. The archive verifies the exported
+extension's bundle identifier. Signed installation and on-device interaction
+qualification remain pending.
+
 ## Android NFC
 
 On NFC-capable Android devices, open music details and select the NFC-writing

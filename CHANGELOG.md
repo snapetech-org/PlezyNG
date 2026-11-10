@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add an iOS music widget with expiring Now Playing metadata and profile/queue-checked transport on iOS 17+. The widget never restores playback from stale data and is embedded in signed archives when its separate App Group provisioning profile is configured.
+
 - Read and write credential-free music NFC links on supported iPhones from Music home and Music details. NFC-capable signed builds use the existing profile authorization path; builds without the reader capability keep NFC controls hidden.
 
 - Manage independently paired music receivers from Now Playing's Sync screen, with discovery, secure pairing, per-endpoint removal and profile-bound teardown without replacing the existing companion control peer.

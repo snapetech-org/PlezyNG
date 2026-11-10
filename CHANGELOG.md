@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Prepare aerynOS recipes independently from x64 checksums, and restore aerynOS as a downstream publication target subject to native qualification.
 - Record the complete review of 64 upstream commits through Plezy 2.26, with originating commit and contributor links, retained fork behavior and explicit unshipped native dependencies. Pleazyng keeps its name, logo, native components and GPL license file; the upstream trademark policy is excluded. See the [review and source credits](docs/maintainers/upstream-sync-2026-11-09.md).
 
 - Run post-publication catalog verification through a read-only reusable workflow, preserving automatic validation while removing the privileged workflow-run trigger rejected by repository policy.

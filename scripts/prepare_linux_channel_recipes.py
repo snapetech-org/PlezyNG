@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ASSETS = {arch: f"pleazyng-linux-{arch}.tar.gz" for arch in ("x64", "arm64")}
 
 
-def release_hashes(manifest: str) -> dict[str, str]:
+def release_hashes(manifest: str, architectures=("x64", "arm64")) -> dict[str, str]:
     hashes = {}
     for line in manifest.splitlines():
         fields = line.split()
@@ -29,22 +29,24 @@ def release_hashes(manifest: str) -> dict[str, str]:
         if digest == "0" * 64:
             raise ValueError(f"Placeholder SHA-256 for {name}")
         hashes[name] = digest.lower()
-    missing = set(ASSETS.values()) - hashes.keys()
+    missing = {ASSETS[arch] for arch in architectures} - hashes.keys()
     if missing:
         raise ValueError(f"Missing release assets: {', '.join(sorted(missing))}")
     return hashes
 
 
-def prepare(tag: str, checksums: Path, output: Path) -> None:
+def prepare(tag: str, checksums: Path, output: Path, channel: str = "all") -> None:
+    if channel not in ("all", "nix", "aerynos"):
+        raise ValueError("Unknown channel")
     if not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", tag):
         raise ValueError("tag must be a stable vMAJOR.MINOR.PATCH tag")
     raw = checksums.read_bytes()
-    hashes = release_hashes(raw.decode("utf-8"))
+    hashes = release_hashes(raw.decode("utf-8"), ("x64",) if channel == "aerynos" else ("x64", "arm64"))
     replacements = {
         "@@TAG@@": tag,
         "@@VERSION@@": tag[1:],
         "@@X64_SHA256@@": hashes[ASSETS["x64"]],
-        "@@ARM64_SHA256@@": hashes[ASSETS["arm64"]],
+        "@@ARM64_SHA256@@": hashes.get(ASSETS["arm64"], ""),
     }
     webkit = json.loads((ROOT / "linux/packaging/webkit-runtime.json").read_text())["x64"]
     replacements.update({
@@ -52,11 +54,15 @@ def prepare(tag: str, checksums: Path, output: Path) -> None:
         "@@WEBKIT_SHA256@@": webkit["sha256"],
     })
     files = {}
-    files['nix/release.json'] = (json.dumps({
-        'version': tag[1:], 'tag': tag, 'repository': 'snapetech-org/pleazyng',
-        'sha256': {arch: hashes[name] for arch, name in ASSETS.items()},
-    }, indent=2) + '\n').encode()
+    if channel != 'aerynos':
+        files['nix/release.json'] = (json.dumps({
+            'version': tag[1:], 'tag': tag, 'repository': 'snapetech-org/pleazyng',
+            'sha256': {arch: hashes[name] for arch, name in ASSETS.items()},
+        }, indent=2) + '\n').encode()
+    channel_choice = channel
     for channel, name in (("nix", "pleazyng.nix"), ("aerynos", "stone.yaml")):
+        if channel_choice != "all" and channel != channel_choice:
+            continue
         template = ROOT / "linux/packaging" / channel / f"{name}.template"
         content = template.read_text(encoding="utf-8")
         for token, value in replacements.items():
@@ -99,12 +105,13 @@ def prepare(tag: str, checksums: Path, output: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--channel", choices=("all", "nix", "aerynos"), default="all")
     parser.add_argument("--tag", required=True)
     parser.add_argument("--checksums", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     try:
-        prepare(args.tag, args.checksums, args.output)
+        prepare(args.tag, args.checksums, args.output, args.channel)
     except (OSError, ValueError) as error:
         parser.exit(1, f"Recipe preparation failed: {error}\n")
     print(f"Prepared unqualified channel candidates in {args.output}")

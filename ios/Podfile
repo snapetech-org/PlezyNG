@@ -6,6 +6,10 @@ unless system('python3', File.expand_path('../scripts/p2p/build_apple.py', __dir
   raise 'Native torrent framework build failed'
 end
 
+unless system('ruby', File.expand_path('../scripts/games/configure_romm_extension.rb', __dir__))
+  raise 'Could not configure the isolated RomM extension'
+end
+
 platform :ios, '15.5'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
@@ -52,6 +56,12 @@ target 'Runner' do
   target 'RunnerTests' do
     inherit! :search_paths
   end
+end
+
+target 'RommWorker' do
+  platform :ios, '26.0'
+  use_frameworks!
+  pod 'plezy_romm_worker', :path => '../native/games/romm/apple'
 end
 
 post_install do |installer|

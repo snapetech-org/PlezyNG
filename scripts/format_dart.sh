@@ -14,4 +14,4 @@ files=()
 while IFS= read -r -d '' source; do files+=("$source"); done < <(
   find "${paths[@]}" -type f -name '*.dart' ! -name '*.g.dart' ! -name '*.freezed.dart' -print0
 )
-[[ ${#files[@]} -eq 0 ]] || dart format "${options[@]}" "${files[@]}"
+[[ ${#files[@]} -eq 0 ]] || dart format ${options[@]+"${options[@]}"} "${files[@]}"

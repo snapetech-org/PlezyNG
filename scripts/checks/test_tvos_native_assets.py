@@ -65,6 +65,10 @@ class TvosNativeAssetTests(unittest.TestCase):
             template.mkdir(parents=True)
             (template / 'sqlite3').write_bytes(b'wrong-platform-ios')
             (template / 'Info.plist').write_bytes(plistlib.dumps({'CFBundleSupportedPlatforms': ['iPhoneOS']}))
+            for name in ('objective_c', 'pdfrx_pdfium_gate'):
+                other = template.parent / f'{name}.framework'
+                other.mkdir()
+                (other / name).write_bytes(b'ios-input')
             source = root / 'sqlite3.c'
             source.write_text('source')
             commands = []
@@ -75,8 +79,11 @@ class TvosNativeAssetTests(unittest.TestCase):
 
             with patch.object(assets, 'sqlite_source', return_value=source), \
                     patch.object(assets, 'run', side_effect=['/SDK', 'arm64', 'platform 8\n', '_sqlite3_initialize']), \
-                    patch.object(assets.subprocess, 'run', side_effect=compile):
+                    patch.object(assets.subprocess, 'run', side_effect=compile), \
+                    patch.object(assets, 'stage_package_asset') as side_assets:
                 assets.stage(root, template.parent, root / 'output', 'appletvsimulator', ['arm64'], '17.0')
+            self.assertEqual([call.args[1].stem for call in side_assets.call_args_list],
+                             ['objective_c', 'pdfrx_pdfium_gate'])
             framework = root / 'output/sqlite3.framework'
             self.assertEqual((framework / 'sqlite3').read_bytes(), b'genuine-tvos')
             self.assertEqual((template / 'sqlite3').read_bytes(), b'wrong-platform-ios')
@@ -97,6 +104,59 @@ class TvosNativeAssetTests(unittest.TestCase):
                 (root / f'input/{name}.framework').mkdir(parents=True)
             with self.assertRaisesRegex(ValueError, 'Unported'):
                 assets.stage(root, root / 'input', root / 'output', 'appletvsimulator', ['arm64'], '17.0')
+
+    def test_objective_c_recipe_preserves_arc_and_api_dl_and_replaces_ios_binary(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'tvos').mkdir()
+            package = root / 'package'
+            (package / 'hook').mkdir(parents=True)
+            (package / 'hook/build.dart').write_text('reviewed hook')
+            (package / 'src/include').mkdir(parents=True)
+            for name in ('bridge.c', 'bridge.m', 'include/dart_api_dl.c'):
+                (package / 'src' / name).write_text('source')
+            (package / 'lib/src').mkdir(parents=True)
+            (package / 'lib/src/c_bindings_generated.dart').write_text("symbol: 'DOBJC_initializeApi'")
+            (package / 'lib/src/objective_c_bindings_generated.dart').write_text(
+                "@ffi.Native<ffi.Void Function()>(symbol: 'native_trampoline') external void trampoline();\n"
+                r"@ffi.Native<ffi.Pointer<ffi.Void>>(symbol: 'OBJC_CLASS_\$_Bridge') external ffi.Pointer get bridge;"
+            )
+            pin = {'package': 'objective_c', 'version': '9.6.2',
+                   'hookSha256': assets.digest(package / 'hook/build.dart'), 'archiveSha256': 'a' * 64}
+            (root / 'tvos/native-asset-packages.lock.json').write_text(json.dumps({'objective_c': pin}))
+            (root / 'pubspec.lock').write_text('  objective_c:\n    version: "9.6.2"\n    sha256: ' + 'a' * 64 + '\n')
+            (root / '.dart_tool').mkdir()
+            (root / '.dart_tool/package_config.json').write_text(json.dumps({'packages': [
+                {'name': 'objective_c', 'rootUri': package.as_uri()},
+            ]}))
+            template = root / 'objective_c.framework'
+            template.mkdir()
+            (template / 'objective_c').write_bytes(b'ios-input')
+            (template / 'Info.plist').write_bytes(plistlib.dumps({}))
+            output = root / 'output'
+            output.mkdir()
+            commands = []
+
+            def compile(command, **kwargs):
+                commands.append(command)
+                Path(command[command.index('-o') + 1]).write_bytes(b'tvos-output')
+
+            with patch.object(assets.subprocess, 'run', side_effect=compile), \
+                    patch.object(assets, 'run', side_effect=[
+                        'arm64', 'platform 8\n', '_DOBJC_initializeApi\n_native_trampoline\n_OBJC_CLASS_$_Bridge\n_Dart_InitializeApiDL',
+                    ]):
+                assets.stage_package_asset(root, template, output, 'appletvsimulator', ['arm64'], '17.0', '/SDK')
+            self.assertEqual((output / 'objective_c.framework/objective_c').read_bytes(), b'tvos-output')
+            self.assertEqual((template / 'objective_c').read_bytes(), b'ios-input')
+            compilation = [command for command in commands if '-c' in command]
+            self.assertEqual(len(compilation), 3)
+            self.assertTrue(any('dart_api_dl.c' in ' '.join(command) for command in compilation))
+            for command in compilation:
+                source = command[command.index('-c') + 1]
+                self.assertEqual('-fobjc-arc' in command, source.endswith('.m'))
+                self.assertIn('arm64-apple-tvos17.0-simulator', command)
+            self.assertIn('dynamic_lookup', commands[-1])
+            self.assertIn('-Wl,-encryptable', commands[-1])
 
 
 if __name__ == '__main__':

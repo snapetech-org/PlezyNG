@@ -616,7 +616,7 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
         completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .unsupported())])
         return
       }
-      if intent.resumePlayback?.boolValue == true {
+      if intent.resumePlayback == true {
         completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .notRequired())])
         return
       }
@@ -687,10 +687,10 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
       let finish: (Any?) -> Void = { result in
         completion(INPlayMediaIntentResponse(code: result as? Bool == true ? .success : .failure, userActivity: nil))
       }
-      if intent.resumePlayback?.boolValue == true {
+      if intent.resumePlayback == true {
         MusicCarBridge.shared.request("play", [:], completion: finish)
       } else if let id = intent.mediaItems?.first?.identifier {
-        var args: [String: Any] = ["id": id, "shuffle": intent.playShuffled?.boolValue == true]
+        var args: [String: Any] = ["id": id, "shuffle": intent.playShuffled == true]
         switch intent.playbackRepeatMode {
         case .one: args["repeat"] = "one"
         case .all: args["repeat"] = "all"

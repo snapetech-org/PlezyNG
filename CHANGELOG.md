@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Include genuine tvOS builds of the Dart Objective-C bridge and process-wide PDFium gate alongside SQLite; verify their locked source recipes, native exports and platform metadata before embedding. Use the current SDK's optional Boolean Siri resume/shuffle properties directly.
+
 - Build and embed SQLite from checksum-pinned source for the actual tvOS device/simulator SDK, preserving the locked Dart package's compile options and FFI exports. Verify a real Dart database open and SQLite version during native qualification. Correct the iOS intent-handler override for the current Flutter SDK and allow Apple test queue barriers to tolerate startup work.
 
 - Link the C++ runtime in every production iOS emulator-worker configuration, and verify that setting without a qualification-only linker workaround. Keep the release controller alive across bounded retries of transient GitHub inventory failures.

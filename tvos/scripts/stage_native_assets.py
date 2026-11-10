@@ -20,15 +20,15 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def sqlite_package(root: Path, version: str) -> Path:
+def resolved_package(root: Path, name: str, version: str) -> Path:
     lock = (root / 'pubspec.lock').read_text()
-    entry = re.search(r'(?ms)^  sqlite3:\n(.*?)(?=^  \S|\Z)', lock)
+    entry = re.search(rf'(?ms)^  {re.escape(name)}:\n(.*?)(?=^  \S|\Z)', lock)
     if not entry or f'version: "{version}"' not in entry[1]:
-        raise ValueError('Review the tvOS SQLite source pin when upgrading package:sqlite3')
+        raise ValueError(f'Review the tvOS source recipe when upgrading package:{name}')
     config = root / '.dart_tool/package_config.json'
-    matches = [item for item in json.loads(config.read_text())['packages'] if item['name'] == 'sqlite3']
+    matches = [item for item in json.loads(config.read_text())['packages'] if item['name'] == name]
     if len(matches) != 1:
-        raise ValueError('Exactly one resolved sqlite3 package is required')
+        raise ValueError(f'Exactly one resolved {name} package is required')
     uri = urlparse(matches[0]['rootUri'])
     if uri.netloc:
         raise ValueError('SQLite package cannot resolve to a remote file authority')
@@ -38,6 +38,11 @@ def sqlite_package(root: Path, version: str) -> Path:
         raise ValueError('SQLite package must be resolved locally')
     else:
         package = (config.parent / unquote(uri.path)).resolve()
+    return package
+
+
+def sqlite_package(root: Path, version: str) -> Path:
+    package = resolved_package(root, 'sqlite3', version)
     hashes = (package / 'lib/src/hook/asset_hashes.dart').read_text()
     tag = re.search(r"releaseTag\s*=\s*'([^']+)'", hashes)
     if not tag or tag[1] != f'sqlite3-{version}':
@@ -101,14 +106,110 @@ def run(*args: str) -> str:
 
 def validate_binary(binary: Path, platform: str, architectures: list[str], symbols: set[str]) -> None:
     if set(run('xcrun', 'lipo', '-archs', str(binary)).split()) != set(architectures):
-        raise ValueError('SQLite native asset architecture mismatch')
+        raise ValueError(f'Native asset architecture mismatch: {binary}')
     expected = '8' if platform == 'appletvsimulator' else '3'
     platforms = re.findall(r'^\s*platform\s+(\d+)\s*$', run('xcrun', 'otool', '-arch', 'all', '-l', str(binary)), re.M)
     if not platforms or set(platforms) != {expected}:
-        raise ValueError('SQLite must contain genuine tvOS platform load commands')
+        raise ValueError(f'Native asset must contain genuine tvOS platform load commands: {binary}')
     exports = {line.split()[-1].removeprefix('_') for line in run('xcrun', 'nm', '-gU', str(binary)).splitlines() if line.split()}
     if missing := symbols - exports:
-        raise ValueError(f'Bundled SQLite is missing Dart FFI symbols: {sorted(missing)}')
+        raise ValueError(f'Native asset is missing Dart FFI symbols: {sorted(missing)}')
+
+
+def finish_framework(template: Path, scratch: Path, output_dir: Path, binaries: list[Path],
+                     platform: str, architectures: list[str], minimum: str, symbols: set[str], receipt: dict) -> None:
+    name = template.stem
+    framework = scratch / template.name
+    shutil.copytree(template, framework)
+    shutil.rmtree(framework / '_CodeSignature', ignore_errors=True)
+    executable = framework / name
+    executable.chmod(0o755)
+    if len(binaries) == 1:
+        shutil.copyfile(binaries[0], executable)
+    else:
+        subprocess.run(['xcrun', 'lipo', '-create', *map(str, binaries), '-output', str(executable)], check=True)
+    validate_binary(executable, platform, architectures, symbols)
+    plist = framework / 'Info.plist'
+    metadata = plistlib.loads(plist.read_bytes())
+    metadata.update(CFBundleExecutable=name, MinimumOSVersion=minimum,
+                    CFBundleSupportedPlatforms=['AppleTVSimulator' if platform == 'appletvsimulator' else 'AppleTVOS'],
+                    DTPlatformName=platform)
+    for key in ('DTSDKName', 'DTPlatformVersion', 'DTPlatformBuild', 'DTSDKBuild'):
+        metadata.pop(key, None)
+    plist.chmod(0o644)
+    plist.write_bytes(plistlib.dumps(metadata))
+    destination = output_dir / template.name
+    if destination.is_symlink():
+        raise ValueError('Refusing linked native asset destination')
+    if destination.exists():
+        shutil.rmtree(destination)
+    receipt = receipt | {'platform': platform, 'architectures': architectures, 'minimumOSVersion': minimum,
+                         'unsignedBinarySha256': digest(executable)}
+    (framework / 'pleazyng-source.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    framework.rename(destination)
+    (output_dir / f'{name}-build.json').write_text(json.dumps(receipt, indent=2) + '\n')
+
+
+def objective_symbols(package: Path) -> set[str]:
+    bindings = (package / 'lib/src/c_bindings_generated.dart').read_text()
+    generated = (package / 'lib/src/objective_c_bindings_generated.dart').read_text()
+    # Dart aliases and class getters can explicitly name a different C symbol.
+    # A Dart escaped dollar in OBJC_CLASS_\$_Foo denotes a literal dollar.
+    symbols = {item.replace(r'\$', '$') for item in re.findall(r"symbol:\s*'([^']+)'", bindings + generated)}
+    for annotation, name in re.findall(
+        r'@ffi\.Native<.*?>\(([^;]*?)\)\s*external\s+[^;]*?\b([A-Za-z_]\w*)\s*\(', generated, re.S,
+    ):
+        if not re.search(r'\bsymbol\s*:', annotation):
+            symbols.add(name)
+    symbols.add('Dart_InitializeApiDL')
+    return symbols
+
+
+def stage_package_asset(root: Path, template: Path, output_dir: Path, platform: str,
+                        architectures: list[str], minimum: str, sdk: str) -> None:
+    name = template.stem
+    pin = json.loads((root / 'tvos/native-asset-packages.lock.json').read_text())[name]
+    package = resolved_package(root, pin['package'], pin['version'])
+    lock = (root / 'pubspec.lock').read_text()
+    entry = re.search(rf'(?ms)^  {re.escape(pin["package"])}:\n(.*?)(?=^  \S|\Z)', lock)
+    archive_hash = re.search(r'sha256:\s*"?([0-9a-f]{64})', entry[1]) if entry else None
+    if not archive_hash or archive_hash[1] != pin['archiveSha256']:
+        raise ValueError(f'Native package archive differs from its reviewed pin: {name}')
+    if digest(package / 'hook/build.dart') != pin['hookSha256']:
+        raise ValueError(f'Review the changed native build recipe for {name}')
+    if name == 'objective_c':
+        # Match the locked package hook: its C API-DL implementation is one of
+        # the recursively collected C sources; ObjC compilation requires ARC.
+        sources = sorted(path for path in (package / 'src').rglob('*') if path.suffix in {'.c', '.m'})
+        symbols = objective_symbols(package)
+    else:
+        sources = [package / 'src/pdfrx_pdfium_gate.c']
+        symbols = set(re.findall(r"symbol:\s*'([^']+)'", (package / 'lib/src/pdfrx_pdfium_gate.dart').read_text()))
+    if not sources or not symbols:
+        raise ValueError(f'Missing sources or native bindings for {name}')
+    with tempfile.TemporaryDirectory(prefix=f'.{name}-tvos-', dir=output_dir) as temporary:
+        scratch = Path(temporary)
+        binaries = []
+        for arch in architectures:
+            triple = f'{arch}-apple-tvos{minimum}' + ('-simulator' if platform == 'appletvsimulator' else '')
+            common = ['xcrun', '--sdk', platform, 'clang', '-target', triple, '-isysroot', sdk]
+            objects = []
+            for index, source in enumerate(sources):
+                obj = scratch / f'{arch}-{index}.o'
+                flags = ['-x', 'objective-c', '-fobjc-arc'] if source.suffix == '.m' else []
+                subprocess.run([*common, '-c', str(source), '-fPIC', '-gline-tables-only',
+                                '-I', str(package / 'src'), *flags, '-o', str(obj)], check=True)
+                objects.append(obj)
+            binary = scratch / arch
+            link = ['-Wl,-encryptable', '-undefined', 'dynamic_lookup'] if name == 'objective_c' else []
+            subprocess.run([*common, '-dynamiclib', '-headerpad_max_install_names',
+                            '-install_name', f'@rpath/{name}.framework/{name}',
+                            *link, *map(str, objects), '-o', str(binary)], check=True)
+            binaries.append(binary)
+        source_files = sorted(path for path in (package / 'src').rglob('*') if path.suffix in {'.c', '.m', '.h'})
+        receipt = pin | {'sourceFilesSha256': {str(path.relative_to(package)): digest(path) for path in source_files}}
+        finish_framework(template, scratch, output_dir, binaries, platform, architectures, minimum, symbols, receipt)
+        print(f'Built {name} from {pin["package"]} {pin["version"]} for {platform}: {architectures}')
 
 
 def stage(root: Path, input_dir: Path, output_dir: Path, platform: str, architectures: list[str], minimum: str) -> None:
@@ -119,11 +220,14 @@ def stage(root: Path, input_dir: Path, output_dir: Path, platform: str, architec
     if platform == 'appletvos' and architectures != ['arm64']:
         raise ValueError('tvOS devices require arm64')
     frameworks = sorted(path.name for path in input_dir.glob('*.framework'))
-    if frameworks != ['sqlite3.framework']:
+    supported = {'sqlite3.framework', 'objective_c.framework', 'pdfrx_pdfium_gate.framework'}
+    if 'sqlite3.framework' not in frameworks or set(frameworks) - supported:
         raise ValueError(f'Unported or missing tvOS native assets: {frameworks}')
     template = input_dir / 'sqlite3.framework'
-    if template.is_symlink() or any(path.is_symlink() for path in template.rglob('*')):
-        raise ValueError('Native asset input must be a materialized framework')
+    for name in frameworks:
+        candidate = input_dir / name
+        if candidate.is_symlink() or any(path.is_symlink() for path in candidate.rglob('*')):
+            raise ValueError('Native asset input must be a materialized framework')
     pin = json.loads((root / 'tvos/sqlite-source.lock.json').read_text())
     package = sqlite_package(root, pin['packageVersion'])
     defines = compiler_defines(package)
@@ -135,9 +239,6 @@ def stage(root: Path, input_dir: Path, output_dir: Path, platform: str, architec
         raise ValueError('Refusing linked native asset output')
     with tempfile.TemporaryDirectory(prefix='.sqlite-tvos-', dir=output_dir) as scratch:
         scratch = Path(scratch)
-        framework = scratch / 'sqlite3.framework'
-        shutil.copytree(template, framework)
-        shutil.rmtree(framework / '_CodeSignature', ignore_errors=True)
         binaries = []
         for arch in architectures:
             binary = scratch / arch
@@ -149,33 +250,12 @@ def stage(root: Path, input_dir: Path, output_dir: Path, platform: str, architec
                 *['-D' + item for item in defines], str(source), '-o', str(binary),
             ], check=True)
             binaries.append(binary)
-        executable = framework / 'sqlite3'
-        executable.chmod(0o755)
-        if len(binaries) == 1:
-            shutil.copyfile(binaries[0], executable)
-        else:
-            subprocess.run(['xcrun', 'lipo', '-create', *map(str, binaries), '-output', str(executable)], check=True)
-        validate_binary(executable, platform, architectures, symbols)
-        plist = framework / 'Info.plist'
-        metadata = plistlib.loads(plist.read_bytes())
-        metadata.update(CFBundleExecutable='sqlite3', MinimumOSVersion=minimum,
-                        CFBundleSupportedPlatforms=['AppleTVSimulator' if platform == 'appletvsimulator' else 'AppleTVOS'],
-                        DTPlatformName=platform)
-        for key in ('DTSDKName', 'DTPlatformVersion', 'DTPlatformBuild', 'DTSDKBuild'):
-            metadata.pop(key, None)
-        plist.chmod(0o644)
-        plist.write_bytes(plistlib.dumps(metadata))
-        destination = output_dir / 'sqlite3.framework'
-        if destination.is_symlink():
-            raise ValueError('Refusing linked native asset destination')
-        if destination.exists():
-            shutil.rmtree(destination)
-        receipt = pin | {'platform': platform, 'architectures': architectures, 'minimumOSVersion': minimum,
-                         'compileDefines': defines, 'unsignedBinarySha256': digest(framework / 'sqlite3')}
-        (framework / 'pleazyng-source.json').write_text(json.dumps(receipt, indent=2) + '\n')
-        framework.rename(destination)
-        (output_dir / 'sqlite3-build.json').write_text(json.dumps(receipt, indent=2) + '\n')
+        finish_framework(template, scratch, output_dir, binaries, platform, architectures, minimum,
+                         symbols, pin | {'compileDefines': defines})
         print(f'Built SQLite {pin["sqliteVersion"]} for {platform}: {architectures}')
+    for name in frameworks:
+        if name != 'sqlite3.framework':
+            stage_package_asset(root, input_dir / name, output_dir, platform, architectures, minimum, sdk)
 
 
 def main() -> None:

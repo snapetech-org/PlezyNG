@@ -1,0 +1,16 @@
+{
+  "objective_c": {
+    "package": "objective_c",
+    "version": "9.6.2",
+    "hookSha256": "4673d675678e842c83880ef88ef14dc17b3aa89a7df615fbd0a4e5bed4846525",
+    "archiveSha256": "5c80c2ad6e2c0397de5db38c6d653e69616a3397e13aa7633bf39eb668f2041b",
+    "sourceReference": "https://pub.dev/api/archives/objective_c-9.6.2.tar.gz"
+  },
+  "pdfrx_pdfium_gate": {
+    "package": "pdfium_dart",
+    "version": "0.4.0",
+    "hookSha256": "1225c89c2b7f153ec88c0e8140a77b96382d8141cb074d77112b488dd14b0506",
+    "archiveSha256": "e9f712166563540228e9ce7b8a515fcbd42ebd9d7c0925baa42c6b981f7e7900",
+    "sourceReference": "https://pub.dev/api/archives/pdfium_dart-0.4.0.tar.gz"
+  }
+}

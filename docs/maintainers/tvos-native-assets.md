@@ -12,6 +12,13 @@ session/preupdate support. A package upgrade requires reviewing the source pin.
 The optional column-metadata export is required only when that compile option is
 enabled, matching the Dart binding's own capability check.
 
+The same staging builds the `objective_c` bridge and `pdfrx_pdfium_gate` from the
+locked package sources. `tvos/native-asset-packages.lock.json` binds package
+versions, archive hashes and reviewed hook recipes. The Objective-C build retains
+ARC, C API-DL sources and generated protocol trampolines; the PDF gate retains its
+process-wide pthread synchronization. Every framework receives the actual tvOS
+target, CPU/export checks, source receipt and normal embedding/signing.
+
 Both Debug and Release run staging after the Flutter asset build. Staging checks
 the CPU slices, genuine tvOS device/simulator load commands and required symbols.
 The existing framework embed phase copies native assets, normalizes deployment

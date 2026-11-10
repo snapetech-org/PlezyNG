@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep failed station download batches separate from bounded offline snapshots. Migrate older retries without losing their candidates, prune only snapshot metadata, and reject saved tracks from a different library or account.
+
 - Use revision-checked downloaded loudness analysis for offline fades and overlapping playback. Start repeated playlist tracks at the selected occurrence instead of the first matching song.
 
 - Reject Chocolatey installer and package payloads larger than 190,000,000 bytes before submission, preventing scanner-size regressions without removing playback components.

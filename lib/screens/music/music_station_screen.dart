@@ -237,7 +237,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     if (!sourceCurrent()) throw StateError('Station preview source changed');
     await context.read<DownloadProvider>().queueListDownload(tracks, client!, sourceCurrent: sourceCurrent);
     if (!sourceCurrent()) return;
-    await _experience.store.saveDocument('stationSnapshot', _id, {
+    await _experience.store.completeStationSnapshot(_id, {
       'version': 1,
       'id': _id,
       'title': _title.text,
@@ -388,6 +388,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
                           }
                           await _experience.store.deleteDocument('station', _id);
                           await _experience.store.deleteDocument('stationSnapshot', _id);
+                          await _experience.store.deleteDocument('stationPending', _id);
                           if (context.mounted) Navigator.of(context).pop();
                         }),
                   child: Text(t.common.delete),

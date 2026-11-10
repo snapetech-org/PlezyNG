@@ -83,6 +83,26 @@ class MusicStation {
     );
   }
 
+  bool acceptsBatch(List<MediaItem> tracks) {
+    if (tracks.length > trackLimit) return false;
+    final seen = <String>{};
+    var duration = 0;
+    for (final track in tracks) {
+      if (track.kind != MediaKind.track ||
+          track.serverId != serverId ||
+          track.libraryId != libraryId ||
+          !seen.add(track.globalKey)) {
+        return false;
+      }
+      if (durationMinutes > 0) {
+        if (track.durationMs == null || track.durationMs! <= 0) return false;
+        duration += track.durationMs!;
+        if (duration > durationMinutes * 60000) return false;
+      }
+    }
+    return true;
+  }
+
   Future<List<MediaItem>> materialize(MediaServerClient client, {AbortController? abort}) async {
     if (client.serverId.value != serverId) throw StateError('Station server changed');
     final authentication = client.authenticationSessionId;
@@ -118,12 +138,23 @@ class MusicStation {
       checkCurrent();
       var fresh = false;
       for (final item in page.items) {
+        if (item.serverId != serverId ||
+            item.libraryId != libraryId ||
+            (albums ? item.kind != MediaKind.album : item.kind != MediaKind.track)) {
+          continue;
+        }
         if (!seenContainers.add(item.globalKey)) continue;
         fresh = true;
         final block = albums ? await client.fetchAlbumTracks(item.id) : [item];
         checkCurrent();
         final tracks = block
-            .where((t) => t.kind == MediaKind.track && t.serverId == serverId && !seen.contains(t.globalKey))
+            .where(
+              (t) =>
+                  t.kind == MediaKind.track &&
+                  t.serverId == serverId &&
+                  t.libraryId == libraryId &&
+                  !seen.contains(t.globalKey),
+            )
             .toList();
         if (albums) {
           tracks.sort((a, b) {

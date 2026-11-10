@@ -84,4 +84,16 @@ void main() {
     };
     await expectLater(station().materialize(client), throwsStateError);
   });
+  test('station materialization rejects foreign and missing library identities', () async {
+    final client = ExperienceClient()
+      ..rows = [
+        musicTrack('foreign').copyWith(libraryId: 'other'),
+        musicTrack('missing').copyWith(libraryId: null),
+        musicTrack('valid'),
+      ];
+    expect((await station().materialize(client)).map((track) => track.id), ['valid']);
+    expect(station().acceptsBatch([musicTrack('foreign').copyWith(libraryId: 'other')]), isFalse);
+    expect(station().acceptsBatch([musicTrack('duplicate'), musicTrack('duplicate')]), isFalse);
+    expect(station(minutes: 1).acceptsBatch([musicTrack('long', durationMs: 120000)]), isFalse);
+  });
 }

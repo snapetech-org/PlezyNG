@@ -113,6 +113,19 @@ void main() {
     expect(client.queries, hasLength(2));
     expect((await store.document('stationSnapshot', 'station'))!['accountScope'], 's/second-user');
   });
+  test('foreign library identities in a saved retry regenerate instead of queueing', () async {
+    await run((_) async => false);
+    final pending = (await store.pendingStationSnapshot('station'))!;
+    pending['tracks'] = [musicTrack('foreign').copyWith(libraryId: 'other').toJson()];
+    await store.saveDocument('stationPending', 'station', pending);
+    client.rows = [musicTrack('fresh')];
+    final queued = <String>[];
+    await run((track) async {
+      queued.add(track.id);
+      return true;
+    });
+    expect(queued, ['fresh']);
+  });
   test('editing a rule during generation invalidates the batch', () async {
     final pending = Completer<LibraryPage<MediaItem>>();
     client.page = (_) => pending.future;

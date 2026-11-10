@@ -372,28 +372,42 @@ class SyncRuleExecutor {
     final authentication = client.authenticationSessionId;
     final accountScope = musicAccountScope(client);
     final signature = jsonEncode(station.toJson());
+    bool sourceCurrent() =>
+        store.active &&
+        serverManager.isServerVisible(client.serverId) &&
+        identical(serverManager.getClient(client.serverId), client) &&
+        identical(authentication, client.authenticationSessionId) &&
+        accountScope == musicAccountScope(client);
     Future<bool> current() async {
-      if (!store.active ||
-          !serverManager.isServerVisible(client.serverId) ||
-          !identical(serverManager.getClient(client.serverId), client) ||
-          !identical(authentication, client.authenticationSessionId) ||
-          accountScope != musicAccountScope(client)) {
-        return false;
-      }
+      if (!sourceCurrent()) return false;
       final activeRule = await _database.getSyncRule(rule.globalKey);
-      return activeRule?.id == rule.id &&
+      final activeStation = await store.document('station', station.id);
+      return sourceCurrent() &&
+          activeRule?.id == rule.id &&
           activeRule?.enabled == true &&
-          jsonEncode(await store.document('station', station.id)) == signature;
+          jsonEncode(activeStation) == signature;
     }
 
     if (!await current()) return null;
-    final previous = await store.document('stationSnapshot', station.id);
+    final previous = await store.pendingStationSnapshot(station.id);
     // Retain the exact candidate batch across queueing failures. A retry must
     // not keep choosing new random tracks and expanding the download budget.
-    final tracks =
-        previous?['pending'] == true && previous?['signature'] == signature && previous?['accountScope'] == accountScope
-        ? (previous!['tracks'] as List).map((row) => MediaItem.fromJson(Map<String, dynamic>.from(row as Map))).toList()
-        : await station.materialize(client);
+    List<MediaItem>? tracks;
+    if (previous?['pending'] == true &&
+        previous?['signature'] == signature &&
+        previous?['accountScope'] == accountScope &&
+        previous?['tracks'] is List) {
+      try {
+        final rows = previous!['tracks'] as List;
+        if (rows.length <= station.trackLimit) {
+          final saved = rows.map((row) => MediaItem.fromJson(Map<String, dynamic>.from(row as Map))).toList();
+          if (station.acceptsBatch(saved)) tracks = saved;
+        }
+      } catch (_) {
+        tracks = null;
+      }
+    }
+    tracks ??= await station.materialize(client);
     if (!await current()) return null;
     final snapshot = <String, dynamic>{
       'version': 1,
@@ -405,7 +419,7 @@ class SyncRuleExecutor {
       'pending': true,
       'createdAt': now.toUtc().toIso8601String(),
     };
-    await store.saveDocument('stationSnapshot', station.id, snapshot);
+    await store.saveDocument('stationPending', station.id, snapshot);
     var queued = 0, failed = false;
     for (final track in tracks) {
       if (!await current()) {
@@ -424,7 +438,7 @@ class SyncRuleExecutor {
       }
     }
     if (!failed && await current()) {
-      await store.saveDocument('stationSnapshot', station.id, {...snapshot, 'pending': false});
+      await store.completeStationSnapshot(station.id, snapshot);
       await _completeRuleExecution(rule.globalKey);
     }
     return SyncRuleResult(globalKey: rule.globalKey, title: station.title, queuedCount: queued, failed: failed);

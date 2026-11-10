@@ -78,6 +78,59 @@ class MusicLibraryStore {
     }
   }
 
+  Future<Map<String, dynamic>?> pendingStationSnapshot(String id) async {
+    final pending = await document('stationPending', id);
+    if (pending != null) return pending;
+    final legacy = await document('stationSnapshot', id);
+    return legacy?['pending'] == true ? legacy : null;
+  }
+
+  Future<void> completeStationSnapshot(String id, Map<String, dynamic> snapshot) async {
+    await database.transaction(() async {
+      if (!active) return;
+      await saveDocument('stationSnapshot', id, {...snapshot, 'pending': false});
+      await deleteDocument('stationPending', id);
+      await pruneStationSnapshots();
+    });
+  }
+
+  Future<void> pruneStationSnapshots({int maxSnapshots = 64, int maxBytes = 64 * 1024 * 1024}) async {
+    if (maxSnapshots < 1 || maxBytes < 1) throw ArgumentError('Invalid snapshot quota');
+    if (!active) return;
+    await database.transaction(() async {
+      (int, String)? cursor;
+      do {
+        final page = await documentPage('stationSnapshot', limit: 100, after: cursor);
+        if (!active) return;
+        for (final snapshot in page.entries) {
+          final id = snapshot['id'];
+          if (snapshot['pending'] != true || id is! String || id.isEmpty) continue;
+          if (await document('stationPending', id) == null) await saveDocument('stationPending', id, snapshot);
+          await deleteDocument('stationSnapshot', id);
+        }
+        cursor = page.cursor;
+      } while (cursor != null);
+      final rows = await database
+          .customSelect(
+            'SELECT id, LENGTH(CAST(document AS BLOB)) AS bytes FROM music_documents '
+            'WHERE profile_id=? AND kind=? ORDER BY updated_at DESC, id DESC',
+            variables: [Variable(profileId), Variable('stationSnapshot')],
+          )
+          .get();
+      if (!active) return;
+      var retained = 0, bytes = 0;
+      for (final row in rows) {
+        final size = row.read<int>('bytes');
+        if (retained >= maxSnapshots || bytes + size > maxBytes) {
+          await deleteDocument('stationSnapshot', row.read<String>('id'));
+        } else {
+          retained++;
+          bytes += size;
+        }
+      }
+    });
+  }
+
   Future<List<Map<String, dynamic>>> documents(String kind, {int limit = 100, int offset = 0}) async {
     if (!active) return [];
     if (limit < 1 || limit > 500 || offset < 0) throw ArgumentError('Invalid page');

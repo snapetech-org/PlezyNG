@@ -8,6 +8,7 @@ import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/services/supporter/supporter_mode.dart';
 import 'package:plezy/services/supporter/supporter_service.dart';
 import 'package:plezy/widgets/store_review_access_button.dart';
+import 'package:plezy/widgets/app_access_gate.dart';
 
 import '../../test_helpers/prefs.dart';
 
@@ -38,12 +39,12 @@ void main() {
 
   tearDown(() => debugDefaultTargetPlatformOverride = null);
 
-  SupporterService create() {
+  SupporterService create({bool autoDispose = true}) {
     final service = SupporterService.forTesting(
       availability: SupporterAvailability.purchasable,
       reviewVerificationKey: verificationKey,
     );
-    addTearDown(service.dispose);
+    if (autoDispose) addTearDown(service.dispose);
     return service;
   }
 
@@ -78,6 +79,44 @@ void main() {
     expect(service.supportsReviewAccess, isFalse);
     expect(await service.redeemReviewAccess(token), isFalse);
     expect(service.hasAccess, isFalse);
+  });
+
+  testWidgets('expired production builder gate opens review dialog and restores application navigator', (tester) async {
+    final service = create(autoDispose: false);
+    try {
+      await service.init();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: const Scaffold(body: Text('Application available')),
+          builder: (context, child) => AppAccessGate(service: service, child: child!),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Your 7-day trial has ended'), findsOneWidget);
+      expect(find.text('Application available'), findsNothing);
+      await tester.tap(find.text('Store review access'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text('Your 7-day trial has ended'), findsOneWidget);
+      await tester.tap(find.text('Store review access'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), token);
+      await tester.tap(find.text('Activate'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text('Application available'), findsOneWidget);
+      expect(service.hasReviewAccess, isTrue);
+      expect(service.hasLifetimeUnlock, isFalse);
+      expect(tester.takeException(), isNull);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      service.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    }
   });
 
   testWidgets('review dialog rejects invalid code and closes cleanly on cancel', (tester) async {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../focus/focusable_button.dart';
+import '../focus/navigator_back_handler.dart';
 import '../i18n/strings.g.dart';
 import '../services/supporter/supporter_service.dart';
 import '../services/supporter/supporter_mode.dart';
@@ -23,7 +24,8 @@ class AppAccessGate extends StatefulWidget {
   State<AppAccessGate> createState() => _AppAccessGateState();
 }
 
-class _AppAccessGateState extends State<AppAccessGate> {
+class _AppAccessGateState extends State<AppAccessGate> with WidgetsBindingObserver {
+  final _accessNavigatorKey = GlobalKey<NavigatorState>();
   late final FocusNode _trialFocusNode = FocusNode(debugLabel: 'app_access_trial');
   late final FocusNode _purchaseFocusNode = FocusNode(debugLabel: 'app_access_purchase');
   late final FocusNode _restoreFocusNode = FocusNode(debugLabel: 'app_access_restore');
@@ -33,6 +35,7 @@ class _AppAccessGateState extends State<AppAccessGate> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (widget.service.availability == SupporterAvailability.purchasable) {
       unawaited(widget.service.loadProduct());
     }
@@ -40,11 +43,15 @@ class _AppAccessGateState extends State<AppAccessGate> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _trialFocusNode.dispose();
     _purchaseFocusNode.dispose();
     _restoreFocusNode.dispose();
     super.dispose();
   }
+
+  @override
+  Future<bool> didPopRoute() async => await _accessNavigatorKey.currentState?.maybePop() ?? false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,10 +61,27 @@ class _AppAccessGateState extends State<AppAccessGate> {
         if (widget.service.availability != SupporterAvailability.purchasable || widget.service.hasAccess) {
           return widget.child;
         }
-        if (!widget.service.isReady) return _loading(context);
-        return ValueListenableBuilder(
-          valueListenable: widget.service.storeState,
-          builder: (context, storeState, _) => _offer(context, storeState),
+        // MaterialApp.builder places this gate above the application Navigator.
+        // While access is blocked, its replacement needs its own Navigator for
+        // the disclosed review dialog. Keep the locked page on Back; restoring
+        // access replaces this Navigator with the ordinary application child.
+        return NavigatorBackHandler(
+          navigatorKey: _accessNavigatorKey,
+          child: Navigator(
+            key: _accessNavigatorKey,
+            pages: [
+              MaterialPage<void>(
+                canPop: false,
+                child: !widget.service.isReady
+                    ? _loading(context)
+                    : ValueListenableBuilder(
+                        valueListenable: widget.service.storeState,
+                        builder: (context, storeState, _) => _offer(context, storeState),
+                      ),
+              ),
+            ],
+            onDidRemovePage: (_) {},
+          ),
         );
       },
     );

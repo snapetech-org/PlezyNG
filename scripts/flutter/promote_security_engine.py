@@ -15,9 +15,8 @@ REPOSITORY = 'snapetech-org/pleazyng'
 OLD_VERSION = '3.47.1'
 OLD_FRAMEWORK = '6655482ec06e547f90abf8ae7590466f4415978d'
 OLD_ENGINE = '5d531788691ec3404cac0cee66ead4007b177363'
-PATHS = ('.github/workflows/build.yml', '.github/workflows/ci.yml',
-         '.github/actions/setup-flutter-git/action.yml', 'scripts/checks/check_build_workflow.py',
-         'windows/tool/install-patched-engine.ps1', 'windows/tool/swap-engine.ps1')
+PATHS = ('scripts/flutter/sdk-pin.json', 'windows/tool/install-patched-engine.ps1',
+         'windows/tool/swap-engine.ps1')
 
 
 def api(path, body=None, method=None):
@@ -63,27 +62,19 @@ def replace_once(source, old, new):
 
 
 def changes(sources, pins):
-    # Never replace a later SDK or unrelated work with this fixed-version lane.
-    version_line = f'FLUTTER_VERSION: "{OLD_VERSION}"'
-    already = all(f'FLUTTER_VERSION: "{VERSION}"' in sources[p] for p in PATHS[:2])
-    if already:
+    manifest = json.loads(sources[PATHS[0]])
+    current = {'schemaVersion': 1, 'version': VERSION, 'frameworkRevision': FRAMEWORK, 'engineRevision': ENGINE}
+    if manifest == current:
         installer = sources['windows/tool/install-patched-engine.ps1']
         if (ENGINE not in installer or any(digest not in installer for digest in pins.values())
-                or FRAMEWORK not in sources['.github/actions/setup-flutter-git/action.yml']
-                or f'FLUTTER_VERSION = \"{VERSION}\"' not in sources['scripts/checks/check_build_workflow.py']
                 or ENGINE not in sources['windows/tool/swap-engine.ps1']):
             raise ValueError('Fixed SDK is already selected with different engine pins')
         return {}
-    updated = {}
-    for path in PATHS[:2]:
-        updated[path] = replace_once(sources[path], version_line, f'FLUTTER_VERSION: "{VERSION}"')
-    path = '.github/actions/setup-flutter-git/action.yml'
-    value = replace_once(sources[path], f'$version = "{OLD_VERSION}"', f'$version = "{VERSION}"')
-    value = replace_once(value, f'$expectedCommit = "{OLD_FRAMEWORK}"', f'$expectedCommit = "{FRAMEWORK}"')
-    updated[path] = value.replace('(5d531788)', f'({ENGINE[:8]})')
-    path = 'scripts/checks/check_build_workflow.py'
-    value = replace_once(sources[path], f'FLUTTER_VERSION = "{OLD_VERSION}"', f'FLUTTER_VERSION = "{VERSION}"')
-    updated[path] = replace_once(value, f'FLUTTER_COMMIT = "{OLD_FRAMEWORK}"', f'FLUTTER_COMMIT = "{FRAMEWORK}"')
+    expected = {'schemaVersion': 1, 'version': OLD_VERSION, 'frameworkRevision': OLD_FRAMEWORK,
+                'engineRevision': OLD_ENGINE}
+    if manifest != expected:
+        raise ValueError('The current SDK pins changed; review before promoting')
+    updated = {PATHS[0]: json.dumps(current, indent=2) + '\n'}
     path = 'windows/tool/swap-engine.ps1'
     updated[path] = replace_once(sources[path], f"$ExpectedEngine = '{OLD_ENGINE}'", f"$ExpectedEngine = '{ENGINE}'")
     path = 'windows/tool/install-patched-engine.ps1'

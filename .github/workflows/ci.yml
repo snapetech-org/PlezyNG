@@ -35,8 +35,7 @@ env:
   # Keep SDK analytics failures separate from build and analysis diagnostics.
   DASH__SUPPRESS_ANALYTICS: "true"
   FLUTTER_SUPPRESS_ANALYTICS: "true"
-  # Only place this workflow names the SDK; .github/actions/setup-flutter-git pins the same release.
-  FLUTTER_VERSION: "3.47.1"
+  # Each setup step loads the immutable SDK manifest after checkout.
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
 
 jobs:
@@ -92,6 +91,10 @@ jobs:
             exit 0
           fi
           python3 scripts/changelog.py validate --mode range --base "$CHANGELOG_BASE" --head "$CHANGELOG_HEAD"
+
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
 
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
@@ -181,6 +184,10 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
 
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
@@ -361,6 +368,10 @@ jobs:
         if: ${{ inputs.execution_profile == 'hybrid' }}
         run: python3 scripts/prepare_android_sdk.py install --direct-egress
 
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
@@ -538,6 +549,10 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
@@ -703,6 +718,10 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
 
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter-apple
@@ -1095,6 +1114,10 @@ jobs:
           & $sevenZip.Source i
           if ($LASTEXITCODE -ne 0) { throw 'The pinned private image 7-Zip is not usable' }
 
+      - name: Load pinned Flutter SDK
+        shell: pwsh
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
       - name: Setup Flutter
         id: setup_flutter_windows
         if: matrix.flutter_setup == 'action'
@@ -1224,6 +1247,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/checks/check_capability_manifest.py --live
 
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
@@ -1288,6 +1315,10 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
 
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2

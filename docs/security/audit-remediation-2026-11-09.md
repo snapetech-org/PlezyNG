@@ -122,3 +122,14 @@ commit or unit tests.
 - Canonical formatter corrections from each hosted run were applied. The local SDK bootstrap was rejected by automatic approval review; it was not retried or bypassed.
 
 Deployment changes are not live merely because source is committed. Apply the Worker and gateway/server changes through their existing deployment runbooks, preserving sessions, provider secrets, route bindings and rollback artifacts.
+
+## Fixed-engine qualification follow-up — 2026-11-10 UTC
+
+- `f489013120` authenticates the immutable Windows producer artifacts, verifies both architecture archives, and runs each patched engine on its matching native Windows runner before SDK adoption. The component release is explicitly excluded from app Latest; publication alone does not qualify the engines.
+- `c1676804a` moves the application SDK version, framework commit and engine ABI into `scripts/flutter/sdk-pin.json`. Promotion updates that manifest and both verified Windows archive hashes in one non-force commit, then dispatches CI. It needs no workflow-edit credential. The separate custom tvOS ABI pin is preserved. The application SDK remains 3.47.1 until the real engine checks pass; a later SDK is never overwritten.
+- `1194b5785` preserves macOS packaging recovery with manifest-based SDK selection. SDK-manifest and loader changes remain compilation inputs, so retained binaries cannot be reused across those changes.
+- Local verification: **26 engine/producer/native-promotion/manifest tests**, **5 macOS recovery tests**, **7 review-provenance tests**, build/workflow security checks and action pins passed. The repository checker suite covers **609 cases: 590 passed, 19 skipped** after rerunning two Dart checks with the existing local compiler configured. Static PE fixtures and mocked APIs are regression evidence, not real patched-engine acceptance.
+- The [desktop window runtime run](https://github.com/snapetech-org/pleazyng/actions/runs/42734123451) passed on all three desktop operating systems. At 02:42 UTC the [fixed Windows engine producer](https://github.com/snapetech-org/pleazyng/actions/runs/42726273235) was still building x64 and ARM64. Neither artifact nor patched-runtime qualification is recorded as passed. The authenticated publication → native validation → atomic promotion → CI chain will run after successful production.
+- `0b9242916` tightens translation-review records: valid source commits and review dates, explicit non-native-speaker provenance, nonempty reviewed values and placeholder/control-character checks. Catalog validation still reports 37 locales, 5,268 messages and 44,422 explicit fallback entries. This does not replace native-speaker review or claim those fallbacks are translated.
+
+Exact evidence and remaining boundaries: [qualification follow-up receipt](evidence/engine-qualification-follow-up-2026-11-10.json). All external acceptance items above remain open until their own evidence is recorded.

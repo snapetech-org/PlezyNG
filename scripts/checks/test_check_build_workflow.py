@@ -138,13 +138,13 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertNotEqual(changed, signing, "signer mutation must match")
         return prefix + "      - name: Sign installer for WinSparkle (EdDSA)\n" + changed
 
-    def test_tvos_arm64_simulator_rejects_an_intel_host(self):
+    def test_apple_arm64_native_tests_reject_an_intel_host(self):
         ci_path = ROOT / '.github/workflows/ci.yml'
         original = Path.read_text
         ci = original(ci_path, encoding='utf-8')
-        selection = "(matrix.platform == 'tvOS' && 'macos-26' || 'macos-26-intel')"
+        selection = "inputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format("
         self.assertIn(selection, ci)
-        invalid = ci.replace(selection, "'macos-26-intel'", 1)
+        invalid = ci.replace(selection, selection.replace("'macos-26'", "'macos-26-intel'"), 1)
 
         def read(path, *args, **kwargs):
             return invalid if path == ci_path else original(path, *args, **kwargs)
@@ -154,7 +154,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             with redirect_stderr(errors), self.assertRaises(SystemExit) as result:
                 runpy.run_path(str(CHECKER), run_name='__main__')
         self.assertEqual(result.exception.code, 1)
-        self.assertIn('tvOS arm64 simulator qualification', errors.getvalue())
+        self.assertIn('Apple arm64 native qualification', errors.getvalue())
 
     def test_locked_root_signer_passes(self) -> None:
         result = self._run(self._workflow())

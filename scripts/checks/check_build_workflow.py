@@ -1329,9 +1329,9 @@ for apple_job_name in ("build-ios", "build-tvos"):
         f"{apple_job_name} signing archives and DerivedData must stay on local APFS",
     )
 require(
-    "matrix.platform == 'tvOS' && 'macos-26' || 'macos-26-intel'" in apple_native
+    "inputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format(" in apple_native
     and "ARCHS=arm64" in apple_native,
-    "tvOS arm64 simulator qualification must select an Apple Silicon hosted runner",
+    "Apple arm64 native qualification must select an Apple Silicon hosted runner",
 )
 require(
     "scripts/refresh_apple_spm.sh ios" in apple_native

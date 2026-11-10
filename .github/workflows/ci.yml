@@ -680,7 +680,8 @@ jobs:
   apple-native-test:
     name: Apple native reliability (${{ matrix.platform }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.platform == 'tvOS' && 'macos-26' || 'macos-26-intel') || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
+    # Native tests and their simulator dependencies build arm64 on every platform.
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     env:

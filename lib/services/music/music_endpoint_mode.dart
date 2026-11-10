@@ -5,4 +5,7 @@ class MusicEndpointMode {
   MusicEndpointMode._();
 
   static bool enabled = false;
+
+  static bool shouldStartHost({required bool offline, required bool enabledBySetting}) =>
+      (enabledBySetting || enabled) && (!offline || enabled);
 }

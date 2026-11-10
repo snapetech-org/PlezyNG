@@ -726,11 +726,13 @@ class _MainScreenState extends State<MainScreen>
         // Ensure first login (or any unset profile state) requires explicit selection.
         await _promptForInitialProfileSelection();
         if (!mounted) return;
+      }
 
-        // Auto-start companion remote server once the active profile is known.
-        if (_companionRemoteSetup) {
-          unawaited(_autoStartCompanionRemoteServer());
-        }
+      // A provisioned Pi can still advertise its paired endpoint while its
+      // server is offline. The receiver checks profile and media ownership
+      // before accepting any queue; ordinary offline app sessions stay local.
+      if (_companionRemoteSetup && (!_isOffline || MusicEndpointMode.enabled)) {
+        unawaited(_autoStartCompanionRemoteServer());
       }
 
       // Links act once the profile is settled and its preferences are loaded.
@@ -1206,7 +1208,12 @@ class _MainScreenState extends State<MainScreen>
   Future<void> _autoStartCompanionRemoteServer() async {
     try {
       final settings = await SettingsService.getInstance();
-      if (!settings.read(SettingsService.enableCompanionRemoteServer) && !MusicEndpointMode.enabled) return;
+      if (!MusicEndpointMode.shouldStartHost(
+        offline: _isOffline,
+        enabledBySetting: settings.read(SettingsService.enableCompanionRemoteServer),
+      )) {
+        return;
+      }
       if (!mounted) return;
       await startCompanionRemoteHost(context);
     } catch (e) {

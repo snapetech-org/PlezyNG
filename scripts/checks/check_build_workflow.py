@@ -1683,6 +1683,11 @@ require(
     "Apple source staging must verify the actual packaging checkout identity",
 )
 
+for build_job in ('build-android', 'build-webos', 'build-ios', 'build-tvos',
+                  'build-macos', 'build-windows', 'build-linux', 'build-tizen'):
+    require("if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && " in job(build_job),
+            f"{build_job} must evaluate after skipped capture/CI ancestors and require successful validation")
+
 trusted_ref = job("validate-trusted-ref")
 native_freshness = named_step(trusted_ref, "Require current verified fork native dependency")
 require(

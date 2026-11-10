@@ -185,6 +185,46 @@ def matching_run(
     return matches[0] if matches else None
 
 
+def packaging_repair_was_validation_only(run: dict) -> bool:
+    """Prove a completed repair never reached build or publication execution."""
+    if run.get("status") != "completed" or run.get("conclusion") != "success":
+        return False
+    run_id = run["id"]
+    pages = gh_json("api", "--paginate", "--slurp",
+                    f"repos/{PLEZY_REPO}/actions/runs/{run_id}/jobs?filter=all&per_page=100")
+    if (not isinstance(pages, list) or not pages or any(not isinstance(page, dict)
+            or not isinstance(page.get("jobs"), list) for page in pages)):
+        raise ReleaseError("Cannot prove validation-only repair job inventory is complete.")
+    jobs = [job for page in pages for job in page["jobs"]]
+    if any(page.get("total_count") != len(jobs) for page in pages):
+        raise ReleaseError("Validation-only repair job inventory is truncated.")
+    validation = [job for job in jobs if job.get("name") == "Validate release request"]
+    if (len(validation) != 1 or validation[0].get("status") != "completed"
+            or validation[0].get("conclusion") != "success"):
+        return False
+    required = {"Verify approved frozen packaging checkout", "Verify reusable platform source"}
+    steps = validation[0].get("steps", [])
+    if any(not any(step.get("name") == name and step.get("status") == "completed"
+                   and step.get("conclusion") == "success" for step in steps) for name in required):
+        return False
+    others = [job for job in jobs if job is not validation[0]]
+    # Require the release and both repaired platform gates to be represented,
+    # even when GitHub did not expand their skipped matrix jobs.
+    if not {"create-release", "build-ios", "Build tvOS developer package (arm64)"}.issubset(
+            {job.get("name") for job in others}):
+        return False
+    if any(job.get("status") != "completed" or job.get("conclusion") != "skipped"
+           or job.get("steps") != [] for job in others):
+        return False
+    artifacts = gh_json("api", f"repos/{PLEZY_REPO}/actions/runs/{run_id}/artifacts?per_page=100")
+    if artifacts.get("total_count") != 0 or artifacts.get("artifacts") != []:
+        return False
+    print(f"Preserving validation-only repair run {run_id}: approved validation succeeded; "
+          f"all {len(others)} other jobs skipped without steps; artifact inventory empty. "
+          "A corrected workflow snapshot may retry the same immutable packaging source.")
+    return True
+
+
 def matching_packaging_repair_run(title: str) -> dict | None:
     """Find this immutable repair across later main snapshots, without duplicates."""
     pages = gh_json("api", "--paginate", "--slurp",
@@ -196,17 +236,21 @@ def matching_packaging_repair_run(title: str) -> dict | None:
     if any(page.get("total_count", len(runs)) > len(runs) for page in pages):
         raise ReleaseError("Packaging repair run inventory is truncated; refusing another dispatch.")
     matches = [run for run in runs if run.get("display_title") == title]
-    if len(matches) > 1:
-        raise ReleaseError("Multiple runs already claim this packaging repair; inspect their side effects.")
-    if not matches:
-        return None
-    run = matches[0]
-    if (run.get("event") != "workflow_dispatch" or run.get("head_branch") != "main"
+    real_matches = []
+    for run in matches:
+        if (run.get("event") != "workflow_dispatch" or run.get("head_branch") != "main"
             or run.get("path", "").split("@")[0] != ".github/workflows/build.yml"
             or (run.get("head_repository") or {}).get("full_name") != PLEZY_REPO
             or not isinstance(run.get("id"), int)
             or re.fullmatch(r"[0-9a-f]{40}", run.get("head_sha", "")) is None):
-        raise ReleaseError("Packaging repair run has an unexpected workflow or source identity.")
+            raise ReleaseError("Packaging repair run has an unexpected workflow or source identity.")
+        if not packaging_repair_was_validation_only(run):
+            real_matches.append(run)
+    if len(real_matches) > 1:
+        raise ReleaseError("Multiple runs already claim this packaging repair; inspect their side effects.")
+    if not real_matches:
+        return None
+    run = real_matches[0]
     return {"databaseId": run["id"], "headSha": run["head_sha"],
             "headBranch": "main", "event": run["event"], "status": run["status"],
             "conclusion": run.get("conclusion"), "url": run.get("html_url")}

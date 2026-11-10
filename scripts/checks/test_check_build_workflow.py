@@ -34,6 +34,13 @@ STEAM_CMAKE = ROOT / "native/games/steam/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
+    def test_recovery_builds_must_evaluate_after_skipped_capture_ancestors(self):
+        original = self._workflow()
+        for prefix in ("always() && ", "!cancelled() && ", "needs.validate-trusted-ref.result == 'success' && "):
+            changed = original.replace(prefix, '')
+            self.assertNotEqual(changed, original)
+            self.assertNotEqual(self._run(changed).returncode, 0)
+
     def test_apple_architecture_and_public_source_credit_cannot_be_removed(self):
         original = self._workflow()
         for old, new in [('ARCHS = arm64', 'ARCHS = arm64 arm64e'),

@@ -733,3 +733,12 @@ original and assembly run IDs, exact reused artifact IDs/digests and Linux archi
 hash. The controller verifies the attestation and receipt before publication.
 Signed Store steps, notarization, Gatekeeper acceptance and full platform coverage
 remain required. Public release notes include the full upstream attribution ledger.
+
+
+Build jobs explicitly evaluate after intentionally skipped capture/CI ancestors
+and still require successful source validation. A corrected workflow snapshot
+may retry the same packaging revision only when the complete trusted prior-run
+inventory proves approved source validation succeeded, every other job (including
+both repaired platforms and release creation) skipped without steps, and no
+artifacts exist. Preserve that validation-only run as evidence. Any actual build,
+publication attempt, artifact or incomplete inventory blocks this exception.

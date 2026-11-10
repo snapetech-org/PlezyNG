@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Evaluate release build jobs after intentionally skipped capture/CI ancestors, while requiring successful source validation. Permit retrying an audited validation-only recovery run that produced no build, artifact or publication side effects.
+
 - Bind a detached Chromecast queue to its acknowledged media session and exact receiver occurrence before preparing a return to local playback.
 
 - Start a saved music station from shuffled tracks, shuffled albums, least played tracks, or oldest releases. The filter editor follows the station's track or album mode, and an invalid album block is skipped in full.

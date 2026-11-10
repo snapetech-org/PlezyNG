@@ -139,6 +139,93 @@ class PackagingRepairControllerTests(unittest.TestCase):
                     'workflow_runs': [{**run, **changed}]}]), self.assertRaises(release.ReleaseError):
                 release.matching_packaging_repair_run('repair')
 
+    def validation_only_inventory(self):
+        run = {'id': 98, 'display_title': 'repair', 'head_sha': 'd' * 40, 'head_branch': 'main',
+               'event': 'workflow_dispatch', 'path': '.github/workflows/build.yml',
+               'head_repository': {'full_name': release.PLEZY_REPO},
+               'status': 'completed', 'conclusion': 'success'}
+        jobs = [{'name': 'Validate release request', 'status': 'completed', 'conclusion': 'success',
+                 'steps': [{'name': name, 'status': 'completed', 'conclusion': 'success'} for name in
+                           ('Verify approved frozen packaging checkout', 'Verify reusable platform source')]}]
+        jobs += [{'name': name, 'status': 'completed', 'conclusion': 'skipped', 'steps': []} for name in
+                 ('create-release', 'build-ios', 'Build tvOS developer package (arm64)', 'build-macos')]
+        return run, jobs, {'total_count': 0, 'artifacts': []}
+
+    def test_validation_only_attempt_allows_latest_workflow_snapshot_without_changing_repair_source(self):
+        run, jobs, artifacts = self.validation_only_inventory()
+        title = f'action:release:pool:private:tag:{self.tag}:repair:{self.repair}'
+        run['display_title'] = title
+
+        def inventory(*args):
+            endpoint = args[-1]
+            if '/jobs?' in endpoint:
+                self.assertIn('filter=all', endpoint)
+                return [{'total_count': len(jobs), 'jobs': jobs}]
+            if '/artifacts?' in endpoint:
+                return artifacts
+            return [{'total_count': 1, 'workflow_runs': [run]}]
+
+        with patch.object(release, 'gh_json', side_effect=inventory), \
+                patch.object(release, 'verify_platform_recovery', return_value=self.proof()) as verify, \
+                patch.object(release, 'ensure_frozen_release_source'), \
+                patch.object(release, 'ensure_remote_main_sha'), \
+                patch.object(release, 'run_has_successful_step', return_value=True), \
+                patch.object(release, 'dispatch', return_value={'databaseId': 99}) as dispatch:
+            release.ensure_release(self.tag, self.repair, **self.options())
+        self.assertEqual(verify.call_args.kwargs['workflow_source_sha'], self.workflow)
+        self.assertEqual(dispatch.call_args.kwargs['expected_sha'], self.workflow)
+        self.assertEqual(dispatch.call_args.args[3]['recovery_source_sha'], self.repair)
+
+    def test_validation_only_exception_rejects_execution_artifacts_and_incomplete_inventory(self):
+        import copy
+        changes = ('validation-failed', 'missing-proof-step', 'job-started', 'job-failed',
+                   'job-succeeded', 'skipped-job-had-steps', 'release-attempted', 'missing-release',
+                   'artifact', 'expired-artifact', 'truncated-jobs', 'previous-attempt-built')
+        for change in changes:
+            run, jobs, artifacts = self.validation_only_inventory()
+            count = len(jobs)
+            if change == 'validation-failed':
+                jobs[0]['conclusion'] = 'failure'
+            elif change == 'missing-proof-step':
+                jobs[0]['steps'].pop()
+            elif change.startswith('job-'):
+                jobs[-1].update(status='in_progress' if change == 'job-started' else 'completed',
+                                conclusion={'job-failed': 'failure', 'job-succeeded': 'success'}.get(change))
+            elif change == 'skipped-job-had-steps':
+                jobs[-1]['steps'] = [{'name': 'Compile', 'conclusion': 'skipped'}]
+            elif change == 'release-attempted':
+                jobs[1].update(conclusion='failure', steps=[{'name': 'Create Release'}])
+            elif change == 'missing-release':
+                jobs.pop(1)
+                count -= 1
+            elif change in ('artifact', 'expired-artifact'):
+                artifacts = {'total_count': 1, 'artifacts': [{'expired': change == 'expired-artifact'}]}
+            elif change == 'truncated-jobs':
+                count += 1
+            elif change == 'previous-attempt-built':
+                jobs.append({**copy.deepcopy(jobs[-1]), 'conclusion': 'failure'})
+                count += 1
+            with self.subTest(change=change), patch.object(release, 'gh_json', side_effect=[
+                    [{'total_count': count, 'jobs': jobs}], artifacts]):
+                if change == 'truncated-jobs':
+                    with self.assertRaisesRegex(release.ReleaseError, 'truncated'):
+                        release.packaging_repair_was_validation_only(run)
+                else:
+                    self.assertFalse(release.packaging_repair_was_validation_only(run))
+
+    def test_only_validation_noops_are_removed_before_duplicate_real_attempt_check(self):
+        run, jobs, artifacts = self.validation_only_inventory()
+        real = {**run, 'id': 99, 'status': 'queued'}
+        for real_runs in ([real], [real, {**real, 'id': 100}]):
+            with self.subTest(real_count=len(real_runs)), patch.object(release, 'gh_json', side_effect=[
+                    [{'workflow_runs': [run, *real_runs], 'total_count': 1 + len(real_runs)}],
+                    [{'total_count': len(jobs), 'jobs': jobs}], artifacts]):
+                if len(real_runs) == 1:
+                    self.assertEqual(release.matching_packaging_repair_run('repair')['databaseId'], 99)
+                else:
+                    with self.assertRaisesRegex(release.ReleaseError, 'Multiple runs'):
+                        release.matching_packaging_repair_run('repair')
+
     def test_reused_signed_platform_is_validated_by_the_source_proof_not_a_skipped_repair_job(self):
         existing = {'databaseId': 99, 'headSha': self.workflow, 'status': 'completed', 'conclusion': 'success'}
         with patch.object(release, 'matching_packaging_repair_run', return_value=existing), \

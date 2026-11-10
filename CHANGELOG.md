@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Start a saved music station from shuffled tracks, shuffled albums, least played tracks, or oldest releases. The filter editor follows the station's track or album mode, and an invalid album block is skipped in full.
+
 - Keep rolling mixes bound to their original server account across refills and restart. A replaced authentication session cannot append a late batch.
 
 - Repair Apple release packaging without changing the qualified application source: pin iOS device archives to the bundled arm64 ABI and make copied native frameworks writable before re-signing. Reuse successful platform artifacts with an exact reviewed packaging revision and publicly attested source identities. Include the complete upstream people/source ledger in public release notes.

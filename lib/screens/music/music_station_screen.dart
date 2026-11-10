@@ -55,6 +55,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
   bool _previewOffline = false;
   AbortController? _abort;
   int _revision = 0;
+  String? _presetTitle;
   @override
   void initState() {
     super.initState();
@@ -138,10 +139,22 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     final library = _library;
     if (library == null) return;
     final client = context.tryGetMediaClientForServer(ServerId(library.serverId!));
-    if (client == null) return;
+    if (client == null || client.isOfflineMode) return;
     final plex = context.tryGetPlexClientForServer(ServerId(library.serverId!));
-    final listing = await client.fetchLibraryFiltersWithValues(library.id, libraryKind: MediaKind.artist);
-    if (!mounted || revision != _revision) return;
+    final authentication = client.authenticationSessionId;
+    final scope = musicAccountScope(client);
+    final kind = _albums ? MediaKind.album : MediaKind.track;
+    bool current() =>
+        _current &&
+        revision == _revision &&
+        _library?.globalKey == library.globalKey &&
+        !client.isOfflineMode &&
+        identical(context.tryGetMediaClientForServer(ServerId(library.serverId!)), client) &&
+        identical(client.authenticationSessionId, authentication) &&
+        scope == musicAccountScope(client);
+    final listing = await client.fetchLibraryFiltersWithValues(library.id, libraryKind: kind);
+    if (!mounted || !current()) return;
+    List<LibraryFilter>? selected;
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
         builder: (ctx) => Scaffold(
@@ -149,19 +162,46 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
           body: FiltersBottomSheet(
             filters: listing.filters,
             selectedFilters: _filters,
-            onFiltersChanged: (value) {
-              _filters = value;
-              _preview = [];
-            },
+            onFiltersChanged: (value) => selected = value,
             serverId: library.serverId!,
             libraryKey: library.id,
             cachedValues: listing.cachedValues,
-            loadFilterValues: (filter) async => plex?.getFilterValues(filter.key) ?? [],
+            loadFilterValues: (filter) async {
+              if (!current() || plex == null) return [];
+              final values = await plex.getFilterValues(filter.key);
+              return current() ? values : [];
+            },
           ),
         ),
       ),
     );
+    if (!current() || selected == null) return;
+    setState(() {
+      _filters = selected!;
+      _preview = [];
+    });
   });
+
+  String _presetLabel(MusicStationPreset preset) => switch (preset) {
+    MusicStationPreset.shuffledTracks => '${t.common.shuffle} · ${t.libraries.groupings.tracks}',
+    MusicStationPreset.shuffledAlbums => t.musicExperience.shuffleAlbums,
+    MusicStationPreset.leastPlayed => '${t.libraries.sortLabels.playCount} ↑',
+    MusicStationPreset.oldestReleases => '${t.libraries.sortLabels.releaseDate} ↑',
+  };
+
+  void _applyPreset(MusicStationPreset preset) {
+    setState(() {
+      final label = _presetLabel(preset);
+      if (_title.text.trim().isEmpty || _title.text == _presetTitle) _title.text = label;
+      _presetTitle = label;
+      if (_albums != preset.albums) _filters = [];
+      _albums = preset.albums;
+      _sort = preset.sort;
+      _descending = preset.descending;
+      _preview = [];
+    });
+  }
+
   Future<void> _generate() => _run((revision) async {
     setState(() {
       _preview = [];
@@ -304,6 +344,15 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          if (widget.station == null)
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                for (final preset in MusicStationPreset.values)
+                  ActionChip(label: Text(_presetLabel(preset)), onPressed: _busy ? null : () => _applyPreset(preset)),
+              ],
+            ),
           TextField(
             controller: _title,
             enabled: !_busy,
@@ -372,6 +421,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
                 ? null
                 : (v) => setState(() {
                     _albums = v;
+                    _filters = [];
                     _preview = [];
                   }),
           ),

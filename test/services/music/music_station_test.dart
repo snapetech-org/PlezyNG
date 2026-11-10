@@ -26,11 +26,32 @@ void main() {
         musicTrack('small').copyWith(kind: MediaKind.album),
       ];
     client.albums = {
-      'large': [musicTrack('1'), musicTrack('2'), musicTrack('3')],
-      'small': [musicTrack('b2', index: 2), musicTrack('b1', index: 1)],
+      'large': [musicTrack('1', album: 'large'), musicTrack('2', album: 'large'), musicTrack('3', album: 'large')],
+      'small': [musicTrack('b2', album: 'small', index: 2), musicTrack('b1', album: 'small', index: 1)],
     };
     final items = await station(albums: true, tracks: 2, minutes: 2).materialize(client);
     expect(items.map((t) => t.id), ['b1', 'b2']);
+  });
+  test('an invalid album block never contributes its otherwise valid tracks', () async {
+    final client = ExperienceClient()
+      ..rows = [
+        musicTrack('foreign-child').copyWith(kind: MediaKind.album),
+        musicTrack('wrong-album').copyWith(kind: MediaKind.album),
+        musicTrack('duplicate').copyWith(kind: MediaKind.album),
+        musicTrack('valid').copyWith(kind: MediaKind.album),
+      ];
+    final repeated = musicTrack('repeated', album: 'duplicate');
+    client.albums = {
+      'foreign-child': [
+        musicTrack('a', album: 'foreign-child'),
+        musicTrack('b', server: 'other', album: 'foreign-child'),
+      ],
+      'wrong-album': [musicTrack('c', album: 'wrong-album'), musicTrack('d', album: 'different')],
+      'duplicate': [repeated, repeated],
+      'valid': [musicTrack('end', album: 'valid', disc: 2), musicTrack('start', album: 'valid')],
+    };
+    final items = await station(albums: true).materialize(client);
+    expect(items.map((track) => track.id), ['start', 'end']);
   });
   test('time-budgeted stations exclude unknown duration and foreign servers', () async {
     final client = ExperienceClient()

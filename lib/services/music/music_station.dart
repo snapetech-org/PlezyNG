@@ -5,6 +5,19 @@ import '../../media/media_server_client.dart';
 import '../../utils/media_server_http_client.dart' show AbortController;
 import 'music_account_scope.dart';
 
+enum MusicStationPreset {
+  shuffledTracks('random', albums: false),
+  shuffledAlbums('random', albums: true),
+  leastPlayed('viewCount', albums: false, descending: false),
+  oldestReleases('originallyAvailableAt', albums: true, descending: false);
+
+  const MusicStationPreset(this.sort, {required this.albums, this.descending = true});
+
+  final String sort;
+  final bool albums;
+  final bool descending;
+}
+
 /// A saved dynamic query, distinct from a materialized server playlist. Filters
 /// use the existing library editor/translator; re-opening re-evaluates the rule.
 class MusicStation {
@@ -181,6 +194,12 @@ class MusicStation {
             )
             .toList();
         if (albums) {
+          if (tracks.isEmpty ||
+              tracks.length != block.length ||
+              tracks.any((track) => track.parentId != null && track.parentId != item.id) ||
+              tracks.map((track) => track.globalKey).toSet().length != tracks.length) {
+            continue;
+          }
           tracks.sort((a, b) {
             final disc = (a.parentIndex ?? 1).compareTo(b.parentIndex ?? 1);
             return disc != 0 ? disc : (a.index ?? 0).compareTo(b.index ?? 0);

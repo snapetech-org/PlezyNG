@@ -2,7 +2,7 @@ name: Localization completion candidates
 on:
   push:
     branches: [main]
-    paths: ['scripts/localization/**', '.github/workflows/localization-completion.yml']
+    paths: ['scripts/localization/generate_candidates.py', 'scripts/localization/requirements.txt', '.github/workflows/localization-completion.yml']
   workflow_dispatch:
 permissions:
   contents: read

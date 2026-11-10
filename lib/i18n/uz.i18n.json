@@ -3323,7 +3323,18 @@
     "noUserInformation": "Seerr foydalanuvchi maʼlumotlarini qaytarmadi",
     "sessionRejectedAfterReauth": "Qayta kirilgandan keyin seans rad etildi",
     "permissionDenied": "Seerr bu amalni rad etdi: hisobingizda endi kerakli ruxsat yoʻq",
-    "permissionRevoked": "Buni soʻrash uchun endi ruxsatingiz yoʻq"
+    "permissionRevoked": "Buni soʻrash uchun endi ruxsatingiz yoʻq",
+    "requestHint": "Seerr’da so‘rov parametrlarini tanlang",
+    "quickRequestHint": "Standart sozlamalar bilan hozir Seerr orqali so‘rang",
+    "chooseSeasonsHint": "Seerr’da so‘raladigan fasllarni tanlang",
+    "request4kHint": "Seerr’da 4K so‘rovini tanlang",
+    "only4kAvailable": "Bu hisob faqat 4K versiyasini so‘rashi mumkin.",
+    "cardActionHint": "Seerr so‘rov variantlarini ochish uchun karta menyusini oching",
+    "requestInProgress": "So‘rov bajarilmoqda",
+    "turnOffAlert": "Mavjudlik ogohlantirishini o‘chirish",
+    "notificationsEnabled4k": "4K versiyasi mavjud bo‘lganda sizga xabar beramiz",
+    "notificationsEnabledSeason": "${season}-fasl mavjud bo‘lganda sizga xabar beramiz",
+    "requestSheetHint": "Tasdiqlash jarayonini Seerr boshqaradi va so‘rovingizni kuzatadi."
   },
   "services": {
     "title": "Xizmatlar",
@@ -4357,7 +4368,10 @@
     "nfsReadBytes": "Data lugay",
     "nfsReadSpeed": "Tadiqni ritmi",
     "nfsReadRequests": "Requirements koʻyadi",
-    "sharedEntryConflict": "This shared item ID is already paired with another item in this library. Bu paylaşt element ID'dir."
+    "sharedEntryConflict": "This shared item ID is already paired with another item in this library. Bu paylaşt element ID'dir.",
+    "bookorbitHelp": "Kitoblaringizni ko‘rish va tinglash uchun o‘z BookOrbit hisobingizga kiring. Mavjud bo‘lmagan nomlar uchun so‘rovlar ulangan SeerrNG nusxangiz orqali yuboriladi.",
+    "bookorbitOpen": "BookOrbit’da ochish",
+    "bookorbitDetailHelp": "Kutubxona tafsilotlari va Pleazyng ocholmaydigan formatlarni boshqarish uchun bu nomni BookOrbit’da ko‘ring. Tinglash jarayoni BookOrbit hisobingiz bilan sinxronlanadi."
   },
   "comics": {
     "fitHeight": "Balandlikka moslash",
@@ -5502,5 +5516,34 @@
     "routeLost": "Audio chiqishi uzildi. Ijro to‘xtatildi.",
     "autoDriving": "Avtomobilga ulanganda haydash ko‘rinishini ochish",
     "routeHint": "Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi."
+  },
+  "musicTools": {
+    "guestDj": "Mehmon DJ",
+    "charts": "Tinglash reytingi",
+    "rediscover": "Qayta kashf etish",
+    "stations": "Musiqa stansiyalari",
+    "prompt": "Tavsifdan pleylist",
+    "provider": "Provayder yaratish manzili",
+    "model": "Model nomi",
+    "consent": "Tavsifimni ushbu provayderga yuborish",
+    "promptHint": "Kerakli musiqani tasvirlang",
+    "noHistory": "Hozircha ko‘rsatiladigan musiqa yo‘q",
+    "historyHint": "Ushbu qurilmada yozilgan ijrolar",
+    "days": "Kunlar",
+    "albumBlocks": "Albomlarni butun saqlash",
+    "home": "Musiqa",
+    "recent": "Yaqinda ijro etilgan",
+    "apiKey": "API kaliti",
+    "missing": "N/A",
+    "minutes": "Daqiqa",
+    "rules": "Filtrlar",
+    "exclusiveOutput": "Eksklyuziv audio chiqish",
+    "preamp": "Oldindan kuchaytirish",
+    "ratingPending": "Ushbu qurilmada saqlandi; sinxronlash kutilmoqda",
+    "lyricsOffset": "Qo‘shiq matni vaqt siljishi",
+    "anniversaries": "Albom yubileylari",
+    "outputPreset": "Bu chiqish uchun ekvalayzer",
+    "outputPresetHint": "Bu chiqish tanlanganda ushbu ekvalayzer avtomatik qoʻllanadi.",
+    "eqApproximation": "Quloqchin profillari oʻn diapazonli ekvalayzer uchun taxminan moslashtirilgan."
   }
 }

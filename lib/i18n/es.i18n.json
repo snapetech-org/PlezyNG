@@ -3326,7 +3326,18 @@
     "noUserInformation": "Seerr no devolvió información del usuario",
     "sessionRejectedAfterReauth": "La sesión fue rechazada después de volver a iniciar sesión",
     "permissionDenied": "Seerr denegó esta acción: tu cuenta ya no tiene el permiso necesario",
-    "permissionRevoked": "Ya no tienes permiso para solicitar esto"
+    "permissionRevoked": "Ya no tienes permiso para solicitar esto",
+    "requestHint": "Elige las opciones de solicitud en Seerr",
+    "quickRequestHint": "Solicitar ahora en Seerr con los ajustes predeterminados",
+    "chooseSeasonsHint": "Elige las temporadas que quieres solicitar en Seerr",
+    "request4kHint": "Elige una solicitud en 4K en Seerr",
+    "only4kAvailable": "Esta cuenta solo puede solicitar la versión 4K.",
+    "cardActionHint": "Abre el menú de la tarjeta para ver las opciones de solicitud de Seerr",
+    "requestInProgress": "Solicitud en curso",
+    "turnOffAlert": "Desactivar la alerta de disponibilidad",
+    "notificationsEnabled4k": "Te avisaremos cuando esté disponible la versión 4K",
+    "notificationsEnabledSeason": "Te avisaremos cuando esté disponible la temporada ${season}",
+    "requestSheetHint": "Seerr se encarga de aprobar y hacer seguimiento de tu solicitud."
   },
   "services": {
     "title": "Servicios",
@@ -4364,7 +4375,10 @@
     "nfsReadBytes": "Los datos leyen",
     "nfsReadSpeed": "Velocidad medida",
     "nfsReadRequests": "Leer solicitudes",
-    "sharedEntryConflict": "Este ID de elemento compartido ya está asociado con otro elemento en esta biblioteca."
+    "sharedEntryConflict": "Este ID de elemento compartido ya está asociado con otro elemento en esta biblioteca.",
+    "bookorbitHelp": "Inicia sesión con tu propia cuenta de BookOrbit para explorar y reproducir sus libros. Las solicitudes de títulos que falten seguirán gestionándose a través de tu instancia conectada de SeerrNG.",
+    "bookorbitOpen": "Abrir en BookOrbit",
+    "bookorbitDetailHelp": "Consulta este título en BookOrbit para gestionar los detalles de la biblioteca y los formatos que Pleazyng no puede abrir. El progreso de escucha se sincroniza con tu cuenta de BookOrbit."
   },
   "comics": {
     "fitHeight": "Ajustar a la altura",
@@ -5511,5 +5525,34 @@
     "routeLost": "Salida de audio desconectada. Reproducción pausada.",
     "autoDriving": "Abrir la vista de conducción al conectar con un coche",
     "routeHint": "El sistema del coche decide si la aplicación puede aparecer automáticamente."
+  },
+  "musicTools": {
+    "guestDj": "DJ invitado",
+    "charts": "Estadísticas de escucha",
+    "rediscover": "Redescubrir",
+    "stations": "Emisoras musicales",
+    "prompt": "Lista por descripción",
+    "provider": "URL de generación del proveedor",
+    "model": "Nombre del modelo",
+    "consent": "Enviar mi descripción a este proveedor",
+    "promptHint": "Describe la música que quieres",
+    "noHistory": "Aún no hay música para mostrar",
+    "historyHint": "Reproducciones registradas en este dispositivo",
+    "days": "Días",
+    "albumBlocks": "Mantener juntos los álbumes completos",
+    "home": "Música",
+    "recent": "Reproducido recientemente",
+    "apiKey": "Clave API",
+    "missing": "N/D",
+    "minutes": "Minutos",
+    "rules": "Filtros",
+    "exclusiveOutput": "Salida de audio exclusiva",
+    "preamp": "Preamplificación",
+    "ratingPending": "Guardado en este dispositivo; pendiente de sincronización",
+    "lyricsOffset": "Desfase de la letra",
+    "anniversaries": "Aniversarios de álbumes",
+    "outputPreset": "Ecualizador de esta salida",
+    "outputPresetHint": "Usar este ecualizador automáticamente al seleccionar esta salida.",
+    "eqApproximation": "Los perfiles de auriculares se aproximan al ecualizador de diez bandas."
   }
 }

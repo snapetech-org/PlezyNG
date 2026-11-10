@@ -115,6 +115,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$ar romm = _Translations$romm$ar._(_root);
 	@override late final _Translations$subtitleCapture$ar subtitleCapture = _Translations$subtitleCapture$ar._(_root);
 	@override late final _Translations$musicExperience$ar musicExperience = _Translations$musicExperience$ar._(_root);
+	@override late final _Translations$musicTools$ar musicTools = _Translations$musicTools$ar._(_root);
 }
 
 // Path: app
@@ -2857,6 +2858,17 @@ class _Translations$seerr$ar extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'تم رفض الجلسة بعد التوقيع مرة أخرى';
 	@override String get permissionDenied => 'رفضت شركة Seerr هذا الإجراء: لم يعد حسابك لديه إذن مطلوب';
 	@override String get permissionRevoked => 'لم يعد لديك إذن لطلب هذا';
+	@override String get requestHint => 'اختر خيارات الطلب في Seerr';
+	@override String get quickRequestHint => 'اطلب الآن عبر Seerr باستخدام الإعدادات الافتراضية';
+	@override String get chooseSeasonsHint => 'اختر المواسم المطلوب طلبها في Seerr';
+	@override String get request4kHint => 'اختر طلب نسخة 4K في Seerr';
+	@override String get only4kAvailable => 'يمكن لهذا الحساب طلب نسخة 4K فقط.';
+	@override String get cardActionHint => 'افتح قائمة البطاقة لعرض خيارات الطلب في Seerr';
+	@override String get requestInProgress => 'الطلب قيد التنفيذ';
+	@override String get turnOffAlert => 'إيقاف تنبيه التوفر';
+	@override String get notificationsEnabled4k => 'سنخطرك عند توفر نسخة 4K';
+	@override String notificationsEnabledSeason({required Object season}) => 'سنخطرك عند توفر الموسم ${season}';
+	@override String get requestSheetHint => 'يتولى Seerr الموافقة على طلبك ومتابعته.';
 }
 
 // Path: services
@@ -3952,6 +3964,9 @@ class _Translations$sourceSetup$ar extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'سرعة قياس';
 	@override String get nfsReadRequests => 'اقرأ الطلبات';
 	@override String get sharedEntryConflict => 'هذا العنصر المشترك الهوية قد تم ربطها بالفعل مع عنصر آخر في هذه المكتبة.';
+	@override String get bookorbitHelp => 'سجّل الدخول باستخدام حساب BookOrbit الخاص بك لتصفح كتبه وتشغيلها. تظل طلبات العناوين غير المتوفرة تمر عبر مثيل SeerrNG المتصل بك.';
+	@override String get bookorbitOpen => 'افتح في BookOrbit';
+	@override String get bookorbitDetailHelp => 'اعرض هذا العنوان في BookOrbit لإدارة تفاصيله في مكتبتك وأي تنسيقات لا يستطيع Pleazyng فتحها. تتم مزامنة تقدم الاستماع مع حسابك في BookOrbit.';
 }
 
 // Path: comics
@@ -4361,6 +4376,42 @@ class _Translations$musicExperience$ar extends Translations$musicExperience$en {
 	@override String get routeLost => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.';
 	@override String get autoDriving => 'فتح واجهة القيادة عند الاتصال بسيارة';
 	@override String get routeHint => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$ar extends Translations$musicTools$en {
+	_Translations$musicTools$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'منسق موسيقى ضيف';
+	@override String get charts => 'إحصاءات الاستماع';
+	@override String get rediscover => 'إعادة الاكتشاف';
+	@override String get stations => 'محطات موسيقية';
+	@override String get prompt => 'قائمة من وصف';
+	@override String get provider => 'رابط التوليد لدى المزود';
+	@override String get model => 'اسم النموذج';
+	@override String get consent => 'إرسال وصفي إلى هذا المزود';
+	@override String get promptHint => 'صف الموسيقى التي تريدها';
+	@override String get noHistory => 'لا توجد موسيقى لعرضها بعد';
+	@override String get historyHint => 'مرات التشغيل المسجلة على هذا الجهاز';
+	@override String get days => 'أيام';
+	@override String get albumBlocks => 'إبقاء الألبومات كاملة معًا';
+	@override String get home => 'الموسيقى';
+	@override String get recent => 'تم تشغيلها مؤخرًا';
+	@override String get apiKey => 'مفتاح API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'دقائق';
+	@override String get rules => 'الفلاتر';
+	@override String get exclusiveOutput => 'إخراج صوت حصري';
+	@override String get preamp => 'التضخيم المسبق';
+	@override String get ratingPending => 'حُفظ على هذا الجهاز؛ بانتظار المزامنة';
+	@override String get lyricsOffset => 'إزاحة توقيت الكلمات';
+	@override String get anniversaries => 'ذكرى إصدار الألبومات';
+	@override String get outputPreset => 'معادل الصوت لهذا المخرج';
+	@override String get outputPresetHint => 'استخدم معادل الصوت هذا تلقائيًا عند اختيار هذا المخرج.';
+	@override String get eqApproximation => 'ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات.';
 }
 
 // Path: appIcon.names
@@ -8188,6 +8239,17 @@ extension on TranslationsAr {
 			'seerr.sessionRejectedAfterReauth' => 'تم رفض الجلسة بعد التوقيع مرة أخرى',
 			'seerr.permissionDenied' => 'رفضت شركة Seerr هذا الإجراء: لم يعد حسابك لديه إذن مطلوب',
 			'seerr.permissionRevoked' => 'لم يعد لديك إذن لطلب هذا',
+			'seerr.requestHint' => 'اختر خيارات الطلب في Seerr',
+			'seerr.quickRequestHint' => 'اطلب الآن عبر Seerr باستخدام الإعدادات الافتراضية',
+			'seerr.chooseSeasonsHint' => 'اختر المواسم المطلوب طلبها في Seerr',
+			'seerr.request4kHint' => 'اختر طلب نسخة 4K في Seerr',
+			'seerr.only4kAvailable' => 'يمكن لهذا الحساب طلب نسخة 4K فقط.',
+			'seerr.cardActionHint' => 'افتح قائمة البطاقة لعرض خيارات الطلب في Seerr',
+			'seerr.requestInProgress' => 'الطلب قيد التنفيذ',
+			'seerr.turnOffAlert' => 'إيقاف تنبيه التوفر',
+			'seerr.notificationsEnabled4k' => 'سنخطرك عند توفر نسخة 4K',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'سنخطرك عند توفر الموسم ${season}',
+			'seerr.requestSheetHint' => 'يتولى Seerr الموافقة على طلبك ومتابعته.',
 			'services.title' => 'الخدمات',
 			'services.hubSubtitle' => 'يراقب Sync التقدم و يطلب عناوين جديدة.',
 			'services.integrations' => 'الاندماج',
@@ -8557,6 +8619,8 @@ extension on TranslationsAr {
 			'universalMedia.addressHelp' => 'يتم استخدام عناوين URL مع المعلمات الاعتمادية أو التوقيع المعترف بها فقط لهذا الجلسة ولا يمكن حفظها على أنها المفضلة.',
 			'universalMedia.displayName' => 'اسم العرض (اختياري )',
 			'universalMedia.displayNameHelp' => 'اختر اسمًا قصيرًا لللاعب ومراقب وسائل الإعلام في النظام.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'إمكانية اتصال HTTP غير المشفر',
 			'universalMedia.allowHttpHelp' => 'HTTP لا يشفّع الاتصال، ويسمح له فقط على شبكة موثوق بها، ويستخدم HTTPS عند الإمكان.',
 			'universalMedia.advancedProtocols' => 'MPV فقط: أدخل عنوان RTSP، RTMP/RTMPS، UDP، أو RTP. لا يمكن حفظ هذه العناوين على أنها المفضلة.',
@@ -8568,8 +8632,6 @@ extension on TranslationsAr {
 			'universalMedia.favoriteSaved' => 'Stream Favorite تم حفظه إلى هذا الملف الشخصي',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', one: 'إدخال ${count} غير مدعوم أو غير آمن.', two: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', few: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', many: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', other: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', ), 
 			'universalMedia.playlistAddress' => 'العنوان Playlist',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'افتح قائمة تشغيل M3U أو M3 U8 أو PLS من عنوان ويب. لنقرات البث المباشر لا تخزن قائمة التشغيل.',
 			'universalMedia.choosePlaylist' => 'اختيار ملف Playlist',
 			'universalMedia.openPlaylist' => 'قائمة ألعاب مفتوحة',
@@ -9071,6 +9133,8 @@ extension on TranslationsAr {
 			'sourceSetup.identityPassphrase' => 'عبارة مرور هوية العميل',
 			'sourceSetup.identityPassphraseHelp' => 'اتركه فارغًا إذا لم يكن للملف عبارة مرور.',
 			'sourceSetup.removeIdentity' => 'إزالة أي هوية عميل محفوظة',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'تُحفظ هويات العملاء في مخزن بيانات اعتماد المصادر المشفّر. اترك هذا القسم دون تغيير للاحتفاظ بالهوية المحفوظة.',
 			'sourceSetup.nfsLimitations' => 'استخدام NFSv3 للقراءة فقط عبر TCP. دون RPC-with-TLS، تكون حركة بيانات NFS غير مشفّرة. يجب أن يسمح NAS بمعرّفات AUTH_SYS المحدّدة ومنافذ العميل غير المميّزة (يُسمّى خيار التصدير هذا غالبًا «insecure»). لا يُدعم NFSv4 ولا UDP.',
 			'sourceSetup.nfsSetupHelp' => 'مساعدة إعداد NFS',
@@ -9082,8 +9146,6 @@ extension on TranslationsAr {
 			'sourceSetup.apiKey' => 'مفتاح API',
 			'sourceSetup.optionalUsername' => 'اسم مستخدم الحساب (اختياري)',
 			'sourceSetup.optionalPassword' => 'كلمة مرور الحساب (اختيارية)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'احصل على مفتاح API من opensubtitles.com. يرسل البحث عنوان الفيديو ومعرّفات IMDb/TMDB المتاحة، ولا يرسل ملف الفيديو مطلقًا. يُحفظ المفتاح وبيانات الحساب الاختيارية بشكل مشفّر مع هذا المصدر.',
 			'sourceSetup.automaticMetadata' => 'جلب بيانات الفيديو الوصفية من الإنترنت تلقائيًا',
 			'sourceSetup.metadataPrivacy' => 'يُرسل فقط العنوان والسنة وأرقام الحلقات المستخرجة من اسم الملف، أو معرّف NFO، ولا يرسل الوسائط أو بيانات الاعتماد مطلقًا. تظل الأولوية لحقول NFO.',
@@ -9144,6 +9206,9 @@ extension on TranslationsAr {
 			'sourceSetup.nfsReadSpeed' => 'سرعة قياس',
 			'sourceSetup.nfsReadRequests' => 'اقرأ الطلبات',
 			'sourceSetup.sharedEntryConflict' => 'هذا العنصر المشترك الهوية قد تم ربطها بالفعل مع عنصر آخر في هذه المكتبة.',
+			'sourceSetup.bookorbitHelp' => 'سجّل الدخول باستخدام حساب BookOrbit الخاص بك لتصفح كتبه وتشغيلها. تظل طلبات العناوين غير المتوفرة تمر عبر مثيل SeerrNG المتصل بك.',
+			'sourceSetup.bookorbitOpen' => 'افتح في BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'اعرض هذا العنوان في BookOrbit لإدارة تفاصيله في مكتبتك وأي تنسيقات لا يستطيع Pleazyng فتحها. تتم مزامنة تقدم الاستماع مع حسابك في BookOrbit.',
 			'comics.fitHeight' => 'ملاءمة الارتفاع',
 			'comics.readingMode' => 'وضع القراءة',
 			'comics.paged' => 'صفحات',
@@ -9481,6 +9546,33 @@ extension on TranslationsAr {
 			'musicExperience.routeLost' => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.',
 			'musicExperience.autoDriving' => 'فتح واجهة القيادة عند الاتصال بسيارة',
 			'musicExperience.routeHint' => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.',
+			'musicTools.guestDj' => 'منسق موسيقى ضيف',
+			'musicTools.charts' => 'إحصاءات الاستماع',
+			'musicTools.rediscover' => 'إعادة الاكتشاف',
+			'musicTools.stations' => 'محطات موسيقية',
+			'musicTools.prompt' => 'قائمة من وصف',
+			'musicTools.provider' => 'رابط التوليد لدى المزود',
+			'musicTools.model' => 'اسم النموذج',
+			'musicTools.consent' => 'إرسال وصفي إلى هذا المزود',
+			'musicTools.promptHint' => 'صف الموسيقى التي تريدها',
+			'musicTools.noHistory' => 'لا توجد موسيقى لعرضها بعد',
+			'musicTools.historyHint' => 'مرات التشغيل المسجلة على هذا الجهاز',
+			'musicTools.days' => 'أيام',
+			'musicTools.albumBlocks' => 'إبقاء الألبومات كاملة معًا',
+			'musicTools.home' => 'الموسيقى',
+			'musicTools.recent' => 'تم تشغيلها مؤخرًا',
+			'musicTools.apiKey' => 'مفتاح API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'دقائق',
+			'musicTools.rules' => 'الفلاتر',
+			'musicTools.exclusiveOutput' => 'إخراج صوت حصري',
+			'musicTools.preamp' => 'التضخيم المسبق',
+			'musicTools.ratingPending' => 'حُفظ على هذا الجهاز؛ بانتظار المزامنة',
+			'musicTools.lyricsOffset' => 'إزاحة توقيت الكلمات',
+			'musicTools.anniversaries' => 'ذكرى إصدار الألبومات',
+			'musicTools.outputPreset' => 'معادل الصوت لهذا المخرج',
+			'musicTools.outputPresetHint' => 'استخدم معادل الصوت هذا تلقائيًا عند اختيار هذا المخرج.',
+			'musicTools.eqApproximation' => 'ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات.',
 			_ => null,
 		};
 	}

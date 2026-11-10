@@ -115,6 +115,7 @@ class TranslationsDa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$da romm = _Translations$romm$da._(_root);
 	@override late final _Translations$subtitleCapture$da subtitleCapture = _Translations$subtitleCapture$da._(_root);
 	@override late final _Translations$musicExperience$da musicExperience = _Translations$musicExperience$da._(_root);
+	@override late final _Translations$musicTools$da musicTools = _Translations$musicTools$da._(_root);
 }
 
 // Path: app
@@ -2781,6 +2782,17 @@ class _Translations$seerr$da extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'Sessionen blev afvist efter at være logget ind igen';
 	@override String get permissionDenied => 'Seerr afviste denne handling: din konto har ikke længere den nødvendige tilladelse';
 	@override String get permissionRevoked => 'Du har ikke længere tilladelse til at anmode om dette';
+	@override String get requestHint => 'Vælg anmodningsmuligheder i Seerr';
+	@override String get quickRequestHint => 'Anmod nu i Seerr med standardindstillingerne';
+	@override String get chooseSeasonsHint => 'Vælg sæsoner, der skal anmodes om i Seerr';
+	@override String get request4kHint => 'Vælg en 4K-anmodning i Seerr';
+	@override String get only4kAvailable => 'Denne konto kan kun anmode om 4K-versionen.';
+	@override String get cardActionHint => 'Åbn kortmenuen for Seerr-anmodningsmuligheder';
+	@override String get requestInProgress => 'Anmodningen behandles';
+	@override String get turnOffAlert => 'Slå tilgængelighedsadvarsel fra';
+	@override String get notificationsEnabled4k => 'Vi giver dig besked, når 4K-versionen er tilgængelig';
+	@override String notificationsEnabledSeason({required Object season}) => 'Vi giver dig besked, når sæson ${season} er tilgængelig';
+	@override String get requestSheetHint => 'Seerr håndterer godkendelse og følger din anmodning.';
 }
 
 // Path: services
@@ -3860,6 +3872,9 @@ class _Translations$sourceSetup$da extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'Målt hastighed';
 	@override String get nfsReadRequests => 'Læs anmodninger';
 	@override String get sharedEntryConflict => 'Denne delte element ID er allerede parret med et andet element i denne bibliotek. Vælg en anden ID.';
+	@override String get bookorbitHelp => 'Log ind med din egen BookOrbit-konto for at gennemse og afspille dens bøger. Anmodninger om manglende titler går stadig gennem din tilsluttede SeerrNG-instans.';
+	@override String get bookorbitOpen => 'Åbn i BookOrbit';
+	@override String get bookorbitDetailHelp => 'Se denne titel i BookOrbit for at administrere biblioteksoplysninger og formater, som Pleazyng ikke kan åbne. Lyttefremskridt synkroniseres med din BookOrbit-konto.';
 }
 
 // Path: comics
@@ -4269,6 +4284,42 @@ class _Translations$musicExperience$da extends Translations$musicExperience$en {
 	@override String get routeLost => 'Lydudgang afbrudt. Afspilning sat på pause.';
 	@override String get autoDriving => 'Åbn kørselsvisning ved forbindelse til en bil';
 	@override String get routeHint => 'Bilens system bestemmer, om appen kan vises automatisk.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$da extends Translations$musicTools$en {
+	_Translations$musicTools$da._(TranslationsDa root) : this._root = root, super.internal(root);
+
+	final TranslationsDa _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Gæste-DJ';
+	@override String get charts => 'Lyttestatistik';
+	@override String get rediscover => 'Genopdag';
+	@override String get stations => 'Musikstationer';
+	@override String get prompt => 'Afspilningsliste fra beskrivelse';
+	@override String get provider => 'Udbyderens genererings-URL';
+	@override String get model => 'Modelnavn';
+	@override String get consent => 'Send min beskrivelse til denne udbyder';
+	@override String get promptHint => 'Beskriv den ønskede musik';
+	@override String get noHistory => 'Ingen musik at vise endnu';
+	@override String get historyHint => 'Afspilninger registreret på denne enhed';
+	@override String get days => 'Dage';
+	@override String get albumBlocks => 'Hold hele album samlet';
+	@override String get home => 'Musik';
+	@override String get recent => 'Senest afspillet';
+	@override String get apiKey => 'API-nøgle';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Minutter';
+	@override String get rules => 'Filtre';
+	@override String get exclusiveOutput => 'Eksklusiv lydudgang';
+	@override String get preamp => 'Forforstærkning';
+	@override String get ratingPending => 'Gemt på denne enhed; afventer synkronisering';
+	@override String get lyricsOffset => 'Tidsforskydning af sangtekst';
+	@override String get anniversaries => 'Albumjubilæer';
+	@override String get outputPreset => 'EQ til denne udgang';
+	@override String get outputPresetHint => 'Brug automatisk denne EQ, når denne udgang vælges.';
+	@override String get eqApproximation => 'Hovedtelefonprofiler er tilnærmet til en EQ med ti bånd.';
 }
 
 // Path: appIcon.names
@@ -8088,6 +8139,17 @@ extension on TranslationsDa {
 			'seerr.sessionRejectedAfterReauth' => 'Sessionen blev afvist efter at være logget ind igen',
 			'seerr.permissionDenied' => 'Seerr afviste denne handling: din konto har ikke længere den nødvendige tilladelse',
 			'seerr.permissionRevoked' => 'Du har ikke længere tilladelse til at anmode om dette',
+			'seerr.requestHint' => 'Vælg anmodningsmuligheder i Seerr',
+			'seerr.quickRequestHint' => 'Anmod nu i Seerr med standardindstillingerne',
+			'seerr.chooseSeasonsHint' => 'Vælg sæsoner, der skal anmodes om i Seerr',
+			'seerr.request4kHint' => 'Vælg en 4K-anmodning i Seerr',
+			'seerr.only4kAvailable' => 'Denne konto kan kun anmode om 4K-versionen.',
+			'seerr.cardActionHint' => 'Åbn kortmenuen for Seerr-anmodningsmuligheder',
+			'seerr.requestInProgress' => 'Anmodningen behandles',
+			'seerr.turnOffAlert' => 'Slå tilgængelighedsadvarsel fra',
+			'seerr.notificationsEnabled4k' => 'Vi giver dig besked, når 4K-versionen er tilgængelig',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Vi giver dig besked, når sæson ${season} er tilgængelig',
+			'seerr.requestSheetHint' => 'Seerr håndterer godkendelse og følger din anmodning.',
 			'services.title' => 'Tjenester',
 			'services.hubSubtitle' => 'Synkroniser dit visningsfremskridt, og anmod om nye titler.',
 			'services.integrations' => 'Integrationer',
@@ -8457,6 +8519,8 @@ extension on TranslationsDa {
 			'universalMedia.addressHelp' => 'URL\'er med anerkendte akkrediterings- eller underskriftsparametre bruges kun til denne session og kan ikke gemmes som favoritter.',
 			'universalMedia.displayName' => 'Navn på billedet (optional)',
 			'universalMedia.displayNameHelp' => 'Vælg et kort navn for spilleren og systemmediakontroller.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'Tillad en ikke krypteret HTTP-forbindelse',
 			'universalMedia.allowHttpHelp' => 'HTTP krypterer ikke forbindelsen. tillade det kun på et betroet netværk. Brug HTTPS, når det er muligt.',
 			'universalMedia.advancedProtocols' => 'MPV kun: Indtast en RTSP, RTMP/RTMPS, UDP eller RTP-adresse.',
@@ -8468,8 +8532,6 @@ extension on TranslationsDa {
 			'universalMedia.favoriteSaved' => 'Stream favorit gemt til denne profil',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('da'))(n, one: 'Skiftede ${count} ustøttet eller usikre playlist indgang.', other: 'Skiftede ${count} uafhængige eller usikre playlist-indtægter.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresser',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Åbn en M3U, M3u8 eller PLS playlist fra en webadresse. direkte streaming links gemmer ikke playlisten.',
 			'universalMedia.choosePlaylist' => 'Vælg Playlist fil',
 			'universalMedia.openPlaylist' => 'Åbent playlist',
@@ -8971,6 +9033,8 @@ extension on TranslationsDa {
 			'sourceSetup.identityPassphrase' => 'Adgangssætning til klientidentiteten',
 			'sourceSetup.identityPassphraseHelp' => 'Lad feltet stå tomt, hvis filen ikke har en adgangssætning.',
 			'sourceSetup.removeIdentity' => 'Fjern enhver gemt klientidentitet',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'Klientidentiteter gemmes i kildens krypterede lager til legitimationsoplysninger. Lad dette afsnit være uændret for at beholde den gemte identitet.',
 			'sourceSetup.nfsLimitations' => 'Skrivebeskyttet NFSv3 over TCP. Uden RPC-with-TLS er NFS-trafik ukrypteret. NAS-enheden skal tillade de valgte AUTH_SYS-ID’er og ikke-privilegerede klientporte (ofte kaldet eksportindstillingen “insecure”). NFSv4 og UDP understøttes ikke.',
 			'sourceSetup.nfsSetupHelp' => 'Hjælp til NFS-opsætning',
@@ -8982,8 +9046,6 @@ extension on TranslationsDa {
 			'sourceSetup.apiKey' => 'API-nøgle',
 			'sourceSetup.optionalUsername' => 'Kontoens brugernavn (valgfrit)',
 			'sourceSetup.optionalPassword' => 'Kontoens adgangskode (valgfri)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Hent en API-nøgle på opensubtitles.com. Søgning sender videotitlen og tilgængelige IMDb/TMDB-ID’er, aldrig videofilen. Nøglen og valgfrie kontooplysninger krypteres sammen med denne kilde.',
 			'sourceSetup.automaticMetadata' => 'Automatiske videometadata fra nettet',
 			'sourceSetup.metadataPrivacy' => 'Sender kun titel/år fra filnavnet og afsnitsnumre eller et NFO-ID, aldrig medier eller legitimationsoplysninger. NFO-felter har fortsat forrang.',
@@ -9044,6 +9106,9 @@ extension on TranslationsDa {
 			'sourceSetup.nfsReadSpeed' => 'Målt hastighed',
 			'sourceSetup.nfsReadRequests' => 'Læs anmodninger',
 			'sourceSetup.sharedEntryConflict' => 'Denne delte element ID er allerede parret med et andet element i denne bibliotek. Vælg en anden ID.',
+			'sourceSetup.bookorbitHelp' => 'Log ind med din egen BookOrbit-konto for at gennemse og afspille dens bøger. Anmodninger om manglende titler går stadig gennem din tilsluttede SeerrNG-instans.',
+			'sourceSetup.bookorbitOpen' => 'Åbn i BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Se denne titel i BookOrbit for at administrere biblioteksoplysninger og formater, som Pleazyng ikke kan åbne. Lyttefremskridt synkroniseres med din BookOrbit-konto.',
 			'comics.fitHeight' => 'Tilpas til højden',
 			'comics.readingMode' => 'Læsetilstand',
 			'comics.paged' => 'Sider',
@@ -9381,6 +9446,33 @@ extension on TranslationsDa {
 			'musicExperience.routeLost' => 'Lydudgang afbrudt. Afspilning sat på pause.',
 			'musicExperience.autoDriving' => 'Åbn kørselsvisning ved forbindelse til en bil',
 			'musicExperience.routeHint' => 'Bilens system bestemmer, om appen kan vises automatisk.',
+			'musicTools.guestDj' => 'Gæste-DJ',
+			'musicTools.charts' => 'Lyttestatistik',
+			'musicTools.rediscover' => 'Genopdag',
+			'musicTools.stations' => 'Musikstationer',
+			'musicTools.prompt' => 'Afspilningsliste fra beskrivelse',
+			'musicTools.provider' => 'Udbyderens genererings-URL',
+			'musicTools.model' => 'Modelnavn',
+			'musicTools.consent' => 'Send min beskrivelse til denne udbyder',
+			'musicTools.promptHint' => 'Beskriv den ønskede musik',
+			'musicTools.noHistory' => 'Ingen musik at vise endnu',
+			'musicTools.historyHint' => 'Afspilninger registreret på denne enhed',
+			'musicTools.days' => 'Dage',
+			'musicTools.albumBlocks' => 'Hold hele album samlet',
+			'musicTools.home' => 'Musik',
+			'musicTools.recent' => 'Senest afspillet',
+			'musicTools.apiKey' => 'API-nøgle',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Minutter',
+			'musicTools.rules' => 'Filtre',
+			'musicTools.exclusiveOutput' => 'Eksklusiv lydudgang',
+			'musicTools.preamp' => 'Forforstærkning',
+			'musicTools.ratingPending' => 'Gemt på denne enhed; afventer synkronisering',
+			'musicTools.lyricsOffset' => 'Tidsforskydning af sangtekst',
+			'musicTools.anniversaries' => 'Albumjubilæer',
+			'musicTools.outputPreset' => 'EQ til denne udgang',
+			'musicTools.outputPresetHint' => 'Brug automatisk denne EQ, når denne udgang vælges.',
+			'musicTools.eqApproximation' => 'Hovedtelefonprofiler er tilnærmet til en EQ med ti bånd.',
 			_ => null,
 		};
 	}

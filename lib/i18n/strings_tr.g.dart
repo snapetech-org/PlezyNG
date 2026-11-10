@@ -115,6 +115,7 @@ class TranslationsTr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$tr romm = _Translations$romm$tr._(_root);
 	@override late final _Translations$subtitleCapture$tr subtitleCapture = _Translations$subtitleCapture$tr._(_root);
 	@override late final _Translations$musicExperience$tr musicExperience = _Translations$musicExperience$tr._(_root);
+	@override late final _Translations$musicTools$tr musicTools = _Translations$musicTools$tr._(_root);
 }
 
 // Path: app
@@ -2781,6 +2782,17 @@ class _Translations$seerr$tr extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'Yeniden giriş yapıldıktan sonra oturum reddedildi';
 	@override String get permissionDenied => 'Seerr bu eylemi reddetti: hesabınız artık gerekli izne sahip değil';
 	@override String get permissionRevoked => 'Bunu isteme izniniz artık yok';
+	@override String get requestHint => 'Seerr\'de istek seçeneklerini belirleyin';
+	@override String get quickRequestHint => 'Varsayılan ayarlarla şimdi Seerr\'den isteyin';
+	@override String get chooseSeasonsHint => 'Seerr\'den istenecek sezonları seçin';
+	@override String get request4kHint => 'Seerr\'de 4K isteği seçin';
+	@override String get only4kAvailable => 'Bu hesap yalnızca 4K sürümünü isteyebilir.';
+	@override String get cardActionHint => 'Seerr istek seçenekleri için kart menüsünü açın';
+	@override String get requestInProgress => 'İstek sürüyor';
+	@override String get turnOffAlert => 'Kullanılabilirlik bildirimini kapat';
+	@override String get notificationsEnabled4k => '4K sürümü kullanılabilir olduğunda sana bildireceğiz';
+	@override String notificationsEnabledSeason({required Object season}) => '${season}. sezon kullanılabilir olduğunda sana bildireceğiz';
+	@override String get requestSheetHint => 'Onay sürecini Seerr yönetir ve isteğinizi takip eder.';
 }
 
 // Path: services
@@ -3860,6 +3872,9 @@ class _Translations$sourceSetup$tr extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'ölçülen hız';
 	@override String get nfsReadRequests => 'talepleri okuyun';
 	@override String get sharedEntryConflict => 'Bu paylaşılan öğe kimliği zaten bu kütüphanede başka bir öğe ile eşleştirilmiştir.';
+	@override String get bookorbitHelp => 'Kitaplarınıza göz atmak ve oynatmak için kendi BookOrbit hesabınızla giriş yapın. Eksik içerik istekleri bağlı SeerrNG örneğiniz üzerinden gönderilmeye devam eder.';
+	@override String get bookorbitOpen => 'BookOrbit’te aç';
+	@override String get bookorbitDetailHelp => 'Kitaplık ayrıntılarını ve Pleazyng’in açamadığı biçimleri yönetmek için bu içeriği BookOrbit’te görüntüleyin. Dinleme ilerlemesi BookOrbit hesabınızla eşitlenir.';
 }
 
 // Path: comics
@@ -4269,6 +4284,42 @@ class _Translations$musicExperience$tr extends Translations$musicExperience$en {
 	@override String get routeLost => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.';
 	@override String get autoDriving => 'Arabaya bağlanınca sürüş görünümünü aç';
 	@override String get routeHint => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$tr extends Translations$musicTools$en {
+	_Translations$musicTools$tr._(TranslationsTr root) : this._root = root, super.internal(root);
+
+	final TranslationsTr _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Konuk DJ';
+	@override String get charts => 'Dinleme listeleri';
+	@override String get rediscover => 'Yeniden keşfet';
+	@override String get stations => 'Müzik istasyonları';
+	@override String get prompt => 'Açıklamadan çalma listesi';
+	@override String get provider => 'Sağlayıcı üretim URL’si';
+	@override String get model => 'Model adı';
+	@override String get consent => 'Açıklamamı bu sağlayıcıya gönder';
+	@override String get promptHint => 'İstediğiniz müziği açıklayın';
+	@override String get noHistory => 'Henüz gösterilecek müzik yok';
+	@override String get historyHint => 'Bu cihazda kaydedilen dinlemeler';
+	@override String get days => 'Günler';
+	@override String get albumBlocks => 'Albümleri bütün olarak tut';
+	@override String get home => 'Müzik';
+	@override String get recent => 'Son çalınanlar';
+	@override String get apiKey => 'API anahtarı';
+	@override String get missing => 'Yok';
+	@override String get minutes => 'Dakika';
+	@override String get rules => 'Filtreler';
+	@override String get exclusiveOutput => 'Özel ses çıkışı';
+	@override String get preamp => 'Ön yükseltme';
+	@override String get ratingPending => 'Bu cihaza kaydedildi; eşitleme bekleniyor';
+	@override String get lyricsOffset => 'Şarkı sözü zaman kaydırması';
+	@override String get anniversaries => 'Albüm yıl dönümleri';
+	@override String get outputPreset => 'Bu çıkış için ekolayzer';
+	@override String get outputPresetHint => 'Bu çıkış seçildiğinde bu ekolayzeri otomatik olarak kullan.';
+	@override String get eqApproximation => 'Kulaklık profilleri on bantlı ekolayzer için yaklaşık olarak uyarlanmıştır.';
 }
 
 // Path: appIcon.names
@@ -8088,6 +8139,17 @@ extension on TranslationsTr {
 			'seerr.sessionRejectedAfterReauth' => 'Yeniden giriş yapıldıktan sonra oturum reddedildi',
 			'seerr.permissionDenied' => 'Seerr bu eylemi reddetti: hesabınız artık gerekli izne sahip değil',
 			'seerr.permissionRevoked' => 'Bunu isteme izniniz artık yok',
+			'seerr.requestHint' => 'Seerr\'de istek seçeneklerini belirleyin',
+			'seerr.quickRequestHint' => 'Varsayılan ayarlarla şimdi Seerr\'den isteyin',
+			'seerr.chooseSeasonsHint' => 'Seerr\'den istenecek sezonları seçin',
+			'seerr.request4kHint' => 'Seerr\'de 4K isteği seçin',
+			'seerr.only4kAvailable' => 'Bu hesap yalnızca 4K sürümünü isteyebilir.',
+			'seerr.cardActionHint' => 'Seerr istek seçenekleri için kart menüsünü açın',
+			'seerr.requestInProgress' => 'İstek sürüyor',
+			'seerr.turnOffAlert' => 'Kullanılabilirlik bildirimini kapat',
+			'seerr.notificationsEnabled4k' => '4K sürümü kullanılabilir olduğunda sana bildireceğiz',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => '${season}. sezon kullanılabilir olduğunda sana bildireceğiz',
+			'seerr.requestSheetHint' => 'Onay sürecini Seerr yönetir ve isteğinizi takip eder.',
 			'services.title' => 'Servisler',
 			'services.hubSubtitle' => 'İzleme ilerlemesini eşitleyin ve yeni başlıklar isteyin.',
 			'services.integrations' => 'Entegrasyonlar',
@@ -8457,6 +8519,8 @@ extension on TranslationsTr {
 			'universalMedia.addressHelp' => 'HTTPS tercih edilir. tanınmış kimlik veya imza parametreleri olan URL\'ler yalnızca bu oturum için kullanılır ve favori olarak kaydedilemez.',
 			'universalMedia.displayName' => 'Gösterim Adı (Seçmeli)',
 			'universalMedia.displayNameHelp' => 'Oyuncu ve sistem medya kontrolü için kısa bir isim seçin.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'Şifrelenmemiş bir HTTP bağlantısı sağlar',
 			'universalMedia.allowHttpHelp' => 'HTTP bağlantıyı şifrelemez. yalnızca güvenilir bir ağda izin verin. mümkün olduğunca HTTPS kullanın.',
 			'universalMedia.advancedProtocols' => 'Sadece MPV: bir RTSP, RTMP/RTMPS, UDP veya RTP adresi girin.',
@@ -8468,8 +8532,6 @@ extension on TranslationsTr {
 			'universalMedia.favoriteSaved' => 'Stream Favori bu profil için kaydedildi',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '${count} desteklenmemiş veya güvenli olmayan oynatma listesi girişini kaydırdı.', other: '${count} desteklenmemiş veya güvenli olmayan oynatma listesi girişleri kayboldu.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresi',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Bir web adresinden bir M3U, M3u8 veya PLS oynatma listesi açın.',
 			'universalMedia.choosePlaylist' => 'Playlist dosyasını seçin',
 			'universalMedia.openPlaylist' => 'Açık Playlist',
@@ -8971,6 +9033,8 @@ extension on TranslationsTr {
 			'sourceSetup.identityPassphrase' => 'İstemci kimliğinin parola ifadesi',
 			'sourceSetup.identityPassphraseHelp' => 'Dosyanın parola ifadesi yoksa boş bırakın.',
 			'sourceSetup.removeIdentity' => 'Kaydedilmiş istemci kimliğini kaldır',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'İstemci kimlikleri, kaynağın şifreli kimlik bilgileri deposunda saklanır. Kaydedilmiş kimliği korumak için bu bölümü değiştirmeyin.',
 			'sourceSetup.nfsLimitations' => 'TCP üzerinden salt okunur NFSv3. RPC-with-TLS olmadan NFS trafiği şifrelenmez. NAS, seçilen AUTH_SYS kimliklerine ve ayrıcalıksız istemci bağlantı noktalarına izin vermelidir (genellikle “insecure” dışa aktarım seçeneği olarak adlandırılır). NFSv4 ve UDP desteklenmez.',
 			'sourceSetup.nfsSetupHelp' => 'NFS kurulum yardımı',
@@ -8982,8 +9046,6 @@ extension on TranslationsTr {
 			'sourceSetup.apiKey' => 'API anahtarı',
 			'sourceSetup.optionalUsername' => 'Hesap kullanıcı adı (isteğe bağlı)',
 			'sourceSetup.optionalPassword' => 'Hesap parolası (isteğe bağlı)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com adresinden API anahtarı alın. Arama, video başlığını ve mevcut IMDb/TMDB kimliklerini gönderir; video dosyasını asla göndermez. Anahtar ve isteğe bağlı hesap kimlik bilgileri bu kaynakla birlikte şifrelenir.',
 			'sourceSetup.automaticMetadata' => 'Otomatik çevrimiçi video meta verileri',
 			'sourceSetup.metadataPrivacy' => 'Yalnızca dosya adındaki başlık/yıl ve bölüm numaralarını veya bir NFO kimliğini gönderir; medyayı ya da kimlik bilgilerini asla göndermez. NFO alanları önceliğini korur.',
@@ -9044,6 +9106,9 @@ extension on TranslationsTr {
 			'sourceSetup.nfsReadSpeed' => 'ölçülen hız',
 			'sourceSetup.nfsReadRequests' => 'talepleri okuyun',
 			'sourceSetup.sharedEntryConflict' => 'Bu paylaşılan öğe kimliği zaten bu kütüphanede başka bir öğe ile eşleştirilmiştir.',
+			'sourceSetup.bookorbitHelp' => 'Kitaplarınıza göz atmak ve oynatmak için kendi BookOrbit hesabınızla giriş yapın. Eksik içerik istekleri bağlı SeerrNG örneğiniz üzerinden gönderilmeye devam eder.',
+			'sourceSetup.bookorbitOpen' => 'BookOrbit’te aç',
+			'sourceSetup.bookorbitDetailHelp' => 'Kitaplık ayrıntılarını ve Pleazyng’in açamadığı biçimleri yönetmek için bu içeriği BookOrbit’te görüntüleyin. Dinleme ilerlemesi BookOrbit hesabınızla eşitlenir.',
 			'comics.fitHeight' => 'Yüksekliğe sığdır',
 			'comics.readingMode' => 'Okuma modu',
 			'comics.paged' => 'Sayfalar',
@@ -9381,6 +9446,33 @@ extension on TranslationsTr {
 			'musicExperience.routeLost' => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.',
 			'musicExperience.autoDriving' => 'Arabaya bağlanınca sürüş görünümünü aç',
 			'musicExperience.routeHint' => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.',
+			'musicTools.guestDj' => 'Konuk DJ',
+			'musicTools.charts' => 'Dinleme listeleri',
+			'musicTools.rediscover' => 'Yeniden keşfet',
+			'musicTools.stations' => 'Müzik istasyonları',
+			'musicTools.prompt' => 'Açıklamadan çalma listesi',
+			'musicTools.provider' => 'Sağlayıcı üretim URL’si',
+			'musicTools.model' => 'Model adı',
+			'musicTools.consent' => 'Açıklamamı bu sağlayıcıya gönder',
+			'musicTools.promptHint' => 'İstediğiniz müziği açıklayın',
+			'musicTools.noHistory' => 'Henüz gösterilecek müzik yok',
+			'musicTools.historyHint' => 'Bu cihazda kaydedilen dinlemeler',
+			'musicTools.days' => 'Günler',
+			'musicTools.albumBlocks' => 'Albümleri bütün olarak tut',
+			'musicTools.home' => 'Müzik',
+			'musicTools.recent' => 'Son çalınanlar',
+			'musicTools.apiKey' => 'API anahtarı',
+			'musicTools.missing' => 'Yok',
+			'musicTools.minutes' => 'Dakika',
+			'musicTools.rules' => 'Filtreler',
+			'musicTools.exclusiveOutput' => 'Özel ses çıkışı',
+			'musicTools.preamp' => 'Ön yükseltme',
+			'musicTools.ratingPending' => 'Bu cihaza kaydedildi; eşitleme bekleniyor',
+			'musicTools.lyricsOffset' => 'Şarkı sözü zaman kaydırması',
+			'musicTools.anniversaries' => 'Albüm yıl dönümleri',
+			'musicTools.outputPreset' => 'Bu çıkış için ekolayzer',
+			'musicTools.outputPresetHint' => 'Bu çıkış seçildiğinde bu ekolayzeri otomatik olarak kullan.',
+			'musicTools.eqApproximation' => 'Kulaklık profilleri on bantlı ekolayzer için yaklaşık olarak uyarlanmıştır.',
 			_ => null,
 		};
 	}

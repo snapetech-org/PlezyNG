@@ -20,10 +20,30 @@ import subprocess
 from build_adapters import verify_swift_pins
 
 ROOT = Path(__file__).resolve().parents[2]
+AETHER_XCODE26_PATCH = ROOT / "tools/dv-engine/patches/aether-xcode26-swift62.patch"
 
 
 def run(args, *, cwd=None, env=None):
     subprocess.run(list(map(str, args)), cwd=cwd, env=env, check=True)
+
+
+def apply_aether_xcode26_patch(work: Path) -> bool:
+    checkouts = work / "SourcePackages/checkouts"
+    if not checkouts.is_dir():
+        return False
+    matches = [path for path in checkouts.iterdir() if path.name.lower() == "aetherengine"]
+    if len(matches) != 1:
+        return False
+    checkout = matches[0]
+    reverse = subprocess.run(
+        ["git", "apply", "--reverse", "--check", AETHER_XCODE26_PATCH],
+        cwd=checkout, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    if reverse.returncode == 0:
+        return True
+    run(["git", "apply", "--check", AETHER_XCODE26_PATCH], cwd=checkout)
+    run(["git", "apply", AETHER_XCODE26_PATCH], cwd=checkout)
+    return True
 
 
 def build_runtime(common, work: Path, architectures: list[str], env):
@@ -31,16 +51,25 @@ def build_runtime(common, work: Path, architectures: list[str], env):
         "ARCHS=" + " ".join(architectures), "ONLY_ACTIVE_ARCH=NO",
         "CODE_SIGNING_ALLOWED=NO", "build",
     ]
-    try:
-        run(command, cwd=work, env=env)
-    except subprocess.CalledProcessError as error:
-        # Xcode 26 can abort while attaching freshly fetched Swift packages to
-        # its project model. Retain the verified task-owned checkouts, discard
-        # only partial build products, and retry the exact locked build once.
-        if error.returncode not in (-signal.SIGABRT, 128 + signal.SIGABRT):
-            raise
+    patched = apply_aether_xcode26_patch(work)
+    for attempt in range(3):
+        try:
+            run(command, cwd=work, env=env)
+        except subprocess.CalledProcessError as error:
+            if not patched:
+                patched = apply_aether_xcode26_patch(work)
+            package_abort = error.returncode in (-signal.SIGABRT, 128 + signal.SIGABRT)
+            if attempt == 2 or (not patched and not package_abort):
+                raise
+            shutil.rmtree(work / "DerivedData", ignore_errors=True)
+            continue
+        if patched:
+            return
+        patched = apply_aether_xcode26_patch(work)
+        if not patched:
+            raise ValueError("AetherEngine checkout missing after the locked package build")
         shutil.rmtree(work / "DerivedData", ignore_errors=True)
-        run(command, cwd=work, env=env)
+    raise AssertionError("unreachable")
 
 
 def build_environment(base=None):
@@ -163,6 +192,7 @@ def build(work: Path, sdk: str, configuration: str, architectures: list[str]) ->
     provenance = {
         "schema_version": 1, "abi_version": 1, "sdk": sdk,
         "architectures": architectures, "aether_commit": aether["commit"],
+        "aether_compatibility_patch": "fa8cc48b93a5b9c83367bf4fb3d731fb3862a177",
         "traits": ["DualLayerDolbyVision"], "activation": "runtime-settings-automatic-with-fallback",
         "qualification": "unqualified", "pins": pins,
         "lock_sha256": hashlib.sha256((ROOT / "tools/dv-engine/adapters.lock.json").read_bytes()).hexdigest(),

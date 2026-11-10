@@ -3327,7 +3327,18 @@
     "noUserInformation": "Seerr לא החזיר מידע משתמש",
     "sessionRejectedAfterReauth": "ההרשמה נדחתה לאחר חתימה נוספת.",
     "permissionDenied": "Seerr הכחישה את הפעולה הזאת: החשבון שלך כבר אין את הרשאה הנדרשת",
-    "permissionRevoked": "אין לך יותר רשות לבקש זאת."
+    "permissionRevoked": "אין לך יותר רשות לבקש זאת.",
+    "requestHint": "בחירת אפשרויות הבקשה ב-Seerr",
+    "quickRequestHint": "שליחת בקשה עכשיו ב-Seerr עם הגדרות ברירת המחדל",
+    "chooseSeasonsHint": "בחירת העונות לבקשה ב-Seerr",
+    "request4kHint": "בחירת בקשת 4K ב-Seerr",
+    "only4kAvailable": "בחשבון הזה אפשר לבקש רק את גרסת ה-4K.",
+    "cardActionHint": "פתיחת תפריט הכרטיס לאפשרויות בקשה ב-Seerr",
+    "requestInProgress": "הבקשה בתהליך",
+    "turnOffAlert": "כיבוי התראת הזמינות",
+    "notificationsEnabled4k": "נעדכן אותך כשהגרסה ב-4K תהיה זמינה",
+    "notificationsEnabledSeason": "נעדכן אותך כשהעונה ${season} תהיה זמינה",
+    "requestSheetHint": "Seerr מטפלת באישור הבקשה שלך ובמעקב אחריה."
   },
   "services": {
     "title": "שירותים",
@@ -4365,7 +4376,10 @@
     "nfsReadBytes": "נתונים קריאה",
     "nfsReadSpeed": "מהירות מדידה",
     "nfsReadRequests": "קרא בקשות",
-    "sharedEntryConflict": "זיהוי פריט משותף זה כבר מחולק עם פריט אחר בספריה זו."
+    "sharedEntryConflict": "זיהוי פריט משותף זה כבר מחולק עם פריט אחר בספריה זו.",
+    "bookorbitHelp": "יש להתחבר לחשבון BookOrbit האישי שלך כדי לעיין בספרים ולנגן אותם. בקשות לכותרות חסרות עדיין עוברות דרך מופע SeerrNG המחובר שלך.",
+    "bookorbitOpen": "פתיחה ב-BookOrbit",
+    "bookorbitDetailHelp": "אפשר לצפות בכותר הזה ב-BookOrbit כדי לנהל את פרטי הספרייה ואת הפורמטים ש-Pleazyng לא יכול לפתוח. התקדמות ההאזנה מסתנכרנת עם חשבון BookOrbit שלך."
   },
   "comics": {
     "fitHeight": "התאמה לגובה",
@@ -5512,5 +5526,34 @@
     "routeLost": "פלט השמע נותק. הניגון הושהה.",
     "autoDriving": "פתיחת תצוגת נהיגה בחיבור לרכב",
     "routeHint": "מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית."
+  },
+  "musicTools": {
+    "guestDj": "תקליטן אורח",
+    "charts": "דירוגי האזנה",
+    "rediscover": "לגלות מחדש",
+    "stations": "תחנות מוזיקה",
+    "prompt": "רשימה מתיאור",
+    "provider": "כתובת היצירה של הספק",
+    "model": "שם המודל",
+    "consent": "שליחת התיאור שלי לספק הזה",
+    "promptHint": "תיאור המוזיקה הרצויה",
+    "noHistory": "עדיין אין מוזיקה להצגה",
+    "historyHint": "השמעות שנרשמו במכשיר הזה",
+    "days": "ימים",
+    "albumBlocks": "שמירה על אלבומים שלמים ביחד",
+    "home": "מוסיקה",
+    "recent": "הושמעו לאחרונה",
+    "apiKey": "מפתח API",
+    "missing": "N / A",
+    "minutes": "דקות",
+    "rules": "מסננים",
+    "exclusiveOutput": "פלט שמע בלעדי",
+    "preamp": "קדם־הגברה",
+    "ratingPending": "נשמר במכשיר הזה; ממתין לסנכרון",
+    "lyricsOffset": "היסט תזמון המילים",
+    "anniversaries": "ימי שנה לאלבומים",
+    "outputPreset": "אקולייזר לפלט הזה",
+    "outputPresetHint": "החלה אוטומטית של האקולייזר הזה כשבוחרים בפלט הזה.",
+    "eqApproximation": "פרופילי האוזניות מותאמים בקירוב לאקולייזר בעל עשרה תחומים."
   }
 }

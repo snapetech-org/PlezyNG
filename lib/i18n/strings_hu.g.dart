@@ -115,6 +115,7 @@ class TranslationsHu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$hu romm = _Translations$romm$hu._(_root);
 	@override late final _Translations$subtitleCapture$hu subtitleCapture = _Translations$subtitleCapture$hu._(_root);
 	@override late final _Translations$musicExperience$hu musicExperience = _Translations$musicExperience$hu._(_root);
+	@override late final _Translations$musicTools$hu musicTools = _Translations$musicTools$hu._(_root);
 }
 
 // Path: app
@@ -2781,6 +2782,17 @@ class _Translations$seerr$hu extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'A munkamenetet az újbóli bejelentkezés után elutasították';
 	@override String get permissionDenied => 'A Seerr elutasította ezt a műveletet: a fiókod már nem rendelkezik a szükséges jogosultsággal';
 	@override String get permissionRevoked => 'Már nincs jogosultságod ennek az igényléséhez';
+	@override String get requestHint => 'Válassz igénylési lehetőségeket a Seerrben';
+	@override String get quickRequestHint => 'Igénylés most az alapértelmezett beállításokkal a Seerrben';
+	@override String get chooseSeasonsHint => 'Válaszd ki a Seerrben igényelni kívánt évadokat';
+	@override String get request4kHint => 'Válassz 4K-igénylést a Seerrben';
+	@override String get only4kAvailable => 'Ezzel a fiókkal csak a 4K-s verzió igényelhető.';
+	@override String get cardActionHint => 'Nyisd meg a kártya menüjét az igénylési lehetőségekhez';
+	@override String get requestInProgress => 'Az igénylés folyamatban van';
+	@override String get turnOffAlert => 'Elérhetőségi értesítés kikapcsolása';
+	@override String get notificationsEnabled4k => 'Értesítünk, amikor elérhető a 4K-s verzió';
+	@override String notificationsEnabledSeason({required Object season}) => 'Értesítünk, amikor elérhető a(z) ${season}. évad';
+	@override String get requestSheetHint => 'A Seerr kezeli a jóváhagyást és követi az igénylésedet.';
 }
 
 // Path: services
@@ -3860,6 +3872,9 @@ class _Translations$sourceSetup$hu extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'Mérhető sebesség';
 	@override String get nfsReadRequests => 'Olvassa el a kéréseket';
 	@override String get sharedEntryConflict => 'Ez a megosztott elem azonosító már párosított egy másik elem ebben a könyvtárban.';
+	@override String get bookorbitHelp => 'Jelentkezz be a saját BookOrbit-fiókoddal a könyvek böngészéséhez és lejátszásához. A hiányzó címek igénylései továbbra is a csatlakoztatott SeerrNG-példányodon keresztül történnek.';
+	@override String get bookorbitOpen => 'Megnyitás a BookOrbitban';
+	@override String get bookorbitDetailHelp => 'A könyvtár adatainak és a Pleazyng által meg nem nyitható formátumok kezeléséhez tekintsd meg ezt a címet a BookOrbitban. A hallgatási folyamat szinkronizálódik a BookOrbit-fiókoddal.';
 }
 
 // Path: comics
@@ -4269,6 +4284,42 @@ class _Translations$musicExperience$hu extends Translations$musicExperience$en {
 	@override String get routeLost => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.';
 	@override String get autoDriving => 'Vezetési nézet megnyitása autóhoz csatlakozáskor';
 	@override String get routeHint => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$hu extends Translations$musicTools$en {
+	_Translations$musicTools$hu._(TranslationsHu root) : this._root = root, super.internal(root);
+
+	final TranslationsHu _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Vendég DJ';
+	@override String get charts => 'Hallgatási toplisták';
+	@override String get rediscover => 'Újrafelfedezés';
+	@override String get stations => 'Zenei állomások';
+	@override String get prompt => 'Lejátszási lista leírásból';
+	@override String get provider => 'Szolgáltató generálási URL-je';
+	@override String get model => 'Modell neve';
+	@override String get consent => 'Leírásom elküldése ennek a szolgáltatónak';
+	@override String get promptHint => 'Írd le a kívánt zenét';
+	@override String get noHistory => 'Még nincs megjeleníthető zene';
+	@override String get historyHint => 'Ezen az eszközön rögzített lejátszások';
+	@override String get days => 'Napok';
+	@override String get albumBlocks => 'Teljes albumok együtt tartása';
+	@override String get home => 'Zene';
+	@override String get recent => 'Legutóbb lejátszott';
+	@override String get apiKey => 'API-kulcs';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Perc';
+	@override String get rules => 'Szűrők';
+	@override String get exclusiveOutput => 'Kizárólagos hangkimenet';
+	@override String get preamp => 'Előerősítés';
+	@override String get ratingPending => 'Ezen az eszközön mentve; szinkronizálásra vár';
+	@override String get lyricsOffset => 'Dalszöveg időeltolása';
+	@override String get anniversaries => 'Albumévfordulók';
+	@override String get outputPreset => 'EQ ehhez a kimenethez';
+	@override String get outputPresetHint => 'A kimenet kiválasztásakor automatikusan ezt az EQ-t használja.';
+	@override String get eqApproximation => 'A fejhallgatóprofilok a tízsávos EQ-hoz igazított közelítések.';
 }
 
 // Path: appIcon.names
@@ -8088,6 +8139,17 @@ extension on TranslationsHu {
 			'seerr.sessionRejectedAfterReauth' => 'A munkamenetet az újbóli bejelentkezés után elutasították',
 			'seerr.permissionDenied' => 'A Seerr elutasította ezt a műveletet: a fiókod már nem rendelkezik a szükséges jogosultsággal',
 			'seerr.permissionRevoked' => 'Már nincs jogosultságod ennek az igényléséhez',
+			'seerr.requestHint' => 'Válassz igénylési lehetőségeket a Seerrben',
+			'seerr.quickRequestHint' => 'Igénylés most az alapértelmezett beállításokkal a Seerrben',
+			'seerr.chooseSeasonsHint' => 'Válaszd ki a Seerrben igényelni kívánt évadokat',
+			'seerr.request4kHint' => 'Válassz 4K-igénylést a Seerrben',
+			'seerr.only4kAvailable' => 'Ezzel a fiókkal csak a 4K-s verzió igényelhető.',
+			'seerr.cardActionHint' => 'Nyisd meg a kártya menüjét az igénylési lehetőségekhez',
+			'seerr.requestInProgress' => 'Az igénylés folyamatban van',
+			'seerr.turnOffAlert' => 'Elérhetőségi értesítés kikapcsolása',
+			'seerr.notificationsEnabled4k' => 'Értesítünk, amikor elérhető a 4K-s verzió',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Értesítünk, amikor elérhető a(z) ${season}. évad',
+			'seerr.requestSheetHint' => 'A Seerr kezeli a jóváhagyást és követi az igénylésedet.',
 			'services.title' => 'Szolgáltatások',
 			'services.hubSubtitle' => 'Megtekintési haladás szinkronizálása és új tartalmak igénylése.',
 			'services.integrations' => 'Integrációk',
@@ -8457,6 +8519,8 @@ extension on TranslationsHu {
 			'universalMedia.addressHelp' => 'Az elismert hitelesítési vagy aláírási paraméterekkel rendelkező URL-k csak ebben az ülésen használhatók, és nem menthetők kedvencként.',
 			'universalMedia.displayName' => 'A kijelző neve (opcionális)',
 			'universalMedia.displayNameHelp' => 'Válasszon egy rövid nevét a játékos és a rendszer média vezérlők.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'A titkosítás nélküli HTTP-kapcsolat engedélyezése',
 			'universalMedia.allowHttpHelp' => 'A HTTP nem titkosítja a kapcsolatot. csak megbízható hálózaton engedélyezheti. ha lehetséges, használja a HTTPS-t.',
 			'universalMedia.advancedProtocols' => 'Csak MPV: adjon meg egy RTSP, RTMP/RTMPS, UDP vagy RTP címet.',
@@ -8468,8 +8532,6 @@ extension on TranslationsHu {
 			'universalMedia.favoriteSaved' => 'Stream kedvenc mentett erre a profilra',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'A ${count} nem támogatott vagy biztonságos lejátszási lista bejárata.', other: 'A ${count} nem támogatott vagy biztonságos lejátszási listájának bejegyzései.', ), 
 			'universalMedia.playlistAddress' => 'Playlist címek',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Nyissa meg a M3U, M3u8 vagy PLS lejátszási listát egy webcímről. közvetlen áramlás linkek nem menthetik meg a lejátszó listát.',
 			'universalMedia.choosePlaylist' => 'Válassza ki a Playlist fájlt',
 			'universalMedia.openPlaylist' => 'Nyílt Playlist',
@@ -8971,6 +9033,8 @@ extension on TranslationsHu {
 			'sourceSetup.identityPassphrase' => 'A kliensazonosság jelmondata',
 			'sourceSetup.identityPassphraseHelp' => 'Hagyd üresen, ha a fájlnak nincs jelmondata.',
 			'sourceSetup.removeIdentity' => 'Mentett kliensazonosság eltávolítása',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'A kliensazonosságok a forrás titkosított hitelesítőadat-tárába kerülnek. A mentett azonosság megőrzéséhez hagyd változatlanul ezt a részt.',
 			'sourceSetup.nfsLimitations' => 'Csak olvasható NFSv3 TCP felett. RPC-with-TLS nélkül az NFS-forgalom titkosítatlan. A NAS-nak engedélyeznie kell a választott AUTH_SYS-azonosítókat és a nem privilegizált kliensportokat (ez gyakran az „insecure” exportbeállítás). Az NFSv4 és az UDP nem támogatott.',
 			'sourceSetup.nfsSetupHelp' => 'NFS-beállítási súgó',
@@ -8982,8 +9046,6 @@ extension on TranslationsHu {
 			'sourceSetup.apiKey' => 'API-kulcs',
 			'sourceSetup.optionalUsername' => 'A fiók felhasználóneve (nem kötelező)',
 			'sourceSetup.optionalPassword' => 'A fiók jelszava (nem kötelező)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Szerezz API-kulcsot az opensubtitles.com oldalon. A keresés a videó címét és az elérhető IMDb/TMDB-azonosítókat küldi el, a videófájlt soha. A kulcs és az opcionális fiókhitelesítő adatok ezzel a forrással együtt titkosítva tárolódnak.',
 			'sourceSetup.automaticMetadata' => 'Automatikus online videómetaadatok',
 			'sourceSetup.metadataPrivacy' => 'Csak a fájlnévből származó címet/évet és epizódszámokat vagy egy NFO-azonosítót küld el, médiát vagy hitelesítő adatokat soha. Az NFO-mezők elsőbbsége megmarad.',
@@ -9044,6 +9106,9 @@ extension on TranslationsHu {
 			'sourceSetup.nfsReadSpeed' => 'Mérhető sebesség',
 			'sourceSetup.nfsReadRequests' => 'Olvassa el a kéréseket',
 			'sourceSetup.sharedEntryConflict' => 'Ez a megosztott elem azonosító már párosított egy másik elem ebben a könyvtárban.',
+			'sourceSetup.bookorbitHelp' => 'Jelentkezz be a saját BookOrbit-fiókoddal a könyvek böngészéséhez és lejátszásához. A hiányzó címek igénylései továbbra is a csatlakoztatott SeerrNG-példányodon keresztül történnek.',
+			'sourceSetup.bookorbitOpen' => 'Megnyitás a BookOrbitban',
+			'sourceSetup.bookorbitDetailHelp' => 'A könyvtár adatainak és a Pleazyng által meg nem nyitható formátumok kezeléséhez tekintsd meg ezt a címet a BookOrbitban. A hallgatási folyamat szinkronizálódik a BookOrbit-fiókoddal.',
 			'comics.fitHeight' => 'Magassághoz igazítás',
 			'comics.readingMode' => 'Olvasási mód',
 			'comics.paged' => 'Oldalak',
@@ -9381,6 +9446,33 @@ extension on TranslationsHu {
 			'musicExperience.routeLost' => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.',
 			'musicExperience.autoDriving' => 'Vezetési nézet megnyitása autóhoz csatlakozáskor',
 			'musicExperience.routeHint' => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.',
+			'musicTools.guestDj' => 'Vendég DJ',
+			'musicTools.charts' => 'Hallgatási toplisták',
+			'musicTools.rediscover' => 'Újrafelfedezés',
+			'musicTools.stations' => 'Zenei állomások',
+			'musicTools.prompt' => 'Lejátszási lista leírásból',
+			'musicTools.provider' => 'Szolgáltató generálási URL-je',
+			'musicTools.model' => 'Modell neve',
+			'musicTools.consent' => 'Leírásom elküldése ennek a szolgáltatónak',
+			'musicTools.promptHint' => 'Írd le a kívánt zenét',
+			'musicTools.noHistory' => 'Még nincs megjeleníthető zene',
+			'musicTools.historyHint' => 'Ezen az eszközön rögzített lejátszások',
+			'musicTools.days' => 'Napok',
+			'musicTools.albumBlocks' => 'Teljes albumok együtt tartása',
+			'musicTools.home' => 'Zene',
+			'musicTools.recent' => 'Legutóbb lejátszott',
+			'musicTools.apiKey' => 'API-kulcs',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Perc',
+			'musicTools.rules' => 'Szűrők',
+			'musicTools.exclusiveOutput' => 'Kizárólagos hangkimenet',
+			'musicTools.preamp' => 'Előerősítés',
+			'musicTools.ratingPending' => 'Ezen az eszközön mentve; szinkronizálásra vár',
+			'musicTools.lyricsOffset' => 'Dalszöveg időeltolása',
+			'musicTools.anniversaries' => 'Albumévfordulók',
+			'musicTools.outputPreset' => 'EQ ehhez a kimenethez',
+			'musicTools.outputPresetHint' => 'A kimenet kiválasztásakor automatikusan ezt az EQ-t használja.',
+			'musicTools.eqApproximation' => 'A fejhallgatóprofilok a tízsávos EQ-hoz igazított közelítések.',
 			_ => null,
 		};
 	}

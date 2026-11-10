@@ -115,6 +115,7 @@ class TranslationsZh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$romm$zh romm = Translations$romm$zh.internal(_root);
 	@override late final Translations$subtitleCapture$zh subtitleCapture = Translations$subtitleCapture$zh.internal(_root);
 	@override late final Translations$musicExperience$zh musicExperience = Translations$musicExperience$zh.internal(_root);
+	@override late final Translations$musicTools$zh musicTools = Translations$musicTools$zh.internal(_root);
 }
 
 // Path: app
@@ -2777,6 +2778,17 @@ class Translations$seerr$zh extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => '重新登录后会话被拒绝';
 	@override String get permissionDenied => 'Seerr 拒绝了此操作：你的账户不再拥有所需权限';
 	@override String get permissionRevoked => '你不再拥有请求此内容的权限';
+	@override String get requestHint => '在 Seerr 中选择请求选项';
+	@override String get quickRequestHint => '使用默认设置立即通过 Seerr 请求';
+	@override String get chooseSeasonsHint => '选择要在 Seerr 中请求的季';
+	@override String get request4kHint => '在 Seerr 中选择 4K 请求';
+	@override String get only4kAvailable => '此账户只能请求 4K 版本。';
+	@override String get cardActionHint => '打开卡片菜单以查看 Seerr 请求选项';
+	@override String get requestInProgress => '请求处理中';
+	@override String get turnOffAlert => '关闭可用性提醒';
+	@override String get notificationsEnabled4k => '4K 版本可用时我们会通知你';
+	@override String notificationsEnabledSeason({required Object season}) => '第 ${season} 季可用时我们会通知你';
+	@override String get requestSheetHint => 'Seerr 负责审批并跟踪你的请求。';
 }
 
 // Path: services
@@ -3855,6 +3867,9 @@ class Translations$sourceSetup$zh extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => '测量速度';
 	@override String get nfsReadRequests => '阅读请求';
 	@override String get sharedEntryConflict => '此共享项目 ID 已与本图书馆中的另一个项目相匹配. 选择不同的 ID。';
+	@override String get bookorbitHelp => '使用你自己的 BookOrbit 账户登录，即可浏览和播放书籍。缺少的书名仍会通过已连接的 SeerrNG 实例提交请求。';
+	@override String get bookorbitOpen => '在 BookOrbit 中打开';
+	@override String get bookorbitDetailHelp => '在 BookOrbit 中查看此书，以管理书库详情和 Pleazyng 无法打开的格式。收听进度会与您的 BookOrbit 账户同步。';
 }
 
 // Path: comics
@@ -4264,6 +4279,42 @@ class Translations$musicExperience$zh extends Translations$musicExperience$en {
 	@override String get routeLost => '音频输出已断开。播放已暂停。';
 	@override String get autoDriving => '连接汽车时打开驾驶界面';
 	@override String get routeHint => '是否允许自动显示应用由汽车系统决定。';
+}
+
+// Path: musicTools
+class Translations$musicTools$zh extends Translations$musicTools$en {
+	Translations$musicTools$zh.internal(TranslationsZh root) : this._root = root, super.internal(root);
+
+	final TranslationsZh _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => '客座 DJ';
+	@override String get charts => '收听排行';
+	@override String get rediscover => '重新发现';
+	@override String get stations => '音乐电台';
+	@override String get prompt => '描述生成歌单';
+	@override String get provider => '提供商生成地址';
+	@override String get model => '模型名称';
+	@override String get consent => '将我的描述发送给此提供商';
+	@override String get promptHint => '描述想听的音乐';
+	@override String get noHistory => '暂无可显示的音乐';
+	@override String get historyHint => '此设备记录的播放';
+	@override String get days => '天';
+	@override String get albumBlocks => '保持专辑完整';
+	@override String get home => '音乐';
+	@override String get recent => '最近播放';
+	@override String get apiKey => 'API 密钥';
+	@override String get missing => 'N/A';
+	@override String get minutes => '分钟';
+	@override String get rules => '筛选';
+	@override String get exclusiveOutput => '独占音频输出';
+	@override String get preamp => '前置放大';
+	@override String get ratingPending => '已保存在此设备；等待同步';
+	@override String get lyricsOffset => '歌词时间偏移';
+	@override String get anniversaries => '专辑发行纪念日';
+	@override String get outputPreset => '此输出的均衡器';
+	@override String get outputPresetHint => '选择此输出时自动使用此均衡器。';
+	@override String get eqApproximation => '耳机配置已近似转换为十段均衡器设置。';
 }
 
 // Path: appIcon.names
@@ -8083,6 +8134,17 @@ extension on TranslationsZh {
 			'seerr.sessionRejectedAfterReauth' => '重新登录后会话被拒绝',
 			'seerr.permissionDenied' => 'Seerr 拒绝了此操作：你的账户不再拥有所需权限',
 			'seerr.permissionRevoked' => '你不再拥有请求此内容的权限',
+			'seerr.requestHint' => '在 Seerr 中选择请求选项',
+			'seerr.quickRequestHint' => '使用默认设置立即通过 Seerr 请求',
+			'seerr.chooseSeasonsHint' => '选择要在 Seerr 中请求的季',
+			'seerr.request4kHint' => '在 Seerr 中选择 4K 请求',
+			'seerr.only4kAvailable' => '此账户只能请求 4K 版本。',
+			'seerr.cardActionHint' => '打开卡片菜单以查看 Seerr 请求选项',
+			'seerr.requestInProgress' => '请求处理中',
+			'seerr.turnOffAlert' => '关闭可用性提醒',
+			'seerr.notificationsEnabled4k' => '4K 版本可用时我们会通知你',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => '第 ${season} 季可用时我们会通知你',
+			'seerr.requestSheetHint' => 'Seerr 负责审批并跟踪你的请求。',
 			'services.title' => '服务',
 			'services.hubSubtitle' => '同步观看进度并请求新内容。',
 			'services.integrations' => '集成',
@@ -8452,6 +8514,8 @@ extension on TranslationsZh {
 			'universalMedia.addressHelp' => 'HTTPS 是优先的. 有认可或签名参数的 URL 仅用于此会议,并且不能保存为喜爱。',
 			'universalMedia.displayName' => '显示名称(可选)',
 			'universalMedia.displayNameHelp' => '选择玩家和系统媒体控制器的简称。',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => '允许未加密的 HTTP 连接',
 			'universalMedia.allowHttpHelp' => 'HTTP 不加密连接. 只允许它在可靠的网络上. 当可能时使用 HTTPS。',
 			'universalMedia.advancedProtocols' => 'MPV 仅:输入 RTSP、RTMP/RTMPS、UDP 或 RTP 地址,这些地址不能保存为最受欢迎的。',
@@ -8463,8 +8527,6 @@ extension on TranslationsZh {
 			'universalMedia.favoriteSaved' => '流喜爱保存到此个人资料',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支持或不安全的播放列表输入。', other: '${count} 不受支持或不安全的播放列表输入。', ), 
 			'universalMedia.playlistAddress' => 'Playlist 地址',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會保存播放名單。',
 			'universalMedia.choosePlaylist' => '选择 Playlist 文件',
 			'universalMedia.openPlaylist' => '开放播放列表',
@@ -8966,6 +9028,8 @@ extension on TranslationsZh {
 			'sourceSetup.identityPassphrase' => '客户端身份凭据口令',
 			'sourceSetup.identityPassphraseHelp' => '如果文件没有口令，请留空。',
 			'sourceSetup.removeIdentity' => '移除已保存的客户端身份凭据',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => '客户端身份凭据保存在加密的来源凭据存储中。保持此部分不变，即可保留已保存的身份凭据。',
 			'sourceSetup.nfsLimitations' => '以只读方式通过 TCP 使用 NFSv3。不使用 RPC-with-TLS 时，NFS 流量不会加密。NAS 必须允许所选 AUTH_SYS ID 和非特权客户端端口（导出选项通常称为“insecure”）。不支持 NFSv4 和 UDP。',
 			'sourceSetup.nfsSetupHelp' => 'NFS 设置帮助',
@@ -8977,8 +9041,6 @@ extension on TranslationsZh {
 			'sourceSetup.apiKey' => 'API 密钥',
 			'sourceSetup.optionalUsername' => '账户用户名（可选）',
 			'sourceSetup.optionalPassword' => '账户密码（可选）',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => '请从 opensubtitles.com 获取 API 密钥。搜索会发送视频标题和可用的 IMDb/TMDB ID，绝不会发送视频文件。密钥和可选的账户凭据会随此来源加密保存。',
 			'sourceSetup.automaticMetadata' => '自动获取在线视频元数据',
 			'sourceSetup.metadataPrivacy' => '仅发送文件名中的标题、年份和集数，或 NFO ID，绝不发送媒体文件或凭据。NFO 字段始终优先。',
@@ -9039,6 +9101,9 @@ extension on TranslationsZh {
 			'sourceSetup.nfsReadSpeed' => '测量速度',
 			'sourceSetup.nfsReadRequests' => '阅读请求',
 			'sourceSetup.sharedEntryConflict' => '此共享项目 ID 已与本图书馆中的另一个项目相匹配. 选择不同的 ID。',
+			'sourceSetup.bookorbitHelp' => '使用你自己的 BookOrbit 账户登录，即可浏览和播放书籍。缺少的书名仍会通过已连接的 SeerrNG 实例提交请求。',
+			'sourceSetup.bookorbitOpen' => '在 BookOrbit 中打开',
+			'sourceSetup.bookorbitDetailHelp' => '在 BookOrbit 中查看此书，以管理书库详情和 Pleazyng 无法打开的格式。收听进度会与您的 BookOrbit 账户同步。',
 			'comics.fitHeight' => '适合高度',
 			'comics.readingMode' => '阅读模式',
 			'comics.paged' => '分页',
@@ -9376,6 +9441,33 @@ extension on TranslationsZh {
 			'musicExperience.routeLost' => '音频输出已断开。播放已暂停。',
 			'musicExperience.autoDriving' => '连接汽车时打开驾驶界面',
 			'musicExperience.routeHint' => '是否允许自动显示应用由汽车系统决定。',
+			'musicTools.guestDj' => '客座 DJ',
+			'musicTools.charts' => '收听排行',
+			'musicTools.rediscover' => '重新发现',
+			'musicTools.stations' => '音乐电台',
+			'musicTools.prompt' => '描述生成歌单',
+			'musicTools.provider' => '提供商生成地址',
+			'musicTools.model' => '模型名称',
+			'musicTools.consent' => '将我的描述发送给此提供商',
+			'musicTools.promptHint' => '描述想听的音乐',
+			'musicTools.noHistory' => '暂无可显示的音乐',
+			'musicTools.historyHint' => '此设备记录的播放',
+			'musicTools.days' => '天',
+			'musicTools.albumBlocks' => '保持专辑完整',
+			'musicTools.home' => '音乐',
+			'musicTools.recent' => '最近播放',
+			'musicTools.apiKey' => 'API 密钥',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => '分钟',
+			'musicTools.rules' => '筛选',
+			'musicTools.exclusiveOutput' => '独占音频输出',
+			'musicTools.preamp' => '前置放大',
+			'musicTools.ratingPending' => '已保存在此设备；等待同步',
+			'musicTools.lyricsOffset' => '歌词时间偏移',
+			'musicTools.anniversaries' => '专辑发行纪念日',
+			'musicTools.outputPreset' => '此输出的均衡器',
+			'musicTools.outputPresetHint' => '选择此输出时自动使用此均衡器。',
+			'musicTools.eqApproximation' => '耳机配置已近似转换为十段均衡器设置。',
 			_ => null,
 		};
 	}

@@ -3407,7 +3407,18 @@
     "noUserInformation": "لم تعيد شركة Seerr معلومات المستخدم",
     "sessionRejectedAfterReauth": "تم رفض الجلسة بعد التوقيع مرة أخرى",
     "permissionDenied": "رفضت شركة Seerr هذا الإجراء: لم يعد حسابك لديه إذن مطلوب",
-    "permissionRevoked": "لم يعد لديك إذن لطلب هذا"
+    "permissionRevoked": "لم يعد لديك إذن لطلب هذا",
+    "requestHint": "اختر خيارات الطلب في Seerr",
+    "quickRequestHint": "اطلب الآن عبر Seerr باستخدام الإعدادات الافتراضية",
+    "chooseSeasonsHint": "اختر المواسم المطلوب طلبها في Seerr",
+    "request4kHint": "اختر طلب نسخة 4K في Seerr",
+    "only4kAvailable": "يمكن لهذا الحساب طلب نسخة 4K فقط.",
+    "cardActionHint": "افتح قائمة البطاقة لعرض خيارات الطلب في Seerr",
+    "requestInProgress": "الطلب قيد التنفيذ",
+    "turnOffAlert": "إيقاف تنبيه التوفر",
+    "notificationsEnabled4k": "سنخطرك عند توفر نسخة 4K",
+    "notificationsEnabledSeason": "سنخطرك عند توفر الموسم ${season}",
+    "requestSheetHint": "يتولى Seerr الموافقة على طلبك ومتابعته."
   },
   "services": {
     "title": "الخدمات",
@@ -4457,7 +4468,10 @@
     "nfsReadBytes": "بيانات قراءة",
     "nfsReadSpeed": "سرعة قياس",
     "nfsReadRequests": "اقرأ الطلبات",
-    "sharedEntryConflict": "هذا العنصر المشترك الهوية قد تم ربطها بالفعل مع عنصر آخر في هذه المكتبة."
+    "sharedEntryConflict": "هذا العنصر المشترك الهوية قد تم ربطها بالفعل مع عنصر آخر في هذه المكتبة.",
+    "bookorbitHelp": "سجّل الدخول باستخدام حساب BookOrbit الخاص بك لتصفح كتبه وتشغيلها. تظل طلبات العناوين غير المتوفرة تمر عبر مثيل SeerrNG المتصل بك.",
+    "bookorbitOpen": "افتح في BookOrbit",
+    "bookorbitDetailHelp": "اعرض هذا العنوان في BookOrbit لإدارة تفاصيله في مكتبتك وأي تنسيقات لا يستطيع Pleazyng فتحها. تتم مزامنة تقدم الاستماع مع حسابك في BookOrbit."
   },
   "comics": {
     "fitHeight": "ملاءمة الارتفاع",
@@ -5610,5 +5624,34 @@
     "routeLost": "تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.",
     "autoDriving": "فتح واجهة القيادة عند الاتصال بسيارة",
     "routeHint": "يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا."
+  },
+  "musicTools": {
+    "guestDj": "منسق موسيقى ضيف",
+    "charts": "إحصاءات الاستماع",
+    "rediscover": "إعادة الاكتشاف",
+    "stations": "محطات موسيقية",
+    "prompt": "قائمة من وصف",
+    "provider": "رابط التوليد لدى المزود",
+    "model": "اسم النموذج",
+    "consent": "إرسال وصفي إلى هذا المزود",
+    "promptHint": "صف الموسيقى التي تريدها",
+    "noHistory": "لا توجد موسيقى لعرضها بعد",
+    "historyHint": "مرات التشغيل المسجلة على هذا الجهاز",
+    "days": "أيام",
+    "albumBlocks": "إبقاء الألبومات كاملة معًا",
+    "home": "الموسيقى",
+    "recent": "تم تشغيلها مؤخرًا",
+    "apiKey": "مفتاح API",
+    "missing": "N / A",
+    "minutes": "دقائق",
+    "rules": "الفلاتر",
+    "exclusiveOutput": "إخراج صوت حصري",
+    "preamp": "التضخيم المسبق",
+    "ratingPending": "حُفظ على هذا الجهاز؛ بانتظار المزامنة",
+    "lyricsOffset": "إزاحة توقيت الكلمات",
+    "anniversaries": "ذكرى إصدار الألبومات",
+    "outputPreset": "معادل الصوت لهذا المخرج",
+    "outputPresetHint": "استخدم معادل الصوت هذا تلقائيًا عند اختيار هذا المخرج.",
+    "eqApproximation": "ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات."
   }
 }

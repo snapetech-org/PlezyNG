@@ -3359,7 +3359,18 @@
     "noUserInformation": "Seerr nevrátil uživatelské informace",
     "sessionRejectedAfterReauth": "Zasedání bylo po opětovném podepsání zamítnuto.",
     "permissionDenied": "Seerr tuto akci odmítl: Váš účet již nemá požadované povolení",
-    "permissionRevoked": "Už nemáte právo na to požádat"
+    "permissionRevoked": "Už nemáte právo na to požádat",
+    "requestHint": "Vyberte možnosti žádosti v Seerr",
+    "quickRequestHint": "Požádat nyní v Seerr s výchozím nastavením",
+    "chooseSeasonsHint": "Vyberte série, o které chcete v Seerr požádat",
+    "request4kHint": "Vyberte žádost o 4K v Seerr",
+    "only4kAvailable": "Tento účet může požádat pouze o 4K verzi.",
+    "cardActionHint": "Otevřete nabídku karty s možnostmi žádosti v Seerr",
+    "requestInProgress": "Žádost se zpracovává",
+    "turnOffAlert": "Vypnout upozornění na dostupnost",
+    "notificationsEnabled4k": "Upozorníme vás, až bude dostupná 4K verze",
+    "notificationsEnabledSeason": "Upozorníme vás, až bude dostupná série ${season}",
+    "requestSheetHint": "Seerr zajišťuje schválení a sledování vaší žádosti."
   },
   "services": {
     "title": "Služby",
@@ -4401,7 +4412,10 @@
     "nfsReadBytes": "Data čtení",
     "nfsReadSpeed": "měřená rychlost",
     "nfsReadRequests": "Čtěte žádosti",
-    "sharedEntryConflict": "Tento sdílený ID položky je již připojen k dalším položkám v této knihovně."
+    "sharedEntryConflict": "Tento sdílený ID položky je již připojen k dalším položkám v této knihovně.",
+    "bookorbitHelp": "Přihlaste se ke svému účtu BookOrbit a procházejte jeho knihy nebo je přehrávejte. Žádosti o chybějící tituly nadále zpracovává vaše připojená instance SeerrNG.",
+    "bookorbitOpen": "Otevřít v BookOrbit",
+    "bookorbitDetailHelp": "Zobrazte tento titul v BookOrbit a spravujte podrobnosti knihovny i formáty, které Pleazyng nedokáže otevřít. Průběh poslechu se synchronizuje s vaším účtem BookOrbit."
   },
   "comics": {
     "fitHeight": "Přizpůsobit výšce",
@@ -5550,5 +5564,34 @@
     "routeLost": "Zvukový výstup odpojen. Přehrávání pozastaveno.",
     "autoDriving": "Otevřít režim řízení při připojení k autu",
     "routeHint": "Systém auta určuje, zda se aplikace může zobrazit automaticky."
+  },
+  "musicTools": {
+    "guestDj": "Hostující DJ",
+    "charts": "Žebříčky poslechu",
+    "rediscover": "Znovu objevit",
+    "stations": "Hudební stanice",
+    "prompt": "Seznam podle popisu",
+    "provider": "URL generování poskytovatele",
+    "model": "Název modelu",
+    "consent": "Odeslat můj popis tomuto poskytovateli",
+    "promptHint": "Popište požadovanou hudbu",
+    "noHistory": "Zatím není co zobrazit",
+    "historyHint": "Přehrání zaznamenaná v tomto zařízení",
+    "days": "Dny",
+    "albumBlocks": "Ponechat celá alba pohromadě",
+    "home": "Hudba",
+    "recent": "Nedávno přehrané",
+    "apiKey": "Klíč API",
+    "missing": "N / A",
+    "minutes": "minuty",
+    "rules": "Filtry",
+    "exclusiveOutput": "Výhradní zvukový výstup",
+    "preamp": "Předzesílení",
+    "ratingPending": "Uloženo v tomto zařízení; čeká na synchronizaci",
+    "lyricsOffset": "Časový posun textu",
+    "anniversaries": "Výročí alb",
+    "outputPreset": "Ekvalizér pro tento výstup",
+    "outputPresetHint": "Při výběru tohoto výstupu automaticky použít tento ekvalizér.",
+    "eqApproximation": "Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér."
   }
 }

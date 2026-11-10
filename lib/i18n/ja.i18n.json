@@ -3319,7 +3319,18 @@
     "noUserInformation": "Seerrからユーザー情報が返されませんでした",
     "sessionRejectedAfterReauth": "再サインイン後にセッションが拒否されました",
     "permissionDenied": "Seerrがこの操作を拒否しました: アカウントに必要な権限がありません",
-    "permissionRevoked": "これをリクエストする権限がなくなりました"
+    "permissionRevoked": "これをリクエストする権限がなくなりました",
+    "requestHint": "Seerrでリクエスト方法を選択",
+    "quickRequestHint": "Seerrで既定の設定を使って今すぐリクエスト",
+    "chooseSeasonsHint": "Seerrでリクエストするシーズンを選択",
+    "request4kHint": "Seerrで4Kリクエストを選択",
+    "only4kAvailable": "このアカウントでは4K版のみリクエストできます。",
+    "cardActionHint": "カードメニューを開いてSeerrのリクエスト方法を選択",
+    "requestInProgress": "リクエスト処理中",
+    "turnOffAlert": "配信開始の通知をオフにする",
+    "notificationsEnabled4k": "4K版が利用可能になったらお知らせします",
+    "notificationsEnabledSeason": "シーズン${season}が利用可能になったらお知らせします",
+    "requestSheetHint": "承認とリクエストの追跡はSeerrが行います。"
   },
   "services": {
     "title": "サービス",
@@ -4352,7 +4363,10 @@
     "nfsReadBytes": "データ読書",
     "nfsReadSpeed": "測定速度",
     "nfsReadRequests": "要請読書",
-    "sharedEntryConflict": "この共有アイテム ID は、すでにこの図書館の別のアイデアとパイロットされています。"
+    "sharedEntryConflict": "この共有アイテム ID は、すでにこの図書館の別のアイデアとパイロットされています。",
+    "bookorbitHelp": "ご自身のBookOrbitアカウントにサインインすると、本を閲覧して再生できます。未登録タイトルのリクエストは、接続済みのSeerrNGインスタンスを通じて送信されます。",
+    "bookorbitOpen": "BookOrbitで開く",
+    "bookorbitDetailHelp": "このタイトルをBookOrbitで表示して、ライブラリの詳細やPleazyngで開けない形式を管理できます。再生位置はBookOrbitアカウントと同期されます。"
   },
   "comics": {
     "fitHeight": "高さに合わせる",
@@ -5497,5 +5511,34 @@
     "routeLost": "音声出力が切断されました。再生を一時停止しました。",
     "autoDriving": "車に接続したら運転用画面を開く",
     "routeHint": "アプリを自動表示できるかどうかは車のシステムによって決まります。"
+  },
+  "musicTools": {
+    "guestDj": "ゲストDJ",
+    "charts": "再生ランキング",
+    "rediscover": "再発見",
+    "stations": "ミュージックステーション",
+    "prompt": "説明からプレイリスト",
+    "provider": "プロバイダーの生成URL",
+    "model": "モデル名",
+    "consent": "このプロバイダーに説明を送信",
+    "promptHint": "聴きたい音楽を説明してください",
+    "noHistory": "表示する音楽はまだありません",
+    "historyHint": "この端末で記録した再生",
+    "days": "日",
+    "albumBlocks": "アルバム全体をまとめる",
+    "home": "音楽",
+    "recent": "最近再生した曲",
+    "apiKey": "API キー",
+    "missing": "N/A",
+    "minutes": "分",
+    "rules": "フィルター",
+    "exclusiveOutput": "排他オーディオ出力",
+    "preamp": "プリアンプ",
+    "ratingPending": "この端末に保存済み・同期待ち",
+    "lyricsOffset": "歌詞のタイミング調整",
+    "anniversaries": "アルバムの発売記念日",
+    "outputPreset": "この出力のEQ",
+    "outputPresetHint": "この出力が選択されたときに、このEQを自動的に使用します。",
+    "eqApproximation": "ヘッドホンのプロファイルは10バンドEQ向けに近似されています。"
   }
 }

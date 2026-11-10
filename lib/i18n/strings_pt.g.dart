@@ -115,6 +115,7 @@ class TranslationsPt extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$romm$pt romm = Translations$romm$pt.internal(_root);
 	@override late final Translations$subtitleCapture$pt subtitleCapture = Translations$subtitleCapture$pt.internal(_root);
 	@override late final Translations$musicExperience$pt musicExperience = Translations$musicExperience$pt.internal(_root);
+	@override late final Translations$musicTools$pt musicTools = Translations$musicTools$pt.internal(_root);
 }
 
 // Path: app
@@ -2784,6 +2785,17 @@ class Translations$seerr$pt extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'A sessão foi rejeitada após entrar novamente';
 	@override String get permissionDenied => 'O Seerr negou esta ação: sua conta não tem mais a permissão necessária';
 	@override String get permissionRevoked => 'Você não tem mais permissão para solicitar isso';
+	@override String get requestHint => 'Escolha as opções do pedido no Seerr';
+	@override String get quickRequestHint => 'Solicitar agora no Seerr com as opções padrão';
+	@override String get chooseSeasonsHint => 'Escolha as temporadas para solicitar no Seerr';
+	@override String get request4kHint => 'Escolha um pedido em 4K no Seerr';
+	@override String get only4kAvailable => 'Esta conta só pode solicitar a versão em 4K.';
+	@override String get cardActionHint => 'Abra o menu do cartão para ver as opções de pedido do Seerr';
+	@override String get requestInProgress => 'Pedido em andamento';
+	@override String get turnOffAlert => 'Desativar alerta de disponibilidade';
+	@override String get notificationsEnabled4k => 'Avisaremos quando a versão em 4K estiver disponível';
+	@override String notificationsEnabledSeason({required Object season}) => 'Avisaremos quando a temporada ${season} estiver disponível';
+	@override String get requestSheetHint => 'O Seerr gerencia a aprovação e acompanha seu pedido.';
 }
 
 // Path: services
@@ -3867,6 +3879,9 @@ class Translations$sourceSetup$pt extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'Velocidade Medida';
 	@override String get nfsReadRequests => 'Leia pedidos';
 	@override String get sharedEntryConflict => 'Este ID de item compartilhado já está em parceria com outro item nesta biblioteca.';
+	@override String get bookorbitHelp => 'Entre com sua própria conta BookOrbit para navegar e reproduzir seus livros. Pedidos de títulos ausentes continuam passando pela sua instância SeerrNG conectada.';
+	@override String get bookorbitOpen => 'Abrir no BookOrbit';
+	@override String get bookorbitDetailHelp => 'Veja este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit.';
 }
 
 // Path: comics
@@ -4276,6 +4291,42 @@ class Translations$musicExperience$pt extends Translations$musicExperience$en {
 	@override String get routeLost => 'Saída áudio desligada. Reprodução em pausa.';
 	@override String get autoDriving => 'Abrir a vista de condução ao ligar a um carro';
 	@override String get routeHint => 'O sistema do carro decide se a aplicação pode aparecer automaticamente.';
+}
+
+// Path: musicTools
+class Translations$musicTools$pt extends Translations$musicTools$en {
+	Translations$musicTools$pt.internal(TranslationsPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ convidado';
+	@override String get charts => 'Estatísticas de escuta';
+	@override String get rediscover => 'Redescobrir';
+	@override String get stations => 'Estações musicais';
+	@override String get prompt => 'Playlist por descrição';
+	@override String get provider => 'URL de geração do fornecedor';
+	@override String get model => 'Nome do modelo';
+	@override String get consent => 'Enviar minha descrição a este fornecedor';
+	@override String get promptHint => 'Descreva a música que deseja';
+	@override String get noHistory => 'Ainda não há música para mostrar';
+	@override String get historyHint => 'Reproduções registradas neste dispositivo';
+	@override String get days => 'Dias';
+	@override String get albumBlocks => 'Manter álbuns completos juntos';
+	@override String get home => 'Música';
+	@override String get recent => 'Reproduzidas recentemente';
+	@override String get apiKey => 'Chave API';
+	@override String get missing => 'N/D';
+	@override String get minutes => 'Minutos';
+	@override String get rules => 'Filtros';
+	@override String get exclusiveOutput => 'Saída de áudio exclusiva';
+	@override String get preamp => 'Pré-amplificação';
+	@override String get ratingPending => 'Salvo neste dispositivo; aguardando sincronização';
+	@override String get lyricsOffset => 'Deslocamento da letra';
+	@override String get anniversaries => 'Aniversários de álbuns';
+	@override String get outputPreset => 'Equalizador desta saída';
+	@override String get outputPresetHint => 'Usar automaticamente este equalizador quando esta saída for selecionada.';
+	@override String get eqApproximation => 'Os perfis de auscultadores são aproximados para o equalizador de dez bandas.';
 }
 
 // Path: appIcon.names
@@ -8095,6 +8146,17 @@ extension on TranslationsPt {
 			'seerr.sessionRejectedAfterReauth' => 'A sessão foi rejeitada após entrar novamente',
 			'seerr.permissionDenied' => 'O Seerr negou esta ação: sua conta não tem mais a permissão necessária',
 			'seerr.permissionRevoked' => 'Você não tem mais permissão para solicitar isso',
+			'seerr.requestHint' => 'Escolha as opções do pedido no Seerr',
+			'seerr.quickRequestHint' => 'Solicitar agora no Seerr com as opções padrão',
+			'seerr.chooseSeasonsHint' => 'Escolha as temporadas para solicitar no Seerr',
+			'seerr.request4kHint' => 'Escolha um pedido em 4K no Seerr',
+			'seerr.only4kAvailable' => 'Esta conta só pode solicitar a versão em 4K.',
+			'seerr.cardActionHint' => 'Abra o menu do cartão para ver as opções de pedido do Seerr',
+			'seerr.requestInProgress' => 'Pedido em andamento',
+			'seerr.turnOffAlert' => 'Desativar alerta de disponibilidade',
+			'seerr.notificationsEnabled4k' => 'Avisaremos quando a versão em 4K estiver disponível',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Avisaremos quando a temporada ${season} estiver disponível',
+			'seerr.requestSheetHint' => 'O Seerr gerencia a aprovação e acompanha seu pedido.',
 			'services.title' => 'Serviços',
 			'services.hubSubtitle' => 'Sincronize o progresso de exibição e solicite novos títulos.',
 			'services.integrations' => 'Integrações',
@@ -8464,6 +8526,8 @@ extension on TranslationsPt {
 			'universalMedia.addressHelp' => 'URLs com parâmetros de autenticação ou assinatura reconhecidos são usados apenas para esta sessão e não podem ser salvos como favoritos.',
 			'universalMedia.displayName' => 'Nome de exibição (opcional)',
 			'universalMedia.displayNameHelp' => 'Escolha um nome curto para o jogador e controles de mídia do sistema.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'Permitir uma conexão HTTP não criptografada',
 			'universalMedia.allowHttpHelp' => 'O HTTP não criptografará a conexão. permita-a apenas em uma rede confiável. Use o HTTPS quando possível.',
 			'universalMedia.advancedProtocols' => 'MPV somente: introduza um endereço RTSP, RTMP/RTMPS, UDP ou RTP. Esses endereços não podem ser salvos como favoritos.',
@@ -8475,8 +8539,6 @@ extension on TranslationsPt {
 			'universalMedia.favoriteSaved' => 'Stream favorito salvo para este perfil',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Escapou ${count} entrada de playlist não suportada ou insegura.', many: 'Escapou ${count} entradas de lista de reprodução não suportadas ou inseguras.', other: 'Escapou ${count} entradas de lista de reprodução não suportadas ou inseguras.', ), 
 			'universalMedia.playlistAddress' => 'Endereço Playlist',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Abra uma lista de reprodução M3U, M3u8, ou PLS a partir de um endereço web. links de streaming direto não salvam a lista.',
 			'universalMedia.choosePlaylist' => 'Escolha o arquivo de playlist',
 			'universalMedia.openPlaylist' => 'Playlist aberta',
@@ -8978,6 +9040,8 @@ extension on TranslationsPt {
 			'sourceSetup.identityPassphrase' => 'Frase secreta da identidade de cliente',
 			'sourceSetup.identityPassphraseHelp' => 'Deixe em branco se o arquivo não tiver uma frase secreta.',
 			'sourceSetup.removeIdentity' => 'Remover qualquer identidade de cliente salva',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'As identidades de cliente são salvas no armazenamento criptografado de credenciais da fonte. Mantenha esta seção inalterada para conservar a identidade salva.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 somente leitura sobre TCP. Sem RPC-with-TLS, o tráfego NFS não é criptografado. O NAS deve permitir os IDs de AUTH_SYS selecionados e portas de cliente não privilegiadas (geralmente pela opção de exportação “insecure”). NFSv4 e UDP não são compatíveis.',
 			'sourceSetup.nfsSetupHelp' => 'Ajuda para configurar NFS',
@@ -8989,8 +9053,6 @@ extension on TranslationsPt {
 			'sourceSetup.apiKey' => 'Chave API',
 			'sourceSetup.optionalUsername' => 'Nome de usuário da conta (opcional)',
 			'sourceSetup.optionalPassword' => 'Senha da conta (opcional)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Obtenha uma chave API em opensubtitles.com. A busca envia o título do vídeo e os IDs de IMDb/TMDB disponíveis, nunca o arquivo de vídeo. A chave e as credenciais opcionais da conta são criptografadas junto com esta fonte.',
 			'sourceSetup.automaticMetadata' => 'Metadados de vídeo online automáticos',
 			'sourceSetup.metadataPrivacy' => 'Envia apenas título/ano do nome do arquivo e números dos episódios, ou um ID NFO; nunca envia mídia ou credenciais. Os campos NFO mantêm a prioridade.',
@@ -9051,6 +9113,9 @@ extension on TranslationsPt {
 			'sourceSetup.nfsReadSpeed' => 'Velocidade Medida',
 			'sourceSetup.nfsReadRequests' => 'Leia pedidos',
 			'sourceSetup.sharedEntryConflict' => 'Este ID de item compartilhado já está em parceria com outro item nesta biblioteca.',
+			'sourceSetup.bookorbitHelp' => 'Entre com sua própria conta BookOrbit para navegar e reproduzir seus livros. Pedidos de títulos ausentes continuam passando pela sua instância SeerrNG conectada.',
+			'sourceSetup.bookorbitOpen' => 'Abrir no BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Veja este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit.',
 			'comics.fitHeight' => 'Ajustar à altura',
 			'comics.readingMode' => 'Modo de leitura',
 			'comics.paged' => 'Páginas',
@@ -9388,6 +9453,33 @@ extension on TranslationsPt {
 			'musicExperience.routeLost' => 'Saída áudio desligada. Reprodução em pausa.',
 			'musicExperience.autoDriving' => 'Abrir a vista de condução ao ligar a um carro',
 			'musicExperience.routeHint' => 'O sistema do carro decide se a aplicação pode aparecer automaticamente.',
+			'musicTools.guestDj' => 'DJ convidado',
+			'musicTools.charts' => 'Estatísticas de escuta',
+			'musicTools.rediscover' => 'Redescobrir',
+			'musicTools.stations' => 'Estações musicais',
+			'musicTools.prompt' => 'Playlist por descrição',
+			'musicTools.provider' => 'URL de geração do fornecedor',
+			'musicTools.model' => 'Nome do modelo',
+			'musicTools.consent' => 'Enviar minha descrição a este fornecedor',
+			'musicTools.promptHint' => 'Descreva a música que deseja',
+			'musicTools.noHistory' => 'Ainda não há música para mostrar',
+			'musicTools.historyHint' => 'Reproduções registradas neste dispositivo',
+			'musicTools.days' => 'Dias',
+			'musicTools.albumBlocks' => 'Manter álbuns completos juntos',
+			'musicTools.home' => 'Música',
+			'musicTools.recent' => 'Reproduzidas recentemente',
+			'musicTools.apiKey' => 'Chave API',
+			'musicTools.missing' => 'N/D',
+			'musicTools.minutes' => 'Minutos',
+			'musicTools.rules' => 'Filtros',
+			'musicTools.exclusiveOutput' => 'Saída de áudio exclusiva',
+			'musicTools.preamp' => 'Pré-amplificação',
+			'musicTools.ratingPending' => 'Salvo neste dispositivo; aguardando sincronização',
+			'musicTools.lyricsOffset' => 'Deslocamento da letra',
+			'musicTools.anniversaries' => 'Aniversários de álbuns',
+			'musicTools.outputPreset' => 'Equalizador desta saída',
+			'musicTools.outputPresetHint' => 'Usar automaticamente este equalizador quando esta saída for selecionada.',
+			'musicTools.eqApproximation' => 'Os perfis de auscultadores são aproximados para o equalizador de dez bandas.',
 			_ => null,
 		};
 	}

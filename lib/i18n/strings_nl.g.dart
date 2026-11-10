@@ -115,6 +115,7 @@ class TranslationsNl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$nl romm = _Translations$romm$nl._(_root);
 	@override late final _Translations$subtitleCapture$nl subtitleCapture = _Translations$subtitleCapture$nl._(_root);
 	@override late final _Translations$musicExperience$nl musicExperience = _Translations$musicExperience$nl._(_root);
+	@override late final _Translations$musicTools$nl musicTools = _Translations$musicTools$nl._(_root);
 }
 
 // Path: app
@@ -2781,6 +2782,17 @@ class _Translations$seerr$nl extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'De sessie is na het opnieuw inloggen geweigerd';
 	@override String get permissionDenied => 'Seerr heeft deze actie geweigerd: je account heeft niet langer de vereiste machtiging';
 	@override String get permissionRevoked => 'Je hebt geen toestemming meer om dit aan te vragen';
+	@override String get requestHint => 'Kies aanvraagopties in Seerr';
+	@override String get quickRequestHint => 'Plaats nu een aanvraag in Seerr met de standaardinstellingen';
+	@override String get chooseSeasonsHint => 'Kies de seizoenen die je in Seerr wilt aanvragen';
+	@override String get request4kHint => 'Kies een 4K-aanvraag in Seerr';
+	@override String get only4kAvailable => 'Met dit account kun je alleen de 4K-versie aanvragen.';
+	@override String get cardActionHint => 'Open het kaartmenu voor Seerr-aanvraagopties';
+	@override String get requestInProgress => 'Aanvraag wordt verwerkt';
+	@override String get turnOffAlert => 'Beschikbaarheidsmelding uitschakelen';
+	@override String get notificationsEnabled4k => 'We laten het je weten zodra de 4K-versie beschikbaar is';
+	@override String notificationsEnabledSeason({required Object season}) => 'We laten het je weten zodra seizoen ${season} beschikbaar is';
+	@override String get requestSheetHint => 'Seerr regelt de goedkeuring en houdt je aanvraag bij.';
 }
 
 // Path: services
@@ -3860,6 +3872,9 @@ class _Translations$sourceSetup$nl extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'gemeten snelheid';
 	@override String get nfsReadRequests => 'Lees verzoeken';
 	@override String get sharedEntryConflict => 'Deze gedeelde item ID is al gepaard met een ander item in deze bibliotheek.';
+	@override String get bookorbitHelp => 'Meld je aan met je eigen BookOrbit-account om de boeken daar te bekijken en af te spelen. Aanvragen voor ontbrekende titels worden nog steeds via je gekoppelde SeerrNG-instantie verstuurd.';
+	@override String get bookorbitOpen => 'Openen in BookOrbit';
+	@override String get bookorbitDetailHelp => 'Bekijk deze titel in BookOrbit om bibliotheekgegevens en indelingen te beheren die Pleazyng niet kan openen. Je luistervoortgang wordt gesynchroniseerd met je BookOrbit-account.';
 }
 
 // Path: comics
@@ -4269,6 +4284,42 @@ class _Translations$musicExperience$nl extends Translations$musicExperience$en {
 	@override String get routeLost => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.';
 	@override String get autoDriving => 'Rijweergave openen bij verbinding met een auto';
 	@override String get routeHint => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$nl extends Translations$musicTools$en {
+	_Translations$musicTools$nl._(TranslationsNl root) : this._root = root, super.internal(root);
+
+	final TranslationsNl _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Gast-dj';
+	@override String get charts => 'Luisterlijsten';
+	@override String get rediscover => 'Herontdekken';
+	@override String get stations => 'Muziekstations';
+	@override String get prompt => 'Afspeellijst uit beschrijving';
+	@override String get provider => 'Generatie-URL van aanbieder';
+	@override String get model => 'Modelnaam';
+	@override String get consent => 'Mijn beschrijving naar deze aanbieder sturen';
+	@override String get promptHint => 'Beschrijf de gewenste muziek';
+	@override String get noHistory => 'Nog geen muziek om te tonen';
+	@override String get historyHint => 'Op dit apparaat vastgelegde afspeelbeurten';
+	@override String get days => 'Dagen';
+	@override String get albumBlocks => 'Volledige albums bij elkaar houden';
+	@override String get home => 'Muziek';
+	@override String get recent => 'Onlangs afgespeeld';
+	@override String get apiKey => 'API-sleutel';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Minuten';
+	@override String get rules => 'Filters';
+	@override String get exclusiveOutput => 'Exclusieve audio-uitvoer';
+	@override String get preamp => 'Voorversterking';
+	@override String get ratingPending => 'Op dit apparaat opgeslagen; wacht op synchronisatie';
+	@override String get lyricsOffset => 'Tijdsverschuiving songtekst';
+	@override String get anniversaries => 'Albumjubilea';
+	@override String get outputPreset => 'EQ voor deze uitgang';
+	@override String get outputPresetHint => 'Gebruik deze EQ automatisch wanneer deze uitgang is geselecteerd.';
+	@override String get eqApproximation => 'Hoofdtelefoonprofielen worden benaderd voor de tienbands-EQ.';
 }
 
 // Path: appIcon.names
@@ -8088,6 +8139,17 @@ extension on TranslationsNl {
 			'seerr.sessionRejectedAfterReauth' => 'De sessie is na het opnieuw inloggen geweigerd',
 			'seerr.permissionDenied' => 'Seerr heeft deze actie geweigerd: je account heeft niet langer de vereiste machtiging',
 			'seerr.permissionRevoked' => 'Je hebt geen toestemming meer om dit aan te vragen',
+			'seerr.requestHint' => 'Kies aanvraagopties in Seerr',
+			'seerr.quickRequestHint' => 'Plaats nu een aanvraag in Seerr met de standaardinstellingen',
+			'seerr.chooseSeasonsHint' => 'Kies de seizoenen die je in Seerr wilt aanvragen',
+			'seerr.request4kHint' => 'Kies een 4K-aanvraag in Seerr',
+			'seerr.only4kAvailable' => 'Met dit account kun je alleen de 4K-versie aanvragen.',
+			'seerr.cardActionHint' => 'Open het kaartmenu voor Seerr-aanvraagopties',
+			'seerr.requestInProgress' => 'Aanvraag wordt verwerkt',
+			'seerr.turnOffAlert' => 'Beschikbaarheidsmelding uitschakelen',
+			'seerr.notificationsEnabled4k' => 'We laten het je weten zodra de 4K-versie beschikbaar is',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'We laten het je weten zodra seizoen ${season} beschikbaar is',
+			'seerr.requestSheetHint' => 'Seerr regelt de goedkeuring en houdt je aanvraag bij.',
 			'services.title' => 'Diensten',
 			'services.hubSubtitle' => 'Synchroniseer kijkvoortgang en vraag nieuwe titels aan.',
 			'services.integrations' => 'Integraties',
@@ -8457,6 +8519,8 @@ extension on TranslationsNl {
 			'universalMedia.addressHelp' => 'URL\'s met geïdentificeerde credentiale of signature parameters worden alleen gebruikt voor deze sessie en kunnen niet als favorieten worden opgeslagen.',
 			'universalMedia.displayName' => 'Display naam (optional)',
 			'universalMedia.displayNameHelp' => 'Kies een korte naam voor de speler en system media controles.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'Een niet-encrypt HTTP verbinding mogelijk maken',
 			'universalMedia.allowHttpHelp' => 'HTTP versleutelt de verbinding niet. toelaat het alleen op een vertrouwde netwerk. gebruik HTTPS wanneer mogelijk.',
 			'universalMedia.advancedProtocols' => 'MPV alleen: voer een RTSP, RTMP/RTMPS, UDP of RTP-adres in. Deze adressen kunnen niet als favorieten worden opgeslagen.',
@@ -8468,8 +8532,6 @@ extension on TranslationsNl {
 			'universalMedia.favoriteSaved' => 'Stream favoriete bewaard naar dit profiel',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: 'Skipped ${count} niet ondersteund of onveilig playlist ingang.', other: 'Skipped ${count} niet ondersteunde of onveilige playlist-inputs.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adres',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Open een M3U, M3u8 of PLS playlist vanuit een webadres. Direct stream links slaan de playlist niet op.',
 			'universalMedia.choosePlaylist' => 'Kies een playlist bestand',
 			'universalMedia.openPlaylist' => 'Open playlist',
@@ -8971,6 +9033,8 @@ extension on TranslationsNl {
 			'sourceSetup.identityPassphrase' => 'Wachtwoordzin van de clientidentiteit',
 			'sourceSetup.identityPassphraseHelp' => 'Laat leeg als het bestand geen wachtwoordzin heeft.',
 			'sourceSetup.removeIdentity' => 'Eventuele opgeslagen clientidentiteit verwijderen',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'Clientidentiteiten worden opgeslagen in de versleutelde opslag voor toegangsgegevens van de bron. Laat dit onderdeel ongewijzigd om de opgeslagen identiteit te behouden.',
 			'sourceSetup.nfsLimitations' => 'Alleen-lezen NFSv3 via TCP. Zonder RPC-with-TLS is NFS-verkeer niet versleuteld. De NAS moet de gekozen AUTH_SYS-ID’s en niet-bevoorrechte clientpoorten toestaan (vaak de exportoptie ‘insecure’ genoemd). NFSv4 en UDP worden niet ondersteund.',
 			'sourceSetup.nfsSetupHelp' => 'Hulp bij NFS-instellingen',
@@ -8982,8 +9046,6 @@ extension on TranslationsNl {
 			'sourceSetup.apiKey' => 'API-sleutel',
 			'sourceSetup.optionalUsername' => 'Gebruikersnaam van het account (optioneel)',
 			'sourceSetup.optionalPassword' => 'Wachtwoord van het account (optioneel)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Vraag een API-sleutel aan op opensubtitles.com. Zoeken verstuurt de videotitel en beschikbare IMDb/TMDB-ID’s, nooit het videobestand. De sleutel en optionele accountgegevens worden samen met deze bron versleuteld.',
 			'sourceSetup.automaticMetadata' => 'Automatische online videometadata',
 			'sourceSetup.metadataPrivacy' => 'Verstuurt alleen titel/jaar uit de bestandsnaam en afleveringsnummers, of een NFO-ID; nooit media of toegangsgegevens. NFO-velden blijven leidend.',
@@ -9044,6 +9106,9 @@ extension on TranslationsNl {
 			'sourceSetup.nfsReadSpeed' => 'gemeten snelheid',
 			'sourceSetup.nfsReadRequests' => 'Lees verzoeken',
 			'sourceSetup.sharedEntryConflict' => 'Deze gedeelde item ID is al gepaard met een ander item in deze bibliotheek.',
+			'sourceSetup.bookorbitHelp' => 'Meld je aan met je eigen BookOrbit-account om de boeken daar te bekijken en af te spelen. Aanvragen voor ontbrekende titels worden nog steeds via je gekoppelde SeerrNG-instantie verstuurd.',
+			'sourceSetup.bookorbitOpen' => 'Openen in BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Bekijk deze titel in BookOrbit om bibliotheekgegevens en indelingen te beheren die Pleazyng niet kan openen. Je luistervoortgang wordt gesynchroniseerd met je BookOrbit-account.',
 			'comics.fitHeight' => 'Aan hoogte aanpassen',
 			'comics.readingMode' => 'Leesmodus',
 			'comics.paged' => 'Pagina’s',
@@ -9381,6 +9446,33 @@ extension on TranslationsNl {
 			'musicExperience.routeLost' => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.',
 			'musicExperience.autoDriving' => 'Rijweergave openen bij verbinding met een auto',
 			'musicExperience.routeHint' => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.',
+			'musicTools.guestDj' => 'Gast-dj',
+			'musicTools.charts' => 'Luisterlijsten',
+			'musicTools.rediscover' => 'Herontdekken',
+			'musicTools.stations' => 'Muziekstations',
+			'musicTools.prompt' => 'Afspeellijst uit beschrijving',
+			'musicTools.provider' => 'Generatie-URL van aanbieder',
+			'musicTools.model' => 'Modelnaam',
+			'musicTools.consent' => 'Mijn beschrijving naar deze aanbieder sturen',
+			'musicTools.promptHint' => 'Beschrijf de gewenste muziek',
+			'musicTools.noHistory' => 'Nog geen muziek om te tonen',
+			'musicTools.historyHint' => 'Op dit apparaat vastgelegde afspeelbeurten',
+			'musicTools.days' => 'Dagen',
+			'musicTools.albumBlocks' => 'Volledige albums bij elkaar houden',
+			'musicTools.home' => 'Muziek',
+			'musicTools.recent' => 'Onlangs afgespeeld',
+			'musicTools.apiKey' => 'API-sleutel',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Minuten',
+			'musicTools.rules' => 'Filters',
+			'musicTools.exclusiveOutput' => 'Exclusieve audio-uitvoer',
+			'musicTools.preamp' => 'Voorversterking',
+			'musicTools.ratingPending' => 'Op dit apparaat opgeslagen; wacht op synchronisatie',
+			'musicTools.lyricsOffset' => 'Tijdsverschuiving songtekst',
+			'musicTools.anniversaries' => 'Albumjubilea',
+			'musicTools.outputPreset' => 'EQ voor deze uitgang',
+			'musicTools.outputPresetHint' => 'Gebruik deze EQ automatisch wanneer deze uitgang is geselecteerd.',
+			'musicTools.eqApproximation' => 'Hoofdtelefoonprofielen worden benaderd voor de tienbands-EQ.',
 			_ => null,
 		};
 	}

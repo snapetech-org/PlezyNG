@@ -1043,7 +1043,13 @@ val downloadLibdovi = tasks.register("downloadLibdovi") {
   }
 }
 
+// Separate AAOS media distribution: the host renders browse/playback. Normal
+// phone/TV/video manifests and parked-only behavior remain the default.
+val automotiveMediaBuild = providers.gradleProperty("pleazyngAutomotiveMedia")
+  .map { it.toBooleanStrict() }.getOrElse(false)
+
 android {
+  if (automotiveMediaBuild) sourceSets.getByName("main").manifest.srcFile("src/automotiveMedia/AndroidManifest.xml")
   namespace = "com.edde746.plezy"
   // permission_handler_android uses Android 17 API constants.
   compileSdk = 37
@@ -1067,6 +1073,7 @@ android {
 
   defaultConfig {
     applicationId = "org.snapetech.pleazyng"
+    buildConfigField("boolean", "AUTOMOTIVE_MEDIA", automotiveMediaBuild.toString())
     if (felAarFile != null) {
       // Keep experimental native builds installable beside the signed app.
       // This avoids asking testers to uninstall their normal client and lose
@@ -1074,7 +1081,7 @@ android {
       applicationIdSuffix = ".dvfel"
       versionNameSuffix = "-dvfel"
     }
-    minSdk = 25 // Fire OS 6.x (API 25); the mpv-android AAR shares the same floor
+    minSdk = if (automotiveMediaBuild) 28 else 25 // Fire OS 6.x (API 25); the mpv-android AAR shares the same floor
     targetSdk = flutter.targetSdkVersion
     versionCode = flutter.versionCode
     versionName = flutter.versionName

@@ -115,6 +115,7 @@ class TranslationsFa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$fa romm = _Translations$romm$fa._(_root);
 	@override late final _Translations$subtitleCapture$fa subtitleCapture = _Translations$subtitleCapture$fa._(_root);
 	@override late final _Translations$musicExperience$fa musicExperience = _Translations$musicExperience$fa._(_root);
+	@override late final _Translations$musicTools$fa musicTools = _Translations$musicTools$fa._(_root);
 }
 
 // Path: app
@@ -2781,6 +2782,17 @@ class _Translations$seerr$fa extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'جلسه پس از امضای مجدد رد شد.';
 	@override String get permissionDenied => 'Seerr این اقدام را رد کرد: حساب شما دیگر مجوز مورد نیاز را ندارد';
 	@override String get permissionRevoked => 'شما دیگر اجازه درخواست این کار را ندارید.';
+	@override String get requestHint => 'گزینه‌های درخواست را در Seerr انتخاب کنید';
+	@override String get quickRequestHint => 'اکنون با تنظیمات پیش‌فرض در Seerr درخواست کنید';
+	@override String get chooseSeasonsHint => 'فصل‌های موردنظر برای درخواست در Seerr را انتخاب کنید';
+	@override String get request4kHint => 'درخواست نسخهٔ 4K را در Seerr انتخاب کنید';
+	@override String get only4kAvailable => 'این حساب فقط می‌تواند نسخهٔ 4K را درخواست کند.';
+	@override String get cardActionHint => 'برای دیدن گزینه‌های درخواست Seerr، منوی کارت را باز کنید';
+	@override String get requestInProgress => 'درخواست در حال انجام است';
+	@override String get turnOffAlert => 'خاموش کردن هشدار در دسترس بودن';
+	@override String get notificationsEnabled4k => 'وقتی نسخهٔ 4K در دسترس باشد به شما اطلاع می‌دهیم';
+	@override String notificationsEnabledSeason({required Object season}) => 'وقتی فصل ${season} در دسترس باشد به شما اطلاع می‌دهیم';
+	@override String get requestSheetHint => 'Seerr تأیید و پیگیری درخواست شما را مدیریت می‌کند.';
 }
 
 // Path: services
@@ -3860,6 +3872,9 @@ class _Translations$sourceSetup$fa extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'سرعت اندازه گیری';
 	@override String get nfsReadRequests => 'خواندن درخواست ها';
 	@override String get sharedEntryConflict => 'این ID آیتم به اشتراک گذاشته شده در حال حاضر با یک آیتم دیگر در این کتابخانه ترکیب شده است.';
+	@override String get bookorbitHelp => 'برای مرور و پخش کتاب‌های BookOrbit، با حساب شخصی خود وارد شوید. درخواست عنوان‌های موجودنبود همچنان از نمونهٔ متصل SeerrNG شما انجام می‌شود.';
+	@override String get bookorbitOpen => 'باز کردن در BookOrbit';
+	@override String get bookorbitDetailHelp => 'برای مدیریت جزئیات کتابخانه و قالب‌هایی که Pleazyng نمی‌تواند باز کند، این عنوان را در BookOrbit ببینید. پیشرفت شنیدن با حساب BookOrbit شما همگام می‌شود.';
 }
 
 // Path: comics
@@ -4269,6 +4284,42 @@ class _Translations$musicExperience$fa extends Translations$musicExperience$en {
 	@override String get routeLost => 'خروجی صدا قطع شد. پخش مکث شد.';
 	@override String get autoDriving => 'باز کردن نمای رانندگی هنگام اتصال به خودرو';
 	@override String get routeHint => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$fa extends Translations$musicTools$en {
+	_Translations$musicTools$fa._(TranslationsFa root) : this._root = root, super.internal(root);
+
+	final TranslationsFa _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'دی‌جی مهمان';
+	@override String get charts => 'آمار شنیدن';
+	@override String get rediscover => 'کشف دوباره';
+	@override String get stations => 'ایستگاه‌های موسیقی';
+	@override String get prompt => 'فهرست پخش از توضیح';
+	@override String get provider => 'نشانی تولید ارائه‌دهنده';
+	@override String get model => 'نام مدل';
+	@override String get consent => 'توضیح من را به این ارائه‌دهنده بفرست';
+	@override String get promptHint => 'موسیقی دلخواهتان را توصیف کنید';
+	@override String get noHistory => 'هنوز موسیقی‌ای برای نمایش نیست';
+	@override String get historyHint => 'پخش‌های ثبت‌شده در این دستگاه';
+	@override String get days => 'روزها';
+	@override String get albumBlocks => 'آلبوم‌ها را کامل نگه دار';
+	@override String get home => 'موسیقی‌ها';
+	@override String get recent => 'اخیراً پخش‌شده';
+	@override String get apiKey => 'کلید API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'دقیقه ها';
+	@override String get rules => 'صافی‌ها';
+	@override String get exclusiveOutput => 'خروجی صدای انحصاری';
+	@override String get preamp => 'پیش‌تقویت';
+	@override String get ratingPending => 'در این دستگاه ذخیره شد؛ در انتظار همگام‌سازی';
+	@override String get lyricsOffset => 'جابجایی زمان متن آهنگ';
+	@override String get anniversaries => 'سالگرد انتشار آلبوم‌ها';
+	@override String get outputPreset => 'اکولایزر این خروجی';
+	@override String get outputPresetHint => 'هنگام انتخاب این خروجی، این اکولایزر به‌طور خودکار اعمال شود.';
+	@override String get eqApproximation => 'پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند.';
 }
 
 // Path: appIcon.names
@@ -8088,6 +8139,17 @@ extension on TranslationsFa {
 			'seerr.sessionRejectedAfterReauth' => 'جلسه پس از امضای مجدد رد شد.',
 			'seerr.permissionDenied' => 'Seerr این اقدام را رد کرد: حساب شما دیگر مجوز مورد نیاز را ندارد',
 			'seerr.permissionRevoked' => 'شما دیگر اجازه درخواست این کار را ندارید.',
+			'seerr.requestHint' => 'گزینه‌های درخواست را در Seerr انتخاب کنید',
+			'seerr.quickRequestHint' => 'اکنون با تنظیمات پیش‌فرض در Seerr درخواست کنید',
+			'seerr.chooseSeasonsHint' => 'فصل‌های موردنظر برای درخواست در Seerr را انتخاب کنید',
+			'seerr.request4kHint' => 'درخواست نسخهٔ 4K را در Seerr انتخاب کنید',
+			'seerr.only4kAvailable' => 'این حساب فقط می‌تواند نسخهٔ 4K را درخواست کند.',
+			'seerr.cardActionHint' => 'برای دیدن گزینه‌های درخواست Seerr، منوی کارت را باز کنید',
+			'seerr.requestInProgress' => 'درخواست در حال انجام است',
+			'seerr.turnOffAlert' => 'خاموش کردن هشدار در دسترس بودن',
+			'seerr.notificationsEnabled4k' => 'وقتی نسخهٔ 4K در دسترس باشد به شما اطلاع می‌دهیم',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'وقتی فصل ${season} در دسترس باشد به شما اطلاع می‌دهیم',
+			'seerr.requestSheetHint' => 'Seerr تأیید و پیگیری درخواست شما را مدیریت می‌کند.',
 			'services.title' => 'خدمات',
 			'services.hubSubtitle' => 'Sync پیشرفت را مشاهده می کند و از عنوان های جدید درخواست می کند.',
 			'services.integrations' => 'ادغام',
@@ -8457,6 +8519,8 @@ extension on TranslationsFa {
 			'universalMedia.addressHelp' => 'URL ها با پارامترهای اعتباربخشی یا امضای شناخته شده تنها برای این جلسه مورد استفاده قرار می گیرند و نمی توانند به عنوان محبوب ذخیره شوند.',
 			'universalMedia.displayName' => 'نام نمایش (اختیاری)',
 			'universalMedia.displayNameHelp' => 'یک نام کوتاه برای بازیکن و کنترل های رسانه سیستم را انتخاب کنید.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'اجازه دادن به یک اتصال HTTP غیر رمزگذاری شده',
 			'universalMedia.allowHttpHelp' => 'HTTP اتصال را رمزگذاری نمی کند. فقط در یک شبکه قابل اعتماد اجازه دهید. هنگامی که ممکن است از HTTPS استفاده کنید.',
 			'universalMedia.advancedProtocols' => 'فقط MPV: یک آدرس RTSP، RTMP/RTMPS، UDP یا RTP را وارد کنید.این آدرس ها نمی توانند به عنوان محبوب ذخیره شوند.',
@@ -8468,8 +8532,6 @@ extension on TranslationsFa {
 			'universalMedia.favoriteSaved' => 'جریان محبوب به این پروفایل ذخیره شده است',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${count} بدون پشتیبانی یا ورود نامناسب به لیست پخش.', other: '${count} بدون پشتیبانی و یا ورود نامناسب به لیست پخش.', ), 
 			'universalMedia.playlistAddress' => 'آدرس Playlist',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'یک لیست پخش M3U، M3u8 یا PLS را از یک آدرس وب باز کنید لینک های جریان مستقیم لیست پخش را ذخیره نمی کنند.',
 			'universalMedia.choosePlaylist' => 'انتخاب فایل playlist',
 			'universalMedia.openPlaylist' => 'باز کردن playlist',
@@ -8971,6 +9033,8 @@ extension on TranslationsFa {
 			'sourceSetup.identityPassphrase' => 'عبارت عبور هویت کارخواه',
 			'sourceSetup.identityPassphraseHelp' => 'اگر فایل عبارت عبور ندارد، خالی بگذارید.',
 			'sourceSetup.removeIdentity' => 'حذف هویت ذخیره‌شدهٔ کارخواه',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'هویت‌های کارخواه در مخزن رمزگذاری‌شدهٔ اطلاعات ورود منابع ذخیره می‌شوند. برای حفظ هویت ذخیره‌شده، این بخش را تغییر ندهید.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 فقط‌خواندنی روی TCP. بدون RPC-with-TLS، ترافیک NFS رمزگذاری نمی‌شود. NAS باید شناسه‌های AUTH_SYS انتخاب‌شده و درگاه‌های بدون امتیاز ویژهٔ کارخواه را مجاز بداند (این گزینهٔ اشتراک‌گذاری معمولاً «insecure» نام دارد). NFSv4 و UDP پشتیبانی نمی‌شوند.',
 			'sourceSetup.nfsSetupHelp' => 'راهنمای تنظیم NFS',
@@ -8982,8 +9046,6 @@ extension on TranslationsFa {
 			'sourceSetup.apiKey' => 'کلید API',
 			'sourceSetup.optionalUsername' => 'نام کاربری حساب (اختیاری)',
 			'sourceSetup.optionalPassword' => 'گذرواژهٔ حساب (اختیاری)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'کلید API را از opensubtitles.com بگیرید. جست‌وجو، عنوان ویدیو و شناسه‌های موجود IMDb/TMDB را ارسال می‌کند، اما هرگز فایل ویدیو را نمی‌فرستد. کلید و اطلاعات ورود اختیاری حساب، همراه این منبع به‌صورت رمزگذاری‌شده ذخیره می‌شوند.',
 			'sourceSetup.automaticMetadata' => 'دریافت خودکار فرادادهٔ آنلاین ویدیو',
 			'sourceSetup.metadataPrivacy' => 'فقط عنوان، سال و شمارهٔ قسمت از نام فایل یا شناسهٔ NFO ارسال می‌شود؛ رسانه و اطلاعات ورود هرگز ارسال نمی‌شوند. فیلدهای NFO همیشه اولویت دارند.',
@@ -9044,6 +9106,9 @@ extension on TranslationsFa {
 			'sourceSetup.nfsReadSpeed' => 'سرعت اندازه گیری',
 			'sourceSetup.nfsReadRequests' => 'خواندن درخواست ها',
 			'sourceSetup.sharedEntryConflict' => 'این ID آیتم به اشتراک گذاشته شده در حال حاضر با یک آیتم دیگر در این کتابخانه ترکیب شده است.',
+			'sourceSetup.bookorbitHelp' => 'برای مرور و پخش کتاب‌های BookOrbit، با حساب شخصی خود وارد شوید. درخواست عنوان‌های موجودنبود همچنان از نمونهٔ متصل SeerrNG شما انجام می‌شود.',
+			'sourceSetup.bookorbitOpen' => 'باز کردن در BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'برای مدیریت جزئیات کتابخانه و قالب‌هایی که Pleazyng نمی‌تواند باز کند، این عنوان را در BookOrbit ببینید. پیشرفت شنیدن با حساب BookOrbit شما همگام می‌شود.',
 			'comics.fitHeight' => 'اندازه بر اساس ارتفاع',
 			'comics.readingMode' => 'حالت مطالعه',
 			'comics.paged' => 'صفحه‌ها',
@@ -9381,6 +9446,33 @@ extension on TranslationsFa {
 			'musicExperience.routeLost' => 'خروجی صدا قطع شد. پخش مکث شد.',
 			'musicExperience.autoDriving' => 'باز کردن نمای رانندگی هنگام اتصال به خودرو',
 			'musicExperience.routeHint' => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.',
+			'musicTools.guestDj' => 'دی‌جی مهمان',
+			'musicTools.charts' => 'آمار شنیدن',
+			'musicTools.rediscover' => 'کشف دوباره',
+			'musicTools.stations' => 'ایستگاه‌های موسیقی',
+			'musicTools.prompt' => 'فهرست پخش از توضیح',
+			'musicTools.provider' => 'نشانی تولید ارائه‌دهنده',
+			'musicTools.model' => 'نام مدل',
+			'musicTools.consent' => 'توضیح من را به این ارائه‌دهنده بفرست',
+			'musicTools.promptHint' => 'موسیقی دلخواهتان را توصیف کنید',
+			'musicTools.noHistory' => 'هنوز موسیقی‌ای برای نمایش نیست',
+			'musicTools.historyHint' => 'پخش‌های ثبت‌شده در این دستگاه',
+			'musicTools.days' => 'روزها',
+			'musicTools.albumBlocks' => 'آلبوم‌ها را کامل نگه دار',
+			'musicTools.home' => 'موسیقی‌ها',
+			'musicTools.recent' => 'اخیراً پخش‌شده',
+			'musicTools.apiKey' => 'کلید API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'دقیقه ها',
+			'musicTools.rules' => 'صافی‌ها',
+			'musicTools.exclusiveOutput' => 'خروجی صدای انحصاری',
+			'musicTools.preamp' => 'پیش‌تقویت',
+			'musicTools.ratingPending' => 'در این دستگاه ذخیره شد؛ در انتظار همگام‌سازی',
+			'musicTools.lyricsOffset' => 'جابجایی زمان متن آهنگ',
+			'musicTools.anniversaries' => 'سالگرد انتشار آلبوم‌ها',
+			'musicTools.outputPreset' => 'اکولایزر این خروجی',
+			'musicTools.outputPresetHint' => 'هنگام انتخاب این خروجی، این اکولایزر به‌طور خودکار اعمال شود.',
+			'musicTools.eqApproximation' => 'پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند.',
 			_ => null,
 		};
 	}

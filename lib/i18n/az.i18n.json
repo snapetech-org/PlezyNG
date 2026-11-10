@@ -3323,7 +3323,18 @@
     "noUserInformation": "Seerr istifadəçi məlumatlarını qaytarmadı",
     "sessionRejectedAfterReauth": "Yenidən daxil olduqdan sonra sessiya rədd edildi",
     "permissionDenied": "Seerr bu əməliyyatı rədd etdi: hesabınızda artıq tələb olunan icazə yoxdur",
-    "permissionRevoked": "Bunu sorğulamaq üçün artıq icazəniz yoxdur"
+    "permissionRevoked": "Bunu sorğulamaq üçün artıq icazəniz yoxdur",
+    "requestHint": "Seerr-də sorğu seçimlərini seçin",
+    "quickRequestHint": "Standart ayarlarla indi Seerr-də sorğu göndərin",
+    "chooseSeasonsHint": "Seerr-də sorğu üçün mövsümləri seçin",
+    "request4kHint": "Seerr-də 4K sorğusunu seçin",
+    "only4kAvailable": "Bu hesab yalnız 4K versiyasını sorğu edə bilər.",
+    "cardActionHint": "Seerr sorğu seçimləri üçün kart menyusunu açın",
+    "requestInProgress": "Sorğu icra olunur",
+    "turnOffAlert": "Əlçatanlıq bildirişini söndür",
+    "notificationsEnabled4k": "4K versiyası əlçatan olduqda sizə xəbər verəcəyik",
+    "notificationsEnabledSeason": "${season} mövsümü əlçatan olduqda sizə xəbər verəcəyik",
+    "requestSheetHint": "Seerr sorğunuzun təsdiqini və izlənməsini idarə edir."
   },
   "services": {
     "title": "Xidmətlər",
@@ -4357,7 +4368,10 @@
     "nfsReadBytes": "Tarihlər Read",
     "nfsReadSpeed": "Hızın ölçülməsi",
     "nfsReadRequests": "İhtiyaçları okuyun",
-    "sharedEntryConflict": "Bu paylaşılan element kimliği bu kütüphanada başqa bir elementlə də parədir. farklı bir ID seçin."
+    "sharedEntryConflict": "Bu paylaşılan element kimliği bu kütüphanada başqa bir elementlə də parədir. farklı bir ID seçin.",
+    "bookorbitHelp": "Kitablarına baxmaq və onları oxutmaq üçün öz BookOrbit hesabınızla daxil olun. Çatışmayan başlıqlar üçün sorğular yenə də qoşulmuş SeerrNG instansiyanız vasitəsilə göndərilir.",
+    "bookorbitOpen": "BookOrbit-də aç",
+    "bookorbitDetailHelp": "Kitabxana təfərrüatlarını və Pleazyng-in aça bilmədiyi formatları idarə etmək üçün bu başlığı BookOrbit-də açın. Dinləmə irəliləyişi BookOrbit hesabınızla sinxronlaşdırılır."
   },
   "comics": {
     "fitHeight": "Hündürlüyə uyğunlaşdır",
@@ -5502,5 +5516,34 @@
     "routeLost": "Səs çıxışı ayrıldı. Oynatma dayandırıldı.",
     "autoDriving": "Avtomobilə qoşulduqda sürücülük görünüşünü aç",
     "routeHint": "Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir."
+  },
+  "musicTools": {
+    "guestDj": "Qonaq DJ",
+    "charts": "Dinləmə reytinqləri",
+    "rediscover": "Yenidən kəşf et",
+    "stations": "Musiqi stansiyaları",
+    "prompt": "Təsvirdən pleylist",
+    "provider": "Provayderin generasiya URL-i",
+    "model": "Modelin adı",
+    "consent": "Təsvirimi bu provayderə göndər",
+    "promptHint": "İstədiyiniz musiqini təsvir edin",
+    "noHistory": "Hələ göstəriləcək musiqi yoxdur",
+    "historyHint": "Bu cihazda qeydə alınan dinləmələr",
+    "days": "Günlər",
+    "albumBlocks": "Albomları bütöv saxla",
+    "home": "Musiqi",
+    "recent": "Son dinlənilənlər",
+    "apiKey": "API açarı",
+    "missing": "Yoxdur",
+    "minutes": "Dəqiqə",
+    "rules": "Filtrlər",
+    "exclusiveOutput": "Eksklüziv səs çıxışı",
+    "preamp": "Ön gücləndirmə",
+    "ratingPending": "Bu cihazda saxlanıldı; sinxronizasiya gözlənilir",
+    "lyricsOffset": "Mahnı sözlərinin vaxt fərqi",
+    "anniversaries": "Albomların ildönümləri",
+    "outputPreset": "Bu çıxış üçün ekvalayzer",
+    "outputPresetHint": "Bu çıxış seçildikdə bu ekvalayzeri avtomatik tətbiq et.",
+    "eqApproximation": "Qulaqlıq profilləri onzolaqlı ekvalayzer üçün təxmini uyğunlaşdırılıb."
   }
 }

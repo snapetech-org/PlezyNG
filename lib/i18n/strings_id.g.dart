@@ -115,6 +115,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$id romm = _Translations$romm$id._(_root);
 	@override late final _Translations$subtitleCapture$id subtitleCapture = _Translations$subtitleCapture$id._(_root);
 	@override late final _Translations$musicExperience$id musicExperience = _Translations$musicExperience$id._(_root);
+	@override late final _Translations$musicTools$id musicTools = _Translations$musicTools$id._(_root);
 }
 
 // Path: app
@@ -2762,6 +2763,17 @@ class _Translations$seerr$id extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'Perjanjian itu ditolak setelah ditandatangani lagi.';
 	@override String get permissionDenied => 'Seerr menolak tindakan ini: akun Anda tidak lagi memiliki izin yang diperlukan';
 	@override String get permissionRevoked => 'Anda tidak lagi memiliki izin untuk meminta ini';
+	@override String get requestHint => 'Pilih opsi permintaan di Seerr';
+	@override String get quickRequestHint => 'Ajukan permintaan sekarang di Seerr dengan pengaturan bawaan';
+	@override String get chooseSeasonsHint => 'Pilih musim yang ingin diminta di Seerr';
+	@override String get request4kHint => 'Pilih permintaan 4K di Seerr';
+	@override String get only4kAvailable => 'Akun ini hanya dapat meminta versi 4K.';
+	@override String get cardActionHint => 'Buka menu kartu untuk opsi permintaan Seerr';
+	@override String get requestInProgress => 'Permintaan sedang diproses';
+	@override String get turnOffAlert => 'Matikan pemberitahuan ketersediaan';
+	@override String get notificationsEnabled4k => 'Kami akan memberi tahu Anda saat versi 4K tersedia';
+	@override String notificationsEnabledSeason({required Object season}) => 'Kami akan memberi tahu Anda saat musim ${season} tersedia';
+	@override String get requestSheetHint => 'Seerr menangani persetujuan dan melacak permintaan Anda.';
 }
 
 // Path: services
@@ -3837,6 +3849,9 @@ class _Translations$sourceSetup$id extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'Kecepatan yang diukur';
 	@override String get nfsReadRequests => 'Baca Permintaan';
 	@override String get sharedEntryConflict => 'ID item yang dikongsi ini sudah dibagi dengan item lain di perpustakaan ini. pilih ID berbeda.';
+	@override String get bookorbitHelp => 'Masuk dengan akun BookOrbit Anda sendiri untuk menelusuri dan memutar buku. Permintaan untuk judul yang tidak tersedia tetap dikirim melalui instans SeerrNG yang terhubung.';
+	@override String get bookorbitOpen => 'Buka di BookOrbit';
+	@override String get bookorbitDetailHelp => 'Lihat judul ini di BookOrbit untuk mengelola detail pustaka dan format yang tidak dapat dibuka Pleazyng. Progres mendengarkan disinkronkan dengan akun BookOrbit Anda.';
 }
 
 // Path: comics
@@ -4246,6 +4261,42 @@ class _Translations$musicExperience$id extends Translations$musicExperience$en {
 	@override String get routeLost => 'Keluaran audio terputus. Pemutaran dijeda.';
 	@override String get autoDriving => 'Buka tampilan berkendara saat terhubung ke mobil';
 	@override String get routeHint => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$id extends Translations$musicTools$en {
+	_Translations$musicTools$id._(TranslationsId root) : this._root = root, super.internal(root);
+
+	final TranslationsId _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ tamu';
+	@override String get charts => 'Peringkat pendengaran';
+	@override String get rediscover => 'Temukan kembali';
+	@override String get stations => 'Stasiun musik';
+	@override String get prompt => 'Daftar putar dari deskripsi';
+	@override String get provider => 'URL pembuatan penyedia';
+	@override String get model => 'Nama model';
+	@override String get consent => 'Kirim deskripsi saya ke penyedia ini';
+	@override String get promptHint => 'Jelaskan musik yang diinginkan';
+	@override String get noHistory => 'Belum ada musik untuk ditampilkan';
+	@override String get historyHint => 'Pemutaran yang dicatat di perangkat ini';
+	@override String get days => 'Hari';
+	@override String get albumBlocks => 'Satukan album utuh';
+	@override String get home => 'Musik';
+	@override String get recent => 'Baru diputar';
+	@override String get apiKey => 'Kunci API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'Minit';
+	@override String get rules => 'Filter';
+	@override String get exclusiveOutput => 'Keluaran audio eksklusif';
+	@override String get preamp => 'Prapenguatan';
+	@override String get ratingPending => 'Disimpan di perangkat ini; menunggu sinkronisasi';
+	@override String get lyricsOffset => 'Pergeseran waktu lirik';
+	@override String get anniversaries => 'Ulang tahun album';
+	@override String get outputPreset => 'EQ untuk keluaran ini';
+	@override String get outputPresetHint => 'Gunakan EQ ini secara otomatis saat keluaran ini dipilih.';
+	@override String get eqApproximation => 'Profil headphone diperkirakan untuk EQ sepuluh pita.';
 }
 
 // Path: appIcon.names
@@ -8063,6 +8114,17 @@ extension on TranslationsId {
 			'seerr.sessionRejectedAfterReauth' => 'Perjanjian itu ditolak setelah ditandatangani lagi.',
 			'seerr.permissionDenied' => 'Seerr menolak tindakan ini: akun Anda tidak lagi memiliki izin yang diperlukan',
 			'seerr.permissionRevoked' => 'Anda tidak lagi memiliki izin untuk meminta ini',
+			'seerr.requestHint' => 'Pilih opsi permintaan di Seerr',
+			'seerr.quickRequestHint' => 'Ajukan permintaan sekarang di Seerr dengan pengaturan bawaan',
+			'seerr.chooseSeasonsHint' => 'Pilih musim yang ingin diminta di Seerr',
+			'seerr.request4kHint' => 'Pilih permintaan 4K di Seerr',
+			'seerr.only4kAvailable' => 'Akun ini hanya dapat meminta versi 4K.',
+			'seerr.cardActionHint' => 'Buka menu kartu untuk opsi permintaan Seerr',
+			'seerr.requestInProgress' => 'Permintaan sedang diproses',
+			'seerr.turnOffAlert' => 'Matikan pemberitahuan ketersediaan',
+			'seerr.notificationsEnabled4k' => 'Kami akan memberi tahu Anda saat versi 4K tersedia',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Kami akan memberi tahu Anda saat musim ${season} tersedia',
+			'seerr.requestSheetHint' => 'Seerr menangani persetujuan dan melacak permintaan Anda.',
 			'services.title' => 'Layanan',
 			'services.hubSubtitle' => 'Sync menonton kemajuan dan meminta judul baru.',
 			'services.integrations' => 'Integrasi',
@@ -8432,6 +8494,8 @@ extension on TranslationsId {
 			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diakui hanya digunakan untuk sesi ini dan tidak dapat disimpan sebagai favorit.',
 			'universalMedia.displayName' => 'Nama Pameran (Optional)',
 			'universalMedia.displayNameHelp' => 'Pilih nama singkat untuk pemain dan kontrol media sistem.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'Memungkinkan koneksi HTTP yang tidak terenkripsi',
 			'universalMedia.allowHttpHelp' => 'HTTP tidak menyulitkan koneksi. hanya membiarkannya di jaringan yang dipercaya. gunakan HTTPS kapan saja mungkin.',
 			'universalMedia.advancedProtocols' => 'Hanya MPV: masukkan alamat RTSP, RTMP/RTMPS, UDP, atau RTP. Alamat ini tidak dapat disimpan sebagai favorit.',
@@ -8443,8 +8507,6 @@ extension on TranslationsId {
 			'universalMedia.favoriteSaved' => 'Stream favorit disimpan ke profil ini',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, other: '${count} masuk daftar main yang tidak didukung atau tidak aman.', ), 
 			'universalMedia.playlistAddress' => 'Alamat Playlist',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Buka daftar main M3U, M3u8, atau PLS dari alamat web. link streaming langsung tidak menyimpan daftar main.',
 			'universalMedia.choosePlaylist' => 'Pilih file playlist',
 			'universalMedia.openPlaylist' => 'Pembukaan playlist',
@@ -8946,6 +9008,8 @@ extension on TranslationsId {
 			'sourceSetup.identityPassphrase' => 'Frasa sandi identitas klien',
 			'sourceSetup.identityPassphraseHelp' => 'Kosongkan jika file tidak memiliki frasa sandi.',
 			'sourceSetup.removeIdentity' => 'Hapus identitas klien yang tersimpan',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'Identitas klien disimpan di penyimpanan kredensial sumber yang terenkripsi. Jangan ubah bagian ini untuk mempertahankan identitas yang tersimpan.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 hanya-baca melalui TCP. Tanpa RPC-with-TLS, lalu lintas NFS tidak terenkripsi. NAS harus mengizinkan ID AUTH_SYS yang dipilih dan port klien tanpa hak istimewa (sering disebut opsi ekspor “insecure”). NFSv4 dan UDP tidak didukung.',
 			'sourceSetup.nfsSetupHelp' => 'Bantuan pengaturan NFS',
@@ -8957,8 +9021,6 @@ extension on TranslationsId {
 			'sourceSetup.apiKey' => 'Kunci API',
 			'sourceSetup.optionalUsername' => 'Nama pengguna akun (opsional)',
 			'sourceSetup.optionalPassword' => 'Kata sandi akun (opsional)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Dapatkan kunci API dari opensubtitles.com. Pencarian mengirim judul video dan ID IMDb/TMDB yang tersedia, tidak pernah mengirim file video. Kunci dan kredensial akun opsional dienkripsi bersama sumber ini.',
 			'sourceSetup.automaticMetadata' => 'Metadata video daring otomatis',
 			'sourceSetup.metadataPrivacy' => 'Hanya mengirim judul/tahun dari nama file dan nomor episode atau ID NFO, tidak pernah mengirim media atau kredensial. Kolom NFO tetap menjadi acuan utama.',
@@ -9019,6 +9081,9 @@ extension on TranslationsId {
 			'sourceSetup.nfsReadSpeed' => 'Kecepatan yang diukur',
 			'sourceSetup.nfsReadRequests' => 'Baca Permintaan',
 			'sourceSetup.sharedEntryConflict' => 'ID item yang dikongsi ini sudah dibagi dengan item lain di perpustakaan ini. pilih ID berbeda.',
+			'sourceSetup.bookorbitHelp' => 'Masuk dengan akun BookOrbit Anda sendiri untuk menelusuri dan memutar buku. Permintaan untuk judul yang tidak tersedia tetap dikirim melalui instans SeerrNG yang terhubung.',
+			'sourceSetup.bookorbitOpen' => 'Buka di BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Lihat judul ini di BookOrbit untuk mengelola detail pustaka dan format yang tidak dapat dibuka Pleazyng. Progres mendengarkan disinkronkan dengan akun BookOrbit Anda.',
 			'comics.fitHeight' => 'Sesuaikan tinggi',
 			'comics.readingMode' => 'Mode baca',
 			'comics.paged' => 'Halaman',
@@ -9356,6 +9421,33 @@ extension on TranslationsId {
 			'musicExperience.routeLost' => 'Keluaran audio terputus. Pemutaran dijeda.',
 			'musicExperience.autoDriving' => 'Buka tampilan berkendara saat terhubung ke mobil',
 			'musicExperience.routeHint' => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.',
+			'musicTools.guestDj' => 'DJ tamu',
+			'musicTools.charts' => 'Peringkat pendengaran',
+			'musicTools.rediscover' => 'Temukan kembali',
+			'musicTools.stations' => 'Stasiun musik',
+			'musicTools.prompt' => 'Daftar putar dari deskripsi',
+			'musicTools.provider' => 'URL pembuatan penyedia',
+			'musicTools.model' => 'Nama model',
+			'musicTools.consent' => 'Kirim deskripsi saya ke penyedia ini',
+			'musicTools.promptHint' => 'Jelaskan musik yang diinginkan',
+			'musicTools.noHistory' => 'Belum ada musik untuk ditampilkan',
+			'musicTools.historyHint' => 'Pemutaran yang dicatat di perangkat ini',
+			'musicTools.days' => 'Hari',
+			'musicTools.albumBlocks' => 'Satukan album utuh',
+			'musicTools.home' => 'Musik',
+			'musicTools.recent' => 'Baru diputar',
+			'musicTools.apiKey' => 'Kunci API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'Minit',
+			'musicTools.rules' => 'Filter',
+			'musicTools.exclusiveOutput' => 'Keluaran audio eksklusif',
+			'musicTools.preamp' => 'Prapenguatan',
+			'musicTools.ratingPending' => 'Disimpan di perangkat ini; menunggu sinkronisasi',
+			'musicTools.lyricsOffset' => 'Pergeseran waktu lirik',
+			'musicTools.anniversaries' => 'Ulang tahun album',
+			'musicTools.outputPreset' => 'EQ untuk keluaran ini',
+			'musicTools.outputPresetHint' => 'Gunakan EQ ini secara otomatis saat keluaran ini dipilih.',
+			'musicTools.eqApproximation' => 'Profil headphone diperkirakan untuk EQ sepuluh pita.',
 			_ => null,
 		};
 	}

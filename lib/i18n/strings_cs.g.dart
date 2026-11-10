@@ -115,6 +115,7 @@ class TranslationsCs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$cs romm = _Translations$romm$cs._(_root);
 	@override late final _Translations$subtitleCapture$cs subtitleCapture = _Translations$subtitleCapture$cs._(_root);
 	@override late final _Translations$musicExperience$cs musicExperience = _Translations$musicExperience$cs._(_root);
+	@override late final _Translations$musicTools$cs musicTools = _Translations$musicTools$cs._(_root);
 }
 
 // Path: app
@@ -2815,6 +2816,17 @@ class _Translations$seerr$cs extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'Zasedání bylo po opětovném podepsání zamítnuto.';
 	@override String get permissionDenied => 'Seerr tuto akci odmítl: Váš účet již nemá požadované povolení';
 	@override String get permissionRevoked => 'Už nemáte právo na to požádat';
+	@override String get requestHint => 'Vyberte možnosti žádosti v Seerr';
+	@override String get quickRequestHint => 'Požádat nyní v Seerr s výchozím nastavením';
+	@override String get chooseSeasonsHint => 'Vyberte série, o které chcete v Seerr požádat';
+	@override String get request4kHint => 'Vyberte žádost o 4K v Seerr';
+	@override String get only4kAvailable => 'Tento účet může požádat pouze o 4K verzi.';
+	@override String get cardActionHint => 'Otevřete nabídku karty s možnostmi žádosti v Seerr';
+	@override String get requestInProgress => 'Žádost se zpracovává';
+	@override String get turnOffAlert => 'Vypnout upozornění na dostupnost';
+	@override String get notificationsEnabled4k => 'Upozorníme vás, až bude dostupná 4K verze';
+	@override String notificationsEnabledSeason({required Object season}) => 'Upozorníme vás, až bude dostupná série ${season}';
+	@override String get requestSheetHint => 'Seerr zajišťuje schválení a sledování vaší žádosti.';
 }
 
 // Path: services
@@ -3902,6 +3914,9 @@ class _Translations$sourceSetup$cs extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'měřená rychlost';
 	@override String get nfsReadRequests => 'Čtěte žádosti';
 	@override String get sharedEntryConflict => 'Tento sdílený ID položky je již připojen k dalším položkám v této knihovně.';
+	@override String get bookorbitHelp => 'Přihlaste se ke svému účtu BookOrbit a procházejte jeho knihy nebo je přehrávejte. Žádosti o chybějící tituly nadále zpracovává vaše připojená instance SeerrNG.';
+	@override String get bookorbitOpen => 'Otevřít v BookOrbit';
+	@override String get bookorbitDetailHelp => 'Zobrazte tento titul v BookOrbit a spravujte podrobnosti knihovny i formáty, které Pleazyng nedokáže otevřít. Průběh poslechu se synchronizuje s vaším účtem BookOrbit.';
 }
 
 // Path: comics
@@ -4311,6 +4326,42 @@ class _Translations$musicExperience$cs extends Translations$musicExperience$en {
 	@override String get routeLost => 'Zvukový výstup odpojen. Přehrávání pozastaveno.';
 	@override String get autoDriving => 'Otevřít režim řízení při připojení k autu';
 	@override String get routeHint => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$cs extends Translations$musicTools$en {
+	_Translations$musicTools$cs._(TranslationsCs root) : this._root = root, super.internal(root);
+
+	final TranslationsCs _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Hostující DJ';
+	@override String get charts => 'Žebříčky poslechu';
+	@override String get rediscover => 'Znovu objevit';
+	@override String get stations => 'Hudební stanice';
+	@override String get prompt => 'Seznam podle popisu';
+	@override String get provider => 'URL generování poskytovatele';
+	@override String get model => 'Název modelu';
+	@override String get consent => 'Odeslat můj popis tomuto poskytovateli';
+	@override String get promptHint => 'Popište požadovanou hudbu';
+	@override String get noHistory => 'Zatím není co zobrazit';
+	@override String get historyHint => 'Přehrání zaznamenaná v tomto zařízení';
+	@override String get days => 'Dny';
+	@override String get albumBlocks => 'Ponechat celá alba pohromadě';
+	@override String get home => 'Hudba';
+	@override String get recent => 'Nedávno přehrané';
+	@override String get apiKey => 'Klíč API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'minuty';
+	@override String get rules => 'Filtry';
+	@override String get exclusiveOutput => 'Výhradní zvukový výstup';
+	@override String get preamp => 'Předzesílení';
+	@override String get ratingPending => 'Uloženo v tomto zařízení; čeká na synchronizaci';
+	@override String get lyricsOffset => 'Časový posun textu';
+	@override String get anniversaries => 'Výročí alb';
+	@override String get outputPreset => 'Ekvalizér pro tento výstup';
+	@override String get outputPresetHint => 'Při výběru tohoto výstupu automaticky použít tento ekvalizér.';
+	@override String get eqApproximation => 'Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér.';
 }
 
 // Path: appIcon.names
@@ -8132,6 +8183,17 @@ extension on TranslationsCs {
 			'seerr.sessionRejectedAfterReauth' => 'Zasedání bylo po opětovném podepsání zamítnuto.',
 			'seerr.permissionDenied' => 'Seerr tuto akci odmítl: Váš účet již nemá požadované povolení',
 			'seerr.permissionRevoked' => 'Už nemáte právo na to požádat',
+			'seerr.requestHint' => 'Vyberte možnosti žádosti v Seerr',
+			'seerr.quickRequestHint' => 'Požádat nyní v Seerr s výchozím nastavením',
+			'seerr.chooseSeasonsHint' => 'Vyberte série, o které chcete v Seerr požádat',
+			'seerr.request4kHint' => 'Vyberte žádost o 4K v Seerr',
+			'seerr.only4kAvailable' => 'Tento účet může požádat pouze o 4K verzi.',
+			'seerr.cardActionHint' => 'Otevřete nabídku karty s možnostmi žádosti v Seerr',
+			'seerr.requestInProgress' => 'Žádost se zpracovává',
+			'seerr.turnOffAlert' => 'Vypnout upozornění na dostupnost',
+			'seerr.notificationsEnabled4k' => 'Upozorníme vás, až bude dostupná 4K verze',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Upozorníme vás, až bude dostupná série ${season}',
+			'seerr.requestSheetHint' => 'Seerr zajišťuje schválení a sledování vaší žádosti.',
 			'services.title' => 'Služby',
 			'services.hubSubtitle' => 'Sync sleduje pokrok a žádá o nové tituly.',
 			'services.integrations' => 'integrace',
@@ -8501,6 +8563,8 @@ extension on TranslationsCs {
 			'universalMedia.addressHelp' => 'URL s uznanými parametry ověřování nebo podpisů se používají pouze pro tuto schůzku a nelze je uložit jako oblíbené.',
 			'universalMedia.displayName' => 'Název zobrazení (volitelné)',
 			'universalMedia.displayNameHelp' => 'Vyberte krátký název pro hráče a systémové médií ovládacích prvků.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'Umožňuje nekryptované připojení HTTP',
 			'universalMedia.allowHttpHelp' => 'HTTP nešifruje připojení. dovolte ho pouze na důvěryhodné síti. použijte HTTPS kdykoli je to možné.',
 			'universalMedia.advancedProtocols' => 'MPV pouze: zadejte adresu RTSP, RTMP/RTMPS, UDP nebo RTP. Tyto adresy nelze uložit jako oblíbené.',
@@ -8512,8 +8576,6 @@ extension on TranslationsCs {
 			'universalMedia.favoriteSaved' => 'Stream oblíbené uložené do tohoto profilu',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Přepadl ${count} nepodporovaný nebo nebezpečný playlist vstup.', few: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', many: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', other: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', ), 
 			'universalMedia.playlistAddress' => 'Playlistová adresa',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Otevřete playlist M3U, M3u8 nebo PLS z webové adresy. Přímé streamovací odkazy nezachovávají playlist.',
 			'universalMedia.choosePlaylist' => 'Vyberte soubor playlist',
 			'universalMedia.openPlaylist' => 'Otevřená playlist',
@@ -9015,6 +9077,8 @@ extension on TranslationsCs {
 			'sourceSetup.identityPassphrase' => 'Heslová fráze identity klienta',
 			'sourceSetup.identityPassphraseHelp' => 'Ponechte prázdné, pokud soubor nemá heslovou frázi.',
 			'sourceSetup.removeIdentity' => 'Odebrat případnou uloženou identitu klienta',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'Identity klienta se ukládají do šifrovaného úložiště přihlašovacích údajů zdroje. Pokud chcete uloženou identitu zachovat, tuto část neměňte.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 přes TCP, pouze pro čtení. Bez RPC-with-TLS není provoz NFS šifrovaný. NAS musí povolit vybraná ID AUTH_SYS a neprivilegované klientské porty (často volba exportu „insecure“). NFSv4 ani UDP nejsou podporovány.',
 			'sourceSetup.nfsSetupHelp' => 'Nápověda k nastavení NFS',
@@ -9026,8 +9090,6 @@ extension on TranslationsCs {
 			'sourceSetup.apiKey' => 'Klíč API',
 			'sourceSetup.optionalUsername' => 'Uživatelské jméno účtu (nepovinné)',
 			'sourceSetup.optionalPassword' => 'Heslo účtu (nepovinné)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Získejte klíč API na opensubtitles.com. Hledání odesílá název videa a dostupná ID IMDb/TMDB, nikdy videosoubor. Klíč a volitelné přihlašovací údaje účtu jsou šifrovány spolu s tímto zdrojem.',
 			'sourceSetup.automaticMetadata' => 'Automatická online metadata videa',
 			'sourceSetup.metadataPrivacy' => 'Odesílá pouze název/rok z názvu souboru a čísla epizod nebo ID NFO, nikdy média ani přihlašovací údaje. Pole NFO mají nadále přednost.',
@@ -9088,6 +9150,9 @@ extension on TranslationsCs {
 			'sourceSetup.nfsReadSpeed' => 'měřená rychlost',
 			'sourceSetup.nfsReadRequests' => 'Čtěte žádosti',
 			'sourceSetup.sharedEntryConflict' => 'Tento sdílený ID položky je již připojen k dalším položkám v této knihovně.',
+			'sourceSetup.bookorbitHelp' => 'Přihlaste se ke svému účtu BookOrbit a procházejte jeho knihy nebo je přehrávejte. Žádosti o chybějící tituly nadále zpracovává vaše připojená instance SeerrNG.',
+			'sourceSetup.bookorbitOpen' => 'Otevřít v BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Zobrazte tento titul v BookOrbit a spravujte podrobnosti knihovny i formáty, které Pleazyng nedokáže otevřít. Průběh poslechu se synchronizuje s vaším účtem BookOrbit.',
 			'comics.fitHeight' => 'Přizpůsobit výšce',
 			'comics.readingMode' => 'Režim čtení',
 			'comics.paged' => 'Stránky',
@@ -9425,6 +9490,33 @@ extension on TranslationsCs {
 			'musicExperience.routeLost' => 'Zvukový výstup odpojen. Přehrávání pozastaveno.',
 			'musicExperience.autoDriving' => 'Otevřít režim řízení při připojení k autu',
 			'musicExperience.routeHint' => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.',
+			'musicTools.guestDj' => 'Hostující DJ',
+			'musicTools.charts' => 'Žebříčky poslechu',
+			'musicTools.rediscover' => 'Znovu objevit',
+			'musicTools.stations' => 'Hudební stanice',
+			'musicTools.prompt' => 'Seznam podle popisu',
+			'musicTools.provider' => 'URL generování poskytovatele',
+			'musicTools.model' => 'Název modelu',
+			'musicTools.consent' => 'Odeslat můj popis tomuto poskytovateli',
+			'musicTools.promptHint' => 'Popište požadovanou hudbu',
+			'musicTools.noHistory' => 'Zatím není co zobrazit',
+			'musicTools.historyHint' => 'Přehrání zaznamenaná v tomto zařízení',
+			'musicTools.days' => 'Dny',
+			'musicTools.albumBlocks' => 'Ponechat celá alba pohromadě',
+			'musicTools.home' => 'Hudba',
+			'musicTools.recent' => 'Nedávno přehrané',
+			'musicTools.apiKey' => 'Klíč API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'minuty',
+			'musicTools.rules' => 'Filtry',
+			'musicTools.exclusiveOutput' => 'Výhradní zvukový výstup',
+			'musicTools.preamp' => 'Předzesílení',
+			'musicTools.ratingPending' => 'Uloženo v tomto zařízení; čeká na synchronizaci',
+			'musicTools.lyricsOffset' => 'Časový posun textu',
+			'musicTools.anniversaries' => 'Výročí alb',
+			'musicTools.outputPreset' => 'Ekvalizér pro tento výstup',
+			'musicTools.outputPresetHint' => 'Při výběru tohoto výstupu automaticky použít tento ekvalizér.',
+			'musicTools.eqApproximation' => 'Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér.',
 			_ => null,
 		};
 	}

@@ -3319,7 +3319,18 @@
     "noUserInformation": "Seerr 未傳回使用者資訊",
     "sessionRejectedAfterReauth": "重新登入後，工作階段遭到拒絕",
     "permissionDenied": "Seerr 拒絕了此操作：您的帳戶不再具備所需權限",
-    "permissionRevoked": "您不再具有請求此內容的權限"
+    "permissionRevoked": "您不再具有請求此內容的權限",
+    "requestHint": "在 Seerr 中選擇請求選項",
+    "quickRequestHint": "使用預設設定立即透過 Seerr 請求",
+    "chooseSeasonsHint": "選擇要在 Seerr 中請求的季度",
+    "request4kHint": "在 Seerr 中選擇 4K 請求",
+    "only4kAvailable": "此帳戶只能請求 4K 版本。",
+    "cardActionHint": "開啟卡片選單以查看 Seerr 請求選項",
+    "requestInProgress": "請求處理中",
+    "turnOffAlert": "關閉可用性通知",
+    "notificationsEnabled4k": "4K 版本可用時我們會通知您",
+    "notificationsEnabledSeason": "第 ${season} 季可用時我們會通知您",
+    "requestSheetHint": "Seerr 會處理核准並追蹤您的請求。"
   },
   "services": {
     "title": "外部服務",
@@ -4352,7 +4363,10 @@
     "nfsReadBytes": "資料閱讀",
     "nfsReadSpeed": "測量速度",
     "nfsReadRequests": "閱讀請求",
-    "sharedEntryConflict": "此共享專案 ID 已與本圖書館中的另一個專案相匹配. 選擇不同的 ID。"
+    "sharedEntryConflict": "此共享專案 ID 已與本圖書館中的另一個專案相匹配. 選擇不同的 ID。",
+    "bookorbitHelp": "使用您自己的 BookOrbit 帳戶登入，即可瀏覽及播放書籍。缺少的書名仍會透過已連線的 SeerrNG 執行個體提出請求。",
+    "bookorbitOpen": "在 BookOrbit 中開啟",
+    "bookorbitDetailHelp": "在 BookOrbit 中查看此書，以管理書庫詳細資料和 Pleazyng 無法開啟的格式。聆聽進度會與您的 BookOrbit 帳戶同步。"
   },
   "comics": {
     "fitHeight": "符合高度",
@@ -5497,5 +5511,34 @@
     "routeLost": "音訊輸出已中斷。播放已暫停。",
     "autoDriving": "連接汽車時開啟駕駛畫面",
     "routeHint": "是否允許自動顯示應用程式由汽車系統決定。"
+  },
+  "musicTools": {
+    "guestDj": "客座 DJ",
+    "charts": "聆聽排行",
+    "rediscover": "重新發現",
+    "stations": "音樂電台",
+    "prompt": "描述產生播放清單",
+    "provider": "供應商產生位址",
+    "model": "模型名稱",
+    "consent": "將我的描述傳送給此供應商",
+    "promptHint": "描述想聽的音樂",
+    "noHistory": "尚無可顯示的音樂",
+    "historyHint": "此裝置記錄的播放",
+    "days": "天",
+    "albumBlocks": "保持專輯完整",
+    "home": "音樂",
+    "recent": "最近播放",
+    "apiKey": "API 金鑰",
+    "missing": "N/A",
+    "minutes": "分鐘",
+    "rules": "篩選器",
+    "exclusiveOutput": "獨佔音訊輸出",
+    "preamp": "前置放大",
+    "ratingPending": "已儲存在此裝置；等待同步",
+    "lyricsOffset": "歌詞時間偏移",
+    "anniversaries": "專輯發行紀念日",
+    "outputPreset": "此輸出的等化器",
+    "outputPresetHint": "選取此輸出時自動使用此等化器。",
+    "eqApproximation": "耳機設定檔已近似轉換為十段等化器設定。"
   }
 }

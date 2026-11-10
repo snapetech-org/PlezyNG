@@ -115,6 +115,7 @@ class TranslationsHi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$hi romm = _Translations$romm$hi._(_root);
 	@override late final _Translations$subtitleCapture$hi subtitleCapture = _Translations$subtitleCapture$hi._(_root);
 	@override late final _Translations$musicExperience$hi musicExperience = _Translations$musicExperience$hi._(_root);
+	@override late final _Translations$musicTools$hi musicTools = _Translations$musicTools$hi._(_root);
 }
 
 // Path: app
@@ -2781,6 +2782,17 @@ class _Translations$seerr$hi extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'फिर से हस्ताक्षर करने के बाद बैठक को अस्वीकार कर दिया गया';
 	@override String get permissionDenied => 'Seerr ने इस कार्रवाई को अस्वीकार कर दिया: आपके खाते में अब आवश्यक अनुमति नहीं है';
 	@override String get permissionRevoked => 'अब आपके पास यह अनुरोध करने की अनुमति नहीं है';
+	@override String get requestHint => 'Seerr में अनुरोध विकल्प चुनें';
+	@override String get quickRequestHint => 'Seerr में डिफ़ॉल्ट सेटिंग्स के साथ अभी अनुरोध करें';
+	@override String get chooseSeasonsHint => 'Seerr में अनुरोध के लिए सीज़न चुनें';
+	@override String get request4kHint => 'Seerr में 4K अनुरोध चुनें';
+	@override String get only4kAvailable => 'इस खाते से केवल 4K संस्करण का अनुरोध किया जा सकता है।';
+	@override String get cardActionHint => 'अनुरोध विकल्पों के लिए कार्ड मेनू खोलें';
+	@override String get requestInProgress => 'अनुरोध जारी है';
+	@override String get turnOffAlert => 'उपलब्धता सूचना बंद करें';
+	@override String get notificationsEnabled4k => '4K उपलब्ध होने पर हम आपको सूचित करेंगे';
+	@override String notificationsEnabledSeason({required Object season}) => 'सीज़न ${season} उपलब्ध होने पर हम आपको सूचित करेंगे';
+	@override String get requestSheetHint => 'Seerr अनुरोध को स्वीकृति देता है और उसकी स्थिति ट्रैक करता है।';
 }
 
 // Path: services
@@ -3860,6 +3872,9 @@ class _Translations$sourceSetup$hi extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'गति का माप';
 	@override String get nfsReadRequests => 'अनुरोधों को पढ़ें';
 	@override String get sharedEntryConflict => 'यह साझा आइटम आईडी पहले से ही इस पुस्तकालय में एक और आइटमी के साथ जुड़ा हुआ है. एक अलग आईडी चुनें.';
+	@override String get bookorbitHelp => 'अपनी BookOrbit पुस्तकों को ब्राउज़ करने और चलाने के लिए अपने BookOrbit खाते से साइन इन करें। अनुपलब्ध शीर्षकों के अनुरोध फिर भी आपके कनेक्ट किए गए SeerrNG इंस्टेंस से भेजे जाते हैं।';
+	@override String get bookorbitOpen => 'BookOrbit में खोलें';
+	@override String get bookorbitDetailHelp => 'लाइब्रेरी का विवरण और वे फ़ॉर्मैट प्रबंधित करने के लिए यह शीर्षक BookOrbit में देखें जिन्हें Pleazyng खोल नहीं सकता। सुनने की प्रगति आपके BookOrbit खाते के साथ सिंक होती है।';
 }
 
 // Path: comics
@@ -4269,6 +4284,42 @@ class _Translations$musicExperience$hi extends Translations$musicExperience$en {
 	@override String get routeLost => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।';
 	@override String get autoDriving => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें';
 	@override String get routeHint => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।';
+}
+
+// Path: musicTools
+class _Translations$musicTools$hi extends Translations$musicTools$en {
+	_Translations$musicTools$hi._(TranslationsHi root) : this._root = root, super.internal(root);
+
+	final TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'अतिथि डीजे';
+	@override String get charts => 'सुनने की रैंकिंग';
+	@override String get rediscover => 'फिर खोजें';
+	@override String get stations => 'संगीत स्टेशन';
+	@override String get prompt => 'विवरण से प्लेलिस्ट';
+	@override String get provider => 'प्रदाता का जनरेशन URL';
+	@override String get model => 'मॉडल का नाम';
+	@override String get consent => 'मेरा विवरण इस प्रदाता को भेजें';
+	@override String get promptHint => 'अपना पसंदीदा संगीत बताएं';
+	@override String get noHistory => 'अभी दिखाने के लिए संगीत नहीं है';
+	@override String get historyHint => 'इस डिवाइस पर दर्ज प्ले';
+	@override String get days => 'दिन';
+	@override String get albumBlocks => 'पूरे एल्बम साथ रखें';
+	@override String get home => 'संगीत';
+	@override String get recent => 'हाल ही में सुने गए';
+	@override String get apiKey => 'API कुंजी';
+	@override String get missing => 'ए / ए';
+	@override String get minutes => 'मिनट';
+	@override String get rules => 'फ़िल्टर';
+	@override String get exclusiveOutput => 'विशेष ऑडियो आउटपुट';
+	@override String get preamp => 'प्रीएम्प';
+	@override String get ratingPending => 'इस डिवाइस पर सहेजा गया; सिंक की प्रतीक्षा में';
+	@override String get lyricsOffset => 'गीत के बोल का समय अंतर';
+	@override String get anniversaries => 'एल्बम की वर्षगाँठ';
+	@override String get outputPreset => 'इस आउटपुट का इक्वलाइज़र';
+	@override String get outputPresetHint => 'यह आउटपुट चुने जाने पर यह इक्वलाइज़र अपने आप इस्तेमाल करें।';
+	@override String get eqApproximation => 'हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।';
 }
 
 // Path: appIcon.names
@@ -8088,6 +8139,17 @@ extension on TranslationsHi {
 			'seerr.sessionRejectedAfterReauth' => 'फिर से हस्ताक्षर करने के बाद बैठक को अस्वीकार कर दिया गया',
 			'seerr.permissionDenied' => 'Seerr ने इस कार्रवाई को अस्वीकार कर दिया: आपके खाते में अब आवश्यक अनुमति नहीं है',
 			'seerr.permissionRevoked' => 'अब आपके पास यह अनुरोध करने की अनुमति नहीं है',
+			'seerr.requestHint' => 'Seerr में अनुरोध विकल्प चुनें',
+			'seerr.quickRequestHint' => 'Seerr में डिफ़ॉल्ट सेटिंग्स के साथ अभी अनुरोध करें',
+			'seerr.chooseSeasonsHint' => 'Seerr में अनुरोध के लिए सीज़न चुनें',
+			'seerr.request4kHint' => 'Seerr में 4K अनुरोध चुनें',
+			'seerr.only4kAvailable' => 'इस खाते से केवल 4K संस्करण का अनुरोध किया जा सकता है।',
+			'seerr.cardActionHint' => 'अनुरोध विकल्पों के लिए कार्ड मेनू खोलें',
+			'seerr.requestInProgress' => 'अनुरोध जारी है',
+			'seerr.turnOffAlert' => 'उपलब्धता सूचना बंद करें',
+			'seerr.notificationsEnabled4k' => '4K उपलब्ध होने पर हम आपको सूचित करेंगे',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'सीज़न ${season} उपलब्ध होने पर हम आपको सूचित करेंगे',
+			'seerr.requestSheetHint' => 'Seerr अनुरोध को स्वीकृति देता है और उसकी स्थिति ट्रैक करता है।',
 			'services.title' => 'सेवाएं',
 			'services.hubSubtitle' => 'सिंक्रनाइज़ेशन प्रगति की निगरानी करता है और नए शीर्षकों की मांग करता है।',
 			'services.integrations' => 'एकीकरण',
@@ -8457,6 +8519,8 @@ extension on TranslationsHi {
 			'universalMedia.addressHelp' => 'मान्यता प्राप्त क्रेडिट या हस्ताक्षर पैरामीटर वाले URL का उपयोग केवल इस सत्र के लिए किया जाता है और पसंदीदा के रूप में संग्रहीत नहीं किया जा सकता है।',
 			'universalMedia.displayName' => 'डिस्प्ले नाम (वैकल्पिक)',
 			'universalMedia.displayNameHelp' => 'प्लेयर और सिस्टम मीडिया नियंत्रण के लिए एक संक्षिप्त नाम चुनें।',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'एक अज्ञात HTTP कनेक्शन की अनुमति दें',
 			'universalMedia.allowHttpHelp' => 'HTTP कनेक्शन को एन्क्रिप्ट नहीं करता. इसे केवल एक विश्वसनीय नेटवर्क पर अनुमति दें. जब संभव हो तो HTTPS का उपयोग करें.',
 			'universalMedia.advancedProtocols' => 'MPV केवल: एक RTSP, RTMP/RTMPS, UDP या RTP पता दर्ज करें. इन पते को पसंद के रूप में नहीं बचाया जा सकता है.',
@@ -8468,8 +8532,6 @@ extension on TranslationsHi {
 			'universalMedia.favoriteSaved' => 'स्ट्रीम पसंदीदा इस प्रोफ़ाइल में सहेजा गया',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n, one: '${count} अपरिवर्तित या असुरक्षित प्लेलिस्ट इनपुट से बाहर निकल गया।', other: '${count} अपरिवर्तित या असुरक्षित प्लेलिस्ट इनपुट को छोड़ दिया।', ), 
 			'universalMedia.playlistAddress' => 'प्लेलिस्ट पता',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'एक वेब पते से M3U, M3u8, या PLS प्लेलिस्ट खोलें. सीधे स्ट्रीम लिंक प्ले लिस्ट को नहीं बचाते हैं.',
 			'universalMedia.choosePlaylist' => 'Playlist फ़ाइल का चयन करें',
 			'universalMedia.openPlaylist' => 'खुली प्लेलिस्ट',
@@ -8971,6 +9033,8 @@ extension on TranslationsHi {
 			'sourceSetup.identityPassphrase' => 'क्लाइंट पहचान का पासफ़्रेज़',
 			'sourceSetup.identityPassphraseHelp' => 'फ़ाइल में पासफ़्रेज़ न हो तो खाली छोड़ें।',
 			'sourceSetup.removeIdentity' => 'सहेजी गई क्लाइंट पहचान हटाएँ',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'क्लाइंट पहचानें स्रोत के एन्क्रिप्टेड क्रेडेंशियल स्टोर में सहेजी जाती हैं। सहेजी गई पहचान बनाए रखने के लिए इस अनुभाग में बदलाव न करें।',
 			'sourceSetup.nfsLimitations' => 'TCP पर केवल पढ़ने के लिए NFSv3। RPC-with-TLS के बिना NFS ट्रैफ़िक एन्क्रिप्ट नहीं होता। NAS को चुने गए AUTH_SYS ID और गैर-विशेषाधिकार प्राप्त क्लाइंट पोर्ट की अनुमति देनी होगी (एक्सपोर्ट में इसे अक्सर “insecure” विकल्प कहा जाता है)। NFSv4 और UDP समर्थित नहीं हैं।',
 			'sourceSetup.nfsSetupHelp' => 'NFS सेटअप सहायता',
@@ -8982,8 +9046,6 @@ extension on TranslationsHi {
 			'sourceSetup.apiKey' => 'API कुंजी',
 			'sourceSetup.optionalUsername' => 'खाते का उपयोगकर्ता नाम (वैकल्पिक)',
 			'sourceSetup.optionalPassword' => 'खाते का पासवर्ड (वैकल्पिक)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com से API कुंजी लें। खोज में वीडियो का शीर्षक और उपलब्ध IMDb/TMDB ID भेजे जाते हैं, वीडियो फ़ाइल कभी नहीं भेजी जाती। कुंजी और वैकल्पिक खाते के क्रेडेंशियल इस स्रोत के साथ एन्क्रिप्ट करके सहेजे जाते हैं।',
 			'sourceSetup.automaticMetadata' => 'ऑनलाइन वीडियो मेटाडेटा अपने-आप पाएँ',
 			'sourceSetup.metadataPrivacy' => 'केवल फ़ाइलनाम से शीर्षक, वर्ष और एपिसोड नंबर या NFO ID भेजा जाता है; मीडिया या क्रेडेंशियल कभी नहीं भेजे जाते। NFO फ़ील्ड को हमेशा प्राथमिकता मिलती है।',
@@ -9044,6 +9106,9 @@ extension on TranslationsHi {
 			'sourceSetup.nfsReadSpeed' => 'गति का माप',
 			'sourceSetup.nfsReadRequests' => 'अनुरोधों को पढ़ें',
 			'sourceSetup.sharedEntryConflict' => 'यह साझा आइटम आईडी पहले से ही इस पुस्तकालय में एक और आइटमी के साथ जुड़ा हुआ है. एक अलग आईडी चुनें.',
+			'sourceSetup.bookorbitHelp' => 'अपनी BookOrbit पुस्तकों को ब्राउज़ करने और चलाने के लिए अपने BookOrbit खाते से साइन इन करें। अनुपलब्ध शीर्षकों के अनुरोध फिर भी आपके कनेक्ट किए गए SeerrNG इंस्टेंस से भेजे जाते हैं।',
+			'sourceSetup.bookorbitOpen' => 'BookOrbit में खोलें',
+			'sourceSetup.bookorbitDetailHelp' => 'लाइब्रेरी का विवरण और वे फ़ॉर्मैट प्रबंधित करने के लिए यह शीर्षक BookOrbit में देखें जिन्हें Pleazyng खोल नहीं सकता। सुनने की प्रगति आपके BookOrbit खाते के साथ सिंक होती है।',
 			'comics.fitHeight' => 'ऊँचाई के अनुसार फ़िट करें',
 			'comics.readingMode' => 'पढ़ने का मोड',
 			'comics.paged' => 'पृष्ठ',
@@ -9381,6 +9446,33 @@ extension on TranslationsHi {
 			'musicExperience.routeLost' => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।',
 			'musicExperience.autoDriving' => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें',
 			'musicExperience.routeHint' => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।',
+			'musicTools.guestDj' => 'अतिथि डीजे',
+			'musicTools.charts' => 'सुनने की रैंकिंग',
+			'musicTools.rediscover' => 'फिर खोजें',
+			'musicTools.stations' => 'संगीत स्टेशन',
+			'musicTools.prompt' => 'विवरण से प्लेलिस्ट',
+			'musicTools.provider' => 'प्रदाता का जनरेशन URL',
+			'musicTools.model' => 'मॉडल का नाम',
+			'musicTools.consent' => 'मेरा विवरण इस प्रदाता को भेजें',
+			'musicTools.promptHint' => 'अपना पसंदीदा संगीत बताएं',
+			'musicTools.noHistory' => 'अभी दिखाने के लिए संगीत नहीं है',
+			'musicTools.historyHint' => 'इस डिवाइस पर दर्ज प्ले',
+			'musicTools.days' => 'दिन',
+			'musicTools.albumBlocks' => 'पूरे एल्बम साथ रखें',
+			'musicTools.home' => 'संगीत',
+			'musicTools.recent' => 'हाल ही में सुने गए',
+			'musicTools.apiKey' => 'API कुंजी',
+			'musicTools.missing' => 'ए / ए',
+			'musicTools.minutes' => 'मिनट',
+			'musicTools.rules' => 'फ़िल्टर',
+			'musicTools.exclusiveOutput' => 'विशेष ऑडियो आउटपुट',
+			'musicTools.preamp' => 'प्रीएम्प',
+			'musicTools.ratingPending' => 'इस डिवाइस पर सहेजा गया; सिंक की प्रतीक्षा में',
+			'musicTools.lyricsOffset' => 'गीत के बोल का समय अंतर',
+			'musicTools.anniversaries' => 'एल्बम की वर्षगाँठ',
+			'musicTools.outputPreset' => 'इस आउटपुट का इक्वलाइज़र',
+			'musicTools.outputPresetHint' => 'यह आउटपुट चुने जाने पर यह इक्वलाइज़र अपने आप इस्तेमाल करें।',
+			'musicTools.eqApproximation' => 'हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।',
 			_ => null,
 		};
 	}

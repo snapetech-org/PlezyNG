@@ -1,3 +1,4 @@
+import 'services/music/music_background_frames.dart';
 import 'dart:async';
 import 'dart:io' show Directory, File, Platform, ProcessInfo, stderr;
 import 'dart:ui' show AppExitResponse;
@@ -180,6 +181,14 @@ void _registerTvosPlatformPlugins() {
 
 void main([List<String> args = const <String>[]]) {
   final binding = PlezyWidgetsBinding.ensureInitialized();
+  final carBootstrap = args.contains('--pleazyng-car-host');
+  if (carBootstrap || Platform.isAndroid) {
+    // Warm phone engines can later become the car's background engine too.
+    MusicBackgroundFrames(
+      binding,
+      active: () => carBootstrap || PlatformDetector.isAutomotiveMedia() || MusicBackgroundFrames.carConnected,
+    ).install();
+  }
   if (args.contains('--plezy-preparation-worker')) {
     unawaited(runDesktopPreparationWorker());
     return;
@@ -1377,6 +1386,9 @@ FutureOr<SentryEvent?> _beforeSend(SentryEvent event, Hint _) {
 void _registerAppLicenses() {
   _registerShaderLicenses();
   LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks(const [
+      'AutoEq headphone equalization (Jaakko Pasanen)',
+    ], await rootBundle.loadString('assets/licenses/AutoEq_MIT.txt'));
     yield LicenseEntryWithLineBreaks(const [
       'MilkRust native integration (AGPL-3.0)',
     ], await rootBundle.loadString('assets/licenses/MilkRust_Native.txt'));

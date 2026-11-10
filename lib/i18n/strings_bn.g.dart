@@ -115,6 +115,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$bn romm = _Translations$romm$bn._(_root);
 	@override late final _Translations$subtitleCapture$bn subtitleCapture = _Translations$subtitleCapture$bn._(_root);
 	@override late final _Translations$musicExperience$bn musicExperience = _Translations$musicExperience$bn._(_root);
+	@override late final _Translations$musicTools$bn musicTools = _Translations$musicTools$bn._(_root);
 }
 
 // Path: app
@@ -2781,6 +2782,17 @@ class _Translations$seerr$bn extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'পুনরাবৃত্তি পরে চিঠি বাতিল করা হয়।';
 	@override String get permissionDenied => 'Seerr এই পদক্ষেপটি প্রত্যাখ্যান করেছে: আপনার অ্যাকাউন্টের প্রয়োজনীয় অনুমতি নেই';
 	@override String get permissionRevoked => 'আপনি এখন আর এ ব্যাপারে অনুরোধ করার অনুমতি নেই।';
+	@override String get requestHint => 'Seerr-এ অনুরোধের বিকল্প বেছে নিন';
+	@override String get quickRequestHint => 'ডিফল্ট সেটিংস ব্যবহার করে এখনই Seerr-এ অনুরোধ করুন';
+	@override String get chooseSeasonsHint => 'Seerr-এ অনুরোধ করার জন্য মৌসুম বেছে নিন';
+	@override String get request4kHint => 'Seerr-এ 4K অনুরোধ বেছে নিন';
+	@override String get only4kAvailable => 'এই অ্যাকাউন্ট থেকে শুধু 4K সংস্করণের অনুরোধ করা যায়।';
+	@override String get cardActionHint => 'Seerr-এর অনুরোধের বিকল্প দেখতে কার্ড মেনু খুলুন';
+	@override String get requestInProgress => 'অনুরোধ প্রক্রিয়াধীন';
+	@override String get turnOffAlert => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করুন';
+	@override String get notificationsEnabled4k => '4K সংস্করণ পাওয়া গেলে আমরা আপনাকে জানাব';
+	@override String notificationsEnabledSeason({required Object season}) => '${season} নম্বর মৌসুম পাওয়া গেলে আমরা আপনাকে জানাব';
+	@override String get requestSheetHint => 'Seerr আপনার অনুরোধের অনুমোদন ও অগ্রগতি সামলায়।';
 }
 
 // Path: services
@@ -3860,6 +3872,9 @@ class _Translations$sourceSetup$bn extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'গতি মাত্রা';
 	@override String get nfsReadRequests => 'অনুরোধ পড়ুন';
 	@override String get sharedEntryConflict => 'এই শেয়ার করা আইটেম ID ইতিমধ্যে এই লাইব্রেরির অন্য আইটেমের সঙ্গে যুক্ত। অন্য ID বেছে নিন।';
+	@override String get bookorbitHelp => 'বইগুলো দেখতে ও পড়তে আপনার নিজের BookOrbit অ্যাকাউন্টে সাইন ইন করুন। অনুপস্থিত শিরোনামের অনুরোধ এখনও আপনার সংযুক্ত SeerrNG ইনস্ট্যান্সের মাধ্যমেই যাবে।';
+	@override String get bookorbitOpen => 'BookOrbit-এ খুলুন';
+	@override String get bookorbitDetailHelp => 'লাইব্রেরির বিবরণ এবং Pleazyng যে ফরম্যাট খুলতে পারে না সেগুলো পরিচালনা করতে BookOrbit-এ এই শিরোনামটি দেখুন। শোনার অগ্রগতি আপনার BookOrbit অ্যাকাউন্টের সঙ্গে সিঙ্ক হয়।';
 }
 
 // Path: comics
@@ -4269,6 +4284,42 @@ class _Translations$musicExperience$bn extends Translations$musicExperience$en {
 	@override String get routeLost => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।';
 	@override String get autoDriving => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন';
 	@override String get routeHint => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।';
+}
+
+// Path: musicTools
+class _Translations$musicTools$bn extends Translations$musicTools$en {
+	_Translations$musicTools$bn._(TranslationsBn root) : this._root = root, super.internal(root);
+
+	final TranslationsBn _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'অতিথি ডিজে';
+	@override String get charts => 'শোনার তালিকা';
+	@override String get rediscover => 'আবার আবিষ্কার করুন';
+	@override String get stations => 'মিউজিক স্টেশন';
+	@override String get prompt => 'বর্ণনা থেকে প্লেলিস্ট';
+	@override String get provider => 'প্রদানকারীর তৈরির URL';
+	@override String get model => 'মডেলের নাম';
+	@override String get consent => 'এই প্রদানকারীকে আমার বর্ণনা পাঠান';
+	@override String get promptHint => 'আপনার পছন্দের সঙ্গীত বর্ণনা করুন';
+	@override String get noHistory => 'এখনও দেখানোর মতো সঙ্গীত নেই';
+	@override String get historyHint => 'এই ডিভাইসে রেকর্ড করা প্লে';
+	@override String get days => 'দিন';
+	@override String get albumBlocks => 'সম্পূর্ণ অ্যালবাম একসাথে রাখুন';
+	@override String get home => 'সঙ্গীত';
+	@override String get recent => 'সম্প্রতি শোনা';
+	@override String get apiKey => 'API কী';
+	@override String get missing => 'ন/এ';
+	@override String get minutes => 'মিনিট';
+	@override String get rules => 'ফিল্টারগুলি';
+	@override String get exclusiveOutput => 'একচেটিয়া অডিও আউটপুট';
+	@override String get preamp => 'প্রিঅ্যাম্প';
+	@override String get ratingPending => 'এই ডিভাইসে সংরক্ষিত; সিঙ্কের অপেক্ষায়';
+	@override String get lyricsOffset => 'গানের কথার সময়ের ব্যবধান';
+	@override String get anniversaries => 'অ্যালবামের বর্ষপূর্তি';
+	@override String get outputPreset => 'এই আউটপুটের ইকুয়ালাইজার';
+	@override String get outputPresetHint => 'এই আউটপুট বেছে নিলে স্বয়ংক্রিয়ভাবে এই ইকুয়ালাইজার ব্যবহার করুন।';
+	@override String get eqApproximation => 'হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।';
 }
 
 // Path: appIcon.names
@@ -8088,6 +8139,17 @@ extension on TranslationsBn {
 			'seerr.sessionRejectedAfterReauth' => 'পুনরাবৃত্তি পরে চিঠি বাতিল করা হয়।',
 			'seerr.permissionDenied' => 'Seerr এই পদক্ষেপটি প্রত্যাখ্যান করেছে: আপনার অ্যাকাউন্টের প্রয়োজনীয় অনুমতি নেই',
 			'seerr.permissionRevoked' => 'আপনি এখন আর এ ব্যাপারে অনুরোধ করার অনুমতি নেই।',
+			'seerr.requestHint' => 'Seerr-এ অনুরোধের বিকল্প বেছে নিন',
+			'seerr.quickRequestHint' => 'ডিফল্ট সেটিংস ব্যবহার করে এখনই Seerr-এ অনুরোধ করুন',
+			'seerr.chooseSeasonsHint' => 'Seerr-এ অনুরোধ করার জন্য মৌসুম বেছে নিন',
+			'seerr.request4kHint' => 'Seerr-এ 4K অনুরোধ বেছে নিন',
+			'seerr.only4kAvailable' => 'এই অ্যাকাউন্ট থেকে শুধু 4K সংস্করণের অনুরোধ করা যায়।',
+			'seerr.cardActionHint' => 'Seerr-এর অনুরোধের বিকল্প দেখতে কার্ড মেনু খুলুন',
+			'seerr.requestInProgress' => 'অনুরোধ প্রক্রিয়াধীন',
+			'seerr.turnOffAlert' => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করুন',
+			'seerr.notificationsEnabled4k' => '4K সংস্করণ পাওয়া গেলে আমরা আপনাকে জানাব',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => '${season} নম্বর মৌসুম পাওয়া গেলে আমরা আপনাকে জানাব',
+			'seerr.requestSheetHint' => 'Seerr আপনার অনুরোধের অনুমোদন ও অগ্রগতি সামলায়।',
 			'services.title' => 'পরিষেবা',
 			'services.hubSubtitle' => 'সিনক উন্নয়ন দেখুন এবং নতুন টাইমের জন্য অনুরোধ করুন।',
 			'services.integrations' => 'ইন্টারফেস',
@@ -8457,6 +8519,8 @@ extension on TranslationsBn {
 			'universalMedia.addressHelp' => 'HTTPS preferred. recognized credential বা signature parameters সঙ্গে URLs শুধুমাত্র এই session জন্য ব্যবহার করা হয় এবং পছন্দ হিসাবে সংরক্ষণ করা যাবে না।',
 			'universalMedia.displayName' => 'ডাউনলোড নাম (অ্যাপ্লিকেশন)',
 			'universalMedia.displayNameHelp' => 'খেলোয়াড় এবং সিস্টেম মিডিয়া কন্ট্রোলগুলির জন্য একটি ছোট নাম নির্বাচন করুন।',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => 'একটি অক্রিপ্ট HTTP সংযোগ অনুমোদন',
 			'universalMedia.allowHttpHelp' => 'HTTP সংযোগটি সক্রিপ্ট করে না. এটি শুধুমাত্র একটি বিশ্বাসযোগ্য নেটওয়ার্কে অনুমতি দেয়. সম্ভবত HTTPS ব্যবহার করুন.',
 			'universalMedia.advancedProtocols' => 'MPV শুধুমাত্র: একটি RTSP, RTMP/RTMPS, UDP বা RTP ঠিকানা লিখুন. এই ঠিকানাগুলি প্রিয় হিসাবে সংরক্ষণ করা যাবে না।',
@@ -8468,8 +8532,6 @@ extension on TranslationsBn {
 			'universalMedia.favoriteSaved' => 'এই প্রোফাইলে সুরক্ষিত পছন্দ স্ট্রিম',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${count} অসহায় বা নিরাপদ Playlist প্রবেশ।', other: '${count} সমর্থিত বা নিরাপদ Playlist অন্তর্ভুক্ত।', ), 
 			'universalMedia.playlistAddress' => 'Playlist ঠিকানা',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'একটি ওয়েব ঠিকানা থেকে একটি M3U, M3u8, বা PLS প্লেলিস্ট খোঁজ করুন. সরাসরি প্রদর্শন লিঙ্কগুলি প্লেলেস্ট সংরক্ষণ করে না।',
 			'universalMedia.choosePlaylist' => 'Playlist ফাইল নির্বাচন করুন',
 			'universalMedia.openPlaylist' => 'খোলা Playlist',
@@ -8971,6 +9033,8 @@ extension on TranslationsBn {
 			'sourceSetup.identityPassphrase' => 'ক্লায়েন্ট পরিচয়পত্রের পাসফ্রেজ',
 			'sourceSetup.identityPassphraseHelp' => 'ফাইলে পাসফ্রেজ না থাকলে ফাঁকা রাখুন।',
 			'sourceSetup.removeIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র সরান',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'ক্লায়েন্টের পরিচয়পত্র উৎসের এনক্রিপ্ট করা প্রবেশতথ্যের ভান্ডারে রাখা হয়। সংরক্ষিত পরিচয়পত্র রাখতে এই অংশ অপরিবর্তিত রাখুন।',
 			'sourceSetup.nfsLimitations' => 'TCP-এর মাধ্যমে শুধু পড়ার জন্য NFSv3। RPC-with-TLS ছাড়া NFS ট্র্যাফিক এনক্রিপ্ট করা হয় না। NAS-এ নির্বাচিত AUTH_SYS ID এবং বিশেষ অধিকার প্রয়োজন হয় না এমন ক্লায়েন্ট পোর্টের অনুমতি থাকতে হবে (এক্সপোর্টের এই বিকল্পকে সাধারণত “insecure” বলা হয়)। NFSv4 ও UDP সমর্থিত নয়।',
 			'sourceSetup.nfsSetupHelp' => 'NFS সেটআপ সহায়তা',
@@ -8982,8 +9046,6 @@ extension on TranslationsBn {
 			'sourceSetup.apiKey' => 'API কী',
 			'sourceSetup.optionalUsername' => 'অ্যাকাউন্টের ব্যবহারকারীর নাম (ঐচ্ছিক)',
 			'sourceSetup.optionalPassword' => 'অ্যাকাউন্টের পাসওয়ার্ড (ঐচ্ছিক)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com থেকে API কী নিন। অনুসন্ধানে ভিডিওর শিরোনাম ও উপলব্ধ IMDb/TMDB ID পাঠানো হয়, ভিডিও ফাইল কখনোই পাঠানো হয় না। কী ও ঐচ্ছিক অ্যাকাউন্টের প্রবেশতথ্য এই উৎসের সঙ্গে এনক্রিপ্ট করে রাখা হয়।',
 			'sourceSetup.automaticMetadata' => 'স্বয়ংক্রিয়ভাবে অনলাইন ভিডিও মেটাডেটা পান',
 			'sourceSetup.metadataPrivacy' => 'শুধু ফাইলের নাম থেকে শিরোনাম, বছর ও পর্বের নম্বর অথবা NFO ID পাঠানো হয়; মিডিয়া বা প্রবেশতথ্য কখনো পাঠানো হয় না। NFO ফিল্ড সবসময় অগ্রাধিকার পায়।',
@@ -9044,6 +9106,9 @@ extension on TranslationsBn {
 			'sourceSetup.nfsReadSpeed' => 'গতি মাত্রা',
 			'sourceSetup.nfsReadRequests' => 'অনুরোধ পড়ুন',
 			'sourceSetup.sharedEntryConflict' => 'এই শেয়ার করা আইটেম ID ইতিমধ্যে এই লাইব্রেরির অন্য আইটেমের সঙ্গে যুক্ত। অন্য ID বেছে নিন।',
+			'sourceSetup.bookorbitHelp' => 'বইগুলো দেখতে ও পড়তে আপনার নিজের BookOrbit অ্যাকাউন্টে সাইন ইন করুন। অনুপস্থিত শিরোনামের অনুরোধ এখনও আপনার সংযুক্ত SeerrNG ইনস্ট্যান্সের মাধ্যমেই যাবে।',
+			'sourceSetup.bookorbitOpen' => 'BookOrbit-এ খুলুন',
+			'sourceSetup.bookorbitDetailHelp' => 'লাইব্রেরির বিবরণ এবং Pleazyng যে ফরম্যাট খুলতে পারে না সেগুলো পরিচালনা করতে BookOrbit-এ এই শিরোনামটি দেখুন। শোনার অগ্রগতি আপনার BookOrbit অ্যাকাউন্টের সঙ্গে সিঙ্ক হয়।',
 			'comics.fitHeight' => 'উচ্চতা অনুযায়ী মানানসই',
 			'comics.readingMode' => 'পড়ার ধরন',
 			'comics.paged' => 'পৃষ্ঠা',
@@ -9381,6 +9446,33 @@ extension on TranslationsBn {
 			'musicExperience.routeLost' => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।',
 			'musicExperience.autoDriving' => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন',
 			'musicExperience.routeHint' => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।',
+			'musicTools.guestDj' => 'অতিথি ডিজে',
+			'musicTools.charts' => 'শোনার তালিকা',
+			'musicTools.rediscover' => 'আবার আবিষ্কার করুন',
+			'musicTools.stations' => 'মিউজিক স্টেশন',
+			'musicTools.prompt' => 'বর্ণনা থেকে প্লেলিস্ট',
+			'musicTools.provider' => 'প্রদানকারীর তৈরির URL',
+			'musicTools.model' => 'মডেলের নাম',
+			'musicTools.consent' => 'এই প্রদানকারীকে আমার বর্ণনা পাঠান',
+			'musicTools.promptHint' => 'আপনার পছন্দের সঙ্গীত বর্ণনা করুন',
+			'musicTools.noHistory' => 'এখনও দেখানোর মতো সঙ্গীত নেই',
+			'musicTools.historyHint' => 'এই ডিভাইসে রেকর্ড করা প্লে',
+			'musicTools.days' => 'দিন',
+			'musicTools.albumBlocks' => 'সম্পূর্ণ অ্যালবাম একসাথে রাখুন',
+			'musicTools.home' => 'সঙ্গীত',
+			'musicTools.recent' => 'সম্প্রতি শোনা',
+			'musicTools.apiKey' => 'API কী',
+			'musicTools.missing' => 'ন/এ',
+			'musicTools.minutes' => 'মিনিট',
+			'musicTools.rules' => 'ফিল্টারগুলি',
+			'musicTools.exclusiveOutput' => 'একচেটিয়া অডিও আউটপুট',
+			'musicTools.preamp' => 'প্রিঅ্যাম্প',
+			'musicTools.ratingPending' => 'এই ডিভাইসে সংরক্ষিত; সিঙ্কের অপেক্ষায়',
+			'musicTools.lyricsOffset' => 'গানের কথার সময়ের ব্যবধান',
+			'musicTools.anniversaries' => 'অ্যালবামের বর্ষপূর্তি',
+			'musicTools.outputPreset' => 'এই আউটপুটের ইকুয়ালাইজার',
+			'musicTools.outputPresetHint' => 'এই আউটপুট বেছে নিলে স্বয়ংক্রিয়ভাবে এই ইকুয়ালাইজার ব্যবহার করুন।',
+			'musicTools.eqApproximation' => 'হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।',
 			_ => null,
 		};
 	}

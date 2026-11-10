@@ -115,6 +115,7 @@ class TranslationsKo extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$ko romm = _Translations$romm$ko._(_root);
 	@override late final _Translations$subtitleCapture$ko subtitleCapture = _Translations$subtitleCapture$ko._(_root);
 	@override late final _Translations$musicExperience$ko musicExperience = _Translations$musicExperience$ko._(_root);
+	@override late final _Translations$musicTools$ko musicTools = _Translations$musicTools$ko._(_root);
 }
 
 // Path: app
@@ -2777,6 +2778,17 @@ class _Translations$seerr$ko extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => '다시 로그인한 후 세션이 거부되었습니다';
 	@override String get permissionDenied => 'Seerr가 이 작업을 거부했습니다: 계정에 필요한 권한이 더 이상 없습니다';
 	@override String get permissionRevoked => '이 항목을 요청할 권한이 더 이상 없습니다';
+	@override String get requestHint => 'Seerr 요청 옵션 선택';
+	@override String get quickRequestHint => 'Seerr에서 기본 설정으로 지금 요청';
+	@override String get chooseSeasonsHint => 'Seerr에서 요청할 시즌 선택';
+	@override String get request4kHint => 'Seerr에서 4K 요청 선택';
+	@override String get only4kAvailable => '이 계정에서는 4K 버전만 요청할 수 있습니다.';
+	@override String get cardActionHint => 'Seerr 요청 옵션을 보려면 카드 메뉴 열기';
+	@override String get requestInProgress => '요청 진행 중';
+	@override String get turnOffAlert => '이용 가능 알림 끄기';
+	@override String get notificationsEnabled4k => '4K 버전을 이용할 수 있게 되면 알려드릴게요';
+	@override String notificationsEnabledSeason({required Object season}) => '시즌 ${season}을 이용할 수 있게 되면 알려드릴게요';
+	@override String get requestSheetHint => '승인 처리와 요청 추적은 Seerr에서 담당합니다.';
 }
 
 // Path: services
@@ -3855,6 +3867,9 @@ class _Translations$sourceSetup$ko extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => '속도 측정';
 	@override String get nfsReadRequests => '요청 읽기';
 	@override String get sharedEntryConflict => '이 공유 항목 ID는 이미 이 도서관의 다른 항목과 조화되어 있습니다.';
+	@override String get bookorbitHelp => 'BookOrbit 도서를 둘러보고 재생하려면 본인 BookOrbit 계정으로 로그인하세요. 없는 작품의 요청은 계속 연결된 SeerrNG 인스턴스를 통해 전송됩니다.';
+	@override String get bookorbitOpen => 'BookOrbit에서 열기';
+	@override String get bookorbitDetailHelp => '라이브러리 세부 정보와 Pleazyng에서 열 수 없는 형식을 관리하려면 BookOrbit에서 이 작품을 확인하세요. 청취 진행 상황은 BookOrbit 계정과 동기화됩니다.';
 }
 
 // Path: comics
@@ -4264,6 +4279,42 @@ class _Translations$musicExperience$ko extends Translations$musicExperience$en {
 	@override String get routeLost => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.';
 	@override String get autoDriving => '차에 연결하면 운전 화면 열기';
 	@override String get routeHint => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$ko extends Translations$musicTools$en {
+	_Translations$musicTools$ko._(TranslationsKo root) : this._root = root, super.internal(root);
+
+	final TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => '게스트 DJ';
+	@override String get charts => '청취 순위';
+	@override String get rediscover => '다시 발견';
+	@override String get stations => '음악 스테이션';
+	@override String get prompt => '설명으로 재생목록 만들기';
+	@override String get provider => '공급자 생성 URL';
+	@override String get model => '모델 이름';
+	@override String get consent => '이 공급자에게 내 설명 보내기';
+	@override String get promptHint => '원하는 음악을 설명하세요';
+	@override String get noHistory => '아직 표시할 음악이 없습니다';
+	@override String get historyHint => '이 기기에 기록된 재생';
+	@override String get days => '일';
+	@override String get albumBlocks => '앨범 전체를 함께 유지';
+	@override String get home => '음악';
+	@override String get recent => '최근 재생한 음악';
+	@override String get apiKey => 'API 키';
+	@override String get missing => 'N/A';
+	@override String get minutes => '분';
+	@override String get rules => '필터';
+	@override String get exclusiveOutput => '독점 오디오 출력';
+	@override String get preamp => '프리앰프';
+	@override String get ratingPending => '이 기기에 저장됨; 동기화 대기 중';
+	@override String get lyricsOffset => '가사 타이밍 조정';
+	@override String get anniversaries => '앨범 발매 기념일';
+	@override String get outputPreset => '이 출력의 EQ';
+	@override String get outputPresetHint => '이 출력이 선택되면 이 EQ를 자동으로 사용합니다.';
+	@override String get eqApproximation => '헤드폰 프로필은 10밴드 EQ에 맞게 근사치로 변환됩니다.';
 }
 
 // Path: appIcon.names
@@ -8083,6 +8134,17 @@ extension on TranslationsKo {
 			'seerr.sessionRejectedAfterReauth' => '다시 로그인한 후 세션이 거부되었습니다',
 			'seerr.permissionDenied' => 'Seerr가 이 작업을 거부했습니다: 계정에 필요한 권한이 더 이상 없습니다',
 			'seerr.permissionRevoked' => '이 항목을 요청할 권한이 더 이상 없습니다',
+			'seerr.requestHint' => 'Seerr 요청 옵션 선택',
+			'seerr.quickRequestHint' => 'Seerr에서 기본 설정으로 지금 요청',
+			'seerr.chooseSeasonsHint' => 'Seerr에서 요청할 시즌 선택',
+			'seerr.request4kHint' => 'Seerr에서 4K 요청 선택',
+			'seerr.only4kAvailable' => '이 계정에서는 4K 버전만 요청할 수 있습니다.',
+			'seerr.cardActionHint' => 'Seerr 요청 옵션을 보려면 카드 메뉴 열기',
+			'seerr.requestInProgress' => '요청 진행 중',
+			'seerr.turnOffAlert' => '이용 가능 알림 끄기',
+			'seerr.notificationsEnabled4k' => '4K 버전을 이용할 수 있게 되면 알려드릴게요',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => '시즌 ${season}을 이용할 수 있게 되면 알려드릴게요',
+			'seerr.requestSheetHint' => '승인 처리와 요청 추적은 Seerr에서 담당합니다.',
 			'services.title' => '서비스',
 			'services.hubSubtitle' => '시청 진행률을 동기화하고 새 작품을 요청하세요.',
 			'services.integrations' => '연동',
@@ -8452,6 +8514,8 @@ extension on TranslationsKo {
 			'universalMedia.addressHelp' => '인증 또는 서명 매개 변수를 가진 URL은 이 세션에만 사용되며 좋아하는 것으로 저장될 수 없습니다.',
 			'universalMedia.displayName' => '디스플레이 이름 (선택)',
 			'universalMedia.displayNameHelp' => '플레이어 및 시스템 미디어 컨트롤에 대한 짧은 이름을 선택합니다.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.allowHttp' => '암호화되지 않은 HTTP 연결을 허용',
 			'universalMedia.allowHttpHelp' => 'HTTP는 연결을 암호화하지 않습니다. 신뢰할 수 있는 네트워크에서만 허용합니다. 가능한 경우 HTTPS를 사용하십시오.',
 			'universalMedia.advancedProtocols' => 'MPV만: RTSP, RTMP/RTMPS, UDP 또는 RTP 주소를 입력합니다.이 주소는 좋아하는 주소로 저장할 수 없습니다.',
@@ -8463,8 +8527,6 @@ extension on TranslationsKo {
 			'universalMedia.favoriteSaved' => 'Stream Favorite 이 프로필에 저장',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '스키피드 ${count} 지원되지 않거나 불안정한 플레이리스트 입력.', other: '${count} 지원되지 않거나 불안정한 플레이리스트 입력을 벗어났습니다.', ), 
 			'universalMedia.playlistAddress' => '플레이리스트 주소',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => '웹 주소에서 M3U, M3u8 또는 PLS 플레이리스트를 열 수 있습니다.Direct stream 링크는 플레이 리스트를 저장하지 않습니다.',
 			'universalMedia.choosePlaylist' => '플레이리스트 파일 선택',
 			'universalMedia.openPlaylist' => '오픈 플레이리스트',
@@ -8966,6 +9028,8 @@ extension on TranslationsKo {
 			'sourceSetup.identityPassphrase' => '클라이언트 인증 정보 암호 구문',
 			'sourceSetup.identityPassphraseHelp' => '파일에 암호 구문이 없으면 비워 두세요.',
 			'sourceSetup.removeIdentity' => '저장된 클라이언트 인증 정보 제거',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => '클라이언트 인증 정보는 암호화된 소스 자격 증명 저장소에 저장됩니다. 저장된 인증 정보를 유지하려면 이 섹션을 변경하지 마세요.',
 			'sourceSetup.nfsLimitations' => 'TCP를 통한 읽기 전용 NFSv3입니다. RPC-with-TLS를 사용하지 않으면 NFS 트래픽이 암호화되지 않습니다. NAS는 선택한 AUTH_SYS ID와 비특권 클라이언트 포트를 허용해야 합니다(보통 내보내기 옵션에서 ‘insecure’로 표시됨). NFSv4와 UDP는 지원하지 않습니다.',
 			'sourceSetup.nfsSetupHelp' => 'NFS 설정 도움말',
@@ -8977,8 +9041,6 @@ extension on TranslationsKo {
 			'sourceSetup.apiKey' => 'API 키',
 			'sourceSetup.optionalUsername' => '계정 사용자 이름(선택 사항)',
 			'sourceSetup.optionalPassword' => '계정 비밀번호(선택 사항)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com에서 API 키를 받으세요. 검색 시 동영상 제목과 사용 가능한 IMDb/TMDB ID만 전송하며, 동영상 파일은 절대 전송하지 않습니다. 키와 선택적 계정 자격 증명은 이 소스와 함께 암호화하여 저장합니다.',
 			'sourceSetup.automaticMetadata' => '온라인 동영상 메타데이터 자동 조회',
 			'sourceSetup.metadataPrivacy' => '파일명의 제목·연도·에피소드 번호 또는 NFO ID만 전송하며, 미디어나 자격 증명은 절대 전송하지 않습니다. NFO 필드가 항상 우선합니다.',
@@ -9039,6 +9101,9 @@ extension on TranslationsKo {
 			'sourceSetup.nfsReadSpeed' => '속도 측정',
 			'sourceSetup.nfsReadRequests' => '요청 읽기',
 			'sourceSetup.sharedEntryConflict' => '이 공유 항목 ID는 이미 이 도서관의 다른 항목과 조화되어 있습니다.',
+			'sourceSetup.bookorbitHelp' => 'BookOrbit 도서를 둘러보고 재생하려면 본인 BookOrbit 계정으로 로그인하세요. 없는 작품의 요청은 계속 연결된 SeerrNG 인스턴스를 통해 전송됩니다.',
+			'sourceSetup.bookorbitOpen' => 'BookOrbit에서 열기',
+			'sourceSetup.bookorbitDetailHelp' => '라이브러리 세부 정보와 Pleazyng에서 열 수 없는 형식을 관리하려면 BookOrbit에서 이 작품을 확인하세요. 청취 진행 상황은 BookOrbit 계정과 동기화됩니다.',
 			'comics.fitHeight' => '높이에 맞춤',
 			'comics.readingMode' => '읽기 모드',
 			'comics.paged' => '페이지',
@@ -9376,6 +9441,33 @@ extension on TranslationsKo {
 			'musicExperience.routeLost' => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.',
 			'musicExperience.autoDriving' => '차에 연결하면 운전 화면 열기',
 			'musicExperience.routeHint' => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.',
+			'musicTools.guestDj' => '게스트 DJ',
+			'musicTools.charts' => '청취 순위',
+			'musicTools.rediscover' => '다시 발견',
+			'musicTools.stations' => '음악 스테이션',
+			'musicTools.prompt' => '설명으로 재생목록 만들기',
+			'musicTools.provider' => '공급자 생성 URL',
+			'musicTools.model' => '모델 이름',
+			'musicTools.consent' => '이 공급자에게 내 설명 보내기',
+			'musicTools.promptHint' => '원하는 음악을 설명하세요',
+			'musicTools.noHistory' => '아직 표시할 음악이 없습니다',
+			'musicTools.historyHint' => '이 기기에 기록된 재생',
+			'musicTools.days' => '일',
+			'musicTools.albumBlocks' => '앨범 전체를 함께 유지',
+			'musicTools.home' => '음악',
+			'musicTools.recent' => '최근 재생한 음악',
+			'musicTools.apiKey' => 'API 키',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => '분',
+			'musicTools.rules' => '필터',
+			'musicTools.exclusiveOutput' => '독점 오디오 출력',
+			'musicTools.preamp' => '프리앰프',
+			'musicTools.ratingPending' => '이 기기에 저장됨; 동기화 대기 중',
+			'musicTools.lyricsOffset' => '가사 타이밍 조정',
+			'musicTools.anniversaries' => '앨범 발매 기념일',
+			'musicTools.outputPreset' => '이 출력의 EQ',
+			'musicTools.outputPresetHint' => '이 출력이 선택되면 이 EQ를 자동으로 사용합니다.',
+			'musicTools.eqApproximation' => '헤드폰 프로필은 10밴드 EQ에 맞게 근사치로 변환됩니다.',
 			_ => null,
 		};
 	}

@@ -1,7 +1,7 @@
 name: plezy
 description: "A cross-platform Pleazyng client for Plex, Jellyfin, and Emby"
 publish_to: "none"
-version: 3.0.22+181
+version: 3.0.23+182
 
 environment:
   # Dart floor stays 3.12: freezed 3.x emits `final` constructor parameters,
@@ -254,6 +254,8 @@ flutter:
     # flutter_inappwebview_macos 1.2.0-beta.3 fails SwiftPM builds on Xcode 26.
     enable-swift-package-manager: false
   assets:
+    - assets/music/autoeq.json
+    - assets/licenses/AutoEq_MIT.txt
     - PRIVACY.md
     - PRIVACY.ko.md
     - assets/wifi_transfer/upload_page.html

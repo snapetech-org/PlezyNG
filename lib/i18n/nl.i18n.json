@@ -3323,7 +3323,18 @@
     "noUserInformation": "Seerr heeft geen gebruikersgegevens geretourneerd",
     "sessionRejectedAfterReauth": "De sessie is na het opnieuw inloggen geweigerd",
     "permissionDenied": "Seerr heeft deze actie geweigerd: je account heeft niet langer de vereiste machtiging",
-    "permissionRevoked": "Je hebt geen toestemming meer om dit aan te vragen"
+    "permissionRevoked": "Je hebt geen toestemming meer om dit aan te vragen",
+    "requestHint": "Kies aanvraagopties in Seerr",
+    "quickRequestHint": "Plaats nu een aanvraag in Seerr met de standaardinstellingen",
+    "chooseSeasonsHint": "Kies de seizoenen die je in Seerr wilt aanvragen",
+    "request4kHint": "Kies een 4K-aanvraag in Seerr",
+    "only4kAvailable": "Met dit account kun je alleen de 4K-versie aanvragen.",
+    "cardActionHint": "Open het kaartmenu voor Seerr-aanvraagopties",
+    "requestInProgress": "Aanvraag wordt verwerkt",
+    "turnOffAlert": "Beschikbaarheidsmelding uitschakelen",
+    "notificationsEnabled4k": "We laten het je weten zodra de 4K-versie beschikbaar is",
+    "notificationsEnabledSeason": "We laten het je weten zodra seizoen ${season} beschikbaar is",
+    "requestSheetHint": "Seerr regelt de goedkeuring en houdt je aanvraag bij."
   },
   "services": {
     "title": "Diensten",
@@ -4357,7 +4368,10 @@
     "nfsReadBytes": "Data lezen",
     "nfsReadSpeed": "gemeten snelheid",
     "nfsReadRequests": "Lees verzoeken",
-    "sharedEntryConflict": "Deze gedeelde item ID is al gepaard met een ander item in deze bibliotheek."
+    "sharedEntryConflict": "Deze gedeelde item ID is al gepaard met een ander item in deze bibliotheek.",
+    "bookorbitHelp": "Meld je aan met je eigen BookOrbit-account om de boeken daar te bekijken en af te spelen. Aanvragen voor ontbrekende titels worden nog steeds via je gekoppelde SeerrNG-instantie verstuurd.",
+    "bookorbitOpen": "Openen in BookOrbit",
+    "bookorbitDetailHelp": "Bekijk deze titel in BookOrbit om bibliotheekgegevens en indelingen te beheren die Pleazyng niet kan openen. Je luistervoortgang wordt gesynchroniseerd met je BookOrbit-account."
   },
   "comics": {
     "fitHeight": "Aan hoogte aanpassen",
@@ -5502,5 +5516,34 @@
     "routeLost": "Audio-uitvoer verbroken. Afspelen gepauzeerd.",
     "autoDriving": "Rijweergave openen bij verbinding met een auto",
     "routeHint": "Het autosysteem bepaalt of de app automatisch kan verschijnen."
+  },
+  "musicTools": {
+    "guestDj": "Gast-dj",
+    "charts": "Luisterlijsten",
+    "rediscover": "Herontdekken",
+    "stations": "Muziekstations",
+    "prompt": "Afspeellijst uit beschrijving",
+    "provider": "Generatie-URL van aanbieder",
+    "model": "Modelnaam",
+    "consent": "Mijn beschrijving naar deze aanbieder sturen",
+    "promptHint": "Beschrijf de gewenste muziek",
+    "noHistory": "Nog geen muziek om te tonen",
+    "historyHint": "Op dit apparaat vastgelegde afspeelbeurten",
+    "days": "Dagen",
+    "albumBlocks": "Volledige albums bij elkaar houden",
+    "home": "Muziek",
+    "recent": "Onlangs afgespeeld",
+    "apiKey": "API-sleutel",
+    "missing": "N/A",
+    "minutes": "Minuten",
+    "rules": "Filters",
+    "exclusiveOutput": "Exclusieve audio-uitvoer",
+    "preamp": "Voorversterking",
+    "ratingPending": "Op dit apparaat opgeslagen; wacht op synchronisatie",
+    "lyricsOffset": "Tijdsverschuiving songtekst",
+    "anniversaries": "Albumjubilea",
+    "outputPreset": "EQ voor deze uitgang",
+    "outputPresetHint": "Gebruik deze EQ automatisch wanneer deze uitgang is geselecteerd.",
+    "eqApproximation": "Hoofdtelefoonprofielen worden benaderd voor de tienbands-EQ."
   }
 }

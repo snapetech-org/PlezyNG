@@ -3323,7 +3323,18 @@
     "noUserInformation": "Seerr returnerte ingen brukerinformasjon",
     "sessionRejectedAfterReauth": "Økten ble avvist etter ny innlogging",
     "permissionDenied": "Seerr avviste denne handlingen: kontoen din har ikke lenger den nødvendige tillatelsen",
-    "permissionRevoked": "Du har ikke lenger tillatelse til å be om dette"
+    "permissionRevoked": "Du har ikke lenger tillatelse til å be om dette",
+    "requestHint": "Velg forespørselsalternativer i Seerr",
+    "quickRequestHint": "Send forespørsel nå i Seerr med standardinnstillingene",
+    "chooseSeasonsHint": "Velg sesongene du vil be om i Seerr",
+    "request4kHint": "Velg en 4K-forespørsel i Seerr",
+    "only4kAvailable": "Denne kontoen kan bare be om 4K-versjonen.",
+    "cardActionHint": "Åpne kortmenyen for Seerr-forespørselsalternativer",
+    "requestInProgress": "Forespørsel pågår",
+    "turnOffAlert": "Slå av tilgjengelighetsvarsel",
+    "notificationsEnabled4k": "Vi varsler deg når 4K-versjonen er tilgjengelig",
+    "notificationsEnabledSeason": "Vi varsler deg når sesong ${season} er tilgjengelig",
+    "requestSheetHint": "Seerr håndterer godkjenningen og følger forespørselen din."
   },
   "services": {
     "title": "Tjenester",
@@ -4357,7 +4368,10 @@
     "nfsReadBytes": "Data leses",
     "nfsReadSpeed": "Målt hastighet",
     "nfsReadRequests": "Les forespørsler",
-    "sharedEntryConflict": "Denne delte element ID er allerede parert med et annet element i denne biblioteket."
+    "sharedEntryConflict": "Denne delte element ID er allerede parert med et annet element i denne biblioteket.",
+    "bookorbitHelp": "Logg på med din egen BookOrbit-konto for å bla gjennom og spille av bøkene der. Forespørsler om titler som mangler, sendes fortsatt via den tilkoblede SeerrNG-instansen.",
+    "bookorbitOpen": "Åpne i BookOrbit",
+    "bookorbitDetailHelp": "Vis denne tittelen i BookOrbit for å administrere bibliotekdetaljer og formater Pleazyng ikke kan åpne. Lyttefremdriften synkroniseres med BookOrbit-kontoen din."
   },
   "comics": {
     "fitHeight": "Tilpass høyden",
@@ -5502,5 +5516,34 @@
     "routeLost": "Lydutgangen ble koblet fra. Avspillingen er pauset.",
     "autoDriving": "Åpne kjørevisning ved tilkobling til en bil",
     "routeHint": "Bilens system bestemmer om appen kan vises automatisk."
+  },
+  "musicTools": {
+    "guestDj": "Gjeste-DJ",
+    "charts": "Lyttestatistikk",
+    "rediscover": "Gjenoppdag",
+    "stations": "Musikkstasjoner",
+    "prompt": "Spilleliste fra beskrivelse",
+    "provider": "Leverandørens genererings-URL",
+    "model": "Modellnavn",
+    "consent": "Send beskrivelsen min til denne leverandøren",
+    "promptHint": "Beskriv musikken du ønsker",
+    "noHistory": "Ingen musikk å vise ennå",
+    "historyHint": "Avspillinger registrert på denne enheten",
+    "days": "Dager",
+    "albumBlocks": "Hold hele album samlet",
+    "home": "Musikk",
+    "recent": "Nylig spilt",
+    "apiKey": "API-nøkkel",
+    "missing": "I/T",
+    "minutes": "Minutter",
+    "rules": "Filtre",
+    "exclusiveOutput": "Eksklusiv lydutgang",
+    "preamp": "Forforsterkning",
+    "ratingPending": "Lagret på denne enheten; venter på synkronisering",
+    "lyricsOffset": "Tidsforskyvning for sangtekst",
+    "anniversaries": "Albumjubileer",
+    "outputPreset": "EQ for denne utgangen",
+    "outputPresetHint": "Bruk denne EQ-en automatisk når denne utgangen velges.",
+    "eqApproximation": "Hodetelefonprofiler er tilnærmet for EQ med ti bånd."
   }
 }

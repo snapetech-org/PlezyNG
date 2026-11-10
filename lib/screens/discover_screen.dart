@@ -71,6 +71,7 @@ import 'libraries/content_state_builder.dart';
 import 'libraries/state_messages.dart';
 import 'main_screen.dart';
 import 'discovery/find_next_screen.dart';
+import 'music/music_home_screen.dart';
 import 'discovery/remote_cloud_home_rail.dart';
 import '../navigation/settings_shortcut.dart';
 import '../watch_together/watch_together.dart';
@@ -994,6 +995,12 @@ class _DiscoverScreenState extends State<DiscoverScreen>
                   // User menu — profiles + sign out
                   _buildUserMenuAction(context),
                   // Append discovery destinations to preserve existing TV and keyboard focus positions.
+                  FocusableAction(
+                    icon: Symbols.library_music_rounded,
+                    iconColor: foregroundColor,
+                    tooltip: t.musicTools.home,
+                    onPressed: () => openMusicHome(context),
+                  ),
                   FocusableAction(
                     icon: Symbols.auto_awesome_rounded,
                     iconColor: foregroundColor,

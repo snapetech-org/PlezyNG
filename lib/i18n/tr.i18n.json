@@ -3323,7 +3323,18 @@
     "noUserInformation": "Seerr kullanıcı bilgilerini döndürmedi",
     "sessionRejectedAfterReauth": "Yeniden giriş yapıldıktan sonra oturum reddedildi",
     "permissionDenied": "Seerr bu eylemi reddetti: hesabınız artık gerekli izne sahip değil",
-    "permissionRevoked": "Bunu isteme izniniz artık yok"
+    "permissionRevoked": "Bunu isteme izniniz artık yok",
+    "requestHint": "Seerr'de istek seçeneklerini belirleyin",
+    "quickRequestHint": "Varsayılan ayarlarla şimdi Seerr'den isteyin",
+    "chooseSeasonsHint": "Seerr'den istenecek sezonları seçin",
+    "request4kHint": "Seerr'de 4K isteği seçin",
+    "only4kAvailable": "Bu hesap yalnızca 4K sürümünü isteyebilir.",
+    "cardActionHint": "Seerr istek seçenekleri için kart menüsünü açın",
+    "requestInProgress": "İstek sürüyor",
+    "turnOffAlert": "Kullanılabilirlik bildirimini kapat",
+    "notificationsEnabled4k": "4K sürümü kullanılabilir olduğunda sana bildireceğiz",
+    "notificationsEnabledSeason": "${season}. sezon kullanılabilir olduğunda sana bildireceğiz",
+    "requestSheetHint": "Onay sürecini Seerr yönetir ve isteğinizi takip eder."
   },
   "services": {
     "title": "Servisler",
@@ -4357,7 +4368,10 @@
     "nfsReadBytes": "Bilgiler okuma",
     "nfsReadSpeed": "ölçülen hız",
     "nfsReadRequests": "talepleri okuyun",
-    "sharedEntryConflict": "Bu paylaşılan öğe kimliği zaten bu kütüphanede başka bir öğe ile eşleştirilmiştir."
+    "sharedEntryConflict": "Bu paylaşılan öğe kimliği zaten bu kütüphanede başka bir öğe ile eşleştirilmiştir.",
+    "bookorbitHelp": "Kitaplarınıza göz atmak ve oynatmak için kendi BookOrbit hesabınızla giriş yapın. Eksik içerik istekleri bağlı SeerrNG örneğiniz üzerinden gönderilmeye devam eder.",
+    "bookorbitOpen": "BookOrbit’te aç",
+    "bookorbitDetailHelp": "Kitaplık ayrıntılarını ve Pleazyng’in açamadığı biçimleri yönetmek için bu içeriği BookOrbit’te görüntüleyin. Dinleme ilerlemesi BookOrbit hesabınızla eşitlenir."
   },
   "comics": {
     "fitHeight": "Yüksekliğe sığdır",
@@ -5502,5 +5516,34 @@
     "routeLost": "Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.",
     "autoDriving": "Arabaya bağlanınca sürüş görünümünü aç",
     "routeHint": "Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler."
+  },
+  "musicTools": {
+    "guestDj": "Konuk DJ",
+    "charts": "Dinleme listeleri",
+    "rediscover": "Yeniden keşfet",
+    "stations": "Müzik istasyonları",
+    "prompt": "Açıklamadan çalma listesi",
+    "provider": "Sağlayıcı üretim URL’si",
+    "model": "Model adı",
+    "consent": "Açıklamamı bu sağlayıcıya gönder",
+    "promptHint": "İstediğiniz müziği açıklayın",
+    "noHistory": "Henüz gösterilecek müzik yok",
+    "historyHint": "Bu cihazda kaydedilen dinlemeler",
+    "days": "Günler",
+    "albumBlocks": "Albümleri bütün olarak tut",
+    "home": "Müzik",
+    "recent": "Son çalınanlar",
+    "apiKey": "API anahtarı",
+    "missing": "Yok",
+    "minutes": "Dakika",
+    "rules": "Filtreler",
+    "exclusiveOutput": "Özel ses çıkışı",
+    "preamp": "Ön yükseltme",
+    "ratingPending": "Bu cihaza kaydedildi; eşitleme bekleniyor",
+    "lyricsOffset": "Şarkı sözü zaman kaydırması",
+    "anniversaries": "Albüm yıl dönümleri",
+    "outputPreset": "Bu çıkış için ekolayzer",
+    "outputPresetHint": "Bu çıkış seçildiğinde bu ekolayzeri otomatik olarak kullan.",
+    "eqApproximation": "Kulaklık profilleri on bantlı ekolayzer için yaklaşık olarak uyarlanmıştır."
   }
 }

@@ -40,6 +40,9 @@ class _Client implements MediaServerClient {
   }) async => (item: items[id], onDeckEpisode: onDeck[id]);
 
   @override
+  Future<List<MediaItem>> fetchAlbumTracks(String id) async => descendants[id] ?? const [];
+
+  @override
   Future<List<MediaItem>> fetchPlayableDescendants(String parentId) async => descendants[parentId] ?? const [];
 
   @override
@@ -173,10 +176,35 @@ void main() {
       expect(resolution, isA<PlayLinkShuffle>().having((r) => r.item.id, 'item', 'show'));
     });
 
-    test('refuses what a link cannot play', () async {
+    test('music links use the music session and missing items still fail', () async {
       servers.add(_Client('s1')..items['t1'] = _item('t1', MediaKind.track, 's1'));
-      expect(await servers.resolver().resolve(_itemLink('s1', 't1')), _fails(PlayLinkFailureReason.unsupportedItem));
+      expect(
+        await servers.resolver().resolve(_itemLink('s1', 't1')),
+        isA<PlayLinkMusic>().having((r) => r.tracks.single.id, 'track', 't1'),
+      );
       expect(await servers.resolver().resolve(_itemLink('s1', 'gone')), _fails(PlayLinkFailureReason.notFound));
+    });
+
+    test('music album links expand only music and preserve shuffle intent', () async {
+      final client = _Client('s1')
+        ..items['album'] = _item('album', MediaKind.album, 's1')
+        ..descendants['album'] = [
+          _item('a', MediaKind.track, 's1'),
+          _item('video', MediaKind.movie, 's1'),
+          _item('b', MediaKind.track, 's1'),
+        ];
+      servers.add(client);
+      final result = await servers.resolver().resolve(_itemLink('s1', 'album', mode: PlayMode.shuffle));
+      expect(result, isA<PlayLinkMusic>());
+      final music = result as PlayLinkMusic;
+      expect(music.tracks.map((t) => t.id), ['a', 'b']);
+      expect(music.shuffle, isTrue);
+    });
+    test('downloaded music links work with the server offline', () async {
+      servers.add(_Client('s1'), online: false);
+      servers.downloads['s1:track'] = _item('track', MediaKind.track, 's1');
+      final result = await servers.resolver().resolve(_itemLink('s1', 'track'));
+      expect(result, isA<PlayLinkMusic>().having((r) => r.offline, 'offline', isTrue));
     });
 
     test('plays the download at once while its server is away', () async {

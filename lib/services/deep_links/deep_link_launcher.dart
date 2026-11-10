@@ -23,6 +23,8 @@ import '../../utils/watch_link.dart';
 import '../catalog/plex_catalog_source.dart';
 import '../data_aggregation_service.dart';
 import '../media_list_playback_launcher.dart';
+import '../music/music_playback_service.dart';
+import '../../utils/music_navigation.dart';
 import '../../screens/sources/open_media_screen.dart';
 import 'deep_link.dart';
 import '../../screens/games/games_screen.dart';
@@ -85,6 +87,8 @@ Future<void> _launchLegacyAutomationLink(BuildContext context, LegacyAutomationL
 }
 
 Future<void> _launchPlayLink(BuildContext context, PlayLink link, {required bool isOffline}) async {
+  final music = context.read<MusicPlaybackService?>();
+  final musicIntent = music?.beginPlayIntent();
   final multiServer = context.read<MultiServerProvider>();
   final downloads = context.read<DownloadProvider>();
   final plexCatalog = context
@@ -133,12 +137,38 @@ Future<void> _launchPlayLink(BuildContext context, PlayLink link, {required bool
     case PlayLinkShuffle(:final item):
       // Reports its own failures.
       unawaited(MediaListPlaybackLauncher.forItem(context, item).launchShuffledShow(metadata: item));
+    case PlayLinkMusic(:final item, :final tracks, :final offline, :final shuffle):
+      if (music == null || musicIntent == null || !music.isPlayIntentCurrent(musicIntent)) return;
+      final playable = offline && item.kind == MediaKind.album
+          ? downloads.getDownloadedTracksForAlbum(item.globalKey)
+          : tracks;
+      await music.playFromList(
+        tracks: playable,
+        offline: offline,
+        shuffle: shuffle,
+        playContext: MusicPlayContext(
+          title: item.displayTitle,
+          kind: item.kind == MediaKind.album
+              ? MusicPlayContextKind.album
+              : item.kind == MediaKind.artist
+              ? MusicPlayContextKind.artist
+              : MusicPlayContextKind.tracks,
+        ),
+      );
+      if (context.mounted) unawaited(openNowPlaying(context));
   }
 }
 
 /// What a [PlayLink] resolved to.
 sealed class PlayLinkResolution {
   const PlayLinkResolution();
+}
+
+final class PlayLinkMusic extends PlayLinkResolution {
+  const PlayLinkMusic(this.item, this.tracks, {this.offline = false, this.shuffle = false});
+  final MediaItem item;
+  final List<MediaItem> tracks;
+  final bool offline, shuffle;
 }
 
 /// Play [item]; [offline] plays its download because its server is away.
@@ -223,11 +253,17 @@ class PlayLinkResolver {
 
   Future<PlayLinkResolution> _resolveItem(ItemPlayTarget target, PlayMode mode) async {
     final downloaded = sources.downloadedItem(target.serverId, target.itemId);
-    final download = downloaded != null && downloaded.kind.isVideo ? downloaded : null;
+    final download =
+        downloaded != null &&
+            (downloaded.kind.isVideo || downloaded.kind == MediaKind.track || downloaded.kind == MediaKind.album)
+        ? downloaded
+        : null;
     bool usable() => sources.isServerOnline(target.serverId) && sources.clientFor(target.serverId) != null;
     // A download plays at once instead of after waiting out an absent server.
     if (download != null && !usable()) {
-      return PlayLinkItem(download, offline: true);
+      return download.kind.isVideo
+          ? PlayLinkItem(download, offline: true)
+          : PlayLinkMusic(download, [download], offline: true, shuffle: mode == PlayMode.shuffle);
     }
 
     if (!await waitForServers(sources.serversChanged, usable, timeout: serverWait)) {
@@ -244,7 +280,9 @@ class PlayLinkResolver {
         stackTrace: stackTrace,
       );
       if (download != null) {
-        return PlayLinkItem(download, offline: true);
+        return download.kind.isVideo
+            ? PlayLinkItem(download, offline: true)
+            : PlayLinkMusic(download, [download], offline: true, shuffle: mode == PlayMode.shuffle);
       }
       return const PlayLinkFailure(PlayLinkFailureReason.serverUnavailable);
     }
@@ -352,6 +390,23 @@ class PlayLinkResolver {
 
   Future<PlayLinkResolution> _forItem(MediaServerClient client, MediaItem item, PlayMode mode) async {
     switch (item.kind) {
+      case MediaKind.track:
+        return PlayLinkMusic(item, [item]);
+      case MediaKind.album || MediaKind.artist:
+        try {
+          final tracks = item.kind == MediaKind.album
+              ? await client.fetchAlbumTracks(item.id)
+              : await client.fetchPlayableDescendants(item.id);
+          final playable = tracks
+              .where((t) => t.kind == MediaKind.track)
+              .map((t) => _onServer(t, ServerId(item.serverId!)))
+              .toList();
+          return playable.isEmpty
+              ? const PlayLinkFailure(PlayLinkFailureReason.notFound)
+              : PlayLinkMusic(item, playable, shuffle: mode == PlayMode.shuffle);
+        } catch (_) {
+          return const PlayLinkFailure(PlayLinkFailureReason.serverUnavailable);
+        }
       case MediaKind.movie || MediaKind.episode || MediaKind.clip:
         return PlayLinkItem(item);
       case MediaKind.show || MediaKind.season:

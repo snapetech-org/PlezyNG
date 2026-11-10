@@ -35,6 +35,22 @@ Resolve that same transaction before rerunning: the workflow does not
 automatically resume an old edit, and Google expires edits. Do not discard a
 newly uploaded version or increment again without inspecting the actual result.
 
+The first 167 delivery ([42733775175](https://github.com/snapetech-org/pleazyng/actions/runs/42733775175))
+uploaded the bundle and assigned its internal draft successfully, but Google
+rejected validation with “This app has no APKs.” Recovery
+[42737436827](https://github.com/snapetech-org/pleazyng/actions/runs/42737436827)
+confirmed that exact draft and attempted commit with the review guard; commit
+returned the same 403. That uncommitted edit expired on 2026-11-10 at 02:15 UTC.
+Do not retry its edit ID or repeat the upload workflow. First-app registration
+must now be completed in Play Console using the retained signed bundle.
+
+The signed store-167 AAB has SHA-256
+`143c18c488118e91740bc2d662308ec79cd044200f3b263d7f45959ae6a58fbc`.
+Its workflow attestation verifies against this repository, the repack workflow,
+`refs/heads/main`, and GitHub-hosted execution. Console attachment, registration,
+and review state still need live verification; API upload success alone proves
+none of those outcomes.
+
 After the internal draft is committed, run `qualify-play-existing.yml` for 167.
 It verifies Google's actual signed APKs, uses Google's official unprotected QA
 splits in a fresh emulator, and tests the expired-trial review grant and restart

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #import <XCTest/XCTest.h>
-#include <condition_variable>
+#include <mutex>
 #include "../steam/tests/red_h264.h"
 #include "SteamAppleSink.h"
 #include "SteamMetalPyrowave.h"
@@ -10,8 +10,17 @@
 @implementation SteamAppleSinkTests
 - (void)testRealH264PixelsAndTeardown {
   std::mutex mutex;
-  std::condition_variable ready;
+  XCTestExpectation* ready = [self expectationWithDescription:@"real H.264 decode callback"];
   bool failed = false, presented = false, red = false, completed = false, completedShown = false;
+  bool notified = false;
+  // Called under mutex. Any terminal callback wakes the test exactly once;
+  // XCTest's wait keeps the main run loop available to VideoToolbox startup.
+  auto notify = [&] {
+    if (!notified) {
+      notified = true;
+      [ready fulfill];
+    }
+  };
   plezy::steam::AppleSink sink(
       [&](CVPixelBufferRef image, uint32_t id) {
         bool valid = id == 7 && CVPixelBufferGetWidth(image) == 64 && CVPixelBufferGetHeight(image) == 64;
@@ -26,8 +35,8 @@
           std::lock_guard<std::mutex> lock(mutex);
           red = valid;
           presented = true;
+          notify();
         }
-        ready.notify_one();
         return true;
       },
       [&](uint32_t id, bool shown) {
@@ -36,24 +45,24 @@
           std::lock_guard<std::mutex> lock(mutex);
           completed = true;
           completedShown = shown;
+          notify();
         }
-        ready.notify_one();
       },
       [&](bool) {
         {
           std::lock_guard<std::mutex> lock(mutex);
           failed = true;
+          notify();
         }
-        ready.notify_one();
       });
   XCTAssertFalse(sink.video(99, 64, 64, nullptr, 0));
   XCTAssertFalse(sink.video(IHS_StreamVideoCodecH264, 100000, 64, nullptr, 0));
   XCTAssertFalse(sink.frame(redH264, 8 * 1024 * 1024 + 1, 1, true));
   XCTAssertTrue(sink.video(IHS_StreamVideoCodecH264, 64, 64, nullptr, 0));
   XCTAssertTrue(sink.frame(redH264, sizeof(redH264), 7, true));
+  [self waitForExpectations:@[ready] timeout:15];
   {
-    std::unique_lock<std::mutex> lock(mutex);
-    ready.wait_for(lock, std::chrono::seconds(15), [&] { return failed || presented || completed; });
+    std::lock_guard<std::mutex> lock(mutex);
     XCTAssertFalse(failed);
     XCTAssertTrue(
         presented, "No decoded frame arrived (completed=%d, displayed=%d, decoderKind=%d)", completed, completedShown,

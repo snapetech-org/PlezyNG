@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep the main run loop available during real Apple H.264 pixel qualification, distinguish pause event-queue recovery from immediate intent updates, and retain failed native test results for diagnosis.
+
 - Make tvOS native qualification await the real Dart database startup and verify its SQLite version against the embedded source receipt before the XCTest host exits.
 
 - Embed the iOS game worker before Flutter/CocoaPods bundle postprocessing so Xcode can process the app's Info.plist without an extension-copy dependency cycle. Distinguish bridge-owned Objective-C exports from Foundation classes supplied by the OS during tvOS validation.

@@ -230,6 +230,7 @@ final class MpvPlayerContractTests: XCTestCase {
 
     let queueEntered = expectation(description: "mpv queue blocked")
     let releaseQueue = DispatchSemaphore(value: 0)
+    defer { releaseQueue.signal() }
     core.queue.async {
       queueEntered.fulfill()
       releaseQueue.wait()
@@ -237,7 +238,10 @@ final class MpvPlayerContractTests: XCTestCase {
     wait(for: [queueEntered], timeout: 2)
 
     let completion = expectation(description: "pause write completed")
+    var writeCompleted = false
     core.setPropertyAsync("pause", value: "no") { result in
+      XCTAssertTrue(Thread.isMainThread)
+      writeCompleted = true
       if case .failure(let error) = result {
         XCTFail("Pause write failed: \(error)")
       }
@@ -245,8 +249,13 @@ final class MpvPlayerContractTests: XCTestCase {
     }
 
     XCTAssertFalse(core.isPaused, "The public pause intent must be visible before the native write completes")
+    XCTAssertFalse(writeCompleted, "The held event queue must prevent native completion")
     releaseQueue.signal()
-    wait(for: [completion], timeout: 2)
+    let queueResumed = expectation(description: "mpv event queue resumed")
+    core.queue.async { queueResumed.fulfill() }
+    // This test deliberately backlogs native events; qualify eventual reply
+    // separately from the synchronous pause-intent assertion above.
+    wait(for: [queueResumed, completion], timeout: 10)
   }
 
   func testPendingSetPropertyIsCancelledExactlyOnceOnDispose() {

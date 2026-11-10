@@ -13,6 +13,7 @@ specs = {
   'ios' => [
     'packages/plezy_preparation/ios/plezy_preparation.podspec',
     'native/games/romm/apple/plezy_romm_ios.podspec',
+    'native/games/romm/apple/plezy_romm_worker.podspec',
     'packages/plezy_torrent/ios/plezy_torrent.podspec',
   ],
   'macos' => [

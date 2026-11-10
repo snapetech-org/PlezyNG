@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Browse live, profile-owned music listening occurrences through bounded cursor pages, preserving repeated plays and deterministic ordering without loading all history.
+
 - Revalidate station previews before both Play and individual track selection. Reject account, hidden-library and download-ownership changes; play owned offline previews without an online fallback.
 
 - Keep station storage-budget units and the unlimited marker inside the translated label on every base locale.

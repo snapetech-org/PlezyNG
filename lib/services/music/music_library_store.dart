@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:drift/drift.dart' show Variable;
+import 'package:drift/drift.dart' show Variable, TableUpdate, TableUpdateQuery;
 
 import '../../database/app_database.dart';
 import '../../media/media_item.dart';
@@ -31,6 +31,28 @@ MediaItem musicIdentity(MediaItem item) => MediaItem.fromJson({
 
 enum MusicChartGroup { tracks, albums, artists }
 
+class MusicHistoryEntry {
+  const MusicHistoryEntry({
+    required this.id,
+    required this.item,
+    required this.startedAt,
+    required this.listenedMs,
+    required this.finished,
+  });
+  final String id;
+  final MediaItem item;
+  final DateTime startedAt;
+  final int listenedMs;
+  final bool finished;
+  (int, String) get cursor => (startedAt.millisecondsSinceEpoch, id);
+}
+
+class MusicHistoryPage {
+  const MusicHistoryPage(this.entries, this.cursor);
+  final List<MusicHistoryEntry> entries;
+  final (int, String)? cursor;
+}
+
 class MusicChartEntry {
   const MusicChartEntry({required this.item, required this.plays, required this.listenedMs});
   final MediaItem item;
@@ -46,6 +68,40 @@ class MusicLibraryStore {
   final String profileId;
   final int _epoch;
   bool get active => database.musicDataEpoch(profileId) == _epoch;
+
+  Stream<void> get historyChanges => database.tableUpdates(TableUpdateQuery.onTableName('music_listens')).map((_) {});
+
+  Future<MusicHistoryPage> historyPage({int limit = 50, (int, String)? before}) async {
+    if (limit < 1 || limit > 100) throw ArgumentError('Invalid history page size');
+    if (!active) return const MusicHistoryPage([], null);
+    final rows = await database
+        .customSelect(
+          'SELECT id, metadata, started_at, listened_ms, finished FROM music_listens '
+          'WHERE profile_id=? AND qualified=1 '
+          '${before == null ? '' : 'AND (started_at < ? OR (started_at = ? AND id < ?)) '}'
+          'ORDER BY started_at DESC, id DESC LIMIT ?',
+          variables: [
+            Variable(profileId),
+            if (before != null) ...[Variable(before.$1), Variable(before.$1), Variable(before.$2)],
+            Variable(limit + 1),
+          ],
+        )
+        .get();
+    if (!active) return const MusicHistoryPage([], null);
+    final entries = rows
+        .take(limit)
+        .map(
+          (row) => MusicHistoryEntry(
+            id: row.read<String>('id'),
+            item: MediaItem.fromJson(jsonDecode(row.read<String>('metadata'))),
+            startedAt: DateTime.fromMillisecondsSinceEpoch(row.read<int>('started_at'), isUtc: true),
+            listenedMs: row.read<int>('listened_ms'),
+            finished: row.read<int>('finished') != 0,
+          ),
+        )
+        .toList();
+    return MusicHistoryPage(entries, rows.length > limit ? entries.last.cursor : null);
+  }
 
   Future<void> saveDocument(String kind, String id, Map<String, dynamic> value) {
     if (!active) return Future.value();
@@ -238,6 +294,7 @@ class MusicLibraryStore {
         finished ? 1 : 0,
       ],
     );
+    database.notifyUpdates({const TableUpdate('music_listens')});
   }
 
   Future<List<MusicChartEntry>> chart({
@@ -295,6 +352,9 @@ class MusicLibraryStore {
     return rows.map((row) => MediaItem.fromJson(jsonDecode(row.read<String>('metadata')))).toList();
   }
 
-  Future<void> clearHistory() =>
-      !active ? Future.value() : database.customStatement('DELETE FROM music_listens WHERE profile_id=?', [profileId]);
+  Future<void> clearHistory() async {
+    if (!active) return;
+    await database.customStatement('DELETE FROM music_listens WHERE profile_id=?', [profileId]);
+    database.notifyUpdates({const TableUpdate('music_listens')});
+  }
 }

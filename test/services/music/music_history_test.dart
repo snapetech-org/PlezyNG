@@ -18,6 +18,51 @@ void main() {
   Future<List<MusicChartEntry>> chart({MusicChartGroup group = MusicChartGroup.tracks}) =>
       store.chart(from: now.subtract(const Duration(days: 365)), until: now.add(const Duration(days: 1)), group: group);
 
+  test('cursor pages retain repeated occurrences and timestamp ties without duplicates', () async {
+    for (var index = 0; index < 123; index++) {
+      await store.record(
+        id: index.toString().padLeft(3, '0'),
+        track: musicTrack('same'),
+        startedAt: now,
+        listenedMs: 30000,
+        finished: true,
+      );
+    }
+    final first = await store.historyPage();
+    expect(first.entries, hasLength(50));
+    await store.record(
+      id: 'newer',
+      track: musicTrack('newer'),
+      startedAt: now.add(const Duration(seconds: 1)),
+      listenedMs: 30000,
+      finished: true,
+    );
+    final second = await store.historyPage(before: first.cursor);
+    final third = await store.historyPage(before: second.cursor);
+    final entries = [...first.entries, ...second.entries, ...third.entries];
+    expect(entries.map((entry) => entry.id).toSet(), hasLength(123));
+    expect(entries.first.id, '122');
+    expect(entries.last.id, '000');
+    expect(third.cursor, isNull);
+    expect((await store.historyPage()).entries.first.id, 'newer');
+    expect(await MusicLibraryStore(db, 'other').historyPage().then((page) => page.entries), isEmpty);
+  });
+
+  test('history observes committed writes and clearing across store instances', () async {
+    final other = MusicLibraryStore(db, store.profileId);
+    final change = other.historyChanges.first;
+    await store.record(id: 'one', track: musicTrack('song'), startedAt: now, listenedMs: 30000, finished: true);
+    await change;
+    expect((await other.historyPage()).entries.single.listenedMs, 30000);
+    final cleared = other.historyChanges.first;
+    await store.clearHistory();
+    await cleared;
+    expect((await other.historyPage()).entries, isEmpty);
+    await expectLater(store.historyPage(limit: 101), throwsArgumentError);
+    await db.deleteMusicRecipesForProfile(store.profileId);
+    expect((await store.historyPage()).entries, isEmpty);
+  });
+
   test('cumulative retry and out of order writes count one qualified occurrence', () async {
     for (final amount in [15000, 30000, 30000, 20000]) {
       await store.record(id: 'one', track: musicTrack('song'), startedAt: now, listenedMs: amount, finished: false);

@@ -6,6 +6,8 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[2]
 DART = r"""
@@ -167,7 +169,7 @@ def qualify(platform):
     run(flutter, "build", platform, "--debug", cwd=directory)
     if platform == "linux":
         binary = directory / "build/linux/x64/debug/bundle/workspace_probe"
-        command = ["xvfb-run", "-a", str(binary)]
+        command = [str(binary)]
     elif platform == "windows":
         binary = directory / "build/windows/x64/runner/Debug/workspace_probe.exe"
         command = [str(binary)]
@@ -179,8 +181,32 @@ def qualify(platform):
         command = [str(binary)]
     environment = dict(os.environ)
     environment["LIBGL_ALWAYS_SOFTWARE"] = "1"
-    result = subprocess.run(command, cwd=binary.parent, env=environment,
-                            text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=90)
+    if platform == "linux":
+        # Xvfb's software GLX denies shared secondary contexts (BadAccess).
+        # An isolated Wayland compositor exercises the real multiview path.
+        with tempfile.TemporaryDirectory(prefix="workspace-wayland-") as runtime:
+            os.chmod(runtime, 0o700)
+            environment.update(XDG_RUNTIME_DIR=runtime, WAYLAND_DISPLAY="workspace-probe",
+                               GDK_BACKEND="wayland")
+            compositor = subprocess.Popen(
+                ["weston", "--backend=headless-backend.so", "--renderer=pixman",
+                 "--socket=workspace-probe", "--no-config"], env=environment,
+                stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+            try:
+                for _ in range(100):
+                    if (Path(runtime) / "workspace-probe").exists() or compositor.poll() is not None:
+                        break
+                    time.sleep(0.1)
+                if compositor.poll() is not None:
+                    raise RuntimeError("Headless Wayland compositor exited: " + compositor.stderr.read())
+                result = subprocess.run(command, cwd=binary.parent, env=environment,
+                                        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=90)
+            finally:
+                compositor.terminate()
+                compositor.wait(timeout=10)
+    else:
+        result = subprocess.run(command, cwd=binary.parent, env=environment,
+                                text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=90)
     print(result.stdout)
     if result.returncode or "WORKSPACE_NATIVE_VIEWS_OK" not in result.stdout:
         raise RuntimeError(f"Native workspace lifetime probe failed ({result.returncode})")

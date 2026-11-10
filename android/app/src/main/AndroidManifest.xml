@@ -1,8 +1,7 @@
 <!-- android:installLocation="auto" is what makes the app eligible to be moved to adoptable
      storage (a USB drive adopted by an Android TV, an adopted SD card), which relocates the
-     private data directory — and therefore downloads — along with the APK. Pleazyng declares none
-     of the components this is unsafe for: no app widget, IME, live wallpaper, device admin,
-     accessibility service, sync adapter or account authenticator. -->
+     private data directory — and therefore downloads — along with the APK. The optional music
+     home-screen widget requires internal installation; moving the app disables its widget. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
@@ -49,6 +48,10 @@
         android:dataExtractionRules="@xml/credential_data_extraction_rules"
         android:usesCleartextTraffic="true">
         <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
+        <receiver android:name=".widgets.MusicWidgetProvider" android:exported="false">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/music_widget_info" />
+        </receiver>
         <service android:name=".car.MusicBrowserService" android:exported="true">
             <intent-filter><action android:name="android.media.browse.MediaBrowserService" /></intent-filter>
         </service>

@@ -130,6 +130,13 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     }
     unawaited(
       _send('snapshot', {
+        'scope': _itemScope,
+        'labels': {
+          'play': t.common.play,
+          'pause': t.common.pause,
+          'previous': t.music.previousTrack,
+          'next': t.music.nextTrack,
+        },
         'revision': _catalogRevision,
         'playing': _music.isPlaying,
         'index': _music.currentIndex,
@@ -202,6 +209,23 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     if (!mounted || !_current || _profileId == null) throw PlatformException(code: 'profile_unavailable');
     final args = call.arguments is Map ? Map<String, dynamic>.from(call.arguments as Map) : <String, dynamic>{};
     switch (call.method) {
+      case 'transport':
+        if (args['scope'] != _itemScope || args['revision'] != _catalogRevision) {
+          throw PlatformException(code: 'stale_widget');
+        }
+        switch (args['command']) {
+          case 'play':
+            await _music.play();
+          case 'pause':
+            await _music.pause();
+          case 'previous':
+            await _music.previous();
+          case 'next':
+            await _music.next();
+          default:
+            throw PlatformException(code: 'invalid_transport');
+        }
+        return null;
       case 'browse':
         return _browse(args['id'] as String? ?? 'root');
       case 'search':

@@ -45,6 +45,7 @@ class MusicBrowserService : MediaBrowserServiceCompat() {
 
   override fun onCreate() {
     super.onCreate()
+    com.edde746.plezy.widgets.MusicWidgetProvider.attach(applicationContext)
     MusicCarApi.addListener(changed)
     MediaSessionHolder.sessionToken?.let { setSessionToken(it) }
   }

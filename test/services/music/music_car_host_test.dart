@@ -84,12 +84,18 @@ void main() {
     return result.future;
   }
 
-  Future<void> mount(WidgetTester tester, Music music, Profiles profiles, {CatalogDownloads? downloads}) async {
+  Future<void> mount(
+    WidgetTester tester,
+    Music music,
+    Profiles profiles, {
+    CatalogDownloads? downloads,
+    void Function(MethodCall)? onNative,
+  }) async {
     final navigator = GlobalKey<NavigatorState>();
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
-      channel,
-      (_) async => null,
-    );
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+      onNative?.call(call);
+      return null;
+    });
     await tester.pumpWidget(
       MultiProvider(
         providers: [
@@ -105,6 +111,33 @@ void main() {
     );
     await tester.pump();
   }
+
+  testWidgets('widget transport is bound to the exact profile scope and queue revision', (tester) async {
+    final calls = <MethodCall>[];
+    final music = Music(), profiles = Profiles();
+    await mount(tester, music, profiles, onNative: calls.add);
+    final snapshot = Map<String, dynamic>.from(calls.lastWhere((call) => call.method == 'snapshot').arguments as Map);
+    expect((snapshot['labels'] as Map)['pause'], isNotEmpty);
+    await native('transport', {'scope': snapshot['scope'], 'revision': snapshot['revision'], 'command': 'pause'});
+    expect(music.pauses, 1);
+    await expectLater(
+      native('transport', {'scope': 'another-profile', 'revision': snapshot['revision'], 'command': 'pause'}),
+      throwsA(isA<PlatformException>()),
+    );
+    music.edit();
+    await tester.pump();
+    await expectLater(
+      native('transport', {'scope': snapshot['scope'], 'revision': snapshot['revision'], 'command': 'pause'}),
+      throwsA(isA<PlatformException>()),
+    );
+    profiles.id = 'other';
+    final latest = Map<String, dynamic>.from(calls.lastWhere((call) => call.method == 'snapshot').arguments as Map);
+    await expectLater(
+      native('transport', {'scope': latest['scope'], 'revision': latest['revision'], 'command': 'pause'}),
+      throwsA(isA<PlatformException>()),
+    );
+    expect(music.pauses, 1);
+  });
 
   testWidgets('projection enters driving by default, respects opt-out and never starts audio', (tester) async {
     resetSharedPreferencesForTest();

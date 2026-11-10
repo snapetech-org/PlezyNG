@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add an Android home-screen music widget with live metadata and localized transport accessibility labels. Controls use the shared profile-scoped session, reject stale widget intents, and never persist stream credentials; internal app installation is required.
+
 - Preserve server ownership when refreshing playlist metadata and bind existing smart-playlist editor loads to the profile that requested them.
 
 - Detect server-side rating/favorite changes before replaying offline music edits, retain conflicting decisions for explicit resolution, and recognize writes already acknowledged by another device.

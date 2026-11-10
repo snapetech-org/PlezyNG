@@ -153,7 +153,7 @@ class _MultiviewOverlay extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final viewport = Size(constraints.maxWidth, constraints.maxHeight);
-                    final result = Stack(
+                    return Stack(
                       clipBehavior: Clip.none,
                       children: [for (final registration in visible) _floatingWindow(context, registration, viewport)],
                     );
@@ -161,7 +161,7 @@ class _MultiviewOverlay extends StatelessWidget {
                 ),
               );
 
-        return Stack(
+        final result = Stack(
           fit: StackFit.expand,
           children: [
             Positioned.fill(child: content),

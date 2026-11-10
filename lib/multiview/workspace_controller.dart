@@ -291,7 +291,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     _publish();
     try {
       if (_supportsDesktopSurface(registration)) {
-        if (_desktopViews?.detached(id) ?? false) return _windows.close(id);
+        if (_desktopViews?.detached(id) ?? false) return await _windows.close(id);
         final geometryKey = sha256.convert(utf8.encode('workspace-view-v1|${_profileId ?? 'default'}|$id')).toString();
         final opened = await _windows.open(id, geometryKey: geometryKey, title: registration.descriptor.title);
         if (_disposed || !identical(_sessions[id]?.buildSurface, registration.buildSurface)) {

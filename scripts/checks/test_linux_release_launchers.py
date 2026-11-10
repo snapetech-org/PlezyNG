@@ -73,6 +73,38 @@ class LinuxReleaseLauncherTests(unittest.TestCase):
                 self.assert_launch(self.bundle / "pleazyng.sh", self.bundle / "lib")
                 self.assertFalse((self.bundle / "plezy.sh").exists())
 
+    def test_moved_bundle_relocates_im_cache_and_preserves_locale_records(self):
+        self.stage_release()
+        moved = self.root / 'portable "copy"'
+        shutil.copytree(self.bundle, moved)
+        modules = moved / 'lib/gtk-3.0/3.0.0/immodules'
+        modules.mkdir(parents=True)
+        module = modules / 'im-viqr.so'
+        module.touch()
+        cache = modules.parent / 'immodules.cache'
+        metadata = '"viqr" "Vietnamese (VIQR)" "gtk30" "/usr/share/locale" "vi" '
+        original = '"/builder/location/im-viqr.so" \n' + metadata + '\n'
+        cache.write_text(original)
+        (moved / 'pleazyng').write_text(
+            '#!/usr/bin/env python3\nimport json,os,pathlib\n'
+            'p=pathlib.Path(os.environ["GTK_IM_MODULE_FILE"])\n'
+            'print(json.dumps({"path":str(p),"cache":p.read_text()}))\n')
+        environment = {**os.environ, 'XDG_CACHE_HOME': str(self.root / 'cache')}
+        result = subprocess.run([str(moved / 'pleazyng.sh')], env=environment,
+                                check=True, capture_output=True, text=True)
+        actual = json.loads(result.stdout)
+        self.assertEqual(actual['cache'], json.dumps(str(module)) + '\n' + metadata + '\n')
+        self.assertEqual(cache.read_text(), original)
+        self.assertEqual(len(list((self.root / 'cache/pleazyng/gtk-im').iterdir())), 1)
+        # A missing module must not replace a usable cache or leave a temporary file.
+        previous = Path(actual['path']).read_bytes()
+        module.unlink()
+        failed = subprocess.run([str(moved / 'pleazyng.sh')], env=environment,
+                                capture_output=True, text=True)
+        self.assertNotEqual(failed.returncode, 0)
+        self.assertEqual(Path(actual['path']).read_bytes(), previous)
+        self.assertEqual(len(list((self.root / 'cache/pleazyng/gtk-im').iterdir())), 1)
+
     def test_appimage_entrypoint_executes_staged_bundle_launcher(self):
         self.stage_release()
         app = self.root / "Pleazyng.AppDir"

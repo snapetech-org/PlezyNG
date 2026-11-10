@@ -42,9 +42,42 @@ if [[ -x "$INSTALL_DIR/lib/glib-2.0/gio-launch-desktop" ]]; then
     export GIO_LAUNCH_DESKTOP="$INSTALL_DIR/lib/glib-2.0/gio-launch-desktop"
 fi
 
-# GTK IM modules
-if [[ -f "$INSTALL_DIR/lib/gtk-3.0/3.0.0/immodules.cache" ]]; then
-    export GTK_IM_MODULE_FILE="$INSTALL_DIR/lib/gtk-3.0/3.0.0/immodules.cache"
+# Use the shipped input modules. Portable bundles can move after generation;
+# keep their relocated cache in the user's cache directory, not the bundle.
+im_cache="$INSTALL_DIR/lib/gtk-3.0/3.0.0/immodules.cache"
+if [[ -f "$im_cache" ]]; then
+    im_relocate=false
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^\"([^\"]+\.so)\" ]]; then
+            [[ "${BASH_REMATCH[1]}" == "$INSTALL_DIR/lib/gtk-3.0/3.0.0/immodules/"* ]] || im_relocate=true
+            break
+        fi
+    done < "$im_cache"
+    if $im_relocate; then
+        im_directory="${XDG_CACHE_HOME:-$HOME/.cache}/pleazyng/gtk-im"
+        im_key=$(printf '%s' "$INSTALL_DIR" | sha256sum)
+        im_destination="$im_directory/${im_key%% *}.cache"
+        mkdir -p "$im_directory" || exit 1
+        im_temporary=$(mktemp "$im_directory/.cache.XXXXXX") || exit 1
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            if [[ "$line" =~ ^\"([^\"]+\.so)\" ]]; then
+                im_module="$INSTALL_DIR/lib/gtk-3.0/3.0.0/immodules/${BASH_REMATCH[1]##*/}"
+                if [[ ! -f "$im_module" ]]; then
+                    rm -f -- "$im_temporary"
+                    echo "Missing bundled GTK input module: $im_module" >&2
+                    exit 1
+                fi
+                im_module="${im_module//\\/\\\\}"
+                im_module="${im_module//\"/\\\"}"
+                printf '"%s"\n' "$im_module"
+            else
+                printf '%s\n' "$line"
+            fi
+        done < "$im_cache" > "$im_temporary"
+        mv -f -- "$im_temporary" "$im_destination" || exit 1
+        im_cache="$im_destination"
+    fi
+    export GTK_IM_MODULE_FILE="$im_cache"
 fi
 
 # GTK module path (print backends, etc.)

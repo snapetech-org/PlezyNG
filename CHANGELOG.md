@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Make tvOS native qualification await the real Dart database startup and verify its SQLite version against the embedded source receipt before the XCTest host exits.
+
 - Embed the iOS game worker before Flutter/CocoaPods bundle postprocessing so Xcode can process the app's Info.plist without an extension-copy dependency cycle. Distinguish bridge-owned Objective-C exports from Foundation classes supplied by the OS during tvOS validation.
 
 - Include genuine tvOS builds of the Dart Objective-C bridge and process-wide PDFium gate alongside SQLite; verify their locked source recipes, native exports and platform metadata before embedding. Use the current SDK's optional Boolean Siri resume/shuffle properties directly.

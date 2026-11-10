@@ -16,6 +16,7 @@ import '../models/download_models.dart';
 import '../services/base_shared_preferences_service.dart';
 import '../services/credential_vault.dart';
 import '../utils/app_logger.dart';
+import '../utils/tvos_startup_probe.dart';
 import '../utils/serial_future_queue.dart';
 import '../utils/global_key_utils.dart';
 import '../utils/content_utils.dart';
@@ -149,6 +150,7 @@ class AppDatabase extends _$AppDatabase {
       if (isTvos && outcome != TvosDatabaseRecoveryOutcome.recoveryRequired) {
         final version = await database.customSelect('SELECT sqlite_version() AS version').getSingle();
         appLogger.i('tvOS SQLite ready: ${version.read<String>('version')} (schema ${database.schemaVersion})');
+        tvosStartupProbe.databaseReady(version.read<String>('version'));
       }
       return AppDatabaseBootstrap(database: database, recoveryOutcome: outcome);
     } catch (_) {

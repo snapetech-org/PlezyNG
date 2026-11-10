@@ -129,6 +129,7 @@ import 'utils/log_redaction_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'utils/android_exit_diagnostics.dart';
+import 'utils/tvos_startup_probe.dart';
 import 'utils/storage_failure.dart';
 import 'services/base_shared_preferences_service.dart';
 import 'services/prefs_recovery.dart';
@@ -220,6 +221,7 @@ void main([List<String> args = const <String>[]]) {
   // target in Flutter's tool), so register platform stores manually for
   // the plugins we use.
   _registerTvosPlatformPlugins();
+  tvosStartupProbe.register(isTvos: PlatformDetector.isAppleTV());
   _registerAppLicenses();
   _bootstrapApp();
 }

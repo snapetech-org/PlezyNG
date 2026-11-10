@@ -34,6 +34,12 @@ Native CI requires the real Dart app to finish its ordinary database open and
 report `sqlite_version()` matching the pin. This supplements native tests and
 binary inspection; it does not claim physical Apple TV qualification. The
 recovery-required startup path remains available without opening the database.
+The native XCTest host awaits a debug-only, in-process method-channel handshake
+from the successful real database open and compares its version with the embedded
+source receipt. CI requires that specific test to pass in the Xcode result, rather
+than inferring success from console timing. This keeps the host alive while Dart
+startup finishes; an ordinary three-second native suite is not a startup timeout.
+The handshake is not registered in release builds and exposes only the version.
 
 Source references: [SQLite amalgamation](https://sqlite.org/2026/sqlite-amalgamation-3530300.zip),
 [the locked package's source selection](https://github.com/simolus3/sqlite3.dart/blob/sqlite3-3.5.0/tool/download_sqlite.dart),

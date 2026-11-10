@@ -121,6 +121,37 @@
                               }];
 }
 
+- (void)testPackagedNativeAssetsOpenTheRealDartDatabase {
+  NSURL* receiptURL = [[NSBundle mainBundle].bundleURL
+      URLByAppendingPathComponent:@"Frameworks/sqlite3.framework/pleazyng-source.json"];
+  NSData* receiptData = [NSData dataWithContentsOfURL:receiptURL];
+  XCTAssertNotNil(receiptData, @"The staged native SQLite source receipt must be embedded");
+  if (!receiptData) return;
+  NSError* error = nil;
+  NSDictionary* receipt = [NSJSONSerialization JSONObjectWithData:receiptData options:0 error:&error];
+  XCTAssertNil(error);
+  NSString* expectedVersion = receipt[@"sqliteVersion"];
+  XCTAssertNotNil(expectedVersion);
+
+  FlutterMethodChannel* channel =
+      [FlutterMethodChannel methodChannelWithName:@"org.snapetech.pleazyng/startup_qualification"
+                                  binaryMessenger:_engine.binaryMessenger];
+  XCTestExpectation* ready = [self expectationWithDescription:@"real Dart database opened"];
+  __block id observed = nil;
+  [channel invokeMethod:@"waitForDatabase"
+              arguments:nil
+                 result:^(id result) {
+                   observed = result;
+                   [ready fulfill];
+                 }];
+  // Keep the host alive for real asynchronous startup, rather than ending
+  // the process when the much shorter native-only suites have completed.
+  [self waitForExpectations:@[ ready ] timeout:60];
+  XCTAssertTrue([observed isKindOfClass:[NSDictionary class]], @"Expected a successful Dart database-open result");
+  if (![observed isKindOfClass:[NSDictionary class]]) return;
+  XCTAssertEqualObjects(observed[@"sqliteVersion"], expectedVersion);
+}
+
 - (void)waitForMainRunLoop {
   XCTestExpectation* expectation = [self expectationWithDescription:@"main run loop"];
   dispatch_async(dispatch_get_main_queue(), ^{

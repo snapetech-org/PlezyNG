@@ -1057,11 +1057,9 @@ jobs:
             xcrun xcresulttool get test-results tests --path "$result_bundle"
           fi
           if [ "${{ matrix.platform }}" = "tvOS" ] && [ "$test_status" -eq 0 ]; then
-            sqlite_version="$(python3 -c 'import json; print(json.load(open("tvos/sqlite-source.lock.json"))["sqliteVersion"])')"
-            if ! grep -Fq "tvOS SQLite ready: $sqlite_version " "$test_log"; then
-              echo "::error::The real Dart app did not open its database using the pinned tvOS SQLite binary."
-              exit 1
-            fi
+            startup_results="$(dirname "$result_bundle")/native-test-results.json"
+            xcrun xcresulttool get test-results tests --path "$result_bundle" > "$startup_results"
+            python3 scripts/checks/check_tvos_startup_result.py "$startup_results"
           fi
           exit "$test_status"
 

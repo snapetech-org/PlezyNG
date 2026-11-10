@@ -5,6 +5,7 @@ import AVFoundation
 import MediaPlayer
 import MusicKit
 import CarPlay
+import Intents
 
 /// Re-downloadable media is not user-created document data. Keep the policy
 /// confined to our two managed roots, including their legacy support paths.
@@ -44,7 +45,33 @@ enum DownloadBackupPolicy {
 }
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+@objc class AppDelegate: FlutterAppDelegate {
+  // One explicit engine survives both the phone scene and CarPlay-only launch.
+  // The normal Dart entry point owns authentication and the only music session.
+  private(set) var musicEngine: FlutterEngine?
+
+  func ensureMusicEngine() -> FlutterEngine {
+    if let engine = musicEngine { return engine }
+    let engine = FlutterEngine(name: "pleazyng_shared_music", project: nil, allowHeadlessExecution: true)
+    musicEngine = engine
+    guard
+      engine.run(
+        withEntrypoint: "main", libraryURI: nil, initialRoute: nil,
+        entrypointArgs: ["--pleazyng-car-host"])
+    else {
+      musicEngine = nil
+      return engine
+    }
+    registerApplicationPlugins(engine)
+    return engine
+  }
+
+  private let musicIntentHandler = MusicPlayIntentHandler()
+
+  func application(_ application: UIApplication, handlerFor intent: INIntent) -> Any? {
+    intent is INPlayMediaIntent ? musicIntentHandler : nil
+  }
+
   private var deviceAdjustmentChannel: FlutterMethodChannel?
   /// The screen whose brightness the player changed, and the level to restore
   /// on it. Track the display because foldable iPhones can move the app between
@@ -81,21 +108,22 @@ enum DownloadBackupPolicy {
     }
 
     application.beginReceivingRemoteControlEvents()
+    _ = ensureMusicEngine()
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "PlezySteamPlugin") {
+  private func registerApplicationPlugins(_ registry: FlutterPluginRegistry) {
+    if let registrar = registry.registrar(forPlugin: "PlezySteamPlugin") {
       PlezySteamPlugin.register(with: registrar)
     }
 
-    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MusicCarBridge") {
+    GeneratedPluginRegistrant.register(with: registry)
+    if let registrar = registry.registrar(forPlugin: "MusicCarBridge") {
       MusicCarBridge.shared.attach(registrar.messenger())
     }
 
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "DownloadStorageChannel") {
+    if let registrar = registry.registrar(forPlugin: "DownloadStorageChannel") {
       let channel = FlutterMethodChannel(name: "com.pleazyng/download_storage", binaryMessenger: registrar.messenger())
       channel.setMethodCallHandler { call, result in
         guard call.method == "excludeFromBackup", let path = call.arguments as? String else {
@@ -111,36 +139,36 @@ enum DownloadBackupPolicy {
       }
     }
 
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MpvPlayerPlugin") {
+    if let registrar = registry.registrar(forPlugin: "MpvPlayerPlugin") {
       MpvPlayerPlugin.register(with: registrar)
     }
 
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MpvWorkspacePlayerPlugin") {
+    if let registrar = registry.registrar(forPlugin: "MpvWorkspacePlayerPlugin") {
       MpvPlayerPlugin.registerWorkspace(with: registrar)
     }
 
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MpvAudioPlayerPlugin") {
+    if let registrar = registry.registrar(forPlugin: "MpvAudioPlayerPlugin") {
       MpvAudioPlayerPlugin.register(with: registrar)
     }
 
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "VideoDecodeCapabilitiesPlugin") {
+    if let registrar = registry.registrar(forPlugin: "VideoDecodeCapabilitiesPlugin") {
       VideoDecodeCapabilitiesPlugin.register(with: registrar)
     }
 
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "DeviceAdjustmentChannel") {
+    if let registrar = registry.registrar(forPlugin: "DeviceAdjustmentChannel") {
       registerDeviceAdjustmentChannel(messenger: registrar.messenger())
     }
 
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AppIconPlugin") {
+    if let registrar = registry.registrar(forPlugin: "AppIconPlugin") {
       AppIconPlugin.register(with: registrar)
     }
 
-    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "DeepLinkPlugin") {
+    if let registrar = registry.registrar(forPlugin: "DeepLinkPlugin") {
       DeepLinkPlugin.register(with: registrar)
     }
 
     if #available(iOS 15.0, *),
-      let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AppleMusicKitPlugin")
+      let registrar = registry.registrar(forPlugin: "AppleMusicKitPlugin")
     {
       AppleMusicKitPlugin.register(with: registrar)
     }
@@ -387,6 +415,64 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
   }
 }
 
+/// The phone attaches to the same engine a CarPlay-only launch prewarmed.
+/// Forward every scene callback through Flutter's lifecycle adapter so URL,
+/// authentication and background-download plugins retain their existing hooks.
+@objc(MusicPhoneSceneDelegate)
+final class MusicPhoneSceneDelegate: UIResponder, UIWindowSceneDelegate, FlutterSceneLifeCycleProvider {
+  var sceneLifeCycleDelegate = FlutterPluginSceneLifeCycleDelegate()
+  var window: UIWindow?
+
+  func scene(
+    _ scene: UIScene, willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
+    guard let windowScene = scene as? UIWindowScene,
+      let app = UIApplication.shared.delegate as? AppDelegate
+    else { return }
+    let engine = app.ensureMusicEngine()
+    if let existing = engine.viewController?.viewIfLoaded?.window?.windowScene, existing != windowScene {
+      // CarPlay and external video scenes are independent native surfaces;
+      // a second phone window must not detach the first window's shared engine.
+      UIApplication.shared.requestSceneSessionDestruction(session, options: nil, errorHandler: nil)
+      return
+    }
+    let window = UIWindow(windowScene: windowScene)
+    window.rootViewController = PlezyFlutterViewController(engine: engine, nibName: nil, bundle: nil)
+    self.window = window
+    sceneLifeCycleDelegate.scene(scene, willConnectTo: session, options: connectionOptions)
+    window.makeKeyAndVisible()
+  }
+
+  func sceneDidDisconnect(_ scene: UIScene) {
+    sceneLifeCycleDelegate.sceneDidDisconnect(scene)
+    if let controller = window?.rootViewController as? FlutterViewController,
+      let app = UIApplication.shared.delegate as? AppDelegate,
+      app.musicEngine?.viewController === controller
+    {
+      app.musicEngine?.viewController = nil
+    }
+    window = nil
+  }
+  func sceneWillEnterForeground(_ scene: UIScene) { sceneLifeCycleDelegate.sceneWillEnterForeground(scene) }
+  func sceneDidBecomeActive(_ scene: UIScene) { sceneLifeCycleDelegate.sceneDidBecomeActive(scene) }
+  func sceneWillResignActive(_ scene: UIScene) { sceneLifeCycleDelegate.sceneWillResignActive(scene) }
+  func sceneDidEnterBackground(_ scene: UIScene) { sceneLifeCycleDelegate.sceneDidEnterBackground(scene) }
+  func scene(_ scene: UIScene, openURLContexts contexts: Set<UIOpenURLContext>) {
+    sceneLifeCycleDelegate.scene(scene, openURLContexts: contexts)
+  }
+  func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+    sceneLifeCycleDelegate.scene(scene, continue: userActivity)
+  }
+  func windowScene(
+    _ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem,
+    completionHandler: @escaping (Bool) -> Void
+  ) {
+    sceneLifeCycleDelegate.windowScene(
+      windowScene, performActionFor: shortcutItem, completionHandler: completionHandler)
+  }
+}
+
 /// Native CarPlay templates backed by the same profile-scoped Dart catalog.
 /// MPNowPlaying/remote commands remain owned by os_media_controls.
 final class MusicCarBridge {
@@ -406,6 +492,9 @@ final class MusicCarBridge {
         self.ready = true
         self.epoch += 1
         if self.connected { self.connection(true) }
+        self.scene?.refresh()
+        result(nil)
+      case "catalogChanged":
         self.scene?.refresh()
         result(nil)
       case "snapshot": result(nil)
@@ -447,6 +536,7 @@ final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     _ templateApplicationScene: CPTemplateApplicationScene,
     didConnect interfaceController: CPInterfaceController
   ) {
+    _ = (UIApplication.shared.delegate as? AppDelegate)?.ensureMusicEngine()
     controller = interfaceController
     MusicCarBridge.shared.scene = self
     MusicCarBridge.shared.connection(true)
@@ -502,8 +592,118 @@ final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
       template.emptyViewTitleVariants = [NSLocalizedString("No music available", comment: "CarPlay empty list")]
       if root {
         controller.setRootTemplate(template, animated: false, completion: nil)
+      } else if id.hasPrefix("page:"), let current = controller.topTemplate as? CPListTemplate {
+        // Pagination updates the current level instead of exhausting CarPlay's
+        // template stack after a few pages of a large music library.
+        current.updateSections(template.sections)
       } else {
         controller.pushTemplate(template, animated: true, completion: nil)
+      }
+    }
+  }
+}
+
+/// Siri resolves through the unlocked profile's catalog. Identifiers are
+/// ephemeral, profile-qualified catalog references, never server credentials.
+/// A cold/locked session reports that the app must open; it cannot bypass PINs.
+final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
+  func resolveMediaItems(
+    for intent: INPlayMediaIntent,
+    with completion: @escaping ([INPlayMediaMediaItemResolutionResult]) -> Void
+  ) {
+    DispatchQueue.main.async {
+      guard MusicCarBridge.shared.ready else {
+        completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .unsupported())])
+        return
+      }
+      if intent.resumePlayback?.boolValue == true {
+        completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .notRequired())])
+        return
+      }
+      if let selected = intent.mediaItems?.first,
+        (selected.identifier?.hasPrefix("item:") == true || selected.identifier?.hasPrefix("station:") == true
+          || selected.identifier?.hasPrefix("recipe:") == true)
+      {
+        // The play command revalidates this identifier against the active map.
+        completion(INPlayMediaMediaItemResolutionResult.successes(with: [selected]))
+        return
+      }
+      guard let name = intent.mediaSearch?.mediaName, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+      else {
+        completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .needsValue())])
+        return
+      }
+      var args: [String: Any] = ["query": name]
+      if let artist = intent.mediaSearch?.artistName { args["artist"] = artist }
+      if let album = intent.mediaSearch?.albumName { args["album"] = album }
+      switch intent.mediaSearch?.mediaType {
+      case .song: args["kind"] = "track"
+      case .album: args["kind"] = "album"
+      case .artist: args["kind"] = "artist"
+      case .playlist: args["kind"] = "playlist"
+      case .radioStation: args["kind"] = "station"
+      default: break
+      }
+      MusicCarBridge.shared.request("resolveVoice", args) { value in
+        let items: [INMediaItem] = (value as? [[String: Any]] ?? []).compactMap { row in
+          guard let id = row["id"] as? String, let title = row["title"] as? String else { return nil }
+          let type: INMediaItemType =
+            row["kind"] as? String == "album"
+            ? .album
+            : row["kind"] as? String == "artist"
+              ? .artist
+              : row["kind"] as? String == "station"
+                ? .radioStation : row["kind"] as? String == "playlist" ? .playlist : .song
+          return INMediaItem(
+            identifier: id, title: title, type: type, artwork: nil,
+            artist: row["subtitle"] as? String)
+        }
+        if items.count == 1 {
+          completion(INPlayMediaMediaItemResolutionResult.successes(with: items))
+        } else if items.isEmpty {
+          completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .unsupported())])
+        } else {
+          completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .disambiguation(with: items))])
+        }
+      }
+    }
+  }
+
+  func confirm(intent: INPlayMediaIntent, completion: @escaping (INPlayMediaIntentResponse) -> Void) {
+    DispatchQueue.main.async {
+      completion(
+        INPlayMediaIntentResponse(
+          code: MusicCarBridge.shared.ready ? .ready : .failureRequiringAppLaunch,
+          userActivity: nil))
+    }
+  }
+
+  func handle(intent: INPlayMediaIntent, completion: @escaping (INPlayMediaIntentResponse) -> Void) {
+    DispatchQueue.main.async {
+      guard MusicCarBridge.shared.ready else {
+        completion(INPlayMediaIntentResponse(code: .failureRequiringAppLaunch, userActivity: nil))
+        return
+      }
+      let finish: (Any?) -> Void = { result in
+        completion(INPlayMediaIntentResponse(code: result as? Bool == true ? .success : .failure, userActivity: nil))
+      }
+      if intent.resumePlayback?.boolValue == true {
+        MusicCarBridge.shared.request("play", [:], completion: finish)
+      } else if let id = intent.mediaItems?.first?.identifier {
+        var args: [String: Any] = ["id": id, "shuffle": intent.playShuffled?.boolValue == true]
+        switch intent.playbackRepeatMode {
+        case .one: args["repeat"] = "one"
+        case .all: args["repeat"] = "all"
+        default: break
+        }
+        switch intent.playbackQueueLocation {
+        case .next: args["queue"] = "next"
+        case .later: args["queue"] = "later"
+        default: break
+        }
+        MusicCarBridge.shared.request("playItem", args, completion: finish)
+      } else {
+        completion(INPlayMediaIntentResponse(code: .failure, userActivity: nil))
       }
     }
   }

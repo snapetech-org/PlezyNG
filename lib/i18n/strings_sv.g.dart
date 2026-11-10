@@ -115,6 +115,7 @@ class TranslationsSv extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$sv romm = _Translations$romm$sv._(_root);
 	@override late final _Translations$subtitleCapture$sv subtitleCapture = _Translations$subtitleCapture$sv._(_root);
 	@override late final _Translations$musicExperience$sv musicExperience = _Translations$musicExperience$sv._(_root);
+	@override late final _Translations$musicTools$sv musicTools = _Translations$musicTools$sv._(_root);
 }
 
 // Path: app
@@ -808,6 +809,7 @@ class _Translations$settings$sv extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Välj vilka klipp från det valda biblioteket som kan spelas före filmer.';
 	@override String get contentScreensaverDelayOptionDescription => 'Vänta på detta många minuter utan inmatning innan du visar skärmskydd konstverk.';
 	@override String get videoCodecOptionDescription => 'Tillåta direktspelning för denna codec när den stöds.Ocheckade codecs transcoderas av media-servern.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Buffer storlek: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2546,6 +2548,7 @@ class _Translations$performanceOverlay$sv extends Translations$performanceOverla
 	@override String get decoderHardware => 'Maskinvara';
 	@override String get tunnelingActive => 'Aktiv';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} misslyckades)';
+	@override String cacheLimitMiB({required Object size}) => 'Cachegräns: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2740,13 +2743,24 @@ class _Translations$seerr$sv extends Translations$seerr$en {
 	@override String get request => 'Begär';
 	@override String get request4k => 'Begär i 4K';
 	@override String get requestSeasons => 'Begär saknade säsonger';
+	@override String get requestHint => 'Välj begärandealternativ i Seerr';
+	@override String get quickRequestHint => 'Begär i Seerr nu med standardinställningarna';
+	@override String get chooseSeasonsHint => 'Välj säsonger att begära i Seerr';
+	@override String get request4kHint => 'Välj en 4K-begäran i Seerr';
+	@override String get only4kAvailable => 'Det här kontot kan bara begära 4K-versionen.';
+	@override String get cardActionHint => 'Öppna kortmenyn för Seerrs begärandealternativ';
+	@override String get requestInProgress => 'Begäran pågår';
 	@override String get notifyMe => 'Meddela mig när den blir tillgänglig';
 	@override String get notifyMe4k => 'Meddela mig när 4K blir tillgängligt';
 	@override String get notificationsOn => 'Tillgänglighetsavisering på';
+	@override String get turnOffAlert => 'Stäng av tillgänglighetsavisering';
 	@override String get notificationsEnabled => 'Vi meddelar dig när den blir tillgänglig';
+	@override String get notificationsEnabled4k => 'Vi meddelar dig när 4K-versionen blir tillgänglig';
+	@override String notificationsEnabledSeason({required Object season}) => 'Vi meddelar dig när säsong ${season} blir tillgänglig';
 	@override String get notificationsDisabled => 'Tillgänglighetsavisering av';
 	@override String get notificationFailed => 'Det gick inte att uppdatera tillgänglighetsaviseringen';
 	@override String get seasons => 'Säsonger';
+	@override String get requestSheetHint => 'Seerr hanterar godkännandet och följer din begäran.';
 	@override String get allSeasons => 'Alla säsonger';
 	@override String get advancedOptions => 'Avancerat';
 	@override String get destinationServer => 'Målserver';
@@ -3749,6 +3763,9 @@ class _Translations$sourceSetup$sv extends Translations$sourceSetup$en {
 	final TranslationsSv _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Logga in med ditt eget BookOrbit-konto för att bläddra bland och spela upp dina böcker. Begäranden om saknade titlar går fortfarande via din anslutna SeerrNG-instans.';
+	@override String get bookorbitOpen => 'Öppna i BookOrbit';
+	@override String get bookorbitDetailHelp => 'Visa den här titeln i BookOrbit för att hantera biblioteksuppgifter och format som Pleazyng inte kan öppna. Lyssningsförloppet synkroniseras med ditt BookOrbit-konto.';
 	@override String get savedCertificate => 'Sparat servercertifikat';
 	@override String get nfsEndpointInvalid => 'Ange en NFS-URL, till exempel nfs://nas:2049/export.';
 	@override String get dlnaNone => 'Inga DLNA-servrar hittades. Ange URL:en till enhetsbeskrivningen manuellt.';
@@ -4269,6 +4286,45 @@ class _Translations$musicExperience$sv extends Translations$musicExperience$en {
 	@override String get routeLost => 'Ljudutgången kopplades från. Uppspelningen pausades.';
 	@override String get autoDriving => 'Öppna körvyn vid anslutning till en bil';
 	@override String get routeHint => 'Bilens system avgör om appen kan visas automatiskt.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$sv extends Translations$musicTools$en {
+	_Translations$musicTools$sv._(TranslationsSv root) : this._root = root, super.internal(root);
+
+	final TranslationsSv _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Gäst-DJ';
+	@override String get charts => 'Lyssningslistor';
+	@override String get rediscover => 'Återupptäck';
+	@override String get stations => 'Musikstationer';
+	@override String get prompt => 'Spellista från beskrivning';
+	@override String get provider => 'Leverantörens genererings-URL';
+	@override String get model => 'Modellnamn';
+	@override String get consent => 'Skicka min beskrivning till leverantören';
+	@override String get promptHint => 'Beskriv musiken du vill ha';
+	@override String get noHistory => 'Ingen musik att visa ännu';
+	@override String get historyHint => 'Uppspelningar registrerade på den här enheten';
+	@override String get days => 'Dagar';
+	@override String get albumBlocks => 'Håll hela album samman';
+	@override String get home => 'Musik';
+	@override String get recent => 'Senast spelat';
+	@override String get apiKey => 'API-nyckel';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Minuter';
+	@override String get rules => 'Filter';
+	@override String get exclusiveOutput => 'Exklusiv ljudutgång';
+	@override String get preamp => 'Förförstärkning';
+	@override String get ratingPending => 'Sparat på den här enheten; väntar på synkronisering';
+	@override String get lyricsOffset => 'Tidsförskjutning för sångtext';
+	@override String get anniversaries => 'Albumjubileer';
+	@override String get outputPreset => 'EQ för denna utgång';
+	@override String get outputPresetHint => 'Använd denna EQ automatiskt när denna utgång väljs.';
+	@override String get eqApproximation => 'Hörlursprofiler är approximationer för EQ med tio band.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6060,6 +6116,7 @@ extension on TranslationsSv {
 			'settings.prerollSelectionDescription' => 'Välj vilka klipp från det valda biblioteket som kan spelas före filmer.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Vänta på detta många minuter utan inmatning innan du visar skärmskydd konstverk.',
 			'settings.videoCodecOptionDescription' => 'Tillåta direktspelning för denna codec när den stöds.Ocheckade codecs transcoderas av media-servern.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer storlek: ${size} MiB',
 			'themeEditor.builtIn' => 'Inbyggda',
 			'themeEditor.presets' => 'Förinställda',
 			'themeEditor.custom' => 'Anpassat',
@@ -6411,9 +6468,9 @@ extension on TranslationsSv {
 			'videoControls.chaptersAndBookmarks' => 'Kapitel och bokmärken',
 			'videoControls.segmentLoop' => 'Segment Lås',
 			'videoControls.addBookmark' => 'Lägg till bookmark',
-			'videoControls.bookmarkName' => 'Bookmark namn',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark namn',
 			'videoControls.bookmarkNameHint' => 'Till exempel öppna scenen',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmärke ${n}',
 			'videoControls.bookmarkNameRequired' => 'Skriv in ett namn för denna bokmärke.',
@@ -6925,9 +6982,9 @@ extension on TranslationsSv {
 			'libraries.hideLibrary' => 'Dölj bibliotek',
 			'libraries.libraryOptions' => 'Biblioteksalternativ',
 			'libraries.content' => 'bibliotekets innehåll',
-			'libraries.selectLibrary' => 'Välj bibliotek',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Välj bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			'libraries.noRecommendations' => 'Inga rekommendationer tillgängliga',
 			'libraries.noCollections' => 'Inga samlingar i det här biblioteket',
@@ -7439,9 +7496,9 @@ extension on TranslationsSv {
 			'watchTogether.paste' => 'Klistra in',
 			'watchTogether.noCodeInClipboard' => 'Urklippet innehåller ingen rumskod',
 			'watchTogether.copyCode' => 'Kopiera kod',
-			'watchTogether.codeCopied' => 'Rumskod kopierad',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Rumskod kopierad',
 			'watchTogether.shareInvite' => 'Dela inbjudan',
 			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Gå med i mitt Titta tillsammans-rum i Pleazyng: öppna Titta tillsammans, välj Gå med i rum och ange ${code}.',
@@ -7905,6 +7962,7 @@ extension on TranslationsSv {
 			'performanceOverlay.decoderHardware' => 'Maskinvara',
 			'performanceOverlay.tunnelingActive' => 'Aktiv',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} misslyckades)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Cachegräns: ${size} MiB',
 			'externalPlayer.title' => 'Extern spelare',
 			'externalPlayer.useExternalPlayer' => 'Använd extern spelare',
 			'externalPlayer.useExternalPlayerDescription' => 'Öppna videor i en annan app',
@@ -7952,10 +8010,10 @@ extension on TranslationsSv {
 			'metadataEdit.fromUrl' => 'Från URL',
 			'metadataEdit.uploadFile' => 'Ladda upp fil',
 			'metadataEdit.enterImageUrl' => 'Ange bild-URL',
-			'metadataEdit.imageUrl' => 'Bild-URL',
-			'metadataEdit.metadataUpdated' => 'Metadata har uppdaterats',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'Bild-URL',
+			'metadataEdit.metadataUpdated' => 'Metadata har uppdaterats',
 			'metadataEdit.metadataUpdateFailed' => 'Det gick inte att uppdatera metadata',
 			'metadataEdit.artworkUpdated' => 'Bildmaterialet har uppdaterats',
 			'metadataEdit.artworkUpdateFailed' => 'Det gick inte att uppdatera bildmaterialet',
@@ -8047,13 +8105,24 @@ extension on TranslationsSv {
 			'seerr.request' => 'Begär',
 			'seerr.request4k' => 'Begär i 4K',
 			'seerr.requestSeasons' => 'Begär saknade säsonger',
+			'seerr.requestHint' => 'Välj begärandealternativ i Seerr',
+			'seerr.quickRequestHint' => 'Begär i Seerr nu med standardinställningarna',
+			'seerr.chooseSeasonsHint' => 'Välj säsonger att begära i Seerr',
+			'seerr.request4kHint' => 'Välj en 4K-begäran i Seerr',
+			'seerr.only4kAvailable' => 'Det här kontot kan bara begära 4K-versionen.',
+			'seerr.cardActionHint' => 'Öppna kortmenyn för Seerrs begärandealternativ',
+			'seerr.requestInProgress' => 'Begäran pågår',
 			'seerr.notifyMe' => 'Meddela mig när den blir tillgänglig',
 			'seerr.notifyMe4k' => 'Meddela mig när 4K blir tillgängligt',
 			'seerr.notificationsOn' => 'Tillgänglighetsavisering på',
+			'seerr.turnOffAlert' => 'Stäng av tillgänglighetsavisering',
 			'seerr.notificationsEnabled' => 'Vi meddelar dig när den blir tillgänglig',
+			'seerr.notificationsEnabled4k' => 'Vi meddelar dig när 4K-versionen blir tillgänglig',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Vi meddelar dig när säsong ${season} blir tillgänglig',
 			'seerr.notificationsDisabled' => 'Tillgänglighetsavisering av',
 			'seerr.notificationFailed' => 'Det gick inte att uppdatera tillgänglighetsaviseringen',
 			'seerr.seasons' => 'Säsonger',
+			'seerr.requestSheetHint' => 'Seerr hanterar godkännandet och följer din begäran.',
 			'seerr.allSeasons' => 'Alla säsonger',
 			'seerr.advancedOptions' => 'Avancerat',
 			'seerr.destinationServer' => 'Målserver',
@@ -8455,6 +8524,8 @@ extension on TranslationsSv {
 			'universalMedia.favorites' => 'Spara ström favoriter',
 			'universalMedia.address' => 'Media adresser',
 			'universalMedia.addressHelp' => 'URL-adresser med erkända verifierings- eller signaturparametrar används endast för den här sessionen och kan inte sparas som favorit.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.displayName' => 'Visningsnamn (alternativt)',
 			'universalMedia.displayNameHelp' => 'Välj ett kortnamn för spelaren och systemmediakontroller.',
 			'universalMedia.allowHttp' => 'Tillåta en icke krypterad HTTP-anslutning',
@@ -8468,8 +8539,6 @@ extension on TranslationsSv {
 			'universalMedia.favoriteSaved' => 'Stream favorit sparas till denna profil',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('sv'))(n, one: 'Skipped ${count} understödda eller osäkra spellistan ingång.', other: 'Skipped ${count} ounderstödda eller osäkra spellistor entréer.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresser',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Öppna en M3U, M3u8 eller PLS-spellista från en webbadress. Direct stream länkar sparar inte spellistan.',
 			'universalMedia.choosePlaylist' => 'Välj Playlist fil',
 			'universalMedia.openPlaylist' => 'Öppna Playlist',
@@ -8931,6 +9000,9 @@ extension on TranslationsSv {
 			'audiobook.recoveryImportConfirm' => 'Kombinera denna krypterade återställningsfil med aktuella läsplatser och anteckningar? befintlig historia kommer att behållas. Delade bibliotek och objekt ID ingår inte; ställa in matchande ID på varje enhet innan import.',
 			'audiobook.recoveryExported' => 'Den krypterade återhämtningsfilen sparas.',
 			'audiobook.recoveryImported' => 'Data återhämtning sammansatt.',
+			'sourceSetup.bookorbitHelp' => 'Logga in med ditt eget BookOrbit-konto för att bläddra bland och spela upp dina böcker. Begäranden om saknade titlar går fortfarande via din anslutna SeerrNG-instans.',
+			'sourceSetup.bookorbitOpen' => 'Öppna i BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Visa den här titeln i BookOrbit för att hantera biblioteksuppgifter och format som Pleazyng inte kan öppna. Lyssningsförloppet synkroniseras med ditt BookOrbit-konto.',
 			'sourceSetup.savedCertificate' => 'Sparat servercertifikat',
 			'sourceSetup.nfsEndpointInvalid' => 'Ange en NFS-URL, till exempel nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Inga DLNA-servrar hittades. Ange URL:en till enhetsbeskrivningen manuellt.',
@@ -8966,6 +9038,8 @@ extension on TranslationsSv {
 			'sourceSetup.clientCertificate' => 'Klientcertifikat (valfritt)',
 			'sourceSetup.clientCertificateHelp' => 'Låter NAS-enheten autentisera den här klienten; AUTH_SYS-ID:n styrs fortfarande av reglerna för NAS-enhetens NFS-delning.',
 			'sourceSetup.savedIdentity' => 'En sparad klientidentitet kommer att användas.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Ersätt sparad klientidentitet',
 			'sourceSetup.chooseIdentity' => 'Välj PKCS#12-klientidentitet',
 			'sourceSetup.identityPassphrase' => 'Lösenfras för klientidentiteten',
@@ -8982,8 +9056,6 @@ extension on TranslationsSv {
 			'sourceSetup.apiKey' => 'API-nyckel',
 			'sourceSetup.optionalUsername' => 'Kontots användarnamn (valfritt)',
 			'sourceSetup.optionalPassword' => 'Kontots lösenord (valfritt)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Hämta en API-nyckel från opensubtitles.com. Sökningen skickar videons titel och tillgängliga IMDb/TMDB-ID:n, aldrig videofilen. Nyckeln och valfria kontouppgifter krypteras tillsammans med den här källan.',
 			'sourceSetup.automaticMetadata' => 'Automatiska videometadata från nätet',
 			'sourceSetup.metadataPrivacy' => 'Skickar endast titel/år från filnamnet och avsnittsnummer eller ett NFO-ID, aldrig medier eller inloggningsuppgifter. NFO-fälten behåller företräde.',
@@ -9381,6 +9453,36 @@ extension on TranslationsSv {
 			'musicExperience.routeLost' => 'Ljudutgången kopplades från. Uppspelningen pausades.',
 			'musicExperience.autoDriving' => 'Öppna körvyn vid anslutning till en bil',
 			'musicExperience.routeHint' => 'Bilens system avgör om appen kan visas automatiskt.',
+			'musicTools.guestDj' => 'Gäst-DJ',
+			'musicTools.charts' => 'Lyssningslistor',
+			'musicTools.rediscover' => 'Återupptäck',
+			'musicTools.stations' => 'Musikstationer',
+			'musicTools.prompt' => 'Spellista från beskrivning',
+			'musicTools.provider' => 'Leverantörens genererings-URL',
+			'musicTools.model' => 'Modellnamn',
+			'musicTools.consent' => 'Skicka min beskrivning till leverantören',
+			'musicTools.promptHint' => 'Beskriv musiken du vill ha',
+			'musicTools.noHistory' => 'Ingen musik att visa ännu',
+			'musicTools.historyHint' => 'Uppspelningar registrerade på den här enheten',
+			'musicTools.days' => 'Dagar',
+			'musicTools.albumBlocks' => 'Håll hela album samman',
+			'musicTools.home' => 'Musik',
+			'musicTools.recent' => 'Senast spelat',
+			'musicTools.apiKey' => 'API-nyckel',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Minuter',
+			'musicTools.rules' => 'Filter',
+			'musicTools.exclusiveOutput' => 'Exklusiv ljudutgång',
+			'musicTools.preamp' => 'Förförstärkning',
+			'musicTools.ratingPending' => 'Sparat på den här enheten; väntar på synkronisering',
+			'musicTools.lyricsOffset' => 'Tidsförskjutning för sångtext',
+			'musicTools.anniversaries' => 'Albumjubileer',
+			'musicTools.outputPreset' => 'EQ för denna utgång',
+			'musicTools.outputPresetHint' => 'Använd denna EQ automatiskt när denna utgång väljs.',
+			'musicTools.eqApproximation' => 'Hörlursprofiler är approximationer för EQ med tio band.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

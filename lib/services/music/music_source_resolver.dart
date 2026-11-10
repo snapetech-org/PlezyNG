@@ -43,6 +43,15 @@ class MusicSource {
     this.mediaInfo,
     this.reportingClient,
   });
+
+  MusicSource prefetched(String localUrl) => MusicSource(
+    url: localUrl,
+    playSessionId: playSessionId,
+    playMethod: playMethod,
+    isOffline: isOffline,
+    mediaInfo: mediaInfo,
+    reportingClient: reportingClient,
+  );
 }
 
 /// Seam between the music engine and playback initialization, so tests can

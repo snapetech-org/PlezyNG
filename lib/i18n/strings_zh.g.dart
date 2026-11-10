@@ -115,6 +115,7 @@ class TranslationsZh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$romm$zh romm = Translations$romm$zh.internal(_root);
 	@override late final Translations$subtitleCapture$zh subtitleCapture = Translations$subtitleCapture$zh.internal(_root);
 	@override late final Translations$musicExperience$zh musicExperience = Translations$musicExperience$zh.internal(_root);
+	@override late final Translations$musicTools$zh musicTools = Translations$musicTools$zh.internal(_root);
 }
 
 // Path: app
@@ -806,6 +807,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get prerollSelectionDescription => '选择从所选图书馆播放的剪辑在电影之前。';
 	@override String get contentScreensaverDelayOptionDescription => '在显示屏保存艺术作品之前等待这些无输入的几分钟。';
 	@override String get videoCodecOptionDescription => '允许在支持时直接播放此代码器. 未经检查的代码被媒体服务器编码。';
+	@override String streamBufferSizeMiB({required Object size}) => '布格大小: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2542,6 +2544,7 @@ class Translations$performanceOverlay$zh extends Translations$performanceOverlay
 	@override String get decoderHardware => '硬件';
 	@override String get tunnelingActive => '已启用';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted}（${failures} 个失败）';
+	@override String cacheLimitMiB({required Object size}) => '缓存限制: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2736,13 +2739,24 @@ class Translations$seerr$zh extends Translations$seerr$en {
 	@override String get request => '请求';
 	@override String get request4k => '请求 4K';
 	@override String get requestSeasons => '请求缺少的季';
+	@override String get requestHint => '在 Seerr 中选择请求选项';
+	@override String get quickRequestHint => '使用默认设置立即通过 Seerr 请求';
+	@override String get chooseSeasonsHint => '选择要在 Seerr 中请求的季';
+	@override String get request4kHint => '在 Seerr 中选择 4K 请求';
+	@override String get only4kAvailable => '此账户只能请求 4K 版本。';
+	@override String get cardActionHint => '打开卡片菜单以查看 Seerr 请求选项';
+	@override String get requestInProgress => '请求处理中';
 	@override String get notifyMe => '有资源时通知我';
 	@override String get notifyMe4k => '有 4K 资源时通知我';
 	@override String get notificationsOn => '可用性提醒已开启';
+	@override String get turnOffAlert => '关闭可用性提醒';
 	@override String get notificationsEnabled => '有资源时我们会通知你';
+	@override String get notificationsEnabled4k => '4K 版本可用时我们会通知你';
+	@override String notificationsEnabledSeason({required Object season}) => '第 ${season} 季可用时我们会通知你';
 	@override String get notificationsDisabled => '可用性提醒已关闭';
 	@override String get notificationFailed => '无法更新可用性提醒';
 	@override String get seasons => '季';
+	@override String get requestSheetHint => 'Seerr 负责审批并跟踪你的请求。';
 	@override String get allSeasons => '全部季';
 	@override String get advancedOptions => '高级';
 	@override String get destinationServer => '目标服务器';
@@ -3744,6 +3758,9 @@ class Translations$sourceSetup$zh extends Translations$sourceSetup$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => '使用你自己的 BookOrbit 账户登录，即可浏览和播放书籍。缺少的书名仍会通过已连接的 SeerrNG 实例提交请求。';
+	@override String get bookorbitOpen => '在 BookOrbit 中打开';
+	@override String get bookorbitDetailHelp => '在 BookOrbit 中查看此书，以管理书库详情和 Pleazyng 无法打开的格式。收听进度会与您的 BookOrbit 账户同步。';
 	@override String get savedCertificate => '已保存的服务器证书';
 	@override String get nfsEndpointInvalid => '请输入 NFS 地址，例如 nfs://nas:2049/export。';
 	@override String get dlnaNone => '未找到 DLNA 服务器。请手动输入设备描述文件的地址。';
@@ -4264,6 +4281,45 @@ class Translations$musicExperience$zh extends Translations$musicExperience$en {
 	@override String get routeLost => '音频输出已断开。播放已暂停。';
 	@override String get autoDriving => '连接汽车时打开驾驶界面';
 	@override String get routeHint => '是否允许自动显示应用由汽车系统决定。';
+}
+
+// Path: musicTools
+class Translations$musicTools$zh extends Translations$musicTools$en {
+	Translations$musicTools$zh.internal(TranslationsZh root) : this._root = root, super.internal(root);
+
+	final TranslationsZh _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => '客座 DJ';
+	@override String get charts => '收听排行';
+	@override String get rediscover => '重新发现';
+	@override String get stations => '音乐电台';
+	@override String get prompt => '描述生成歌单';
+	@override String get provider => '提供商生成地址';
+	@override String get model => '模型名称';
+	@override String get consent => '将我的描述发送给此提供商';
+	@override String get promptHint => '描述想听的音乐';
+	@override String get noHistory => '暂无可显示的音乐';
+	@override String get historyHint => '此设备记录的播放';
+	@override String get days => '天';
+	@override String get albumBlocks => '保持专辑完整';
+	@override String get home => '音乐';
+	@override String get recent => '最近播放';
+	@override String get apiKey => 'API 密钥';
+	@override String get missing => 'N/A';
+	@override String get minutes => '分钟';
+	@override String get rules => '筛选';
+	@override String get exclusiveOutput => '独占音频输出';
+	@override String get preamp => '前置放大';
+	@override String get ratingPending => '已保存在此设备；等待同步';
+	@override String get lyricsOffset => '歌词时间偏移';
+	@override String get anniversaries => '专辑发行纪念日';
+	@override String get outputPreset => '此输出的均衡器';
+	@override String get outputPresetHint => '选择此输出时自动使用此均衡器。';
+	@override String get eqApproximation => '耳机配置已近似转换为十段均衡器设置。';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6055,6 +6111,7 @@ extension on TranslationsZh {
 			'settings.prerollSelectionDescription' => '选择从所选图书馆播放的剪辑在电影之前。',
 			'settings.contentScreensaverDelayOptionDescription' => '在显示屏保存艺术作品之前等待这些无输入的几分钟。',
 			'settings.videoCodecOptionDescription' => '允许在支持时直接播放此代码器. 未经检查的代码被媒体服务器编码。',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => '布格大小: ${size} MiB',
 			'themeEditor.builtIn' => '内置',
 			'themeEditor.presets' => '预设',
 			'themeEditor.custom' => '自定义',
@@ -6406,9 +6463,9 @@ extension on TranslationsZh {
 			'videoControls.chaptersAndBookmarks' => '章节和书标',
 			'videoControls.segmentLoop' => '分区路径',
 			'videoControls.addBookmark' => '添加 Bookmark',
-			'videoControls.bookmarkName' => 'Bookmark 名称',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark 名称',
 			'videoControls.bookmarkNameHint' => '例如,开幕式',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => '图标 ${n}',
 			'videoControls.bookmarkNameRequired' => '请输入本书标志的名称。',
@@ -6920,9 +6977,9 @@ extension on TranslationsZh {
 			'libraries.hideLibrary' => '隐藏媒体库',
 			'libraries.libraryOptions' => '媒体库选项',
 			'libraries.content' => '媒体库内容',
-			'libraries.selectLibrary' => '选择媒体库',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => '选择媒体库',
 			'libraries.filtersWithCount' => ({required Object count}) => '筛选器（${count}）',
 			'libraries.noRecommendations' => '暂无推荐',
 			'libraries.noCollections' => '此媒体库中没有合集',
@@ -7434,9 +7491,9 @@ extension on TranslationsZh {
 			'watchTogether.paste' => '粘贴',
 			'watchTogether.noCodeInClipboard' => '剪贴板中没有房间代码',
 			'watchTogether.copyCode' => '复制代码',
-			'watchTogether.codeCopied' => '房间代码已复制',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => '房间代码已复制',
 			'watchTogether.shareInvite' => '分享邀请',
 			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
 			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
@@ -7900,6 +7957,7 @@ extension on TranslationsZh {
 			'performanceOverlay.decoderHardware' => '硬件',
 			'performanceOverlay.tunnelingActive' => '已启用',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted}（${failures} 个失败）',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => '缓存限制: ${size} MiB',
 			'externalPlayer.title' => '外部播放器',
 			'externalPlayer.useExternalPlayer' => '使用外部播放器',
 			'externalPlayer.useExternalPlayerDescription' => '在其他应用中打开视频',
@@ -7947,10 +8005,10 @@ extension on TranslationsZh {
 			'metadataEdit.fromUrl' => '通过 URL',
 			'metadataEdit.uploadFile' => '上传文件',
 			'metadataEdit.enterImageUrl' => '输入图片 URL',
-			'metadataEdit.imageUrl' => '图片 URL',
-			'metadataEdit.metadataUpdated' => '元数据已更新',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => '图片 URL',
+			'metadataEdit.metadataUpdated' => '元数据已更新',
 			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
 			'metadataEdit.artworkUpdated' => '封面图片已更新',
 			'metadataEdit.artworkUpdateFailed' => '封面图片更新失败',
@@ -8042,13 +8100,24 @@ extension on TranslationsZh {
 			'seerr.request' => '请求',
 			'seerr.request4k' => '请求 4K',
 			'seerr.requestSeasons' => '请求缺少的季',
+			'seerr.requestHint' => '在 Seerr 中选择请求选项',
+			'seerr.quickRequestHint' => '使用默认设置立即通过 Seerr 请求',
+			'seerr.chooseSeasonsHint' => '选择要在 Seerr 中请求的季',
+			'seerr.request4kHint' => '在 Seerr 中选择 4K 请求',
+			'seerr.only4kAvailable' => '此账户只能请求 4K 版本。',
+			'seerr.cardActionHint' => '打开卡片菜单以查看 Seerr 请求选项',
+			'seerr.requestInProgress' => '请求处理中',
 			'seerr.notifyMe' => '有资源时通知我',
 			'seerr.notifyMe4k' => '有 4K 资源时通知我',
 			'seerr.notificationsOn' => '可用性提醒已开启',
+			'seerr.turnOffAlert' => '关闭可用性提醒',
 			'seerr.notificationsEnabled' => '有资源时我们会通知你',
+			'seerr.notificationsEnabled4k' => '4K 版本可用时我们会通知你',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => '第 ${season} 季可用时我们会通知你',
 			'seerr.notificationsDisabled' => '可用性提醒已关闭',
 			'seerr.notificationFailed' => '无法更新可用性提醒',
 			'seerr.seasons' => '季',
+			'seerr.requestSheetHint' => 'Seerr 负责审批并跟踪你的请求。',
 			'seerr.allSeasons' => '全部季',
 			'seerr.advancedOptions' => '高级',
 			'seerr.destinationServer' => '目标服务器',
@@ -8450,6 +8519,8 @@ extension on TranslationsZh {
 			'universalMedia.favorites' => '保存流喜爱',
 			'universalMedia.address' => '媒體地址',
 			'universalMedia.addressHelp' => 'HTTPS 是优先的. 有认可或签名参数的 URL 仅用于此会议,并且不能保存为喜爱。',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.displayName' => '显示名称(可选)',
 			'universalMedia.displayNameHelp' => '选择玩家和系统媒体控制器的简称。',
 			'universalMedia.allowHttp' => '允许未加密的 HTTP 连接',
@@ -8463,8 +8534,6 @@ extension on TranslationsZh {
 			'universalMedia.favoriteSaved' => '流喜爱保存到此个人资料',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支持或不安全的播放列表输入。', other: '${count} 不受支持或不安全的播放列表输入。', ), 
 			'universalMedia.playlistAddress' => 'Playlist 地址',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會保存播放名單。',
 			'universalMedia.choosePlaylist' => '选择 Playlist 文件',
 			'universalMedia.openPlaylist' => '开放播放列表',
@@ -8926,6 +8995,9 @@ extension on TranslationsZh {
 			'audiobook.recoveryImportConfirm' => '将此加密恢复文件与当前阅读位置和笔记相结合吗?现有历史记录将被保留. 共享图书馆和项目 ID 不包含; 在进口之前,在每个设备上设置匹配 ID。',
 			'audiobook.recoveryExported' => '加密恢复文件保存。',
 			'audiobook.recoveryImported' => '恢复数据合并。',
+			'sourceSetup.bookorbitHelp' => '使用你自己的 BookOrbit 账户登录，即可浏览和播放书籍。缺少的书名仍会通过已连接的 SeerrNG 实例提交请求。',
+			'sourceSetup.bookorbitOpen' => '在 BookOrbit 中打开',
+			'sourceSetup.bookorbitDetailHelp' => '在 BookOrbit 中查看此书，以管理书库详情和 Pleazyng 无法打开的格式。收听进度会与您的 BookOrbit 账户同步。',
 			'sourceSetup.savedCertificate' => '已保存的服务器证书',
 			'sourceSetup.nfsEndpointInvalid' => '请输入 NFS 地址，例如 nfs://nas:2049/export。',
 			'sourceSetup.dlnaNone' => '未找到 DLNA 服务器。请手动输入设备描述文件的地址。',
@@ -8961,6 +9033,8 @@ extension on TranslationsZh {
 			'sourceSetup.clientCertificate' => '客户端证书（可选）',
 			'sourceSetup.clientCertificateHelp' => '允许 NAS 验证此客户端的身份；AUTH_SYS ID 仍受 NAS 导出策略约束。',
 			'sourceSetup.savedIdentity' => '将使用已保存的客户端身份凭据。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => '替换已保存的客户端身份凭据',
 			'sourceSetup.chooseIdentity' => '选择 PKCS#12 客户端身份凭据',
 			'sourceSetup.identityPassphrase' => '客户端身份凭据口令',
@@ -8977,8 +9051,6 @@ extension on TranslationsZh {
 			'sourceSetup.apiKey' => 'API 密钥',
 			'sourceSetup.optionalUsername' => '账户用户名（可选）',
 			'sourceSetup.optionalPassword' => '账户密码（可选）',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => '请从 opensubtitles.com 获取 API 密钥。搜索会发送视频标题和可用的 IMDb/TMDB ID，绝不会发送视频文件。密钥和可选的账户凭据会随此来源加密保存。',
 			'sourceSetup.automaticMetadata' => '自动获取在线视频元数据',
 			'sourceSetup.metadataPrivacy' => '仅发送文件名中的标题、年份和集数，或 NFO ID，绝不发送媒体文件或凭据。NFO 字段始终优先。',
@@ -9376,6 +9448,36 @@ extension on TranslationsZh {
 			'musicExperience.routeLost' => '音频输出已断开。播放已暂停。',
 			'musicExperience.autoDriving' => '连接汽车时打开驾驶界面',
 			'musicExperience.routeHint' => '是否允许自动显示应用由汽车系统决定。',
+			'musicTools.guestDj' => '客座 DJ',
+			'musicTools.charts' => '收听排行',
+			'musicTools.rediscover' => '重新发现',
+			'musicTools.stations' => '音乐电台',
+			'musicTools.prompt' => '描述生成歌单',
+			'musicTools.provider' => '提供商生成地址',
+			'musicTools.model' => '模型名称',
+			'musicTools.consent' => '将我的描述发送给此提供商',
+			'musicTools.promptHint' => '描述想听的音乐',
+			'musicTools.noHistory' => '暂无可显示的音乐',
+			'musicTools.historyHint' => '此设备记录的播放',
+			'musicTools.days' => '天',
+			'musicTools.albumBlocks' => '保持专辑完整',
+			'musicTools.home' => '音乐',
+			'musicTools.recent' => '最近播放',
+			'musicTools.apiKey' => 'API 密钥',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => '分钟',
+			'musicTools.rules' => '筛选',
+			'musicTools.exclusiveOutput' => '独占音频输出',
+			'musicTools.preamp' => '前置放大',
+			'musicTools.ratingPending' => '已保存在此设备；等待同步',
+			'musicTools.lyricsOffset' => '歌词时间偏移',
+			'musicTools.anniversaries' => '专辑发行纪念日',
+			'musicTools.outputPreset' => '此输出的均衡器',
+			'musicTools.outputPresetHint' => '选择此输出时自动使用此均衡器。',
+			'musicTools.eqApproximation' => '耳机配置已近似转换为十段均衡器设置。',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

@@ -732,7 +732,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "ขนาด Buffer: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "โครงสร้าง",
@@ -3091,7 +3092,8 @@
     "decoderHardware": "ฮาร์ดแวร์",
     "tunnelingActive": "การใช้งาน",
     "dvRpuFailed": "${converted} (${failures} ไม่สําเร็จ)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "หมายเลขรุ่น: Cache Limit: ${size} MiB"
   },
   "externalPlayer": {
     "title": "ผู้เล่นภายนอก",
@@ -3262,13 +3264,24 @@
     "request": "คําขอ",
     "request4k": "คําขอใน 4K",
     "requestSeasons": "ขอซีซันที่ขาดหายไป",
+    "requestHint": "เลือกตัวเลือกคำขอใน Seerr",
+    "quickRequestHint": "ส่งคำขอใน Seerr ทันทีโดยใช้การตั้งค่าเริ่มต้น",
+    "chooseSeasonsHint": "เลือกซีซันที่จะขอใน Seerr",
+    "request4kHint": "เลือกคำขอ 4K ใน Seerr",
+    "only4kAvailable": "บัญชีนี้ขอได้เฉพาะเวอร์ชัน 4K เท่านั้น",
+    "cardActionHint": "เปิดเมนูการ์ดเพื่อดูตัวเลือกคำขอของ Seerr",
+    "requestInProgress": "กำลังดำเนินการคำขอ",
     "notifyMe": "แจ้งเตือนเมื่อพร้อมใช้งาน",
     "notifyMe4k": "แจ้งเตือนเมื่อมีเวอร์ชัน 4K",
     "notificationsOn": "เปิดการแจ้งเตือนเมื่อพร้อมใช้งาน",
+    "turnOffAlert": "ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน",
     "notificationsEnabled": "เราจะแจ้งให้ทราบเมื่อพร้อมใช้งาน",
+    "notificationsEnabled4k": "เราจะแจ้งให้ทราบเมื่อเวอร์ชัน 4K พร้อมใช้งาน",
+    "notificationsEnabledSeason": "เราจะแจ้งให้ทราบเมื่อซีซัน ${season} พร้อมใช้งาน",
     "notificationsDisabled": "ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน",
     "notificationFailed": "อัปเดตการแจ้งเตือนเมื่อพร้อมใช้งานไม่สำเร็จ",
     "seasons": "ฤดูกาล",
+    "requestSheetHint": "Seerr จัดการการอนุมัติและติดตามคำขอของคุณ",
     "allSeasons": "ทุกฤดูกาล",
     "advancedOptions": "ขั้นสูง",
     "destinationServer": "เซิร์ฟเวอร์ปลายทาง",
@@ -4221,6 +4234,9 @@
     "recoveryImported": "ข้อมูลการกู้คืนรวม"
   },
   "sourceSetup": {
+    "bookorbitHelp": "ลงชื่อเข้าใช้บัญชี BookOrbit ของคุณเพื่อเรียกดูและเล่นหนังสือ คำขอสำหรับเรื่องที่ไม่มีให้บริการยังคงส่งผ่าน SeerrNG ที่เชื่อมต่อไว้",
+    "bookorbitOpen": "เปิดใน BookOrbit",
+    "bookorbitDetailHelp": "ดูเรื่องนี้ใน BookOrbit เพื่อจัดการรายละเอียดในคลังและรูปแบบไฟล์ที่ Pleazyng เปิดไม่ได้ ความคืบหน้าในการฟังจะซิงค์กับบัญชี BookOrbit ของคุณ",
     "savedCertificate": "ใบรับรองเซิร์ฟเวอร์ที่บันทึกไว้",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "ป้อน URL ของ NFS เช่น nfs://nas:2049/export.",
@@ -5475,5 +5491,37 @@
     "routeLost": "เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว",
     "autoDriving": "เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ",
     "routeHint": "ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่"
+  },
+  "musicTools": {
+    "guestDj": "ดีเจรับเชิญ",
+    "charts": "อันดับการฟัง",
+    "rediscover": "ค้นพบอีกครั้ง",
+    "stations": "สถานีเพลง",
+    "prompt": "เพลย์ลิสต์จากคำอธิบาย",
+    "provider": "URL สร้างรายการของผู้ให้บริการ",
+    "model": "ชื่อโมเดล",
+    "consent": "ส่งคำอธิบายของฉันให้ผู้ให้บริการนี้",
+    "promptHint": "อธิบายเพลงที่ต้องการ",
+    "noHistory": "ยังไม่มีเพลงให้แสดง",
+    "historyHint": "การเล่นที่บันทึกบนอุปกรณ์นี้",
+    "days": "วัน",
+    "albumBlocks": "เก็บอัลบั้มทั้งชุดไว้ด้วยกัน",
+    "home": "เพลง",
+    "recent": "เล่นล่าสุด",
+    "apiKey": "คีย์ API",
+    "missing": "หมายเลขรุ่น: A",
+    "minutes": "นาที",
+    "rules": "ฟิล์ม",
+    "exclusiveOutput": "เอาต์พุตเสียงแบบเอกสิทธิ์",
+    "preamp": "ปรีแอมป์",
+    "ratingPending": "บันทึกบนอุปกรณ์นี้แล้ว รอซิงค์",
+    "lyricsOffset": "ปรับเวลาเนื้อเพลง",
+    "anniversaries": "ครบรอบการออกอัลบั้ม",
+    "outputPreset": "EQ สำหรับเอาต์พุตนี้",
+    "outputPresetHint": "ใช้ EQ นี้โดยอัตโนมัติเมื่อเลือกเอาต์พุตนี้",
+    "eqApproximation": "โปรไฟล์หูฟังถูกปรับโดยประมาณสำหรับ EQ สิบย่านความถี่",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

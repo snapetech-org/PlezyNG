@@ -125,6 +125,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$karaokeUi$en karaokeUi = Translations$karaokeUi$en.internal(_root);
 	late final Translations$bonusExtras$en bonusExtras = Translations$bonusExtras$en.internal(_root);
 	late final Translations$musicExperience$en musicExperience = Translations$musicExperience$en.internal(_root);
+	late final Translations$musicTools$en musicTools = Translations$musicTools$en.internal(_root);
 }
 
 // Path: app
@@ -2173,6 +2174,9 @@ class Translations$settings$en {
 
 	/// en: 'SDR · H.264'
 	String get dvOfflineSdr => 'SDR · H.264';
+
+	/// en: 'Buffer Size: ${size} MiB'
+	String streamBufferSizeMiB({required Object size}) => 'Buffer Size: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -7315,6 +7319,9 @@ class Translations$performanceOverlay$en {
 
 	/// en: '${request} · initializing${fallback}'
 	String neuralProviderInitializing({required Object request, required Object fallback}) => '${request} · initializing${fallback}';
+
+	/// en: 'Cache Limit: ${size} MiB'
+	String cacheLimitMiB({required Object size}) => 'Cache Limit: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -14663,6 +14670,105 @@ class Translations$musicExperience$en {
 	String get routeHint => 'The car system controls whether the app can appear automatically.';
 }
 
+// Path: musicTools
+class Translations$musicTools$en {
+	Translations$musicTools$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Guest DJ'
+	String get guestDj => 'Guest DJ';
+
+	/// en: 'Listening charts'
+	String get charts => 'Listening charts';
+
+	/// en: 'Rediscover'
+	String get rediscover => 'Rediscover';
+
+	/// en: 'Music stations'
+	String get stations => 'Music stations';
+
+	/// en: 'Prompt playlist'
+	String get prompt => 'Prompt playlist';
+
+	/// en: 'Provider completion URL'
+	String get provider => 'Provider completion URL';
+
+	/// en: 'Model name'
+	String get model => 'Model name';
+
+	/// en: 'Send my prompt to this provider'
+	String get consent => 'Send my prompt to this provider';
+
+	/// en: 'Describe the music you want'
+	String get promptHint => 'Describe the music you want';
+
+	/// en: 'No music to show yet'
+	String get noHistory => 'No music to show yet';
+
+	/// en: 'Plays recorded on this device'
+	String get historyHint => 'Plays recorded on this device';
+
+	/// en: 'Days'
+	String get days => 'Days';
+
+	/// en: 'Keep whole albums together'
+	String get albumBlocks => 'Keep whole albums together';
+
+	/// en: 'Music'
+	String get home => 'Music';
+
+	/// en: 'Recently played'
+	String get recent => 'Recently played';
+
+	/// en: 'API key'
+	String get apiKey => 'API key';
+
+	/// en: 'N/A'
+	String get missing => 'N/A';
+
+	/// en: 'Minutes'
+	String get minutes => 'Minutes';
+
+	/// en: 'Filters'
+	String get rules => 'Filters';
+
+	/// en: 'Exclusive audio output'
+	String get exclusiveOutput => 'Exclusive audio output';
+
+	/// en: 'Preamp'
+	String get preamp => 'Preamp';
+
+	/// en: 'Saved on this device; waiting to sync'
+	String get ratingPending => 'Saved on this device; waiting to sync';
+
+	/// en: 'Lyrics timing offset'
+	String get lyricsOffset => 'Lyrics timing offset';
+
+	/// en: 'Album anniversaries'
+	String get anniversaries => 'Album anniversaries';
+
+	/// en: 'EQ for this output'
+	String get outputPreset => 'EQ for this output';
+
+	/// en: 'Automatically use this EQ when this output is selected.'
+	String get outputPresetHint => 'Automatically use this EQ when this output is selected.';
+
+	/// en: 'Headphone profiles are approximated for the ten-band EQ.'
+	String get eqApproximation => 'Headphone profiles are approximated for the ten-band EQ.';
+
+	/// en: 'AutoEq GraphicEQ'
+	String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+
+	/// en: 'AutoEq'
+	String get autoEq => 'AutoEq';
+
+	/// en: 'AutoEq — Jaakko Pasanen'
+	String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
 // Path: appIcon.names
 class Translations$appIcon$names$en {
 	Translations$appIcon$names$en.internal(this._root);
@@ -17971,6 +18077,7 @@ extension on Translations {
 			'settings.dvOfflineNewOutput' => 'Choose a new .mkv filename. Existing media and reports are preserved.',
 			'settings.dvOfflineHdr10' => 'HDR10 · 10-bit HEVC',
 			'settings.dvOfflineSdr' => 'SDR · H.264',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer Size: ${size} MiB',
 			'themeEditor.builtIn' => 'Built-in',
 			'themeEditor.presets' => 'Presets',
 			'themeEditor.custom' => 'Custom',
@@ -18285,9 +18392,9 @@ extension on Translations {
 			'videoControls.playbackWillPauseIn' => ({required Object duration}) => 'Playback will pause in ${duration}',
 			'videoControls.sleepTimerEndOfVideo' => 'End of current video',
 			'videoControls.sleepTimerStopAtHeader' => 'Stop at',
-			'videoControls.sleepTimerDurationHeader' => 'Timer',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.sleepTimerDurationHeader' => 'Timer',
 			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
 			'videoControls.stillWatching' => 'Still watching?',
 			'videoControls.pausingIn' => ({required Object seconds}) => 'Pausing in ${seconds}s',
@@ -18799,9 +18906,9 @@ extension on Translations {
 			'accountPreferences.subtitleAccessibilityOptions.preferSdhDescription' => 'Prefer SDH subtitles when available, but allow standard subtitles as a fallback.',
 			'accountPreferences.subtitleAccessibilityOptions.onlySdhDescription' => 'Use SDH subtitles only; do not fall back to standard subtitles.',
 			'accountPreferences.subtitleAccessibilityOptions.onlyNonSdhDescription' => 'Use standard subtitles only; exclude SDH subtitles.',
-			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
 			_ => null,
 		} ?? switch (path) {
+			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferForced' => 'Prefer forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyForced' => 'Only forced subtitles',
@@ -19313,9 +19420,9 @@ extension on Translations {
 			'explore.creditRole.director' => 'Director',
 			'explore.creditRole.writer' => 'Writer',
 			'explore.creditRole.producer' => 'Producer',
-			'explore.creditRole.creator' => 'Creator',
 			_ => null,
 		} ?? switch (path) {
+			'explore.creditRole.creator' => 'Creator',
 			'explore.creditRole.composer' => 'Composer',
 			'explore.relation.prequel' => 'Prequel',
 			'explore.relation.sequel' => 'Sequel',
@@ -19827,9 +19934,9 @@ extension on Translations {
 			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} show', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} shows', ), 
 			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ), 
 			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ), 
-			'downloads.errorFileNotFound' => 'File not found (404)',
 			_ => null,
 		} ?? switch (path) {
+			'downloads.errorFileNotFound' => 'File not found (404)',
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
 			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
@@ -20138,6 +20245,7 @@ extension on Translations {
 			'performanceOverlay.tunnelingActive' => 'Active',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} failed)',
 			'performanceOverlay.neuralProviderInitializing' => ({required Object request, required Object fallback}) => '${request} · initializing${fallback}',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Cache Limit: ${size} MiB',
 			'externalPlayer.title' => 'External Player',
 			'externalPlayer.useExternalPlayer' => 'Use External Player',
 			'externalPlayer.useExternalPlayerDescription' => 'Open videos in another app',
@@ -20340,10 +20448,10 @@ extension on Translations {
 			'seerr.quickConnectUnsupported' => 'This Seerr instance does not support Quick Connect. It needs Seerr 3.4 or newer.',
 			'seerr.notInitialized' => 'This Seerr instance has not completed first-run setup',
 			'seerr.noPlexTokenForReauth' => 'No Plex token is available to sign in again',
-			'seerr.noStoredCredentials' => 'No stored credentials are available to sign in again',
-			'seerr.signInRejected' => 'Sign-in was rejected',
 			_ => null,
 		} ?? switch (path) {
+			'seerr.noStoredCredentials' => 'No stored credentials are available to sign in again',
+			'seerr.signInRejected' => 'Sign-in was rejected',
 			'seerr.noSessionCookie' => 'Seerr did not issue a session cookie',
 			'seerr.freshCookieRejected' => 'Seerr rejected the new session cookie',
 			'seerr.noUserInformation' => 'Seerr did not return user information',
@@ -20854,10 +20962,10 @@ extension on Translations {
 			'universalMedia.mediaTool' => 'Media tool',
 			'universalMedia.captureIntro' => 'Record your screen or a camera to an MP4 file, or preview a live input in the player. FFmpeg must be installed and include the H.264 encoder for recording.',
 			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
-			'universalMedia.captureSource' => 'Screen or camera',
-			'universalMedia.captureScreen' => 'Screen',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.captureSource' => 'Screen or camera',
+			'universalMedia.captureScreen' => 'Screen',
 			'universalMedia.captureAudioSource' => 'Audio input (optional)',
 			'universalMedia.captureAudioHelp' => 'Add audio from a microphone or available input. Device choices depend on FFmpeg and system permissions.',
 			'universalMedia.captureAudioNone' => 'No audio',
@@ -21368,10 +21476,10 @@ extension on Translations {
 			'games.recent' => 'Recently played',
 			'games.favorites' => 'Favorites',
 			'games.allGames' => 'All games',
-			'games.search' => 'Find a game',
-			'games.noMatches' => 'No games match this search.',
 			_ => null,
 		} ?? switch (path) {
+			'games.search' => 'Find a game',
+			'games.noMatches' => 'No games match this search.',
 			'games.favorite' => 'Save favorite',
 			'games.unfavorite' => 'Remove favorite',
 			'games.forget' => 'Forget computer',
@@ -21882,10 +21990,10 @@ extension on Translations {
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
 			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
 			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
-			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
-			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
+			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
 			'subtitleAiUi.alignsTheWatchedPortionAgainstAnExistingSubtitle' => 'Aligns the watched portion against an existing subtitle',
 			'subtitleAiUi.repairCutsFromCapturedPlayback' => 'Repair cuts from captured playback',
 			'subtitleAiUi.preservesCueTimingOutsideSpeechMatchedEvidence' => 'Preserves cue timing outside speech-matched evidence',
@@ -22396,10 +22504,10 @@ extension on Translations {
 			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
 			'karaokeUi.requestASong' => 'Request a song',
 			'karaokeUi.hostUnlock' => 'Host unlock',
-			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
-			'karaokeUi.searchSongs' => 'Search songs',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
+			'karaokeUi.searchSongs' => 'Search songs',
 			'bonusExtras.title' => 'Extras',
 			'bonusExtras.seeAll' => 'See all extras',
 			'bonusExtras.findMore' => 'Find more',
@@ -22516,6 +22624,36 @@ extension on Translations {
 			'musicExperience.routeLost' => 'Audio output disconnected. Playback paused.',
 			'musicExperience.autoDriving' => 'Open driving view when connected to a car',
 			'musicExperience.routeHint' => 'The car system controls whether the app can appear automatically.',
+			'musicTools.guestDj' => 'Guest DJ',
+			'musicTools.charts' => 'Listening charts',
+			'musicTools.rediscover' => 'Rediscover',
+			'musicTools.stations' => 'Music stations',
+			'musicTools.prompt' => 'Prompt playlist',
+			'musicTools.provider' => 'Provider completion URL',
+			'musicTools.model' => 'Model name',
+			'musicTools.consent' => 'Send my prompt to this provider',
+			'musicTools.promptHint' => 'Describe the music you want',
+			'musicTools.noHistory' => 'No music to show yet',
+			'musicTools.historyHint' => 'Plays recorded on this device',
+			'musicTools.days' => 'Days',
+			'musicTools.albumBlocks' => 'Keep whole albums together',
+			'musicTools.home' => 'Music',
+			'musicTools.recent' => 'Recently played',
+			'musicTools.apiKey' => 'API key',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Minutes',
+			'musicTools.rules' => 'Filters',
+			'musicTools.exclusiveOutput' => 'Exclusive audio output',
+			'musicTools.preamp' => 'Preamp',
+			'musicTools.ratingPending' => 'Saved on this device; waiting to sync',
+			'musicTools.lyricsOffset' => 'Lyrics timing offset',
+			'musicTools.anniversaries' => 'Album anniversaries',
+			'musicTools.outputPreset' => 'EQ for this output',
+			'musicTools.outputPresetHint' => 'Automatically use this EQ when this output is selected.',
+			'musicTools.eqApproximation' => 'Headphone profiles are approximated for the ten-band EQ.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

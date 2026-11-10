@@ -1,0 +1,61 @@
+name: Reviewed translation integration
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lib/i18n/*.i18n.json'
+      - 'docs/localization/reviews/**'
+      - scripts/localization/publish_generated.py
+      - .github/workflows/localization-reviewed.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: reviewed-locales-main
+  cancel-in-progress: false
+jobs:
+  integrate:
+    if: github.repository == 'snapetech-org/pleazyng' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          channel: stable
+          flutter-version: '3.47.8'
+          cache: false
+      - run: flutter pub get --enforce-lockfile
+      - name: Prefetch pinned test libraries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/prepare_native_downloads.py --sqlite-platform linux --arch x64
+      - name: Validate complete source messages and canonical structure
+        run: |
+          python3 scripts/checks/check_localizations.py --report docs/localization/coverage.json
+          python3 scripts/checks/clean_translations.py --check --clean
+      - name: Regenerate all canonical outputs
+        run: scripts/codegen.sh
+      - name: Verify locale behavior
+        run: |
+          python3 scripts/checks/check_localizations.py
+          python3 scripts/codegen/generate_localized_quantities.py --check
+          python3 scripts/codegen/generate_platform_locales.py --check
+          flutter test --no-pub test/i18n test/utils/formatters_test.dart
+      - name: Publish verified generated translations on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/localization/publish_generated.py
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: reviewed-locale-output
+          path: |
+            docs/localization/coverage.json
+            lib/i18n/strings*.g.dart
+          if-no-files-found: error
+          retention-days: 14

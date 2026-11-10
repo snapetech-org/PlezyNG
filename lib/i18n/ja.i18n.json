@@ -732,7 +732,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "バッファーサイズ: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "標準",
@@ -3108,7 +3109,8 @@
     "decoderHardware": "ハードウェア",
     "tunnelingActive": "有効",
     "dvRpuFailed": "${converted}（${failures}件失敗）",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "キャッシュ上限: ${size} MiB"
   },
   "externalPlayer": {
     "title": "外部プレーヤー",
@@ -3279,13 +3281,24 @@
     "request": "リクエスト",
     "request4k": "4K でリクエスト",
     "requestSeasons": "未配信のシーズンをリクエスト",
+    "requestHint": "Seerrでリクエスト方法を選択",
+    "quickRequestHint": "Seerrで既定の設定を使って今すぐリクエスト",
+    "chooseSeasonsHint": "Seerrでリクエストするシーズンを選択",
+    "request4kHint": "Seerrで4Kリクエストを選択",
+    "only4kAvailable": "このアカウントでは4K版のみリクエストできます。",
+    "cardActionHint": "カードメニューを開いてSeerrのリクエスト方法を選択",
+    "requestInProgress": "リクエスト処理中",
     "notifyMe": "配信開始時に通知",
     "notifyMe4k": "4Kで配信開始時に通知",
     "notificationsOn": "配信通知オン",
+    "turnOffAlert": "配信開始の通知をオフにする",
     "notificationsEnabled": "配信開始時にお知らせします",
+    "notificationsEnabled4k": "4K版が利用可能になったらお知らせします",
+    "notificationsEnabledSeason": "シーズン${season}が利用可能になったらお知らせします",
     "notificationsDisabled": "配信通知をオフにしました",
     "notificationFailed": "配信通知を更新できませんでした",
     "seasons": "シーズン",
+    "requestSheetHint": "承認とリクエストの追跡はSeerrが行います。",
     "allSeasons": "全シーズン",
     "advancedOptions": "詳細",
     "destinationServer": "宛先サーバー",
@@ -4241,6 +4254,9 @@
     "recoveryImported": "リハビリデータが合併。"
   },
   "sourceSetup": {
+    "bookorbitHelp": "ご自身のBookOrbitアカウントにサインインすると、本を閲覧して再生できます。未登録タイトルのリクエストは、接続済みのSeerrNGインスタンスを通じて送信されます。",
+    "bookorbitOpen": "BookOrbitで開く",
+    "bookorbitDetailHelp": "このタイトルをBookOrbitで表示して、ライブラリの詳細やPleazyngで開けない形式を管理できます。再生位置はBookOrbitアカウントと同期されます。",
     "savedCertificate": "保存済みのサーバー証明書",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "nfs://nas:2049/export のような NFS URL を入力してください。",
@@ -5497,5 +5513,37 @@
     "routeLost": "音声出力が切断されました。再生を一時停止しました。",
     "autoDriving": "車に接続したら運転用画面を開く",
     "routeHint": "アプリを自動表示できるかどうかは車のシステムによって決まります。"
+  },
+  "musicTools": {
+    "guestDj": "ゲストDJ",
+    "charts": "再生ランキング",
+    "rediscover": "再発見",
+    "stations": "ミュージックステーション",
+    "prompt": "説明からプレイリスト",
+    "provider": "プロバイダーの生成URL",
+    "model": "モデル名",
+    "consent": "このプロバイダーに説明を送信",
+    "promptHint": "聴きたい音楽を説明してください",
+    "noHistory": "表示する音楽はまだありません",
+    "historyHint": "この端末で記録した再生",
+    "days": "日",
+    "albumBlocks": "アルバム全体をまとめる",
+    "home": "音楽",
+    "recent": "最近再生した曲",
+    "apiKey": "API キー",
+    "missing": "N/A",
+    "minutes": "分",
+    "rules": "フィルター",
+    "exclusiveOutput": "排他オーディオ出力",
+    "preamp": "プリアンプ",
+    "ratingPending": "この端末に保存済み・同期待ち",
+    "lyricsOffset": "歌詞のタイミング調整",
+    "anniversaries": "アルバムの発売記念日",
+    "outputPreset": "この出力のEQ",
+    "outputPresetHint": "この出力が選択されたときに、このEQを自動的に使用します。",
+    "eqApproximation": "ヘッドホンのプロファイルは10バンドEQ向けに近似されています。",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

@@ -115,6 +115,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$vi romm = _Translations$romm$vi._(_root);
 	@override late final _Translations$subtitleCapture$vi subtitleCapture = _Translations$subtitleCapture$vi._(_root);
 	@override late final _Translations$musicExperience$vi musicExperience = _Translations$musicExperience$vi._(_root);
+	@override late final _Translations$musicTools$vi musicTools = _Translations$musicTools$vi._(_root);
 }
 
 // Path: app
@@ -806,6 +807,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Chọn clip nào từ thư viện được chọn có thể chơi trước khi xem phim.';
 	@override String get contentScreensaverDelayOptionDescription => 'Đợi nhiều phút này mà không cần nhập trước khi hiển thị màn hình bảo vệ nghệ thuật.';
 	@override String get videoCodecOptionDescription => 'Cho phép phát trực tiếp cho codec này khi được hỗ trợ. codec không kiểm tra được chuyển mã bởi máy chủ truyền thông.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Buffer kích thước: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2527,6 +2529,7 @@ class _Translations$performanceOverlay$vi extends Translations$performanceOverla
 	@override String get decoderHardware => 'Phần cứng';
 	@override String get tunnelingActive => 'hoạt động';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} thất bại)';
+	@override String cacheLimitMiB({required Object size}) => 'Cache giới hạn: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2721,13 +2724,24 @@ class _Translations$seerr$vi extends Translations$seerr$en {
 	@override String get request => 'yêu cầu';
 	@override String get request4k => 'yêu cầu 4K';
 	@override String get requestSeasons => 'Yêu cầu các mùa còn thiếu';
+	@override String get requestHint => 'Chọn tùy chọn yêu cầu trong Seerr';
+	@override String get quickRequestHint => 'Yêu cầu ngay qua Seerr bằng cài đặt mặc định';
+	@override String get chooseSeasonsHint => 'Chọn các mùa cần yêu cầu trong Seerr';
+	@override String get request4kHint => 'Chọn yêu cầu bản 4K trong Seerr';
+	@override String get only4kAvailable => 'Tài khoản này chỉ có thể yêu cầu phiên bản 4K.';
+	@override String get cardActionHint => 'Mở menu thẻ để xem các tùy chọn yêu cầu Seerr';
+	@override String get requestInProgress => 'Đang xử lý yêu cầu';
 	@override String get notifyMe => 'Thông báo cho tôi khi có sẵn';
 	@override String get notifyMe4k => 'Thông báo cho tôi khi có bản 4K';
 	@override String get notificationsOn => 'Đã bật thông báo tình trạng khả dụng';
+	@override String get turnOffAlert => 'Tắt thông báo tình trạng khả dụng';
 	@override String get notificationsEnabled => 'Chúng tôi sẽ thông báo khi có sẵn';
+	@override String get notificationsEnabled4k => 'Chúng tôi sẽ thông báo khi có phiên bản 4K';
+	@override String notificationsEnabledSeason({required Object season}) => 'Chúng tôi sẽ thông báo khi có mùa ${season}';
 	@override String get notificationsDisabled => 'Đã tắt thông báo tình trạng khả dụng';
 	@override String get notificationFailed => 'Không thể cập nhật thông báo tình trạng khả dụng';
 	@override String get seasons => 'Phần';
+	@override String get requestSheetHint => 'Seerr xử lý phê duyệt và theo dõi yêu cầu của bạn.';
 	@override String get allSeasons => 'Tất cả mùa';
 	@override String get advancedOptions => 'Nâng cao';
 	@override String get destinationServer => 'Destination Server Khách sạn';
@@ -3726,6 +3740,9 @@ class _Translations$sourceSetup$vi extends Translations$sourceSetup$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Đăng nhập bằng tài khoản BookOrbit của riêng bạn để duyệt và phát sách. Yêu cầu các tựa sách còn thiếu vẫn được gửi qua phiên bản SeerrNG đã kết nối.';
+	@override String get bookorbitOpen => 'Mở trong BookOrbit';
+	@override String get bookorbitDetailHelp => 'Xem tựa sách này trong BookOrbit để quản lý thông tin thư viện và các định dạng Pleazyng không thể mở. Tiến độ nghe được đồng bộ với tài khoản BookOrbit của bạn.';
 	@override String get savedCertificate => 'Chứng chỉ máy chủ đã lưu';
 	@override String get nfsEndpointInvalid => 'Nhập URL NFS, chẳng hạn nfs://nas:2049/export.';
 	@override String get dlnaNone => 'Không tìm thấy máy chủ DLNA. Hãy nhập thủ công URL mô tả thiết bị.';
@@ -4246,6 +4263,45 @@ class _Translations$musicExperience$vi extends Translations$musicExperience$en {
 	@override String get routeLost => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.';
 	@override String get autoDriving => 'Mở giao diện lái xe khi kết nối với ô tô';
 	@override String get routeHint => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$vi extends Translations$musicTools$en {
+	_Translations$musicTools$vi._(TranslationsVi root) : this._root = root, super.internal(root);
+
+	final TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ khách mời';
+	@override String get charts => 'Bảng xếp hạng nghe';
+	@override String get rediscover => 'Khám phá lại';
+	@override String get stations => 'Đài âm nhạc';
+	@override String get prompt => 'Danh sách từ mô tả';
+	@override String get provider => 'URL tạo của nhà cung cấp';
+	@override String get model => 'Tên mô hình';
+	@override String get consent => 'Gửi mô tả của tôi đến nhà cung cấp này';
+	@override String get promptHint => 'Mô tả âm nhạc bạn muốn';
+	@override String get noHistory => 'Chưa có nhạc để hiển thị';
+	@override String get historyHint => 'Lượt phát được ghi trên thiết bị này';
+	@override String get days => 'Ngày';
+	@override String get albumBlocks => 'Giữ nguyên album';
+	@override String get home => 'Nhạc';
+	@override String get recent => 'Đã phát gần đây';
+	@override String get apiKey => 'Khóa API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'phút';
+	@override String get rules => 'Bộ lọc';
+	@override String get exclusiveOutput => 'Đầu ra âm thanh độc quyền';
+	@override String get preamp => 'Tiền khuếch đại';
+	@override String get ratingPending => 'Đã lưu trên thiết bị này; đang chờ đồng bộ';
+	@override String get lyricsOffset => 'Độ lệch thời gian lời bài hát';
+	@override String get anniversaries => 'Kỷ niệm phát hành album';
+	@override String get outputPreset => 'EQ cho đầu ra này';
+	@override String get outputPresetHint => 'Tự động dùng EQ này khi đầu ra này được chọn.';
+	@override String get eqApproximation => 'Hồ sơ tai nghe được xấp xỉ cho EQ mười dải.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6035,6 +6091,7 @@ extension on TranslationsVi {
 			'settings.prerollSelectionDescription' => 'Chọn clip nào từ thư viện được chọn có thể chơi trước khi xem phim.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Đợi nhiều phút này mà không cần nhập trước khi hiển thị màn hình bảo vệ nghệ thuật.',
 			'settings.videoCodecOptionDescription' => 'Cho phép phát trực tiếp cho codec này khi được hỗ trợ. codec không kiểm tra được chuyển mã bởi máy chủ truyền thông.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer kích thước: ${size} MiB',
 			'themeEditor.builtIn' => 'xây dựng',
 			'themeEditor.presets' => 'Lời bài hát',
 			'themeEditor.custom' => 'Tùy chọn',
@@ -6386,9 +6443,9 @@ extension on TranslationsVi {
 			'videoControls.chaptersAndBookmarks' => 'Chương và Bookmark',
 			'videoControls.segmentLoop' => 'phân đoạn loop',
 			'videoControls.addBookmark' => 'Thêm Bookmark',
-			'videoControls.bookmarkName' => 'Bookmark tên',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark tên',
 			'videoControls.bookmarkNameHint' => 'Ví dụ: Mở cảnh',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Đề ${n}',
 			'videoControls.bookmarkNameRequired' => 'Nhập tên cho bookmark này.',
@@ -6900,9 +6957,9 @@ extension on TranslationsVi {
 			'libraries.hideLibrary' => 'ẩn thư viện',
 			'libraries.libraryOptions' => 'Tùy chọn thư viện',
 			'libraries.content' => 'Thư viện Content',
-			'libraries.selectLibrary' => 'Chọn thư viện',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Chọn thư viện',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Bộ lọc (${count})',
 			'libraries.noRecommendations' => 'Không có khuyến nghị có sẵn',
 			'libraries.noCollections' => 'Không có tập hợp trong thư viện này',
@@ -7414,9 +7471,9 @@ extension on TranslationsVi {
 			'watchTogether.paste' => 'Ăn bánh',
 			'watchTogether.noCodeInClipboard' => 'Clipboard không chứa mã phòng',
 			'watchTogether.copyCode' => 'Copy mã',
-			'watchTogether.codeCopied' => 'Mã phòng copy',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Mã phòng copy',
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
@@ -7880,6 +7937,7 @@ extension on TranslationsVi {
 			'performanceOverlay.decoderHardware' => 'Phần cứng',
 			'performanceOverlay.tunnelingActive' => 'hoạt động',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} thất bại)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Cache giới hạn: ${size} MiB',
 			'externalPlayer.title' => 'Người chơi bên ngoài',
 			'externalPlayer.useExternalPlayer' => 'Sử dụng Player External',
 			'externalPlayer.useExternalPlayerDescription' => 'Mở video trong ứng dụng khác',
@@ -7927,10 +7985,10 @@ extension on TranslationsVi {
 			'metadataEdit.fromUrl' => 'Từ URL',
 			'metadataEdit.uploadFile' => 'tải file',
 			'metadataEdit.enterImageUrl' => 'Nhập hình ảnh URL',
-			'metadataEdit.imageUrl' => 'Ảnh URL',
-			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'Ảnh URL',
+			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
 			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
 			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
@@ -8022,13 +8080,24 @@ extension on TranslationsVi {
 			'seerr.request' => 'yêu cầu',
 			'seerr.request4k' => 'yêu cầu 4K',
 			'seerr.requestSeasons' => 'Yêu cầu các mùa còn thiếu',
+			'seerr.requestHint' => 'Chọn tùy chọn yêu cầu trong Seerr',
+			'seerr.quickRequestHint' => 'Yêu cầu ngay qua Seerr bằng cài đặt mặc định',
+			'seerr.chooseSeasonsHint' => 'Chọn các mùa cần yêu cầu trong Seerr',
+			'seerr.request4kHint' => 'Chọn yêu cầu bản 4K trong Seerr',
+			'seerr.only4kAvailable' => 'Tài khoản này chỉ có thể yêu cầu phiên bản 4K.',
+			'seerr.cardActionHint' => 'Mở menu thẻ để xem các tùy chọn yêu cầu Seerr',
+			'seerr.requestInProgress' => 'Đang xử lý yêu cầu',
 			'seerr.notifyMe' => 'Thông báo cho tôi khi có sẵn',
 			'seerr.notifyMe4k' => 'Thông báo cho tôi khi có bản 4K',
 			'seerr.notificationsOn' => 'Đã bật thông báo tình trạng khả dụng',
+			'seerr.turnOffAlert' => 'Tắt thông báo tình trạng khả dụng',
 			'seerr.notificationsEnabled' => 'Chúng tôi sẽ thông báo khi có sẵn',
+			'seerr.notificationsEnabled4k' => 'Chúng tôi sẽ thông báo khi có phiên bản 4K',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Chúng tôi sẽ thông báo khi có mùa ${season}',
 			'seerr.notificationsDisabled' => 'Đã tắt thông báo tình trạng khả dụng',
 			'seerr.notificationFailed' => 'Không thể cập nhật thông báo tình trạng khả dụng',
 			'seerr.seasons' => 'Phần',
+			'seerr.requestSheetHint' => 'Seerr xử lý phê duyệt và theo dõi yêu cầu của bạn.',
 			'seerr.allSeasons' => 'Tất cả mùa',
 			'seerr.advancedOptions' => 'Nâng cao',
 			'seerr.destinationServer' => 'Destination Server Khách sạn',
@@ -8430,6 +8499,8 @@ extension on TranslationsVi {
 			'universalMedia.favorites' => 'Save Stream yêu thích',
 			'universalMedia.address' => 'Địa chỉ Media',
 			'universalMedia.addressHelp' => 'URL với các thông số xác nhận hoặc ký tự được công nhận chỉ được sử dụng cho phiên này và không thể được lưu như là yêu thích.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.displayName' => 'Tên hiển thị (tùy chọn)',
 			'universalMedia.displayNameHelp' => 'Chọn tên ngắn cho người chơi và hệ thống điều khiển phương tiện truyền thông.',
 			'universalMedia.allowHttp' => 'Cho phép kết nối HTTP không được mã hóa',
@@ -8443,8 +8514,6 @@ extension on TranslationsVi {
 			'universalMedia.favoriteSaved' => 'Stream Favorite được tiết kiệm đến hồ sơ này',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Tắt ${count} không được hỗ trợ hoặc không an toàn danh sách đăng nhập.', ), 
 			'universalMedia.playlistAddress' => 'Địa chỉ Playlist',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Mở một danh sách chơi M3U, M3u8, hoặc PLS từ địa chỉ web. liên kết trực tiếp không lưu danh sách playlist.',
 			'universalMedia.choosePlaylist' => 'Chọn playlist file',
 			'universalMedia.openPlaylist' => 'playlist mở',
@@ -8906,6 +8975,9 @@ extension on TranslationsVi {
 			'audiobook.recoveryImportConfirm' => 'Kết hợp tệp phục hồi mã hóa này với các vị trí đọc và ghi chú hiện tại? Lịch sử hiện có sẽ được giữ lại. Thư viện chia sẻ và ID mục không bao gồm; thiết lập ID phù hợp trên mỗi thiết bị trước khi nhập khẩu.',
 			'audiobook.recoveryExported' => 'Tệp phục hồi mã hóa đã được lưu.',
 			'audiobook.recoveryImported' => 'Dữ liệu phục hồi kết hợp.',
+			'sourceSetup.bookorbitHelp' => 'Đăng nhập bằng tài khoản BookOrbit của riêng bạn để duyệt và phát sách. Yêu cầu các tựa sách còn thiếu vẫn được gửi qua phiên bản SeerrNG đã kết nối.',
+			'sourceSetup.bookorbitOpen' => 'Mở trong BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Xem tựa sách này trong BookOrbit để quản lý thông tin thư viện và các định dạng Pleazyng không thể mở. Tiến độ nghe được đồng bộ với tài khoản BookOrbit của bạn.',
 			'sourceSetup.savedCertificate' => 'Chứng chỉ máy chủ đã lưu',
 			'sourceSetup.nfsEndpointInvalid' => 'Nhập URL NFS, chẳng hạn nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Không tìm thấy máy chủ DLNA. Hãy nhập thủ công URL mô tả thiết bị.',
@@ -8941,6 +9013,8 @@ extension on TranslationsVi {
 			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
 			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
 			'sourceSetup.savedIdentity' => 'Sẽ dùng danh tính máy khách đã lưu.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Thay danh tính máy khách đã lưu',
 			'sourceSetup.chooseIdentity' => 'Chọn danh tính máy khách PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Cụm mật khẩu của danh tính máy khách',
@@ -8957,8 +9031,6 @@ extension on TranslationsVi {
 			'sourceSetup.apiKey' => 'Khóa API',
 			'sourceSetup.optionalUsername' => 'Tên người dùng của tài khoản (không bắt buộc)',
 			'sourceSetup.optionalPassword' => 'Mật khẩu tài khoản (không bắt buộc)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Lấy khóa API từ opensubtitles.com. Tìm kiếm gửi tiêu đề video và các ID IMDb/TMDB có sẵn, không bao giờ gửi tệp video. Khóa và thông tin xác thực tài khoản tùy chọn được mã hóa cùng nguồn này.',
 			'sourceSetup.automaticMetadata' => 'Siêu dữ liệu video trực tuyến tự động',
 			'sourceSetup.metadataPrivacy' => 'Chỉ gửi tiêu đề/năm từ tên tệp và số tập hoặc một ID NFO, không bao giờ gửi nội dung đa phương tiện hay thông tin xác thực. Các trường NFO vẫn được ưu tiên.',
@@ -9356,6 +9428,36 @@ extension on TranslationsVi {
 			'musicExperience.routeLost' => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.',
 			'musicExperience.autoDriving' => 'Mở giao diện lái xe khi kết nối với ô tô',
 			'musicExperience.routeHint' => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.',
+			'musicTools.guestDj' => 'DJ khách mời',
+			'musicTools.charts' => 'Bảng xếp hạng nghe',
+			'musicTools.rediscover' => 'Khám phá lại',
+			'musicTools.stations' => 'Đài âm nhạc',
+			'musicTools.prompt' => 'Danh sách từ mô tả',
+			'musicTools.provider' => 'URL tạo của nhà cung cấp',
+			'musicTools.model' => 'Tên mô hình',
+			'musicTools.consent' => 'Gửi mô tả của tôi đến nhà cung cấp này',
+			'musicTools.promptHint' => 'Mô tả âm nhạc bạn muốn',
+			'musicTools.noHistory' => 'Chưa có nhạc để hiển thị',
+			'musicTools.historyHint' => 'Lượt phát được ghi trên thiết bị này',
+			'musicTools.days' => 'Ngày',
+			'musicTools.albumBlocks' => 'Giữ nguyên album',
+			'musicTools.home' => 'Nhạc',
+			'musicTools.recent' => 'Đã phát gần đây',
+			'musicTools.apiKey' => 'Khóa API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'phút',
+			'musicTools.rules' => 'Bộ lọc',
+			'musicTools.exclusiveOutput' => 'Đầu ra âm thanh độc quyền',
+			'musicTools.preamp' => 'Tiền khuếch đại',
+			'musicTools.ratingPending' => 'Đã lưu trên thiết bị này; đang chờ đồng bộ',
+			'musicTools.lyricsOffset' => 'Độ lệch thời gian lời bài hát',
+			'musicTools.anniversaries' => 'Kỷ niệm phát hành album',
+			'musicTools.outputPreset' => 'EQ cho đầu ra này',
+			'musicTools.outputPresetHint' => 'Tự động dùng EQ này khi đầu ra này được chọn.',
+			'musicTools.eqApproximation' => 'Hồ sơ tai nghe được xấp xỉ cho EQ mười dải.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

@@ -115,6 +115,7 @@ class TranslationsIt extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$it romm = _Translations$romm$it._(_root);
 	@override late final _Translations$subtitleCapture$it subtitleCapture = _Translations$subtitleCapture$it._(_root);
 	@override late final _Translations$musicExperience$it musicExperience = _Translations$musicExperience$it._(_root);
+	@override late final _Translations$musicTools$it musicTools = _Translations$musicTools$it._(_root);
 }
 
 // Path: app
@@ -810,6 +811,7 @@ class _Translations$settings$it extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Scegli i clip dalla biblioteca selezionata che puoi giocare prima dei film.';
 	@override String get contentScreensaverDelayOptionDescription => 'Aspettate questi molti minuti senza input prima di mostrare screensaver artwork.';
 	@override String get videoCodecOptionDescription => 'Permettere la riproduzione diretta di questo codec quando supportato. i codec non controllati sono trascoditi dal server dei media.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Dimensioni Buffer: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2549,6 +2551,7 @@ class _Translations$performanceOverlay$it extends Translations$performanceOverla
 	@override String get decoderHardware => 'Hardware';
 	@override String get tunnelingActive => 'Attivo';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} errori)';
+	@override String cacheLimitMiB({required Object size}) => 'Limite cache: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2743,13 +2746,24 @@ class _Translations$seerr$it extends Translations$seerr$en {
 	@override String get request => 'Richiedi';
 	@override String get request4k => 'Richiedi in 4K';
 	@override String get requestSeasons => 'Richiedi le stagioni mancanti';
+	@override String get requestHint => 'Scegli le opzioni di richiesta in Seerr';
+	@override String get quickRequestHint => 'Invia subito la richiesta in Seerr con le impostazioni predefinite';
+	@override String get chooseSeasonsHint => 'Scegli le stagioni da richiedere in Seerr';
+	@override String get request4kHint => 'Scegli una richiesta 4K in Seerr';
+	@override String get only4kAvailable => 'Con questo account puoi richiedere solo la versione 4K.';
+	@override String get cardActionHint => 'Apri il menu della scheda per le opzioni di richiesta Seerr';
+	@override String get requestInProgress => 'Richiesta in corso';
 	@override String get notifyMe => 'Avvisami quando disponibile';
 	@override String get notifyMe4k => 'Avvisami quando disponibile in 4K';
 	@override String get notificationsOn => 'Avviso di disponibilità attivo';
+	@override String get turnOffAlert => 'Disattiva l\'avviso di disponibilità';
 	@override String get notificationsEnabled => 'Ti avviseremo quando sarà disponibile';
+	@override String get notificationsEnabled4k => 'Ti avviseremo quando sarà disponibile la versione 4K';
+	@override String notificationsEnabledSeason({required Object season}) => 'Ti avviseremo quando sarà disponibile la stagione ${season}';
 	@override String get notificationsDisabled => 'Avviso di disponibilità disattivato';
 	@override String get notificationFailed => 'Impossibile aggiornare l’avviso di disponibilità';
 	@override String get seasons => 'Stagioni';
+	@override String get requestSheetHint => 'Seerr gestisce l\'approvazione e tiene traccia della tua richiesta.';
 	@override String get allSeasons => 'Tutte le stagioni';
 	@override String get advancedOptions => 'Avanzate';
 	@override String get destinationServer => 'Server di destinazione';
@@ -3756,6 +3770,9 @@ class _Translations$sourceSetup$it extends Translations$sourceSetup$en {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Accedi con il tuo account BookOrbit per sfogliare e riprodurre i suoi libri. Le richieste per i titoli mancanti passano comunque dall\'istanza SeerrNG collegata.';
+	@override String get bookorbitOpen => 'Apri in BookOrbit';
+	@override String get bookorbitDetailHelp => 'Visualizza questo titolo in BookOrbit per gestire i dettagli della libreria e i formati che Pleazyng non può aprire. I progressi di ascolto si sincronizzano con il tuo account BookOrbit.';
 	@override String get savedCertificate => 'Certificato del server salvato';
 	@override String get nfsEndpointInvalid => 'Inserisci un URL NFS, ad esempio nfs://nas:2049/export.';
 	@override String get dlnaNone => 'Nessun server DLNA trovato. Inserisci manualmente l’URL della descrizione del dispositivo.';
@@ -4276,6 +4293,45 @@ class _Translations$musicExperience$it extends Translations$musicExperience$en {
 	@override String get routeLost => 'Uscita audio scollegata. Riproduzione in pausa.';
 	@override String get autoDriving => 'Apri la vista guida quando ti colleghi a un’auto';
 	@override String get routeHint => 'Il sistema dell’auto decide se l’app può apparire automaticamente.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$it extends Translations$musicTools$en {
+	_Translations$musicTools$it._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ ospite';
+	@override String get charts => 'Classifiche di ascolto';
+	@override String get rediscover => 'Riscopri';
+	@override String get stations => 'Stazioni musicali';
+	@override String get prompt => 'Playlist da descrizione';
+	@override String get provider => 'URL di generazione del fornitore';
+	@override String get model => 'Nome del modello';
+	@override String get consent => 'Invia la mia descrizione a questo fornitore';
+	@override String get promptHint => 'Descrivi la musica che desideri';
+	@override String get noHistory => 'Nessuna musica da mostrare';
+	@override String get historyHint => 'Ascolti registrati su questo dispositivo';
+	@override String get days => 'Giorni';
+	@override String get albumBlocks => 'Mantieni gli album interi';
+	@override String get home => 'Musica';
+	@override String get recent => 'Ascoltati di recente';
+	@override String get apiKey => 'Chiave API';
+	@override String get missing => 'N/D';
+	@override String get minutes => 'Minuti';
+	@override String get rules => 'Filtri';
+	@override String get exclusiveOutput => 'Uscita audio esclusiva';
+	@override String get preamp => 'Preamplificazione';
+	@override String get ratingPending => 'Salvato sul dispositivo; sincronizzazione in attesa';
+	@override String get lyricsOffset => 'Sfasamento del testo';
+	@override String get anniversaries => 'Anniversari degli album';
+	@override String get outputPreset => 'Equalizzatore per questa uscita';
+	@override String get outputPresetHint => 'Usa automaticamente questo equalizzatore quando viene selezionata questa uscita.';
+	@override String get eqApproximation => 'I profili delle cuffie sono approssimati per l’equalizzatore a dieci bande.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6067,6 +6123,7 @@ extension on TranslationsIt {
 			'settings.prerollSelectionDescription' => 'Scegli i clip dalla biblioteca selezionata che puoi giocare prima dei film.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Aspettate questi molti minuti senza input prima di mostrare screensaver artwork.',
 			'settings.videoCodecOptionDescription' => 'Permettere la riproduzione diretta di questo codec quando supportato. i codec non controllati sono trascoditi dal server dei media.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Dimensioni Buffer: ${size} MiB',
 			'themeEditor.builtIn' => 'Integrati',
 			'themeEditor.presets' => 'Preimpostati',
 			'themeEditor.custom' => 'Personalizzato',
@@ -6418,9 +6475,9 @@ extension on TranslationsIt {
 			'videoControls.chaptersAndBookmarks' => 'Capitoli e bookmark',
 			'videoControls.segmentLoop' => 'Segmento Loop',
 			'videoControls.addBookmark' => 'Aggiungi Bookmark',
-			'videoControls.bookmarkName' => 'Nome di Bookmark',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Nome di Bookmark',
 			'videoControls.bookmarkNameHint' => 'Ad esempio, la scena di apertura',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Il Bookmark ${n}',
 			'videoControls.bookmarkNameRequired' => 'Inserisci un nome per questo bookmark.',
@@ -6932,9 +6989,9 @@ extension on TranslationsIt {
 			'libraries.hideLibrary' => 'Nascondi libreria',
 			'libraries.libraryOptions' => 'Opzioni libreria',
 			'libraries.content' => 'contenuto della libreria',
-			'libraries.selectLibrary' => 'Seleziona libreria',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Seleziona libreria',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtri (${count})',
 			'libraries.noRecommendations' => 'Nessun consiglio disponibile',
 			'libraries.noCollections' => 'Nessuna raccolta in questa libreria',
@@ -7446,9 +7503,9 @@ extension on TranslationsIt {
 			'watchTogether.paste' => 'Incolla',
 			'watchTogether.noCodeInClipboard' => 'Gli appunti non contengono un codice stanza',
 			'watchTogether.copyCode' => 'Copia codice',
-			'watchTogether.codeCopied' => 'Codice stanza copiato',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Codice stanza copiato',
 			'watchTogether.shareInvite' => 'Condividi invito',
 			'watchTogether.inviteCopied' => 'Invito copiato. Incollalo in un messaggio.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Unisciti alla mia stanza di Guarda insieme su Pleazyng: apri «Guarda insieme», scegli «Unisciti a una stanza» e inserisci ${code}.',
@@ -7912,6 +7969,7 @@ extension on TranslationsIt {
 			'performanceOverlay.decoderHardware' => 'Hardware',
 			'performanceOverlay.tunnelingActive' => 'Attivo',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} errori)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Limite cache: ${size} MiB',
 			'externalPlayer.title' => 'Lettore esterno',
 			'externalPlayer.useExternalPlayer' => 'Usa un lettore esterno',
 			'externalPlayer.useExternalPlayerDescription' => 'Apri i video in un\'altra app',
@@ -7959,10 +8017,10 @@ extension on TranslationsIt {
 			'metadataEdit.fromUrl' => 'Da URL',
 			'metadataEdit.uploadFile' => 'Carica file',
 			'metadataEdit.enterImageUrl' => 'Inserisci URL immagine',
-			'metadataEdit.imageUrl' => 'URL immagine',
-			'metadataEdit.metadataUpdated' => 'Metadati aggiornati correttamente',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'URL immagine',
+			'metadataEdit.metadataUpdated' => 'Metadati aggiornati correttamente',
 			'metadataEdit.metadataUpdateFailed' => 'Impossibile aggiornare i metadati',
 			'metadataEdit.artworkUpdated' => 'Immagini aggiornate',
 			'metadataEdit.artworkUpdateFailed' => 'Impossibile aggiornare le immagini',
@@ -8054,13 +8112,24 @@ extension on TranslationsIt {
 			'seerr.request' => 'Richiedi',
 			'seerr.request4k' => 'Richiedi in 4K',
 			'seerr.requestSeasons' => 'Richiedi le stagioni mancanti',
+			'seerr.requestHint' => 'Scegli le opzioni di richiesta in Seerr',
+			'seerr.quickRequestHint' => 'Invia subito la richiesta in Seerr con le impostazioni predefinite',
+			'seerr.chooseSeasonsHint' => 'Scegli le stagioni da richiedere in Seerr',
+			'seerr.request4kHint' => 'Scegli una richiesta 4K in Seerr',
+			'seerr.only4kAvailable' => 'Con questo account puoi richiedere solo la versione 4K.',
+			'seerr.cardActionHint' => 'Apri il menu della scheda per le opzioni di richiesta Seerr',
+			'seerr.requestInProgress' => 'Richiesta in corso',
 			'seerr.notifyMe' => 'Avvisami quando disponibile',
 			'seerr.notifyMe4k' => 'Avvisami quando disponibile in 4K',
 			'seerr.notificationsOn' => 'Avviso di disponibilità attivo',
+			'seerr.turnOffAlert' => 'Disattiva l\'avviso di disponibilità',
 			'seerr.notificationsEnabled' => 'Ti avviseremo quando sarà disponibile',
+			'seerr.notificationsEnabled4k' => 'Ti avviseremo quando sarà disponibile la versione 4K',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Ti avviseremo quando sarà disponibile la stagione ${season}',
 			'seerr.notificationsDisabled' => 'Avviso di disponibilità disattivato',
 			'seerr.notificationFailed' => 'Impossibile aggiornare l’avviso di disponibilità',
 			'seerr.seasons' => 'Stagioni',
+			'seerr.requestSheetHint' => 'Seerr gestisce l\'approvazione e tiene traccia della tua richiesta.',
 			'seerr.allSeasons' => 'Tutte le stagioni',
 			'seerr.advancedOptions' => 'Avanzate',
 			'seerr.destinationServer' => 'Server di destinazione',
@@ -8462,6 +8531,8 @@ extension on TranslationsIt {
 			'universalMedia.favorites' => 'Salva i tuoi preferiti',
 			'universalMedia.address' => 'Indirizzo Media',
 			'universalMedia.addressHelp' => 'Gli URL con parametri di credenziale o di firma riconosciuti sono utilizzati solo per questa sessione e non possono essere salvati come preferiti.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.displayName' => 'Nome di visualizzazione (opzionale)',
 			'universalMedia.displayNameHelp' => 'Scegli un nome corto per il giocatore e i controlli dei media del sistema.',
 			'universalMedia.allowHttp' => 'Permettere una connessione HTTP non crittografata',
@@ -8475,8 +8546,6 @@ extension on TranslationsIt {
 			'universalMedia.favoriteSaved' => 'Stream preferito salvato a questo profilo',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('it'))(n, one: 'Scappato ${count} ingresso di playlist non supportato o insicuro.', many: 'Scappato ${count} ingressi di playlist non supportati o insicuri.', other: 'Scappato ${count} ingressi di playlist non supportati o insicuri.', ), 
 			'universalMedia.playlistAddress' => 'Indirizzo Playlist',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Apri una playlist M3U, M3u8, o PLS da un indirizzo web. link di streaming diretto non salvi la playlist.',
 			'universalMedia.choosePlaylist' => 'Scegli il file di playlist',
 			'universalMedia.openPlaylist' => 'L\'apertura del playlist',
@@ -8938,6 +9007,9 @@ extension on TranslationsIt {
 			'audiobook.recoveryImportConfirm' => 'Combinare questo file di recupero crittografato con posizioni di lettura corrente e note? Storia esistente sarà conservata. ID della biblioteca condivisa e degli articoli non sono inclusi; impostare ID corrispondenti su ogni dispositivo prima dell\'importazione.',
 			'audiobook.recoveryExported' => 'Il file di recupero crittografato salvato.',
 			'audiobook.recoveryImported' => 'I dati di recupero sono misti.',
+			'sourceSetup.bookorbitHelp' => 'Accedi con il tuo account BookOrbit per sfogliare e riprodurre i suoi libri. Le richieste per i titoli mancanti passano comunque dall\'istanza SeerrNG collegata.',
+			'sourceSetup.bookorbitOpen' => 'Apri in BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Visualizza questo titolo in BookOrbit per gestire i dettagli della libreria e i formati che Pleazyng non può aprire. I progressi di ascolto si sincronizzano con il tuo account BookOrbit.',
 			'sourceSetup.savedCertificate' => 'Certificato del server salvato',
 			'sourceSetup.nfsEndpointInvalid' => 'Inserisci un URL NFS, ad esempio nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Nessun server DLNA trovato. Inserisci manualmente l’URL della descrizione del dispositivo.',
@@ -8973,6 +9045,8 @@ extension on TranslationsIt {
 			'sourceSetup.clientCertificate' => 'Certificato client (facoltativo)',
 			'sourceSetup.clientCertificateHelp' => 'Consente al NAS di autenticare questo client; gli ID AUTH_SYS dipendono comunque dai criteri della condivisione NFS del NAS.',
 			'sourceSetup.savedIdentity' => 'Verrà usata un’identità client salvata.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Sostituisci l’identità client salvata',
 			'sourceSetup.chooseIdentity' => 'Scegli un’identità client PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Passphrase dell’identità client',
@@ -8989,8 +9063,6 @@ extension on TranslationsIt {
 			'sourceSetup.apiKey' => 'Chiave API',
 			'sourceSetup.optionalUsername' => 'Nome utente dell’account (facoltativo)',
 			'sourceSetup.optionalPassword' => 'Password dell’account (facoltativa)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Ottieni una chiave API da opensubtitles.com. La ricerca invia il titolo del video e gli ID IMDb/TMDB disponibili, mai il file video. La chiave e le credenziali facoltative dell’account vengono crittografate insieme a questa fonte.',
 			'sourceSetup.automaticMetadata' => 'Metadati video online automatici',
 			'sourceSetup.metadataPrivacy' => 'Invia solo titolo/anno ricavati dal nome del file e numeri degli episodi, oppure un ID NFO; non invia mai contenuti multimediali o credenziali. I campi NFO mantengono la precedenza.',
@@ -9388,6 +9460,36 @@ extension on TranslationsIt {
 			'musicExperience.routeLost' => 'Uscita audio scollegata. Riproduzione in pausa.',
 			'musicExperience.autoDriving' => 'Apri la vista guida quando ti colleghi a un’auto',
 			'musicExperience.routeHint' => 'Il sistema dell’auto decide se l’app può apparire automaticamente.',
+			'musicTools.guestDj' => 'DJ ospite',
+			'musicTools.charts' => 'Classifiche di ascolto',
+			'musicTools.rediscover' => 'Riscopri',
+			'musicTools.stations' => 'Stazioni musicali',
+			'musicTools.prompt' => 'Playlist da descrizione',
+			'musicTools.provider' => 'URL di generazione del fornitore',
+			'musicTools.model' => 'Nome del modello',
+			'musicTools.consent' => 'Invia la mia descrizione a questo fornitore',
+			'musicTools.promptHint' => 'Descrivi la musica che desideri',
+			'musicTools.noHistory' => 'Nessuna musica da mostrare',
+			'musicTools.historyHint' => 'Ascolti registrati su questo dispositivo',
+			'musicTools.days' => 'Giorni',
+			'musicTools.albumBlocks' => 'Mantieni gli album interi',
+			'musicTools.home' => 'Musica',
+			'musicTools.recent' => 'Ascoltati di recente',
+			'musicTools.apiKey' => 'Chiave API',
+			'musicTools.missing' => 'N/D',
+			'musicTools.minutes' => 'Minuti',
+			'musicTools.rules' => 'Filtri',
+			'musicTools.exclusiveOutput' => 'Uscita audio esclusiva',
+			'musicTools.preamp' => 'Preamplificazione',
+			'musicTools.ratingPending' => 'Salvato sul dispositivo; sincronizzazione in attesa',
+			'musicTools.lyricsOffset' => 'Sfasamento del testo',
+			'musicTools.anniversaries' => 'Anniversari degli album',
+			'musicTools.outputPreset' => 'Equalizzatore per questa uscita',
+			'musicTools.outputPresetHint' => 'Usa automaticamente questo equalizzatore quando viene selezionata questa uscita.',
+			'musicTools.eqApproximation' => 'I profili delle cuffie sono approssimati per l’equalizzatore a dieci bande.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

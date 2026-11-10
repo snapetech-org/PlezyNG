@@ -736,7 +736,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "גודל בופר: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "בנוי",
@@ -3116,7 +3117,8 @@
     "decoderHardware": "חומרה",
     "tunnelingActive": "פעיל",
     "dvRpuFailed": "${converted} (${failures} נכשל)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "הגבלת Cache: ${size} MiB"
   },
   "externalPlayer": {
     "title": "שחקן חיצוני",
@@ -3287,13 +3289,24 @@
     "request": "בקשה",
     "request4k": "בקשה 4K",
     "requestSeasons": "בקשת העונות החסרות",
+    "requestHint": "בחירת אפשרויות הבקשה ב-Seerr",
+    "quickRequestHint": "שליחת בקשה עכשיו ב-Seerr עם הגדרות ברירת המחדל",
+    "chooseSeasonsHint": "בחירת העונות לבקשה ב-Seerr",
+    "request4kHint": "בחירת בקשת 4K ב-Seerr",
+    "only4kAvailable": "בחשבון הזה אפשר לבקש רק את גרסת ה-4K.",
+    "cardActionHint": "פתיחת תפריט הכרטיס לאפשרויות בקשה ב-Seerr",
+    "requestInProgress": "הבקשה בתהליך",
     "notifyMe": "עדכנו אותי כשהתוכן יהיה זמין",
     "notifyMe4k": "עדכנו אותי כשהתוכן יהיה זמין ב־4K",
     "notificationsOn": "התראת זמינות מופעלת",
+    "turnOffAlert": "כיבוי התראת הזמינות",
     "notificationsEnabled": "נעדכן אותך כשהתוכן יהיה זמין",
+    "notificationsEnabled4k": "נעדכן אותך כשהגרסה ב-4K תהיה זמינה",
+    "notificationsEnabledSeason": "נעדכן אותך כשהעונה ${season} תהיה זמינה",
     "notificationsDisabled": "התראת הזמינות כובתה",
     "notificationFailed": "עדכון התראת הזמינות נכשל",
     "seasons": "עונות",
+    "requestSheetHint": "Seerr מטפלת באישור הבקשה שלך ובמעקב אחריה.",
     "allSeasons": "כל העונות",
     "advancedOptions": "מתקדם",
     "destinationServer": "שרת היעד",
@@ -4254,6 +4267,9 @@
     "recoveryImported": "נתוני ההחזרה מתמזגים."
   },
   "sourceSetup": {
+    "bookorbitHelp": "יש להתחבר לחשבון BookOrbit האישי שלך כדי לעיין בספרים ולנגן אותם. בקשות לכותרות חסרות עדיין עוברות דרך מופע SeerrNG המחובר שלך.",
+    "bookorbitOpen": "פתיחה ב-BookOrbit",
+    "bookorbitDetailHelp": "אפשר לצפות בכותר הזה ב-BookOrbit כדי לנהל את פרטי הספרייה ואת הפורמטים ש-Pleazyng לא יכול לפתוח. התקדמות ההאזנה מסתנכרנת עם חשבון BookOrbit שלך.",
     "savedCertificate": "אישור השרת השמור",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "יש להזין כתובת NFS, למשל nfs://nas:2049/export.",
@@ -5512,5 +5528,37 @@
     "routeLost": "פלט השמע נותק. הניגון הושהה.",
     "autoDriving": "פתיחת תצוגת נהיגה בחיבור לרכב",
     "routeHint": "מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית."
+  },
+  "musicTools": {
+    "guestDj": "תקליטן אורח",
+    "charts": "דירוגי האזנה",
+    "rediscover": "לגלות מחדש",
+    "stations": "תחנות מוזיקה",
+    "prompt": "רשימה מתיאור",
+    "provider": "כתובת היצירה של הספק",
+    "model": "שם המודל",
+    "consent": "שליחת התיאור שלי לספק הזה",
+    "promptHint": "תיאור המוזיקה הרצויה",
+    "noHistory": "עדיין אין מוזיקה להצגה",
+    "historyHint": "השמעות שנרשמו במכשיר הזה",
+    "days": "ימים",
+    "albumBlocks": "שמירה על אלבומים שלמים ביחד",
+    "home": "מוסיקה",
+    "recent": "הושמעו לאחרונה",
+    "apiKey": "מפתח API",
+    "missing": "N / A",
+    "minutes": "דקות",
+    "rules": "מסננים",
+    "exclusiveOutput": "פלט שמע בלעדי",
+    "preamp": "קדם־הגברה",
+    "ratingPending": "נשמר במכשיר הזה; ממתין לסנכרון",
+    "lyricsOffset": "היסט תזמון המילים",
+    "anniversaries": "ימי שנה לאלבומים",
+    "outputPreset": "אקולייזר לפלט הזה",
+    "outputPresetHint": "החלה אוטומטית של האקולייזר הזה כשבוחרים בפלט הזה.",
+    "eqApproximation": "פרופילי האוזניות מותאמים בקירוב לאקולייזר בעל עשרה תחומים.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

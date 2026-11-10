@@ -32,6 +32,24 @@ class _Controls extends FakeMediaControlsManager {
   }
 }
 
+class _RecoverySources extends MemorySources {
+  _RecoverySources(super.repository, super.directory);
+  final localFiles = <String>{};
+  Completer<bool>? pendingLocal;
+  SourceEntry? refreshed;
+  var hydrationCount = 0;
+
+  @override
+  Future<bool> hasOfflineContent(SourceEntry entry, PublicationFile file) async =>
+      pendingLocal == null ? localFiles.contains(file.fingerprint) : await pendingLocal!.future;
+
+  @override
+  Future<SourceEntry> hydrate(SourceEntry entry) async {
+    hydrationCount++;
+    return refreshed ?? entry;
+  }
+}
+
 class _GatedPlayer extends FakePlayer {
   final requestedFocus = Completer<void>();
   final allowFocus = Completer<void>();
@@ -114,6 +132,45 @@ void main() {
     expect(() => WorkspaceResumeTarget.fromJson(encoded), throwsFormatException);
     encoded['fileIds'] = ['https://provider.example/secret'];
     expect(() => WorkspaceResumeTarget.fromJson(encoded), throwsFormatException);
+  });
+
+  test('offline recovery verifies every selected file before bypassing the provider', () async {
+    final directory = await Directory.systemTemp.createTemp('pleazyng-offline-recovery-');
+    final sources = _RecoverySources(repository, directory);
+    final target = WorkspaceResumeTarget(
+      kind: WorkspaceResumeKind.source,
+      providerId: entry.sourceId,
+      itemId: 'opaque',
+      fileIds: entry.audio.map((file) => file.fingerprint).toList(),
+    );
+    try {
+      sources.localFiles.addAll(target.fileIds);
+      expect(await resolveRecoverySourceEntry(
+        sources: sources, cached: entry, target: target, isCurrent: () => true,
+      ), same(entry));
+      expect(sources.hydrationCount, 0);
+
+      sources.localFiles.remove(second.fingerprint);
+      sources.refreshed = entry.copyWith(files: [first]);
+      final refreshed = await resolveRecoverySourceEntry(
+        sources: sources, cached: entry, target: target, isCurrent: () => true,
+      );
+      expect(sources.hydrationCount, 1);
+      expect(recoverySourceFiles(refreshed!, target), isNull);
+
+      sources.pendingLocal = Completer<bool>();
+      var current = true;
+      final pending = resolveRecoverySourceEntry(
+        sources: sources, cached: entry, target: target, isCurrent: () => current,
+      );
+      current = false;
+      sources.pendingLocal!.complete(true);
+      expect(await pending, isNull);
+      expect(sources.hydrationCount, 1);
+    } finally {
+      sources.dispose();
+      await directory.delete(recursive: true);
+    }
   });
 
   Future<void> exercise(

@@ -96,7 +96,12 @@ class MusicDiscovery {
     for (final seed in recipe.seeds) {
       final client = clientFor(seed);
       if (client == null) throw StateError('Music server is unavailable');
-      pools.add(await client.fetchInstantMix(seed.id, limit: recipe.limit));
+      final authentication = client.authenticationSessionId;
+      final tracks = await client.fetchInstantMix(seed.id, limit: recipe.limit);
+      if (!identical(clientFor(seed), client) || !identical(authentication, client.authenticationSessionId)) {
+        throw StateError('Music account changed during generation');
+      }
+      pools.add(tracks);
     }
     return interleave(pools, limit: recipe.limit);
   }
@@ -111,6 +116,7 @@ class MusicDiscovery {
     if (client is! SonicMusicClient) {
       throw UnsupportedError('This server does not support sonic paths');
     }
+    final authentication = client!.authenticationSessionId;
     final result = <MediaItem>[];
     for (var i = 1; i < recipe.seeds.length; i++) {
       final segment = await (client as SonicMusicClient).sonicPath(
@@ -118,6 +124,9 @@ class MusicDiscovery {
         startId: recipe.seeds[i - 1].id,
         endId: recipe.seeds[i].id,
       );
+      if (!identical(clientFor(first), client) || !identical(authentication, client.authenticationSessionId)) {
+        throw StateError('Music account changed during generation');
+      }
       if (segment.isEmpty) return [];
       for (final track in segment) {
         if (track.kind != MediaKind.track) continue;
@@ -153,20 +162,25 @@ class MusicDiscovery {
 }
 
 class MusicRecipeStore {
-  MusicRecipeStore(this.database, this.profileId);
+  MusicRecipeStore(this.database, this.profileId) : _epoch = database.musicDataEpoch(profileId);
+  final int _epoch;
+  bool get active => database.musicDataEpoch(profileId) == _epoch;
   final AppDatabase database;
   final String profileId;
 
-  Future<void> save(MusicRecipe recipe) => database.customStatement(
-    'INSERT INTO music_recipes (profile_id, id, recipe, updated_at) VALUES (?, ?, ?, ?) '
-    'ON CONFLICT(profile_id, id) DO UPDATE SET recipe = excluded.recipe, updated_at = excluded.updated_at',
-    [profileId, recipe.id, jsonEncode(recipe.toJson()), DateTime.now().millisecondsSinceEpoch],
-  );
+  Future<void> save(MusicRecipe recipe) => !active
+      ? Future.value()
+      : database.customStatement(
+          'INSERT INTO music_recipes (profile_id, id, recipe, updated_at) VALUES (?, ?, ?, ?) '
+          'ON CONFLICT(profile_id, id) DO UPDATE SET recipe = excluded.recipe, updated_at = excluded.updated_at',
+          [profileId, recipe.id, jsonEncode(recipe.toJson()), DateTime.now().millisecondsSinceEpoch],
+        );
 
   Future<List<MusicRecipe>> load() async {
+    if (!active) return [];
     final rows = await database
         .customSelect(
-          'SELECT recipe FROM music_recipes WHERE profile_id = ? ORDER BY updated_at DESC',
+          'SELECT recipe FROM music_recipes WHERE profile_id = ? ORDER BY updated_at DESC LIMIT 500',
           variables: [Variable<String>(profileId)],
         )
         .get();
@@ -185,6 +199,7 @@ class MusicRecipeStore {
     return result;
   }
 
-  Future<void> delete(String id) =>
-      database.customStatement('DELETE FROM music_recipes WHERE profile_id = ? AND id = ?', [profileId, id]);
+  Future<void> delete(String id) => !active
+      ? Future.value()
+      : database.customStatement('DELETE FROM music_recipes WHERE profile_id = ? AND id = ?', [profileId, id]);
 }

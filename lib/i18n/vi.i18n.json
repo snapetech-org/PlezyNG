@@ -732,7 +732,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer kích thước: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "xây dựng",
@@ -3091,7 +3092,8 @@
     "decoderHardware": "Phần cứng",
     "tunnelingActive": "hoạt động",
     "dvRpuFailed": "${converted} (${failures} thất bại)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Cache giới hạn: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Người chơi bên ngoài",
@@ -3262,13 +3264,24 @@
     "request": "yêu cầu",
     "request4k": "yêu cầu 4K",
     "requestSeasons": "Yêu cầu các mùa còn thiếu",
+    "requestHint": "Chọn tùy chọn yêu cầu trong Seerr",
+    "quickRequestHint": "Yêu cầu ngay qua Seerr bằng cài đặt mặc định",
+    "chooseSeasonsHint": "Chọn các mùa cần yêu cầu trong Seerr",
+    "request4kHint": "Chọn yêu cầu bản 4K trong Seerr",
+    "only4kAvailable": "Tài khoản này chỉ có thể yêu cầu phiên bản 4K.",
+    "cardActionHint": "Mở menu thẻ để xem các tùy chọn yêu cầu Seerr",
+    "requestInProgress": "Đang xử lý yêu cầu",
     "notifyMe": "Thông báo cho tôi khi có sẵn",
     "notifyMe4k": "Thông báo cho tôi khi có bản 4K",
     "notificationsOn": "Đã bật thông báo tình trạng khả dụng",
+    "turnOffAlert": "Tắt thông báo tình trạng khả dụng",
     "notificationsEnabled": "Chúng tôi sẽ thông báo khi có sẵn",
+    "notificationsEnabled4k": "Chúng tôi sẽ thông báo khi có phiên bản 4K",
+    "notificationsEnabledSeason": "Chúng tôi sẽ thông báo khi có mùa ${season}",
     "notificationsDisabled": "Đã tắt thông báo tình trạng khả dụng",
     "notificationFailed": "Không thể cập nhật thông báo tình trạng khả dụng",
     "seasons": "Phần",
+    "requestSheetHint": "Seerr xử lý phê duyệt và theo dõi yêu cầu của bạn.",
     "allSeasons": "Tất cả mùa",
     "advancedOptions": "Nâng cao",
     "destinationServer": "Destination Server Khách sạn",
@@ -4221,6 +4234,9 @@
     "recoveryImported": "Dữ liệu phục hồi kết hợp."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Đăng nhập bằng tài khoản BookOrbit của riêng bạn để duyệt và phát sách. Yêu cầu các tựa sách còn thiếu vẫn được gửi qua phiên bản SeerrNG đã kết nối.",
+    "bookorbitOpen": "Mở trong BookOrbit",
+    "bookorbitDetailHelp": "Xem tựa sách này trong BookOrbit để quản lý thông tin thư viện và các định dạng Pleazyng không thể mở. Tiến độ nghe được đồng bộ với tài khoản BookOrbit của bạn.",
     "savedCertificate": "Chứng chỉ máy chủ đã lưu",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Nhập URL NFS, chẳng hạn nfs://nas:2049/export.",
@@ -5475,5 +5491,37 @@
     "routeLost": "Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.",
     "autoDriving": "Mở giao diện lái xe khi kết nối với ô tô",
     "routeHint": "Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không."
+  },
+  "musicTools": {
+    "guestDj": "DJ khách mời",
+    "charts": "Bảng xếp hạng nghe",
+    "rediscover": "Khám phá lại",
+    "stations": "Đài âm nhạc",
+    "prompt": "Danh sách từ mô tả",
+    "provider": "URL tạo của nhà cung cấp",
+    "model": "Tên mô hình",
+    "consent": "Gửi mô tả của tôi đến nhà cung cấp này",
+    "promptHint": "Mô tả âm nhạc bạn muốn",
+    "noHistory": "Chưa có nhạc để hiển thị",
+    "historyHint": "Lượt phát được ghi trên thiết bị này",
+    "days": "Ngày",
+    "albumBlocks": "Giữ nguyên album",
+    "home": "Nhạc",
+    "recent": "Đã phát gần đây",
+    "apiKey": "Khóa API",
+    "missing": "N / A",
+    "minutes": "phút",
+    "rules": "Bộ lọc",
+    "exclusiveOutput": "Đầu ra âm thanh độc quyền",
+    "preamp": "Tiền khuếch đại",
+    "ratingPending": "Đã lưu trên thiết bị này; đang chờ đồng bộ",
+    "lyricsOffset": "Độ lệch thời gian lời bài hát",
+    "anniversaries": "Kỷ niệm phát hành album",
+    "outputPreset": "EQ cho đầu ra này",
+    "outputPresetHint": "Tự động dùng EQ này khi đầu ra này được chọn.",
+    "eqApproximation": "Hồ sơ tai nghe được xấp xỉ cho EQ mười dải.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

@@ -528,13 +528,13 @@ class PlayerNative extends PlayerBase
       if (audioOnly) {
         // Only what the music service consumes (position/duration/playing/
         // completed). Every observation costs an initial notification plus a
-        // channel event per edge; the video set's track-list,
-        // demuxer-cache-state, and audio-device-list decode structured nodes
-        // into models nobody on the music path reads.
+        // channel event per edge. Music observes routes for output-specific EQ,
+        // but still omits the video track-list and demuxer-cache-state payloads.
         await observeProperty('time-pos', 'double');
         await observeProperty('duration', 'double');
         await observeProperty('pause', 'flag');
         await observeProperty('eof-reached', 'flag');
+        await observeProperty('audio-device', 'string');
         // Debug aid plus the freeze point for the outgoing track's final
         // position (see handlePropertyChange). Gapless advance DETECTION
         // rides the file-loaded event instead — see _handleAudioFileLoaded

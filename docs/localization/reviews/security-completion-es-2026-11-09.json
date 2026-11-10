@@ -1,0 +1,711 @@
+{
+  "schemaVersion": 1,
+  "locale": "es",
+  "reviewedOn": "2026-11-09",
+  "reviewMethod": "Assistant-authored corrections checked against each complete English source message, including negation, data disclosure, terminology and actions.",
+  "nativeSpeakerReviewed": false,
+  "sourceCommit": "7b44d998423ae15588992c12d2c81321ea827269",
+  "catalogSha256": "04327f9da17cd7536124e0414682643114f8ecaaf2b4158d615e7eb61c24e7c5",
+  "entries": {
+    "about.traktAttribution": {
+      "source": "Pleazyng uses Trakt but is not endorsed or certified by Trakt",
+      "before": null,
+      "translation": "Pleazyng utiliza Trakt, pero Trakt no lo avala ni lo certifica",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "5f2eb955d08c13c20a1c5e4cd8dc41bb8796ce56fc1f292bed00963d04609438"
+    },
+    "appAccess.activateReviewAccess": {
+      "source": "Activate",
+      "before": "",
+      "translation": "Activar",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "24433c70eba5b15368fe2e1dda94fe3d61db2357aa144363b9ab487e60235ab2"
+    },
+    "appAccess.reviewAccess": {
+      "source": "Store review access",
+      "before": "",
+      "translation": "Acceso para revisión de la tienda",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "f89643c4fbc6d6451cda9fa363808c446c96188f9b8a42cee17c46e16d7120a9"
+    },
+    "appAccess.reviewAccessActive": {
+      "source": "Store review access active",
+      "before": "",
+      "translation": "Acceso para revisión de la tienda activo",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "afc4e35cfa207c066b185aee12c53ac6b91f4c471d2fa4af1f6d62acac1a279d"
+    },
+    "appAccess.reviewAccessInstructions": {
+      "source": "Enter the review code provided in the store review instructions. This does not make a purchase.",
+      "before": "",
+      "translation": "Introduce el código proporcionado en las instrucciones de revisión de la tienda. Esto no realiza ninguna compra.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "6a57e3fe19edc88198b15b347fceb7778f820a1f4274aaef5ba77a4c390ad417"
+    },
+    "appAccess.reviewCode": {
+      "source": "Review code",
+      "before": "",
+      "translation": "Código de revisión",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "c30a455598c6c06235a9f934329f8da6139712fee7072d864842b341bd94a3c7"
+    },
+    "appAccess.reviewCodeInvalid": {
+      "source": "The review code is invalid or expired.",
+      "before": "",
+      "translation": "El código de revisión no es válido o ha caducado.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "4d74f629b228ecd3ff7d8d06b8f330b420c72c8af9144c01053af0eff416b596"
+    },
+    "audiobook.syncFolderHelp": {
+      "source": "Choose a separate existing WebDAV folder or a dedicated S3 prefix for app-owned state files. Playback media is never uploaded, replaced, renamed or deleted.",
+      "before": "",
+      "translation": "Elige una carpeta WebDAV existente y separada o un prefijo S3 exclusivo para los archivos de estado de la aplicación. Los archivos multimedia nunca se suben, sustituyen, renombran ni eliminan.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "ff9947d8d6c745ae9412013393d9c24a98a3334e496f7334fe79a94d03e98dea"
+    },
+    "audiobook.syncPrivacy": {
+      "source": "Cloud sync writes encrypted progress, completion, bookmark and note data to app-owned sync files. Playback media is never uploaded, replaced, renamed or deleted. Account tokens and passwords are not uploaded. Google Drive and OneDrive use app storage; Dropbox uses Pleazyng Sync; WebDAV and S3 use the chosen folder or prefix. Enabling sync may require provider write permission, but the app writes only those state files. Cloud sync and compatible server progress/bookmark sync run independently with separate retries. Conflicts are shown for you to resolve. Turning sync off keeps local history and remote state.",
+      "before": "",
+      "translation": "La sincronización en la nube guarda datos cifrados de progreso, finalización, marcadores y notas en archivos de sincronización de la aplicación. Los archivos multimedia nunca se suben, sustituyen, renombran ni eliminan. Los tokens de cuenta y las contraseñas no se suben. Google Drive y OneDrive usan el almacenamiento de la aplicación; Dropbox usa Pleazyng Sync; WebDAV y S3 usan la carpeta o el prefijo elegidos. Activar la sincronización puede requerir permiso de escritura del proveedor, pero la aplicación solo escribe esos archivos de estado. La sincronización en la nube y la sincronización compatible de progreso y marcadores con el servidor funcionan de forma independiente, con reintentos separados. Los conflictos se muestran para que los resuelvas. Desactivar la sincronización conserva el historial local y el estado remoto.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "da586572262dc78fd58a8baef288c1c8c52145ef3be134f79cc8f50933984fcd"
+    },
+    "bonusExtras.addLink": {
+      "source": "Add a link",
+      "before": null,
+      "translation": "Añadir un enlace",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "b1109578faeffc9b3a657f9e05041f132c6c6351333092b2f851be0fc9306176"
+    },
+    "bonusExtras.aiCloud": {
+      "source": "Cloud",
+      "before": null,
+      "translation": "En la nube",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "b977b950c1ae31e5aeb9ef778cc20a66fc034eb81e738e0206104b677962c465"
+    },
+    "bonusExtras.aiDevice": {
+      "source": "On this device",
+      "before": null,
+      "translation": "En este dispositivo",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "38b9d88c1fdbee4f0ea76524cfaad211ef2c0a94d13a91a65a8c2831d749367d"
+    },
+    "bonusExtras.aiFallback": {
+      "source": "Ordinary search is available; AI did not return supported evidence.",
+      "before": null,
+      "translation": "La búsqueda normal está disponible; la IA no devolvió pruebas compatibles.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "d98c62f23ad0d6edb551ff400a6532458e8386b0bcbe2f383c40da293f505704"
+    },
+    "bonusExtras.aiMode": {
+      "source": "AI assistance",
+      "before": null,
+      "translation": "Asistencia con IA",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "22a65461bf9b4455cfc4e29e741ae66238e56d7bc9bcb60724d00d1963a94b9b"
+    },
+    "bonusExtras.aiModel": {
+      "source": "Model name",
+      "before": null,
+      "translation": "Nombre del modelo",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "a3c3370cc7323c7127109bab88721b47e604949a462c19a5d5c3e38237ccc817"
+    },
+    "bonusExtras.aiNotice": {
+      "source": "AI receives your question and permitted transcript passages only when you search. Off keeps ordinary topic and transcript search available.",
+      "before": null,
+      "translation": "La IA recibe tu pregunta y los fragmentos permitidos de la transcripción solo cuando buscas. Al desactivarla, la búsqueda normal por tema y en la transcripción sigue disponible.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "a19b5eb4d04d212c9b6c583261f5e4a0f196575a4ad67040f97b48bdb823b190"
+    },
+    "bonusExtras.aiOff": {
+      "source": "Off",
+      "before": null,
+      "translation": "Desactivada",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "ca7981b46ecf2c1787b6d76d81d9fd7fa0ca95842e2fcc2a452869891a9334d1"
+    },
+    "bonusExtras.aiServer": {
+      "source": "On my server",
+      "before": null,
+      "translation": "En mi servidor",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "ed6ad515fe5fa6f3f01e348e4d639a1f394645c4e2a2251f47fac3bc4766bb0f"
+    },
+    "bonusExtras.aiToken": {
+      "source": "AI access token",
+      "before": null,
+      "translation": "Token de acceso a la IA",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "d9859b440d5247c216dba2e80a025cd7afb356fa85e532d12d87c0733112aae0"
+    },
+    "bonusExtras.aiUrl": {
+      "source": "AI server address",
+      "before": null,
+      "translation": "Dirección del servidor de IA",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "f11627fdee2883175fde867e5fe15d5d3f76f3d92d315019ca966fcd342ff0c6"
+    },
+    "bonusExtras.all": {
+      "source": "All",
+      "before": null,
+      "translation": "Todos",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "a52ace420f2175d08b1577a1bea5445e36801229c074ef9ed6c55a73401fd9c2"
+    },
+    "bonusExtras.cancel": {
+      "source": "Cancel",
+      "before": null,
+      "translation": "Cancelar",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27"
+    },
+    "bonusExtras.clearCache": {
+      "source": "Clear discovery cache",
+      "before": null,
+      "translation": "Borrar la caché de descubrimiento",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "0fec71d4647a1a0d10dcaf3dce020f82be935558c3871a697dde5a46e4ec0c18"
+    },
+    "bonusExtras.completed": {
+      "source": "Completed",
+      "before": null,
+      "translation": "Completado",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "22a970d2e5b1cc233e462be7c7b64e135a275bb09d83d87683bf4236c43113a1"
+    },
+    "bonusExtras.copyLink": {
+      "source": "Copy link",
+      "before": null,
+      "translation": "Copiar enlace",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "dbf362d4f210c780513a9258278d4d07abe8a224f84ba7ad775d819039342e77"
+    },
+    "bonusExtras.deviceNotice": {
+      "source": "On this device requires an installed OpenAI-compatible runtime on localhost.",
+      "before": null,
+      "translation": "La opción «En este dispositivo» requiere un entorno de ejecución compatible con OpenAI instalado en localhost.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "3682d3c58b7a1ab2349eaa18783e73fbd46881646053a5e5517649971f3af8a5"
+    },
+    "bonusExtras.empty": {
+      "source": "No verified extras found for this title.",
+      "before": null,
+      "translation": "No se encontraron extras verificados para este título.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "a520dcd77d9c38fc4d881a82ee28ad11dc1aae307fac567f1ec3c5285170925f"
+    },
+    "bonusExtras.external": {
+      "source": "Online",
+      "before": null,
+      "translation": "En línea",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "0d21bd52022ca7f7e97109d28d327da1e68cc0bedd9713b2dc2b49d3aa104392"
+    },
+    "bonusExtras.externalEnabled": {
+      "source": "Discover verified online extras",
+      "before": null,
+      "translation": "Descubrir extras verificados en línea",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "801dea313f812e6873f18dd39166aa76424e5fcd2998710a66aef16dfa4fe6f1"
+    },
+    "bonusExtras.failed": {
+      "source": "Extras could not be updated. Your available library extras remain accessible.",
+      "before": null,
+      "translation": "No se pudieron actualizar los extras. Los extras disponibles en tu biblioteca siguen siendo accesibles.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "be9fb0dcb5547a1430aacb286ef78c485b746166824783559d7ff80a3847db2e"
+    },
+    "bonusExtras.findMore": {
+      "source": "Find more",
+      "before": null,
+      "translation": "Buscar más",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "0baa1ed663825f9cd18c879f8dab3c07f47ccf4a5f9192959f6be469772d84ef"
+    },
+    "bonusExtras.hide": {
+      "source": "Hide this extra",
+      "before": null,
+      "translation": "Ocultar este extra",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "f856fc22145456789b9425d7bacd75128678dde0c6266e9be6dc1994b3ddecc2"
+    },
+    "bonusExtras.hidePublisher": {
+      "source": "Hide publisher",
+      "before": null,
+      "translation": "Ocultar editor",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "e1a9abedec287ca16fe3a3fcf599563009676820a865145a74944db9562a8376"
+    },
+    "bonusExtras.importTranscript": {
+      "source": "Import SRT or VTT transcript",
+      "before": null,
+      "translation": "Importar transcripción SRT o VTT",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "db67af2a643a79c623d20d1438b39b167f84d4fd8d784583eec1473039a8b243"
+    },
+    "bonusExtras.includeAnalysis": {
+      "source": "Include reviewed filmmaking analysis",
+      "before": null,
+      "translation": "Incluir análisis cinematográficos revisados",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "0ce79de58be1253a0c83a53d7321077333341c42d99eb2729da8183cd47ee081"
+    },
+    "bonusExtras.invalidLink": {
+      "source": "Enter a title and a valid HTTPS YouTube or Vimeo video link.",
+      "before": null,
+      "translation": "Introduce un título y un enlace HTTPS válido a un vídeo de YouTube o Vimeo.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "ff6101c26fa6ce2ee71e6d6ffbe5d534ba11a9e8260c7a3ac35c8dd5e01b0f6d"
+    },
+    "bonusExtras.invalidSettings": {
+      "source": "Check the server addresses and model name. Cloud requires HTTPS; device mode requires localhost.",
+      "before": null,
+      "translation": "Comprueba las direcciones de los servidores y el nombre del modelo. El modo en la nube requiere HTTPS; el modo en este dispositivo requiere localhost.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "b68a93b92fdb8285e477185fcbaa01c15d89db565c0c5d324e7aaf52f5cedf76"
+    },
+    "bonusExtras.invalidTranscript": {
+      "source": "The transcript could not be read or exceeds the size limit.",
+      "before": null,
+      "translation": "No se pudo leer la transcripción o supera el límite de tamaño.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "b05a73b7c25ccd11a9d627b685c2d410b4fecb0fcf9aca3d921facba6585a999"
+    },
+    "bonusExtras.kind.analysis": {
+      "source": "Filmmaking analysis",
+      "before": null,
+      "translation": "Análisis cinematográfico",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "d24edefdb529c957dcfe7ce10fb2e88c668e3c2cbc68f8ca83be9834406d73bb"
+    },
+    "bonusExtras.kind.bloopers": {
+      "source": "Bloopers",
+      "before": null,
+      "translation": "Tomas falsas",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "f36298e97d29ceb31a0e336895e8e5716a41c06b386f1bf273a8f3541348db4b"
+    },
+    "bonusExtras.kind.commentary": {
+      "source": "Commentary",
+      "before": null,
+      "translation": "Comentarios",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "4a7a75ab79cde05b0b1baa8f7a704c991586ea44d7e7793e57178ef56f778ff8"
+    },
+    "bonusExtras.kind.deletedScene": {
+      "source": "Deleted scenes",
+      "before": null,
+      "translation": "Escenas eliminadas",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "e6b8fb708f7a4fadd2cce6f65aa208f4f7bdbd8712efa5c99a96578baaebbbd5"
+    },
+    "bonusExtras.kind.effects": {
+      "source": "Effects and stunts",
+      "before": null,
+      "translation": "Efectos y escenas de riesgo",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "f7f5ce8ff244e4c52e1d90f290b68e862d0ca586cd259e1c002e689b35e60b16"
+    },
+    "bonusExtras.kind.interview": {
+      "source": "Interviews",
+      "before": null,
+      "translation": "Entrevistas",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "0b9e49cf035bd75bd6a9e6d4c4bc8efea296515e471fcd905c30133d3fd08955"
+    },
+    "bonusExtras.kind.makeup": {
+      "source": "Makeup and costumes",
+      "before": null,
+      "translation": "Maquillaje y vestuario",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "4a57a3a799ce5ebbdf87fe073bc10493b3e08693076dee3ba90d3aaaa60f204a"
+    },
+    "bonusExtras.kind.makingOf": {
+      "source": "Making of",
+      "before": null,
+      "translation": "Cómo se hizo",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "7650a892d3991042ce4dd9bd7b7187500dea983497d37316eebae22ef92af625"
+    },
+    "bonusExtras.kind.other": {
+      "source": "Other extras",
+      "before": null,
+      "translation": "Otros extras",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "325756798d3b339304d3054060a0aee621364c663653b7e22af9e65491257a76"
+    },
+    "bonusExtras.kind.trailer": {
+      "source": "Trailers",
+      "before": null,
+      "translation": "Tráilers",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "099cdbe8994e6a8f20448ee3d291a304a9c1b2cadcb351de448c0097c179f31c"
+    },
+    "bonusExtras.library": {
+      "source": "In your library",
+      "before": null,
+      "translation": "En tu biblioteca",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "b9da1b72d53fabae47164c8f19b60fe385c3a3084a81027d679b0a0c90027e5b"
+    },
+    "bonusExtras.linkTitle": {
+      "source": "Extra title",
+      "before": null,
+      "translation": "Título del extra",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "035e81abc5da87ce4156226d46d71304a1969677ec45d586d9b98532b5022c7d"
+    },
+    "bonusExtras.linkUrl": {
+      "source": "YouTube or Vimeo link",
+      "before": null,
+      "translation": "Enlace de YouTube o Vimeo",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "8f31c2af7ee382a4855407366b64f27d9010093dfa8080008c56f25dafff1104"
+    },
+    "bonusExtras.markCompleted": {
+      "source": "Mark completed",
+      "before": null,
+      "translation": "Marcar como completado",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "2b53d89797de82d0ce088843a03a65604ad922295d3d9ad2b789f335be28e1c7"
+    },
+    "bonusExtras.noTranscript": {
+      "source": "No searchable transcript is available.",
+      "before": null,
+      "translation": "No hay ninguna transcripción disponible para buscar.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "108dec270f91a5a7f777e6bfb31f287a2ef7fbbd440cc7a6a9832cdfe5951a62"
+    },
+    "bonusExtras.openProvider": {
+      "source": "Open in provider app or browser",
+      "before": null,
+      "translation": "Abrir en la aplicación del proveedor o en el navegador",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "d9be39c2a7d976f08b5f9133010e8d873c24db7629605ad36127d553b816808b"
+    },
+    "bonusExtras.opened": {
+      "source": "Opened",
+      "before": null,
+      "translation": "Abierto",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "b19fb8d1b395b333251f40be2909ca37a0b0a007b3c4c4b34b726be71f715daa"
+    },
+    "bonusExtras.partial": {
+      "source": "Some online sources are unavailable. Showing the available results.",
+      "before": null,
+      "translation": "Algunas fuentes en línea no están disponibles. Se muestran los resultados disponibles.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "298b75e33d483bc498ae7bc10fca2bc9324ced5e86260d69542dbb5ce7f8e241"
+    },
+    "bonusExtras.personal": {
+      "source": "Personal link",
+      "before": null,
+      "translation": "Enlace personal",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "378201d386c3a088e4156255d8208a7170ec3eac7eb2a95176756ea47a551731"
+    },
+    "bonusExtras.playbackBlocked": {
+      "source": "This extra is no longer available with your current settings.",
+      "before": null,
+      "translation": "Este extra ya no está disponible con tus ajustes actuales.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "9759d7d882f18cc33099506bcf4f06994f5f81baeee779bc398ccaa459c1ab41"
+    },
+    "bonusExtras.playbackUnavailable": {
+      "source": "Playback is unavailable here. Try the provider app, scan the code, or copy the link.",
+      "before": null,
+      "translation": "La reproducción no está disponible aquí. Prueba la aplicación del proveedor, escanea el código o copia el enlace.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "d27b50688cda2ad87dc24fd8a7fbf63b8ba409edfb76ff90058bc998c2d1f244"
+    },
+    "bonusExtras.providerNotice": {
+      "source": "Playback opens the provider’s player and may include its recommendations.",
+      "before": null,
+      "translation": "La reproducción se abre en el reproductor del proveedor y puede incluir sus recomendaciones.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "98eceb0081fa69c991d69d12c80b3c08e1486c92cbed2a0ee1b9975c323a7d12"
+    },
+    "bonusExtras.remove": {
+      "source": "Remove personal link",
+      "before": null,
+      "translation": "Eliminar enlace personal",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "25c5743f5610a9d4bdd82a38ca3737d61cbcdb6dba63a486d1fced570770e3ed"
+    },
+    "bonusExtras.restricted": {
+      "source": "Online extras are unavailable for this profile.",
+      "before": null,
+      "translation": "Los extras en línea no están disponibles para este perfil.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "b28ea8ab7f5ecc11b6ff378e6b1e79687e5e719fe6a29625df7996b0e9244ce1"
+    },
+    "bonusExtras.resume": {
+      "source": "Resume extra",
+      "before": null,
+      "translation": "Reanudar extra",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "7b843ff59370c085b8b60e9dfaa0a143a6b4aee9a7cbc795338b0a7a67f5ae25"
+    },
+    "bonusExtras.save": {
+      "source": "Save",
+      "before": null,
+      "translation": "Guardar",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "1509f561f2416598629b886ad7d3c05a7e221e4e0675c84bbff4ee6d9e03913d"
+    },
+    "bonusExtras.search": {
+      "source": "Search extras or a topic",
+      "before": null,
+      "translation": "Buscar extras o un tema",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "ea9fff3a161a586a912648adba7aaed4326721fa81513a6d4d17e739283575bf"
+    },
+    "bonusExtras.searchAction": {
+      "source": "Search",
+      "before": null,
+      "translation": "Buscar",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "49c266baaaa70981ea188fa714d5c40cf13830d786a861c9943ae0d26a7f3fe9"
+    },
+    "bonusExtras.seeAll": {
+      "source": "See all extras",
+      "before": null,
+      "translation": "Ver todos los extras",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "26c58c1b3f96f33d1d87c4374076acfcffd0364818f12273e51bd86be69a0975"
+    },
+    "bonusExtras.sendToPhone": {
+      "source": "Open on your phone",
+      "before": null,
+      "translation": "Abrir en tu teléfono",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "2ee5206f1240fc8eaf5117656952ec52a6db71533b477012e5a8873a9c575e48"
+    },
+    "bonusExtras.serviceToken": {
+      "source": "Discovery access token",
+      "before": null,
+      "translation": "Token de acceso al servicio de descubrimiento",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "957834bc92517b12e3187093d39ea1c97048b5f7ad0decc4e7b71df20ea7d0eb"
+    },
+    "bonusExtras.serviceUrl": {
+      "source": "Discovery server address",
+      "before": null,
+      "translation": "Dirección del servidor de descubrimiento",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "de504f107aa398eb889eb66fa72a0f810bfe7beb9659b4a68661120554f823dc"
+    },
+    "bonusExtras.settings": {
+      "source": "Extras settings",
+      "before": null,
+      "translation": "Ajustes de extras",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "c40e5b2598180c1c7bf36318de33f0d8baa2b50b0769cfef0106e89bb1966f9d"
+    },
+    "bonusExtras.setupHint": {
+      "source": "Connect a discovery server in Extras settings to find verified online extras. Library extras work without one.",
+      "before": null,
+      "translation": "Conecta un servidor de descubrimiento en Ajustes de extras para encontrar extras verificados en línea. Los extras de la biblioteca funcionan sin él.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "a59e452caaaf20331bae82c611e5efafcc9f3d75f93d5fca4af1231b95784de1"
+    },
+    "bonusExtras.showHidden": {
+      "source": "Reset hidden extras and publishers",
+      "before": null,
+      "translation": "Restablecer extras y editores ocultos",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "ad24770494417e016026e92c2381a350b53f9f86102b52e0284b1ee0bd06dcc0"
+    },
+    "bonusExtras.spoilerHint": {
+      "source": "Unwatched titles hide extras unless their spoiler status is verified.",
+      "before": null,
+      "translation": "Los títulos que no has visto ocultan los extras, salvo que se haya verificado si contienen spoilers.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "8dabf5be11dcbde05eb741b1cefeb3795e90b394d7a4353d99cb1bcb2fe001f5"
+    },
+    "bonusExtras.spoilers": {
+      "source": "Show extras that may contain spoilers",
+      "before": null,
+      "translation": "Mostrar extras que pueden contener spoilers",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "298961d678339be9f6e1ff8324892eb641856d0e6c3a76808546c1b0bb209823"
+    },
+    "bonusExtras.title": {
+      "source": "Extras",
+      "before": null,
+      "translation": "Extras",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "30385237387ab08220765a141adc4298afa7fa796fdf9f27aeec2592c06b762f"
+    },
+    "bonusExtras.transcript": {
+      "source": "Search transcript",
+      "before": null,
+      "translation": "Buscar en la transcripción",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "4be16bc89194b31792ce94eec6be1116fceded82ef9bd2177586da2582da0bdd"
+    },
+    "bonusExtras.transcriptHint": {
+      "source": "Use a transcript you have permission to process. It stays in this profile; AI uses it only with your selected mode.",
+      "before": null,
+      "translation": "Usa una transcripción que tengas permiso para procesar. Se conserva en este perfil; la IA solo la usa con el modo que hayas seleccionado.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "dad5ce413ad5d53bfa485aa1db17bb736fb49684fc3eec14be60c6cc2224bdcf"
+    },
+    "bonusExtras.transcriptImported": {
+      "source": "Transcript imported",
+      "before": null,
+      "translation": "Transcripción importada",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "6da7f161d6bd2e047c768b67f2661f86cc5d1d0e6a4535d1a170217a904b806c"
+    },
+    "bonusExtras.unknownLanguage": {
+      "source": "Language not specified",
+      "before": null,
+      "translation": "Idioma no especificado",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "b9b862fd222595c270df4c63c7a27ae2a1165f7a0d1d2a5df07a814ad9110336"
+    },
+    "bonusExtras.watchHere": {
+      "source": "Watch here",
+      "before": null,
+      "translation": "Ver aquí",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "11a7768a6ffcf9a76feb43f65bedc93e40511cd2ef09a31fa2ec59ea532c06bd"
+    },
+    "bonusExtras.wrongTitle": {
+      "source": "Wrong title",
+      "before": null,
+      "translation": "Título incorrecto",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "7ad36da00f8d34c30b515367ebf679e3db9f992106c154b5ac94c200d4049527"
+    },
+    "common.compare": {
+      "source": "Compare",
+      "before": "",
+      "translation": "Comparar",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "e888155d8c7d2e3c3f9eb1bf57e8d81ba1a3c182b5e94b01e09de2cb2cca81f9"
+    },
+    "common.on": {
+      "source": "On",
+      "before": "",
+      "translation": "Activado",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "130011756125313c72f2cab730db4347e2841526d236a89cb25f38789fa49229"
+    },
+    "common.preview": {
+      "source": "Preview",
+      "before": "",
+      "translation": "Vista previa",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "324b134f57c70c729ae3dc4d298bb451656717d70523e942c1ce667b8024ea07"
+    },
+    "discover.findNext.aiApiKey": {
+      "source": "API key (optional for local services)",
+      "before": "",
+      "translation": "Clave de API (opcional para servicios locales)",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "c21c6f1321ea5b107f6b35b14c71293eff839d6bf835ef137f3cbf0fb0119f75"
+    },
+    "discover.findNext.aiClearKey": {
+      "source": "Remove saved API key",
+      "before": "",
+      "translation": "Eliminar la clave de API guardada",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "32a118a506b02141ae00204747bcc89f9da12ab03070ae04d3e003d16e2a6889"
+    },
+    "discover.findNext.aiConsentBody": {
+      "source": "When enabled, the configured service receives up to 24 picks with temporary IDs, title, media type, genre tags, metadata mood tags and your selected moment filters for media, time, genre, mood and familiarity. It receives no server or source IDs, URLs, filenames, playback history, account data, notes, credentials or content. Results can only reorder picks already eligible on this device.",
+      "before": "",
+      "translation": "Al activarse, el servicio configurado recibe hasta 24 sugerencias con identificadores temporales, título, tipo de contenido, etiquetas de género y de estado de ánimo de los metadatos, y los filtros que hayas seleccionado para este momento: contenido, tiempo, género, estado de ánimo y familiaridad. No recibe identificadores de servidores ni de fuentes, URL, nombres de archivos, historial de reproducción, datos de cuenta, notas, credenciales ni contenido. Los resultados solo pueden reordenar las sugerencias que ya cumplen los requisitos en este dispositivo.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "6e1ef17611a4a40ce074b69a173941102b9dcb42d0537a2889867a938f1b4db7"
+    },
+    "discover.findNext.aiConsentTitle": {
+      "source": "Review AI ranking data",
+      "before": "",
+      "translation": "Revisar los datos para la clasificación con IA",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "6822dc2c4e3dbeaea753891253cb18709e14fef188e61c0b6400b3bcb10a3d92"
+    },
+    "discover.findNext.aiEnabled": {
+      "source": "Enable AI ranking",
+      "before": "",
+      "translation": "Activar la clasificación con IA",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "a4939763d3e54ae0fb185ea68005a793b18dac03b42bdbc874487ecbbcf52de8"
+    },
+    "discover.findNext.aiEndpoint": {
+      "source": "Service URL",
+      "before": "",
+      "translation": "URL del servicio",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "1e73fdfdf87bab9a74beb9e21bb0b4b70b20d918230edecb180941f77e1de1d4"
+    },
+    "discover.findNext.aiError": {
+      "source": "AI ranking was unavailable. Your usual discovery order is still active.",
+      "before": "",
+      "translation": "La clasificación con IA no estaba disponible. Tu orden habitual de descubrimiento sigue activo.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "6999700c73c130d13de9ae370fd1c2a556bfdaf417d7af15de35a251066bb598"
+    },
+    "discover.findNext.aiInvalidConfig": {
+      "source": "Enter a model and a valid HTTPS URL, or use HTTP on this device only.",
+      "before": "",
+      "translation": "Introduce un modelo y una URL HTTPS válida, o usa HTTP únicamente en este dispositivo.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "2c9ac9172c5035f7f4dd2598b47bf23c0ab523031cb12f205f0391e6f0b8d5bb"
+    },
+    "discover.findNext.aiModel": {
+      "source": "Model name",
+      "before": "",
+      "translation": "Nombre del modelo",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "a3c3370cc7323c7127109bab88721b47e604949a462c19a5d5c3e38237ccc817"
+    },
+    "discover.findNext.aiRanking": {
+      "source": "Optional AI ranking",
+      "before": "",
+      "translation": "Clasificación con IA opcional",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "7013e07fb05cf41b53b4ee358db16e1de73dce4913aec0d6e048db2d5f3a7fe2"
+    },
+    "discover.findNext.aiRankingHelp": {
+      "source": "An external or loopback OpenAI-compatible service may reorder up to 24 eligible picks. The ordinary deck stays usable if it is off or unavailable.",
+      "before": "",
+      "translation": "Un servicio externo o local compatible con OpenAI puede reordenar hasta 24 sugerencias que cumplan los requisitos. La selección normal sigue disponible si está desactivado o no está disponible.",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "5fa320ed321dfa10a32b98ba22ffcc44ce93ebb9d45d8d6231b464f50585d413"
+    },
+    "discover.findNext.aiSaved": {
+      "source": "AI ranking settings saved",
+      "before": "",
+      "translation": "Ajustes de clasificación con IA guardados",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "1cd54829b62ba0b9fbfbbb91e4ab0a10852b8c1a1bbbf2a9d1f8455077fec40b"
+    },
+    "discover.findNext.aiSavedKey": {
+      "source": "A key is saved securely",
+      "before": "",
+      "translation": "Hay una clave guardada de forma segura",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "a6a6a2e01b221e70763840415425033dd1c5f0a388944e0ed5a5027fcbe8eab7"
+    },
+    "discover.findNext.availability": {
+      "source": "Availability",
+      "before": "",
+      "translation": "Disponibilidad",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "12f67f8539c46701e62d1c50254cf025c22a992b06fea6d4c0e19705f21f4cac"
+    },
+    "discover.findNext.availabilityNotChecked": {
+      "source": "Check again when opened",
+      "before": "",
+      "translation": "Volver a comprobar al abrir",
+      "review": "assistant-authored-and-semantically-reviewed",
+      "sourceSha256": "5ed6d87aeab9063a9522fdae041abcee410db28e12015987e144c12b6e8c3cbc"
+    }
+  }
+}

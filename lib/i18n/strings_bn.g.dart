@@ -115,6 +115,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$bn romm = _Translations$romm$bn._(_root);
 	@override late final _Translations$subtitleCapture$bn subtitleCapture = _Translations$subtitleCapture$bn._(_root);
 	@override late final _Translations$musicExperience$bn musicExperience = _Translations$musicExperience$bn._(_root);
+	@override late final _Translations$musicTools$bn musicTools = _Translations$musicTools$bn._(_root);
 }
 
 // Path: app
@@ -808,6 +809,7 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'নির্বাচিত লাইব্রেরির কোন ক্লিপগুলো সিনেমার আগে চলতে পারবে তা বেছে নিন।';
 	@override String get contentScreensaverDelayOptionDescription => 'স্ক্রিন সার্ভার শিল্প প্রদর্শন করার আগে এই অনেক মিনিট অন্তর্ভুক্ত অপেক্ষা করুন।';
 	@override String get videoCodecOptionDescription => 'সমর্থিত হলে এই কোডেক সরাসরি চালাতে দিন। চেক না করা কোডেকগুলো মিডিয়া সার্ভার ট্রান্সকোড করবে।';
+	@override String streamBufferSizeMiB({required Object size}) => 'বাফার আকার: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2546,6 +2548,7 @@ class _Translations$performanceOverlay$bn extends Translations$performanceOverla
 	@override String get decoderHardware => 'হার্ডওয়ার্ক';
 	@override String get tunnelingActive => 'আক্রমণ';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} অসম্ভব)';
+	@override String cacheLimitMiB({required Object size}) => 'ক্যাশি সীমা: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2740,13 +2743,24 @@ class _Translations$seerr$bn extends Translations$seerr$en {
 	@override String get request => 'অনুরোধ';
 	@override String get request4k => '4K অনুসন্ধান';
 	@override String get requestSeasons => 'অনুপস্থিত মৌসুমগুলোর জন্য অনুরোধ করুন';
+	@override String get requestHint => 'Seerr-এ অনুরোধের বিকল্প বেছে নিন';
+	@override String get quickRequestHint => 'ডিফল্ট সেটিংস ব্যবহার করে এখনই Seerr-এ অনুরোধ করুন';
+	@override String get chooseSeasonsHint => 'Seerr-এ অনুরোধ করার জন্য মৌসুম বেছে নিন';
+	@override String get request4kHint => 'Seerr-এ 4K অনুরোধ বেছে নিন';
+	@override String get only4kAvailable => 'এই অ্যাকাউন্ট থেকে শুধু 4K সংস্করণের অনুরোধ করা যায়।';
+	@override String get cardActionHint => 'Seerr-এর অনুরোধের বিকল্প দেখতে কার্ড মেনু খুলুন';
+	@override String get requestInProgress => 'অনুরোধ প্রক্রিয়াধীন';
 	@override String get notifyMe => 'পাওয়া গেলে আমাকে জানান';
 	@override String get notifyMe4k => '4K-তে পাওয়া গেলে আমাকে জানান';
 	@override String get notificationsOn => 'পাওয়ার বিজ্ঞপ্তি চালু আছে';
+	@override String get turnOffAlert => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করুন';
 	@override String get notificationsEnabled => 'পাওয়া গেলে আমরা আপনাকে জানাব';
+	@override String get notificationsEnabled4k => '4K সংস্করণ পাওয়া গেলে আমরা আপনাকে জানাব';
+	@override String notificationsEnabledSeason({required Object season}) => '${season} নম্বর মৌসুম পাওয়া গেলে আমরা আপনাকে জানাব';
 	@override String get notificationsDisabled => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করা হয়েছে';
 	@override String get notificationFailed => 'পাওয়ার বিজ্ঞপ্তি আপডেট করা যায়নি';
 	@override String get seasons => 'সপ্তাহ';
+	@override String get requestSheetHint => 'Seerr আপনার অনুরোধের অনুমোদন ও অগ্রগতি সামলায়।';
 	@override String get allSeasons => 'সব সপ্তাহ';
 	@override String get advancedOptions => 'উন্নত';
 	@override String get destinationServer => 'ডিজিটাল সার্ভার';
@@ -3749,6 +3763,9 @@ class _Translations$sourceSetup$bn extends Translations$sourceSetup$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'বইগুলো দেখতে ও পড়তে আপনার নিজের BookOrbit অ্যাকাউন্টে সাইন ইন করুন। অনুপস্থিত শিরোনামের অনুরোধ এখনও আপনার সংযুক্ত SeerrNG ইনস্ট্যান্সের মাধ্যমেই যাবে।';
+	@override String get bookorbitOpen => 'BookOrbit-এ খুলুন';
+	@override String get bookorbitDetailHelp => 'লাইব্রেরির বিবরণ এবং Pleazyng যে ফরম্যাট খুলতে পারে না সেগুলো পরিচালনা করতে BookOrbit-এ এই শিরোনামটি দেখুন। শোনার অগ্রগতি আপনার BookOrbit অ্যাকাউন্টের সঙ্গে সিঙ্ক হয়।';
 	@override String get savedCertificate => 'সংরক্ষিত সার্ভার সার্টিফিকেট';
 	@override String get nfsEndpointInvalid => 'nfs://nas:2049/export-এর মতো একটি NFS URL লিখুন।';
 	@override String get dlnaNone => 'কোনো DLNA সার্ভার পাওয়া যায়নি। ডিভাইসের বিবরণের URL নিজে লিখুন।';
@@ -4269,6 +4286,45 @@ class _Translations$musicExperience$bn extends Translations$musicExperience$en {
 	@override String get routeLost => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।';
 	@override String get autoDriving => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন';
 	@override String get routeHint => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।';
+}
+
+// Path: musicTools
+class _Translations$musicTools$bn extends Translations$musicTools$en {
+	_Translations$musicTools$bn._(TranslationsBn root) : this._root = root, super.internal(root);
+
+	final TranslationsBn _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'অতিথি ডিজে';
+	@override String get charts => 'শোনার তালিকা';
+	@override String get rediscover => 'আবার আবিষ্কার করুন';
+	@override String get stations => 'মিউজিক স্টেশন';
+	@override String get prompt => 'বর্ণনা থেকে প্লেলিস্ট';
+	@override String get provider => 'প্রদানকারীর তৈরির URL';
+	@override String get model => 'মডেলের নাম';
+	@override String get consent => 'এই প্রদানকারীকে আমার বর্ণনা পাঠান';
+	@override String get promptHint => 'আপনার পছন্দের সঙ্গীত বর্ণনা করুন';
+	@override String get noHistory => 'এখনও দেখানোর মতো সঙ্গীত নেই';
+	@override String get historyHint => 'এই ডিভাইসে রেকর্ড করা প্লে';
+	@override String get days => 'দিন';
+	@override String get albumBlocks => 'সম্পূর্ণ অ্যালবাম একসাথে রাখুন';
+	@override String get home => 'সঙ্গীত';
+	@override String get recent => 'সম্প্রতি শোনা';
+	@override String get apiKey => 'API কী';
+	@override String get missing => 'ন/এ';
+	@override String get minutes => 'মিনিট';
+	@override String get rules => 'ফিল্টারগুলি';
+	@override String get exclusiveOutput => 'একচেটিয়া অডিও আউটপুট';
+	@override String get preamp => 'প্রিঅ্যাম্প';
+	@override String get ratingPending => 'এই ডিভাইসে সংরক্ষিত; সিঙ্কের অপেক্ষায়';
+	@override String get lyricsOffset => 'গানের কথার সময়ের ব্যবধান';
+	@override String get anniversaries => 'অ্যালবামের বর্ষপূর্তি';
+	@override String get outputPreset => 'এই আউটপুটের ইকুয়ালাইজার';
+	@override String get outputPresetHint => 'এই আউটপুট বেছে নিলে স্বয়ংক্রিয়ভাবে এই ইকুয়ালাইজার ব্যবহার করুন।';
+	@override String get eqApproximation => 'হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6060,6 +6116,7 @@ extension on TranslationsBn {
 			'settings.prerollSelectionDescription' => 'নির্বাচিত লাইব্রেরির কোন ক্লিপগুলো সিনেমার আগে চলতে পারবে তা বেছে নিন।',
 			'settings.contentScreensaverDelayOptionDescription' => 'স্ক্রিন সার্ভার শিল্প প্রদর্শন করার আগে এই অনেক মিনিট অন্তর্ভুক্ত অপেক্ষা করুন।',
 			'settings.videoCodecOptionDescription' => 'সমর্থিত হলে এই কোডেক সরাসরি চালাতে দিন। চেক না করা কোডেকগুলো মিডিয়া সার্ভার ট্রান্সকোড করবে।',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'বাফার আকার: ${size} MiB',
 			'themeEditor.builtIn' => 'ভিত্তিতে',
 			'themeEditor.presets' => 'প্রজাতন',
 			'themeEditor.custom' => 'কাস্টম',
@@ -6411,9 +6468,9 @@ extension on TranslationsBn {
 			'videoControls.chaptersAndBookmarks' => 'বিভাগ ও বইমেলা',
 			'videoControls.segmentLoop' => 'সেগেট লোভ',
 			'videoControls.addBookmark' => 'Bookmark যোগ করুন',
-			'videoControls.bookmarkName' => 'Bookmark নাম',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark নাম',
 			'videoControls.bookmarkNameHint' => 'উদাহরণস্বরূপ, দৃশ্য খোলা',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'বইমার্ক ${n}',
 			'videoControls.bookmarkNameRequired' => 'এ বইয়ের জন্য একটি নাম লিখুন।',
@@ -6925,9 +6982,9 @@ extension on TranslationsBn {
 			'libraries.hideLibrary' => 'কবর লাইব্রেরি',
 			'libraries.libraryOptions' => 'লাইব্রেরি বিকল্প',
 			'libraries.content' => 'লাইব্রেরি বিষয়বস্তু',
-			'libraries.selectLibrary' => 'লাইব্রেরি নির্বাচন',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'লাইব্রেরি নির্বাচন',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ফিল্টার (${count})',
 			'libraries.noRecommendations' => 'উপলব্ধি নেই',
 			'libraries.noCollections' => 'এই লাইব্রেরিতে কোন সংগ্রহ নেই',
@@ -7439,9 +7496,9 @@ extension on TranslationsBn {
 			'watchTogether.paste' => 'পেস্ট',
 			'watchTogether.noCodeInClipboard' => 'ক্লাববের কোডে রুম কোড নেই।',
 			'watchTogether.copyCode' => 'কপি কোড',
-			'watchTogether.codeCopied' => 'রুম কোড কপি',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'রুম কোড কপি',
 			'watchTogether.shareInvite' => 'বিতর্ক invitaciones',
 			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
@@ -7905,6 +7962,7 @@ extension on TranslationsBn {
 			'performanceOverlay.decoderHardware' => 'হার্ডওয়ার্ক',
 			'performanceOverlay.tunnelingActive' => 'আক্রমণ',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} অসম্ভব)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'ক্যাশি সীমা: ${size} MiB',
 			'externalPlayer.title' => 'বিদেশী খেলোয়াড়',
 			'externalPlayer.useExternalPlayer' => 'বাইরের খেলোয়াড় ব্যবহার',
 			'externalPlayer.useExternalPlayerDescription' => 'অন্য অ্যাপে ভিডিও খোলা',
@@ -7952,10 +8010,10 @@ extension on TranslationsBn {
 			'metadataEdit.fromUrl' => 'URL থেকে',
 			'metadataEdit.uploadFile' => 'ফাইল আপলোড',
 			'metadataEdit.enterImageUrl' => 'ইমেজ URL লিখুন',
-			'metadataEdit.imageUrl' => 'ইমেজ URL',
-			'metadataEdit.metadataUpdated' => 'মেটাদাডেট আপডেট',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'ইমেজ URL',
+			'metadataEdit.metadataUpdated' => 'মেটাদাডেট আপডেট',
 			'metadataEdit.metadataUpdateFailed' => 'মেটাদাটা আপডেট করতে পারেনি',
 			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
 			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
@@ -8047,13 +8105,24 @@ extension on TranslationsBn {
 			'seerr.request' => 'অনুরোধ',
 			'seerr.request4k' => '4K অনুসন্ধান',
 			'seerr.requestSeasons' => 'অনুপস্থিত মৌসুমগুলোর জন্য অনুরোধ করুন',
+			'seerr.requestHint' => 'Seerr-এ অনুরোধের বিকল্প বেছে নিন',
+			'seerr.quickRequestHint' => 'ডিফল্ট সেটিংস ব্যবহার করে এখনই Seerr-এ অনুরোধ করুন',
+			'seerr.chooseSeasonsHint' => 'Seerr-এ অনুরোধ করার জন্য মৌসুম বেছে নিন',
+			'seerr.request4kHint' => 'Seerr-এ 4K অনুরোধ বেছে নিন',
+			'seerr.only4kAvailable' => 'এই অ্যাকাউন্ট থেকে শুধু 4K সংস্করণের অনুরোধ করা যায়।',
+			'seerr.cardActionHint' => 'Seerr-এর অনুরোধের বিকল্প দেখতে কার্ড মেনু খুলুন',
+			'seerr.requestInProgress' => 'অনুরোধ প্রক্রিয়াধীন',
 			'seerr.notifyMe' => 'পাওয়া গেলে আমাকে জানান',
 			'seerr.notifyMe4k' => '4K-তে পাওয়া গেলে আমাকে জানান',
 			'seerr.notificationsOn' => 'পাওয়ার বিজ্ঞপ্তি চালু আছে',
+			'seerr.turnOffAlert' => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করুন',
 			'seerr.notificationsEnabled' => 'পাওয়া গেলে আমরা আপনাকে জানাব',
+			'seerr.notificationsEnabled4k' => '4K সংস্করণ পাওয়া গেলে আমরা আপনাকে জানাব',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => '${season} নম্বর মৌসুম পাওয়া গেলে আমরা আপনাকে জানাব',
 			'seerr.notificationsDisabled' => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করা হয়েছে',
 			'seerr.notificationFailed' => 'পাওয়ার বিজ্ঞপ্তি আপডেট করা যায়নি',
 			'seerr.seasons' => 'সপ্তাহ',
+			'seerr.requestSheetHint' => 'Seerr আপনার অনুরোধের অনুমোদন ও অগ্রগতি সামলায়।',
 			'seerr.allSeasons' => 'সব সপ্তাহ',
 			'seerr.advancedOptions' => 'উন্নত',
 			'seerr.destinationServer' => 'ডিজিটাল সার্ভার',
@@ -8455,6 +8524,8 @@ extension on TranslationsBn {
 			'universalMedia.favorites' => 'সুরক্ষিত প্রদর্শন পছন্দ',
 			'universalMedia.address' => 'মিডিয়া ঠিকানা',
 			'universalMedia.addressHelp' => 'HTTPS preferred. recognized credential বা signature parameters সঙ্গে URLs শুধুমাত্র এই session জন্য ব্যবহার করা হয় এবং পছন্দ হিসাবে সংরক্ষণ করা যাবে না।',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.displayName' => 'ডাউনলোড নাম (অ্যাপ্লিকেশন)',
 			'universalMedia.displayNameHelp' => 'খেলোয়াড় এবং সিস্টেম মিডিয়া কন্ট্রোলগুলির জন্য একটি ছোট নাম নির্বাচন করুন।',
 			'universalMedia.allowHttp' => 'একটি অক্রিপ্ট HTTP সংযোগ অনুমোদন',
@@ -8468,8 +8539,6 @@ extension on TranslationsBn {
 			'universalMedia.favoriteSaved' => 'এই প্রোফাইলে সুরক্ষিত পছন্দ স্ট্রিম',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${count} অসহায় বা নিরাপদ Playlist প্রবেশ।', other: '${count} সমর্থিত বা নিরাপদ Playlist অন্তর্ভুক্ত।', ), 
 			'universalMedia.playlistAddress' => 'Playlist ঠিকানা',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'একটি ওয়েব ঠিকানা থেকে একটি M3U, M3u8, বা PLS প্লেলিস্ট খোঁজ করুন. সরাসরি প্রদর্শন লিঙ্কগুলি প্লেলেস্ট সংরক্ষণ করে না।',
 			'universalMedia.choosePlaylist' => 'Playlist ফাইল নির্বাচন করুন',
 			'universalMedia.openPlaylist' => 'খোলা Playlist',
@@ -8931,6 +9000,9 @@ extension on TranslationsBn {
 			'audiobook.recoveryImportConfirm' => 'এই এনক্রিপ্ট করা পুনরুদ্ধার ফাইলটি বর্তমান পড়ার অবস্থান ও নোটের সঙ্গে মেশাবেন? আগের ইতিহাস থাকবে। শেয়ার করা লাইব্রেরি ও আইটেম ID এতে নেই; আমদানির আগে প্রতিটি ডিভাইসে একই ID সেট করুন।',
 			'audiobook.recoveryExported' => 'সক্রিপ্ট ফাইল পুনরায় সংরক্ষণ করা হয়েছে।',
 			'audiobook.recoveryImported' => 'রেকর্ড ডেটা একত্রিত।',
+			'sourceSetup.bookorbitHelp' => 'বইগুলো দেখতে ও পড়তে আপনার নিজের BookOrbit অ্যাকাউন্টে সাইন ইন করুন। অনুপস্থিত শিরোনামের অনুরোধ এখনও আপনার সংযুক্ত SeerrNG ইনস্ট্যান্সের মাধ্যমেই যাবে।',
+			'sourceSetup.bookorbitOpen' => 'BookOrbit-এ খুলুন',
+			'sourceSetup.bookorbitDetailHelp' => 'লাইব্রেরির বিবরণ এবং Pleazyng যে ফরম্যাট খুলতে পারে না সেগুলো পরিচালনা করতে BookOrbit-এ এই শিরোনামটি দেখুন। শোনার অগ্রগতি আপনার BookOrbit অ্যাকাউন্টের সঙ্গে সিঙ্ক হয়।',
 			'sourceSetup.savedCertificate' => 'সংরক্ষিত সার্ভার সার্টিফিকেট',
 			'sourceSetup.nfsEndpointInvalid' => 'nfs://nas:2049/export-এর মতো একটি NFS URL লিখুন।',
 			'sourceSetup.dlnaNone' => 'কোনো DLNA সার্ভার পাওয়া যায়নি। ডিভাইসের বিবরণের URL নিজে লিখুন।',
@@ -8966,6 +9038,8 @@ extension on TranslationsBn {
 			'sourceSetup.clientCertificate' => 'ক্লায়েন্ট সার্টিফিকেট (ঐচ্ছিক)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-কে এই ক্লায়েন্টের পরিচয় যাচাই করতে দেয়; AUTH_SYS ID এখনো NAS এক্সপোর্টের নীতির ওপর নির্ভর করে।',
 			'sourceSetup.savedIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র ব্যবহার করা হবে।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র প্রতিস্থাপন করুন',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 ক্লায়েন্ট পরিচয়পত্র বেছে নিন',
 			'sourceSetup.identityPassphrase' => 'ক্লায়েন্ট পরিচয়পত্রের পাসফ্রেজ',
@@ -8982,8 +9056,6 @@ extension on TranslationsBn {
 			'sourceSetup.apiKey' => 'API কী',
 			'sourceSetup.optionalUsername' => 'অ্যাকাউন্টের ব্যবহারকারীর নাম (ঐচ্ছিক)',
 			'sourceSetup.optionalPassword' => 'অ্যাকাউন্টের পাসওয়ার্ড (ঐচ্ছিক)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com থেকে API কী নিন। অনুসন্ধানে ভিডিওর শিরোনাম ও উপলব্ধ IMDb/TMDB ID পাঠানো হয়, ভিডিও ফাইল কখনোই পাঠানো হয় না। কী ও ঐচ্ছিক অ্যাকাউন্টের প্রবেশতথ্য এই উৎসের সঙ্গে এনক্রিপ্ট করে রাখা হয়।',
 			'sourceSetup.automaticMetadata' => 'স্বয়ংক্রিয়ভাবে অনলাইন ভিডিও মেটাডেটা পান',
 			'sourceSetup.metadataPrivacy' => 'শুধু ফাইলের নাম থেকে শিরোনাম, বছর ও পর্বের নম্বর অথবা NFO ID পাঠানো হয়; মিডিয়া বা প্রবেশতথ্য কখনো পাঠানো হয় না। NFO ফিল্ড সবসময় অগ্রাধিকার পায়।',
@@ -9381,6 +9453,36 @@ extension on TranslationsBn {
 			'musicExperience.routeLost' => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।',
 			'musicExperience.autoDriving' => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন',
 			'musicExperience.routeHint' => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।',
+			'musicTools.guestDj' => 'অতিথি ডিজে',
+			'musicTools.charts' => 'শোনার তালিকা',
+			'musicTools.rediscover' => 'আবার আবিষ্কার করুন',
+			'musicTools.stations' => 'মিউজিক স্টেশন',
+			'musicTools.prompt' => 'বর্ণনা থেকে প্লেলিস্ট',
+			'musicTools.provider' => 'প্রদানকারীর তৈরির URL',
+			'musicTools.model' => 'মডেলের নাম',
+			'musicTools.consent' => 'এই প্রদানকারীকে আমার বর্ণনা পাঠান',
+			'musicTools.promptHint' => 'আপনার পছন্দের সঙ্গীত বর্ণনা করুন',
+			'musicTools.noHistory' => 'এখনও দেখানোর মতো সঙ্গীত নেই',
+			'musicTools.historyHint' => 'এই ডিভাইসে রেকর্ড করা প্লে',
+			'musicTools.days' => 'দিন',
+			'musicTools.albumBlocks' => 'সম্পূর্ণ অ্যালবাম একসাথে রাখুন',
+			'musicTools.home' => 'সঙ্গীত',
+			'musicTools.recent' => 'সম্প্রতি শোনা',
+			'musicTools.apiKey' => 'API কী',
+			'musicTools.missing' => 'ন/এ',
+			'musicTools.minutes' => 'মিনিট',
+			'musicTools.rules' => 'ফিল্টারগুলি',
+			'musicTools.exclusiveOutput' => 'একচেটিয়া অডিও আউটপুট',
+			'musicTools.preamp' => 'প্রিঅ্যাম্প',
+			'musicTools.ratingPending' => 'এই ডিভাইসে সংরক্ষিত; সিঙ্কের অপেক্ষায়',
+			'musicTools.lyricsOffset' => 'গানের কথার সময়ের ব্যবধান',
+			'musicTools.anniversaries' => 'অ্যালবামের বর্ষপূর্তি',
+			'musicTools.outputPreset' => 'এই আউটপুটের ইকুয়ালাইজার',
+			'musicTools.outputPresetHint' => 'এই আউটপুট বেছে নিলে স্বয়ংক্রিয়ভাবে এই ইকুয়ালাইজার ব্যবহার করুন।',
+			'musicTools.eqApproximation' => 'হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

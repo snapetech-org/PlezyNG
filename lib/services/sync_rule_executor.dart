@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../media/ids.dart';
@@ -17,6 +18,8 @@ import 'connectivity_probe.dart';
 import 'download_manager_service.dart';
 import 'multi_server_manager.dart';
 import 'playlist_items_loader.dart';
+import 'music/music_library_store.dart';
+import 'music/music_station.dart';
 
 /// Sync-rule filter values stored in `SyncRules.downloadFilter`.
 class SyncRuleFilter {
@@ -284,6 +287,16 @@ class SyncRuleExecutor {
         deleteSyncRuleDownload: deleteSyncRuleDownload,
       );
     }
+    if (rule.targetType == ContentTypes.musicStation) {
+      return _executeMusicStationRule(
+        rule: rule,
+        client: client,
+        serverManager: serverManager,
+        downloads: downloads,
+        associateDownload: associateDownload,
+        queueSingleDownload: queueSingleDownload,
+      );
+    }
 
     // Migration safety net for rules created before targetMetadata was passed
     // at creation time: fetch the rule target's title once so the snackbar
@@ -334,6 +347,82 @@ class SyncRuleExecutor {
   String? _clientScopeIdFor(MediaServerClient client, ServerId serverId) {
     final cacheServerId = client.cacheServerId;
     return cacheServerId == serverId || cacheServerId.isEmpty ? null : cacheServerId;
+  }
+
+  Future<SyncRuleResult?> _executeMusicStationRule({
+    required SyncRuleItem rule,
+    required MediaServerClient client,
+    required MultiServerManager serverManager,
+    required Map<String, DownloadProgress> downloads,
+    required AssociateSyncRuleDownload associateDownload,
+    required QueueSyncRuleDownload queueSingleDownload,
+  }) async {
+    final store = MusicLibraryStore(_database, rule.profileId);
+    final json = await store.document('station', rule.ratingKey);
+    if (json == null) return null;
+    final station = MusicStation.fromJson(json);
+    if (station.serverId != rule.serverId || station.refreshHours == 0) return null;
+    final now = DateTime.now();
+    if (rule.lastExecutedAt != null &&
+        now.millisecondsSinceEpoch - rule.lastExecutedAt! < Duration(hours: station.refreshHours).inMilliseconds) {
+      return null;
+    }
+    if (station.wifiOnly && !(await ConnectivityProbe.check()).hasWifiOrEthernet) return null;
+    final authentication = client.authenticationSessionId;
+    final signature = jsonEncode(station.toJson());
+    Future<bool> current() async {
+      if (!store.active ||
+          !serverManager.isServerVisible(client.serverId) ||
+          !identical(serverManager.getClient(client.serverId), client) ||
+          !identical(authentication, client.authenticationSessionId)) {
+        return false;
+      }
+      final activeRule = await _database.getSyncRule(rule.globalKey);
+      return activeRule?.id == rule.id &&
+          activeRule?.enabled == true &&
+          jsonEncode(await store.document('station', station.id)) == signature;
+    }
+
+    if (!await current()) return null;
+    final previous = await store.document('stationSnapshot', station.id);
+    // Retain the exact candidate batch across queueing failures. A retry must
+    // not keep choosing new random tracks and expanding the download budget.
+    final tracks = previous?['pending'] == true && previous?['signature'] == signature
+        ? (previous!['tracks'] as List).map((row) => MediaItem.fromJson(Map<String, dynamic>.from(row as Map))).toList()
+        : await station.materialize(client);
+    if (!await current()) return null;
+    final snapshot = <String, dynamic>{
+      'version': 1,
+      'id': station.id,
+      'title': station.title,
+      'signature': signature,
+      'tracks': tracks.map((track) => musicIdentity(track).toJson()).toList(),
+      'pending': true,
+      'createdAt': now.toUtc().toIso8601String(),
+    };
+    await store.saveDocument('stationSnapshot', station.id, snapshot);
+    var queued = 0, failed = false;
+    for (final track in tracks) {
+      if (!await current()) {
+        return SyncRuleResult(globalKey: rule.globalKey, title: station.title, queuedCount: queued, failed: true);
+      }
+      if (_isActiveDownload(downloads[track.globalKey])) {
+        await associateDownload(rule, track.globalKey);
+        continue;
+      }
+      final ok = await queueSingleDownload(track, client, mediaIndex: 0, downloadQuality: _qualityForRule(rule));
+      if (ok) {
+        queued++;
+        await associateDownload(rule, track.globalKey);
+      } else {
+        failed = true;
+      }
+    }
+    if (!failed && await current()) {
+      await store.saveDocument('stationSnapshot', station.id, {...snapshot, 'pending': false});
+      await _completeRuleExecution(rule.globalKey);
+    }
+    return SyncRuleResult(globalKey: rule.globalKey, title: station.title, queuedCount: queued, failed: failed);
   }
 
   Future<void> _completeRuleExecution(String globalKey) {

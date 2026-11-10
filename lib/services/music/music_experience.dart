@@ -1,0 +1,51 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+
+import '../../media/media_item.dart';
+import '../../media/media_server_client.dart';
+import '../../utils/app_logger.dart';
+import 'music_guest_dj.dart';
+import 'music_library_store.dart';
+import 'music_listening_recorder.dart';
+import 'music_playback_service.dart';
+import 'music_rating_journal.dart';
+
+/// Created eagerly with the profile session, independent of music screens.
+class MusicExperience extends ChangeNotifier {
+  MusicExperience({
+    required this.music,
+    required this.store,
+    required this.clientFor,
+    Stream<Object?>? connectionChanges,
+  }) {
+    dj = MusicGuestDj(music, clientFor)..addListener(notifyListeners);
+    recorder = MusicListeningRecorder(music, store);
+    ratings = MusicRatingJournal(store, clientFor);
+    _connections = connectionChanges?.listen((_) => _syncRatings());
+    _syncRatings();
+  }
+  final MusicPlaybackService music;
+  final MusicLibraryStore store;
+  final MediaServerClient? Function(MediaItem) clientFor;
+  late final MusicGuestDj dj;
+  late final MusicListeningRecorder recorder;
+  late final MusicRatingJournal ratings;
+  StreamSubscription<Object?>? _connections;
+  void _syncRatings() {
+    unawaited(
+      ratings.sync().catchError((Object error, StackTrace stack) {
+        appLogger.w('Pending music ratings could not be synchronized', error: error, stackTrace: stack);
+      }),
+    );
+  }
+
+  @override
+  void dispose() {
+    dj.removeListener(notifyListeners);
+    dj.dispose();
+    recorder.dispose();
+    ratings.dispose();
+    unawaited(_connections?.cancel());
+    super.dispose();
+  }
+}

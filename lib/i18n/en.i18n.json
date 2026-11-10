@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "Choose different synchronized layer files and a frame rate from 1 to 120 fps.",
     "dvOfflineNewOutput": "Choose a new .mkv filename. Existing media and reports are preserved.",
     "dvOfflineHdr10": "HDR10 · 10-bit HEVC",
-    "dvOfflineSdr": "SDR · H.264"
+    "dvOfflineSdr": "SDR · H.264",
+    "streamBufferSizeMiB": "Buffer Size: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Built-in",
@@ -3113,7 +3114,8 @@
     "decoderHardware": "Hardware",
     "tunnelingActive": "Active",
     "dvRpuFailed": "${converted} (${failures} failed)",
-    "neuralProviderInitializing": "${request} · initializing${fallback}"
+    "neuralProviderInitializing": "${request} · initializing${fallback}",
+    "cacheLimitMiB": "Cache Limit: ${size} MiB"
   },
   "externalPlayer": {
     "title": "External Player",
@@ -5594,5 +5596,37 @@
     "routeLost": "Audio output disconnected. Playback paused.",
     "autoDriving": "Open driving view when connected to a car",
     "routeHint": "The car system controls whether the app can appear automatically."
+  },
+  "musicTools": {
+    "guestDj": "Guest DJ",
+    "charts": "Listening charts",
+    "rediscover": "Rediscover",
+    "stations": "Music stations",
+    "prompt": "Prompt playlist",
+    "provider": "Provider completion URL",
+    "model": "Model name",
+    "consent": "Send my prompt to this provider",
+    "promptHint": "Describe the music you want",
+    "noHistory": "No music to show yet",
+    "historyHint": "Plays recorded on this device",
+    "days": "Days",
+    "albumBlocks": "Keep whole albums together",
+    "home": "Music",
+    "recent": "Recently played",
+    "apiKey": "API key",
+    "missing": "N/A",
+    "minutes": "Minutes",
+    "rules": "Filters",
+    "exclusiveOutput": "Exclusive audio output",
+    "preamp": "Preamp",
+    "ratingPending": "Saved on this device; waiting to sync",
+    "lyricsOffset": "Lyrics timing offset",
+    "anniversaries": "Album anniversaries",
+    "outputPreset": "EQ for this output",
+    "outputPresetHint": "Automatically use this EQ when this output is selected.",
+    "eqApproximation": "Headphone profiles are approximated for the ten-band EQ.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

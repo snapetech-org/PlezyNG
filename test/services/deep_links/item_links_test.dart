@@ -218,8 +218,19 @@ void main() {
       expect(link!.target, ItemPlayTarget(serverId: ServerId('jf-server'), itemId: 'jf-ep'));
     });
 
+    test('music shares a server-qualified link without sending catalogue lookups', () async {
+      for (final kind in [MediaKind.track, MediaKind.album, MediaKind.artist]) {
+        final item = testMediaItem(id: 'music', kind: kind, serverId: 's');
+        final client = _ExternalIdsClient(_allIds);
+        final link = await linkForItem(client, item);
+        expect(link!.target, ItemPlayTarget(serverId: ServerId('s'), itemId: 'music'));
+        expect(client.calls, isEmpty);
+        expect(canLinkItem(item), isTrue);
+      }
+    });
+
     test('other kinds have no link', () async {
-      for (final kind in [MediaKind.season, MediaKind.album, MediaKind.track, MediaKind.collection]) {
+      for (final kind in [MediaKind.season, MediaKind.collection]) {
         final item = testMediaItem(id: 'x', kind: kind, serverId: 'plex-1');
         final client = _ExternalIdsClient(_allIds);
 

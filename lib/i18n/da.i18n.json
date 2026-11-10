@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer størrelse: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Indbygget",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Hardware",
     "tunnelingActive": "Aktiv",
     "dvRpuFailed": "${converted} (${failures} mislykkedes)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Cachegrænse: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Ekstern afspiller",
@@ -3283,13 +3285,24 @@
     "request": "Anmod",
     "request4k": "Anmod i 4K",
     "requestSeasons": "Anmod om manglende sæsoner",
+    "requestHint": "Vælg anmodningsmuligheder i Seerr",
+    "quickRequestHint": "Anmod nu i Seerr med standardindstillingerne",
+    "chooseSeasonsHint": "Vælg sæsoner, der skal anmodes om i Seerr",
+    "request4kHint": "Vælg en 4K-anmodning i Seerr",
+    "only4kAvailable": "Denne konto kan kun anmode om 4K-versionen.",
+    "cardActionHint": "Åbn kortmenuen for Seerr-anmodningsmuligheder",
+    "requestInProgress": "Anmodningen behandles",
     "notifyMe": "Giv mig besked, når det er tilgængeligt",
     "notifyMe4k": "Giv mig besked, når det er tilgængeligt i 4K",
     "notificationsOn": "Tilgængelighedsadvarsel er slået til",
+    "turnOffAlert": "Slå tilgængelighedsadvarsel fra",
     "notificationsEnabled": "Vi giver dig besked, når det er tilgængeligt",
+    "notificationsEnabled4k": "Vi giver dig besked, når 4K-versionen er tilgængelig",
+    "notificationsEnabledSeason": "Vi giver dig besked, når sæson ${season} er tilgængelig",
     "notificationsDisabled": "Tilgængelighedsadvarsel er slået fra",
     "notificationFailed": "Tilgængelighedsadvarslen kunne ikke opdateres",
     "seasons": "Sæsoner",
+    "requestSheetHint": "Seerr håndterer godkendelse og følger din anmodning.",
     "allSeasons": "Alle sæsoner",
     "advancedOptions": "Avanceret",
     "destinationServer": "Destinationsserver",
@@ -4246,6 +4259,9 @@
     "recoveryImported": "Genopretning af data sammensat."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Log ind med din egen BookOrbit-konto for at gennemse og afspille dens bøger. Anmodninger om manglende titler går stadig gennem din tilsluttede SeerrNG-instans.",
+    "bookorbitOpen": "Åbn i BookOrbit",
+    "bookorbitDetailHelp": "Se denne titel i BookOrbit for at administrere biblioteksoplysninger og formater, som Pleazyng ikke kan åbne. Lyttefremskridt synkroniseres med din BookOrbit-konto.",
     "savedCertificate": "Gemt servercertifikat",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Angiv en NFS-URL, f.eks. nfs://nas:2049/export.",
@@ -5502,5 +5518,37 @@
     "routeLost": "Lydudgang afbrudt. Afspilning sat på pause.",
     "autoDriving": "Åbn kørselsvisning ved forbindelse til en bil",
     "routeHint": "Bilens system bestemmer, om appen kan vises automatisk."
+  },
+  "musicTools": {
+    "guestDj": "Gæste-DJ",
+    "charts": "Lyttestatistik",
+    "rediscover": "Genopdag",
+    "stations": "Musikstationer",
+    "prompt": "Afspilningsliste fra beskrivelse",
+    "provider": "Udbyderens genererings-URL",
+    "model": "Modelnavn",
+    "consent": "Send min beskrivelse til denne udbyder",
+    "promptHint": "Beskriv den ønskede musik",
+    "noHistory": "Ingen musik at vise endnu",
+    "historyHint": "Afspilninger registreret på denne enhed",
+    "days": "Dage",
+    "albumBlocks": "Hold hele album samlet",
+    "home": "Musik",
+    "recent": "Senest afspillet",
+    "apiKey": "API-nøgle",
+    "missing": "N/A",
+    "minutes": "Minutter",
+    "rules": "Filtre",
+    "exclusiveOutput": "Eksklusiv lydudgang",
+    "preamp": "Forforstærkning",
+    "ratingPending": "Gemt på denne enhed; afventer synkronisering",
+    "lyricsOffset": "Tidsforskydning af sangtekst",
+    "anniversaries": "Albumjubilæer",
+    "outputPreset": "EQ til denne udgang",
+    "outputPresetHint": "Brug automatisk denne EQ, når denne udgang vælges.",
+    "eqApproximation": "Hovedtelefonprofiler er tilnærmet til en EQ med ti bånd.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

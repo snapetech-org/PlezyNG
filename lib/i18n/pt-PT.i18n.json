@@ -556,7 +556,9 @@
   },
   "sourceSetup": {
     "subtitleApplyFailed": "Não foi possível descarregar ou aplicar esta legenda. Verifique a ligação e tente outro resultado.",
-    "subtitleSearching": "A pesquisar no OpenSubtitles"
+    "subtitleSearching": "A pesquisar no OpenSubtitles",
+    "bookorbitOpen": "Abrir no BookOrbit",
+    "bookorbitDetailHelp": "Consulte este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit."
   },
   "householdSetup": {
     "title": "Configuração do agregado familiar"

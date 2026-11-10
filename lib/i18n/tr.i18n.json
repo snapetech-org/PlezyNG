@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer boyutu: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Yerleşik",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Donanım",
     "tunnelingActive": "Etkin",
     "dvRpuFailed": "${converted} (${failures} başarısız)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Önbellek Sınırı: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Harici Oynatıcı",
@@ -3283,13 +3285,24 @@
     "request": "İstek Gönder",
     "request4k": "4K İstek Gönder",
     "requestSeasons": "Eksik sezonları iste",
+    "requestHint": "Seerr'de istek seçeneklerini belirleyin",
+    "quickRequestHint": "Varsayılan ayarlarla şimdi Seerr'den isteyin",
+    "chooseSeasonsHint": "Seerr'den istenecek sezonları seçin",
+    "request4kHint": "Seerr'de 4K isteği seçin",
+    "only4kAvailable": "Bu hesap yalnızca 4K sürümünü isteyebilir.",
+    "cardActionHint": "Seerr istek seçenekleri için kart menüsünü açın",
+    "requestInProgress": "İstek sürüyor",
     "notifyMe": "Kullanılabilir olduğunda bildir",
     "notifyMe4k": "4K kullanılabilir olduğunda bildir",
     "notificationsOn": "Kullanılabilirlik bildirimi açık",
+    "turnOffAlert": "Kullanılabilirlik bildirimini kapat",
     "notificationsEnabled": "Kullanılabilir olduğunda sana bildireceğiz",
+    "notificationsEnabled4k": "4K sürümü kullanılabilir olduğunda sana bildireceğiz",
+    "notificationsEnabledSeason": "${season}. sezon kullanılabilir olduğunda sana bildireceğiz",
     "notificationsDisabled": "Kullanılabilirlik bildirimi kapalı",
     "notificationFailed": "Kullanılabilirlik bildirimi güncellenemedi",
     "seasons": "Sezonlar",
+    "requestSheetHint": "Onay sürecini Seerr yönetir ve isteğinizi takip eder.",
     "allSeasons": "Tüm sezonlar",
     "advancedOptions": "Gelişmiş",
     "destinationServer": "Hedef sunucu",
@@ -4246,6 +4259,9 @@
     "recoveryImported": "Kurtarma verileri birleşti."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Kitaplarınıza göz atmak ve oynatmak için kendi BookOrbit hesabınızla giriş yapın. Eksik içerik istekleri bağlı SeerrNG örneğiniz üzerinden gönderilmeye devam eder.",
+    "bookorbitOpen": "BookOrbit’te aç",
+    "bookorbitDetailHelp": "Kitaplık ayrıntılarını ve Pleazyng’in açamadığı biçimleri yönetmek için bu içeriği BookOrbit’te görüntüleyin. Dinleme ilerlemesi BookOrbit hesabınızla eşitlenir.",
     "savedCertificate": "Kaydedilmiş sunucu sertifikası",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "nfs://nas:2049/export gibi bir NFS URL’si girin.",
@@ -5502,5 +5518,37 @@
     "routeLost": "Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.",
     "autoDriving": "Arabaya bağlanınca sürüş görünümünü aç",
     "routeHint": "Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler."
+  },
+  "musicTools": {
+    "guestDj": "Konuk DJ",
+    "charts": "Dinleme listeleri",
+    "rediscover": "Yeniden keşfet",
+    "stations": "Müzik istasyonları",
+    "prompt": "Açıklamadan çalma listesi",
+    "provider": "Sağlayıcı üretim URL’si",
+    "model": "Model adı",
+    "consent": "Açıklamamı bu sağlayıcıya gönder",
+    "promptHint": "İstediğiniz müziği açıklayın",
+    "noHistory": "Henüz gösterilecek müzik yok",
+    "historyHint": "Bu cihazda kaydedilen dinlemeler",
+    "days": "Günler",
+    "albumBlocks": "Albümleri bütün olarak tut",
+    "home": "Müzik",
+    "recent": "Son çalınanlar",
+    "apiKey": "API anahtarı",
+    "missing": "Yok",
+    "minutes": "Dakika",
+    "rules": "Filtreler",
+    "exclusiveOutput": "Özel ses çıkışı",
+    "preamp": "Ön yükseltme",
+    "ratingPending": "Bu cihaza kaydedildi; eşitleme bekleniyor",
+    "lyricsOffset": "Şarkı sözü zaman kaydırması",
+    "anniversaries": "Albüm yıl dönümleri",
+    "outputPreset": "Bu çıkış için ekolayzer",
+    "outputPresetHint": "Bu çıkış seçildiğinde bu ekolayzeri otomatik olarak kullan.",
+    "eqApproximation": "Kulaklık profilleri on bantlı ekolayzer için yaklaşık olarak uyarlanmıştır.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

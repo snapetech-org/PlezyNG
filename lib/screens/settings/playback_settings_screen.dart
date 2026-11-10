@@ -264,6 +264,8 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
                 // machine too weak for a codec says so (#2443).
                 if (PlatformDetector.isDesktopOS()) _videoCodecsTile(),
                 _musicQualityTile(),
+                _musicQualityOverrideTile(cellular: true),
+                _musicQualityOverrideTile(cellular: false),
               ],
             ),
 
@@ -1304,6 +1306,26 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
           ),
         )
         .toList(),
+  );
+
+  Widget _musicQualityOverrideTile({required bool cellular}) => SettingSelectionTile<AudioQualityPreset?>(
+    pref: cellular ? SettingsService.musicCellularQualityPreset : SettingsService.musicRemoteQualityPreset,
+    icon: cellular ? Symbols.signal_cellular_alt_rounded : Symbols.public_rounded,
+    title:
+        '${t.settings.musicQualityTitle} · ${cellular ? t.settings.cellularQualityTitle : t.settings.remoteQualityTitle}',
+    description: t.settings.musicQualityDescription,
+    subtitleBuilder: (preset) => preset == null ? t.settings.remoteQualitySameAsDefault : _musicQualityLabel(preset),
+    options: [
+      DialogOption<AudioQualityPreset?>(value: null, title: t.settings.remoteQualitySameAsDefault),
+      for (final preset in AudioQualityPreset.values)
+        DialogOption<AudioQualityPreset?>(
+          value: preset,
+          title: _musicQualityLabel(preset),
+          subtitle: preset.isOriginal
+              ? t.settings.musicQualityOriginalDescription
+              : t.settings.musicQualityTranscodeOptionDescription,
+        ),
+    ],
   );
 
   String _musicQualityLabel(AudioQualityPreset preset) =>

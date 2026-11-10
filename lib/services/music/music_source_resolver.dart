@@ -4,11 +4,15 @@ import '../../media/media_item.dart';
 import '../../media/media_server_client.dart';
 import '../../media/media_source_info.dart';
 import '../../models/transcode_quality_preset.dart';
+import '../../models/audio_quality_preset.dart';
+import '../../media/ids.dart';
+import '../../utils/connectivity_link_type.dart';
 import '../../utils/session_identifier.dart';
 import '../multi_server_manager.dart';
 import '../playback_initialization_service.dart';
 import '../playback_source_resolver.dart';
 import '../settings_service.dart';
+import '../connectivity_probe.dart';
 
 /// Everything the music engine needs to open and report one track.
 class MusicSource {
@@ -73,6 +77,14 @@ class ServerMusicSourceResolver implements MusicSourceResolver {
   @override
   Future<MusicSource> resolve(MediaItem track, {bool offline = false}) async {
     final settings = await SettingsService.getInstance();
+    final cellular = settings.read(SettingsService.musicCellularQualityPreset);
+    final quality = AudioQualityPreset.resolveStreamingDefault(
+      generalDefault: settings.read(SettingsService.musicQualityPreset),
+      cellularDefault: cellular,
+      remoteDefault: settings.read(SettingsService.musicRemoteQualityPreset),
+      onCellularOnly: !offline && cellular != null && (await ConnectivityProbe.check()).isCellularOnly,
+      onRemoteConnection: track.serverId != null && serverManager.isRemoteConnection(ServerId(track.serverId!)),
+    );
     final context = await PlaybackSourceResolver(serverManager: serverManager, database: database).resolve(
       PlaybackInitializationOptions(
         metadata: track,
@@ -80,7 +92,7 @@ class ServerMusicSourceResolver implements MusicSourceResolver {
         // Video-shaped preset is ignored for tracks; `original` also keeps the
         // resolver's downloaded-copy preference on.
         qualityPreset: TranscodeQualityPreset.original,
-        audioQualityPreset: settings.read(SettingsService.musicQualityPreset),
+        audioQualityPreset: quality,
         // Plex music transcode requires both session ids; fresh per track so
         // concurrent gapless arming never reuses a live transcode session.
         sessionIdentifier: generateSessionIdentifier(),

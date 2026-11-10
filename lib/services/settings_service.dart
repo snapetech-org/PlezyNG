@@ -1192,6 +1192,14 @@ class SettingsService extends BaseSharedPreferencesService {
     values: AudioQualityPreset.values,
     defaultValue: AudioQualityPreset.original,
   );
+  static const musicCellularQualityPreset = NullableEnumPref<AudioQualityPreset>(
+    'music_cellular_quality_preset',
+    values: AudioQualityPreset.values,
+  );
+  static const musicRemoteQualityPreset = NullableEnumPref<AudioQualityPreset>(
+    'music_remote_quality_preset',
+    values: AudioQualityPreset.values,
+  );
 
   /// Music player volume (0–100), independent of the video player's
   /// [volume] so desktop music listening levels don't drag video loudness
@@ -2395,6 +2403,8 @@ class SettingsService extends BaseSharedPreferencesService {
     cellularQualityPreset,
     remoteQualityPreset,
     musicQualityPreset,
+    musicCellularQualityPreset,
+    musicRemoteQualityPreset,
     liveTvDefaultFavorites,
     matchRefreshRate,
     matchDynamicRange,

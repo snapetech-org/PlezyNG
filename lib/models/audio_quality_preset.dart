@@ -18,4 +18,16 @@ enum AudioQualityPreset {
   final int? bitrateKbps;
 
   bool get isOriginal => this == AudioQualityPreset.original;
+
+  static AudioQualityPreset resolveStreamingDefault({
+    required AudioQualityPreset generalDefault,
+    required bool onCellularOnly,
+    required bool onRemoteConnection,
+    AudioQualityPreset? cellularDefault,
+    AudioQualityPreset? remoteDefault,
+  }) {
+    if (onCellularOnly && cellularDefault != null) return cellularDefault;
+    if (onRemoteConnection && remoteDefault != null) return remoteDefault;
+    return generalDefault;
+  }
 }

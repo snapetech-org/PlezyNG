@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Apply separate cellular and remote music streaming-quality overrides, with cellular taking precedence and unchanged original-quality offline downloads.
+
 - Add estimated per-station download storage budgets with whole-album preservation, retry validation, and accounting for already linked download bytes during scheduled refreshes.
 
 - Remember the last 20 explicitly submitted searches per profile, with one-tap replay, individual removal, and clearing. Typing alone does not save partial queries.

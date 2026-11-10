@@ -18,6 +18,20 @@ PACKAGE = 'org.snapetech.pleazyng'
 EXPIRED = 'Your 7-day trial has ended'
 
 
+def accessibility_failure_reason(stdout, stderr):
+    """Return only fixed categories, never UI text, credentials or raw errors."""
+    combined = (stdout + '\n' + stderr).lower()
+    for marker, category in (
+        ('null root node', 'null_root'),
+        ('could not get idle state', 'idle_timeout'),
+        ('permission denied', 'permission_denied'),
+        ('could not create', 'dump_file_error'),
+    ):
+        if marker in combined:
+            return category
+    return 'malformed_xml' if '<?xml' in stdout else 'no_xml'
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--serial', required=True)
@@ -29,11 +43,14 @@ def main():
     if not re.fullmatch(r'[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+', token):
         raise RuntimeError('Review grant is missing or has invalid encoding')
 
-    def adb(*command, binary=False, timeout=45):
+    def adb(*command, binary=False, timeout=45, diagnostics=False):
         try:
             result = subprocess.run(['adb', '-s', args.serial, *command], capture_output=True, timeout=timeout)
         except subprocess.TimeoutExpired:
             raise RuntimeError('ADB operation timed out') from None
+        if diagnostics:
+            return (result.stdout.decode('utf-8', errors='replace'),
+                    result.stderr.decode('utf-8', errors='replace'))
         if result.returncode:
             # A failed input command's argv/stderr could include the grant.
             raise RuntimeError('ADB operation failed')
@@ -92,32 +109,44 @@ def main():
             raise RuntimeError('Expected app launcher activity not found')
         adb('shell', 'am', 'start', '-W', '-n', component)
 
-    def ui():
+    ui_failures = {}
+
+    def note_ui_failure(category):
+        ui_failures[category] = ui_failures.get(category, 0) + 1
+        (root / 'native-ui-diagnostics.json').write_text(json.dumps({'failure_counts': ui_failures}, indent=2) + '\n')
+
+    def ui(timeout):
         # /dev/stdout streams directly through adb; no populated grant XML is
         # written to device storage, even if parsing or a command fails.
-        data = adb('exec-out', 'uiautomator', 'dump', '/dev/stdout')
+        try:
+            data, stderr = adb('exec-out', 'uiautomator', 'dump', '/dev/stdout', timeout=timeout, diagnostics=True)
+        except RuntimeError:
+            note_ui_failure('adb_timeout')
+            raise
         try:
             start = data.index('<?xml')
             end = data.index('</hierarchy>', start) + len('</hierarchy>')
             return ET.fromstring(data[start:end])
         except (ValueError, ET.ParseError):
+            note_ui_failure(accessibility_failure_reason(data, stderr))
             raise RuntimeError('Could not parse native accessibility tree') from None
 
     def labels(tree):
         return [node.get(key, '') for node in tree.iter('node') for key in ('text', 'content-desc')]
 
     def wait_for(predicate):
-        for _ in range(40):
+        deadline = time.monotonic() + 90
+        while (remaining := deadline - time.monotonic()) > 0:
             try:
-                tree = ui()
+                tree = ui(timeout=min(20, remaining))
             except RuntimeError:
                 # Fresh-boot/Flutter transitions can temporarily expose no
                 # accessibility root. Retry without logging sensitive UI XML.
-                time.sleep(1)
+                time.sleep(min(1, max(0, deadline - time.monotonic())))
                 continue
             if predicate(labels(tree)):
                 return tree
-            time.sleep(1)
+            time.sleep(min(1, max(0, deadline - time.monotonic())))
         raise RuntimeError('Expected application state did not appear')
 
     def click(tree, label):

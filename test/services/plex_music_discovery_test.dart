@@ -39,7 +39,8 @@ void main() {
     expect(requests.last.path, '/library/metadata/41/nearest');
     expect(requests.last.queryParameters['limit'], '12');
     expect(requests.last.queryParameters['maxDistance'], '0.4');
-    await client.sonicPath(libraryId: '3', startId: '41', endId: '42');
+    final path = await client.sonicPath(libraryId: '3', startId: '41', endId: '42');
+    expect(path.single.libraryId, '3');
     expect(requests.last.path, '/library/sections/3/computePath');
     expect(requests.last.queryParameters['startID'], '41');
     expect(requests.last.queryParameters['endID'], '42');

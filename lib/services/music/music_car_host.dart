@@ -340,10 +340,22 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           final matching = recipes.where((recipe) => recipe.id == id.substring(7)).toList();
           if (matching.length != 1) throw PlatformException(code: 'stale_item');
           final intent = _music.beginPlayIntent();
-          final tracks = await MusicDiscovery(
-            (item) => context.getMediaClientForItemOrNull(item),
-          ).generate(matching.single);
-          if (!mounted || !_current || !_music.isPlayIntentCurrent(intent)) return false;
+          final hidden = context.read<HiddenLibrariesProvider?>();
+          final servers = context.read<MultiServerProvider>();
+          await hidden?.ensureInitialized();
+          final batch = await MusicDiscovery((item) {
+            final server = serverIdOrNull(item.serverId);
+            if (!_current ||
+                !_music.isPlayIntentCurrent(intent) ||
+                server == null ||
+                !servers.isServerOnline(server) ||
+                (item.libraryId != null && hidden?.isLibraryHidden('$server:${item.libraryId}') == true)) {
+              return null;
+            }
+            return servers.getClientForServer(server);
+          }).generate(matching.single);
+          if (!batch.isCurrent()) return false;
+          final tracks = batch.tracks;
           if (_enqueueRequested(tracks, args)) return true;
           await _music.playFromList(
             tracks: tracks,

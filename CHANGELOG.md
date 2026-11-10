@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep mix and Sonic Adventure previews tied to their original source accounts and visible libraries. Playback, queueing, downloads and playlist saves reject a revoked preview.
+
 - Keep sequential albums gapless even when queued from a playlist. Sweet Fades follows edits to the actual queue and stays available for shuffled and mixed queues.
 
 - Transfer an eligible music queue to Chromecast from Now Playing. The receiver can advance the prepared queue after the sender disconnects, and the phone retains its queue paused after an acknowledged handoff.

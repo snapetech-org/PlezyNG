@@ -4037,7 +4037,10 @@ class PlexClient
       queryParameters: {'startID': startId, 'endID': endId},
     );
     throwIfHttpError(response);
-    return _extractMetadataList(response).map(PlexMappers.mediaItem).toList();
+    return _extractMetadataListWithLibrary(
+      response,
+      librarySectionID: int.tryParse(libraryId),
+    ).map(PlexMappers.mediaItem).toList();
   }
 
   /// Plex lyrics: sidecar `.lrc`/`.txt` files surface as track Part streams

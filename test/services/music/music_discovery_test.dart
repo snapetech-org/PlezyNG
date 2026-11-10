@@ -1,48 +1,85 @@
+import 'dart:async';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/database/app_database.dart';
+import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/media/media_server_client.dart';
 import 'package:plezy/services/music/music_discovery.dart';
 import '../../test_helpers/media_items.dart';
+import '../../test_helpers/music_experience_fakes.dart';
 
 MediaItem track(String id, {String server = 's', String library = 'lib'}) =>
     testMediaItem(id: id, serverId: server, libraryId: library, kind: MediaKind.track, title: id);
 
-class Client implements MediaServerClient, SonicMusicClient {
+class Client extends ExperienceClient {
+  Client({String server = 's'}) : serverId = ServerId(server);
+
   @override
-  final Object authenticationSessionId = Object();
+  final ServerId serverId;
   final Map<String, List<MediaItem>> mixes = {};
   final List<(String, String)> paths = [];
+  Future<List<MediaItem>> Function(String)? fetchMix;
   @override
-  Future<List<MediaItem>> fetchInstantMix(String id, {int limit = 100}) async => mixes[id] ?? [];
+  Future<List<MediaItem>> fetchInstantMix(String id, {int limit = 100}) async {
+    if (fetchMix case final fetch?) return fetch(id);
+    return mixes[id] ?? [];
+  }
+
   @override
   Future<List<MediaItem>> sonicPath({required String libraryId, required String startId, required String endId}) async {
     paths.add((startId, endId));
     return [track(startId), track('$startId-$endId'), track(endId)];
   }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
   test('multi-seed mix fairly interleaves, deduplicates and qualifies server IDs', () async {
-    final client = Client()
-      ..mixes.addAll({
-        'a': [track('one'), track('same'), track('three')],
-        'b': [track('same'), track('one', server: 'other'), track('four')],
-      });
+    final client = Client()..mixes['a'] = [track('one'), track('same'), track('same'), track('three')];
+    final other = Client(server: 'other')
+      ..mixes['b'] = [track('wrong'), track('one', server: 'other'), track('four', server: 'other')];
     final recipe = MusicRecipe(
       id: 'mix',
       title: 'Mix',
       kind: MusicRecipeKind.mix,
-      seeds: [track('a'), track('b')],
+      seeds: [
+        track('a'),
+        track('b', server: 'other'),
+      ],
       limit: 4,
     );
-    final items = await MusicDiscovery((_) => client).generate(recipe);
-    expect(items.map((t) => '${t.serverId}:${t.id}'), ['s:one', 's:same', 'other:one', 's:three']);
+    final result = await MusicDiscovery((item) => item.serverId == 's' ? client : other).generate(recipe);
+    expect(result.tracks.map((item) => '${item.serverId}:${item.id}'), ['s:one', 'other:one', 's:same', 'other:four']);
+    expect(result.isCurrent(), isTrue);
+    other.authenticationSessionId = Object();
+    expect(result.isCurrent(), isFalse);
+  });
+
+  test('a seed already fetched cannot outlive its account when another request finishes', () async {
+    final first = Client()..mixes['first'] = [track('earlier')];
+    final started = Completer<void>();
+    final response = Completer<List<MediaItem>>();
+    final later = Client(server: 'later')
+      ..fetchMix = (_) {
+        started.complete();
+        return response.future;
+      };
+    final recipe = MusicRecipe(
+      id: 'mixed',
+      title: 'Mixed',
+      kind: MusicRecipeKind.mix,
+      seeds: [
+        track('first'),
+        track('later', server: 'later'),
+      ],
+    );
+    final generation = MusicDiscovery((item) => item.serverId == 's' ? first : later).generate(recipe);
+    final rejected = expectLater(generation, throwsStateError);
+    await started.future;
+    first.authenticationSessionId = Object();
+    response.complete([track('later-row', server: 'later')]);
+    await rejected;
   });
 
   test('ordered adventure preserves all waypoints and joins shared endpoints once', () async {
@@ -53,9 +90,9 @@ void main() {
       kind: MusicRecipeKind.adventure,
       seeds: [track('a'), track('b'), track('c')],
     );
-    final items = await MusicDiscovery((_) => client).generate(recipe);
+    final result = await MusicDiscovery((_) => client).generate(recipe);
     expect(client.paths, [('a', 'b'), ('b', 'c')]);
-    expect(items.map((t) => t.id), ['a', 'a-b', 'b', 'b-c', 'c']);
+    expect(result.tracks.map((track) => track.id), ['a', 'a-b', 'b', 'b-c', 'c']);
   });
 
   test('adventure rejects cross-library seeds and never truncates its destination', () async {

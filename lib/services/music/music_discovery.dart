@@ -6,6 +6,7 @@ import '../../database/app_database.dart';
 import '../../media/media_item.dart';
 import '../../media/media_kind.dart';
 import '../../media/media_server_client.dart';
+import 'music_account_scope.dart';
 
 /// Optional protocol capability. A successful empty response means no analysis
 /// matches; authorization and transport errors must remain errors.
@@ -84,52 +85,99 @@ class MusicRecipe {
   }
 }
 
+class MusicDiscoveryBatch {
+  MusicDiscoveryBatch._(List<MediaItem> tracks, this.isCurrent) : tracks = List.unmodifiable(tracks);
+
+  final List<MediaItem> tracks;
+  final bool Function() isCurrent;
+}
+
 /// Uses only authorized clients supplied by the current profile. Every seed is
 /// qualified by server; identical local IDs on two servers never collide.
 class MusicDiscovery {
   MusicDiscovery(this.clientFor);
   final MediaServerClient? Function(MediaItem) clientFor;
 
-  Future<List<MediaItem>> generate(MusicRecipe recipe) async {
-    if (recipe.kind == MusicRecipeKind.adventure) return _adventure(recipe);
-    final pools = <List<MediaItem>>[];
+  bool _matches(MediaItem item, MediaServerClient client) =>
+      item.serverId == client.serverId.value && item.backend == client.backend && !client.isOfflineMode;
+
+  Future<MusicDiscoveryBatch> generate(MusicRecipe recipe) async {
+    final sources = <MediaItem, MediaServerClient>{};
+    final sessions = <MediaServerClient, ({Object? authentication, String account})>{};
     for (final seed in recipe.seeds) {
       final client = clientFor(seed);
-      if (client == null) throw StateError('Music server is unavailable');
-      final authentication = client.authenticationSessionId;
-      final tracks = await client.fetchInstantMix(seed.id, limit: recipe.limit);
-      if (!identical(clientFor(seed), client) || !identical(authentication, client.authenticationSessionId)) {
-        throw StateError('Music account changed during generation');
-      }
-      pools.add(tracks);
+      if (client == null || !_matches(seed, client)) throw StateError('Music server is unavailable');
+      sources[seed] = client;
+      sessions[client] = (authentication: client.authenticationSessionId, account: musicAccountScope(client));
     }
-    return interleave(pools, limit: recipe.limit);
+    bool sourcesCurrent() =>
+        sessions.entries.every(
+          (entry) =>
+              !entry.key.isOfflineMode &&
+              identical(entry.key.authenticationSessionId, entry.value.authentication) &&
+              musicAccountScope(entry.key) == entry.value.account,
+        ) &&
+        sources.entries.every((entry) => identical(clientFor(entry.key), entry.value));
+    void verify() {
+      if (!sourcesCurrent()) throw StateError('Music account changed during generation');
+    }
+
+    bool allowedTrack(MediaItem track, MediaServerClient client) =>
+        track.kind == MediaKind.track && _matches(track, client) && identical(clientFor(track), client);
+
+    final List<MediaItem> tracks;
+    if (recipe.kind == MusicRecipeKind.adventure) {
+      final client = sources[recipe.seeds.first]!;
+      tracks = await _adventure(recipe, client, verify, (track) => allowedTrack(track, client));
+    } else {
+      final pools = <List<MediaItem>>[];
+      for (final seed in recipe.seeds) {
+        final client = sources[seed]!;
+        verify();
+        final rows = await client.fetchInstantMix(seed.id, limit: recipe.limit);
+        verify();
+        pools.add(rows.take(recipe.limit).where((track) => allowedTrack(track, client)).toList());
+      }
+      tracks = interleave(pools, limit: recipe.limit);
+    }
+    final clientsByServer = {for (final client in sessions.keys) client.serverId.value: client};
+    bool resultCurrent() =>
+        sourcesCurrent() &&
+        tracks.every((track) {
+          final client = clientsByServer[track.serverId];
+          return client != null && allowedTrack(track, client);
+        });
+    if (!resultCurrent()) throw StateError('Music preview source changed');
+    return MusicDiscoveryBatch._(tracks, resultCurrent);
   }
 
-  Future<List<MediaItem>> _adventure(MusicRecipe recipe) async {
+  Future<List<MediaItem>> _adventure(
+    MusicRecipe recipe,
+    MediaServerClient client,
+    void Function() verify,
+    bool Function(MediaItem) allowedTrack,
+  ) async {
     final first = recipe.seeds.first;
     final library = first.libraryId;
     if (library == null || recipe.seeds.any((s) => s.serverId != first.serverId || s.libraryId != library)) {
       throw ArgumentError('Adventure waypoints must belong to the same music library');
     }
-    final client = clientFor(first);
     if (client is! SonicMusicClient) {
       throw UnsupportedError('This server does not support sonic paths');
     }
-    final authentication = client!.authenticationSessionId;
+    final sonic = client as SonicMusicClient;
     final result = <MediaItem>[];
     for (var i = 1; i < recipe.seeds.length; i++) {
-      final segment = await (client as SonicMusicClient).sonicPath(
+      verify();
+      final segment = await sonic.sonicPath(
         libraryId: library,
         startId: recipe.seeds[i - 1].id,
         endId: recipe.seeds[i].id,
       );
-      if (!identical(clientFor(first), client) || !identical(authentication, client.authenticationSessionId)) {
-        throw StateError('Music account changed during generation');
-      }
+      verify();
       if (segment.isEmpty) return [];
       for (final track in segment) {
-        if (track.kind != MediaKind.track) continue;
+        if (track.libraryId != library || !allowedTrack(track)) throw StateError('Invalid sonic path source');
         if (result.isEmpty || result.last.globalKey != track.globalKey) {
           result.add(track);
         }

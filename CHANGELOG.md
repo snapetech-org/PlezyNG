@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Link the C++ runtime in every production iOS emulator-worker configuration, and verify that setting without a qualification-only linker workaround. Keep the release controller alive across bounded retries of transient GitHub inventory failures.
+
 - Automatically deliver every complete fresh release to the configured Google Play testing track, verify the committed bundle, preserve interrupted uploads for retry, and serialize release builds and app-wide Play edits. Retire the old v3.0.7 store-repack workflows.
 
 - Support task-owned GitHub-hosted Apple source workspaces in AppleDouble cleanup while retaining exact run/source checks and the private NFS ownership fence.

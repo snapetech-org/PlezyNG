@@ -24,6 +24,10 @@ phase = host.copy_files_build_phases.find { |value| value.name == 'Embed Romm Ex
 raise 'Wrong extension packaging destination' unless phase && phase.dst_subfolder_spec == '16' &&
   phase.dst_path == '$(EXTENSIONS_FOLDER_PATH)' && phase.files.size == 1
 raise 'Missing profile build' unless worker.build_configurations.map(&:name).include?('Profile')
+worker.build_configurations.each do |config|
+  flags = config.build_settings['OTHER_LDFLAGS'] || []
+  raise "Worker C++ runtime missing in #{config.name}" unless flags.include?('-lc++') && flags.include?('$(inherited)')
+end
 
 # Link the production worker into its real extension target. The verification
 # project omits app-only Pods and uses the already-built simulator framework.
@@ -46,7 +50,6 @@ worker.frameworks_build_phase.add_file_reference(reference, true)
 worker.build_configurations.each do |config|
   config.base_configuration_reference = nil
   config.build_settings['FRAMEWORK_SEARCH_PATHS'] = [native]
-  config.build_settings['OTHER_LDFLAGS'] = ['$(inherited)', '-lc++']
   config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
   config.build_settings['FLUTTER_BUILD_NAME'] = '1.0'
   config.build_settings['FLUTTER_BUILD_NUMBER'] = '1'

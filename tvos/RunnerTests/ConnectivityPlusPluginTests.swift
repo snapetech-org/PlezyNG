@@ -222,6 +222,8 @@ final class ConnectivityPlusPluginTests: XCTestCase {
   private func drainMainQueue() {
     let drained = expectation(description: "main queue drained")
     DispatchQueue.main.async { drained.fulfill() }
-    wait(for: [drained], timeout: 2)
+    // This is a queue-ordering barrier, not a responsiveness benchmark.
+    // Simulator app startup can occupy the main queue for more than two seconds.
+    wait(for: [drained], timeout: 10)
   }
 }

@@ -14,6 +14,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+      - name: Verify production worker target configuration
+        run: ruby scripts/games/test_configure_romm_extension.rb
       - run: python3 scripts/games/inspect_apple_extension_sdk.py
       - name: Compile real iOS extension and native worker
         run: python3 scripts/games/verify_apple_worker.py

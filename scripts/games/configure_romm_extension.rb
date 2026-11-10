@@ -3,6 +3,7 @@
 # Connect the bundled iOS worker to the existing Xcode/CocoaPods project.
 require 'xcodeproj'
 require 'pathname'
+require 'shellwords'
 
 root = File.expand_path('../..', __dir__)
 project_path = ARGV[0] || File.join(root, 'ios/Runner.xcodeproj')
@@ -38,6 +39,13 @@ host.build_configurations.each do |config|
   config.build_settings['EX_ENABLE_EXTENSION_POINT_GENERATION'] = 'YES'
 end
 worker.build_configurations.each do |config|
+  # The Swift extension links the static C++ worker. Its host's linker flags
+  # do not propagate to this separate target.
+  flags = config.build_settings['OTHER_LDFLAGS']
+  flags = flags.is_a?(String) ? Shellwords.split(flags) : Array(flags).dup
+  flags.unshift('$(inherited)') unless flags.include?('$(inherited)')
+  flags << '-lc++' unless flags.include?('-lc++')
+  config.build_settings['OTHER_LDFLAGS'] = flags
   host_config = host.build_configurations.find { |value| value.name == config.name }
   entitlements = Pathname.new(File.join(extension_root, 'RommWorker.entitlements')).relative_path_from(base).to_s
   config.build_settings.merge!({

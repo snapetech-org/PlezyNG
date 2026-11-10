@@ -27,13 +27,20 @@ class QueueError(RuntimeError):
 
 
 def gh_json(*args: str) -> dict:
-    result = subprocess.run(
-        ["gh", *args],
-        check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
+    # All callers read run/job/runner inventories. A transient GitHub outage
+    # must not abandon the sole release controller while its jobs still run.
+    for attempt in range(4):
+        result = subprocess.run(
+            ["gh", *args],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        transient = re.search(r"\(HTTP (?:500|502|503|504)\)", result.stderr)
+        if not result.returncode or not transient or attempt == 3:
+            break
+        time.sleep(2 ** (attempt + 1))
     if result.returncode:
         detail = result.stderr.strip() or "GitHub CLI returned an error."
         raise QueueError(detail)

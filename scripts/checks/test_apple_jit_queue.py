@@ -47,6 +47,26 @@ def failed_release():
 
 
 class AppleQueueTests(unittest.TestCase):
+    def test_transient_inventory_failure_recovers_without_abandoning_the_run(self):
+        failed = subprocess.CompletedProcess([], 1, '', 'gh: Server Error (HTTP 503)')
+        success = subprocess.CompletedProcess([], 0, '{"jobs": []}', '')
+        with patch.object(queue.subprocess, 'run', side_effect=[failed, success]) as read, \
+                patch.object(queue.time, 'sleep') as sleep:
+            self.assertEqual(queue.gh_json('api', 'repos/example/actions/jobs'), {'jobs': []})
+        self.assertEqual(read.call_count, 2)
+        sleep.assert_called_once_with(2)
+
+    def test_inventory_outage_retries_are_bounded_and_auth_failures_are_immediate(self):
+        for status, attempts in ((503, 4), (403, 1)):
+            failed = subprocess.CompletedProcess([], 1, '', f'gh: Server Error (HTTP {status})')
+            with self.subTest(status=status), \
+                    patch.object(queue.subprocess, 'run', return_value=failed) as read, \
+                    patch.object(queue.time, 'sleep') as sleep:
+                with self.assertRaises(queue.QueueError):
+                    queue.gh_json('api', 'repos/example/actions/jobs')
+                self.assertEqual(read.call_count, attempts)
+                self.assertEqual(sleep.call_count, attempts - 1)
+
     def test_skipped_apple_jobs_have_no_logs_to_fetch_or_retry(self):
         with tempfile.TemporaryDirectory() as scratch, patch.object(queue.subprocess, 'run') as fetch:
             queue.save_github_logs('42', [{**apple_job('completed'), 'conclusion': 'skipped'}], Path(scratch))

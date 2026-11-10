@@ -29,7 +29,11 @@ An already published SHA does not rebuild.
    used; no personal media or credentials enter the guest.
 3. The channel controller checks the qualified handoff, publishes immutable
    prerelease assets, verifies GitHub's asset digests, then commits the recipe,
-   live index and last-good receipt together. Failed builds, tests, uploads or
+   live index and last-good receipt together. Each snapshot carries a durable
+   `qa-evidence.tar.gz` with screenshots, measurements, logs and original audio
+   capture. Its playable audio copy repairs only QEMU placeholder WAV lengths;
+   sample bytes are unchanged. Native failures retain app cores and audio in
+   the diagnostic artifact. Failed builds, tests, uploads or
    pushes leave the live index unchanged.
 
 The package release counter advances even when the app version stays the same.

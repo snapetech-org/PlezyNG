@@ -48,7 +48,7 @@ class RecipePreparationTests(unittest.TestCase):
                 self.assertNotIn('edde746', text)
             for name in ('LICENSE', 'org.snapetech.pleazyng.desktop', 'relocate-caches.py',
                          'install-webkit-helpers.py', 'webkit-runtime.json', 'rebuild-pixbuf-cache.py',
-                         'normalize-bundle-rpaths.py'):
+                         'normalize-bundle-rpaths.py', 'rebuild-im-cache.py'):
                 self.assertTrue((output / 'aerynos/pkg' / name).is_file())
             with self.assertRaises(FileExistsError):
                 recipes.prepare('v3.0.7', checksums, output)

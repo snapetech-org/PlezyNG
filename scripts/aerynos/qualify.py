@@ -157,6 +157,9 @@ class AppQA:
         time.sleep(0.3)
         self.text('maestro')
         time.sleep(0.3)
+        if self.ui('length', 'Password') != len('maestro'):
+            self.guest.screenshot(self.evidence / 'password-input-failed.png')
+            raise RuntimeError('Ordinary protected-field keyboard input failed')
         self.ui('click', 'Sign in')
         self.finish_sign_in()
 
@@ -285,7 +288,7 @@ def qualify(args):
     if not re.fullmatch(r'\d+\.\d+\.\d+', version) or not re.fullmatch(r'[0-9a-f]{40}', build['source_sha']):
         raise ValueError('Invalid source version or SHA')
     tag = f'main-{build["source_sha"][:12]}-r{args.release}'
-    run([sys.executable, source / 'scripts/prepare_linux_channel_recipes.py', '--channel', 'aerynos', '--tag', 'v' + version,
+    run([sys.executable, HERE.parents[1] / 'scripts/prepare_linux_channel_recipes.py', '--channel', 'aerynos', '--tag', 'v' + version,
          '--checksums', candidate / 'SHA256SUMS.txt', '--output', output / 'prepared'])
     recipe = output / 'prepared/aerynos'
     text = (recipe / 'stone.yaml').read_text()
@@ -336,6 +339,7 @@ def qualify(args):
         (output / 'stone.index').write_bytes(guest.ssh(f'cat {packages}/stone.index').stdout)
         guest.put(HERE / 'check_installed.py', '/root/check-installed.py')
         command(guest, 'python3 /root/check-installed.py /usr/lib/pleazyng /root/recipe/pkg/normalize-bundle-rpaths.py', evidence / 'installed-elf.json')
+        command(guest, 'test -s /usr/lib/pleazyng/lib/gtk-3.0/3.0.0/immodules.cache', evidence / 'im-cache.log')
         app = AppQA(guest, evidence)
         print('Testing ordinary installed release application', flush=True)
         app.login_desktop()
@@ -349,7 +353,8 @@ def qualify(args):
         # All publication claims must correspond to checks actually executed above.
         qualification = {'source_sha': build['source_sha'], 'version': build['version'], 'release': args.release, 'tag': tag,
                          'iso_sha256': ISO_SHA256, 'status': 'qualified',
-                         'checks': ['native_boulder_build', 'native_moss_install', 'native_moss_upgrade', 'installed_elf', 'ordinary_release_launch',
+                         'recipe_tooling_sha': run(['git', '-C', HERE.parents[1], 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip(),
+                         'checks': ['native_boulder_build', 'native_moss_install', 'native_moss_upgrade', 'installed_elf', 'bundled_im_cache', 'ordinary_release_launch',
                                     'jellyfin_sign_in', 'dv_default_on', 'fallback_default_on', 'visible_h264', 'pause', 'seek', 'fullscreen'],
                          'not_qualified': ['physical HDR/Dolby Vision output', 'FEL reference picture accuracy', 'physical GPU/NPU execution'],
                          'stone': names[0], 'stone_sha256': digest(output / names[0]), 'build': build, 'baseline': baseline,

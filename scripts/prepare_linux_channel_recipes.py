@@ -81,6 +81,9 @@ def prepare(tag: str, checksums: Path, output: Path, channel: str = "all") -> No
         for name in ('webkit-runtime.json', 'install-webkit-helpers.py', 'rebuild-pixbuf-cache.py'):
             files[f'{support}/{name}'] = (ROOT / 'linux/packaging' / name).read_bytes()
         if channel == "aerynos":
+            files[f"{support}/rebuild-im-cache.py"] = (
+                ROOT / "linux/packaging/aerynos/rebuild-im-cache.py"
+            ).read_bytes()
             files[f"{support}/normalize-bundle-rpaths.py"] = (
                 ROOT / "linux/packaging/normalize-bundle-rpaths.py"
             ).read_bytes()

@@ -33,6 +33,7 @@ builddeps   :
     - binary(tar)
     - binary(zstd)
     - pkgconfig(gdk-pixbuf-2.0)
+    - binary(gtk-query-immodules-3.0)
 rundeps     :
     - binary(bash)
     - binary(bwrap)
@@ -55,6 +56,8 @@ install     : |
         patchelf --set-rpath %(libdir)/pleazyng/lib "$helper"
     done
     python3 %(pkgdir)/rebuild-pixbuf-cache.py "$bundle" \
+        --runtime-prefix %(libdir)/pleazyng
+    python3 %(pkgdir)/rebuild-im-cache.py "$bundle" \
         --runtime-prefix %(libdir)/pleazyng
     python3 %(pkgdir)/relocate-caches.py "$bundle" \
         --runtime-prefix %(libdir)/pleazyng

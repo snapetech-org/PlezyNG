@@ -68,6 +68,8 @@ def main():
             raise RuntimeError('No activation action for ' + label)
     elif command == 'fill':
         result = node.get_editable_text_iface().set_text_contents(sys.argv[3])
+    elif command == 'length':
+        result = node.get_text_iface().get_character_count()
     elif command == 'state':
         result = node.get_state_set().contains(Atspi.StateType.CHECKED)
     else:

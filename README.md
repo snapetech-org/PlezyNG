@@ -510,7 +510,7 @@ This list covers the current Pleazyng codebase, including additions since the fo
 [^connect]: Requires connecting the service under Settings > Services.
 [^hdr]: In-app HDR toggle on Windows, macOS, iOS, tvOS, and Linux — Linux needs a colour-managed Wayland compositor. Dolby Vision on Android, macOS, and Apple TV.
 [^pass]: Desktop, Android TV, and Apple TV.
-[^mpv]: Requires mpv's GPU renderer — unavailable on iOS, tvOS, and macOS, and Android defaults to ExoPlayer.
+[^mpv]: Requires MPV; Android defaults to ExoPlayer. Apple GLSL presets and ambient lighting use the AVFoundation shader stage, which skips Dolby Vision and composited picture-in-picture frames. See [playback compositor behavior](docs/plezyng/playback-compositor.md).
 [^pip]: Android, iOS, and macOS — not on Android TV or Apple TV.
 [^rrm]: Windows, Android, tvOS, and fullscreen macOS playback where supported by the active display.
 [^android]: Progress sync on Android.

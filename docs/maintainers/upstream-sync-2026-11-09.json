@@ -6,11 +6,11 @@
   "reviewed_snapshot": "738e18fdc552ace910dedabf6e689ab74e1dae58",
   "license_blob": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
   "disposition_counts": {
-    "excluded": 6,
-    "covered": 24,
     "retained": 8,
-    "adapted": 23,
-    "native-pending": 3
+    "covered": 24,
+    "adapted": 26,
+    "excluded": 6,
+    "native-pending": 0
   },
   "entries": [
     {
@@ -621,8 +621,8 @@
         "url": "https://github.com/edde746"
       },
       "subject": "fix(player): keep Dolby Vision letterbox bars black on Amlogic boxes with mpv",
-      "disposition": "native-pending",
-      "evidence": "Not shipped: Amlogic transparent letterbox control needs vo-mediacodec-letterbox-fill, absent from the active fork engine patch. Keep existing output behavior until its engine implementation is integrated.",
+      "disposition": "adapted",
+      "evidence": "Independently adapted Amlogic transparent letterboxing with the Amazon exception. Normal Android engine 6168c50b5c17 and AAR 82ace919fd97 include the native option; all four ABIs were built and inspected, and API-36 Android TV JNI read/write and playback lifecycle checks passed. Physical Dolby Vision black levels remain hardware-specific qualification.",
       "files": [
         "android/app/src/main/kotlin/com/edde746/plezy/mpv/MpvPlayerCore.kt",
         "android/app/src/main/kotlin/com/edde746/plezy/shared/DeviceQuirks.kt",
@@ -830,8 +830,8 @@
         "url": "https://github.com/edde746"
       },
       "subject": "feat(player): enable shaders and ambient lighting on iOS, tvOS and macOS",
-      "disposition": "native-pending",
-      "evidence": "Not shipped: the active fork AVFoundation patch lacks the GLSL stage. Keep the platform capability gate until that native implementation is packaged and validated.",
+      "disposition": "adapted",
+      "evidence": "Independently enabled Apple MPV shader presets and ambient lighting with normal Libmpv 93fdd133cea1. All six Apple platform groups were built, every packaged architecture passed the real-stage check, and iOS/tvOS consumers linked. Real Mac M4 playback exercised hardware decoding, GLSL, stretched output and shutdown; the discovered embedded Cocoa initialization deadlock was fixed. Dolby Vision and other documented runtime exclusions remain explicit.",
       "files": [
         "README.md",
         "lib/screens/settings/keyboard_shortcuts_screen.dart",
@@ -1140,8 +1140,8 @@
         "url": "https://github.com/edde746"
       },
       "subject": "fix(subtitles): line mpv subtitles up with their picture on Amlogic and MediaTek TV boxes",
-      "disposition": "native-pending",
-      "evidence": "Not shipped: the fork exposes the delay option but lacks the active per-video-frame repeat patch required to avoid Amlogic judder. Do not enable the delay from app code alone.",
+      "disposition": "adapted",
+      "evidence": "Independently adapted the one-refresh subtitle offset for Amlogic and MediaTek TV devices after integrating early queueing and per-video-frame repetition into the normal Android/FEL engine. Scheduler, unchanged-content, rebind and runtime JNI range checks passed. Phones and unknown SoCs retain zero delay; physical TV scanout timing remains hardware-specific qualification.",
       "files": [
         "android/app/src/main/kotlin/com/edde746/plezy/mpv/MpvPlayerCore.kt",
         "android/app/src/main/kotlin/com/edde746/plezy/shared/DeviceQuirks.kt",

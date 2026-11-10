@@ -22,9 +22,6 @@ void main() {
     root = await Directory.systemTemp.createTemp('plezy_shader_service_test_');
     PathProviderPlatform.instance = FakePathProvider(root);
     ShaderAssetLoader.clearCache();
-    // The suite exercises mpv's GLSL chain, which the Apple hosts' avfoundation
-    // VO does not have.
-    ShaderService.debugPlatformSupported = true;
   });
 
   tearDown(() async {

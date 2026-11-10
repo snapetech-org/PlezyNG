@@ -19,7 +19,6 @@ void main() {
     originalPathProvider = PathProviderPlatform.instance;
     temporaryRoot = Directory.systemTemp.createTempSync('plezy_ambient_test_');
     PathProviderPlatform.instance = FakePathProvider(temporaryRoot);
-    ShaderService.debugPlatformSupported = true;
   });
 
   tearDown(() {

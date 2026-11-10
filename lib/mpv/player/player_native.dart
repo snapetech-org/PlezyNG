@@ -485,10 +485,9 @@ class PlayerNative extends PlayerBase
       // choose its vo before mpv_initialize, and the subtitle "Render
       // Resolution" fraction for its vo=mediacodec OSD plane (the same knob the
       // ExoPlayer overlay honors; other platforms size the OSD themselves).
-      // The OSD plane is presented on the video's own timestamp: shifting it
-      // by a display period put it on the vsync Amlogic's compositor latches
-      // the next picture on and pushed that picture a vsync late (a 4:1 hold
-      // pair every couple of seconds of 24p on 60 Hz). `instanceId` names
+      // The core chooses a device-specific subtitle-plane delay. The native
+      // scheduler repeats unchanged subtitles per video frame, preventing the
+      // delayed plane from disturbing the picture cadence. `instanceId` names
       // this Dart instance so a later `dispose` that lost the ownership race
       // is provably stale; handlers that predate any of these arguments
       // ignore them.

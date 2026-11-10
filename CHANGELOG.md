@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add an explicitly negotiated two-device music synchronization group over authenticated companion pairing: receiver preflight, monotonic clock-offset sampling, sequenced playhead anchors, drift correction, heartbeat expiry, and lease-bound teardown. Queue/mode replacement ends the group; arbitrary multi-endpoint grouping and acoustic latency qualification remain separate.
+
 - Bind Cast loads to profile/authentication and matching receiver media-session acknowledgements, serialize competing loads, and retire progress/control ownership when another sender replaces the media.
 
 - Write durable music links to writable Android NFC tags from music details, with explicit scanning/cancellation, tag-capacity checks, optional hardware support, and credential-free NDEF records resolved through normal profile authorization when scanned.

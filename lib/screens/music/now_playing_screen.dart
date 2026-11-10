@@ -847,6 +847,21 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
       key: contextMenuKey,
       item: track,
       extraEntries: [
+        if (companion.supportsMusicGroup)
+          MediaMenuExtraEntry(
+            icon: Symbols.speaker_group_rounded,
+            label: companion.musicGroupActive
+                ? '${t.common.cancel} · ${t.homeLayout.sync}'
+                : '${t.homeLayout.sync}: ${companion.connectedDevice?.name ?? t.companionRemote.unknownDevice}',
+            onSelected: () async {
+              if (companion.musicGroupActive) {
+                companion.leaveMusicGroup();
+              } else {
+                final joined = await companion.startMusicGroup();
+                if (mounted) showAppSnackBar(context, joined ? t.watchTogether.connected : t.musicExperience.error);
+              }
+            },
+          ),
         MediaMenuExtraEntry(
           icon: Symbols.library_music_rounded,
           label: t.musicTools.home,

@@ -8,6 +8,7 @@ import '../../utils/app_logger.dart';
 import '../../utils/serial_future_queue.dart';
 import 'music_library_store.dart';
 import 'music_playback_service.dart';
+import 'music_group_playback.dart';
 
 /// Counts observed playback, excluding pauses, buffering and seeks. It stores
 /// cumulative values against one occurrence UUID so retries cannot add plays.
@@ -36,6 +37,15 @@ class MusicListeningRecorder {
   bool _wasPlaying = false;
 
   void _changed() {
+    final session = service;
+    if (session is MusicGroupSession && (session as MusicGroupSession).isMusicGroupFollower) {
+      unawaited(flush(finished: true));
+      _track = null;
+      _id = null;
+      _listened = 0;
+      _resetAnchor();
+      return;
+    }
     if (_occurrence != service.playbackOccurrenceRevision || _track?.globalKey != service.currentTrack?.globalKey) {
       unawaited(flush(finished: true));
       _occurrence = service.playbackOccurrenceRevision;
@@ -59,6 +69,11 @@ class MusicListeningRecorder {
   }
 
   void _position(Duration position) {
+    final session = service;
+    if (session is MusicGroupSession && (session as MusicGroupSession).isMusicGroupFollower) {
+      _resetAnchor();
+      return;
+    }
     final time = _clock(), ms = position.inMilliseconds;
     if (service.isPlaying && _lastPosition != null && _lastClock != null) {
       final delta = ms - _lastPosition!, elapsed = time - _lastClock!;

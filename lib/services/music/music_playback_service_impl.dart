@@ -49,6 +49,7 @@ import 'music_queue_controller.dart';
 import 'music_session_store.dart';
 import 'music_source_resolver.dart';
 import 'music_transfer_snapshot.dart';
+import 'music_group_playback.dart';
 
 /// A gapless-armed next track: what [Player.setNext] was fed, so the
 /// trackTransition event can be mapped back to a queue entry and its
@@ -113,7 +114,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicAudioControls,
         MusicCacheControls,
         MusicSignalPathService,
-        MusicTransferSession {
+        MusicTransferSession,
+        MusicGroupSession {
   final MusicLibraryStore? _libraryStore;
   late final MusicByteCache? _byteCache = _libraryStore == null ? null : MusicByteCache(scope: _libraryStore.profileId);
 
@@ -393,6 +395,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   Future<void> _extendStation() {
+    if (_musicGroupFollower) return Future.value();
     if (_continuationLoading) return _continuationTask ?? Future.value();
     final seed = _continuationSeed;
     if (seed == null || _disposed || _queue.length - _queue.cursor > 12) {
@@ -647,6 +650,55 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _queueEditRevision,
       _continuationResumeRevision,
     );
+  }
+
+  @override
+  bool groupOfferCurrent(MusicTransferOffer offer) =>
+      !_disposed &&
+      _queueSessionRevision == offer.session &&
+      _queueEditRevision == offer.edit &&
+      _continuationResumeRevision == offer.transport;
+
+  @override
+  Object get groupControlRevision =>
+      (_queueSessionRevision, _queueEditRevision, _continuationResumeRevision, _generation);
+
+  bool _musicGroupFollower = false;
+  bool _resumeGroupTracking = false;
+  @override
+  bool get isMusicGroupFollower => _musicGroupFollower;
+
+  @override
+  void setMusicGroupFollower(bool follower) {
+    if (_disposed || _musicGroupFollower == follower) return;
+    if (follower) _finalizeCurrentTrack();
+    _musicGroupFollower = follower;
+    _resumeGroupTracking = !follower;
+    final track = _currentTrack;
+    final source = _currentSource;
+    if (!follower && isPlaying && track != null && source != null) {
+      _bindTrackServices(track, source);
+    }
+    notifyListeners();
+  }
+
+  @override
+  bool Function() captureGroupAuthority() {
+    final clients = <MediaServerClient, Object?>{};
+    for (final item in _queue.queue) {
+      final client = _clientFor(item);
+      if (client == null || client.isOfflineMode) return () => false;
+      clients[client] = client.authenticationSessionId;
+    }
+    return () =>
+        !_disposed &&
+        clients.isNotEmpty &&
+        clients.entries.every(
+          (entry) =>
+              identical(entry.key.authenticationSessionId, entry.value) &&
+              identical(_serverManager.getClient(entry.key.serverId), entry.key) &&
+              _serverManager.isServerVisible(entry.key.serverId),
+        );
   }
 
   @override
@@ -1885,6 +1937,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// `_wirePerItemPlaybackServices`. The previous track must already be
   /// finalized.
   void _bindTrackServices(MediaItem track, MusicSource source, {bool fadeIn = false}) {
+    _resumeGroupTracking = false;
     _playbackOccurrenceRevision++;
     if (_audioPolicy != null) _onAudioSettingsChanged();
     unawaited(_extendStation());
@@ -1937,7 +1990,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final initialDuration = track.durationMs != null ? Duration(milliseconds: track.durationMs!) : null;
 
     final client = source.reportingClient;
-    if (client != null) {
+    if (client != null && !_musicGroupFollower) {
       _tracker = PlaybackProgressTracker(
         client: client,
         metadata: track,
@@ -1950,7 +2003,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         playSessionId: source.playSessionId,
         mediaInfo: source.mediaInfo,
       )..startTracking(initialPosition: Duration.zero, initialDuration: initialDuration);
-    } else if (source.isOffline && _offlineWatchService != null) {
+    } else if (source.isOffline && _offlineWatchService != null && !_musicGroupFollower) {
       _tracker = PlaybackProgressTracker(
         client: null,
         metadata: track,
@@ -2628,6 +2681,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
     _setStatus(MusicPlaybackStatus.playing);
+    if (_resumeGroupTracking && !_musicGroupFollower && _currentTrack != null && _currentSource != null) {
+      _bindTrackServices(_currentTrack!, _currentSource!);
+    }
     // A restriction cleared the native arm on the way in; restore it so gapless
     // playback survives a park-and-resume cycle.
     if (PlatformDetector.isAutomotive()) {
@@ -2875,6 +2931,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> next() async {
+    _continuationResumeRevision++;
     final nextCursor = _queue.nextIndex(manual: true);
     if (nextCursor == null) {
       return;
@@ -2884,6 +2941,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> previous() async {
+    _continuationResumeRevision++;
     _cancelOverlap();
     final player = _player;
     if (player == null) {
@@ -3044,6 +3102,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (index < 0 || index >= _queue.length || index == _queue.cursor) {
       return;
     }
+    _continuationResumeRevision++;
     await _advanceTo(index);
   }
 

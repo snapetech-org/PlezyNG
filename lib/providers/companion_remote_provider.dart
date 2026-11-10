@@ -33,6 +33,9 @@ import '../services/companion_remote/remote_auth_service.dart';
 import '../services/companion_remote/remote_pairing_store.dart';
 import '../services/music/music_transfer_exchange.dart';
 import '../services/music/music_transfer_snapshot.dart';
+import '../services/music/music_group_exchange.dart';
+import '../services/music/music_group_playback.dart';
+import '../services/music/music_playback_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/device_identity.dart';
 import '../utils/error_message_utils.dart';
@@ -81,6 +84,9 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   MusicTransferSession? _musicSession;
   MusicTransferExchange? _musicTransfer;
   int _musicTransferVersion = 0;
+  int _musicGroupVersion = 0;
+  MusicGroupExchange? _musicGroup;
+  MusicGroupPlayback? _musicGroupPlayback;
   LanDiscoveryService? _discoveryService;
   String _deviceName = t.companionRemote.unknownDevice;
   String _platform = 'unknown';
@@ -250,20 +256,45 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   bool get supportsMusicTransfer =>
       isConnected && _musicTransferVersion == 1 && _musicTransfer != null && _musicSession != null;
 
+  bool get supportsMusicGroup =>
+      isConnected && _musicGroupVersion == 1 && _musicGroup != null && _musicGroupPlayback != null;
+  bool get musicGroupActive => _musicGroup?.active ?? false;
+  bool get musicGroupJoined => _musicGroup?.joined ?? false;
+  Future<bool> startMusicGroup() async {
+    if (!supportsMusicGroup || musicGroupActive) return false;
+    final playback = _musicGroupPlayback;
+    final group = _musicGroup;
+    await playback?.release();
+    if (!supportsMusicGroup || !identical(playback, _musicGroupPlayback) || !identical(group, _musicGroup)) {
+      return false;
+    }
+    return group!.start();
+  }
+
+  void leaveMusicGroup() => _musicGroup?.leave();
+
   void bindMusicSession(MusicTransferSession session) {
     if (identical(_musicSession, session)) return;
+    _musicGroup?.leave();
     _musicSession = session;
+    _musicGroupPlayback = session is MusicGroupSession && session is MusicPlaybackService
+        ? MusicGroupPlayback(session as MusicPlaybackService, session)
+        : null;
   }
 
   void unbindMusicSession(MusicTransferSession session) {
     if (!identical(_musicSession, session)) return;
+    _musicGroup?.leave();
+    _musicGroupPlayback = null;
     _musicSession = null;
   }
 
   Future<MusicTransferResult> transferMusicToPeer() async {
     final session = _musicSession;
     final exchange = _musicTransfer;
-    if (!supportsMusicTransfer || session == null || exchange == null) return MusicTransferResult.unavailable;
+    if (!supportsMusicTransfer || musicGroupActive || session == null || exchange == null) {
+      return MusicTransferResult.unavailable;
+    }
     final offer = session.offerTransfer();
     if (offer == null) return MusicTransferResult.unavailable;
     if (!await exchange.request(offer.snapshot)) return MusicTransferResult.rejected;
@@ -1094,11 +1125,38 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     // synchronously cancels these subscriptions.
     _cleanupSubscriptions();
     final profileId = _cryptoProfileId;
+    _musicGroup = MusicGroupExchange(
+      allowed: () =>
+          _ownsPeer(peer, generation) &&
+          isConnected &&
+          _musicGroupVersion == 1 &&
+          profileId != null &&
+          profileId == _cryptoProfileId &&
+          _musicGroupPlayback != null,
+      capture: () => _musicGroupPlayback?.capture(),
+      prepare: (snapshot, current) {
+        final playback = _musicGroupPlayback;
+        if (playback == null) return Future.value(false);
+        return playback.prepare(snapshot, () => current() && identical(playback, _musicGroupPlayback));
+      },
+      align: (snapshot, current) {
+        final playback = _musicGroupPlayback;
+        if (playback == null) return Future.value(false);
+        return playback.align(snapshot, () => current() && identical(playback, _musicGroupPlayback));
+      },
+      release: () => _musicGroupPlayback?.release() ?? Future.value(),
+      send: (data) {
+        if (_ownsPeer(peer, generation)) {
+          peer.sendCommand(RemoteCommand(type: RemoteCommandType.musicGroup, data: data));
+        }
+      },
+      changed: safeNotifyListeners,
+    );
     _musicTransfer = MusicTransferExchange(
       allowed: () => _ownsPeer(peer, generation) && isConnected && profileId != null && profileId == _cryptoProfileId,
       accept: (snapshot, current) {
         final session = _musicSession;
-        if (session == null || !current()) return Future.value(false);
+        if (session == null || !current() || musicGroupActive) return Future.value(false);
         return session.acceptTransfer(snapshot, current: () => current() && identical(_musicSession, session));
       },
       send: (data) {
@@ -1201,6 +1259,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
           _gameSessions?.receive(command.data);
         } else if (command.type == RemoteCommandType.musicTransfer) {
           _musicTransfer?.receive(command.data);
+        } else if (command.type == RemoteCommandType.musicGroup) {
+          _musicGroup?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameCloudSetting) {
           _cloudSettings?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameAction) {
@@ -1241,6 +1301,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
       if (!_ownsPeer(peer, generation)) return;
       _musicTransfer?.reset();
       _musicTransferVersion = 0;
+      _musicGroup?.leave(notifyPeer: false);
+      _musicGroupVersion = 0;
       _gameInventory?.reset();
       _cloudSettings?.reset();
       _gameActions?.reset();
@@ -1300,6 +1362,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _handleDeviceInfo(RemoteCommand command) {
+    _musicGroupVersion = command.data?['musicGroupVersion'] == 1 ? 1 : 0;
+    if (_musicGroupVersion == 0) _musicGroup?.leave(notifyPeer: false);
     _musicTransferVersion = command.data?['musicTransferVersion'] == 1 ? 1 : 0;
     _gameSessionVersion = command.data?['gameSessionVersion'] == 1 ? 1 : 0;
     _cloudSettingsSupported = command.data?['gameCloudSettingVersion'] == 1;
@@ -1330,6 +1394,9 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _cleanupSubscriptions() {
+    _musicGroup?.close();
+    _musicGroup = null;
+    _musicGroupVersion = 0;
     _musicTransfer?.close();
     _musicTransfer = null;
     _musicTransferVersion = 0;

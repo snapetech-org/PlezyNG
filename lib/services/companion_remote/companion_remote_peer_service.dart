@@ -1391,6 +1391,7 @@ class CompanionRemotePeerService with KeepaliveMixin {
           'gameActionKinds': SteamHostAction.values.map((action) => action.name).toList(growable: false),
           'gameSessionVersion': 1,
           'musicTransferVersion': 1,
+          'musicGroupVersion': 1,
           if (supportsLocalSteamCloudSettings) 'gameCloudSettingVersion': 1,
         },
       ),

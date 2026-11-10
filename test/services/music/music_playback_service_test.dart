@@ -39,6 +39,7 @@ import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_session_store.dart';
 import 'package:plezy/services/music/music_source_resolver.dart';
 import 'package:plezy/services/music/music_transfer_snapshot.dart';
+import 'package:plezy/services/music/music_group_playback.dart';
 import 'package:plezy/services/offline_watch_sync_service.dart';
 import 'package:plezy/services/playback_coordinator.dart';
 import 'package:plezy/services/settings_service.dart';
@@ -1475,6 +1476,56 @@ void main() {
       expect(h.service.playContext?.title, 'Transferred mix');
       expect(h.player.openStarts.last, const Duration(seconds: 42));
       expect(h.resolver.resolveCounts['t1'], 1, reason: 'preflight source is reused for open');
+    });
+
+    test('group follows duplicate occurrences and local edits revoke its lease', () async {
+      final group = MusicGroupPlayback(h.service, h.service);
+      final initial = transfer();
+      expect(await group.prepare(initial, () => true), isTrue);
+      final anchor = MusicTransferSnapshot(
+        queue: initial.queue,
+        position: const Duration(seconds: 45),
+        playing: true,
+        playContext: initial.playContext,
+      );
+      expect(await group.align(anchor, () => true), isTrue);
+      expect(h.service.isPlaying, isTrue);
+      expect(h.service.currentIndex, 1);
+      expect(h.service.position, const Duration(seconds: 45));
+      await pumpEventQueue();
+      expect(h.client.reports, isEmpty, reason: 'only the group leader reports listening progress');
+      await h.service.next();
+      expect(await group.align(anchor, () => true), isFalse);
+      await group.release();
+      expect(h.service.isPlaying, isTrue, reason: 'local transport owns the newer playback');
+    });
+
+    test('group release pauses only the receiver queue it still owns', () async {
+      final group = MusicGroupPlayback(h.service, h.service);
+      final initial = transfer();
+      expect(await group.prepare(initial, () => true), isTrue);
+      expect(
+        await group.align(
+          MusicTransferSnapshot(queue: initial.queue, position: initial.position, playing: true),
+          () => true,
+        ),
+        isTrue,
+      );
+      await group.release();
+      expect(h.service.isPlaying, isFalse);
+    });
+
+    test('account replacement revokes group correction and pauses the old owned source', () async {
+      final group = MusicGroupPlayback(h.service, h.service);
+      final initial = transfer();
+      expect(await group.prepare(initial, () => true), isTrue);
+      final anchor = MusicTransferSnapshot(queue: initial.queue, position: initial.position, playing: true);
+      expect(await group.align(anchor, () => true), isTrue);
+      h.serverManager.debugRegisterClientForTesting(FakeMediaServerClient());
+      expect(await group.align(anchor, () => true), isFalse);
+      await group.release();
+      expect(h.service.isPlaying, isFalse);
+      expect(h.service.isMusicGroupFollower, isFalse);
     });
 
     test('acknowledges a playing transfer only after the receiver opens it', () async {

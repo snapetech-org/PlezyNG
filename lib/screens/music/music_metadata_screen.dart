@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/strings.g.dart';
@@ -10,7 +13,10 @@ import '../../providers/multi_server_provider.dart';
 import '../../services/music/music_account_scope.dart';
 import '../../services/music/music_experience.dart';
 import '../../services/music/music_metadata.dart';
+import '../../services/music/music_nfc_writer.dart';
 import '../../utils/formatters.dart';
+import '../../utils/snackbar_helper.dart';
+import '../../widgets/app_icon.dart';
 
 class MusicMetadataScreen extends StatefulWidget {
   const MusicMetadataScreen({super.key, required this.item});
@@ -32,6 +38,47 @@ class _MusicMetadataScreenState extends State<MusicMetadataScreen> {
   MediaServerClient? _client;
   Object? _authentication;
   String? _scope;
+  static const _nfc = MusicNfcWriter();
+  late final Future<bool> _nfcAvailable = _nfc.available;
+  bool _writing = false;
+
+  Future<void> _writeNfc() async {
+    if (_writing || !_sourceCurrent) return;
+    setState(() => _writing = true);
+    final navigator = Navigator.of(context);
+    late final DialogRoute<void> route;
+    route = DialogRoute<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          title: Text(t.musicTools.nfcWrite),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [Text(t.musicTools.nfcPrompt), const SizedBox(height: 16), const CircularProgressIndicator()],
+          ),
+          actions: [TextButton(onPressed: () => _nfc.cancel(), child: Text(t.common.cancel))],
+        ),
+      ),
+    );
+    unawaited(navigator.push(route));
+    try {
+      final written = await _nfc.write(widget.item);
+      if (mounted && _sourceCurrent && written) showAppSnackBar(context, t.rateSheet.saved);
+    } catch (_) {
+      if (mounted && _sourceCurrent) showAppSnackBar(context, t.musicExperience.error);
+    } finally {
+      if (route.isActive) navigator.removeRoute(route);
+      if (mounted) setState(() => _writing = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_writing) unawaited(_nfc.cancel());
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -63,7 +110,21 @@ class _MusicMetadataScreenState extends State<MusicMetadataScreen> {
     context.watch<HiddenLibrariesProvider>();
     context.watch<MultiServerProvider>();
     return Scaffold(
-      appBar: AppBar(title: Text(t.mediaMenu.viewDetails)),
+      appBar: AppBar(
+        title: Text(t.mediaMenu.viewDetails),
+        actions: [
+          FutureBuilder<bool>(
+            future: _nfcAvailable,
+            builder: (context, snapshot) => snapshot.data == true
+                ? IconButton(
+                    tooltip: t.musicTools.nfcWrite,
+                    icon: const AppIcon(Symbols.nfc_rounded),
+                    onPressed: _writing || !_sourceCurrent ? null : _writeNfc,
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
       body: FutureBuilder<MediaItem>(
         future: _details,
         builder: (context, snapshot) {

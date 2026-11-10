@@ -4385,6 +4385,8 @@ class Translations$musicTools$es extends Translations$musicTools$en {
 	final TranslationsEs _root; // ignore: unused_field
 
 	// Translations
+	@override String get nfcWrite => 'Escribir etiqueta NFC';
+	@override String get nfcPrompt => 'Acerca una etiqueta NFC grabable al teléfono.';
 	@override String get storageBudget => 'Presupuesto estimado de descarga (MiB; 0 = ∞)';
 	@override String get guestDj => 'DJ invitado';
 	@override String get charts => 'Estadísticas de escucha';
@@ -9680,6 +9682,8 @@ extension on TranslationsEs {
 			_ => null,
 		} ?? switch (path) {
 			'musicExperience.routeHint' => 'El sistema del coche decide si la aplicación puede aparecer automáticamente.',
+			'musicTools.nfcWrite' => 'Escribir etiqueta NFC',
+			'musicTools.nfcPrompt' => 'Acerca una etiqueta NFC grabable al teléfono.',
 			'musicTools.storageBudget' => 'Presupuesto estimado de descarga (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'DJ invitado',
 			'musicTools.charts' => 'Estadísticas de escucha',

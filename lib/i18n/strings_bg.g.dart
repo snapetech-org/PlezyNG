@@ -4295,6 +4295,8 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	final TranslationsBg _root; // ignore: unused_field
 
 	// Translations
+	@override String get nfcWrite => 'Запис на NFC етикет';
+	@override String get nfcPrompt => 'Дръжте NFC етикет с възможност за запис близо до телефона.';
 	@override String get storageBudget => 'Приблизителен бюджет за изтегляне (MiB; 0 = ∞)';
 	@override String get guestDj => 'Гостуващ диджей';
 	@override String get charts => 'Класации на слушане';
@@ -9454,6 +9456,8 @@ extension on TranslationsBg {
 			'musicExperience.routeLost' => 'Аудиоизходът е прекъснат. Възпроизвеждането е на пауза.',
 			'musicExperience.autoDriving' => 'Отваряне на изгледа за шофиране при свързване с кола',
 			'musicExperience.routeHint' => 'Системата на колата определя дали приложението може да се показва автоматично.',
+			'musicTools.nfcWrite' => 'Запис на NFC етикет',
+			'musicTools.nfcPrompt' => 'Дръжте NFC етикет с възможност за запис близо до телефона.',
 			'musicTools.storageBudget' => 'Приблизителен бюджет за изтегляне (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Гостуващ диджей',
 			'musicTools.charts' => 'Класации на слушане',

@@ -5520,6 +5520,8 @@
     "routeHint": "Bilens system avgör om appen kan visas automatiskt."
   },
   "musicTools": {
+    "nfcWrite": "Skriv NFC-tagg",
+    "nfcPrompt": "Håll en skrivbar NFC-tagg nära telefonen.",
     "storageBudget": "Uppskattad nedladdningsgräns (MiB; 0 = ∞)",
     "guestDj": "Gäst-DJ",
     "charts": "Lyssningslistor",

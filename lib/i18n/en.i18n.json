@@ -5598,6 +5598,8 @@
     "routeHint": "The car system controls whether the app can appear automatically."
   },
   "musicTools": {
+    "nfcWrite": "Write NFC tag",
+    "nfcPrompt": "Hold a writable NFC tag near your phone.",
     "storageBudget": "Estimated download budget (MiB; 0 = ∞)",
     "transferToDevice": "Transfer music to ${device}",
     "guestDj": "Guest DJ",

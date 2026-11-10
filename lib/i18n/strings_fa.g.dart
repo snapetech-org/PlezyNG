@@ -4295,6 +4295,8 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	final TranslationsFa _root; // ignore: unused_field
 
 	// Translations
+	@override String get nfcWrite => 'نوشتن برچسب NFC';
+	@override String get nfcPrompt => 'یک برچسب NFC قابل نوشتن را نزدیک تلفن نگه دارید.';
 	@override String get storageBudget => 'سقف تخمینی دانلود (MiB; 0 = ∞)';
 	@override String get guestDj => 'دی‌جی مهمان';
 	@override String get charts => 'آمار شنیدن';
@@ -9454,6 +9456,8 @@ extension on TranslationsFa {
 			'musicExperience.routeLost' => 'خروجی صدا قطع شد. پخش مکث شد.',
 			'musicExperience.autoDriving' => 'باز کردن نمای رانندگی هنگام اتصال به خودرو',
 			'musicExperience.routeHint' => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.',
+			'musicTools.nfcWrite' => 'نوشتن برچسب NFC',
+			'musicTools.nfcPrompt' => 'یک برچسب NFC قابل نوشتن را نزدیک تلفن نگه دارید.',
 			'musicTools.storageBudget' => 'سقف تخمینی دانلود (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'دی‌جی مهمان',
 			'musicTools.charts' => 'آمار شنیدن',

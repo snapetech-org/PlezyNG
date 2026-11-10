@@ -5515,6 +5515,8 @@
     "routeHint": "是否允许自动显示应用由汽车系统决定。"
   },
   "musicTools": {
+    "nfcWrite": "写入 NFC 标签",
+    "nfcPrompt": "请将可写入的 NFC 标签靠近手机。",
     "storageBudget": "预计下载容量上限 (MiB; 0 = ∞)",
     "guestDj": "客座 DJ",
     "charts": "收听排行",

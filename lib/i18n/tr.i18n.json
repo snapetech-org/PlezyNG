@@ -5520,6 +5520,8 @@
     "routeHint": "Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler."
   },
   "musicTools": {
+    "nfcWrite": "NFC etiketi yaz",
+    "nfcPrompt": "Yazılabilir bir NFC etiketini telefonunuza yaklaştırın.",
     "storageBudget": "Tahmini indirme sınırı (MiB; 0 = ∞)",
     "guestDj": "Konuk DJ",
     "charts": "Dinleme listeleri",

@@ -5520,6 +5520,8 @@
     "routeHint": "Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir."
   },
   "musicTools": {
+    "nfcWrite": "NFC etiketinə yaz",
+    "nfcPrompt": "Yazıla bilən NFC etiketini telefonunuza yaxın tutun.",
     "storageBudget": "Təxmini endirmə büdcəsi (MiB; 0 = ∞)",
     "guestDj": "Qonaq DJ",
     "charts": "Dinləmə reytinqləri",

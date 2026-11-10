@@ -5520,6 +5520,8 @@
     "routeHint": "Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi."
   },
   "musicTools": {
+    "nfcWrite": "NFC tegiga yozish",
+    "nfcPrompt": "Yoziladigan NFC tegini telefoningizga yaqin tuting.",
     "storageBudget": "Taxminiy yuklab olish chegarasi (MiB; 0 = ∞)",
     "guestDj": "Mehmon DJ",
     "charts": "Tinglash reytingi",

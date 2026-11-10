@@ -5529,6 +5529,8 @@
     "routeHint": "Il sistema dell’auto decide se l’app può apparire automaticamente."
   },
   "musicTools": {
+    "nfcWrite": "Scrivi tag NFC",
+    "nfcPrompt": "Avvicina un tag NFC scrivibile al telefono.",
     "storageBudget": "Limite stimato di download (MiB; 0 = ∞)",
     "guestDj": "DJ ospite",
     "charts": "Classifiche di ascolto",

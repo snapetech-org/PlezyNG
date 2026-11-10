@@ -5568,6 +5568,8 @@
     "routeHint": "Systém auta určuje, zda se aplikace může zobrazit automaticky."
   },
   "musicTools": {
+    "nfcWrite": "Zapsat NFC štítek",
+    "nfcPrompt": "Přiložte zapisovatelný NFC štítek k telefonu.",
     "storageBudget": "Odhadovaný limit stahování (MiB; 0 = ∞)",
     "guestDj": "Hostující DJ",
     "charts": "Žebříčky poslechu",

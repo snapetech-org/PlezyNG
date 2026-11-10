@@ -5515,6 +5515,8 @@
     "routeHint": "是否允許自動顯示應用程式由汽車系統決定。"
   },
   "musicTools": {
+    "nfcWrite": "寫入 NFC 標籤",
+    "nfcPrompt": "請將可寫入的 NFC 標籤靠近手機。",
     "storageBudget": "預估下載容量上限 (MiB; 0 = ∞)",
     "guestDj": "客座 DJ",
     "charts": "聆聽排行",

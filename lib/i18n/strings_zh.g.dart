@@ -4290,6 +4290,8 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
+	@override String get nfcWrite => '写入 NFC 标签';
+	@override String get nfcPrompt => '请将可写入的 NFC 标签靠近手机。';
 	@override String get storageBudget => '预计下载容量上限 (MiB; 0 = ∞)';
 	@override String get guestDj => '客座 DJ';
 	@override String get charts => '收听排行';
@@ -9449,6 +9451,8 @@ extension on TranslationsZh {
 			'musicExperience.routeLost' => '音频输出已断开。播放已暂停。',
 			'musicExperience.autoDriving' => '连接汽车时打开驾驶界面',
 			'musicExperience.routeHint' => '是否允许自动显示应用由汽车系统决定。',
+			'musicTools.nfcWrite' => '写入 NFC 标签',
+			'musicTools.nfcPrompt' => '请将可写入的 NFC 标签靠近手机。',
 			'musicTools.storageBudget' => '预计下载容量上限 (MiB; 0 = ∞)',
 			'musicTools.guestDj' => '客座 DJ',
 			'musicTools.charts' => '收听排行',

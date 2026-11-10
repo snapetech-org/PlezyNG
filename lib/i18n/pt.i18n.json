@@ -5529,6 +5529,8 @@
     "routeHint": "O sistema do carro decide se a aplicação pode aparecer automaticamente."
   },
   "musicTools": {
+    "nfcWrite": "Gravar etiqueta NFC",
+    "nfcPrompt": "Aproxime uma etiqueta NFC gravável do telefone.",
     "storageBudget": "Limite estimado de download (MiB; 0 = ∞)",
     "guestDj": "DJ convidado",
     "charts": "Estatísticas de escuta",

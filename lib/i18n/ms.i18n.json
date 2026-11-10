@@ -5493,6 +5493,8 @@
     "routeHint": "Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik."
   },
   "musicTools": {
+    "nfcWrite": "Tulis tag NFC",
+    "nfcPrompt": "Dekatkan tag NFC yang boleh ditulis pada telefon anda.",
     "storageBudget": "Anggaran had muat turun (MiB; 0 = ∞)",
     "guestDj": "DJ jemputan",
     "charts": "Carta pendengaran",

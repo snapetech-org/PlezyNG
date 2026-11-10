@@ -5515,6 +5515,8 @@
     "routeHint": "アプリを自動表示できるかどうかは車のシステムによって決まります。"
   },
   "musicTools": {
+    "nfcWrite": "NFCタグに書き込む",
+    "nfcPrompt": "書き込み可能なNFCタグをスマートフォンに近づけてください。",
     "storageBudget": "ダウンロード容量の推定上限 (MiB; 0 = ∞)",
     "guestDj": "ゲストDJ",
     "charts": "再生ランキング",

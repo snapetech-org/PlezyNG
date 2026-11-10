@@ -4341,6 +4341,8 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
+	@override String get nfcWrite => 'Записать NFC-метку';
+	@override String get nfcPrompt => 'Поднесите доступную для записи NFC-метку к телефону.';
 	@override String get storageBudget => 'Расчётный лимит загрузки (MiB; 0 = ∞)';
 	@override String get guestDj => 'Приглашённый диджей';
 	@override String get charts => 'Статистика прослушиваний';
@@ -9504,6 +9506,8 @@ extension on TranslationsRu {
 			'musicExperience.routeLost' => 'Аудиовыход отключён. Воспроизведение приостановлено.',
 			'musicExperience.autoDriving' => 'Открывать режим вождения при подключении к машине',
 			'musicExperience.routeHint' => 'Система автомобиля определяет, может ли приложение появляться автоматически.',
+			'musicTools.nfcWrite' => 'Записать NFC-метку',
+			'musicTools.nfcPrompt' => 'Поднесите доступную для записи NFC-метку к телефону.',
 			'musicTools.storageBudget' => 'Расчётный лимит загрузки (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Приглашённый диджей',
 			'musicTools.charts' => 'Статистика прослушиваний',

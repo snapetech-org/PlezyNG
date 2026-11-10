@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Write durable music links to writable Android NFC tags from music details, with explicit scanning/cancellation, tag-capacity checks, optional hardware support, and credential-free NDEF records resolved through normal profile authorization when scanned.
+
 - Add an Android home-screen music widget with live metadata and localized transport accessibility labels. Controls use the shared profile-scoped session, reject stale widget intents, and never persist stream credentials; internal app installation is required.
 
 - Preserve server ownership when refreshing playlist metadata and bind existing smart-playlist editor loads to the profile that requested them.

@@ -4295,6 +4295,8 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	final TranslationsNl _root; // ignore: unused_field
 
 	// Translations
+	@override String get nfcWrite => 'NFC-tag schrijven';
+	@override String get nfcPrompt => 'Houd een beschrijfbare NFC-tag bij je telefoon.';
 	@override String get storageBudget => 'Geschat downloadbudget (MiB; 0 = ∞)';
 	@override String get guestDj => 'Gast-dj';
 	@override String get charts => 'Luisterlijsten';
@@ -9454,6 +9456,8 @@ extension on TranslationsNl {
 			'musicExperience.routeLost' => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.',
 			'musicExperience.autoDriving' => 'Rijweergave openen bij verbinding met een auto',
 			'musicExperience.routeHint' => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.',
+			'musicTools.nfcWrite' => 'NFC-tag schrijven',
+			'musicTools.nfcPrompt' => 'Houd een beschrijfbare NFC-tag bij je telefoon.',
 			'musicTools.storageBudget' => 'Geschat downloadbudget (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Gast-dj',
 			'musicTools.charts' => 'Luisterlijsten',

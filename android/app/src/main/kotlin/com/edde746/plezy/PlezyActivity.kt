@@ -945,6 +945,7 @@ class PlezyActivity : FlutterActivity() {
 
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
+    if (!flutterEngine.plugins.has(com.edde746.plezy.music.MusicNfcPlugin::class.java)) flutterEngine.plugins.add(com.edde746.plezy.music.MusicNfcPlugin())
     com.edde746.plezy.widgets.MusicWidgetProvider.attach(applicationContext)
     runCatching { com.edde746.plezy.games.RommProcessBroker.attach(applicationContext) }
       .onFailure { android.util.Log.w("RomM", "Isolated emulator service is unavailable") }

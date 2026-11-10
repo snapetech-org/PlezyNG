@@ -5520,6 +5520,8 @@
     "routeHint": "Het autosysteem bepaalt of de app automatisch kan verschijnen."
   },
   "musicTools": {
+    "nfcWrite": "NFC-tag schrijven",
+    "nfcPrompt": "Houd een beschrijfbare NFC-tag bij je telefoon.",
     "storageBudget": "Geschat downloadbudget (MiB; 0 = ∞)",
     "guestDj": "Gast-dj",
     "charts": "Luisterlijsten",

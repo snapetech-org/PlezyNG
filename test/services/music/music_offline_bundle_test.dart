@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/database/app_database.dart';
@@ -8,6 +9,7 @@ import 'package:plezy/media/media_server_client.dart';
 import 'package:plezy/media/media_source_info.dart';
 import 'package:plezy/services/music/music_library_store.dart';
 import 'package:plezy/services/music/music_offline_bundle.dart';
+
 import '../../test_helpers/music_experience_fakes.dart';
 
 class LyricsClient extends ExperienceClient {
@@ -117,6 +119,11 @@ void main() {
     expect(result.map((item) => item.id), ['b', 'a', 'b']);
     expect(musicSnapshotTracks(snapshot, []), isEmpty);
     expect(musicSnapshotTracks({'version': 2, 'tracks': []}, [musicTrack('a')]), isEmpty);
+    expect(musicSnapshotTracks(snapshot, [musicTrack('a')], accountScope: 's/other-user'), isEmpty);
+    expect(
+      musicSnapshotTracks({...snapshot, 'accountScope': 's/user'}, [musicTrack('a')], accountScope: 's/user'),
+      hasLength(1),
+    );
   });
   test('invalid analysis never enters persistent offline data', () {
     expect(

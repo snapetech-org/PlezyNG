@@ -1,9 +1,11 @@
 import 'dart:async';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/services/music/music_library_store.dart';
 import 'package:plezy/services/music/music_rating_journal.dart';
+
 import '../../test_helpers/music_experience_fakes.dart';
 
 void main() {
@@ -91,5 +93,23 @@ void main() {
       await expectLater(journal.rate(musicTrack('a'), value), throwsArgumentError);
     }
     expect(await store.documents('ratingPending'), isEmpty);
+  });
+  test('sync drains past old and malformed rows without skipping a pending edit', () async {
+    for (var i = 0; i < 501; i++) {
+      await store.saveDocument('ratingPending', 'legacy-$i', {'version': 1});
+    }
+    await db.customStatement('INSERT INTO music_documents VALUES (?, ?, ?, ?, ?)', [
+      'p',
+      'ratingPending',
+      'invalid-json',
+      '{',
+      DateTime.now().millisecondsSinceEpoch + 1000,
+    ]);
+    client.isOfflineMode = true;
+    await journal.rate(musicTrack('current'), 8);
+    client.isOfflineMode = false;
+    await journal.sync();
+    expect(client.mutations, [('s:current', 8.0)]);
+    expect(await store.documents('ratingPending', limit: 500), hasLength(500));
   });
 }

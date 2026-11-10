@@ -70,8 +70,13 @@ Map<String, dynamic>? musicAnalysisDocument(MediaItem track, AudioLoudnessProfil
 
 /// A saved station/recipe is playable offline only through currently owned,
 /// completed downloads. Cached metadata alone never grants a file or account.
-List<MediaItem> musicSnapshotTracks(Map<String, dynamic>? snapshot, Iterable<MediaItem> downloads) {
+List<MediaItem> musicSnapshotTracks(
+  Map<String, dynamic>? snapshot,
+  Iterable<MediaItem> downloads, {
+  String? accountScope,
+}) {
   if (snapshot?['version'] != 1 || snapshot?['tracks'] is! List) return [];
+  if (accountScope != null && snapshot?['accountScope'] != accountScope) return [];
   final rows = snapshot!['tracks'] as List;
   if (rows.length > 5000) return [];
   final owned = {for (final track in downloads) track.globalKey: track};

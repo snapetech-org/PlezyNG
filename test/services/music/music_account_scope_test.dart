@@ -1,0 +1,27 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/services/music/music_account_scope.dart';
+
+import '../../test_helpers/backend_client_fixtures.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  test('direct Plex users are distinct without persisting a token', () {
+    final first = testPlexClient(token: 'direct-secret-a');
+    final second = testPlexClient(token: 'direct-secret-b');
+    addTearDown(first.close);
+    addTearDown(second.close);
+    expect(musicAccountScope(first), isNot(musicAccountScope(second)));
+    expect(musicAccountScope(first), isNot(contains('direct-secret-a')));
+  });
+
+  test('an identified Plex account keeps its scope when its token rotates', () {
+    final first = testPlexClient(token: 'old-token')..plexAccountId = 'account-a';
+    final rotated = testPlexClient(token: 'new-token')..plexAccountId = 'account-a';
+    final other = testPlexClient(token: 'other-token')..plexAccountId = 'account-b';
+    addTearDown(first.close);
+    addTearDown(rotated.close);
+    addTearDown(other.close);
+    expect(musicAccountScope(first), musicAccountScope(rotated));
+    expect(musicAccountScope(first), isNot(musicAccountScope(other)));
+  });
+}

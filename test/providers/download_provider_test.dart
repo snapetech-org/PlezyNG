@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:drift/drift.dart' show ApplyInterceptor, QueryExecutor, QueryInterceptor;
 import 'package:plezy/media/ids.dart';
 
@@ -29,6 +30,7 @@ import 'package:plezy/utils/deletion_notifier.dart';
 import 'package:plezy/utils/notification_permission.dart';
 import 'package:plezy/utils/watch_state_notifier.dart';
 import 'package:plezy/utils/active_client_scope.dart';
+
 import '../test_helpers/download_fixtures.dart';
 import '../test_helpers/media_items.dart';
 import '../test_helpers/saf_fakes.dart';
@@ -1168,6 +1170,40 @@ void main() {
       expect(await db.getDownloadOwnerKeysForProfile('test-profile'), {'srv:t1', 'srv:t2'});
 
       p.dispose();
+    });
+
+    test('list download abandons a preview when its source changes during expansion', () async {
+      final album = testMediaItem(
+        id: 'album-preview',
+        backend: MediaBackend.plex,
+        kind: MediaKind.album,
+        title: 'Preview',
+        serverId: ServerId('srv'),
+      );
+      final track = testMediaItem(
+        id: 'track-preview',
+        backend: MediaBackend.plex,
+        kind: MediaKind.track,
+        title: 'Track',
+        serverId: ServerId('srv'),
+      );
+      final provider = DownloadProvider.forTesting(downloadManager: downloadManager, database: db);
+      addTearDown(provider.dispose);
+      await provider.ensureInitialized();
+      provider.debugSeedState(
+        downloads: {track.globalKey: DownloadProgress(globalKey: track.globalKey, status: DownloadStatus.completed)},
+        metadata: {track.globalKey: track},
+        ownedDownloadKeys: const {},
+      );
+      final started = Completer<void>(), release = Completer<void>();
+      final client = _MusicExpansionClient([track], gate: release.future, started: started);
+      var current = true;
+      final task = provider.queueListDownload([album], client, sourceCurrent: () => current);
+      await started.future;
+      current = false;
+      release.complete();
+      expect(await task, 0);
+      expect(await db.getDownloadOwnerKeysForProfile('test-profile'), isEmpty);
     });
 
     test('container queue ownership remains claimed until expansion finishes', () async {

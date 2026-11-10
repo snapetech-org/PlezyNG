@@ -25,6 +25,7 @@ import 'music_discovery.dart';
 import 'music_playback_service.dart';
 import 'music_library_store.dart';
 import 'music_station.dart';
+import 'music_account_scope.dart';
 import 'music_background_frames.dart';
 import 'music_offline_bundle.dart';
 import 'music_playlist_loader.dart';
@@ -282,6 +283,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           final client = context.read<MultiServerProvider>().getClientForServer(ServerId(station.serverId));
           final offline = client == null || client.isOfflineMode;
           final authentication = client?.authenticationSessionId;
+          final accountScope = client == null ? null : musicAccountScope(client);
           final downloads = context.read<DownloadProvider>().downloadedTracks;
           final tracks = offline
               ? musicSnapshotTracks(
@@ -290,12 +292,14 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
                     _profileId,
                   ).document('stationSnapshot', station.id),
                   downloads,
+                  accountScope: accountScope,
                 )
               : await station.materialize(client);
 
           if (!_current ||
               !_music.isPlayIntentCurrent(intent) ||
               client != null && !_clientCurrent(client, authentication!) ||
+              client != null && accountScope != musicAccountScope(client) ||
               tracks.isEmpty) {
             return false;
           }
@@ -312,9 +316,8 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           final matching = recipes.where((recipe) => recipe.id == id.substring(7)).toList();
           if (matching.length != 1) throw PlatformException(code: 'stale_item');
           final intent = _music.beginPlayIntent();
-          final tracks = await MusicDiscovery(
-            (item) => context.getMediaClientForItemOrNull(item),
-          ).generate(matching.single);
+          final tracks = await MusicDiscovery((item) => context.getMediaClientForItemOrNull(item))
+              .generate(matching.single);
           if (!mounted || !_current || !_music.isPlayIntentCurrent(intent)) return false;
           if (_enqueueRequested(tracks, args)) return true;
           await _music.playFromList(

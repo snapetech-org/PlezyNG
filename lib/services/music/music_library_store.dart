@@ -100,6 +100,46 @@ class MusicLibraryStore {
     return result;
   }
 
+  /// Stable keyset traversal for pending writes. The cursor advances over raw
+  /// rows, including corrupt documents, while acknowledgements delete rows.
+  Future<({List<Map<String, dynamic>> entries, (int, String)? cursor})> documentPage(
+    String kind, {
+    int limit = 500,
+    (int, String)? after,
+  }) async {
+    if (!active) return (entries: <Map<String, dynamic>>[], cursor: null);
+    if (limit < 1 || limit > 500) throw ArgumentError('Invalid page');
+    final rows = await database
+        .customSelect(
+          'SELECT id, updated_at, document FROM music_documents '
+          'WHERE profile_id=? AND kind=? '
+          '${after == null ? '' : 'AND (updated_at < ? OR (updated_at = ? AND id < ?)) '} '
+          'ORDER BY updated_at DESC, id DESC LIMIT ?',
+          variables: [
+            Variable(profileId),
+            Variable(kind),
+            if (after != null) ...[Variable(after.$1), Variable(after.$1), Variable(after.$2)],
+            Variable(limit),
+          ],
+        )
+        .get();
+    final entries = <Map<String, dynamic>>[];
+    for (final row in rows) {
+      try {
+        entries.add(jsonDecode(row.read<String>('document')) as Map<String, dynamic>);
+      } on FormatException {
+        continue;
+      } on TypeError {
+        continue;
+      }
+    }
+    final last = rows.lastOrNull;
+    return (
+      entries: entries,
+      cursor: last == null || rows.length < limit ? null : (last.read<int>('updated_at'), last.read<String>('id')),
+    );
+  }
+
   Future<void> deleteDocument(String kind, String id) => !active
       ? Future.value()
       : database.customStatement('DELETE FROM music_documents WHERE profile_id=? AND kind=? AND id=?', [

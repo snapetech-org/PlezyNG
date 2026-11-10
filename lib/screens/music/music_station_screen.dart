@@ -8,6 +8,7 @@ import '../../media/library_query.dart';
 import '../../media/media_item.dart';
 import '../../media/media_kind.dart';
 import '../../media/media_library.dart';
+import '../../media/media_server_client.dart';
 import '../../providers/download_provider.dart';
 import '../../profiles/active_profile_provider.dart';
 import '../../utils/content_utils.dart';
@@ -18,6 +19,7 @@ import '../../services/music/music_experience.dart';
 import '../../services/music/music_library_store.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../services/music/music_station.dart';
+import '../../services/music/music_account_scope.dart';
 import '../../services/music/music_offline_bundle.dart';
 import '../../utils/media_server_http_client.dart' show AbortController;
 import '../../utils/provider_extensions.dart';
@@ -43,6 +45,9 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
   bool get _current => mounted && context.read<ActiveProfileProvider>().activeId == _experience.store.profileId;
   String? _error;
   List<MediaItem> _preview = [];
+  MediaServerClient? _previewClient;
+  Object? _previewAuthentication;
+  String? _previewAccountScope;
   AbortController? _abort;
   int _revision = 0;
   @override
@@ -146,17 +151,30 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     );
   });
   Future<void> _generate() => _run((revision) async {
+    setState(() {
+      _preview = [];
+      _previewClient = null;
+      _previewAuthentication = null;
+      _previewAccountScope = null;
+    });
     final station = _station();
     final client = context.tryGetMediaClientForServer(ServerId(station.serverId));
     if (client == null || client.isOfflineMode) {
       final downloads = context.read<DownloadProvider>().downloadedTracks;
       final snapshot = await _experience.store.document('stationSnapshot', station.id);
       if (mounted && revision == _revision && _current) {
-        setState(() => _preview = musicSnapshotTracks(snapshot, downloads));
+        setState(
+          () => _preview = musicSnapshotTracks(
+            snapshot,
+            downloads,
+            accountScope: client == null ? null : musicAccountScope(client),
+          ),
+        );
       }
       return;
     }
     final authentication = client.authenticationSessionId;
+    final accountScope = musicAccountScope(client);
     _abort?.abort();
     final abort = _abort = AbortController();
     final items = await station.materialize(client, abort: abort);
@@ -164,10 +182,16 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
         revision != _revision ||
         !_current ||
         !identical(client, context.tryGetMediaClientForServer(ServerId(station.serverId))) ||
-        !identical(authentication, client.authenticationSessionId)) {
+        !identical(authentication, client.authenticationSessionId) ||
+        accountScope != musicAccountScope(client)) {
       return;
     }
-    setState(() => _preview = items);
+    setState(() {
+      _preview = items;
+      _previewClient = client;
+      _previewAuthentication = authentication;
+      _previewAccountScope = accountScope;
+    });
   });
   Future<void> _save() => _run((_) async {
     final station = _station(), downloads = context.read<DownloadProvider>();
@@ -201,14 +225,24 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     if (mounted && _current) showAppSnackBar(context, t.musicExperience.ready);
   });
   Future<void> _download() => _run((_) async {
-    final client = _experience.clientFor(_preview.first);
-    if (client == null) throw StateError('Server unavailable');
-    await context.read<DownloadProvider>().queueListDownload(_preview, client);
+    if (_preview.isEmpty) return;
+    final tracks = List<MediaItem>.of(_preview);
+    final client = _previewClient;
+    bool sourceCurrent() =>
+        _current &&
+        client != null &&
+        identical(client, _experience.clientFor(tracks.first)) &&
+        identical(_previewAuthentication, client.authenticationSessionId) &&
+        _previewAccountScope == musicAccountScope(client);
+    if (!sourceCurrent()) throw StateError('Station preview source changed');
+    await context.read<DownloadProvider>().queueListDownload(tracks, client!, sourceCurrent: sourceCurrent);
+    if (!sourceCurrent()) return;
     await _experience.store.saveDocument('stationSnapshot', _id, {
       'version': 1,
       'id': _id,
       'title': _title.text,
-      'tracks': _preview.map((t) => musicIdentity(t).toJson()).toList(),
+      'accountScope': _previewAccountScope,
+      'tracks': tracks.map((t) => musicIdentity(t).toJson()).toList(),
       'createdAt': DateTime.now().toUtc().toIso8601String(),
     });
     if (mounted) showAppSnackBar(context, t.musicExperience.ready);

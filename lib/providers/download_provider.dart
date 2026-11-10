@@ -1,7 +1,11 @@
 import 'dart:async';
+
 import '../media/ids.dart';
+
 import 'dart:math';
+
 import 'package:flutter/foundation.dart';
+
 import '../i18n/strings.g.dart';
 import '../media/media_backend.dart';
 import '../media/media_item.dart';
@@ -1718,14 +1722,17 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     MediaServerClient client, {
     DownloadFilter filter = DownloadFilter.all,
     SyncRuleItem? syncRule,
+    bool Function()? sourceCurrent,
   }) async {
     if (!_downloadManager.downloadsSupported) return 0;
 
     final ownership = _captureQueueOwnership();
+    bool current() => _isQueueOwnershipCurrent(ownership) && (sourceCurrent?.call() ?? true);
+    if (!current()) return 0;
     if (await DownloadManagerService.shouldBlockDownloadOnCellular()) {
       throw CellularDownloadBlockedException();
     }
-    if (!_isQueueOwnershipCurrent(ownership)) return 0;
+    if (!current()) return 0;
 
     final unwatchedOnly = filter == DownloadFilter.unwatched;
     final membership = <MediaItem>[];
@@ -1733,23 +1740,26 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     // Expand one list entry at a time so a cancelled queue stops before the
     // next container is fetched.
     for (final item in items) {
-      if (!_isQueueOwnershipCurrent(ownership)) return 0;
+      if (!current()) return 0;
       final leaves = <MediaItem>[];
       await collectListLeaves(client, [item], unwatchedOnly: unwatchedOnly, out: leaves);
+      if (!current()) return 0;
       candidates.addAll(leaves);
       if (syncRule != null) {
         if (unwatchedOnly) {
           // Rule membership spans the whole list; only the queue is filtered.
           await collectListLeaves(client, [item], unwatchedOnly: false, out: membership);
+          if (!current()) return 0;
         } else {
           membership.addAll(leaves);
         }
       }
     }
-    if (!_isQueueOwnershipCurrent(ownership)) return 0;
+    if (!current()) return 0;
 
     if (syncRule != null) {
       for (final item in membership) {
+        if (!current()) return 0;
         final withServer = _ensureServerId(item, client.serverId);
         if (_hasActiveOwnedDownload(withServer.globalKey)) {
           await _associateSyncRuleDownload(syncRule, withServer.globalKey, ownership);
@@ -1760,7 +1770,7 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     final relatedContext = _RelatedMetadataDownloadContext();
     var count = 0;
     for (final item in candidates) {
-      if (!_isQueueOwnershipCurrent(ownership)) return count;
+      if (!current()) return count;
       final withServer = _ensureServerId(item, client.serverId);
       if (_hasActiveOwnedDownload(withServer.globalKey)) continue;
       final queued = await _queueSingleDownload(
@@ -1768,13 +1778,15 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
         client,
         ownership: ownership,
         relatedContext: relatedContext,
+        sourceCurrent: sourceCurrent,
       );
+      if (!current()) return count;
       if (syncRule != null) {
         await _associateSyncRuleDownload(syncRule, withServer.globalKey, ownership);
       }
       if (queued) count++;
     }
-    if (syncRule != null && _isQueueOwnershipCurrent(ownership)) {
+    if (syncRule != null && current()) {
       await markSyncRuleDownloadLinksInitialized(syncRule.globalKey);
     }
     return count;
@@ -1791,11 +1803,13 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     DownloadVersionConfig? versionConfig,
     _RelatedMetadataDownloadContext? relatedContext,
     bool userInitiated = true,
+    bool Function()? sourceCurrent,
   }) async {
     if (!_downloadManager.downloadsSupported) return false;
     if (!userInitiated && _downloadManager.isWaitingForStorageRecovery) return false;
 
-    if (!_isQueueOwnershipCurrent(ownership)) return false;
+    bool sourceIsCurrent() => _isQueueOwnershipCurrent(ownership) && (sourceCurrent?.call() ?? true);
+    if (!sourceIsCurrent()) return false;
     var metadataToStore = metadata.serverId == null ? metadata.copyWith(serverId: client.serverId) : metadata;
     final globalKey = metadataToStore.globalKey;
 
@@ -1814,13 +1828,13 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
           // offline. Cache enrichment is best effort; ownership is durable.
           appLogger.w('Failed to pin metadata while claiming $globalKey', error: e);
         }
-        if (!_isQueueOwnershipCurrent(ownership)) return false;
+        if (!sourceIsCurrent()) return false;
         final claimed = await _claimDownloadForProfile(globalKey, ownership, client);
-        if (!_isQueueOwnershipCurrent(ownership)) return false;
+        if (!sourceIsCurrent()) return false;
         if (claimed) {
           await _hydrateClaimedDownload(metadataToStore, client, ownership: ownership, relatedContext: relatedContext);
-          if (!_isQueueOwnershipCurrent(ownership)) return false;
-          await _prepareMusicBundle(metadataToStore, client, ownership);
+          if (!sourceIsCurrent()) return false;
+          await _prepareMusicBundle(metadataToStore, client, ownership, sourceCurrent: sourceCurrent);
           safeNotifyListeners();
         }
         return claimed;
@@ -1851,7 +1865,7 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
         appLogger.w('Failed to fetch full metadata for ${metadata.id}, using partial', error: e);
       }
     }
-    if (!_isQueueOwnershipCurrent(ownership)) return false;
+    if (!sourceIsCurrent()) return false;
 
     // Smart version matching for series/season downloads
     var resolvedIndex = mediaIndex;
@@ -1863,10 +1877,10 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
           resolvedIndex = matchedIndex;
         } else if (versionConfig.onVersionMismatch != null) {
           final pickedIndex = await versionConfig.onVersionMismatch!(metadataToStore, versions);
-          if (!_isQueueOwnershipCurrent(ownership)) return false;
+          if (!sourceIsCurrent()) return false;
           if (pickedIndex == null) return false;
           resolvedIndex = pickedIndex;
-          if (!_isQueueOwnershipCurrent(ownership)) return false;
+          if (!sourceIsCurrent()) return false;
           versionConfig.accept(versions[pickedIndex]);
         }
       }
@@ -1881,15 +1895,15 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
         ownership: ownership,
         context: relatedContext ?? _RelatedMetadataDownloadContext(),
       );
-      if (!_isQueueOwnershipCurrent(ownership)) return false;
+      if (!sourceIsCurrent()) return false;
     }
 
     // Store full metadata for display
-    if (!_isQueueOwnershipCurrent(ownership)) return false;
+    if (!sourceIsCurrent()) return false;
     _metadata[globalKey] = metadataToStore;
 
     await _claimDownloadForProfile(globalKey, ownership, client);
-    if (!_isQueueOwnershipCurrent(ownership)) return false;
+    if (!sourceIsCurrent()) return false;
 
     final previousProgress = _downloads[globalKey];
     if (userInitiated) {
@@ -1897,7 +1911,7 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
       safeNotifyListeners();
     }
 
-    if (!_isQueueOwnershipCurrent(ownership)) return false;
+    if (!sourceIsCurrent()) return false;
     final storedMetadata = await _downloadManager.queueDownload(
       metadata: metadataToStore,
       client: client,
@@ -1919,18 +1933,23 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
       _downloadLibraries[globalKey] = (libraryId: storedMetadata.libraryId, libraryTitle: storedMetadata.libraryTitle);
     }
     if (storedMetadata.isMovie || storedMetadata.isEpisode) unawaited(_refreshCollections(client));
-    await _prepareMusicBundle(storedMetadata, client, ownership);
+    await _prepareMusicBundle(storedMetadata, client, ownership, sourceCurrent: sourceCurrent);
     return true;
   }
 
-  Future<void> _prepareMusicBundle(MediaItem track, MediaServerClient client, _QueueOwnership ownership) async {
-    if (track.kind != MediaKind.track || !_isQueueOwnershipCurrent(ownership)) return;
+  Future<void> _prepareMusicBundle(
+    MediaItem track,
+    MediaServerClient client,
+    _QueueOwnership ownership, {
+    bool Function()? sourceCurrent,
+  }) async {
+    bool current() => !isDisposed && _isQueueOwnershipCurrent(ownership) && (sourceCurrent?.call() ?? true);
+    if (track.kind != MediaKind.track || !current()) return;
     // Sequential with the batch queue: one optional request at a time, rather
     // than launching thousands of lyric downloads for a large playlist.
     try {
-      await MusicOfflineBundle(
-        MusicLibraryStore(_database, ownership.profileId),
-      ).prepare(track, client, current: () => !isDisposed && _isQueueOwnershipCurrent(ownership));
+      await MusicOfflineBundle(MusicLibraryStore(_database, ownership.profileId))
+          .prepare(track, client, current: current);
     } catch (_) {
       // Optional metadata/storage adapters cannot change a successfully queued
       // audio download into a failure or interrupt the rest of an album batch.

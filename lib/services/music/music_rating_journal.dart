@@ -78,16 +78,22 @@ class MusicRatingJournal {
   }
 
   Future<void> sync() => _operations.run(() async {
-    for (final entry in await store.documents('ratingPending', limit: 500)) {
-      if (_disposed) return;
-      try {
-        await _send(entry);
-      } on FormatException {
-        continue;
-      } on TypeError {
-        continue;
+    (int, String)? cursor;
+    do {
+      if (_disposed || !store.active) return;
+      final page = await store.documentPage('ratingPending', after: cursor);
+      for (final entry in page.entries) {
+        if (_disposed) return;
+        try {
+          await _send(entry);
+        } on FormatException {
+          continue;
+        } on TypeError {
+          continue;
+        }
       }
-    }
+      cursor = page.cursor;
+    } while (cursor != null);
   });
   void dispose() {
     _disposed = true;

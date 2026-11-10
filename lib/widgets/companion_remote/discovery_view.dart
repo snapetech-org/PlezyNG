@@ -22,7 +22,6 @@ import '../loading_indicator_box.dart';
 import '../app_icon.dart';
 import 'remote_pairing_dialog.dart';
 
-@visibleForTesting
 String companionRemotePairingErrorMessage(Object error) {
   if (error is PeerError) {
     return switch (error.type) {

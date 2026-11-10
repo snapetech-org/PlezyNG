@@ -21,7 +21,7 @@ failures. Local finite download stations are a different feature.
 
 ## History and conflicting offline edits
 
-Music history is device-local listening history, paged by occurrence rather than
+Music history is profile-owned listening history, paged by occurrence rather than
 deduplicated by track. New database writes refresh the view. This is not a server
 history import or a RAM-independent live playback queue.
 
@@ -36,12 +36,17 @@ claimed to be transactional.
 
 1. Configure and authorize both app instances normally, then pair them using the
    existing companion remote flow. Both must advertise music group version 1.
-2. Start a music queue, then select **Sync: device name** in Now Playing.
+2. Start a music queue, then select **Sync** in Now Playing. Select the existing
+   control peer or add discovered receivers and enter each receiver's pairing
+   code when requested. Up to sixteen additional receiver connections can be
+   active alongside the existing control peer.
 3. The receiver validates its own library access and prepares the queue paused.
    Playback starts following only after clock sampling and source preparation.
-4. Use the initiating device for group transport. Cancel Sync to leave.
+4. Use the initiating device for group transport. Remove a receiver independently
+   without disconnecting siblings, or use Stop to leave all groups.
 
-This is a group of two app instances, distinct from **transfer**, which pauses
+Each receiver has an independent authenticated channel, clock and heartbeat.
+This is distinct from **transfer**, which pauses
 the sender only after receiver acknowledgement. The initiating group device
 keeps playing. Selecting a control target by itself starts neither operation.
 
@@ -54,8 +59,8 @@ leader records progress/listening history, avoiding duplicate group scrobbles.
 
 Synchronization uses monotonic clock-offset/round-trip samples and one-second
 sequenced anchors, seeking when drift exceeds 250 ms. It is not sample-accurate
-multi-room audio: decoder/DAC/acoustic latency is not calibrated. Arbitrary
-multi-endpoint grouping and Plexamp protocol interoperability are not implemented.
+multi-room audio: decoder/DAC/acoustic latency is not calibrated. Plexamp protocol
+interoperability and acoustic multi-device qualification are not claimed.
 
 ## Android widget
 

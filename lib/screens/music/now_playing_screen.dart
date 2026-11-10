@@ -2,6 +2,7 @@ import '../../widgets/music/music_seek_print.dart';
 import 'music_discovery_screen.dart';
 import 'music_driving_screen.dart';
 import 'music_home_screen.dart';
+import 'music_group_screen.dart';
 import '../../karaoke/karaoke_screen.dart';
 import '../../karaoke/karaoke_strings.dart';
 import 'dart:async';
@@ -879,20 +880,11 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
               }
             },
           ),
-        if (companion.supportsMusicGroup && output?.remoteOutputName == null)
+        if (companion.canManageMusicGroups && output?.remoteOutputName == null)
           MediaMenuExtraEntry(
             icon: Symbols.speaker_group_rounded,
-            label: companion.musicGroupActive
-                ? '${t.common.cancel} · ${t.homeLayout.sync}'
-                : '${t.homeLayout.sync}: ${companion.connectedDevice?.name ?? t.companionRemote.unknownDevice}',
-            onSelected: () async {
-              if (companion.musicGroupActive) {
-                companion.leaveMusicGroup();
-              } else {
-                final joined = await companion.startMusicGroup();
-                if (mounted) showAppSnackBar(context, joined ? t.watchTogether.connected : t.musicExperience.error);
-              }
-            },
+            label: t.homeLayout.sync,
+            onSelected: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MusicGroupScreen())),
           ),
         MediaMenuExtraEntry(
           icon: Symbols.library_music_rounded,

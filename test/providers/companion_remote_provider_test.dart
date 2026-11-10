@@ -21,6 +21,8 @@ import 'package:plezy/services/companion_remote/lan_discovery_service.dart';
 import 'package:plezy/services/companion_remote/remote_auth_context.dart';
 import 'package:plezy/services/companion_remote/remote_auth_service.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
+import 'package:plezy/services/music/music_group_playback.dart';
+import 'package:plezy/services/music/music_group_exchange.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_transfer_snapshot.dart';
 import 'package:plezy/services/music/music_history_reconciliation.dart';
@@ -267,6 +269,81 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       expect(music.acceptCalls, 1);
       expect(peer.sentCommands.last.data?['accepted'], isTrue);
+    });
+  });
+
+  group('CompanionRemoteProvider — multi-endpoint music groups', () {
+    Future<DiscoveredHost> host(String client) async {
+      final secret = await RemoteAuthService.instance.deriveHomeSecretFromHome(_home('remote-admin'));
+      return DiscoveredHost(
+        authContextId: RemoteAuthService.instance.computeAuthContextId(secret),
+        clientId: client,
+        name: client,
+        platform: 'linux',
+        port: 48634,
+        ips: ['192.0.2.40'],
+      );
+    }
+
+    test('three endpoints share music without replacing the primary peer and leave independently', () async {
+      final peers = List.generate(3, (_) => _MusicGroupPeer());
+      final factory = _FakePeerFactory(peers);
+      final harness = await _RemoteHarness.create(factory.call);
+      addTearDown(harness.close);
+      final music = _GroupMusicSession();
+      harness.provider.bindMusicSession(music);
+      final hosts = await Future.wait(['one', 'two', 'three'].map(host));
+      for (final endpoint in hosts) {
+        expect(
+          await harness.provider.addMusicGroupEndpoint(endpoint, pairingCode: '0123456789abcdef0123456789abcdef'),
+          isTrue,
+        );
+      }
+      expect(harness.provider.session, isNull);
+      expect(harness.provider.musicGroupJoined, isTrue);
+      expect(harness.provider.musicGroupEndpoints, hasLength(3));
+      expect(await harness.provider.addMusicGroupEndpoint(hosts.first), isFalse);
+      await harness.provider.removeMusicGroupEndpoint(hosts[1]);
+      expect(peers[1].disposeCalls, 1);
+      expect(peers[0].follower.joined && peers[2].follower.joined, isTrue);
+      harness.provider.unbindMusicSession(music);
+      await Future<void>.delayed(Duration.zero);
+      expect(harness.provider.musicGroupActive, isFalse);
+      expect(peers.every((peer) => peer.disposeCalls == 1), isTrue);
+      expect(music.follower, isFalse);
+    });
+
+    test('removing a connecting endpoint prevents stale preparation after join completes', () async {
+      final gate = Completer<void>();
+      final peer = _MusicGroupPeer(joinGate: gate);
+      final harness = await _RemoteHarness.create(_FakePeerFactory([peer]).call);
+      addTearDown(harness.close);
+      harness.provider.bindMusicSession(_GroupMusicSession());
+      final endpoint = await host('waiting');
+      final joining = harness.provider.addMusicGroupEndpoint(endpoint, pairingCode: '0123456789abcdef0123456789abcdef');
+      await peer.joinStarted.future;
+      await harness.provider.removeMusicGroupEndpoint(endpoint);
+      gate.complete();
+      expect(await joining, isFalse);
+      expect(peer.sentCommands.where((command) => command.type == RemoteCommandType.musicGroup), isEmpty);
+      expect(harness.provider.musicGroupEndpoints, isEmpty);
+    });
+
+    test('legacy endpoints and self discovery never receive a queue', () async {
+      final peer = _MusicGroupPeer(version: 0);
+      final harness = await _RemoteHarness.create(_FakePeerFactory([peer]).call);
+      addTearDown(harness.close);
+      harness.provider.bindMusicSession(_GroupMusicSession());
+      expect(await harness.provider.addMusicGroupEndpoint(await host('remote-client')), isFalse);
+      expect(
+        await harness.provider.addMusicGroupEndpoint(
+          await host('legacy'),
+          pairingCode: '0123456789abcdef0123456789abcdef',
+        ),
+        isFalse,
+      );
+      expect(peer.disposeCalls, 1);
+      expect(peer.sentCommands.where((command) => command.type == RemoteCommandType.musicGroup), isEmpty);
     });
   });
 
@@ -1271,6 +1348,73 @@ class _FakeCompanionRemotePeerService extends CompanionRemotePeerService {
       _statuses.close(),
     ]);
   }
+}
+
+class _MusicGroupPeer extends _FakeCompanionRemotePeerService {
+  _MusicGroupPeer({super.joinGate, this.version = 1});
+  final int version;
+  late MusicGroupExchange follower;
+  bool connected = false;
+  @override
+  bool get isConnected => connected && disposeCalls == 0;
+  @override
+  Future<String> joinSessionRacingWithContexts(
+    String deviceName,
+    String platform,
+    List<String> hostAddresses,
+    List<RemoteAuthContext> authContexts, {
+    String? authContextId,
+    String expectedHostClientId = '',
+  }) async {
+    final result = await super.joinSessionRacingWithContexts(
+      deviceName,
+      platform,
+      hostAddresses,
+      authContexts,
+      authContextId: authContextId,
+      expectedHostClientId: expectedHostClientId,
+    );
+    if (disposeCalls != 0) return result;
+    connected = true;
+    follower = MusicGroupExchange(
+      allowed: () => isConnected,
+      capture: () => _FakeMusicTransferSession().snapshot,
+      prepare: (_, _) async => true,
+      align: (_, _) async => true,
+      release: () async {},
+      changed: () {},
+      send: (data) => emitCommand(RemoteCommand(type: RemoteCommandType.musicGroup, data: data)),
+    );
+    emitCommand(RemoteCommand(type: RemoteCommandType.deviceInfo, data: {'musicGroupVersion': version}));
+    return result;
+  }
+
+  @override
+  void sendCommand(RemoteCommand command) {
+    super.sendCommand(command);
+    if (command.type == RemoteCommandType.musicGroup && connected) follower.receive(command.data);
+  }
+
+  @override
+  Future<void> dispose() {
+    if (connected) follower.close();
+    connected = false;
+    return super.dispose();
+  }
+}
+
+class _GroupMusicSession extends Fake implements MusicGroupSession, MusicPlaybackService {
+  final snapshot = _FakeMusicTransferSession().snapshot;
+  bool follower = false;
+  @override
+  bool get isMusicGroupFollower => follower;
+  @override
+  void setMusicGroupFollower(bool value) => follower = value;
+  @override
+  bool Function() captureGroupAuthority() =>
+      () => true;
+  @override
+  MusicTransferOffer? offerTransfer() => MusicTransferOffer(snapshot, 1, 1, 1, 1);
 }
 
 class _FakeLanDiscoveryService extends LanDiscoveryService {

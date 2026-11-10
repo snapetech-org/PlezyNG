@@ -36,6 +36,7 @@ import '../services/companion_remote/remote_pairing_store.dart';
 import '../services/music/music_transfer_exchange.dart';
 import '../services/music/music_transfer_snapshot.dart';
 import '../services/music/music_group_exchange.dart';
+import '../services/music/music_group_endpoint.dart';
 import '../services/music/music_group_playback.dart';
 import '../services/music/music_playback_service.dart';
 import '../services/music/music_history_exchange.dart';
@@ -94,6 +95,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   MusicHistoryReconciliation? _historyReconciliation;
   MusicGroupExchange? _musicGroup;
   MusicGroupPlayback? _musicGroupPlayback;
+  final Map<String, ({DiscoveredHost host, MusicGroupEndpoint endpoint})> _musicEndpoints = {};
   LanDiscoveryService? _discoveryService;
   String _deviceName = t.companionRemote.unknownDevice;
   String _platform = 'unknown';
@@ -265,10 +267,23 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
   bool get supportsMusicGroup =>
       isConnected && _musicGroupVersion == 1 && _musicGroup != null && _musicGroupPlayback != null;
-  bool get musicGroupActive => _musicGroup?.active ?? false;
-  bool get musicGroupJoined => _musicGroup?.joined ?? false;
+  bool get musicGroupActive => (_musicGroup?.active ?? false) || _musicEndpoints.isNotEmpty;
+  bool get musicGroupJoined =>
+      (_musicGroup?.joined ?? false) || _musicEndpoints.values.any((entry) => entry.endpoint.joined);
+  bool get primaryMusicGroupActive => _musicGroup?.active ?? false;
+  bool get canManageMusicGroups => isCryptoReady && _musicGroupPlayback != null;
+  List<DiscoveredHost> get musicGroupEndpoints =>
+      _musicEndpoints.values.map((entry) => entry.host).toList(growable: false);
+  bool musicGroupEndpointJoined(DiscoveredHost host) =>
+      _musicEndpoints[_musicEndpointKey(host)]?.endpoint.joined ?? false;
+
+  String _musicEndpointKey(DiscoveredHost host) => '${host.authContextId}:${host.clientId}';
+
+  bool isOwnMusicEndpoint(DiscoveredHost host) =>
+      _authContexts.any((identity) => identity.clientIdentifier == host.clientId);
+
   Future<bool> startMusicGroup() async {
-    if (!supportsMusicGroup || musicGroupActive) return false;
+    if (!supportsMusicGroup || primaryMusicGroupActive) return false;
     final playback = _musicGroupPlayback;
     final group = _musicGroup;
     await playback?.release();
@@ -278,7 +293,97 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     return group!.start();
   }
 
-  void leaveMusicGroup() => _musicGroup?.leave();
+  void leavePrimaryMusicGroup() => _musicGroup?.leave();
+
+  void leaveMusicGroup() {
+    _closeMusicEndpoints();
+    _musicGroup?.leave();
+    safeNotifyListeners();
+  }
+
+  void _closeMusicEndpoints() {
+    final endpoints = _musicEndpoints.values.toList();
+    _musicEndpoints.clear();
+    for (final entry in endpoints) {
+      unawaited(entry.endpoint.close());
+    }
+  }
+
+  Future<void> removeMusicGroupEndpoint(DiscoveredHost host) async {
+    final entry = _musicEndpoints.remove(_musicEndpointKey(host));
+    if (entry == null) return;
+    safeNotifyListeners();
+    await entry.endpoint.close();
+  }
+
+  Future<bool> addMusicGroupEndpoint(DiscoveredHost host, {String? pairingCode}) async {
+    final session = _musicSession;
+    final identity = _authContextForId(host.authContextId);
+    final profileId = _cryptoProfileId;
+    if (!canManageMusicGroups ||
+        identity == null ||
+        profileId == null ||
+        session is! MusicGroupSession ||
+        session is! MusicPlaybackService ||
+        session.isMusicGroupFollower ||
+        isOwnMusicEndpoint(host)) {
+      return false;
+    }
+    if (isConnected &&
+        _peerService?.selectedHostClientId == host.clientId &&
+        _peerService?.selectedAuthContextId == host.authContextId) {
+      return primaryMusicGroupActive ? _musicGroup!.leader : startMusicGroup();
+    }
+    final key = _musicEndpointKey(host);
+    if (_musicEndpoints.containsKey(key) || _musicEndpoints.length >= 16) return false;
+    final contexts = _authContexts;
+    final playback = MusicGroupPlayback(session as MusicPlaybackService, session);
+    late final MusicGroupEndpoint endpoint;
+    bool current() =>
+        !isDisposed &&
+        profileId == _cryptoProfileId &&
+        identical(session, _musicSession) &&
+        _sameAuthContexts(contexts, _authContexts) &&
+        !session.isMusicGroupFollower &&
+        identical(_musicEndpoints[key]?.endpoint, endpoint);
+    endpoint = MusicGroupEndpoint(
+      peer: _peerServiceFactory(),
+      authorized: current,
+      capture: playback.capture,
+      changed: () {
+        if (current()) safeNotifyListeners();
+      },
+      ended: () {
+        if (identical(_musicEndpoints[key]?.endpoint, endpoint)) {
+          _musicEndpoints.remove(key);
+          safeNotifyListeners();
+        }
+      },
+    );
+    _musicEndpoints[key] = (host: host, endpoint: endpoint);
+    safeNotifyListeners();
+    try {
+      final code = await _remotePairingCode(profileId, key, pairingCode);
+      if (!current()) return false;
+      final pairedContexts = await _pairedContexts(code);
+      if (!current()) return false;
+      final joined = await endpoint.start((peer) async {
+        await peer.joinSessionRacingWithContexts(
+          _deviceName,
+          _platform,
+          host.addresses,
+          pairedContexts,
+          authContextId: identity.id,
+          expectedHostClientId: host.clientId,
+        );
+      });
+      if (!joined || !current()) return false;
+      if (pairingCode != null) await RemotePairingStore.rememberRemote(profileId, key, code);
+      return current();
+    } finally {
+      if (!endpoint.joined || !current()) await endpoint.close();
+    }
+  }
 
   bool get supportsMusicHistory =>
       isConnected && _musicHistoryVersion == 1 && _musicHistory != null && _historyReconciliation != null;
@@ -299,6 +404,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
   void bindMusicSession(MusicTransferSession session) {
     if (identical(_musicSession, session)) return;
+    _closeMusicEndpoints();
     _musicGroup?.leave();
     _musicSession = session;
     _musicGroupPlayback = session is MusicGroupSession && session is MusicPlaybackService
@@ -308,6 +414,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
   void unbindMusicSession(MusicTransferSession session) {
     if (!identical(_musicSession, session)) return;
+    _closeMusicEndpoints();
     _musicGroup?.leave();
     _musicGroupPlayback = null;
     _musicSession = null;
@@ -682,6 +789,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _clearCryptoContext() {
+    _closeMusicEndpoints();
     _closeSteamInternet();
     _authContexts = const [];
     _cryptoProfileId = null;
@@ -735,6 +843,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   ({CompanionRemotePeerService? current, CompanionRemotePeerService? pending}) _invalidateRemoteLifecycle() {
+    _closeMusicEndpoints();
     _remoteGeneration++;
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
@@ -964,6 +1073,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
       _clearIntentionalDisconnect(peer, stopGeneration);
     }
   }
+
+  bool get isDiscoveringHosts => _discoveryService?.isListening ?? false;
 
   Stream<List<DiscoveredHost>>? discoverHosts() {
     if (!isCryptoReady) {
@@ -1202,7 +1313,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
       capture: () => _musicGroupPlayback?.capture(),
       prepare: (snapshot, current) {
         final playback = _musicGroupPlayback;
-        if (playback == null) return Future.value(false);
+        if (playback == null || _musicEndpoints.isNotEmpty) return Future.value(false);
         return playback.prepare(snapshot, () => current() && identical(playback, _musicGroupPlayback));
       },
       align: (snapshot, current) {
@@ -1718,6 +1829,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
   @override
   void dispose() {
+    _closeMusicEndpoints();
     _closeSteamInternet();
     WidgetsBinding.instance.removeObserver(this);
     _remoteGeneration++;

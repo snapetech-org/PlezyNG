@@ -170,8 +170,9 @@ def qualify(platform, arch=None):
                 "    _ = engine.perform(selector)\n"
                 "    let flutterViewController = FlutterViewController(engine: engine, nibName: nil, bundle: nil)\n"
                 "    workspaceWindows = WorkspaceDesktopWindows(engine: engine, parent: self, available: true)")
-    target = ["--target-platform", f"windows-{arch}"] if platform == "windows" else []
-    run(flutter, "build", platform, "--debug", *target, cwd=directory)
+    # Flutter selects the Windows target from the native host architecture.
+    # The build windows command rejects --target-platform.
+    run(flutter, "build", platform, "--debug", cwd=directory)
     if platform == "linux":
         binary = directory / "build/linux/x64/debug/bundle/workspace_probe"
         command = [str(binary)]

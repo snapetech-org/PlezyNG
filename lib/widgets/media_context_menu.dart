@@ -53,6 +53,7 @@ import '../screens/plex_match_screen.dart';
 import '../screens/media_detail_screen.dart';
 import '../screens/metadata_edit_screen.dart';
 import '../screens/music/album_detail_screen.dart';
+import '../screens/music/music_metadata_screen.dart';
 import '../screens/music/artist_detail_screen.dart';
 import '../utils/smart_deletion_handler.dart';
 import '../utils/video_player_navigation.dart';
@@ -777,6 +778,8 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     final ancestorArtistId = context.findAncestorWidgetOfExactType<ArtistDetailScreen>()?.artist.id;
     return [
       _MenuAction(value: 'music_play', icon: Symbols.play_arrow_rounded, label: t.common.play),
+      if (menu.itemServerOnline)
+        _MenuAction(value: 'music_details', icon: Symbols.info_rounded, label: t.mediaMenu.viewDetails),
       if (context.read<MusicPlaybackService?>() != null) ...[
         _MenuAction(value: 'music_play_next', icon: Symbols.playlist_play_rounded, label: t.music.playNext),
         _MenuAction(value: 'music_add_queue', icon: Symbols.queue_music_rounded, label: t.music.addToQueue),
@@ -995,6 +998,13 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       case 'details':
         outcome.didNavigate = true;
         if (context.mounted) await navigateToMediaItemDetails(context, mediaItem, onRefresh: _notifyRefresh);
+        break;
+      case 'music_details':
+        if (context.mounted) {
+          await Navigator.of(
+            context,
+          ).push<void>(MaterialPageRoute(builder: (_) => MusicMetadataScreen(item: mediaItem)));
+        }
         break;
       case 'rate':
         if (context.mounted) await _handleRate(context, mediaItem);

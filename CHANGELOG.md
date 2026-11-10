@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Expose music performers, writers, producers and available composer/contributor credits alongside exact edition and media-variant details, with account-bound metadata loading rather than title-based recording merges.
+
 - Browse live, profile-owned music listening occurrences through bounded cursor pages, preserving repeated plays and deterministic ordering without loading all history.
 
 - Revalidate station previews before both Play and individual track selection. Reject account, hidden-library and download-ownership changes; play owned offline previews without an online fallback.

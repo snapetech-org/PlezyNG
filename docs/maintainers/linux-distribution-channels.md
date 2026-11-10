@@ -18,7 +18,7 @@ Flatpak application ID is `org.snapetech.pleazyng`.
 | Nix | [Both native builds](https://github.com/snapetech-org/pleazyng/actions/runs/42714489114) passed. Maintained locked flake built locally. Software WebView smoke rendered HTML and ran JavaScript with WebKit sandbox enabled (`NoNewPrivs=1`, `Seccomp=2`). Final Nixpkgs proposal also built on x64 | [Nixpkgs PR 585758](https://github.com/NixOS/nixpkgs/pull/585758) awaits maintainer acceptance; full NixOS desktop and hardware playback remain unqualified |
 | Google Play | Existing v3.0.7+166 AAB uploaded to closed Alpha; foreground-service declaration and release notes saved; release saved in Publishing overview, ready for review. Lifetime SKU is active at USD 2.99 base in 174 regions. Compiled reviewer public key matches on all three ABIs | Signed-build expired-trial grant redemption, purchase/restore, Google review and actual test activation remain gates; `GOOGLE_PLAY_BOOTSTRAP_COMPLETE` stays false |
 | Homebrew | Tap Cask 3.0.7 published by [run 42702581594](https://github.com/snapetech-org/pleazyng/actions/runs/42702581594); [native signature/ticket/Gatekeeper qualification](https://github.com/snapetech-org/pleazyng/actions/runs/42702586238) passed | [Native Cask installation and installed-app Gatekeeper qualification](https://github.com/snapetech-org/pleazyng/actions/runs/42717147909) passed |
-| aerynOS / Moss | x86_64 Boulder build, Moss install, launch and Jellyfin sign-in pass in aerynOS 2026.11 | v3.0.7 video remains covered by the preceding route; use a new bundle containing the aperture repair and repeat playback QA; official acceptance is separate |
+| aerynOS / Moss | Independent x86_64 preview: native build/install, visible video, default-on P7 routing and renderer-failure fallback pass | [Install and review](https://github.com/snapetech-org/pleazyng-aerynos); [snapshot qualification](aerynos-snapshot-qualification.md); physical HDR/FEL accuracy unqualified |
 
 The AUR RPC and cgit responses may be cached briefly after a push. Verify the
 public Git head and use a fresh RPC request before treating stale metadata as a
@@ -135,6 +135,9 @@ test instance. The current Moss CLI uses `moss index --input-dir <output-dir>`,
 evidence. Increment `release` for recipe-only changes to an already distributed
 version. See the [native qualification record](aerynos-qualification.md): build
 and installation pass; the published v3.0.7 input fails video playback QA.
+The separately versioned [3.0.22+181 source snapshot](aerynos-snapshot-qualification.md)
+passes native visible-video and fallback checks and is delivered through the
+[independent preview feed](https://github.com/snapetech-org/pleazyng-aerynos).
 
 aerynOS is a downstream publication target. Qualify the exact package before
 publishing an independent Moss repository; retain the source checksum and native

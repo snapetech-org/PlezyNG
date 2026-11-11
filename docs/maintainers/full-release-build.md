@@ -765,3 +765,22 @@ certificates against their original workflow/run, and publishes a distinct
 `tvos_source` proof. Ordinary Linux/Mac repair reuse keeps its existing meaning.
 The existing workflow `reuse_repaired_run_id` slot is interpreted as TV reuse only
 for this explicit frozen Apple mode; no additional dispatch input is required.
+
+
+Before iOS compilation, signed releases validate the Runner App Store profile and
+prepare a separate `org.snapetech.pleazyng.RommWorker` App Store profile through
+the existing Apple API key. The API certificate must exactly match the imported
+Apple Distribution identity before any bundle/profile creation. Reuse a valid
+worker profile; create only the explicit worker bundle/profile when needed.
+Never rotate certificates or overwrite another target's profile. The worker does
+not request the host app group; Runner and TopShelf retain that requirement.
+All targets still require exact bundle/team/certificate, unexpired Store profiles,
+matching platforms, and no development, ad hoc or enterprise provisioning.
+
+The generated worker profile is masked and passed only through the current job's
+environment; API keys and installed temporary profiles are cleaned up. API access
+failure stops before expensive compilation. A locked human Apple web login does
+not establish whether the independently authorized API key works. The unsigned
+iOS IPA is attested and uploaded as `ios-unsigned-checkpoint` before Store
+packaging; it does not substitute for the complete final `ios-ipa` artifact or
+qualify Store distribution. Final assembly still requires the signed archive.

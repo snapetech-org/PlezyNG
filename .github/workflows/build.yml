@@ -1333,6 +1333,9 @@ jobs:
           APPLE_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
         run: |
           set -euo pipefail
           if [[ "$INCLUDE_APPLE_STORE_BUILD" != "true" ]]; then
@@ -1346,6 +1349,15 @@ jobs:
               exit 1
             fi
           done
+          if [[ -z "${IOS_ROMMWORKER_PROVISIONING_PROFILE_BASE64:-}" ]]; then
+            for name in APPLE_API_ISSUER_ID APPLE_API_KEY_ID APPLE_API_PRIVATE_KEY; do
+              if [[ -z "${!name}" ]]; then
+                echo "Missing required Apple profile API secret: $name" >&2
+                exit 1
+              fi
+            done
+            python3 "$GITHUB_WORKSPACE/scripts/build_apple_store_archive.py" --prepare-ios-worker-profile
+          fi
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
       - name: Pin iOS device builds to the packaged native ABI
@@ -1401,6 +1413,23 @@ jobs:
           zip -r pleazyng-ios-unsigned.ipa Payload
 
 
+      - name: Checkpoint unsigned iOS developer IPA
+        working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
+        run: cp -f pleazyng-ios-unsigned.ipa "$GITHUB_WORKSPACE/"
+
+      - name: Attest unsigned developer IPA
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: pleazyng-ios-unsigned.ipa
+
+      - name: Retain unsigned iOS developer checkpoint
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ios-unsigned-checkpoint
+          path: pleazyng-ios-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Build signed iOS App Store IPA
         if: steps.ios-signing.outputs.configured == 'true'
         env:
@@ -1433,11 +1462,6 @@ jobs:
           if [[ -f pleazyng-ios-appstore.ipa ]]; then
             cp -f pleazyng-ios-appstore.ipa "$GITHUB_WORKSPACE/"
           fi
-
-      - name: Attest unsigned developer IPA
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
-        with:
-          subject-path: pleazyng-ios-unsigned.ipa
 
       - name: Attest signed iOS App Store IPA
         if: steps.ios-signing.outputs.configured == 'true'

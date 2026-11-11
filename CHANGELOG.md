@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Prepare and validate distinct iOS Runner and RommWorker App Store profiles before compilation, using the existing distribution identity and Apple API access. Retain the attested unsigned IPA before Store packaging, so a signing failure preserves the successful developer artifact.
+
 - Prepare the unchanged pinned iOS Steam sources before Xcode with bounded retries, so dependency-network failures stop before expensive compilation and the Xcode phase reuses the verified source recipe.
 
 - Keep cold offline Jellyfin/Emby rating intents in the exact saved client namespace so they can reconcile after discovery.

@@ -1,5 +1,7 @@
 """Product, packaging, and main workflow identities stay distinct on recovery."""
 import contextlib
+import copy
+from datetime import datetime, timedelta
 import hashlib
 import json
 from pathlib import Path
@@ -11,6 +13,8 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import release_all_platforms as release
+import build_apple_store_archive as apple
+from scripts.checks.workflow_yaml import job_block
 
 
 class PackagingRepairControllerTests(unittest.TestCase):
@@ -392,6 +396,91 @@ class PackagingRepairControllerTests(unittest.TestCase):
                     release.main()
                 self.assertEqual(bool(native_checks), ordinary)
                 build.assert_not_called()
+
+
+class WorkerSigningTests(unittest.TestCase):
+    team, certificate = 'A1B2C3D4E5', b'fixture distribution certificate'
+    worker = apple.BUNDLE + '.RommWorker'
+    uuid = '00000000-0000-0000-0000-000000000001'
+
+    def profile(self, bundle, platform='ios', group=False):
+        entitlements = {'application-identifier': self.team + '.' + bundle}
+        if group:
+            entitlements['com.apple.security.application-groups'] = [apple.GROUP]
+        return {'Entitlements': entitlements, 'TeamIdentifier': [self.team],
+                'DeveloperCertificates': [self.certificate], 'Platform': ['iOS' if platform == 'ios' else 'tvOS'],
+                'ExpirationDate': datetime.now() + timedelta(days=1), 'UUID': self.uuid}
+
+    def validate(self, profile, bundle=None, platform='ios'):
+        return apple.validate_profile(profile, bundle=bundle or self.worker, platform=platform,
+                                      team=self.team, certificate=self.certificate)
+
+    def test_ios_worker_has_its_own_profile_binding(self):
+        self.assertIn(('RommWorker', self.worker, 'IOS_ROMMWORKER_PROVISIONING_PROFILE_BASE64'),
+                      apple.PROFILE_KEYS['ios'])
+        self.assertEqual(self.validate(self.profile(self.worker)), self.uuid)
+
+    def test_only_the_ios_worker_can_omit_the_shared_app_group(self):
+        for platform, bundle in (('ios', apple.BUNDLE), ('tvos', apple.BUNDLE),
+                                 ('tvos', apple.BUNDLE + '.TopShelfExtension'), ('tvos', self.worker),
+                                 ('ios', apple.BUNDLE + '.OtherExtension')):
+            with self.subTest(platform=platform, bundle=bundle):
+                with self.assertRaisesRegex(ValueError, 'app group'):
+                    self.validate(self.profile(bundle, platform), bundle, platform)
+                self.assertEqual(self.validate(self.profile(bundle, platform, group=True), bundle, platform), self.uuid)
+
+    def test_worker_profile_keeps_identity_certificate_platform_and_distribution_checks(self):
+        original = self.profile(self.worker)
+        mutations = [
+            ('Entitlements', {'application-identifier': self.team + '.' + apple.BUNDLE}),
+            ('TeamIdentifier', ['OTHERTEAM']), ('DeveloperCertificates', [b'another certificate']),
+            ('Platform', ['tvOS']), ('ExpirationDate', datetime.now() - timedelta(days=1)),
+            ('UUID', 'invalid'), ('ProvisionedDevices', ['fixture device']), ('ProvisionsAllDevices', True),
+            ('Entitlements', {**original['Entitlements'], 'get-task-allow': True}),
+        ]
+        for key, value in mutations:
+            with self.subTest(key=key, value=value):
+                profile = copy.deepcopy(original)
+                profile[key] = value
+                with self.assertRaises(ValueError):
+                    self.validate(profile)
+
+    def test_archive_configures_worker_team_identity_and_distinct_profile(self):
+        objects = {'root': {'targets': ['runner', 'worker']}}
+        bindings = {}
+        for key, name, bundle, uuid in (('runner', 'Runner', apple.BUNDLE, self.uuid),
+                                        ('worker', 'RommWorker', self.worker,
+                                         '00000000-0000-0000-0000-000000000002')):
+            objects[key] = {'isa': 'PBXNativeTarget', 'name': name, 'buildConfigurationList': key + '-configs'}
+            objects[key + '-configs'] = {'buildConfigurations': [key + '-release']}
+            objects[key + '-release'] = {'name': 'Release', 'buildSettings': {'CODE_SIGN_ENTITLEMENTS': key + '.entitlements'}}
+            bindings[name] = {'bundle': bundle, 'uuid': uuid}
+        apple.configure_project({'rootObject': 'root', 'objects': objects}, bindings,
+                                self.team, 'f' * 40, Path('/fixture/signing.keychain'))
+        for key, name in (('runner', 'Runner'), ('worker', 'RommWorker')):
+            settings = objects[key + '-release']['buildSettings']
+            self.assertEqual(settings['DEVELOPMENT_TEAM'], self.team)
+            self.assertEqual(settings['CODE_SIGN_STYLE'], 'Manual')
+            self.assertEqual(settings['CODE_SIGN_IDENTITY'], 'f' * 40)
+            self.assertEqual(settings['PROVISIONING_PROFILE_SPECIFIER'], bindings[name]['uuid'])
+            self.assertEqual(settings['PRODUCT_BUNDLE_IDENTIFIER'], bindings[name]['bundle'])
+            self.assertEqual(settings['CODE_SIGN_ENTITLEMENTS'], key + '.entitlements')
+            self.assertIn('--keychain "/fixture/signing.keychain"', settings['OTHER_CODE_SIGN_FLAGS'])
+
+    def test_worker_profile_bootstrap_runs_before_compilation_without_empty_secret_override(self):
+        workflow = (Path(__file__).resolve().parents[2] / '.github/workflows/build.yml').read_text()
+        ios = job_block(workflow, 'build-ios')
+        configure = ios.split('      - name: Configure optional iOS App Store signing', 1)[1].split('      - name:', 1)[0]
+        signed = ios.split('      - name: Build signed iOS App Store IPA', 1)[1].split('      - name:', 1)[0]
+        for name in ('APPLE_API_ISSUER_ID', 'APPLE_API_KEY_ID', 'APPLE_API_PRIVATE_KEY'):
+            self.assertIn(f'{name}: ${{{{ secrets.{name} }}}}', configure)
+        self.assertIn('for name in APPLE_API_ISSUER_ID APPLE_API_KEY_ID APPLE_API_PRIVATE_KEY', configure)
+        self.assertIn('${IOS_ROMMWORKER_PROVISIONING_PROFILE_BASE64:-}', configure)
+        self.assertIn('--prepare-ios-worker-profile', configure)
+        self.assertLess(ios.index('--prepare-ios-worker-profile'), ios.index('Stage locked iOS worker frameworks'))
+        self.assertLess(ios.index('--prepare-ios-worker-profile'), ios.index('Build iOS (no codesign)'))
+        self.assertNotIn('IOS_ROMMWORKER_PROVISIONING_PROFILE_BASE64:', signed)
+        self.assertNotIn('secrets.IOS_ROMMWORKER_PROVISIONING_PROFILE_BASE64', ios)
 
 
 if __name__ == '__main__':

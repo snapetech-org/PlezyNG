@@ -77,12 +77,13 @@ and the route back to this device share the normal player surfaces.
 
 ## Validation record
 
-Hosted Flutter checks cover paired protocol compatibility, transactional
-handoff, control routing, queue framing, pairing, provider integration and
-player screens. New regressions exercise real encrypted LAN transport, real
-TLS WebSocket routing, replay rejection, reconnect, interrupted commits and
-small-screen/large-text picker layouts. Server tests include the Go race
-detector.
+At source checkpoint `dedb73b`, hosted Flutter checks passed all 546 integrated
+tests plus two focused preflight checks. Coverage includes paired protocol
+compatibility, handoff, control routing, queue framing, pairing, provider
+integration and player screens. Regressions exercise encrypted loopback
+transport, TLS WebSocket routing, replay rejection, reconnect, interrupted
+commits and small-screen/large-text picker layouts. The complete Go server
+suite passed with the race detector.
 
 Physical phone, TV, Pi, sleep/wake, background receiving and real audio
 continuity checks remain device qualification work. New labels require

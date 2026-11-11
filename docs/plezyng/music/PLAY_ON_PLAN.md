@@ -58,12 +58,24 @@ handoff/return, large queues, encrypted invitations, LAN/relay fallback and
 active-controller reconnect are integrated. The relay has bounded admission,
 queues and E2E paired music channels.
 
-Hosted Flutter checkpoints at `9622b4b` and `c1e8c6d` passed the focused
-music, Companion and player-surface suites. The complete Go server suite passed
-with `go test -race ./...`. Final integration and added real-transport/picker
-regressions are recorded below after their runs finish.
+The final hosted run at `dedb73b` passed two focused encrypted-loopback
+preflight checks and all 546 tests in the integrated music, Companion,
+receiver, WebSocket, screen and widget suite. This includes real session
+handoff/control/return/disconnect, WSS relay reconnect, interrupted commits,
+capability delivery during authentication, receiver revocation and the
+320-pixel picker at 200% text size. The preflight checks also run within the
+full suite.
 
-Production relay activation, physical-device qualification and native-language
-review remain external acceptance work. Software implementation checkboxes
+The complete Go server suite passed with `go test -race ./...`. Maintained
+Dart formatting, full-lib analysis with the music/transport tests, localization
+source hashes and placeholders, workflow action pins/security and diff checks
+also passed. New translations are machine-authored and await native-language
+review.
+
+The hosted run and its exact source checkpoint are available in
+[Music device handoff, run 42932674878](https://github.com/snapetech-org/pleazyng/actions/runs/42932674878).
+
+Production relay activation, distribution in an app release, physical-device
+qualification and native-language review remain external acceptance work. Software implementation checkboxes
 above track delivered code. Follow [the user guide](PLAY_ON.md) and
 [relay deployment guide](../../../server/MUSIC_CONNECT.md).

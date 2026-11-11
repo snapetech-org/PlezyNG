@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/database/app_database.dart';
@@ -38,6 +39,171 @@ void main() {
     shuffled: shuffled,
     repeatMode: repeatMode,
   );
+
+  Future<void> auditWrites() async {
+    await db.customStatement('CREATE TABLE queue_write_audit (operation TEXT NOT NULL)');
+    for (final operation in ['INSERT', 'UPDATE', 'DELETE']) {
+      await db.customStatement(
+        'CREATE TRIGGER queue_audit_${operation.toLowerCase()} AFTER $operation ON music_queue_entries BEGIN '
+        "INSERT INTO queue_write_audit VALUES ('$operation'); END",
+      );
+    }
+  }
+
+  Future<Map<String, int>> written() async => {
+    for (final row
+        in await db.customSelect('SELECT operation, COUNT(*) AS n FROM queue_write_audit GROUP BY operation').get())
+      row.read<String>('operation'): row.read<int>('n'),
+  };
+
+  test('mode edits write no queue rows and append writes only the new occurrence', () async {
+    final session = store();
+    final items = [for (var i = 0; i < 100; i++) track('track-$i')];
+    MusicSessionSnapshot snapshot(List<MediaItem> items, MusicRepeatMode mode) => MusicSessionSnapshot(
+      queue: state(items: items, repeatMode: mode),
+      playContext: null,
+      position: Duration.zero,
+    );
+    await session.save(snapshot(items, MusicRepeatMode.off));
+    await auditWrites();
+    await session.save(snapshot(items, MusicRepeatMode.all));
+    expect(await written(), isEmpty);
+    await session.save(snapshot([...items, track('tail')], MusicRepeatMode.all));
+    expect(await written(), {'INSERT': 1});
+    final loaded = await session.load();
+    expect(loaded!.queue.items.last.id, 'tail');
+    expect(loaded.queue.repeatMode, MusicRepeatMode.all);
+  });
+
+  test('cyclic reordering changes only moved positions and preserves duplicate occurrences', () async {
+    final session = store();
+    final items = [track('a'), track('a'), track('b'), track('c')];
+    MusicSessionSnapshot snapshot(List<int> order) => MusicSessionSnapshot(
+      queue: state(items: items, order: order, shuffled: true),
+      playContext: null,
+      position: Duration.zero,
+    );
+    await session.save(snapshot([0, 1, 2, 3]));
+    await auditWrites();
+    await session.save(snapshot([1, 2, 0, 3]));
+    expect(await written(), {'UPDATE': 6});
+    final loaded = await session.load();
+    expect(loaded!.queue.order, [1, 2, 0, 3]);
+    expect(loaded.queue.items.map((item) => item.id), ['a', 'a', 'b', 'c']);
+    await db.customStatement('DELETE FROM queue_write_audit');
+    await session.save(snapshot([1, 2, 0, 3]));
+    expect(await written(), isEmpty);
+  });
+
+  test('shrinking a queue deletes only its retired canonical tail', () async {
+    final session = store();
+    final items = [for (var i = 0; i < 10; i++) track('track-$i')];
+    MusicSessionSnapshot snapshot(List<MediaItem> items) => MusicSessionSnapshot(
+      queue: state(items: items),
+      playContext: null,
+      position: Duration.zero,
+    );
+    await session.save(snapshot(items));
+    await auditWrites();
+    await session.save(snapshot(items.take(7).toList()));
+    expect(await written(), {'DELETE': 3});
+    expect((await session.load())!.queue.items.map((item) => item.id), items.take(7).map((item) => item.id));
+  });
+
+  test('failure after staging a permutation rolls back entries and the session header', () async {
+    final session = store();
+    final items = [track('a'), track('b'), track('c')];
+    final before = MusicSessionSnapshot(
+      queue: state(items: items),
+      playContext: null,
+      position: const Duration(seconds: 12),
+    );
+    await session.save(before);
+    await db.customStatement(
+      'CREATE TRIGGER reject_queue_commit BEFORE UPDATE ON music_queue_entries '
+      'WHEN NEW.canonical_index = 2 AND NEW.playback_index >= 0 '
+      "BEGIN SELECT RAISE(ABORT, 'test queue write refusal'); END",
+    );
+    await expectLater(
+      session.save(
+        MusicSessionSnapshot(
+          queue: state(items: items, order: [2, 0, 1], shuffled: true),
+          playContext: const MusicPlayContext(title: 'New context', kind: MusicPlayContextKind.mix),
+          position: const Duration(seconds: 99),
+        ),
+      ),
+      throwsA(isA<Exception>()),
+    );
+    final loaded = await session.load();
+    expect(loaded!.queue.order, [0, 1, 2]);
+    expect(loaded.queue.shuffled, isFalse);
+    expect(loaded.position, before.position);
+    expect(loaded.playContext, isNull);
+    await db.customStatement('DROP TRIGGER reject_queue_commit');
+    await session.save(before);
+    expect((await session.load())!.queue.order, [0, 1, 2]);
+  });
+
+  test('a malformed old queue is replaced atomically on the next valid save', () async {
+    final session = store();
+    final snapshot = MusicSessionSnapshot(
+      queue: state(items: [track('a'), track('b')]),
+      playContext: null,
+      position: Duration.zero,
+    );
+    await session.save(snapshot);
+    await db.customStatement('UPDATE music_queue_entries SET playback_index = -1 WHERE canonical_index = 0');
+    expect(await session.load(), isNull);
+    await session.save(snapshot);
+    expect((await session.load())!.queue.order, [0, 1]);
+  });
+
+  test('a retired store cannot resurrect or clear a replacement profile session', () async {
+    final retired = store();
+    final snapshot = MusicSessionSnapshot(
+      queue: state(items: [track('a')]),
+      playContext: null,
+      position: Duration.zero,
+    );
+    final pending = retired.save(snapshot);
+    await db.deleteMusicRecipesForProfile('p1');
+    await db.deleteMusicSessionForProfile('p1');
+    await pending;
+    expect(await retired.load(), isNull);
+    final replacement = store();
+    expect(await replacement.load(), isNull);
+    await replacement.save(snapshot);
+    await retired.clear();
+    await retired.save(snapshot);
+    await retired.updateProgress(cursor: 0, position: const Duration(seconds: 33));
+    expect((await replacement.load())!.position, Duration.zero);
+  });
+
+  test('mixed edits round-trip full occurrence order through incremental saves', () async {
+    final session = store();
+    final queue = MusicQueueController(random: Random(17));
+    queue.load([for (var i = 0; i < 8; i++) track('track-${i % 3}')], startIndex: 3);
+    final random = Random(41);
+    for (var step = 0; step < 48; step++) {
+      switch (step % 4) {
+        case 0:
+          queue.addNext([track('added-$step')]);
+        case 1:
+          if (queue.length > 1) queue.removeAt(random.nextInt(queue.length));
+        case 2:
+          queue.move(random.nextInt(queue.length), random.nextInt(queue.length));
+        case 3:
+          queue.toggleShuffle();
+      }
+      final expected = queue.captureState();
+      await session.save(MusicSessionSnapshot(queue: expected, playContext: null, position: Duration.zero));
+      final restored = (await session.load())!.queue;
+      expect(restored.items.map((item) => item.id), expected.items.map((item) => item.id), reason: 'step $step');
+      expect(restored.order, expected.order, reason: 'step $step');
+      expect(restored.cursor, expected.cursor, reason: 'step $step');
+      expect(restored.shuffled, expected.shuffled, reason: 'step $step');
+    }
+  });
 
   test('round-trips queue state, provenance, and position', () async {
     final items = [track('a'), track('b'), track('c')];

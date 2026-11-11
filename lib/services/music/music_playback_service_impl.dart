@@ -4663,7 +4663,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     return pending.position;
   }
 
-  /// Full snapshot rewrite — queue-shape/mode changes only; the playhead
+  /// Transactional snapshot update — queue-shape/mode changes only; the playhead
   /// travels through [_persistSessionProgress] otherwise.
   void _persistSessionSnapshot({Duration? positionOverride}) {
     final store = _sessionStore;

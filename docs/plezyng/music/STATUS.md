@@ -76,7 +76,7 @@ applied enable, -3.5 dB gain and two exact bands to the production host.
 Actual pinned Linux execution found missing FFmpeg EQ filters. Producer repair
 eb78e98 now builds and executes generated flat/peak/shelf/global-gain PCM checks
 successfully on the rebuilt Linux binary. The all-platform publication run and
-atomic application dependency promotion remain pending.
+atomic application dependency promotion remain pending. Both Linux architectures passed actual DSP execution and their immutable artifacts are published at producer fb65bcb. Android native ABIs/AAR built successfully; their publication is pending retrieval/hosted startup recovery.
 Native source output now negotiates saved audio.channels preferences with bounded,
 non-redirecting reads and preserves stereo for automatic or legacy peers.
 Known 5.1/7.1 capture is canonicalized; stereo/5.1/7.1 buses advance on one clock
@@ -90,7 +90,7 @@ Local physical-output/headphone correction is now excluded from wire PCM while
 retaining the general source curve. Leaving restores the latest saved output
 preset without changing queue ownership; 113 focused output/shared-session
 tests pass. The full Linux debug application compiles at a64e31c8b with the
-pinned MilkRust runtime. Native mobile builds and acoustic evidence remain.
+pinned MilkRust runtime. The full Android ARM64 debug application also compiles at 2144d0300; Apple native builds and acoustic evidence remain.
  Renderer
 feedback now reads the current core's audible audio-PTS, maps its WAV clock to
 monotonic time and resamples source frames for actual presentation. Bounded
@@ -275,7 +275,7 @@ and native-language review remain open.
 | P04 | Advanced pre-caching | Complete DirectPlay files can be prefetched into a separate profile cache, with a 0–2048 MiB quota, Wi-Fi policy, total request deadline, atomic promotion, hashed credential-qualified keys and LRU eviction. Current account visibility is rechecked before promotion/use; pinned downloads are separate. Transcodes and playlists retain streaming. | Quota/LRU, malformed/partial/oversized responses, network policy, authorization revocation and clear tests pass. |
 | P05 | Streaming and conversion quality | Music streaming has general, remote and cellular settings, with cellular override precedence. Music downloads retain original representation; settings and offline policy explain that distinction. Output equivalence remains. | Precedence/persistence tests pass; no new format/device matrix. |
 | P06 | Queue edits, shuffle and repeat | Existing edits retained; continuation respects manual inserts, removals and clear-upcoming. Full reference gesture/Back To inventory remains. | Queue and playback tests pass. |
-| P07 | Persistent large queues | Full queue, order, cursor and continuation metadata persist without a 1,000-track truncation. Listening history retains the loaded window through live database invalidation and uses keyset pages preserving repeated plays and timestamp ties. Live queue still resides in RAM and shape edits rewrite its rows. | 10,000-track persistence, duplicate occurrences, cursor paging, tied timestamps, refresh/load races and migration regressions pass. |
+| P07 | Persistent large queues | Full queue, order, cursor and continuation metadata persist without a 1,000-track truncation. Listening history retains the loaded window through live database invalidation and uses keyset pages preserving repeated plays and timestamp ties. Queue edits now stage changed playback positions and upsert only changed metadata in bounded transactions; mode-only changes write no queue rows and tail appends write only new occurrences. The live queue still resides in RAM. | 10,000-track persistence, duplicate occurrences, cursor paging, tied timestamps, refresh/load races and migration regressions pass. |
 | P08 | Album-aware playback | Album-block shuffle/skip retained; station generation orders whole albums by disc and track, skipping blocks that exceed count/time budgets. | Album queue and station boundary tests pass. |
 | P09 | Timed/plain lyrics | Authorized server lyrics are cached on explicit download and playback; per-track timing offsets affect highlighting and tap-to-seek. New data is profile-owned and rejects late revoked-account results. | Lyrics bundle, revocation and existing widget tests pass; licensed/live provider timing qualification pending. |
 | P10 | Waveform/seek-print navigation | Seek-print analysis now persists in a versioned, at-most-512-sample profile document and is enriched during downloads when the selected cached source exposes Plex analysis. Unknown/invalid analysis remains absent. | Bounded bundle, stale-account and invalid-analysis tests pass; live server/device evidence pending. |

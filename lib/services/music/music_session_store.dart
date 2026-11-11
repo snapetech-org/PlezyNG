@@ -34,17 +34,25 @@ class MusicSessionSnapshot {
 
 /// Per-profile persistence for the last music session (#2148).
 ///
-/// Serialization boundary between [MusicSessionSnapshot] and the
-/// `MusicSessions` Drift row. [save] rewrites the whole row (queue JSON
-/// included) and runs only on queue-shape/mode changes; [updateProgress] is
+/// Serialization boundary between the snapshot, session header and bounded
+/// queue-entry pages. [save] updates changed entries transactionally;
+/// [updateProgress] is
 /// the cheap cursor/playhead write-through used on track changes, pauses, and
 /// the throttled position tick. Decoding is best-effort: any malformed row is
 /// discarded as a whole — restore must never produce a half-valid session.
 class MusicSessionStore {
-  MusicSessionStore({required this._database, required this._profileId});
+  MusicSessionStore({required AppDatabase database, required String profileId})
+    : _database = database,
+      _profileId = profileId,
+      _epoch = database.musicDataEpoch(profileId);
 
   final AppDatabase _database;
   final String _profileId;
+  final int _epoch;
+  bool get _active => _database.musicDataEpoch(_profileId) == _epoch;
+  void _guard() {
+    if (!_active) throw StateError('Music profile retired');
+  }
 
   // Serialize saves, progress and clear; an old save must never resurrect a
   // session after stop or overwrite a newer cursor.
@@ -52,11 +60,13 @@ class MusicSessionStore {
   static const int pageSize = 256;
 
   Future<void> save(MusicSessionSnapshot snapshot) => _writes.run(() async {
+    if (!_active) return;
     final queue = snapshot.queue;
     if (!MusicQueueController().restoreState(queue)) {
       throw ArgumentError('Invalid music queue snapshot');
     }
     await _database.transaction(() async {
+      _guard();
       await _database.upsertMusicSession(
         MusicSessionRow(
           profileId: _profileId,
@@ -88,40 +98,103 @@ class MusicSessionStore {
           updatedAt: DateTime.now().millisecondsSinceEpoch,
         ),
       );
-      await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ?', [_profileId]);
-      final playbackPositions = List<int>.filled(queue.items.length, 0);
-      for (var i = 0; i < queue.order.length; i++) {
-        playbackPositions[queue.order[i]] = i;
-      }
-      // Bounded encoding batches; never build a multi-megabyte JSON array.
-      for (var start = 0; start < queue.items.length; start += pageSize) {
-        final end = (start + pageSize).clamp(0, queue.items.length);
-        await _database.batch((batch) {
-          for (var i = start; i < end; i++) {
-            batch.customStatement(
-              'INSERT INTO music_queue_entries (profile_id, canonical_index, playback_index, metadata) VALUES (?, ?, ?, ?)',
-              [_profileId, i, playbackPositions[i], jsonEncode(queue.items[i].toJson())],
-            );
-          }
-        });
-      }
+      _guard();
+      await _writeQueueRows(queue);
     });
   });
 
-  Future<void> updateProgress({required int cursor, required Duration position}) => _writes.run(
-    () => _database.updateMusicSessionProgress(
-      profileId: _profileId,
-      cursor: cursor,
-      positionMs: position.inMilliseconds.clamp(0, 1 << 62),
-      updatedAt: DateTime.now().millisecondsSinceEpoch,
-    ),
-  );
+  /// Stage only moved playback positions before upserting changed rows. The
+  /// negative positions are private to this transaction, so permutation cycles
+  /// never collide with the unique playback index seen by committed readers.
+  Future<void> _writeQueueRows(MusicQueueState queue) async {
+    final shape = await _database
+        .customSelect(
+          'SELECT COUNT(*) AS n, MIN(canonical_index) AS cmin, MAX(canonical_index) AS cmax, '
+          'MIN(playback_index) AS pmin, MAX(playback_index) AS pmax '
+          'FROM music_queue_entries WHERE profile_id = ?',
+          variables: [Variable(_profileId)],
+        )
+        .getSingle();
+    _guard();
+    final count = shape.read<int>('n');
+    if (count > 0 &&
+        (shape.read<int>('cmin') != 0 ||
+            shape.read<int>('cmax') != count - 1 ||
+            shape.read<int>('pmin') != 0 ||
+            shape.read<int>('pmax') != count - 1)) {
+      // An interrupted/corrupt legacy shape has no safe incremental identity.
+      await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ?', [_profileId]);
+    }
+    await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ? AND canonical_index >= ?', [
+      _profileId,
+      queue.items.length,
+    ]);
+    final positions = List<int>.filled(queue.items.length, 0);
+    for (var i = 0; i < queue.order.length; i++) {
+      positions[queue.order[i]] = i;
+    }
+    for (var start = 0; start < queue.items.length; start += pageSize) {
+      _guard();
+      final rows = await _database
+          .customSelect(
+            'SELECT canonical_index, playback_index FROM music_queue_entries '
+            'WHERE profile_id = ? AND canonical_index >= ? AND canonical_index < ?',
+            variables: [Variable(_profileId), Variable(start), Variable(start + pageSize)],
+          )
+          .get();
+      await _database.batch((batch) {
+        for (final row in rows) {
+          final canonical = row.read<int>('canonical_index');
+          if (row.read<int>('playback_index') != positions[canonical]) {
+            batch.customStatement(
+              'UPDATE music_queue_entries SET playback_index = ? WHERE profile_id = ? AND canonical_index = ?',
+              [-canonical - 1, _profileId, canonical],
+            );
+          }
+        }
+      });
+    }
+    // Encoding remains bounded. Unchanged payloads and positions cause no row
+    // update, including repeat/context-only edits and an appended queue tail.
+    for (var start = 0; start < queue.items.length; start += pageSize) {
+      _guard();
+      final end = (start + pageSize).clamp(0, queue.items.length);
+      await _database.batch((batch) {
+        for (var i = start; i < end; i++) {
+          batch.customStatement(
+            'INSERT INTO music_queue_entries (profile_id, canonical_index, playback_index, metadata) '
+            'VALUES (?, ?, ?, ?) ON CONFLICT (profile_id, canonical_index) DO UPDATE SET '
+            'playback_index = excluded.playback_index, metadata = excluded.metadata '
+            'WHERE music_queue_entries.playback_index != excluded.playback_index '
+            'OR music_queue_entries.metadata != excluded.metadata',
+            [_profileId, i, positions[i], jsonEncode(queue.items[i].toJson())],
+          );
+        }
+      });
+    }
+    _guard();
+  }
+
+  Future<void> updateProgress({required int cursor, required Duration position}) => _writes.run(() async {
+    if (!_active) return;
+    await _database.transaction(() async {
+      _guard();
+      await _database.updateMusicSessionProgress(
+        profileId: _profileId,
+        cursor: cursor,
+        positionMs: position.inMilliseconds.clamp(0, 1 << 62),
+        updatedAt: DateTime.now().millisecondsSinceEpoch,
+      );
+      _guard();
+    });
+  });
 
   Future<MusicSessionSnapshot?> load() async {
     await _writes.settled;
+    if (!_active) return null;
     return _database.transaction(() async {
       final row = await _database.getMusicSession(_profileId);
-      if (row == null) return null;
+      if (row == null || !_active) return null;
       try {
         final payload = jsonDecode(row.queueJson);
         final items = <MediaItem>[];
@@ -187,6 +260,7 @@ class MusicSessionStore {
           repeatMode: repeatMode,
         );
         if (!MusicQueueController().restoreState(queue)) return null;
+        if (!_active) return null;
         return MusicSessionSnapshot(
           queue: queue,
           continuationSeed: continuationSeed,
@@ -204,7 +278,14 @@ class MusicSessionStore {
     });
   }
 
-  Future<void> clear() => _writes.run(() => _database.deleteMusicSessionForProfile(_profileId));
+  Future<void> clear() => _writes.run(() async {
+    if (!_active) return;
+    await _database.transaction(() async {
+      _guard();
+      await _database.deleteMusicSessionForProfile(_profileId);
+      _guard();
+    });
+  });
 
   /// Stable persisted ids — never the enum `.name`, which a rename would
   /// corrupt (same policy as [OfflineActionType.id]).

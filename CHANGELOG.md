@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Persist only changed music queue rows in bounded transactional batches, safely stage cyclic shuffle/reorder updates and fence retired profile stores.
+
 - Show pinned music on Music Home with removal and drag ordering. Pin artists, albums and tracks from music actions, and reopen current authorized detail routes through the shared session.
 
 - Store bounded Music Home artist, album and track pins for the active profile and account. Refresh authorized metadata before saving or opening, and retire stale account, library and profile operations.

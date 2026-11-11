@@ -1275,7 +1275,7 @@ for apple_job_name, workspace_label in (
     )
     stage_step = named_step(apple_release_job, stage_step_name)
     require(
-        'python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$GITHUB_SHA"'
+        'python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$COMPILE_SOURCE_SHA"'
         in stage_step and 'ditto "$GITHUB_WORKSPACE/."' not in stage_step,
         f"{workspace_label} release must stage tracked sources without copying ignored caches or APFS attributes",
     )
@@ -1664,9 +1664,64 @@ require(
     "draft release notes must be rendered from CHANGELOG.md",
 )
 
+
+require(
+    'UPSTREAM_ATTRIBUTION.md' in release
+    and 'cat UPSTREAM_ATTRIBUTION.md >> release-notes.md' in release
+    and 'blob/v%s/UPSTREAM_ATTRIBUTION.md' in release,
+    "public release notes must include the upstream people/source ledger and tag-pinned link",
+)
+apple_sidecar_cleanup = (ROOT / 'scripts/clean_appledouble_sidecars.sh').read_text()
+require(
+    'source_sha="${COMPILE_SOURCE_SHA:-${GITHUB_SHA:-}}"' in apple_sidecar_cleanup
+    and '"$(git -C "$workspace" rev-parse HEAD)" != "$source_sha"' in apple_sidecar_cleanup
+    and '"sha=${GITHUB_SHA:-}"' in apple_sidecar_cleanup,
+    "Apple sidecar cleanup must separate approved source validation from workflow ownership",
+)
+ios_arch = named_step(job("build-ios"), "Pin iOS device builds to the packaged native ABI")
+ios_steam = named_step(job("build-ios"), "Prepare pinned iOS Steam sources before Xcode")
+require(
+    'working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}' in ios_steam
+    and 'timeout-minutes: 15\n' in ios_steam and '        if:' not in ios_steam
+    and 'for attempt in 1 2 3; do' in ios_steam
+    and 'if python3 scripts/games/prepare_steam.py; then' in ios_steam
+    and 'if (( attempt == 3 )); then' in ios_steam and 'exit 1' in ios_steam
+    and job("build-ios").index('Prepare pinned iOS Steam sources before Xcode')
+        < job("build-ios").index('Stage locked iOS worker frameworks for Release'),
+    "iOS must prepare pinned Steam sources in the compiler workspace with bounded retries before Xcode",
+)
+require(
+    r'ARCHS = arm64\nONLY_ACTIVE_ARCH = NO\n' in ios_arch and 'ONLY_ACTIVE_ARCH = NO' in ios_arch
+    and 'XCODE_XCCONFIG_FILE=$override' in ios_arch,
+    "iOS device compilation must use the packaged arm64 ABI",
+)
+require(
+    all('"$(git -C "$short_root" rev-parse HEAD)" == "$COMPILE_SOURCE_SHA"' in job(name)
+        for name in ('build-ios', 'build-macos')),
+    "Apple source staging must verify the actual packaging checkout identity",
+)
+
+for build_job in ('build-android', 'build-webos', 'build-ios', 'build-tvos',
+                  'build-macos', 'build-windows', 'build-linux', 'build-tizen'):
+    require("if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && " in job(build_job),
+            f"{build_job} must evaluate after skipped capture/CI ancestors and require successful validation")
+
 trusted_ref = job("validate-trusted-ref")
+native_freshness = named_step(trusted_ref, "Require current verified fork native dependency")
+require(
+    "if: steps.frozen-repair.outputs.approved != 'true'" in native_freshness
+    and trusted_ref.index('Verify approved frozen packaging checkout') < trusted_ref.index('Require current verified fork native dependency'),
+    "only independently approved frozen packaging may preserve pins instead of checking moving native HEAD",
+)
 recovery_gate = named_step(trusted_ref, "Verify reusable platform source")
 recovery_download = named_step(release, "Recover verified platform artifacts")
+require(
+    '--tvos-run "$REPAIRED_RUN"' in recovery_gate
+    and '--tvos-run "$REPAIRED_RUN"' in recovery_download
+    and 'if [[ -n "$PACKAGING_SHA" ]]' in recovery_gate
+    and '--repaired-run "$REPAIRED_RUN"' in recovery_gate,
+    "approved Apple recovery must distinguish signed TV reuse from legacy Linux/Mac repair reuse",
+)
 ios_worker_stage = named_step(job("build-ios"), "Stage locked iOS worker frameworks for Release")
 require(
     "(inputs.reuse_platform_run_id == '' || inputs.rebuild_ios)" in job("build-ios")

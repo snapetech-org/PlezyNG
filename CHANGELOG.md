@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Prepare and validate distinct iOS Runner and RommWorker App Store profiles before compilation, using the existing distribution identity and Apple API access. Retain the attested unsigned IPA before Store packaging, so a signing failure preserves the successful developer artifact.
+
+- Prepare the unchanged pinned iOS Steam sources before Xcode with bounded retries, so dependency-network failures stop before expensive compilation and the Xcode phase reuses the verified source recipe.
+
+- Keep Apple workflow ownership separate from the approved source checkout when cleaning build workspaces. Reuse a separately verified signed tvOS repair output when only iOS still needs building, preserving the same qualified product source and native dependencies.
+
+- Repair Apple release packaging without changing the qualified application source: pin iOS device archives to the bundled arm64 ABI and make copied native frameworks writable before re-signing. Reuse successful platform artifacts with an exact reviewed packaging revision and publicly attested source identities. Include the complete upstream people/source ledger in public release notes.
+
 - Dispatch Cast media loads before awaiting receiver acknowledgement, retaining synchronous status events and cleaning up failed or timed-out handshakes.
 
 - Qualify Apple simulator startup on fresh, SDK-matched job-owned devices. Preserve existing simulator saves and real tvOS database recovery checks, and retain ownership receipts for cleanup.

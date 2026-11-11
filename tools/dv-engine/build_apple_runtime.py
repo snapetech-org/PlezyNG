@@ -201,6 +201,15 @@ def build(work: Path, sdk: str, configuration: str, architectures: list[str]) ->
     return product_root
 
 
+def make_framework_writable(target: Path) -> None:
+    """Make only our copied framework signable; never follow bundle symlinks."""
+    if target.is_symlink() or not target.is_dir():
+        raise ValueError("expected an owned copied framework directory")
+    for path in [target, *target.rglob("*")]:
+        if not path.is_symlink():
+            path.chmod(path.stat().st_mode | 0o200)
+
+
 def embed(products: Path, frameworks: Path, resources: Path) -> None:
     frameworks.mkdir(parents=True, exist_ok=True)
     resources.mkdir(parents=True, exist_ok=True)
@@ -214,8 +223,10 @@ def embed(products: Path, frameworks: Path, resources: Path) -> None:
             continue
         target = frameworks / source.name
         if target.exists():
+            make_framework_writable(target)
             shutil.rmtree(target)
         shutil.copytree(source, target, symlinks=True)
+        make_framework_writable(target)
         copied.append(target)
     for source in products.glob("*.bundle"):
         target = resources / source.name

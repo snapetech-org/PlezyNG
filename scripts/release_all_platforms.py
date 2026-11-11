@@ -185,6 +185,77 @@ def matching_run(
     return matches[0] if matches else None
 
 
+def packaging_repair_was_validation_only(run: dict) -> bool:
+    """Prove a completed repair never reached build or publication execution."""
+    if run.get("status") != "completed" or run.get("conclusion") != "success":
+        return False
+    run_id = run["id"]
+    pages = gh_json("api", "--paginate", "--slurp",
+                    f"repos/{PLEZY_REPO}/actions/runs/{run_id}/jobs?filter=all&per_page=100")
+    if (not isinstance(pages, list) or not pages or any(not isinstance(page, dict)
+            or not isinstance(page.get("jobs"), list) for page in pages)):
+        raise ReleaseError("Cannot prove validation-only repair job inventory is complete.")
+    jobs = [job for page in pages for job in page["jobs"]]
+    if any(page.get("total_count") != len(jobs) for page in pages):
+        raise ReleaseError("Validation-only repair job inventory is truncated.")
+    validation = [job for job in jobs if job.get("name") == "Validate release request"]
+    if (len(validation) != 1 or validation[0].get("status") != "completed"
+            or validation[0].get("conclusion") != "success"):
+        return False
+    required = {"Verify approved frozen packaging checkout", "Verify reusable platform source"}
+    steps = validation[0].get("steps", [])
+    if any(not any(step.get("name") == name and step.get("status") == "completed"
+                   and step.get("conclusion") == "success" for step in steps) for name in required):
+        return False
+    others = [job for job in jobs if job is not validation[0]]
+    # Require the release and both repaired platform gates to be represented,
+    # even when GitHub did not expand their skipped matrix jobs.
+    if not {"create-release", "build-ios", "Build tvOS developer package (arm64)"}.issubset(
+            {job.get("name") for job in others}):
+        return False
+    if any(job.get("status") != "completed" or job.get("conclusion") != "skipped"
+           or job.get("steps") != [] for job in others):
+        return False
+    artifacts = gh_json("api", f"repos/{PLEZY_REPO}/actions/runs/{run_id}/artifacts?per_page=100")
+    if artifacts.get("total_count") != 0 or artifacts.get("artifacts") != []:
+        return False
+    print(f"Preserving validation-only repair run {run_id}: approved validation succeeded; "
+          f"all {len(others)} other jobs skipped without steps; artifact inventory empty. "
+          "A corrected workflow snapshot may retry the same immutable packaging source.")
+    return True
+
+
+def matching_packaging_repair_run(title: str) -> dict | None:
+    """Find this immutable repair across later main snapshots, without duplicates."""
+    pages = gh_json("api", "--paginate", "--slurp",
+                    f"repos/{PLEZY_REPO}/actions/workflows/{RELEASE_WORKFLOW}/runs?branch=main&event=workflow_dispatch&per_page=100")
+    if not isinstance(pages, list) or any(not isinstance(page, dict)
+            or not isinstance(page.get("workflow_runs"), list) for page in pages):
+        raise ReleaseError("Cannot prove the packaging repair run inventory is complete.")
+    runs = [run for page in pages for run in page["workflow_runs"]]
+    if any(page.get("total_count", len(runs)) > len(runs) for page in pages):
+        raise ReleaseError("Packaging repair run inventory is truncated; refusing another dispatch.")
+    matches = [run for run in runs if run.get("display_title") == title]
+    real_matches = []
+    for run in matches:
+        if (run.get("event") != "workflow_dispatch" or run.get("head_branch") != "main"
+            or run.get("path", "").split("@")[0] != ".github/workflows/build.yml"
+            or (run.get("head_repository") or {}).get("full_name") != PLEZY_REPO
+            or not isinstance(run.get("id"), int)
+            or re.fullmatch(r"[0-9a-f]{40}", run.get("head_sha", "")) is None):
+            raise ReleaseError("Packaging repair run has an unexpected workflow or source identity.")
+        if not packaging_repair_was_validation_only(run):
+            real_matches.append(run)
+    if len(real_matches) > 1:
+        raise ReleaseError("Multiple runs already claim this packaging repair; inspect their side effects.")
+    if not real_matches:
+        return None
+    run = real_matches[0]
+    return {"databaseId": run["id"], "headSha": run["head_sha"],
+            "headBranch": "main", "event": run["event"], "status": run["status"],
+            "conclusion": run.get("conclusion"), "url": run.get("html_url")}
+
+
 def failed_build_has_drained(run: dict, jobs: list[dict]) -> bool:
     """Cancel only obsolete queued Apple work, after all other consumers finish."""
     if not apple_queue.is_failed_release_build(run, jobs):
@@ -1103,10 +1174,13 @@ def ensure_release(
     rebuild_tvos: bool = False,
     rebuild_ios: bool = False,
     reuse_repaired_run_id: int | None = None,
+    reuse_tvos_run_id: int | None = None,
     reuse_webos_run_id: int | None = None,
     candidate_ref: str | None = None,
     start_only: bool = False,
     tvos_runner_pool: str = "hosted",
+    packaging_source_sha: str | None = None,
+    workflow_source_sha: str | None = None,
 ) -> dict:
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
@@ -1117,8 +1191,21 @@ def ensure_release(
             raise ReleaseError("A captured main build requires its exact version/SHA candidate reference.")
         ensure_frozen_release_source(candidate_ref, commit_sha)
     run_title = f"action:release:pool:private:tag:{tag}"
+    repair = packaging_source_sha is not None
+    if reuse_tvos_run_id and (not repair or rebuild_tvos or reuse_repaired_run_id):
+        raise ReleaseError('Signed TV reuse requires approved iOS-only packaging recovery without another repair source.')
+    existing = None
+    if repair:
+        if (packaging_source_sha != commit_sha or not reuse_platform_run_id or candidate_ref
+                or re.fullmatch(r"[0-9a-f]{40}", packaging_source_sha) is None):
+            raise ReleaseError("Packaging recovery requires the exact repair source and original platform run.")
+        run_title += f":repair:{packaging_source_sha}"
+        existing = matching_packaging_repair_run(run_title)
+        workflow_source_sha = (existing["headSha"] if existing else workflow_source_sha)
+        if workflow_source_sha is None:
+            workflow_source_sha = gh_json("api", f"repos/{PLEZY_REPO}/branches/main")["commit"]["sha"]
     if reuse_platform_run_id:
-        if execution_profile != "hybrid" or include_apple_store_build:
+        if execution_profile != "hybrid" or (include_apple_store_build and not repair):
             raise ReleaseError("Platform recovery requires the hybrid GitHub-only release profile without fresh Apple or Homebrew qualification.")
         options = {}
         if rebuild_linux:
@@ -1131,6 +1218,8 @@ def ensure_release(
             options["rebuild_ios"] = True
         if reuse_repaired_run_id:
             options["repaired_run"] = reuse_repaired_run_id
+        if reuse_tvos_run_id:
+            options['tvos_run'] = reuse_tvos_run_id
         if reuse_webos_run_id:
             options["webos_run"] = reuse_webos_run_id
         if prepare_homebrew_cask and not reuse_macos_run_id:
@@ -1141,10 +1230,16 @@ def ensure_release(
             options["android_run"] = reuse_android_run_id
         if not include_webos_build:
             options["include_webos_build"] = False
+        if repair:
+            options.update(packaging_source_sha=packaging_source_sha,
+                           workflow_source_sha=workflow_source_sha,
+                           include_apple_store_build=include_apple_store_build)
         if reuse_android_run_id and not include_webos_build:
             options["wait_complete"] = True
-        verify_platform_recovery(reuse_platform_run_id, commit_sha, tag.removeprefix("v"), **options)
-    existing = matching_run(
+        proof = verify_platform_recovery(reuse_platform_run_id, commit_sha, tag.removeprefix("v"), **options)
+        if repair:
+            validate_packaging_repair_proof(proof, tag, packaging_source_sha, workflow_source_sha)
+    existing = existing if repair else matching_run(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
         commit_sha,
@@ -1172,6 +1267,7 @@ def ensure_release(
                     ("build-ios", "Build signed iOS App Store IPA"),
                     ("Build tvOS developer package (arm64)", "Build signed tvOS App Store IPA"),
                 )
+                if not repair or (rebuild_ios if job_name == "build-ios" else rebuild_tvos)
             )
         if prepare_homebrew_cask:
             complete = complete and all(
@@ -1185,11 +1281,14 @@ def ensure_release(
         if complete:
             print(f"Reusing successful release build run {existing['databaseId']} for {tag}.")
             return existing
+        if repair:
+            raise ReleaseError("Existing packaging repair lacks requested signing/qualification steps; refusing a duplicate dispatch.")
         print(
             f"Release run {existing['databaseId']} passed without all requested platform jobs; "
             "dispatching the required profile."
         )
-    ensure_remote_main_sha(commit_sha, f"dispatching the {tag} release build")
+    dispatch_sha = workflow_source_sha if repair else commit_sha
+    ensure_remote_main_sha(dispatch_sha, f"dispatching the {tag} release build")
     fields = {
         "action": "release",
         "runner_pool": "private",
@@ -1204,6 +1303,9 @@ def ensure_release(
     }
     if candidate_ref:
         fields["candidate_ref"] = candidate_ref
+    if repair:
+        fields["recovery_source_sha"] = packaging_source_sha
+        fields["recovery_product_sha"] = proof["product_source_sha"]
     if tvos_runner_pool == "private":
         fields["tvos_runner_pool"] = "private"
     if rebuild_linux:
@@ -1216,6 +1318,10 @@ def ensure_release(
         fields["rebuild_ios"] = "true"
     if reuse_repaired_run_id:
         fields["reuse_repaired_run_id"] = str(reuse_repaired_run_id)
+    if reuse_tvos_run_id:
+        # Reuse the existing dispatch slot; the frozen-mode workflow maps this
+        # exclusively to --tvos-run, never the legacy Linux/Mac repair option.
+        fields['reuse_repaired_run_id'] = str(reuse_tvos_run_id)
     if reuse_webos_run_id:
         fields["reuse_webos_run_id"] = str(reuse_webos_run_id)
     if reuse_platform_run_id:
@@ -1224,26 +1330,47 @@ def ensure_release(
         fields["reuse_android_run_id"] = str(reuse_android_run_id)
     if reuse_macos_run_id:
         fields["reuse_macos_package_run_id"] = str(reuse_macos_run_id)
-    return dispatch(
+    result = dispatch(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
         "main",
         fields,
         f"Pleazyng {tag} all-platform release build",
         expected_title=run_title,
-        expected_sha=commit_sha,
+        expected_sha=dispatch_sha,
         **({"wait": False} if start_only else {}),
     )
+    if repair and not start_only:
+        required_steps = []
+        if include_apple_store_build:
+            if rebuild_ios:
+                required_steps.append(("build-ios", "Build signed iOS App Store IPA"))
+            if rebuild_tvos:
+                required_steps.append(("Build tvOS developer package (arm64)", "Build signed tvOS App Store IPA"))
+        if prepare_homebrew_cask:
+            if rebuild_macos:
+                required_steps.extend(("build-macos", name) for name in
+                                      ("Notarize Application", "Verify Gatekeeper acceptance for Homebrew Cask"))
+            required_steps.extend(("create-release", name) for name in
+                                  ("Generate Homebrew Cask candidate", "Attest Homebrew Cask candidate"))
+        if any(not run_has_successful_step(PLEZY_REPO, result, job, step) for job, step in required_steps):
+            raise ReleaseError("Packaging repair completed without every requested signing/qualification step.")
+    return result
 
 
 def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
                              android_run=None, macos_run=None, webos_run=None, include_webos_build=True, wait_complete=False,
-                             rebuild_linux=False, rebuild_macos=False, rebuild_tvos=False, rebuild_ios=False, repaired_run=None, require_homebrew_cask=False) -> dict:
+                             rebuild_linux=False, rebuild_macos=False, rebuild_tvos=False, rebuild_ios=False, repaired_run=None, require_homebrew_cask=False,
+                             packaging_source_sha=None, workflow_source_sha=None, include_apple_store_build=False, tvos_run=None) -> dict:
     from recover_release_platforms import RecoveryError, compose_proof, verify_source_run, wait_for_source_run, verify_macos_packaging_recovery
 
     if (rebuild_tvos or rebuild_ios) and (macos_run or repaired_run):
         raise ReleaseError("Apple device rebuilding requires ordinary verified platform recovery")
     options = {}
+    if tvos_run:
+        if not packaging_source_sha or rebuild_tvos or repaired_run or macos_run:
+            raise ReleaseError('Signed TV reuse requires approved frozen packaging recovery.')
+        options['tvos_run'] = tvos_run
     if rebuild_linux:
         options["rebuild_linux"] = True
     if rebuild_macos:
@@ -1256,6 +1383,11 @@ def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
         options["repaired_run"] = repaired_run
     if require_homebrew_cask:
         options["require_homebrew_cask"] = True
+    if packaging_source_sha is not None:
+        options.update(packaging_source_sha=packaging_source_sha, workflow_source_sha=workflow_source_sha,
+                       include_apple_store_build=include_apple_store_build)
+    elif workflow_source_sha is not None or include_apple_store_build:
+        raise ReleaseError("Signed packaging recovery requires an approved packaging source.")
     try:
         source = (verify_macos_packaging_recovery(run_id, macos_run, commit_sha, version) if macos_run else
                   wait_for_source_run(run_id, commit_sha, version, 10800, **options) if wait_complete else
@@ -1263,6 +1395,96 @@ def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
         return compose_proof(source, android_run, include_webos_build, webos_run)
     except (RecoveryError, RuntimeError) as error:
         raise ReleaseError(f"Platform artifact recovery rejected: {error}") from error
+
+
+def validate_packaging_repair_proof(proof: dict, tag: str, packaging_sha: str, workflow_sha: str) -> None:
+    if (proof.get("schema_version") != 2
+            or proof.get("recovery_policy") != "frozen-apple-packaging-v1"
+            or proof.get("packaging_source_sha") != packaging_sha
+            or proof.get("workflow_source_sha") != workflow_sha
+            or re.fullmatch(r"[0-9a-f]{40}", str(proof.get("product_source_sha", ""))) is None):
+        raise ReleaseError("Approved Apple packaging recovery proof is incomplete or mismatched.")
+    ensure_frozen_release_source(tag, proof["product_source_sha"])
+
+
+def verify_packaging_repair_assembly(scratch: Path, tag: str, source_proof: dict, run: dict) -> dict:
+    """Bind the assembled recovery receipt to its actual workflow and release bytes."""
+    directory = scratch / "packaging-repair-assembly"
+    directory.mkdir()
+    command(["gh", "release", "download", tag, "--repo", PLEZY_REPO,
+             "--pattern", "SHA256SUMS.txt", "--pattern", "platform-reuse-provenance.json",
+             "--dir", str(directory)])
+    checksums = directory / "SHA256SUMS.txt"
+    receipt_path = directory / "platform-reuse-provenance.json"
+    workflow_sha = source_proof["workflow_source_sha"]
+    result = command(["gh", "attestation", "verify", str(checksums), "--repo", PLEZY_REPO,
+                      "--signer-workflow", f"{PLEZY_REPO}/.github/workflows/build.yml",
+                      "--source-digest", workflow_sha, "--format", "json"], capture=True)
+    verification = json.loads(result.stdout)
+    expected_run = f"https://github.com/{PLEZY_REPO}/actions/runs/{run['databaseId']}"
+    if not isinstance(verification, list) or not any(
+            str(cert.get("sourceRepositoryIdentifier")) == "1433487464"
+            and cert.get("sourceRepositoryDigest") == workflow_sha
+            and re.fullmatch(re.escape(expected_run) + r"(?:/attempts/[1-9][0-9]*)?",
+                             str(cert.get("runInvocationURI", "")))
+            for item in verification for cert in
+            [item.get("verificationResult", {}).get("signature", {}).get("certificate", {})]):
+        raise ReleaseError("Recovery checksums are not attested by the actual assembly run and workflow source.")
+    expected = [line.split()[0] for line in checksums.read_text().splitlines()
+                if len(line.split()) == 2 and line.split()[1].lstrip("*") == receipt_path.name]
+    actual = hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+    if expected != [actual]:
+        raise ReleaseError("Attested recovery checksums do not uniquely bind the assembly receipt.")
+    receipt = json.loads(receipt_path.read_text())
+    validate_packaging_repair_proof(receipt, tag, source_proof["packaging_source_sha"], workflow_sha)
+    if (receipt["product_source_sha"] != source_proof["product_source_sha"]
+            or receipt.get("assembly_run_id") != run["databaseId"]
+            or receipt.get("actual_checkout_sha") != source_proof["packaging_source_sha"]
+            or receipt.get("source_run_id") != source_proof.get("source_run_id")
+            or receipt.get("packaging_approval") != source_proof.get("packaging_approval")
+            or re.fullmatch(r"[0-9a-f]{64}", str(receipt.get("linux_archive_sha256", ""))) is None
+            or not isinstance(receipt.get("artifacts"), list) or not receipt["artifacts"]):
+        raise ReleaseError("Attested recovery receipt differs from its approved sources or assembly identity.")
+    expected_tv = source_proof.get('tvos_source')
+    actual_tv = receipt.get('tvos_source')
+    if expected_tv is not None:
+        if (not isinstance(actual_tv, dict)
+                or {key: value for key, value in actual_tv.items() if key != 'package_sha256'} != expected_tv):
+            raise ReleaseError('Assembled signed TV source differs from independently approved sibling repair.')
+        hashes = actual_tv.get('package_sha256', {})
+        if set(hashes) != {'pleazyng-tvos-unsigned.ipa', 'pleazyng-tvos-appstore.ipa'}:
+            raise ReleaseError('Assembled TV recovery lacks both original attestation-verified package hashes.')
+        assets = release_metadata(tag).get('assets', [])
+        for name, digest in hashes.items():
+            entries = [line.split()[0] for line in checksums.read_text().splitlines()
+                       if len(line.split()) == 2 and line.split()[1].lstrip('*') == name]
+            published = [asset for asset in assets if asset.get('name') == name]
+            if (re.fullmatch('[0-9a-f]{64}', str(digest)) is None or entries != [digest]
+                    or len(published) != 1 or published[0].get('digest') != 'sha256:' + digest):
+                raise ReleaseError('Published TV package differs from the original attestation-verified recovery bytes.')
+    elif actual_tv is not None:
+        raise ReleaseError('Assembly introduced an unapproved TV source.')
+    names = set()
+    for artifact in receipt["artifacts"]:
+        name = artifact.get("name")
+        source = (source_proof.get('tvos_source', source_proof) if name == 'tvos-ipa' else
+                  source_proof.get("android_source", source_proof) if name == "android-apk" else
+                  source_proof.get("webos_source", source_proof) if name == "webos-ipk" else source_proof)
+        if (not isinstance(name, str) or not name or name in names
+                or artifact.get("source_run_id") != source["source_run_id"]
+                or artifact.get("source_sha") != source["source_sha"]
+                or type(artifact.get("artifact_id")) is not int or artifact["artifact_id"] < 1
+                or re.fullmatch(r"sha256:[0-9a-f]{64}", str(artifact.get("digest", ""))) is None):
+            raise ReleaseError("Attested recovery artifact record differs from the verified original producer.")
+        if name == 'tvos-ipa' and source_proof.get('tvos_source') and (
+                artifact['artifact_id'] != source['artifact_id'] or artifact['digest'] != source['artifact_digest']):
+            raise ReleaseError('Attested TV artifact differs from the independently approved signed producer.')
+        names.add(name)
+    linux = [asset for asset in release_metadata(tag).get("assets", [])
+             if asset.get("name") == "pleazyng-linux-x64.tar.gz"]
+    if len(linux) != 1 or linux[0].get("digest") != "sha256:" + receipt["linux_archive_sha256"]:
+        raise ReleaseError("Published Linux archive differs from the attested recovery receipt.")
+    return receipt
 
 
 def ensure_frozen_release_source(tag: str, expected_sha: str) -> None:
@@ -1759,6 +1981,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rebuild-linux", action="store_true", help="Rebuild Linux during verified platform recovery")
     parser.add_argument("--reuse-webos-run", type=int, help="Reuse a verified webOS package and wait locally for completed source outputs before assembly")
     parser.add_argument("--reuse-repaired-run", type=int, help="Reuse successful Linux and fully qualified Mac jobs from a prior repair run")
+    parser.add_argument('--reuse-tvos-run', type=int, help='Reuse successful signed TV output from an approved sibling Apple packaging repair')
     parser.add_argument("--rebuild-ios", action="store_true", help="Rebuild iOS during verified platform recovery")
     parser.add_argument("--rebuild-tvos", action="store_true", help="Rebuild only tvOS during verified platform recovery")
     parser.add_argument("--rebuild-macos", action="store_true", help="Build and qualify macOS during verified platform recovery")
@@ -1827,9 +2050,16 @@ def main() -> int:
         validate_source_metadata(ROOT, args.version)
     if args.execution_profile != "hybrid":
         raise ReleaseError("Complete releases require the hybrid profile, including native Windows ARM64 CI.")
+    packaging_repair = bool(args.reuse_platform_run and getattr(args, "source_commit", None))
+    if args.reuse_tvos_run and (args.reuse_tvos_run < 1 or not packaging_repair or not args.rebuild_ios
+                               or args.rebuild_tvos or args.reuse_repaired_run or args.reuse_macos_run):
+        raise ReleaseError('Signed TV reuse requires approved iOS-only sibling packaging recovery.')
+    if packaging_repair and (not (args.rebuild_ios or args.rebuild_tvos or args.rebuild_macos)
+                            or args.rebuild_linux
+                            or args.reuse_macos_run or args.reuse_repaired_run):
+        raise ReleaseError("Approved packaging recovery rebuilds only requested Apple packages.")
     if args.reuse_platform_run and (
-        args.reuse_platform_run < 1 or args.publish
-        or args.include_apple_store_build
+        args.reuse_platform_run < 1 or ((args.publish or args.include_apple_store_build) and not packaging_repair)
         or args.execution_profile != "hybrid"
     ):
         raise ReleaseError("Platform recovery supports hybrid GitHub-only or draft publication without fresh Apple or Homebrew qualification.")
@@ -1882,7 +2112,7 @@ def main() -> int:
         frozen_commit = existing_release_tag_commit(ROOT, tag) if frozen else None
         selected_commit = getattr(args, "source_commit", None)
         if selected_commit:
-            if not frozen or (frozen_commit is not None and frozen_commit != selected_commit):
+            if (not frozen and not packaging_repair) or (frozen_commit is not None and frozen_commit != selected_commit):
                 raise ReleaseError("Selected source requires a normal frozen release and must match any existing version tag.")
             ensure_main_ancestor(selected_commit)
         if frozen_commit or selected_commit:
@@ -1953,9 +2183,43 @@ def main() -> int:
             pin_sha = commit_and_push_native_pin(
                 worktree, native_repo, native_sha, ffmpeg_version, ffmpeg_sha256
             )
+        if args.reuse_platform_run:
+            repair_options = {}
+            if packaging_repair:
+                repair_title = f"action:release:pool:private:tag:{tag}:repair:{pin_sha}"
+                prior_repair = matching_packaging_repair_run(repair_title)
+                workflow_sha = (prior_repair["headSha"] if prior_repair else
+                                gh_json("api", f"repos/{PLEZY_REPO}/branches/main")["commit"]["sha"])
+                repair_options = {"packaging_source_sha": pin_sha, "workflow_source_sha": workflow_sha,
+                                  "include_apple_store_build": args.include_apple_store_build}
+            proof = verify_platform_recovery(
+                args.reuse_platform_run, pin_sha, args.version,
+                android_run=args.reuse_android_run, include_webos_build=not args.skip_webos_build,
+                **({"rebuild_linux": True} if args.rebuild_linux else {}),
+                **({"rebuild_macos": True} if args.rebuild_macos else {}),
+                **({"rebuild_tvos": True} if args.rebuild_tvos else {}),
+                **({"rebuild_ios": True} if args.rebuild_ios else {}),
+                **({"repaired_run": args.reuse_repaired_run} if args.reuse_repaired_run else {}),
+                **({'tvos_run': args.reuse_tvos_run} if args.reuse_tvos_run else {}),
+                **({"webos_run": args.reuse_webos_run} if args.reuse_webos_run else {}),
+                **({"require_homebrew_cask": True} if args.prepare_homebrew_cask and not args.reuse_macos_run else {}),
+                **({"macos_run": args.reuse_macos_run} if args.reuse_macos_run else {}),
+                wait_complete=bool(args.reuse_webos_run or (args.reuse_android_run and args.skip_webos_build)),
+                **repair_options,
+            )
+            if packaging_repair:
+                validate_packaging_repair_proof(proof, tag, pin_sha, workflow_sha)
+                product_sha = proof["product_source_sha"]
+                progress.update(packaging_source_commit=pin_sha, workflow_source_commit=workflow_sha,
+                                plezyng_commit=product_sha, ci_source_commit=proof["ci_source_sha"])
         # Include immutable-tag reuse: that path otherwise skips native refresh.
         # Stale tagged native inputs require the next version, never a moved tag.
-        command(["python3", "scripts/sync_native_revision.py", "--check"], cwd=worktree)
+        if packaging_repair:
+            # The verified S-to-R tree proof preserves every native pin. A
+            # later native-fork main cannot invalidate immutable product bytes.
+            progress["native_pin_policy"] = "preserved-approved-product-pins"
+        else:
+            command(["python3", "scripts/sync_native_revision.py", "--check"], cwd=worktree)
         validate_source_metadata(worktree, args.version)
         if frozen:
             # Candidate names include their source SHA. Failed validation can
@@ -1963,9 +2227,9 @@ def main() -> int:
             candidate_ref = ensure_candidate_tag(worktree, args.version, pin_sha)
             progress["candidate_ref"] = candidate_ref
             progress["frozen_source"] = True
-        ci_source = ci_source if tag_reused else pin_sha
+        ci_source = proof["ci_source_sha"] if packaging_repair else ci_source if tag_reused else pin_sha
         progress["ci_source_commit"] = ci_source
-        progress["plezyng_commit"] = pin_sha
+        progress["plezyng_commit"] = product_sha if packaging_repair else pin_sha
         stage = "Pleazyng CI"
         progress["stage"] = stage
         save_progress()
@@ -1984,21 +2248,11 @@ def main() -> int:
             progress["apple_arm_runner_pool"] = apple_pool
             save_progress()
         elif args.reuse_platform_run:
-            proof = verify_platform_recovery(
-                args.reuse_platform_run, pin_sha, args.version,
-                android_run=args.reuse_android_run, include_webos_build=not args.skip_webos_build,
-                **({"rebuild_linux": True} if args.rebuild_linux else {}),
-                **({"rebuild_macos": True} if args.rebuild_macos else {}),
-                **({"rebuild_tvos": True} if args.rebuild_tvos else {}),
-                **({"rebuild_ios": True} if args.rebuild_ios else {}),
-                **({"repaired_run": args.reuse_repaired_run} if args.reuse_repaired_run else {}),
-                **({"webos_run": args.reuse_webos_run} if args.reuse_webos_run else {}),
-                **({"require_homebrew_cask": True} if args.prepare_homebrew_cask and not args.reuse_macos_run else {}),
-                **({"macos_run": args.reuse_macos_run} if args.reuse_macos_run else {}),
-                wait_complete=bool(args.reuse_webos_run or (args.reuse_android_run and args.skip_webos_build)),
-            )
             ci = {"databaseId": proof["ci_run_id"]}
             progress["platform_recovery"] = proof
+            progress["ci_mode"] = proof.get("ci_mode", "standalone")
+            if proof.get("embedded_ci") is not None:
+                progress["embedded_ci"] = proof["embedded_ci"]
             print(f"Verified unchanged product inputs and exact-source CI from run {proof['ci_run_id']}.")
         else:
             ci = ensure_ci(ci_source, execution_profile=args.execution_profile)
@@ -2028,17 +2282,20 @@ def main() -> int:
             execution_profile=args.execution_profile,
             include_apple_store_build=include_apple_store_build,
             prepare_homebrew_cask=args.prepare_homebrew_cask,
-            **({"candidate_ref": candidate_ref, "tvos_runner_pool": apple_pool} if frozen else {}),
+            **({"candidate_ref": candidate_ref} if frozen else {}),
+            **({"tvos_runner_pool": apple_pool} if frozen or packaging_repair else {}),
             **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"rebuild_macos": True} if args.rebuild_macos else {}),
             **({"rebuild_tvos": True} if args.rebuild_tvos else {}),
             **({"rebuild_ios": True} if args.rebuild_ios else {}),
             **({"reuse_repaired_run_id": args.reuse_repaired_run} if args.reuse_repaired_run else {}),
+            **({'reuse_tvos_run_id': args.reuse_tvos_run} if args.reuse_tvos_run else {}),
             **({"reuse_webos_run_id": args.reuse_webos_run} if args.reuse_webos_run else {}),
             **({"reuse_platform_run_id": args.reuse_platform_run} if args.reuse_platform_run else {}),
             **({"reuse_android_run_id": args.reuse_android_run} if args.reuse_android_run else {}),
             **({"reuse_macos_run_id": args.reuse_macos_run} if args.reuse_macos_run else {}),
             **({"include_webos_build": False} if args.skip_webos_build else {}),
+            **({"packaging_source_sha": pin_sha, "workflow_source_sha": workflow_sha} if packaging_repair else {}),
         )
         progress["release_run"] = release["databaseId"]
         progress["release_url"] = f"https://github.com/{PLEZY_REPO}/releases/tag/{tag}"
@@ -2059,6 +2316,10 @@ def main() -> int:
             include_apple_store_build=include_apple_store_build,
             prepare_homebrew_cask=args.prepare_homebrew_cask,
         )
+        if packaging_repair:
+            assembly_proof = verify_packaging_repair_assembly(scratch, tag, proof, release)
+            progress["packaging_repair_assembly"] = assembly_proof
+            save_progress()
 
         published_channels: list[dict] = []
         skipped_channels: list[dict] = []
@@ -2069,8 +2330,8 @@ def main() -> int:
         publication_facts_failures: list[str] = []
         release_published = False
         if args.publish or args.publish_github_only:
-            if frozen:
-                ensure_frozen_release_source(tag, pin_sha)
+            if frozen or packaging_repair:
+                ensure_frozen_release_source(tag, product_sha if packaging_repair else pin_sha)
             else:
                 ensure_remote_main_sha(pin_sha, f"publishing Pleazyng {tag}")
             stage = "publish GitHub release"
@@ -2085,7 +2346,7 @@ def main() -> int:
             save_progress()
             try:
                 delivery_sha = (gh_json("api", f"repos/{PLEZY_REPO}/branches/main")["commit"]["sha"]
-                                if frozen else pin_sha)
+                                if frozen or packaging_repair else pin_sha)
                 progress["delivery_tooling_commit"] = delivery_sha
                 followups = post_release_actions(
                     tag, args.version, release_sha=delivery_sha,
@@ -2107,8 +2368,8 @@ def main() -> int:
             if channel_failures or notification_failures:
                 print("GitHub release is published; post-release delivery needs a separate retry.")
             try:
-                publication_facts_commit = (refresh_latest_published_facts(scratch, tag, pin_sha)
-                                            if frozen else refresh_published_facts(worktree, tag, pin_sha))
+                publication_facts_commit = (refresh_latest_published_facts(scratch, tag, product_sha if packaging_repair else pin_sha)
+                                            if frozen or packaging_repair else refresh_published_facts(worktree, tag, pin_sha))
             except Exception as error:
                 # Preserve core publication success; do not rebuild published
                 # binaries merely because documentation needs a separate retry.
@@ -2124,7 +2385,9 @@ def main() -> int:
             "native_manifest_commit": native_sha,
             "ffmpeg_version": ffmpeg_version,
             "ffmpeg_source_sha256": ffmpeg_sha256,
-            "plezyng_commit": pin_sha,
+            "plezyng_commit": product_sha if packaging_repair else pin_sha,
+            "packaging_source_commit": pin_sha if packaging_repair else None,
+            "workflow_source_commit": workflow_sha if packaging_repair else None,
             "ci_run": ci["databaseId"],
             "ci_mode": progress.get("ci_mode", "standalone"),
             "embedded_ci": progress.get("embedded_ci"),

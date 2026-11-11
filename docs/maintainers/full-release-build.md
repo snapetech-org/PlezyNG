@@ -706,3 +706,81 @@ an import smoke check before downloading artifacts. The regression suite creates
 the actual Git sparse checkout in an isolated repository and imports its recovery
 helpers with Python isolation enabled; adding a helper must not create another
 late assembly failure after successful platform builds.
+
+
+### Frozen Apple packaging recovery
+
+Prepare pinned iOS Steam sources in `PLEZYNG_APPLE_WORKSPACE` before Xcode.
+The bounded preflight retries preparation three times within 15 minutes and
+keeps the existing dependency revisions and patch verification. The later
+Xcode phase reuses the matching recipe marker from that same source copy;
+preparing only the original checkout does not populate its inputs.
+
+When only Apple packaging fails after source qualification, preserve the stable
+product tag and successful platform artifacts. Create one reviewed packaging
+commit whose sole parent is the qualified product commit; it may change only the
+explicit metadata paths in `scripts/verify_frozen_packaging_repair.py`. Merge that
+commit into main, then record its exact changed Git blob inventory in
+`.github/release-packaging-repairs.json` on main. Application sources, dependency
+pins, native binaries and version numbers cannot change in this exception.
+
+The trusted main workflow independently verifies the approval, complete Git trees,
+and ancestry before checking out the packaging revision. `GIT_COMMIT` retains the
+qualified product identity. Build-source copying uses the packaging identity;
+workflow authorization retains the dispatched main identity. Request only the
+failed Apple rebuilds, with signed Store archives enabled, and reuse Android,
+webOS and other successful jobs from the original release run. Do not dispatch a
+second all-platform build. Native-fork HEAD movement does not invalidate unchanged
+pins in an explicitly approved frozen repair.
+
+The assembly publishes a schema-2 `platform-reuse-provenance.json` bound by the
+attested SHA256SUMS manifest. It identifies product, packaging and workflow SHAs,
+original and assembly run IDs, exact reused artifact IDs/digests and Linux archive
+hash. The controller verifies the attestation and receipt before publication.
+Signed Store steps, notarization, Gatekeeper acceptance and full platform coverage
+remain required. Public release notes include the full upstream attribution ledger.
+
+
+Build jobs explicitly evaluate after intentionally skipped capture/CI ancestors
+and still require successful source validation. A corrected workflow snapshot
+may retry the same packaging revision only when the complete trusted prior-run
+inventory proves approved source validation succeeded, every other job (including
+both repaired platforms and release creation) skipped without steps, and no
+artifacts exist. Preserve that validation-only run as evidence. Any actual build,
+publication attempt, artifact or incomplete inventory blocks this exception.
+
+
+Apple workspace cleanup binds source validation to `COMPILE_SOURCE_SHA` while
+private scratch ownership remains bound to the real workflow `GITHUB_SHA`.
+The two identities differ in an approved frozen repair; do not overwrite workflow
+identity globally or weaken task-path/owner checks.
+
+If a signed tvOS repair succeeds while iOS fails, retain its compiler run and use
+`--reuse-tvos-run` during the next approved, iOS-only packaging recovery. Its
+previous packaging revision must independently qualify as an approved sibling of
+the same frozen product. The prior run must contain the actual successful signed
+TV build, both package attestations and upload, with no publication attempt.
+The producer pins the exact TV artifact ID and digest, verifies both IPA
+certificates against their original workflow/run, and publishes a distinct
+`tvos_source` proof. Ordinary Linux/Mac repair reuse keeps its existing meaning.
+The existing workflow `reuse_repaired_run_id` slot is interpreted as TV reuse only
+for this explicit frozen Apple mode; no additional dispatch input is required.
+
+
+Before iOS compilation, signed releases validate the Runner App Store profile and
+prepare a separate `org.snapetech.pleazyng.RommWorker` App Store profile through
+the existing Apple API key. The API certificate must exactly match the imported
+Apple Distribution identity before any bundle/profile creation. Reuse a valid
+worker profile; create only the explicit worker bundle/profile when needed.
+Never rotate certificates or overwrite another target's profile. The worker does
+not request the host app group; Runner and TopShelf retain that requirement.
+All targets still require exact bundle/team/certificate, unexpired Store profiles,
+matching platforms, and no development, ad hoc or enterprise provisioning.
+
+The generated worker profile is masked and passed only through the current job's
+environment; API keys and installed temporary profiles are cleaned up. API access
+failure stops before expensive compilation. A locked human Apple web login does
+not establish whether the independently authorized API key works. The unsigned
+iOS IPA is attested and uploaded as `ios-unsigned-checkpoint` before Store
+packaging; it does not substitute for the complete final `ios-ipa` artifact or
+qualify Store distribution. Final assembly still requires the signed archive.

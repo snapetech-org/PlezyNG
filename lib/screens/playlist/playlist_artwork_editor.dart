@@ -117,6 +117,17 @@ class _PlaylistArtworkEditorState extends State<PlaylistArtworkEditor> {
             descriptor.width * descriptor.height > 64000000) {
           throw const FormatException('Image dimensions exceed upload limit');
         }
+        _requireCurrent();
+        // Header metadata alone can accept a truncated/corrupt image. Decode
+        // only a tiny first-frame presentation before handing original bytes
+        // to the server.
+        final codec = await descriptor.instantiateCodec(targetWidth: 1, targetHeight: 1);
+        try {
+          final frame = await codec.getNextFrame();
+          frame.image.dispose();
+        } finally {
+          codec.dispose();
+        }
       } finally {
         descriptor.dispose();
       }

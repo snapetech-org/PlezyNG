@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -211,23 +212,27 @@ void main() {
     expect(client.calls, isEmpty);
   });
 
-  for (final oversized in [false, true]) {
-    testWidgets('rejects ${oversized ? "oversized" : "invalid"} image before upload', (tester) async {
+  for (final input in ['oversized', 'invalid', 'corrupt']) {
+    testWidgets('rejects $input image before upload', (tester) async {
       final client = _Client();
       final picker = _Picker();
       FilePickerService.setDelegateForTesting(picker);
       await open(tester, client);
       await tester.tap(find.byKey(const ValueKey('playlist_artwork_upload')));
       await tester.pump();
+      final bytes = input == 'corrupt'
+          ? base64Decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jB7sAAAAASUVORK5CYII=')
+          : Uint8List.fromList([1, 2, 3]);
       picker.result.complete(
         FilePickerResult([
           PlatformFile(
             name: 'x.png',
-            size: oversized ? PlaylistArtworkClient.maxUploadBytes + 1 : 3,
-            bytes: Uint8List.fromList([1, 2, 3]),
+            size: input == 'oversized' ? PlaylistArtworkClient.maxUploadBytes + 1 : bytes.length,
+            bytes: bytes,
           ),
         ]),
       );
+      await tester.runAsync(() async => Future<void>.delayed(const Duration(milliseconds: 100)));
       await tester.pumpAndSettle();
       expect(client.calls, isEmpty);
       expect(find.byType(PlaylistArtworkEditor), findsOneWidget);
@@ -242,9 +247,16 @@ void main() {
     await open(tester, client);
     await tester.tap(find.byKey(const ValueKey('playlist_artwork_upload')));
     await tester.pump();
-    final bytes = base64Decode(
-      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jB7sAAAAASUVORK5CYII=',
-    );
+    final bytes = (await tester.runAsync(() async {
+      final recorder = ui.PictureRecorder();
+      ui.Canvas(recorder).drawRect(const ui.Rect.fromLTWH(0, 0, 2, 2), ui.Paint()..color = const ui.Color(0xff00ff00));
+      final picture = recorder.endRecording();
+      final image = await picture.toImage(2, 2);
+      final data = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      picture.dispose();
+      return data!.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    }))!;
     picker.result.complete(FilePickerResult([PlatformFile(name: 'x.png', size: bytes.length, bytes: bytes)]));
     await tester.runAsync(() async => Future<void>.delayed(const Duration(milliseconds: 100)));
     await tester.pumpAndSettle();

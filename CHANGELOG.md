@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Reject playlist artwork with corrupt pixel data before upload and preserve the original upload bytes across asynchronous playlist identity checks.
+
 - Show bounded, account-scoped artwork in CarPlay music lists, including owned offline artwork. Discard stale browse/image replies and keep image requests, decoding and presentation caches bounded.
 
 - Edit playlist artwork from the detail screen: select a current server image, upload a bounded image or restore default artwork. Retire picker results and accepted writes when the owning account changes.

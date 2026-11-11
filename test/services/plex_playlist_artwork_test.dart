@@ -101,6 +101,28 @@ void main() {
     });
   }
 
+  test('upload payload stays frozen while fresh playlist identity is loading', () async {
+    final gate = Completer<http.Response>();
+    final sent = <List<int>>[];
+    var reads = 0;
+    final api = client((r) async {
+      if (r.method == 'POST') {
+        sent.add(r.bodyBytes);
+        return http.Response('', 200);
+      }
+      return reads++ == 0 ? gate.future : metadata();
+    });
+    final bytes = <int>[1, 2, 3];
+    final pending = api.updatePlaylistArtwork(playlist: playlist, bytes: bytes);
+    await Future<void>.delayed(Duration.zero);
+    bytes
+      ..clear()
+      ..addAll([9, 8]);
+    gate.complete(metadata());
+    await pending;
+    expect(sent.single, [1, 2, 3]);
+  });
+
   test('unoffered and ignored choices cannot report successful selection', () async {
     var writes = 0;
     final api = client((r) async {

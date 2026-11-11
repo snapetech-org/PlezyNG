@@ -162,6 +162,8 @@ mixin _PlexPlaylistMethods on _PlexClientInternals implements PlaylistMetadataCl
       throw ArgumentError('Invalid playlist artwork update');
     }
     final requireCurrent = _playlistArtworkLease(playlist, isCurrent);
+    // The caller may retain a mutable buffer across the preflight await.
+    final uploadBytes = bytes == null ? null : Uint8List.fromList(bytes);
     await _reloadArtworkPlaylist(playlist, requireCurrent);
     final root = '/library/metadata/${playlist.id}';
     late MediaServerResponse response;
@@ -172,7 +174,11 @@ mixin _PlexPlaylistMethods on _PlexClientInternals implements PlaylistMetadataCl
       response = await _http.put('$root/poster', queryParameters: {'url': artworkKey});
     } else if (bytes != null) {
       requireCurrent();
-      response = await _http.post('$root/posters', body: bytes, headers: {'Content-Type': 'application/octet-stream'});
+      response = await _http.post(
+        '$root/posters',
+        body: uploadBytes,
+        headers: {'Content-Type': 'application/octet-stream'},
+      );
     } else {
       requireCurrent();
       response = await _http.delete('$root/thumb');

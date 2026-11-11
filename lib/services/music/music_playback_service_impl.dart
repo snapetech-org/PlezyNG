@@ -3,6 +3,7 @@ import 'music_discovery.dart';
 import 'music_account_scope.dart';
 import 'music_audio_policy.dart';
 import 'music_gain.dart';
+import 'caldera_mesh_equalizer.dart';
 import 'music_byte_cache.dart';
 import 'music_library_store.dart';
 import 'music_offline_bundle.dart';
@@ -137,7 +138,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         CalderaAudioOutput,
         CalderaAudioMetadataOutput,
         CalderaAudioClockOutput,
-        CalderaAudioVolumeOutput {
+        CalderaAudioVolumeOutput,
+        CalderaEqualizerControls {
   bool Function() _nativeMusicScope(bool Function() current) {
     Iterable<MediaServerClient> clients() => _serverManager.serverIds
         .map((id) => _serverManager.getClient(ServerId(id)))
@@ -242,6 +244,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       name: 'Pleazyng',
       current: owns,
       metadata: _nativeMetadata,
+      equalizer: this,
       control: (action, value) async {
         if (!owns()) throw StateError('Native music scope changed');
         await _nativeControl(action, value);
@@ -343,6 +346,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         ];
       },
       metadata: _nativeMetadata,
+      equalizer: this,
       control: (action, value) async {
         if (!authorized()) throw StateError('Native music scope changed');
         await _nativeControl(action, value);
@@ -356,6 +360,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       onClosed: () {
         if (identical(_calderaSource, source)) {
           _calderaSource = null;
+          _refreshNativeEqualizer();
           _syncNativeHost();
           if (!_disposed) notifyListeners();
         }
@@ -363,6 +368,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     );
     _calderaSource = source;
     try {
+      // Per-speaker EQ belongs to local rendering, never the shared wire PCM.
+      await _audioChanges.run(() async {
+        for (final player in [_player, _overlap?.player ?? _overlapStartingPlayer]) {
+          if (player != null && authorized()) await _applyNativeEqualizer(player);
+        }
+      });
+      if (!authorized()) throw StateError('Native music scope changed');
       await source.start();
       if (!authorized()) {
         await source.close();
@@ -371,7 +383,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       selecting = false;
       notifyListeners();
     } catch (_) {
-      if (identical(_calderaSource, source)) _calderaSource = null;
+      if (identical(_calderaSource, source)) {
+        _calderaSource = null;
+        _refreshNativeEqualizer();
+      }
       rethrow;
     }
   }
@@ -487,6 +502,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _calderaSource = null;
     await source?.close();
     await sink?.close();
+    if (source != null) _refreshNativeEqualizer();
     _syncNativeHost();
   }
 
@@ -799,6 +815,99 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
           })
           .catchError((Object _) {
             /* Optional prefetch never interrupts playback. */
+          }),
+    );
+  }
+
+  PlayerParametricEqualizer _nativeEqualizer = const PlayerParametricEqualizer();
+  int _nativeEqRevision = 0;
+  @override
+  PlayerParametricEqualizer get calderaEqualizer => _nativeEqualizer;
+
+  Future<void> _applyNativeEqualizer(Player player) async {
+    if (_disposed || player.disposed) return;
+    final effective = _calderaSource == null ? _nativeEqualizer : const PlayerParametricEqualizer();
+    if (player case final ParametricEqualizerCapable output) {
+      await output.setParametricEqualizer(effective);
+    } else if (effective.filters.isNotEmpty) {
+      throw UnsupportedError('Native equalizer unavailable');
+    }
+  }
+
+  Future<void> _restoreNativeEqualizerForPlayback(Player player) async {
+    final requested = _nativeEqualizer, revision = _nativeEqRevision;
+    try {
+      await _applyNativeEqualizer(player);
+    } catch (error) {
+      // The typed native setter rolls back its accepted graph on failure.
+      // A preset saved while idle or on another platform cannot prevent audio.
+      if (!_disposed && revision == _nativeEqRevision && identical(requested, _nativeEqualizer)) {
+        _nativeEqualizer = const PlayerParametricEqualizer();
+      }
+      appLogger.w('Native music EQ is unavailable on this output', error: error);
+      if (!_disposed) _errorsController.add(error);
+    }
+  }
+
+  @override
+  Future<void> setCalderaEqualizer(PlayerParametricEqualizer value, {required bool Function() current}) {
+    final copy = value.snapshot(), scope = _nativeMusicScope(current);
+    _nativeEqRevision++;
+    return _audioChanges.run(() async {
+      if (!scope()) throw StateError('Native equalizer scope changed');
+      _cancelOverlap();
+      final previous = _nativeEqualizer, player = _player;
+      _nativeEqualizer = copy;
+      try {
+        if (player != null) await _applyNativeEqualizer(player);
+        if (!scope()) throw StateError('Native equalizer scope changed');
+        await _libraryStore?.saveDocument('audio', 'nativeEqualizer', {
+          'version': 1,
+          ...CalderaMeshEqualizer.snapshot(copy),
+        });
+        if (!scope()) throw StateError('Native equalizer scope changed');
+        notifyListeners();
+      } catch (_) {
+        _nativeEqualizer = previous;
+        if (player != null && identical(_player, player) && !player.disposed && !_disposed) {
+          await _applyNativeEqualizer(player);
+        }
+        rethrow;
+      }
+    });
+  }
+
+  Future<void> _restoreNativeEqualizer() async {
+    final revision = _nativeEqRevision;
+    try {
+      final data = await _libraryStore?.document('audio', 'nativeEqualizer');
+      if (data == null || data['version'] != 1 || _disposed || revision != _nativeEqRevision) return;
+      final value = CalderaMeshEqualizer.restore(data);
+      await _audioChanges.run(() async {
+        if (_disposed || revision != _nativeEqRevision) return;
+        _nativeEqualizer = value;
+        final player = _player;
+        if (player != null) await _restoreNativeEqualizerForPlayback(player);
+        if (!_disposed) notifyListeners();
+      });
+    } catch (error) {
+      appLogger.w('Native music EQ could not be restored', error: error);
+    }
+  }
+
+  void _refreshNativeEqualizer() {
+    final player = _player;
+    if (player == null || _disposed) return;
+    unawaited(
+      _audioChanges
+          .run(() async {
+            if (!_disposed && identical(player, _player) && !player.disposed) {
+              await _restoreNativeEqualizerForPlayback(player);
+            }
+          })
+          .catchError((Object error) {
+            appLogger.w('Native music EQ could not be applied', error: error);
+            if (!_disposed) _errorsController.add(error);
           }),
     );
   }
@@ -1232,7 +1341,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (_sessionStore != null) {
       unawaited(_maybeRestoreSession());
     }
-    if (_libraryStore != null) unawaited(_restoreAudioPolicy());
+    if (_libraryStore != null) {
+      unawaited(_restoreAudioPolicy());
+      unawaited(_restoreNativeEqualizer());
+    }
   }
 
   static const _previousRestartThreshold = Duration(seconds: 3);
@@ -2451,10 +2563,15 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       await policy.apply(player, albumContext: !shuffled && _playContext?.kind == MusicPlayContextKind.album);
       _outputEqSignature = null;
       await _applyOutputEqualizerNow(player);
+      await _restoreNativeEqualizerForPlayback(player);
       return;
     }
     final settings = SettingsService.instanceOrNull;
-    if (settings == null || player.disposed) return;
+    if (player.disposed) return;
+    if (settings == null) {
+      await _restoreNativeEqualizerForPlayback(player);
+      return;
+    }
     await player.setAudioNormalization(settings.read(SettingsService.audioNormalization));
     if (player is AudioEqualizerCapable && !player.disposed) {
       await (player as AudioEqualizerCapable).setAudioEqualizer([
@@ -2463,6 +2580,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
     _outputEqSignature = null;
     await _applyOutputEqualizerNow(player);
+    await _restoreNativeEqualizerForPlayback(player);
   }
 
   Future<void> _applyAudioPassthrough(Player player) async {
@@ -3181,6 +3299,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
           await (player as AudioEqualizerCapable).setAudioEqualizer(eq.bands);
         }
       }
+      if (!current()) return;
+      await _restoreNativeEqualizerForPlayback(player);
       if (!current()) return;
       final nativeSource = _calderaSource;
       if (nativeSource != null) {

@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart' show listEquals;
-
 typedef PlayerParametricBand = ({int filterType, double frequency, double gain, double q});
 
 /// Finite numeric DSP parameters; never accepts a caller-supplied filter graph.
@@ -55,7 +53,8 @@ class PlayerParametricEqualizer {
       other is PlayerParametricEqualizer &&
       other.enabled == enabled &&
       other.gain == gain &&
-      listEquals(other.bands, bands);
+      other.bands.length == bands.length &&
+      Iterable<int>.generate(bands.length).every((index) => other.bands[index] == bands[index]);
   @override
   int get hashCode => Object.hash(enabled, gain, Object.hashAll(bands));
 }

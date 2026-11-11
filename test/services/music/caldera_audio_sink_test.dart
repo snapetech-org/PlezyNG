@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/music/caldera_audio_sink.dart';
 import 'package:plezy/services/music/caldera_group.dart';
+import 'package:plezy/services/music/caldera_mesh_equalizer.dart';
 import 'package:plezy/services/music/xita_packet.dart';
 
 XitaDescriptor descriptor({int rate = 8000}) =>
@@ -29,7 +30,16 @@ XitaAudio audio(int frame, {int count = 80, double value = .5, int flags = 1}) =
         )!
         as XitaAudio;
 
-class _Output implements CalderaAudioOutput, CalderaAudioMetadataOutput, CalderaAudioVolumeOutput {
+class _Output
+    implements CalderaAudioOutput, CalderaAudioMetadataOutput, CalderaAudioVolumeOutput, CalderaEqualizerControls {
+  @override
+  PlayerParametricEqualizer calderaEqualizer = const PlayerParametricEqualizer();
+  @override
+  Future<void> setCalderaEqualizer(PlayerParametricEqualizer value, {required bool Function() current}) async {
+    if (!current() || owner == null) throw StateError('Output changed');
+    calderaEqualizer = value.snapshot();
+  }
+
   @override
   double calderaAudioVolume = 50;
   @override
@@ -328,6 +338,27 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }
         expect(output.calderaAudioVolume, 37);
+        for (final (method, data) in [
+          ('SetSinkEqualizerEnabled', {'enabled': true}),
+          ('SetSinkEqualizerGain', {'gain': -3.5}),
+          (
+            'SetSinkEqualizerBands',
+            {
+              'bands': [
+                {'filterType': 0, 'frequency': 1000, 'gain': 2, 'q': .7},
+              ],
+            },
+          ),
+        ]) {
+          socket!.add(jsonEncode({'source': native, 'method': method, 'data': data}));
+        }
+        for (var i = 0; i < 100 && output.calderaEqualizer.bands.isEmpty; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
+        expect(output.calderaEqualizer.enabled, isTrue);
+        expect(output.calderaEqualizer.gain, -3.5);
+        expect(output.calderaEqualizer.bands.single.q, .7);
+
         expect(controls, isEmpty, reason: 'Sink volume must not change source transport');
 
         await sink.control('pause');

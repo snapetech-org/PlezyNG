@@ -97,7 +97,15 @@ class _CallGate {
 
 /// In-memory audio player: records calls, exposes manual stream controllers
 /// so tests drive transitions/completion/errors deterministically.
-class FakePlayer implements Player, PlayerAudioFocusControl {
+class FakePlayer implements Player, PlayerAudioFocusControl, ParametricEqualizerCapable {
+  final parametric = <PlayerParametricEqualizer>[];
+  bool rejectParametric = false;
+  @override
+  Future<void> setParametricEqualizer(PlayerParametricEqualizer value) async {
+    if (rejectParametric) throw StateError('Native graph rejected');
+    parametric.add(value.snapshot());
+  }
+
   @override
   Set<String> get supportedLocalSubtitleExtensions => const {};
   @override
@@ -801,6 +809,7 @@ class _Harness {
     MusicLibraryStore? libraryStore,
     bool overlapDecoder = false,
     bool pcmCapture = false,
+    bool rejectParametric = false,
     CalderaNativeHostFactory? nativeHostFactory,
   }) {
     final queueRandom = _ScriptedRandom();
@@ -813,6 +822,7 @@ class _Harness {
     FakePlayer newPlayer() {
       final player = pcmCapture ? _CapturingPlayer() : FakePlayer();
       player.failingSetNextUris.addAll(harness.failingSetNextUris);
+      player.rejectParametric = rejectParametric;
       players.add(player);
       return player;
     }
@@ -1259,6 +1269,47 @@ void main() {
     expect(player.disposed, isFalse);
   });
 
+  test('an idle EQ preset cannot prevent playback on a decoder lacking DSP', () async {
+    h.dispose();
+    h = _Harness.create(rejectParametric: true);
+    final failures = <Object>[];
+    final subscription = h.service.errors.listen(failures.add);
+    addTearDown(subscription.cancel);
+    await h.service.setCalderaEqualizer(
+      const PlayerParametricEqualizer(enabled: true, gain: -3.5),
+      current: () => true,
+    );
+    expect(h.players, isEmpty);
+    await h.playTracks([t1]);
+    expect(h.service.isPlaying, isTrue);
+    expect(h.service.currentTrack?.id, t1.id);
+    expect(h.service.calderaEqualizer.enabled, isFalse);
+    expect(failures, isNotEmpty);
+  });
+
+  test('native EQ failure and retired scope preserve accepted session DSP', () async {
+    await h.playTracks([t1]);
+    final player = h.player;
+    const accepted = PlayerParametricEqualizer(enabled: true, gain: -3.5);
+    await h.service.setCalderaEqualizer(accepted, current: () => true);
+    expect(player.parametric.last, accepted);
+    player.rejectParametric = true;
+    await expectLater(
+      h.service.setCalderaEqualizer(const PlayerParametricEqualizer(enabled: true, gain: -5), current: () => true),
+      throwsStateError,
+    );
+    expect(h.service.calderaEqualizer, accepted);
+    player.rejectParametric = false;
+    await expectLater(
+      h.service.setCalderaEqualizer(const PlayerParametricEqualizer(), current: () => false),
+      throwsStateError,
+    );
+    expect(h.service.calderaEqualizer, accepted);
+    await h.service.setCalderaEqualizer(const PlayerParametricEqualizer(), current: () => true);
+    expect(player.parametric.last.enabled, isFalse);
+    expect(h.service.currentTrack?.id, t1.id);
+  });
+
   test('native availability exposes an idle endpoint and retires with its account set', () async {
     h.dispose();
     late CalderaNativeHost host;
@@ -1272,6 +1323,7 @@ void main() {
             required control,
             required assign,
             required onClosed,
+            required equalizer,
           }) => host = CalderaNativeHost(
             id: id,
             name: name,
@@ -1280,6 +1332,7 @@ void main() {
             control: control,
             assign: assign,
             onClosed: onClosed,
+            equalizer: equalizer,
             meshPort: 0,
             companionPort: 0,
             advertise: false,
@@ -1323,6 +1376,7 @@ void main() {
             required control,
             required assign,
             required onClosed,
+            required equalizer,
           }) => host = CalderaNativeHost(
             id: id,
             name: name,
@@ -1331,6 +1385,7 @@ void main() {
             control: control,
             assign: assign,
             onClosed: onClosed,
+            equalizer: equalizer,
             meshPort: 0,
             companionPort: 0,
             advertise: false,
@@ -1441,6 +1496,22 @@ void main() {
       await until(() => h.service.volume == 37);
       expect(player.volumes.last, 37);
 
+      controller.add(
+        jsonEncode({
+          'source': peer,
+          'method': 'SetSinkEqualizerEnabled',
+          'data': {'enabled': true},
+        }),
+      );
+      controller.add(
+        jsonEncode({
+          'source': peer,
+          'method': 'SetSinkEqualizerGain',
+          'data': {'gain': -3.5},
+        }),
+      );
+      await until(() => h.service.calderaEqualizer.enabled && h.service.calderaEqualizer.gain == -3.5);
+      expect(player.parametric.last.enabled, isFalse, reason: 'Per-speaker EQ must not enter captured group PCM');
       final selection = host.membership;
       host.synchronize(CalderaMembership(host.id, [host.id, peer, '22222222-2222-4222-8222-222222222222']));
       await Future<void>.delayed(const Duration(milliseconds: 40));
@@ -1471,6 +1542,8 @@ void main() {
       await client.group(local, state, [], current: () => true);
       await until(() => !h.service.sendingNativeMusicGroup && !player.captureEnabled);
       expect(player.properties['mute'], 'no');
+      await until(() => player.parametric.last.enabled);
+      expect(player.parametric.last.gain, -3.5);
       expect(player.disposed, isFalse);
       expect(h.service.currentTrack?.id, t1.id);
       expect(h.service.queue.map((track) => track.id), [t1.id, t1.id, t2.id]);

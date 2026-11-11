@@ -280,3 +280,29 @@ exposed the original failure; deterministic pending-flush regressions cover it.
   and descriptor bytes. The notes' tentative header lengths and sequence
   interpretation are superseded by the published packet definition and the
   current native routines.
+
+## Native per-player parametric EQ
+
+Hosted, dedicated source and receive mesh connections accept native
+SetSinkEqualizerEnabled, SetSinkEqualizerGain and SetSinkEqualizerBands commands.
+Each command is bounded and copied before queueing; individual fields compose
+against accepted settings at execution time. Queued work rechecks account and
+connection ownership. Only successful changes publish the new native state.
+
+The shared session owns the typed DSP layer and its versioned profile document.
+It preserves ten-band EQ and other effects, cancels a pending overlap before
+changing audio policy, and rolls back rejected graphs. A cold restored preset
+that cannot execute on the decoder is disabled in memory and reported while
+ordinary playback continues. Receiver settings apply only locally. While
+transmitting, this per-player layer is bypassed on capture decoders so changing
+one native speaker cannot contaminate every destination's wire PCM; leaving the
+group restores the local layer.
+
+227 focused volume/EQ/mesh/shared-player/native-bridge tests pass. The official
+Caldera 1.1.0 controller applied enable, -3.5 dB gain and exact 100/1000 Hz bands
+to the production host through its native HTTP-to-mesh relay. This checks the
+wire and ownership path. Separately, producer eb78e98's rebuilt Linux decoder
+executed generated PCM checks: flat 0.1999817, peak EQ 0.3990173, low/high shelves
+0.2825012 and global attenuation 0.0999908. The all-platform publication run and
+atomic application lock promotion are still pending; the application remains
+pinned to its previous decoder until verified artifacts are available.

@@ -7,6 +7,8 @@ import 'package:plezy/services/music/caldera_group.dart';
 import 'package:plezy/services/music/caldera_native_host.dart';
 import 'package:plezy/services/music/caldera_source_endpoint.dart';
 
+import '../../test_helpers/fake_caldera_equalizer.dart';
+
 const own = '33333333-3333-4333-8333-333333333333';
 const first = '11111111-1111-4111-8111-111111111111';
 const second = '22222222-2222-4222-8222-222222222222';
@@ -88,6 +90,7 @@ void main() {
   final scopes = <bool Function()>[];
   final actions = <String>[];
   final connections = <_Connection>[];
+  late FakeCalderaEqualizer equalizer;
   bool current = true;
   double volume = 50;
   Completer<void>? gate;
@@ -98,6 +101,7 @@ void main() {
     actions.clear();
     connections.clear();
     current = true;
+    equalizer = FakeCalderaEqualizer();
     volume = 50;
     gate = null;
     address = (await NetworkInterface.list(
@@ -117,6 +121,7 @@ void main() {
     }
     host = CalderaNativeHost(
       id: own,
+      equalizer: equalizer,
       name: 'Pleazyng fixture',
       current: () => current,
       meshPort: 0,
@@ -190,7 +195,13 @@ void main() {
     final peer = await connect();
     await peer.hello();
     expect(peer.messages.first['source'], own);
-    expect(peer.messages.first['data'], {'version': '1.0.0', 'source': own, 'capabilities': null, 'volume': 50});
+    expect(peer.messages.first['data'], {
+      'version': '1.0.0',
+      'source': own,
+      'capabilities': null,
+      'volume': 50,
+      'equalizer': {'enabled': false, 'gain': 0.0, 'bands': <Object>[]},
+    });
     expect(peer.messages.any((message) => message['method'] == 'MeshUpdate'), isTrue);
     expect(await request('/resources'), 200);
     final state = await CalderaGroupClient().state(
@@ -326,6 +337,32 @@ void main() {
     );
     expect(await request('/player/playback/pause', query: {'type': 'music', 'commandID': '2'}), 200);
     expect(actions, ['pause:null']);
+  });
+
+  test('native relayed parametric settings publish only accepted shared state', () async {
+    final peer = await connect();
+    await peer.hello();
+    peer.send('SetSinkEqualizerEnabled', {'enabled': true});
+    peer.send('SetSinkEqualizerGain', {'gain': -3.5});
+    peer.send('SetSinkEqualizerBands', {
+      'bands': [
+        {'filterType': 0, 'frequency': 1000.0, 'gain': 2.0, 'q': .7},
+      ],
+    });
+    await until(() => equalizer.writes.length == 3);
+    expect(equalizer.calderaEqualizer.enabled, isTrue);
+    expect(equalizer.calderaEqualizer.gain, -3.5);
+    expect(equalizer.calderaEqualizer.bands.single.q, .7);
+    await until(
+      () => peer.messages.any(
+        (value) => value['method'] == 'SetNodeState' && ((value['data'] as Map)['equalizer'] as Map)['gain'] == -3.5,
+      ),
+    );
+    expect(assignments, isEmpty);
+    peer.send('SetSinkEqualizerGain', {'gain': 1000});
+    await until(() => peer.closed);
+    expect(equalizer.writes, hasLength(3));
+    expect(host.active, isTrue);
   });
 
   test('native relayed sink volume reaches shared controls and publishes accepted state', () async {

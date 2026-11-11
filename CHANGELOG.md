@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Apply native per-player parametric EQ relays through the shared music session, persist bounded profile settings and publish accepted state. Preserve other speakers' PCM while transmitting, roll back rejected changes and keep ordinary playback available when a restored preset lacks decoder support.
+
 - Add finite, bounded parametric EQ to the native audio-state reconciler, preserving independent ten-band/effect state and rolling back rejected graphs. Require executable native DSP verification before qualifying the dependency; the previous Linux/Android filter lists omitted EQ.
 
 - Accept native per-player volume relays on hosted, source and receiver mesh connections. Serialize bounded commands, recheck account/connection ownership and publish accepted state without reopening audio or forwarding receiver gain to the source.

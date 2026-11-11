@@ -9,6 +9,8 @@ import 'package:plezy/services/music/caldera_group.dart';
 import 'package:plezy/services/music/caldera_source_endpoint.dart';
 import 'package:plezy/services/music/xita_packet.dart';
 
+import '../../test_helpers/fake_caldera_equalizer.dart';
+
 class _Capture implements MusicPcmCaptureSource {
   bool available = true, enabled = false;
   int frame = 0;
@@ -49,6 +51,7 @@ class _Fixture {
   final packets = <XitaPacket>[];
   final messages = <Map<String, dynamic>>[];
   final capture = _Capture();
+  final equalizer = FakeCalderaEqualizer();
   final mutes = <bool>[];
   bool muted = false, current = true, feedCurrent = true;
   double replayGain = 1, volume = 50;
@@ -111,6 +114,7 @@ class _Fixture {
     return source = CalderaAudioSource(
       sinks: [node],
       serveCompanion: false,
+      equalizer: equalizer,
       metadata: () => CalderaSourceMetadata(
         title: 'Fixture',
         artist: '',
@@ -159,6 +163,38 @@ Future<void> waitFor(bool Function() predicate) async {
 }
 
 void main() {
+  test('native source accepts independent parametric fields without replacing capture', () async {
+    final f = _Fixture();
+    await f.open();
+    final source = f.create();
+    try {
+      await source.start();
+      for (final (method, data) in [
+        ('SetSinkEqualizerEnabled', {'enabled': true}),
+        ('SetSinkEqualizerGain', {'gain': -3.5}),
+        (
+          'SetSinkEqualizerBands',
+          {
+            'bands': [
+              {'filterType': 2, 'frequency': 8000, 'gain': -2, 'q': .7},
+            ],
+          },
+        ),
+      ]) {
+        f.socket!.add(jsonEncode({'source': f.node.id, 'method': method, 'data': data}));
+      }
+      for (var i = 0; i < 100 && f.equalizer.writes.length < 3; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      expect(f.equalizer.calderaEqualizer.enabled, isTrue);
+      expect(f.equalizer.calderaEqualizer.bands.single.filterType, 2);
+      expect(source.active, isTrue);
+      expect(f.capture.toggles, [true]);
+    } finally {
+      await f.close();
+    }
+  });
+
   test('native source accepts relayed volume without restarting capture or membership', () async {
     final f = _Fixture();
     await f.open();

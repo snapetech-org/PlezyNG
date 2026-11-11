@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'caldera_group.dart';
 import 'caldera_mesh_volume.dart';
+import 'caldera_mesh_equalizer.dart';
 import 'caldera_source_endpoint.dart';
 
 abstract interface class NativeMusicGroupAvailabilityControls {
@@ -53,6 +54,7 @@ typedef CalderaNativeHostFactory =
       required Future<void> Function(String action, int? value) control,
       required Future<void> Function(CalderaMembership membership, bool Function() current) assign,
       required void Function() onClosed,
+      required CalderaEqualizerControls equalizer,
     });
 
 class CalderaNativeHost {
@@ -64,6 +66,7 @@ class CalderaNativeHost {
     required this.control,
     required this.assign,
     this.onClosed,
+    this.equalizer,
     this.meshPort = 1998,
     this.companionPort = 32500,
     this.advertise = true,
@@ -71,6 +74,8 @@ class CalderaNativeHost {
   }) : _discovery = discovery ?? CalderaDiscovery(),
        _membership = CalderaMembership(id, [id]);
   final String id, name;
+  final CalderaEqualizerControls? equalizer;
+  late final _equalizerCommands = equalizer == null ? null : CalderaMeshEqualizer(equalizer!);
   final bool Function() current;
   final CalderaSourceMetadata Function() metadata;
   final Future<void> Function(String action, int? value) control;
@@ -220,8 +225,10 @@ class CalderaNativeHost {
     );
   }
 
-  void _state(_MeshConnection peer, {bool initial = false}) =>
-      _send(peer, initial ? 'SetState' : 'SetNodeState', _volumeCommands.state(_membership.source));
+  void _state(_MeshConnection peer, {bool initial = false}) => _send(peer, initial ? 'SetState' : 'SetNodeState', {
+    ..._volumeCommands.state(_membership.source),
+    if (equalizer != null) 'equalizer': CalderaMeshEqualizer.snapshot(equalizer!.calderaEqualizer),
+  });
   void _publish() {
     if (!active) return;
     for (final peer in _connections.where((peer) => peer.identity != null).toList()) {
@@ -287,6 +294,21 @@ class CalderaNativeHost {
                 peer.identity = identity as String;
                 _state(peer, initial: true);
                 _send(peer, 'MeshUpdate', const []);
+              } else if (CalderaMeshEqualizer.supports(method)) {
+                final commands = _equalizerCommands;
+                if (commands == null) throw UnsupportedError('Native equalizer unavailable');
+                final operation = commands.apply(
+                  method,
+                  data,
+                  current: () => active && _connections.contains(peer),
+                  changed: _publish,
+                );
+                unawaited(
+                  operation.catchError((Object _) {
+                    _connections.remove(peer);
+                    unawaited(socket.close());
+                  }),
+                );
               } else if (method == 'SetSinkVolume') {
                 final operation = _volumeCommands.apply(
                   data,

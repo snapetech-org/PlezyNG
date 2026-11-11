@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 import 'caldera_group.dart';
 import 'caldera_mesh_volume.dart';
+import 'caldera_mesh_equalizer.dart';
 import 'caldera_state_feed.dart';
 import 'xita_packet.dart';
 import 'xita_output_clock.dart';
@@ -200,6 +201,14 @@ class CalderaAudioSink {
   bool get active => !_closed && _opened && output.ownsCalderaAudio(_owner);
   bool get _valid => !_closed && current() && (!_opened || output.ownsCalderaAudio(_owner));
 
+  late final _equalizerCommands = output is CalderaEqualizerControls
+      ? CalderaMeshEqualizer(output as CalderaEqualizerControls)
+      : null;
+  void _publishSettings() => _send('SetNodeState', {
+    ..._volumeCommands.state(leader.id),
+    if (output case final CalderaEqualizerControls eq) 'equalizer': CalderaMeshEqualizer.snapshot(eq.calderaEqualizer),
+  });
+
   late final _volumeCommands = CalderaMeshVolume(
     read: () => output is CalderaAudioVolumeOutput ? (output as CalderaAudioVolumeOutput).calderaAudioVolume : 100,
     write: (value) async {
@@ -377,13 +386,20 @@ class CalderaAudioSink {
               if (message['source'] != leader.id) throw const FormatException('Native peer identity changed');
               _lastMesh = _clock.elapsedMilliseconds;
               final data = message['data'];
+              if (CalderaMeshEqualizer.supports(message['method'])) {
+                final commands = _equalizerCommands;
+                if (!_meshReady.isCompleted || commands == null) throw StateError('Native equalizer unavailable');
+                final operation = commands.apply(
+                  message['method'],
+                  data,
+                  current: () => _valid && _opened,
+                  changed: _publishSettings,
+                );
+                unawaited(operation.catchError((Object _) => close()));
+              }
               if (message['method'] == 'SetSinkVolume') {
                 if (!_meshReady.isCompleted) throw const FormatException('Native Hello required');
-                final operation = _volumeCommands.apply(
-                  data,
-                  current: () => _valid,
-                  changed: () => _send('SetNodeState', _volumeCommands.state(leader.id)),
-                );
+                final operation = _volumeCommands.apply(data, current: () => _valid, changed: _publishSettings);
                 unawaited(operation.catchError((Object _) => close()));
               }
               if (const ['Hello', 'SetState', 'SetNodeState'].contains(message['method'])) {

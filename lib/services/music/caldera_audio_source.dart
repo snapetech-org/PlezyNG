@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
 import 'caldera_mesh_volume.dart';
+import 'caldera_mesh_equalizer.dart';
 import 'caldera_source_endpoint.dart';
 import 'xita_packet.dart';
 import 'xita_transmit_clock.dart';
@@ -51,6 +52,7 @@ class CalderaAudioSource {
     this.onMembershipChanged,
     this.metadata,
     this.control,
+    this.equalizer,
     this.serveCompanion = true,
     String? id,
   }) : _sinks = List.unmodifiable(sinks),
@@ -65,6 +67,12 @@ class CalderaAudioSource {
   CalderaSourceEndpoint? _endpoint;
   final String id;
   final bool serveCompanion;
+  final CalderaEqualizerControls? equalizer;
+  late final _equalizerCommands = equalizer == null ? null : CalderaMeshEqualizer(equalizer!);
+  Map<String, Object?> _settingsState() => {
+    ..._volumeCommands.state(id),
+    if (equalizer != null) 'equalizer': CalderaMeshEqualizer.snapshot(equalizer!.calderaEqualizer),
+  };
   late final _volumeCommands = CalderaMeshVolume(
     read: () => metadata?.call().volume ?? 100,
     write: (value) async {
@@ -73,10 +81,10 @@ class CalderaAudioSource {
       await handler('setParameters', value.round());
     },
   );
-  void _publishVolume() {
+  void _publishSettings() {
     if (!_valid) return;
     for (final peer in _peers.where((peer) => peer.adopted && !peer.retired).toList()) {
-      _send(peer, 'SetNodeState', _volumeCommands.state(id));
+      _send(peer, 'SetNodeState', _settingsState());
     }
   }
 
@@ -203,7 +211,7 @@ class CalderaAudioSource {
   void _join(_SourcePeer peer, List<CalderaNode> nodes) {
     peer.joined = true;
     _send(peer, 'SetSinksForSource', _membership(nodes));
-    _send(peer, 'SetState', _volumeCommands.state(id));
+    _send(peer, 'SetState', _settingsState());
   }
 
   void _retirePeer(_SourcePeer peer) {
@@ -260,12 +268,23 @@ class CalderaAudioSource {
             }
             if (value['source'] != node.id) throw const FormatException('Native identity changed');
             peer.lastMessage = _clock.elapsedMilliseconds;
+            if (CalderaMeshEqualizer.supports(value['method'])) {
+              final commands = _equalizerCommands;
+              if (!peer.ready.isCompleted || commands == null) throw StateError('Native equalizer unavailable');
+              final operation = commands.apply(
+                value['method'],
+                value['data'],
+                current: () => _valid && !peer.retired,
+                changed: _publishSettings,
+              );
+              unawaited(operation.catchError((Object _) => _retirePeer(peer)));
+            }
             if (value['method'] == 'SetSinkVolume') {
               if (!peer.ready.isCompleted) throw const FormatException('Native Hello required');
               final operation = _volumeCommands.apply(
                 value['data'],
                 current: () => _valid && !peer.retired,
-                changed: _publishVolume,
+                changed: _publishSettings,
               );
               unawaited(operation.catchError((Object _) => _retirePeer(peer)));
             }

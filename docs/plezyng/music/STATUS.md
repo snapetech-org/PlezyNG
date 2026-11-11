@@ -66,11 +66,18 @@ Native per-player volume relays now use bounded serial shared controls on
 hosted and dedicated audio connections, rechecking queued ownership and retaining
 audio/queue state. Receiver gain remains local. The official controller applied
 37 through its native relay; 139 focused tests pass.
-A bounded, rollback-safe parametric EQ player layer passes 85 player/policy
-tests. Actual pinned Linux execution found missing FFmpeg EQ filters; producer
-repair eb78e98 is building with a generated-audio publish gate. Rebuilt artifact
-promotion and mesh EQ integration remain required.
-Remaining code/integration includes parametric EQ relays, multichannel wire output and physical
+Native enable/gain/band EQ relays now compose at execution time through the
+shared music session, persist bounded profile settings and publish accepted state.
+Receiver EQ stays local; a transmitting source excludes this per-speaker layer
+from wire PCM. Rejected changes roll back, and an unsupported restored preset
+reports an error without preventing ordinary music playback. The combined
+volume/EQ/mesh/player suite passes 227 tests. An official Caldera controller
+applied enable, -3.5 dB gain and two exact bands to the production host.
+Actual pinned Linux execution found missing FFmpeg EQ filters. Producer repair
+eb78e98 now builds and executes generated flat/peak/shelf/global-gain PCM checks
+successfully on the rebuilt Linux binary. The all-platform publication run and
+atomic application dependency promotion remain pending.
+Remaining code/integration includes multichannel wire output and physical
 output-latency qualification. Renderer
 feedback now reads the current core's audible audio-PTS, maps its WAV clock to
 monotonic time and resamples source frames for actual presentation. Bounded

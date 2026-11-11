@@ -360,7 +360,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       onClosed: () {
         if (identical(_calderaSource, source)) {
           _calderaSource = null;
-          _refreshNativeEqualizer();
+          _refreshNativeOutputDsp();
           _syncNativeHost();
           if (!_disposed) notifyListeners();
         }
@@ -368,10 +368,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     );
     _calderaSource = source;
     try {
+      // A DSP/output change retires a partial overlap before capture. Later
+      // overlaps inherit the shared source policy on both decoders.
+      _cancelOverlap();
       // Per-speaker EQ belongs to local rendering, never the shared wire PCM.
       await _audioChanges.run(() async {
         for (final player in [_player, _overlap?.player ?? _overlapStartingPlayer]) {
-          if (player != null && authorized()) await _applyNativeEqualizer(player);
+          if (player != null && authorized()) {
+            if (identical(player, _player)) await _applyOutputEqualizerNow(player);
+            await _applyNativeEqualizer(player);
+          }
         }
       });
       if (!authorized()) throw StateError('Native music scope changed');
@@ -385,7 +391,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     } catch (_) {
       if (identical(_calderaSource, source)) {
         _calderaSource = null;
-        _refreshNativeEqualizer();
+        _refreshNativeOutputDsp();
       }
       rethrow;
     }
@@ -502,7 +508,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _calderaSource = null;
     await source?.close();
     await sink?.close();
-    if (source != null) _refreshNativeEqualizer();
+    if (source != null) _refreshNativeOutputDsp();
     _syncNativeHost();
   }
 
@@ -895,13 +901,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
   }
 
-  void _refreshNativeEqualizer() {
+  void _refreshNativeOutputDsp() {
+    _cancelOverlap();
     final player = _player;
     if (player == null || _disposed) return;
     unawaited(
       _audioChanges
           .run(() async {
             if (!_disposed && identical(player, _player) && !player.disposed) {
+              _outputEqSignature = null;
+              await _applyOutputEqualizerNow(player);
               await _restoreNativeEqualizerForPlayback(player);
             }
           })
@@ -1064,11 +1073,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (_disposed || _player != player || player.disposed || player.playerType != 'mpv' || _libraryStore == null) {
       return;
     }
+    final source = _calderaSource;
     final output = await player.getProperty('audio-device') ?? 'auto';
-    final eq = await outputEqualizer(output);
-    if (_disposed || _player != player || player.disposed) return;
+    // Physical-output presets must not color PCM sent to other speakers.
+    // General music EQ remains the shared source policy.
+    final eq = source == null ? await outputEqualizer(output) : null;
+    if (_disposed || _player != player || player.disposed || !identical(_calderaSource, source)) return;
     if (output != (await player.getProperty('audio-device') ?? 'auto')) return;
-    final signature = jsonEncode([output, eq?.toJson()]);
+    final signature = jsonEncode([output, eq?.toJson(), source != null]);
     if (_outputEqSignature == signature) return;
     final previous = _outputEqualizer;
     final effective = eq ?? _audioPolicy;
@@ -3291,7 +3303,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
           }
         }
       }
-      if (_libraryStore != null && player is AudioEqualizerCapable) {
+      if (_libraryStore != null && _calderaSource == null && player is AudioEqualizerCapable) {
         final output = await player.getProperty('audio-device') ?? 'auto';
         final eq = await outputEqualizer(output);
         if (eq != null) {

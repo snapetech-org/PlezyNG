@@ -345,3 +345,18 @@ leader. The native controller route is retained when controlling another source.
 Source and receiver Stop remain available when discovery loses the selected
 peer. Five widget regressions cover these ownership changes, native control,
 profile retirement and 320px/200% text layout.
+
+## Physical-output correction stays local
+
+Starting native transmission bypasses the current physical-output/headphone
+preset and its preamp while retaining the general music policy. Preset edits
+during transmission are saved for the local output; leaving restores the latest
+assignment without replacing the queue. A partial overlap is re-armed during
+this output/DSP transition. Later overlap decoders inherit the shared source
+curve, so both lanes use the same policy. 113 focused output-EQ/shared-session
+tests pass, including real socket ownership and unchanged track identity.
+
+A full Linux debug application built successfully at a64e31c8b, including the
+native capture/channel registration and pinned MilkRust runtime. This is a
+compiler result with the existing decoder pin, not physical output or native
+mobile-platform qualification.

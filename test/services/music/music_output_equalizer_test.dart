@@ -1,8 +1,13 @@
 import 'dart:convert';
+import 'dart:async';
+import 'dart:io';
+import 'dart:math' as math;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/mpv/models.dart';
+import 'package:plezy/mpv/player/music_pcm_capture_source.dart';
+import 'package:plezy/services/music/caldera_group.dart';
 import 'package:plezy/mpv/player/player.dart';
 import 'package:plezy/services/music/music_audio_policy.dart';
 import 'package:plezy/services/music/music_library_store.dart';
@@ -15,7 +20,18 @@ import '../../test_helpers/prefs.dart';
 import 'music_playback_service_test.dart'
     show FakePlayer, FakeMediaServerClient, FakeMusicSourceResolver, FakeMediaControlsManager;
 
-class EqPlayer extends FakePlayer implements AudioEqualizerCapable {
+class EqPlayer extends FakePlayer implements AudioEqualizerCapable, MusicPcmCaptureSource {
+  bool captureEnabled = false;
+  @override
+  Future<bool> musicPcmCaptureAvailable() async => true;
+  @override
+  Future<bool> setMusicPcmCaptureEnabled(bool enabled) async {
+    captureEnabled = enabled;
+    return true;
+  }
+
+  @override
+  Future<List<MusicPcmBlock>> drainMusicPcmCapture() async => const [];
   final properties = <String, String>{'audio-device': 'auto'};
   List<double> bands = List.filled(10, 0);
   @override
@@ -95,7 +111,7 @@ void main() {
     await music.setAudioPolicy(const MusicAudioPolicy(output: 'alsa/usb'));
     await play();
     expect(player.bands.first, 3);
-    expect(player.volumes.last, closeTo(100 * eq.gain, 0.001));
+    expect(math.pow(player.volumes.last / 100, 3), closeTo(eq.gain, .00001));
     await player.setAudioDevice(const AudioDevice(name: 'alsa/speakers'));
     await pumpEventQueue();
     expect(player.bands, everyElement(0));
@@ -138,4 +154,84 @@ void main() {
     await music.setOutputEqualizer('alsa/usb', null);
     expect(player.bands.first, -2);
   });
+
+  test('native source excludes local output presets and restores edits made while transmitting', () async {
+    final address = (await NetworkInterface.list(
+      type: InternetAddressType.IPv4,
+    )).expand((interface) => interface.addresses).firstWhere(CalderaNode.privateAddress);
+    final peer = await HttpServer.bind(address, 0);
+    WebSocket? socket;
+    const id = '11111111-1111-4111-8111-111111111111';
+    peer.listen((request) async {
+      if (!WebSocketTransformer.isUpgradeRequest(request)) {
+        request.response.write('2');
+        await request.response.close();
+        return;
+      }
+      socket = await WebSocketTransformer.upgrade(request);
+      socket!.listen((frame) {
+        for (final message in CalderaGroupClient.meshMessages(frame as String)) {
+          if (message['data'] == 'ping') {
+            socket!.add('{"data":"ping"}');
+            continue;
+          }
+          if (message['method'] == 'Hello' || message['method'] == 'SetSinksForSource') {
+            socket!.add(
+              jsonEncode({
+                'method': 'SetNodeState',
+                'source': id,
+                'data': {
+                  'version': '1.0.0',
+                  'source': message['method'] == 'Hello' ? id : (message['data'] as Map)['source'],
+                },
+              }),
+            );
+          }
+        }
+      });
+    });
+    try {
+      await music.setOutputEqualizer('alsa/usb', eq);
+      await music.setAudioPolicy(const MusicAudioPolicy(output: 'alsa/usb', bands: [-2, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+      await play();
+      expect(player.bands.first, 3);
+      final track = music.currentTrack;
+      await HttpOverrides.runWithHttpOverrides(
+        () => music.sendNativeMusicGroup([
+          CalderaNode(
+            id: id,
+            name: 'Fixture',
+            address: address,
+            meshPort: peer.port,
+            companionPort: peer.port,
+            expires: DateTime.now().add(const Duration(minutes: 1)),
+          ),
+        ], current: () => true),
+        _MusicNetworkHttp(),
+      );
+      expect(music.sendingNativeMusicGroup, isTrue);
+      expect(player.bands.first, -2, reason: 'Headphone correction must not enter shared PCM');
+      expect(player.captureEnabled, isTrue);
+      expect(music.currentTrack, same(track));
+      await music.setOutputEqualizer(
+        'alsa/usb',
+        const MusicAudioPolicy(bands: [6, 0, 0, 0, 0, 0, 0, 0, 0, 0], preampDb: -6),
+      );
+      expect(player.bands.first, -2);
+      await music.leaveNativeMusicGroup();
+      for (var i = 0; i < 100 && player.bands.first != 6; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      expect(player.bands.first, 6);
+      expect(player.captureEnabled, isFalse);
+      expect(music.currentTrack, same(track));
+      expect(player.properties['audio-device'], 'alsa/usb');
+    } finally {
+      await music.leaveNativeMusicGroup();
+      unawaited(socket?.close());
+      await peer.close(force: true);
+    }
+  });
 }
+
+class _MusicNetworkHttp extends HttpOverrides {}

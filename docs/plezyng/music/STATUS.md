@@ -85,7 +85,13 @@ that peer. 307 combined format/mixer/source/membership/mesh/clock/player tests a
 C++17/C++20 native capture tests pass. Official Caldera 1.1.0 receivers confirmed
 6/8-channel production wire audio, receiving 1,608/2,053 packets with zero drops.
 The preference reflects saved configuration, not a launch-only channel override.
-Physical output-latency qualification remains. Renderer
+Physical output-latency qualification remains.
+Local physical-output/headphone correction is now excluded from wire PCM while
+retaining the general source curve. Leaving restores the latest saved output
+preset without changing queue ownership; 113 focused output/shared-session
+tests pass. The full Linux debug application compiles at a64e31c8b with the
+pinned MilkRust runtime. Native mobile builds and acoustic evidence remain.
+ Renderer
 feedback now reads the current core's audible audio-PTS, maps its WAV clock to
 monotonic time and resamples source frames for actual presentation. Bounded
 output priming, drift/phase correction and stale-clock retirement have automated

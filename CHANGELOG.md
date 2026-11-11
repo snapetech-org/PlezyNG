@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep local headphone/output correction out of native group source PCM. Apply the general music curve while transmitting and restore the latest local output preset on departure without replacing the shared queue.
+
 - Apply speaker edits to the current local native music source without promoting a remote player. Keep native source/receiver Stop controls available when discovery loses the selected peer.
 
 - Negotiate native speaker channel preferences and send synchronized stereo, 5.1 and 7.1 PCM without exceeding the UDP MTU. Preserve/reorder known surround capture layouts, downmix other supported layouts, and retire changed or invalid peer formats independently.

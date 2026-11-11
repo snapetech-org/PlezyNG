@@ -74,6 +74,7 @@ class PlaybackMeasurementsTests(unittest.TestCase):
         app.guest = SimpleNamespace(user=Mock())
         app.stop, app.launch = Mock(), Mock()
         app.wait = Mock()
+        app.form_field = Mock()
         app.observe_playback = Mock(side_effect=observation_error)
         state = {'Allow an unencrypted HTTP connection': False, 'Treat as live': True}
         events = []
@@ -101,9 +102,73 @@ class PlaybackMeasurementsTests(unittest.TestCase):
             self.assertEqual((link.scheme, link.netloc), ('pleazyng', 'open-media'))
             self.assertEqual(urllib.parse.parse_qs(link.query)['url'],
                              ['https://10.0.2.2:12345/Maestro%20Movie.mp4'])
-            self.assertIn(('fill', 'Media address', 'http://10.0.2.2:12345/Maestro%20Movie.mp4'), events)
+            self.assertEqual(app.form_field.call_args_list, [
+                call('Media address', 'http://10.0.2.2:12345/Maestro%20Movie.mp4'),
+                call('Display name (optional)', 'QA direct H264')])
             app.observe_playback.assert_called_once_with('open-media-initial', source_route=True)
             self.assertEqual(events[-1], ('click', 'Back', None))
+
+    def test_native_form_entry_types_scheme_punctuation_and_case_then_checks_value(self):
+        app = AppQA.__new__(AppQA)
+        app.pointer_field, app.key = Mock(), Mock()
+        value = 'http://10.0.2.2:12345/Maestro%20Movie.mp4'
+        app.ui = Mock(return_value=value)
+        with patch('qualify.time.sleep'):
+            app.form_field('Media address', value)
+        app.pointer_field.assert_called_once_with('Media address', placeholder=False)
+        self.assertEqual(app.key.call_args_list[:8], [call(key) for key in
+            ('ctrl-a', 'h', 't', 't', 'p', 'shift-semicolon', 'slash', 'slash')])
+        self.assertIn(call('shift-m'), app.key.call_args_list)
+        self.assertIn(call('shift-5'), app.key.call_args_list)
+        app.ui.assert_called_once_with('form-text', 'Media address')
+
+    def test_native_form_entry_rejects_unchanged_https_before_consent_or_play(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app, events = self.direct_app(directory)
+            del app.form_field
+            app.pointer_field, app.key = Mock(), Mock()
+            original = app.ui
+            app.ui = Mock(side_effect=lambda action, name, value=None:
+                'https://10.0.2.2:12345/Maestro%20Movie.mp4' if action == 'form-text'
+                else original(action, name, value))
+            app.guest.screenshot = Mock()
+            with patch('qualify.time.sleep'), patch('qualify.time.monotonic', side_effect=[0, 6]):
+                with self.assertRaisesRegex(RuntimeError, 'did not retain authored input'):
+                    app.direct_playback(12345)
+            self.assertFalse(events)
+            app.observe_playback.assert_not_called()
+            app.guest.screenshot.assert_called_once_with(app.evidence / 'form-input-failed.png')
+
+    def test_native_form_entry_rejects_other_fields_and_unsupported_input_before_focus(self):
+        app = AppQA.__new__(AppQA)
+        app.pointer_field, app.key = Mock(), Mock()
+        for label, value in (('Password', 'maestro'), ('Media address', 'http://bad\n'),
+                             ('Display name (optional)', ''), ('Media address', 'é')):
+            with self.subTest(label=label, value=value), self.assertRaises(ValueError):
+                app.form_field(label, value)
+        app.pointer_field.assert_not_called()
+        app.key.assert_not_called()
+
+    def test_pointer_field_matches_multiword_label_within_one_observed_ocr_line(self):
+        app = AppQA.__new__(AppQA)
+        app.evidence = Path('/fixture-evidence')
+        app.guest = SimpleNamespace(screenshot=Mock())
+        app.click = Mock()
+        header = 'page_num\tblock_num\tpar_num\tline_num\tleft\ttop\twidth\theight\ttext\n'
+        rows = '1\t1\t1\t1\t100\t200\t40\t14\tMedia\n1\t1\t1\t1\t150\t200\t60\t14\taddress\n'
+        with patch('qualify.run', return_value=SimpleNamespace(stdout=header + rows)):
+            app.pointer_field('Media address')
+        app.click.assert_called_once_with(155, 226)
+        app.click.reset_mock()
+        with patch('qualify.run', return_value=SimpleNamespace(stdout=header + rows)):
+            app.pointer_field('Media address', placeholder=True)
+        app.click.assert_called_once_with(155, 207)
+        for extra in (rows, rows.replace('\t1\t150', '\t2\t150')):
+            # Duplicate labels or words split across lines must not select a field.
+            data = rows + extra if extra == rows else extra
+            with patch('qualify.run', return_value=SimpleNamespace(stdout=header + data)):
+                with self.assertRaisesRegex(RuntimeError, 'Could not locate'):
+                    app.pointer_field('Media address')
 
     def test_link_launch_keeps_one_owned_unit_and_does_not_dismiss_the_open_media_form(self):
         app = AppQA.__new__(AppQA)

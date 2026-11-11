@@ -91,6 +91,15 @@ def main():
             raise RuntimeError('No activation action for ' + label)
     elif command in ('fill', 'fill-role'):
         result = node.get_editable_text_iface().set_text_contents(sys.argv[3])
+    elif command == 'form-text':
+        if label not in ('Media address', 'Display name (optional)') or len(found) != 1:
+            raise RuntimeError('Expected one authored non-secret Open media field')
+        if node.get_role_name() == 'password text':
+            raise RuntimeError('Protected text readback is forbidden')
+        text = node.get_text_iface()
+        if text is None:
+            raise RuntimeError('Open media field has no accessible text')
+        result = text.get_text(0, text.get_character_count())
     elif command == 'length':
         result = node.get_text_iface().get_character_count()
     elif command == 'state':

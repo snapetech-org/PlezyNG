@@ -174,22 +174,73 @@ class AppQA:
         self.guest.user('systemctl --user stop pleazyng-qa')
         time.sleep(1)
 
-    def pointer_field(self, label):
+    def pointer_field(self, label, *, placeholder=False):
         # A semantic Tap can focus Flutter without assigning Wayland keyboard
         # focus to the native window. Click the observed field before typing.
         image = self.evidence / 'keyboard-field.png'
         self.guest.screenshot(image)
         result = run(['tesseract', image, 'stdout', 'tsv'], capture_output=True, text=True)
         rows = csv.DictReader(io.StringIO(result.stdout), delimiter='\t')
-        matches = [row for row in rows if row['text'].casefold() == label.casefold()]
+        lines = {}
+        for row in rows:
+            if row['text'].strip():
+                line = tuple(row[key] for key in ('page_num', 'block_num', 'par_num', 'line_num'))
+                lines.setdefault(line, []).append(row)
+        words = label.casefold().split()
+        matches = []
+        for line in lines.values():
+            for start in range(len(line) - len(words) + 1):
+                group = line[start:start + len(words)]
+                if [row['text'].casefold() for row in group] == words:
+                    matches.append(group)
         if len(matches) != 1:
             raise RuntimeError('Could not locate the native input field label: ' + label)
-        row = matches[0]
-        x = int(row['left']) + int(row['width']) // 2
-        y = int(row['top']) + int(row['height']) + 12
+        group = matches[0]
+        left = min(int(row['left']) for row in group)
+        right = max(int(row['left']) + int(row['width']) for row in group)
+        x = (left + right) // 2
+        bottom = max(int(row['top']) + int(row['height']) for row in group)
+        y = ((min(int(row['top']) for row in group) + bottom) // 2
+             if placeholder else bottom + 12)
         if not (0 <= x < 1280 and 0 <= y < 800):
             raise RuntimeError('Input field is outside the observed guest display')
         self.click(x, y)
+
+    def form_field(self, label, value):
+        # Only these authored, non-secret fixture fields support text readback.
+        if label not in ('Media address', 'Display name (optional)'):
+            raise ValueError('Unexpected authored Open media field')
+        punctuation = {':': 'shift-semicolon', '/': 'slash', '.': 'dot',
+                       '%': 'shift-5', ' ': 'spc'}
+        keys = []
+        for char in value:
+            if char in 'abcdefghijklmnopqrstuvwxyz0123456789':
+                keys.append(char)
+            elif char in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                keys.append('shift-' + char.lower())
+            elif char in punctuation:
+                keys.append(punctuation[char])
+            else:
+                raise ValueError('Unsupported authored Open media character')
+        if not keys:
+            raise ValueError('Authored Open media value must not be empty')
+        self.pointer_field(label, placeholder=label == 'Display name (optional)')
+        time.sleep(0.2)
+        self.key('ctrl-a')
+        time.sleep(0.12)
+        for key in keys:
+            self.key(key)
+            time.sleep(0.12)
+        # AT-SPI set_text_contents can report success without updating Flutter's
+        # controller. Use physical keyboard input and verify its actual value.
+        deadline = time.monotonic() + 5
+        while True:
+            if self.ui('form-text', label) == value:
+                return
+            if time.monotonic() >= deadline:
+                self.guest.screenshot(self.evidence / 'form-input-failed.png')
+                raise RuntimeError('Native Open media field did not retain authored input: ' + label)
+            time.sleep(0.2)
 
     def sign_in(self, server_port):
         self.wait('Connect to Jellyfin')
@@ -544,8 +595,8 @@ class AppQA:
         self.stop()
         self.launch(link=link)
         self.wait('Media address')
-        self.ui('fill', 'Media address', address)
-        self.ui('fill', 'Display name (optional)', 'QA direct H264')
+        self.form_field('Media address', address)
+        self.form_field('Display name (optional)', 'QA direct H264')
         http_consent = 'Allow an unencrypted HTTP connection'
         self.wait(http_consent)
         if self.ui('state', http_consent) is False:

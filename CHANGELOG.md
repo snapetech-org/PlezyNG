@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Enter and verify native Open Media qualification fields through the real keyboard on Wayland before accepting HTTP consent or starting playback.
+
 - Reject iOS worker signing profiles that omit requested Enhanced Security grants before native compilation, preserving the extension's security settings and existing distribution identity.
 
 - Wake aerynOS source tracking after canonical main updates and automated release-metadata reconciliation using a dedicated repository-scoped credential, retaining scheduled catch-up and independent native qualification before package publication.

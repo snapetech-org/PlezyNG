@@ -4,6 +4,8 @@
 
 - Reuse the existing Apple ARM runner-pool input for iOS and tvOS recovery so the release workflow stays within GitHub's 25-input limit.
 
+- Freeze official Apple authentication podspec metadata so unchanged AppAuth and Google Sign-In versions pass locked native dependency installation after CDN metadata edits.
+
 - Verify a signed tvOS-only recovery as a sibling source for the focused iOS rebuild only when its release assembly stopped before publication.
 
 - Recover the signed iOS package on the private Apple Silicon runner after the hosted archive reached its job limit, reusing the same qualified product and successful platform outputs.

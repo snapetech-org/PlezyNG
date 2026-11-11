@@ -191,6 +191,7 @@ PODS:
 
 DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
+  - AppAuth (from `https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/b/b/9/AppAuth/2.1.0/AppAuth.podspec.json`)
   - background_downloader (from `.symlinks/plugins/background_downloader/ios`)
   - battery_plus (from `.symlinks/plugins/battery_plus/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
@@ -208,6 +209,7 @@ DEPENDENCIES:
   - google_mlkit_commons (from `.symlinks/plugins/google_mlkit_commons/ios`)
   - google_mlkit_translation (from `.symlinks/plugins/google_mlkit_translation/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
+  - GoogleSignIn (from `https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/d/4/0/GoogleSignIn/9.2.0/GoogleSignIn.podspec.json`)
   - GTMAppAuth (from `https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/2/c/c/GTMAppAuth/5.0.0/GTMAppAuth.podspec.json`)
   - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/darwin`)
   - os_media_controls (from `.symlinks/plugins/os_media_controls/ios`)
@@ -229,12 +231,10 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - AppAuth
     - AppCheckCore
     - google-cast-sdk
     - GoogleDataTransport
     - GoogleMLKit
-    - GoogleSignIn
     - GoogleToolboxForMac
     - GoogleUtilities
     - GTMSessionFetcher
@@ -257,6 +257,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   app_links:
     :path: ".symlinks/plugins/app_links/ios"
+  AppAuth:
+    :podspec: https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/b/b/9/AppAuth/2.1.0/AppAuth.podspec.json
   background_downloader:
     :path: ".symlinks/plugins/background_downloader/ios"
   battery_plus:
@@ -291,6 +293,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_mlkit_translation/ios"
   google_sign_in_ios:
     :path: ".symlinks/plugins/google_sign_in_ios/darwin"
+  GoogleSignIn:
+    :podspec: https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/d/4/0/GoogleSignIn/9.2.0/GoogleSignIn.podspec.json
   GTMAppAuth:
     :podspec: https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/2/c/c/GTMAppAuth/5.0.0/GTMAppAuth.podspec.json
   in_app_purchase_storekit:
@@ -330,7 +334,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_links: a754cbec3c255bd4bbb4d236ecc06f28cd9a7ce8
-  AppAuth: ef4da5a3fc2e10b90c09a0a94a9baeaedc0341d5
+  AppAuth: 79d4891e7425754d65d19009ba8863e2e8d98fcb
   AppCheckCore: be8fce5469f68d7f6a29aa94b25f097409ff7fdc
   background_downloader: 50e91d979067b82081aba359d7d916b3ba5fadad
   battery_plus: b42253f6d2dde71712f8c36fef456d99121c5977
@@ -352,7 +356,7 @@ SPEC CHECKSUMS:
   google_sign_in_ios: 92f9b87736ef92fbfda3bdd2036283d2e44bfc29
   GoogleDataTransport: a24e58982ab3ba2f64d79613e027fe7f57e88539
   GoogleMLKit: b1eee21a41c57704fe72483b15c85cb2c0cd7444
-  GoogleSignIn: e449a40a92e9f2eea56e98b5214d13725dc5a00a
+  GoogleSignIn: 67c0f1414184bda853a55b3d6833b8f621be5ecd
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
   GoogleUtilities: 7dc09b3fa9ecb5c2298b952313d14628b61b9da3
   GTMAppAuth: 1805b470c6ecfdd900e4304c0467ab311f0cea99
@@ -390,6 +394,6 @@ SPEC CHECKSUMS:
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   wakelock_plus: 5aaa6a7ccaf4749a96a7d8ff0721d68061ad62cf
 
-PODFILE CHECKSUM: af29077ac1b6b09acc4c5b0aaa0f2d6536d9f4ee
+PODFILE CHECKSUM: 866e50bb2b44f3be0242275e10a19398e784614d
 
 COCOAPODS: 1.17.0

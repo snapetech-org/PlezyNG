@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import hashlib
 import json
 from pathlib import Path
+import plistlib
 import subprocess
 import sys
 import tempfile
@@ -405,6 +406,8 @@ class WorkerSigningTests(unittest.TestCase):
 
     def profile(self, bundle, platform='ios', group=False):
         entitlements = {'application-identifier': self.team + '.' + bundle}
+        if platform == 'ios' and bundle == self.worker:
+            entitlements.update(plistlib.loads(apple.WORKER_ENTITLEMENTS.read_bytes()))
         if group:
             entitlements['com.apple.security.application-groups'] = [apple.GROUP]
         return {'Entitlements': entitlements, 'TeamIdentifier': [self.team],

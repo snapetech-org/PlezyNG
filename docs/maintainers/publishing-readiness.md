@@ -62,12 +62,14 @@ currently claimed to have published the new release.
 it does not upload to app stores. `--publish` dispatches configured downstream
 publishers, with receipts for completed, skipped and failed channels. Before
 first store publication, complete the console bootstrap and validate the actual
-signed artifact. Google supports a configured testing track and release status. This repository
-now stages `GOOGLE_PLAY_TRACK=alpha` and `GOOGLE_PLAY_RELEASE_STATUS=completed`;
-`GOOGLE_PLAY_BOOTSTRAP_COMPLETE=false` prevents rollout until first console setup
-and signed-build review/purchase validation pass. An unconfigured repository
-defaults to internal draft. Neither a draft upload nor a successful dispatch is
-a beta rollout. Apple uploads do not submit App Review or configure
+signed artifact. [Automatic Google Play delivery](google-play-release-delivery.md)
+uses `GOOGLE_PLAY_AUTO_TRACK=internal` for completed internal-testing releases.
+The older manual publisher setting remains `GOOGLE_PLAY_TRACK=alpha`.
+`GOOGLE_PLAY_BOOTSTRAP_COMPLETE=false` gates automatic alpha/beta selection;
+internal distribution supports the pending device, reviewer and purchase/restore
+qualification. An unconfigured manual publisher defaults to internal draft.
+Neither a draft upload nor a successful dispatch proves a completed rollout.
+Apple uploads do not submit App Review or configure
 TestFlight groups. Amazon's initial submission must go through its console.
 
 `AMAZON_APPSTORE_BOOTSTRAP_COMPLETE` similarly enables subsequent Amazon API

@@ -55,19 +55,26 @@ end
 # Trunk may edit metadata for an existing version (for example deprecation).
 # Keep the reviewed official document immutable instead of trusting a CDN edge.
 # External specs use the checksum of CocoaPods' normalized sandbox JSON.
-gtm_spec = 'https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/2/c/c/GTMAppAuth/5.0.0/GTMAppAuth.podspec.json'
+immutable_specs = {
+  'AppAuth' => ['b/b/9', '2.1.0', '79d4891e7425754d65d19009ba8863e2e8d98fcb'],
+  'GoogleSignIn' => ['d/4/0', '9.2.0', '67c0f1414184bda853a55b3d6833b8f621be5ecd'],
+  'GTMAppAuth' => ['2/c/c', '5.0.0', '1805b470c6ecfdd900e4304c0467ab311f0cea99'],
+}
 %w[ios macos].each do |platform|
   podfile = root.join(platform, 'Podfile').read
   lock = Pod::Lockfile.from_file(root.join(platform, 'Podfile.lock')).to_hash
-  declaration = "pod 'GTMAppAuth', :podspec => '#{gtm_spec}'"
-  pinned = podfile.lines.count { |line| line.strip == declaration } == 1 &&
-    lock.fetch('DEPENDENCIES').count("GTMAppAuth (from `#{gtm_spec}`)") == 1 &&
-    lock.fetch('EXTERNAL SOURCES').fetch('GTMAppAuth', {}) == { podspec: gtm_spec } &&
-    lock.fetch('SPEC REPOS').values.none? { |names| names.include?('GTMAppAuth') } &&
-    lock.fetch('SPEC CHECKSUMS').fetch('GTMAppAuth') == '1805b470c6ecfdd900e4304c0467ab311f0cea99' &&
-    lock.fetch('PODS').any? { |item| item.is_a?(Hash) && item.key?('GTMAppAuth (5.0.0)') } &&
-    lock.fetch('PODFILE CHECKSUM') == Digest::SHA1.hexdigest(podfile)
-  errors << "#{platform}: GTMAppAuth must retain its immutable official podspec and matching lockfile" unless pinned
+  immutable_specs.each do |name, (path, version, checksum)|
+    spec_url = "https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/#{path}/#{name}/#{version}/#{name}.podspec.json"
+    declaration = "pod '#{name}', :podspec => '#{spec_url}'"
+    pinned = podfile.lines.count { |line| line.strip == declaration } == 1 &&
+      lock.fetch('DEPENDENCIES').count("#{name} (from `#{spec_url}`)") == 1 &&
+      lock.fetch('EXTERNAL SOURCES').fetch(name, {}) == { podspec: spec_url } &&
+      lock.fetch('SPEC REPOS').values.none? { |names| names.include?(name) } &&
+      lock.fetch('SPEC CHECKSUMS').fetch(name) == checksum &&
+      lock.fetch('PODS').any? { |item| item.is_a?(Hash) && item.key?("#{name} (#{version})") } &&
+      lock.fetch('PODFILE CHECKSUM') == Digest::SHA1.hexdigest(podfile)
+    errors << "#{platform}: #{name} must retain its immutable official podspec and matching lockfile" unless pinned
+  end
 end
 
 unless errors.empty?

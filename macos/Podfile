@@ -36,6 +36,8 @@ flutter_macos_podfile_setup
 
 target 'Runner' do
   # Pin metadata as well as code: CDN deprecation edits change spec checksums.
+  pod 'AppAuth', :podspec => 'https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/b/b/9/AppAuth/2.1.0/AppAuth.podspec.json'
+  pod 'GoogleSignIn', :podspec => 'https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/d/4/0/GoogleSignIn/9.2.0/GoogleSignIn.podspec.json'
   pod 'GTMAppAuth', :podspec => 'https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/2/c/c/GTMAppAuth/5.0.0/GTMAppAuth.podspec.json'
   pod 'plezy_romm_macos', :path => '../native/games/romm/apple'
   use_frameworks!

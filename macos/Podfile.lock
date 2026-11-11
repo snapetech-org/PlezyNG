@@ -114,6 +114,7 @@ PODS:
 
 DEPENDENCIES:
   - app_links (from `Flutter/ephemeral/.symlinks/plugins/app_links/macos`)
+  - AppAuth (from `https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/b/b/9/AppAuth/2.1.0/AppAuth.podspec.json`)
   - auto_updater_macos (from `Flutter/ephemeral/.symlinks/plugins/auto_updater_macos/macos`)
   - battery_plus (from `Flutter/ephemeral/.symlinks/plugins/battery_plus/macos`)
   - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos`)
@@ -129,6 +130,7 @@ DEPENDENCIES:
   - flutter_whisper_ggml (from `Flutter/ephemeral/.symlinks/plugins/flutter_whisper_ggml/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - google_sign_in_ios (from `Flutter/ephemeral/.symlinks/plugins/google_sign_in_ios/darwin`)
+  - GoogleSignIn (from `https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/d/4/0/GoogleSignIn/9.2.0/GoogleSignIn.podspec.json`)
   - GTMAppAuth (from `https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/2/c/c/GTMAppAuth/5.0.0/GTMAppAuth.podspec.json`)
   - in_app_purchase_storekit (from `Flutter/ephemeral/.symlinks/plugins/in_app_purchase_storekit/darwin`)
   - os_media_controls (from `Flutter/ephemeral/.symlinks/plugins/os_media_controls/macos`)
@@ -148,9 +150,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - AppAuth
     - AppCheckCore
-    - GoogleSignIn
     - GoogleUtilities
     - GTMSessionFetcher
     - openiap
@@ -163,6 +163,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   app_links:
     :path: Flutter/ephemeral/.symlinks/plugins/app_links/macos
+  AppAuth:
+    :podspec: https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/b/b/9/AppAuth/2.1.0/AppAuth.podspec.json
   auto_updater_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/auto_updater_macos/macos
   battery_plus:
@@ -193,6 +195,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral
   google_sign_in_ios:
     :path: Flutter/ephemeral/.symlinks/plugins/google_sign_in_ios/darwin
+  GoogleSignIn:
+    :podspec: https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/d/4/0/GoogleSignIn/9.2.0/GoogleSignIn.podspec.json
   GTMAppAuth:
     :podspec: https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/2/c/c/GTMAppAuth/5.0.0/GTMAppAuth.podspec.json
   in_app_purchase_storekit:
@@ -228,7 +232,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_links: 05a6ec2341985eb05e9f97dc63f5837c39895c3f
-  AppAuth: ef4da5a3fc2e10b90c09a0a94a9baeaedc0341d5
+  AppAuth: 79d4891e7425754d65d19009ba8863e2e8d98fcb
   AppCheckCore: be8fce5469f68d7f6a29aa94b25f097409ff7fdc
   auto_updater_macos: 3a42f1a06be6981f1a18be37e6e7bf86aa732118
   battery_plus: f51ad29136e025b714b96f7d096f44f604615da7
@@ -245,7 +249,7 @@ SPEC CHECKSUMS:
   flutter_whisper_ggml: 82f2e7085c1ea33e885da682a54126767acd032b
   FlutterMacOS: c232990155153907050900a2e175c7773903ba4e
   google_sign_in_ios: 92f9b87736ef92fbfda3bdd2036283d2e44bfc29
-  GoogleSignIn: e449a40a92e9f2eea56e98b5214d13725dc5a00a
+  GoogleSignIn: 67c0f1414184bda853a55b3d6833b8f621be5ecd
   GoogleUtilities: 7dc09b3fa9ecb5c2298b952313d14628b61b9da3
   GTMAppAuth: 1805b470c6ecfdd900e4304c0467ab311f0cea99
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
@@ -271,6 +275,6 @@ SPEC CHECKSUMS:
   wakelock_plus: 917609be14d812ddd9e9528876538b2263aaa03b
   window_manager: b729e31d38fb04905235df9ea896128991cad99e
 
-PODFILE CHECKSUM: 8026daaf6fc22dc2ceb175c800f2e07f1878ff2d
+PODFILE CHECKSUM: 637eb6cdcbb8df7f79cf756dcca6b96a3ea41981
 
 COCOAPODS: 1.17.0

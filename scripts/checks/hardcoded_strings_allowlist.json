@@ -95,5 +95,14 @@
   },
   "lib/screens/settings/privacy_screen.dart": {
     "https://snape.tech/privacy/pleazyng/": "Canonical policy URL displayed if the bundled notice cannot load; URLs do not change with the UI language."
+  },
+  "lib/screens/music/caldera_group_screen.dart": {
+    "Caldera / Plexamp": "Native product names; this label contains no translatable language."
+  },
+  "lib/screens/music/music_group_screen.dart": {
+    "Caldera / Plexamp": "Native product names; this label contains no translatable language."
+  },
+  "lib/widgets/music/music_device_picker.dart": {
+    "https://music.example": "Literal example relay URL; the network address is not translatable language."
   }
 }

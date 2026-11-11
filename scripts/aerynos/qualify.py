@@ -333,17 +333,22 @@ class AppQA:
             nodes = self.ui()
             times = []
             for node in nodes:
-                for label in (node['name'] or '').splitlines():
-                    if re.fullmatch(r'\d{1,2}:\d{2}(?::\d{2})?', label):
+                labels = (node['name'] or '').splitlines()
+                # Flutter merges the player's elapsed/remaining labels into
+                # one panel. The desktop clock and duration are not elapsed.
+                clock = r'\d+:[0-5]\d(?::[0-5]\d)?'
+                for label, remaining in zip(labels, labels[1:]):
+                    if (re.fullmatch(clock, label)
+                            and re.fullmatch('-' + clock, remaining)):
                         value = 0
                         for part in label.split(':'):
                             value = value * 60 + int(part)
                         times.append(value)
-            if times:
-                return min(times)
+            if len(times) == 1:
+                return times[0]
             if time.monotonic() >= deadline:
                 (self.evidence / 'clock-timeout.json').write_text(json.dumps(nodes, indent=2) + '\n')
-                raise RuntimeError('No visible playback clock after controls settled')
+                raise RuntimeError('Expected one elapsed/remaining playback clock after controls settled')
             # Seek and overlay dismissal update the accessibility tree on a
             # later frame, particularly in software-rendered hosted guests.
             time.sleep(0.2)

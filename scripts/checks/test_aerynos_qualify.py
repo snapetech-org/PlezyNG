@@ -1,5 +1,6 @@
 """Check native QA measurements against known clocks and authored PCM payloads."""
 import importlib.util
+import json
 from pathlib import Path
 import struct
 import sys
@@ -61,6 +62,42 @@ class PlaybackMeasurementsTests(unittest.TestCase):
         with patch('qualify.time.sleep') as sleep:
             self.assertEqual(app.clock(), 15)
         self.assertGreaterEqual(sleep.call_count, 2)
+
+    def test_clock_ignores_wall_clock_and_duration_around_player_time(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = AppQA.__new__(AppQA)
+            app.evidence = Path(directory)
+            for panel in ('01:25\n3:00\n2:54\n-0:05',
+                          '3:00\n2:54\n-0:05\n01:25'):
+                with self.subTest(panel=panel):
+                    app.ui = lambda *args: [{'name': 'Maestro Movie\n' + panel},
+                                            {'name': '01:24'}]
+                    self.assertEqual(app.clock(timeout=0), 174)
+
+    def test_clock_accepts_long_elapsed_times_and_zero(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = AppQA.__new__(AppQA)
+            app.evidence = Path(directory)
+            for elapsed, seconds in (('1:02:03', 3723), ('62:03', 3723), ('0:00', 0)):
+                with self.subTest(elapsed=elapsed):
+                    app.ui = lambda *args: [{'name': '01:25\n' + elapsed + '\n-0:05'}]
+                    self.assertEqual(app.clock(timeout=0), seconds)
+
+    def test_clock_rejects_missing_invalid_or_ambiguous_player_time(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = AppQA.__new__(AppQA)
+            app.evidence = Path(directory)
+            for names in (['01:25'], ['01:25\n-0:05', '2:54\n-0:05'],
+                          ['2:54\n-0:05\n2:54\n-0:05'],
+                          ['01:25\n2:54'], ['01:25\nPause\n-0:05'],
+                          ['2:99\n-0:05'], ['2:54\n-0:99'], ['-0:05']):
+                nodes = [{'name': name} for name in names]
+                app.ui = lambda *args: nodes
+                with self.subTest(names=names):
+                    with self.assertRaises(RuntimeError):
+                        app.clock(timeout=0)
+                    self.assertEqual(json.loads(
+                        (app.evidence / 'clock-timeout.json').read_text()), nodes)
 
     @unittest.skipUnless(importlib.util.find_spec('numpy'), 'numpy required for PCM measurement')
     def test_live_capture_ignores_placeholder_lengths_and_respects_audio_offset(self):

@@ -62,10 +62,12 @@ class PackagingRepairControllerTests(unittest.TestCase):
                 patch.object(release, 'run_has_successful_step', return_value=True), \
                 patch.object(release, 'dispatch', return_value={'databaseId': 99}) as dispatch:
             release.ensure_release(self.tag, self.repair, **{
-                **self.options(), 'rebuild_tvos': False, 'reuse_tvos_run_id': 84})
+                **self.options(), 'rebuild_tvos': False, 'reuse_tvos_run_id': 84,
+                'ios_runner_pool': 'private'})
         self.assertEqual(verify.call_args.kwargs['tvos_run'], 84)
         self.assertNotIn('repaired_run', verify.call_args.kwargs)
         self.assertEqual(dispatch.call_args.args[3]['reuse_repaired_run_id'], '84')
+        self.assertEqual(dispatch.call_args.args[3]['ios_runner_pool'], 'private')
         self.assertNotIn('rebuild_tvos', dispatch.call_args.args[3])
 
     def test_completed_repair_is_reused_after_main_advances_and_all_signed_steps_are_required(self):

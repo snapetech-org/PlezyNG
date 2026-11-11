@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Verify a signed tvOS-only recovery as a sibling source for the focused iOS rebuild only when its release assembly stopped before publication.
+
 - Recover the signed iOS package on the private Apple Silicon runner after the hosted archive reached its job limit, reusing the same qualified product and successful platform outputs.
 
 - Register a third audio-only music core for the clocked native-group source speaker, independent of both fade decoders on every native platform.

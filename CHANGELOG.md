@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Restore detached Chromecast music controls after restart only for the acknowledged receiver queue and the same profile accounts, without saving stream URLs or reloading the receiver.
+
 - Record music ratings during a cold offline start using the saved profile account, and review remote conflicts before replaying them after reconnection.
 
 - Keep Apple workflow ownership separate from the approved source checkout when cleaning build workspaces. Reuse a separately verified signed tvOS repair output when only iOS still needs building, preserving the same qualified product source and native dependencies.

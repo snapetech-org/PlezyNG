@@ -403,7 +403,10 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                       connectionChanges: manager.statusStream,
                       offlineRatingAccountFor: offlineRatings.forItem,
                       syncClients: () => manager.visibleOnlineClients.values,
-                      onDispose: (value) => companion.unbindMusicHistory(value.history),
+                      onDispose: (value) {
+                        companion.unbindMusicHistory(value.history);
+                        CastMediaService.instance.unbindMusicRecovery(value.store);
+                      },
                       sharedSources: () async {
                         await hidden.ensureInitialized();
                         return [
@@ -435,6 +438,7 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                           : manager.getClient(ServerId(item.serverId!)),
                     );
                     companion.bindMusicHistory(experience.history);
+                    CastMediaService.instance.bindMusicRecovery(experience.store, manager);
                     return experience;
                   },
                 ),

@@ -13,9 +13,10 @@ import 'music_device_session.dart';
 import 'music_playback_service.dart';
 import 'music_queue_controller.dart';
 import 'music_transfer_snapshot.dart';
+import 'music_account_scope.dart';
 
 class CastMusicQueue {
-  CastMusicQueue._(this.items, this._snapshot, this.token, this.authorized);
+  CastMusicQueue._(this.items, this._snapshot, this.token, this.authorized, this._accounts);
 
   static const maxTracks = 32;
   static const maxRequestBytes = 48 * 1024;
@@ -26,9 +27,105 @@ class CastMusicQueue {
   final MusicTransferSnapshot _snapshot;
   final String token;
   final bool Function() authorized;
+  final Map<String, String> _accounts;
   int? _mediaSessionId;
 
   int get cursor => _snapshot.queue.cursor;
+
+  Map<String, dynamic> recoveryDocument(CastReceiverKey connection, {DateTime? now}) {
+    if (_mediaSessionId == null || !authorized()) throw StateError('Cast queue is not acknowledged');
+    return {
+      'version': 1,
+      'token': token,
+      'session': connection.session,
+      'device': connection.device,
+      'mediaSession': _mediaSessionId,
+      'created': (now ?? DateTime.now()).millisecondsSinceEpoch,
+      'accounts': _accounts,
+      'snapshot': _snapshot.toJson(itemLimit: maxTracks),
+    };
+  }
+
+  /// Recovers control only. No streams are resolved or loaded into the receiver.
+  static CastMusicQueue? recover(
+    Map<String, dynamic> document, {
+    required MultiServerManager manager,
+    required CastReceiverKey connection,
+    required GoggleCastMediaStatus? status,
+    DateTime? now,
+  }) {
+    try {
+      if (utf8.encode(jsonEncode(document)).length > maxRequestBytes) return null;
+      final token = document['token'], mediaSession = document['mediaSession'], created = document['created'];
+      final clock = (now ?? DateTime.now()).millisecondsSinceEpoch;
+      if (document['version'] != 1 ||
+          token is! String ||
+          token.isEmpty ||
+          token.length > 128 ||
+          document['session'] != connection.session ||
+          document['device'] != connection.device ||
+          mediaSession is! int ||
+          mediaSession <= 0 ||
+          created is! int ||
+          created > clock ||
+          clock - created > const Duration(days: 7).inMilliseconds) {
+        return null;
+      }
+      final snapshot = MusicTransferSnapshot.tryParse(document['snapshot'], itemLimit: maxTracks);
+      if (snapshot == null ||
+          snapshot.queue.items.length > maxTracks ||
+          snapshot.queue.repeatMode != MusicRepeatMode.off) {
+        return null;
+      }
+      final accounts = Map<String, String>.from(document['accounts'] as Map);
+      final sources = <ServerId, ({MediaServerClient client, Object? authentication})>{};
+      for (final track in snapshot.queue.items) {
+        final id = ServerId(track.serverId!);
+        final client = manager.getClient(id);
+        if (client == null ||
+            client.backend != track.backend ||
+            client.isOfflineMode ||
+            !manager.isServerVisible(id) ||
+            accounts[id.value] != musicAccountScope(client)) {
+          return null;
+        }
+        sources[id] = (client: client, authentication: client.authenticationSessionId);
+      }
+      if (sources.length != accounts.length) return null;
+      bool authorized() => sources.entries.every(
+        (source) =>
+            identical(manager.getClient(source.key), source.value.client) &&
+            identical(source.value.client.authenticationSessionId, source.value.authentication) &&
+            accounts[source.key.value] == musicAccountScope(source.value.client) &&
+            !source.value.client.isOfflineMode &&
+            manager.isServerVisible(source.key),
+      );
+      final queue = CastMusicQueue._(
+        List.unmodifiable([
+          for (var index = 0; index < snapshot.queue.items.length; index++)
+            GoogleCastQueueItem(
+              mediaInformation: GoogleCastMediaInformation(
+                contentId: 'pleazyng:$token:$index',
+                contentType: 'audio/*',
+                streamType: CastMediaStreamType.buffered,
+                customData: {ownerKey: token, occurrenceKey: index.toString()},
+              ),
+            ),
+        ]),
+        snapshot,
+        token,
+        authorized,
+        accounts,
+      ).._mediaSessionId = mediaSession;
+      return queue.matchesMedia(status) ? queue : null;
+    } on FormatException {
+      return null;
+    } on TypeError {
+      return null;
+    } on ArgumentError {
+      return null;
+    }
+  }
 
   GoogleCastQueueLoadOptions options(Duration position) =>
       GoogleCastQueueLoadOptions(startIndex: cursor, playPosition: position);
@@ -218,7 +315,9 @@ class CastMusicQueue {
         ),
       );
     }
-    final prepared = CastMusicQueue._(List.unmodifiable(items), snapshot, token, authorized);
+    final prepared = CastMusicQueue._(List.unmodifiable(items), snapshot, token, authorized, {
+      for (final source in sources.entries) source.key.value: musicAccountScope(source.value.client),
+    });
     final size = utf8
         .encode(
           jsonEncode({

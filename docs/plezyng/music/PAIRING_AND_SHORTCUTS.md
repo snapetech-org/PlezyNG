@@ -205,9 +205,13 @@ Use the Cast controls in Now Playing to pause, resume or stop the owned queue.
 **Return playback to this device** opens the receiver's current occurrence at
 its acknowledged paused position and preserves the queue's playback order. If
 the local open fails, only the same still-owned receiver can resume.
-Detached playback does not produce local listening history. Restoring detached
-control after app restart, receiver codec/device qualification and Google Cast
-speaker-group management remain separate. Paired synchronization uses Pleazyng
+Detached playback does not produce local listening history. After restart,
+controls return when the same profile reconnects to the exact acknowledged
+receiver session and queue under the same server accounts. Recovery records
+contain queue identities and account fingerprints, expire after seven days and
+never reload the receiver or store stream URLs. A takeover, account change or
+expired record prevents recovery. Receiver codec/device qualification and
+Google Cast speaker-group management remain separate. Paired synchronization uses Pleazyng
 endpoints.
 
 ## Play on another device

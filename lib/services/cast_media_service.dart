@@ -18,6 +18,8 @@ import '../utils/session_identifier.dart';
 import 'cast_playback_ownership.dart';
 import 'music/cast_music_output.dart';
 import 'music/cast_music_queue.dart';
+import 'music/cast_music_recovery.dart';
+import 'music/music_library_store.dart';
 import 'music/music_device_session.dart';
 import 'music/music_transfer_snapshot.dart';
 import 'multi_server_manager.dart';
@@ -64,9 +66,87 @@ class CastMediaService extends ChangeNotifier {
   _DetachedMusicQueue? _detached;
   Timer? _detachedTimer;
   bool _returningDetached = false;
+  CastMusicRecovery? _musicRecovery;
+  StreamSubscription<Object?>? _recoveryConnections;
+  bool _recoveringDetached = false;
+
+  void bindMusicRecovery(MusicLibraryStore store, MultiServerManager manager) {
+    if (store.profileId != _profileId || identical(_musicRecovery?.store, store)) return;
+    unawaited(_recoveryConnections?.cancel());
+    _musicRecovery = CastMusicRecovery(store, manager);
+    _recoveryConnections = manager.statusStream.listen((_) => _tryRecoverDetached());
+    if (isSupportedPlatform) {
+      unawaited(
+        initialize().then((_) => _tryRecoverDetached()).catchError((Object error) {
+          appLogger.d('Cast queue recovery initialization failed (${error.runtimeType})');
+        }),
+      );
+    }
+  }
+
+  void unbindMusicRecovery(MusicLibraryStore store) {
+    if (!identical(_musicRecovery?.store, store)) return;
+    _musicRecovery = null;
+    unawaited(_recoveryConnections?.cancel());
+    _recoveryConnections = null;
+  }
+
+  void _tryRecoverDetached() {
+    final recovery = _musicRecovery;
+    if (!isSupportedPlatform || recovery == null || _recoveringDetached || _detached != null || _activeItem != null) {
+      return;
+    }
+    _recoveringDetached = true;
+    unawaited(
+      _loads.run(() async {
+        try {
+          final document = await recovery.read();
+          final connection = castReceiverKey(_sessions.currentSession);
+          if (!identical(_musicRecovery, recovery) ||
+              document == null ||
+              connection == null ||
+              _detached != null ||
+              _activeItem != null ||
+              !recovery.store.active) {
+            return;
+          }
+          final queue = CastMusicQueue.recover(
+            document,
+            manager: recovery.manager,
+            connection: connection,
+            status: _remote.mediaStatus,
+          );
+          if (queue == null) return;
+          _detached = _DetachedMusicQueue(queue, connection)..committed = true;
+          _detachedTimer?.cancel();
+          _detachedTimer = Timer.periodic(const Duration(seconds: 2), (_) => _checkDetached());
+          _checkDetached();
+          notifyListeners();
+        } catch (error) {
+          appLogger.d('Cast queue recovery unavailable (${error.runtimeType})');
+        } finally {
+          _recoveringDetached = false;
+        }
+      }),
+    );
+  }
+
+  void _forgetRecovery({String? token}) {
+    final recovery = _musicRecovery;
+    if (recovery == null) return;
+    unawaited(
+      recovery.clear(token: token).catchError((Object error) {
+        appLogger.d('Cast queue recovery removal failed (${error.runtimeType})');
+      }),
+    );
+  }
 
   void bindProfile(String? profileId) {
     if (_profileId == profileId) return;
+    _forgetRecovery();
+    _musicRecovery = null;
+    unawaited(_recoveryConnections?.cancel());
+    _recoveryConnections = null;
     unawaited(_stopMatchedReceiver());
     _profileId = profileId;
     _profileRevision++;
@@ -114,6 +194,7 @@ class CastMediaService extends ChangeNotifier {
 
   void _clearDetached(_DetachedMusicQueue detached) {
     if (!identical(_detached, detached)) return;
+    _forgetRecovery(token: detached.queue.token);
     _detached = null;
     _detachedTimer?.cancel();
     _detachedTimer = null;
@@ -350,6 +431,17 @@ class CastMediaService extends ChangeNotifier {
           return MusicTransferResult.superseded;
         }
         prepared.committed = true;
+        final recovery = _musicRecovery;
+        if (recovery != null && recovery.store.profileId == _profileId) {
+          try {
+            await recovery.save(queue, connection);
+            if (!identical(_musicRecovery, recovery) || prepared.retiredAt != null) {
+              await recovery.clear(token: queue.token);
+            }
+          } catch (error) {
+            appLogger.d('Cast queue recovery save failed (${error.runtimeType})');
+          }
+        }
         notifyListeners();
         return MusicTransferResult.completed;
       } catch (error) {
@@ -771,6 +863,7 @@ class CastMediaService extends ChangeNotifier {
 
   void _onSessionChanged(GoogleCastSession? session) {
     _checkDetached();
+    _tryRecoverDetached();
     if (castReceiverKey(session) != _receiverKey && _activeItem != null && !_finishingPlayback) {
       _retirePlayback();
     }
@@ -780,6 +873,7 @@ class CastMediaService extends ChangeNotifier {
 
   void _onMediaStatusChanged(GoggleCastMediaStatus? status) {
     _checkDetached();
+    _tryRecoverDetached();
     if (_activeItem != null) {
       if (!_ownsReceiver()) {
         _progressTimer?.cancel();
@@ -940,6 +1034,7 @@ class CastMediaService extends ChangeNotifier {
     _progressTimer?.cancel();
     _detachedTimer?.cancel();
     _detached = null;
+    unawaited(_recoveryConnections?.cancel());
     unawaited(_sessionSubscription?.cancel());
     unawaited(_statusSubscription?.cancel());
     unawaited(_positionSubscription?.cancel());

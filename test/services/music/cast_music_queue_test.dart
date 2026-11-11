@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:drift/native.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
@@ -10,6 +12,9 @@ import 'package:plezy/services/music/music_playback_service.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_transfer_snapshot.dart';
 import 'package:plezy/services/playback_initialization_service.dart';
+import 'package:plezy/database/app_database.dart';
+import 'package:plezy/services/music/cast_music_recovery.dart';
+import 'package:plezy/services/music/music_library_store.dart';
 
 import '../../test_helpers/music_experience_fakes.dart';
 
@@ -67,6 +72,117 @@ void main() {
 
   Future<CastMusicQueue> prepare(MusicTransferSnapshot snapshot) =>
       CastMusicQueue.prepare(snapshot, manager: manager, token: 'test-owner', current: () => true);
+
+  Future<CastMusicQueue> acknowledgedQueue() async {
+    final snapshot = _snapshot(playing: false);
+    final queue = await prepare(snapshot);
+    final events = StreamController<GoggleCastMediaStatus?>.broadcast(sync: true);
+    GoggleCastMediaStatus? status;
+    try {
+      expect(
+        await queue.handoff(
+          offer: MusicTransferOffer(snapshot, 1, 1, 1, 1),
+          current: () => true,
+          status: () => status,
+          statuses: events.stream,
+          invalidated: const Stream.empty(),
+          load: (_, _) async {
+            status = _status(queue, 1, CastMediaPlayerState.paused);
+            events.add(status);
+          },
+          play: () async {},
+          finish: (_) async => true,
+        ),
+        isTrue,
+      );
+      return queue;
+    } finally {
+      await events.close();
+    }
+  }
+
+  test('restart restores only catalog identities and exact acknowledged ownership', () async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(db.close);
+    final original = await acknowledgedQueue();
+    const connection = (session: 'native-session', device: 'speaker');
+    final persistence = CastMusicRecovery(MusicLibraryStore(db, 'p'), manager);
+    await persistence.save(original, connection);
+    final restarted = CastMusicRecovery(MusicLibraryStore(db, 'p'), manager);
+    final document = (await restarted.read())!;
+    expect(jsonEncode(document), isNot(contains('https://')));
+    final newClient = _Client();
+    final newManager = MultiServerManager()..debugRegisterClientForTesting(newClient);
+    addTearDown(newManager.dispose);
+    final status = _status(original, 2, CastMediaPlayerState.playing);
+    final recovered = CastMusicQueue.recover(document, manager: newManager, connection: connection, status: status)!;
+    expect(recovered.matches(connection, connection, status), isTrue);
+    expect(recovered.items.every((item) => item.mediaInformation.contentUrl == null), isTrue);
+    expect(newClient.resolved, isEmpty);
+    final events = StreamController<GoggleCastMediaStatus?>.broadcast(sync: true);
+    addTearDown(events.close);
+    var current = status;
+    expect(
+      await recovered.returnToLocal(
+        current: () => true,
+        status: () => current,
+        statuses: events.stream,
+        invalidated: const Stream.empty(),
+        position: () => const Duration(seconds: 31),
+        pause: () async {
+          current = _status(original, 2, CastMediaPlayerState.paused);
+          events.add(current);
+        },
+        resume: () async => fail('return succeeded'),
+        prepare: (snapshot, _) async {
+          expect(snapshot.queue.order, [1, 2, 0]);
+          expect(snapshot.queue.items.map((item) => item.id), ['one', 'two', 'one']);
+          expect(snapshot.queue.cursor, 2);
+          return (position, playing) async => position.inSeconds == 31 && playing;
+        },
+      ),
+      isTrue,
+    );
+    newClient.authenticationSessionId = Object();
+    expect(recovered.authorized(), isFalse);
+    await restarted.clear(token: 'different-queue');
+    expect(await restarted.read(), isNotNull);
+    await restarted.clear(token: original.token);
+    expect(await CastMusicRecovery(MusicLibraryStore(db, 'p'), manager).read(), isNull);
+    expect(await CastMusicRecovery(MusicLibraryStore(db, 'other'), manager).read(), isNull);
+  });
+
+  test('restart refuses stale, malformed, foreign or unacknowledged queues', () async {
+    const connection = (session: 'native-session', device: 'speaker');
+    final unacknowledged = await prepare(_snapshot());
+    expect(() => unacknowledged.recoveryDocument(connection), throwsStateError);
+    final queue = await acknowledgedQueue();
+    final now = DateTime.utc(2026, 11, 10);
+    final document = queue.recoveryDocument(connection, now: now);
+    final status = _status(queue, 1, CastMediaPlayerState.paused);
+    CastMusicQueue? recover(Map<String, dynamic> value) =>
+        CastMusicQueue.recover(value, manager: manager, connection: connection, status: status, now: now);
+    for (final invalid in <Map<String, dynamic>>[
+      {...document, 'version': 2},
+      {...document, 'session': 'different'},
+      {...document, 'device': 'different'},
+      {...document, 'mediaSession': 13},
+      {...document, 'created': now.add(const Duration(seconds: 1)).millisecondsSinceEpoch},
+      {...document, 'created': now.subtract(const Duration(days: 8)).millisecondsSinceEpoch},
+      {
+        ...document,
+        'accounts': {'s': 'other-user'},
+      },
+      {...document, 'accounts': []},
+      {...document, 'snapshot': {}},
+      {...document, 'token': 'x' * 129},
+    ]) {
+      expect(recover(invalid), isNull);
+    }
+    expect(recover(document), isNotNull);
+    client.scopedServerId = 's/other';
+    expect(recover(document), isNull);
+  });
 
   test('queue order, duplicate identities and paused cursor are sent independently', () async {
     final snapshot = _snapshot();

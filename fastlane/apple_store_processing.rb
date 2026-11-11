@@ -55,6 +55,9 @@ module AppleStoreProcessing
   def self.wait_for_valid(expected:, fetch:, upload:, clock:, pause:, timeout_seconds: 900, interval_seconds: 20)
     raise ArgumentError, 'Invalid processing wait limit' unless timeout_seconds.between?(1, 900) && interval_seconds.between?(1, 60)
     build = exact_build(fetch.call(expected), expected)
+    if build && %w[FAILED INVALID].include?(build.processing_state)
+      raise RuntimeError, "App Store Connect rejected build processing: #{build.processing_state}"
+    end
     if build.nil?
       upload.call
       uploaded = true

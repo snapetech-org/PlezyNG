@@ -68,11 +68,16 @@ class AppleStoreProcessingTest < Minitest::Test
   def test_failed_invalid_duplicate_and_mismatched_builds_are_rejected
     identity = expected
     %w[FAILED INVALID].each do |state|
+      fetches = 0
       assert_raises(RuntimeError) do
         AppleStoreProcessing.wait_for_valid(expected: identity,
-          fetch: ->(_) { [build(identity, state)] }, upload: -> { flunk('upload') },
+          fetch: ->(_) do
+            fetches += 1
+            fetches == 1 ? [build(identity, state)] : [build(identity, 'VALID')]
+          end, upload: -> { flunk('upload') },
           clock: -> { 0 }, pause: ->(_) { flunk('wait') })
       end
+      assert_equal 1, fetches
     end
     assert_raises(ArgumentError) { AppleStoreProcessing.exact_build([build(identity, 'VALID')] * 2, identity) }
     wrong = build(identity, 'VALID')

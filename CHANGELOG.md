@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Apply speaker edits to the current local native music source without promoting a remote player. Keep native source/receiver Stop controls available when discovery loses the selected peer.
+
 - Negotiate native speaker channel preferences and send synchronized stereo, 5.1 and 7.1 PCM without exceeding the UDP MTU. Preserve/reorder known surround capture layouts, downmix other supported layouts, and retire changed or invalid peer formats independently.
 
 - Apply native per-player parametric EQ relays through the shared music session, persist bounded profile settings and publish accepted state. Preserve other speakers' PCM while transmitting, roll back rejected changes and keep ordinary playback available when a restored preset lacks decoder support.

@@ -173,9 +173,51 @@ void main() {
     await tester.pumpAndSettle();
     expect(audio.selections.single, discovery.entries.map((node) => node.id));
     expect(audio.sendingNativeMusicGroup, isTrue);
+    await tester.ensureVisible(speaker);
+    await tester.tap(speaker);
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(FilledButton, t.common.save);
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(audio.selections, [
+      discovery.entries.map((node) => node.id).toList(),
+      [discovery.entries.first.id],
+    ]);
+    expect(client.groups, isEmpty, reason: 'Local output changes must not promote a remote source');
+    discovery.entries.clear();
+    discovery.events.add([]);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(tile);
     await tester.tap(action);
     await tester.pumpAndSettle();
     expect(audio.sendingNativeMusicGroup, isFalse);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('a receiving device can leave after its source disappears from discovery', (tester) async {
+    final discovery = _Discovery(), audio = _Audio()..receivingNativeMusicGroup = true;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testMonoTokens]),
+        home: CalderaGroupScreen(
+          current: () => true,
+          audio: audio,
+          discoveryFactory: () => discovery,
+          clientFactory: _Client.new,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    discovery.entries.clear();
+    discovery.events.add([]);
+    await tester.pumpAndSettle();
+    final tile = find.widgetWithText(ListTile, t.musicDevices.thisDevice);
+    await tester.ensureVisible(tile);
+    await tester.tap(find.descendant(of: tile, matching: find.byType(IconButton)));
+    await tester.pumpAndSettle();
+    expect(audio.receivingNativeMusicGroup, isFalse);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });

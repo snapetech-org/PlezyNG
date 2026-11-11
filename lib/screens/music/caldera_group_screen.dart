@@ -226,11 +226,11 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
                     if (selected != null) unawaited(_run(() => _read(selected)));
                   },
           ),
-          if (widget.audio != null && leader != null)
+          if (widget.audio != null && (leader != null || widget.audio!.receivingNativeMusicGroup))
             ListTile(
               leading: const AppIcon(Symbols.speaker_rounded),
               title: Text(t.musicDevices.thisDevice),
-              subtitle: Text(leader.name),
+              subtitle: leader == null ? null : Text(leader.name),
               trailing: IconButton(
                 tooltip: widget.audio!.receivingNativeMusicGroup ? t.music.stopPlayback : t.common.play,
                 icon: AppIcon(
@@ -243,6 +243,7 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
                           if (widget.audio!.receivingNativeMusicGroup) {
                             await widget.audio!.leaveNativeMusicGroup();
                           } else {
+                            if (leader == null) return;
                             await widget.audio!.receiveNativeMusicGroup(leader, current: widget.current);
                           }
                           if (mounted) setState(() {});
@@ -263,7 +264,7 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
               trailing: IconButton(
                 tooltip: source.sendingNativeMusicGroup ? t.music.stopPlayback : t.common.play,
                 icon: AppIcon(source.sendingNativeMusicGroup ? Symbols.stop_rounded : Symbols.play_arrow_rounded),
-                onPressed: _busy || leader == null
+                onPressed: _busy || leader == null && !source.sendingNativeMusicGroup
                     ? null
                     : () => unawaited(
                         _run(() async {
@@ -355,7 +356,13 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
                 : () => _run(() async {
                     final sinks = _nodes.where((node) => _members.contains(node.id)).toList();
                     if (sinks.length != _members.length) throw StateError('Native group member unavailable');
-                    await _client.group(leader, state, sinks, current: () => _valid(leader) && sinks.every(_valid));
+                    bool current() => _valid(leader) && sinks.every(_valid);
+                    final audio = widget.audio;
+                    if (audio case final NativeMusicGroupSourceControls source when source.sendingNativeMusicGroup) {
+                      await source.sendNativeMusicGroup([leader, ...sinks], current: current);
+                    } else {
+                      await _client.group(leader, state, sinks, current: current);
+                    }
                     if (_current) setState(() => _accepted = true);
                   }),
           ),

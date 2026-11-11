@@ -336,3 +336,12 @@ production 48 kHz 6-channel PCM (1,608 packets) and 8-channel PCM (2,053 packets
 both with zero drops. Each supplied 95,520 capture frames and remained alive.
 Automatic-preference runs correctly retained stereo. Null-device underruns
 remain unqualified and these runs do not establish acoustic synchronization.
+
+## Controller ownership during local output
+
+Saving speaker edits while this device is transmitting calls the shared source's
+replace operation. It does not promote the selected remote speaker into a new
+leader. The native controller route is retained when controlling another source.
+Source and receiver Stop remain available when discovery loses the selected
+peer. Five widget regressions cover these ownership changes, native control,
+profile retirement and 320px/200% text layout.

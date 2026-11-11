@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$sv extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Håll Pleazyng öppet för att ta emot musik. Parkoppla en gång med den här koden.';
 	@override String get moveFailed => 'Det gick inte att flytta uppspelningen. Kontrollera att enheten är vaken, parkopplad och når musikservern.';
 	@override String get uncertain => 'Anslutningen avbröts. Anslut till den valda enheten igen för att kontrollera uppspelningen.';
+	@override String get away => 'Utanför hemmet';
+	@override String get relay => 'URL till musikrelä';
+	@override String get relayHint => 'Aktivera på mottagaren och parkoppla en gång på samma nätverk. Håll Pleazyng öppet. Reläet skickar krypterade musikkommandon och ser nätverksadresser. Varje spelare strömmar från sin egen medieserver.';
+	@override String get relayInvalid => 'Ange en HTTPS-adress till reläet.';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsSv {
 			'musicDevices.receiverHint' => 'Håll Pleazyng öppet för att ta emot musik. Parkoppla en gång med den här koden.',
 			'musicDevices.moveFailed' => 'Det gick inte att flytta uppspelningen. Kontrollera att enheten är vaken, parkopplad och når musikservern.',
 			'musicDevices.uncertain' => 'Anslutningen avbröts. Anslut till den valda enheten igen för att kontrollera uppspelningen.',
+			'musicDevices.away' => 'Utanför hemmet',
+			'musicDevices.relay' => 'URL till musikrelä',
+			'musicDevices.relayHint' => 'Aktivera på mottagaren och parkoppla en gång på samma nätverk. Håll Pleazyng öppet. Reläet skickar krypterade musikkommandon och ser nätverksadresser. Varje spelare strömmar från sin egen medieserver.',
+			'musicDevices.relayInvalid' => 'Ange en HTTPS-adress till reläet.',
 			_ => null,
 		};
 	}

@@ -5544,6 +5544,10 @@
     "nearbyHint": "Mở trình chọn thiết bị trên thiết bị kia và cho phép phát ở đó.",
     "receiverHint": "Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.",
     "moveFailed": "Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.",
-    "uncertain": "Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc."
+    "uncertain": "Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.",
+    "away": "Khi xa nhà",
+    "relay": "URL chuyển tiếp nhạc",
+    "relayHint": "Bật trên thiết bị nhận rồi ghép đôi một lần trên cùng mạng. Giữ Pleazyng mở. Máy chuyển tiếp truyền lệnh nhạc được mã hóa và thấy địa chỉ mạng. Mỗi trình phát truyền từ máy chủ phương tiện riêng.",
+    "relayInvalid": "Nhập địa chỉ chuyển tiếp HTTPS."
   }
 }

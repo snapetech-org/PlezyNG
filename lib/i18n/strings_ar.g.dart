@@ -4447,6 +4447,10 @@ class _Translations$musicDevices$ar extends Translations$musicDevices$en {
 	@override String get receiverHint => 'أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.';
 	@override String get moveFailed => 'تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.';
 	@override String get uncertain => 'انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل.';
+	@override String get away => 'خارج المنزل';
+	@override String get relay => 'عنوان مرحّل الموسيقى';
+	@override String get relayHint => 'فعّل هذا على جهاز الاستقبال، ثم أقرن الجهازين مرة واحدة على الشبكة نفسها. أبقِ Pleazyng مفتوحًا. ينقل المرحّل أوامر الموسيقى المشفّرة ويرى عناوين الشبكة. يبث كل مشغّل من خادم الوسائط الخاص به.';
+	@override String get relayInvalid => 'أدخل عنوان مرحّل يستخدم HTTPS.';
 }
 
 // Path: appIcon.names
@@ -9633,6 +9637,10 @@ extension on TranslationsAr {
 			'musicDevices.receiverHint' => 'أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.',
 			'musicDevices.moveFailed' => 'تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.',
 			'musicDevices.uncertain' => 'انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل.',
+			'musicDevices.away' => 'خارج المنزل',
+			'musicDevices.relay' => 'عنوان مرحّل الموسيقى',
+			'musicDevices.relayHint' => 'فعّل هذا على جهاز الاستقبال، ثم أقرن الجهازين مرة واحدة على الشبكة نفسها. أبقِ Pleazyng مفتوحًا. ينقل المرحّل أوامر الموسيقى المشفّرة ويرى عناوين الشبكة. يبث كل مشغّل من خادم الوسائط الخاص به.',
+			'musicDevices.relayInvalid' => 'أدخل عنوان مرحّل يستخدم HTTPS.',
 			_ => null,
 		};
 	}

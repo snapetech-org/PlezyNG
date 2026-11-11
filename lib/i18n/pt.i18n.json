@@ -5580,6 +5580,10 @@
     "nearbyHint": "Abra o seletor de dispositivos no outro dispositivo e permita a reprodução.",
     "receiverHint": "Mantenha o Pleazyng aberto para receber música. Emparelhe uma vez com este código.",
     "moveFailed": "Não foi possível mover a reprodução. Verifique se o dispositivo está ativo, emparelhado e tem acesso ao servidor de música.",
-    "uncertain": "Ligação interrompida. Volte a ligar ao dispositivo selecionado para verificar a reprodução."
+    "uncertain": "Ligação interrompida. Volte a ligar ao dispositivo selecionado para verificar a reprodução.",
+    "away": "Fora de casa",
+    "relay": "URL do relay de música",
+    "relayHint": "Ative no dispositivo recetor e emparelhe uma vez na mesma rede. Mantenha o Pleazyng aberto. O relay transmite comandos de música encriptados e vê os endereços de rede. Cada leitor transmite do seu próprio servidor multimédia.",
+    "relayInvalid": "Introduza um endereço HTTPS do relay."
   }
 }

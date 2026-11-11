@@ -4362,6 +4362,10 @@ class _Translations$musicDevices$it extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Tieni Pleazyng aperto per ricevere musica. Associa una volta con questo codice.';
 	@override String get moveFailed => 'Impossibile spostare la riproduzione. Controlla che il dispositivo sia attivo, associato e possa accedere al server musicale.';
 	@override String get uncertain => 'Connessione interrotta. Riconnettiti al dispositivo selezionato per verificare la riproduzione.';
+	@override String get away => 'Fuori casa';
+	@override String get relay => 'URL del relay musicale';
+	@override String get relayHint => 'Attiva sul dispositivo ricevente, poi associa una volta sulla stessa rete. Tieni Pleazyng aperto. Il relay trasmette comandi musicali cifrati e vede gli indirizzi di rete. Ogni lettore riproduce dal proprio server multimediale.';
+	@override String get relayInvalid => 'Inserisci un indirizzo HTTPS del relay.';
 }
 
 // Path: appIcon.names
@@ -9540,6 +9544,10 @@ extension on TranslationsIt {
 			'musicDevices.receiverHint' => 'Tieni Pleazyng aperto per ricevere musica. Associa una volta con questo codice.',
 			'musicDevices.moveFailed' => 'Impossibile spostare la riproduzione. Controlla che il dispositivo sia attivo, associato e possa accedere al server musicale.',
 			'musicDevices.uncertain' => 'Connessione interrotta. Riconnettiti al dispositivo selezionato per verificare la riproduzione.',
+			'musicDevices.away' => 'Fuori casa',
+			'musicDevices.relay' => 'URL del relay musicale',
+			'musicDevices.relayHint' => 'Attiva sul dispositivo ricevente, poi associa una volta sulla stessa rete. Tieni Pleazyng aperto. Il relay trasmette comandi musicali cifrati e vede gli indirizzi di rete. Ogni lettore riproduce dal proprio server multimediale.',
+			'musicDevices.relayInvalid' => 'Inserisci un indirizzo HTTPS del relay.',
 			_ => null,
 		};
 	}

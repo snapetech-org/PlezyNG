@@ -5571,6 +5571,10 @@
     "nearbyHint": "Nyisd meg az eszközválasztót a másik eszközön, és engedélyezd ott a lejátszást.",
     "receiverHint": "Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.",
     "moveFailed": "Nem sikerült áthelyezni a lejátszást. Ellenőrizd, hogy az eszköz ébren van, párosítva van, és eléri a zenekiszolgálót.",
-    "uncertain": "A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz."
+    "uncertain": "A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.",
+    "away": "Otthontól távol",
+    "relay": "Zenei közvetítő URL-címe",
+    "relayHint": "Engedélyezze a fogadó eszközön, majd párosítsa egyszer ugyanazon a hálózaton. Tartsa nyitva a Pleazyng alkalmazást. A közvetítő titkosított zenevezérlést továbbít és látja a hálózati címeket. Minden lejátszó a saját médiaszerveréről streamel.",
+    "relayInvalid": "Adja meg a közvetítő HTTPS-címét."
   }
 }

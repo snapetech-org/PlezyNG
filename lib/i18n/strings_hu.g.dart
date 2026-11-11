@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$hu extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.';
 	@override String get moveFailed => 'Nem sikerült áthelyezni a lejátszást. Ellenőrizd, hogy az eszköz ébren van, párosítva van, és eléri a zenekiszolgálót.';
 	@override String get uncertain => 'A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.';
+	@override String get away => 'Otthontól távol';
+	@override String get relay => 'Zenei közvetítő URL-címe';
+	@override String get relayHint => 'Engedélyezze a fogadó eszközön, majd párosítsa egyszer ugyanazon a hálózaton. Tartsa nyitva a Pleazyng alkalmazást. A közvetítő titkosított zenevezérlést továbbít és látja a hálózati címeket. Minden lejátszó a saját médiaszerveréről streamel.';
+	@override String get relayInvalid => 'Adja meg a közvetítő HTTPS-címét.';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsHu {
 			'musicDevices.receiverHint' => 'Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.',
 			'musicDevices.moveFailed' => 'Nem sikerült áthelyezni a lejátszást. Ellenőrizd, hogy az eszköz ébren van, párosítva van, és eléri a zenekiszolgálót.',
 			'musicDevices.uncertain' => 'A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.',
+			'musicDevices.away' => 'Otthontól távol',
+			'musicDevices.relay' => 'Zenei közvetítő URL-címe',
+			'musicDevices.relayHint' => 'Engedélyezze a fogadó eszközön, majd párosítsa egyszer ugyanazon a hálózaton. Tartsa nyitva a Pleazyng alkalmazást. A közvetítő titkosított zenevezérlést továbbít és látja a hálózati címeket. Minden lejátszó a saját médiaszerveréről streamel.',
+			'musicDevices.relayInvalid' => 'Adja meg a közvetítő HTTPS-címét.',
 			_ => null,
 		};
 	}

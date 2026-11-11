@@ -5544,6 +5544,10 @@
     "nearbyHint": "Buka pemilih peranti pada peranti lain dan benarkan main balik di sana.",
     "receiverHint": "Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.",
     "moveFailed": "Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.",
-    "uncertain": "Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik."
+    "uncertain": "Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.",
+    "away": "Di luar rumah",
+    "relay": "URL geganti muzik",
+    "relayHint": "Aktifkan pada peranti penerima, kemudian pasangkan sekali pada rangkaian yang sama. Biarkan Pleazyng terbuka. Geganti menghantar kawalan muzik yang disulitkan dan melihat alamat rangkaian. Setiap pemain menstrim daripada pelayan medianya sendiri.",
+    "relayInvalid": "Masukkan alamat geganti HTTPS."
   }
 }

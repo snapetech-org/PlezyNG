@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$az extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.';
 	@override String get moveFailed => 'Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.';
 	@override String get uncertain => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.';
+	@override String get away => 'Evdən kənarda';
+	@override String get relay => 'Musiqi rele ünvanı';
+	@override String get relayHint => 'Qəbul edən cihazda aktivləşdirin, sonra eyni şəbəkədə bir dəfə qoşalaşdırın. Pleazyng açıq qalsın. Rele şifrələnmiş musiqi əmrlərini ötürür və şəbəkə ünvanlarını görür. Hər pleyer öz media serverindən yayımlayır.';
+	@override String get relayInvalid => 'HTTPS rele ünvanı daxil edin.';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsAz {
 			'musicDevices.receiverHint' => 'Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.',
 			'musicDevices.moveFailed' => 'Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.',
 			'musicDevices.uncertain' => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.',
+			'musicDevices.away' => 'Evdən kənarda',
+			'musicDevices.relay' => 'Musiqi rele ünvanı',
+			'musicDevices.relayHint' => 'Qəbul edən cihazda aktivləşdirin, sonra eyni şəbəkədə bir dəfə qoşalaşdırın. Pleazyng açıq qalsın. Rele şifrələnmiş musiqi əmrlərini ötürür və şəbəkə ünvanlarını görür. Hər pleyer öz media serverindən yayımlayır.',
+			'musicDevices.relayInvalid' => 'HTTPS rele ünvanı daxil edin.',
 			_ => null,
 		};
 	}

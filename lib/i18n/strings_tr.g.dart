@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$tr extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.';
 	@override String get moveFailed => 'Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.';
 	@override String get uncertain => 'Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.';
+	@override String get away => 'Ev dışındayken';
+	@override String get relay => 'Müzik rölesi URL’si';
+	@override String get relayHint => 'Alıcı cihazda etkinleştirin, ardından aynı ağda bir kez eşleştirin. Pleazyng açık kalsın. Röle şifreli müzik denetimlerini iletir ve ağ adreslerini görür. Her oynatıcı kendi medya sunucusundan yayın yapar.';
+	@override String get relayInvalid => 'Bir HTTPS röle adresi girin.';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsTr {
 			'musicDevices.receiverHint' => 'Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.',
 			'musicDevices.moveFailed' => 'Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.',
 			'musicDevices.uncertain' => 'Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.',
+			'musicDevices.away' => 'Ev dışındayken',
+			'musicDevices.relay' => 'Müzik rölesi URL’si',
+			'musicDevices.relayHint' => 'Alıcı cihazda etkinleştirin, ardından aynı ağda bir kez eşleştirin. Pleazyng açık kalsın. Röle şifreli müzik denetimlerini iletir ve ağ adreslerini görür. Her oynatıcı kendi medya sunucusundan yayın yapar.',
+			'musicDevices.relayInvalid' => 'Bir HTTPS röle adresi girin.',
 			_ => null,
 		};
 	}

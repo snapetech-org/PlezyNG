@@ -300,6 +300,10 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
       await peer.close();
     }
     await RemotePairingStore.forgetRemote(profile, key);
+    for (final ip in host.ips) {
+      final address = Uri(scheme: 'ws', host: ip, port: host.port).authority.toLowerCase();
+      await RemotePairingStore.forgetRemote(profile, 'address:$address');
+    }
     await MusicDeviceStore.forget(profile, host);
     await MusicRelayStore.remember(profile, key, null);
     safeNotifyListeners();

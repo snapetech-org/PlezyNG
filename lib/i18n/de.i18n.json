@@ -5571,6 +5571,10 @@
     "nearbyHint": "Öffne die Geräteauswahl auf dem anderen Gerät und erlaube dort die Wiedergabe.",
     "receiverHint": "Lass Pleazyng geöffnet, um Musik zu empfangen. Kopple einmal mit diesem Code.",
     "moveFailed": "Wiedergabe konnte nicht verschoben werden. Prüfe, ob das Gerät aktiv und gekoppelt ist und deinen Musikserver erreicht.",
-    "uncertain": "Verbindung unterbrochen. Verbinde dich erneut mit dem gewählten Gerät, um die Wiedergabe zu prüfen."
+    "uncertain": "Verbindung unterbrochen. Verbinde dich erneut mit dem gewählten Gerät, um die Wiedergabe zu prüfen.",
+    "away": "Unterwegs",
+    "relay": "URL des Musik-Relays",
+    "relayHint": "Auf dem Empfangsgerät aktivieren und einmal im selben Netzwerk koppeln. Pleazyng geöffnet lassen. Das Relay überträgt verschlüsselte Musikbefehle und sieht Netzwerkadressen. Jeder Player streamt vom eigenen Medienserver.",
+    "relayInvalid": "Eine HTTPS-Adresse für das Relay eingeben."
   }
 }

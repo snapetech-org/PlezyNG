@@ -4332,6 +4332,10 @@ class _Translations$musicDevices$id extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.';
 	@override String get moveFailed => 'Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.';
 	@override String get uncertain => 'Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.';
+	@override String get away => 'Di luar rumah';
+	@override String get relay => 'URL relai musik';
+	@override String get relayHint => 'Aktifkan di perangkat penerima, lalu pasangkan sekali di jaringan yang sama. Biarkan Pleazyng terbuka. Relai meneruskan kontrol musik terenkripsi dan melihat alamat jaringan. Setiap pemutar melakukan streaming dari server medianya sendiri.';
+	@override String get relayInvalid => 'Masukkan alamat relai HTTPS.';
 }
 
 // Path: appIcon.names
@@ -9508,6 +9512,10 @@ extension on TranslationsId {
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.',
 			'musicDevices.moveFailed' => 'Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.',
 			'musicDevices.uncertain' => 'Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.',
+			'musicDevices.away' => 'Di luar rumah',
+			'musicDevices.relay' => 'URL relai musik',
+			'musicDevices.relayHint' => 'Aktifkan di perangkat penerima, lalu pasangkan sekali di jaringan yang sama. Biarkan Pleazyng terbuka. Relai meneruskan kontrol musik terenkripsi dan melihat alamat jaringan. Setiap pemutar melakukan streaming dari server medianya sendiri.',
+			'musicDevices.relayInvalid' => 'Masukkan alamat relai HTTPS.',
 			_ => null,
 		};
 	}

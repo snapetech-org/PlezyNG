@@ -5571,6 +5571,10 @@
     "nearbyHint": "Diğer cihazda cihaz seçiciyi açın ve orada oynatmaya izin verin.",
     "receiverHint": "Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.",
     "moveFailed": "Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.",
-    "uncertain": "Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın."
+    "uncertain": "Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.",
+    "away": "Ev dışındayken",
+    "relay": "Müzik rölesi URL’si",
+    "relayHint": "Alıcı cihazda etkinleştirin, ardından aynı ağda bir kez eşleştirin. Pleazyng açık kalsın. Röle şifreli müzik denetimlerini iletir ve ağ adreslerini görür. Her oynatıcı kendi medya sunucusundan yayın yapar.",
+    "relayInvalid": "Bir HTTPS röle adresi girin."
   }
 }

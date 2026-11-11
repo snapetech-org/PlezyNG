@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$da extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.';
 	@override String get moveFailed => 'Kunne ikke flytte afspilningen. Kontrollér, at enheden er vågen, parret og har adgang til din musikserver.';
 	@override String get uncertain => 'Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.';
+	@override String get away => 'Uden for hjemmet';
+	@override String get relay => 'URL til musikrelæ';
+	@override String get relayHint => 'Aktivér på modtageren, og par én gang på samme netværk. Hold Pleazyng åben. Relæet sender krypteret musikstyring og ser netværksadresser. Hver afspiller streamer fra sin egen medieserver.';
+	@override String get relayInvalid => 'Indtast en HTTPS-adresse til relæet.';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsDa {
 			'musicDevices.receiverHint' => 'Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.',
 			'musicDevices.moveFailed' => 'Kunne ikke flytte afspilningen. Kontrollér, at enheden er vågen, parret og har adgang til din musikserver.',
 			'musicDevices.uncertain' => 'Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.',
+			'musicDevices.away' => 'Uden for hjemmet',
+			'musicDevices.relay' => 'URL til musikrelæ',
+			'musicDevices.relayHint' => 'Aktivér på modtageren, og par én gang på samme netværk. Hold Pleazyng åben. Relæet sender krypteret musikstyring og ser netværksadresser. Hver afspiller streamer fra sin egen medieserver.',
+			'musicDevices.relayInvalid' => 'Indtast en HTTPS-adresse til relæet.',
 			_ => null,
 		};
 	}

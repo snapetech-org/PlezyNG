@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$hi extends Translations$musicDevices$en {
 	@override String get receiverHint => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।';
 	@override String get moveFailed => 'प्लेबैक स्थानांतरित नहीं हुआ। जाँचें कि डिवाइस सक्रिय और पेयर है तथा संगीत सर्वर तक पहुँच सकता है।';
 	@override String get uncertain => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।';
+	@override String get away => 'घर से दूर';
+	@override String get relay => 'संगीत रिले URL';
+	@override String get relayHint => 'प्राप्त करने वाले डिवाइस पर चालू करें, फिर एक ही नेटवर्क पर एक बार पेयर करें। Pleazyng खुला रखें। रिले एन्क्रिप्टेड संगीत नियंत्रण भेजता है और नेटवर्क पते देखता है। हर प्लेयर अपने मीडिया सर्वर से स्ट्रीम करता है।';
+	@override String get relayInvalid => 'HTTPS रिले पता दर्ज करें।';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsHi {
 			'musicDevices.receiverHint' => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।',
 			'musicDevices.moveFailed' => 'प्लेबैक स्थानांतरित नहीं हुआ। जाँचें कि डिवाइस सक्रिय और पेयर है तथा संगीत सर्वर तक पहुँच सकता है।',
 			'musicDevices.uncertain' => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।',
+			'musicDevices.away' => 'घर से दूर',
+			'musicDevices.relay' => 'संगीत रिले URL',
+			'musicDevices.relayHint' => 'प्राप्त करने वाले डिवाइस पर चालू करें, फिर एक ही नेटवर्क पर एक बार पेयर करें। Pleazyng खुला रखें। रिले एन्क्रिप्टेड संगीत नियंत्रण भेजता है और नेटवर्क पते देखता है। हर प्लेयर अपने मीडिया सर्वर से स्ट्रीम करता है।',
+			'musicDevices.relayInvalid' => 'HTTPS रिले पता दर्ज करें।',
 			_ => null,
 		};
 	}

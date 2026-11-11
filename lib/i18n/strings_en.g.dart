@@ -14840,6 +14840,18 @@ class Translations$musicDevices$en {
 
 	/// en: 'Connection interrupted. Reconnect to the selected device to check playback.'
 	String get uncertain => 'Connection interrupted. Reconnect to the selected device to check playback.';
+
+	/// en: 'Away from home'
+	String get away => 'Away from home';
+
+	/// en: 'Music relay URL'
+	String get relay => 'Music relay URL';
+
+	/// en: 'Enable this on the receiving device, then pair once on the same network. Keep Pleazyng open. The relay carries encrypted music controls and sees network addresses. Each player streams from its own media server.'
+	String get relayHint => 'Enable this on the receiving device, then pair once on the same network. Keep Pleazyng open. The relay carries encrypted music controls and sees network addresses. Each player streams from its own media server.';
+
+	/// en: 'Enter an HTTPS relay address.'
+	String get relayInvalid => 'Enter an HTTPS relay address.';
 }
 
 // Path: appIcon.names
@@ -22748,6 +22760,10 @@ extension on Translations {
 			'musicDevices.receiverHint' => 'Keep Pleazyng open to receive music. Pair once using this code.',
 			'musicDevices.moveFailed' => 'Could not move playback. Check that the device is awake, paired, and can access your music server.',
 			'musicDevices.uncertain' => 'Connection interrupted. Reconnect to the selected device to check playback.',
+			'musicDevices.away' => 'Away from home',
+			'musicDevices.relay' => 'Music relay URL',
+			'musicDevices.relayHint' => 'Enable this on the receiving device, then pair once on the same network. Keep Pleazyng open. The relay carries encrypted music controls and sees network addresses. Each player streams from its own media server.',
+			'musicDevices.relayInvalid' => 'Enter an HTTPS relay address.',
 			_ => null,
 		};
 	}

@@ -5619,6 +5619,10 @@
     "nearbyHint": "Na druhém zařízení otevřete nabídku zařízení a povolte tam přehrávání.",
     "receiverHint": "Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.",
     "moveFailed": "Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.",
-    "uncertain": "Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení."
+    "uncertain": "Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.",
+    "away": "Mimo domov",
+    "relay": "URL hudebního relé",
+    "relayHint": "Zapněte na přijímajícím zařízení a jednou spárujte ve stejné síti. Nechte Pleazyng otevřený. Relé přenáší šifrované ovládání hudby a vidí síťové adresy. Každý přehrávač streamuje z vlastního mediálního serveru.",
+    "relayInvalid": "Zadejte HTTPS adresu relé."
   }
 }

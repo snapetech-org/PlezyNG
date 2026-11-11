@@ -4350,6 +4350,10 @@ class _Translations$musicDevices$ja extends Translations$musicDevices$en {
 	@override String get receiverHint => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。';
 	@override String get moveFailed => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。';
 	@override String get uncertain => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。';
+	@override String get away => '外出先から';
+	@override String get relay => '音楽リレーのURL';
+	@override String get relayHint => '受信デバイスで有効にし、同じネットワークで一度ペアリングしてください。Pleazyngを開いたままにします。リレーは暗号化された音楽操作を転送し、ネットワークアドレスを参照します。各プレーヤーは自身のメディアサーバーから再生します。';
+	@override String get relayInvalid => 'リレーのHTTPSアドレスを入力してください。';
 }
 
 // Path: appIcon.names
@@ -9528,6 +9532,10 @@ extension on TranslationsJa {
 			'musicDevices.receiverHint' => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。',
 			'musicDevices.moveFailed' => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。',
 			'musicDevices.uncertain' => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。',
+			'musicDevices.away' => '外出先から',
+			'musicDevices.relay' => '音楽リレーのURL',
+			'musicDevices.relayHint' => '受信デバイスで有効にし、同じネットワークで一度ペアリングしてください。Pleazyngを開いたままにします。リレーは暗号化された音楽操作を転送し、ネットワークアドレスを参照します。各プレーヤーは自身のメディアサーバーから再生します。',
+			'musicDevices.relayInvalid' => 'リレーのHTTPSアドレスを入力してください。',
 			_ => null,
 		};
 	}

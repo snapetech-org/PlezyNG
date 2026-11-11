@@ -5571,6 +5571,10 @@
     "nearbyHint": "Digər cihazda səsləndirmə menyusunu açın və səsləndirməyə icazə verin.",
     "receiverHint": "Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.",
     "moveFailed": "Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.",
-    "uncertain": "Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun."
+    "uncertain": "Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.",
+    "away": "Evdən kənarda",
+    "relay": "Musiqi rele ünvanı",
+    "relayHint": "Qəbul edən cihazda aktivləşdirin, sonra eyni şəbəkədə bir dəfə qoşalaşdırın. Pleazyng açıq qalsın. Rele şifrələnmiş musiqi əmrlərini ötürür və şəbəkə ünvanlarını görür. Hər pleyer öz media serverindən yayımlayır.",
+    "relayInvalid": "HTTPS rele ünvanı daxil edin."
   }
 }

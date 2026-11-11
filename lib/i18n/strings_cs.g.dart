@@ -4397,6 +4397,10 @@ class _Translations$musicDevices$cs extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.';
 	@override String get moveFailed => 'Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.';
 	@override String get uncertain => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.';
+	@override String get away => 'Mimo domov';
+	@override String get relay => 'URL hudebního relé';
+	@override String get relayHint => 'Zapněte na přijímajícím zařízení a jednou spárujte ve stejné síti. Nechte Pleazyng otevřený. Relé přenáší šifrované ovládání hudby a vidí síťové adresy. Každý přehrávač streamuje z vlastního mediálního serveru.';
+	@override String get relayInvalid => 'Zadejte HTTPS adresu relé.';
 }
 
 // Path: appIcon.names
@@ -9577,6 +9581,10 @@ extension on TranslationsCs {
 			'musicDevices.receiverHint' => 'Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.',
 			'musicDevices.moveFailed' => 'Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.',
 			'musicDevices.uncertain' => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.',
+			'musicDevices.away' => 'Mimo domov',
+			'musicDevices.relay' => 'URL hudebního relé',
+			'musicDevices.relayHint' => 'Zapněte na přijímajícím zařízení a jednou spárujte ve stejné síti. Nechte Pleazyng otevřený. Relé přenáší šifrované ovládání hudby a vidí síťové adresy. Každý přehrávač streamuje z vlastního mediálního serveru.',
+			'musicDevices.relayInvalid' => 'Zadejte HTTPS adresu relé.',
 			_ => null,
 		};
 	}

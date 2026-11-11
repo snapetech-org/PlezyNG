@@ -4401,6 +4401,10 @@ class _Translations$musicDevices$pl extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Pozostaw Pleazyng otwarte, aby odbierać muzykę. Sparuj raz przy użyciu tego kodu.';
 	@override String get moveFailed => 'Nie udało się przenieść odtwarzania. Sprawdź, czy urządzenie jest aktywne, sparowane i ma dostęp do serwera muzyki.';
 	@override String get uncertain => 'Połączenie przerwane. Połącz się ponownie z wybranym urządzeniem, aby sprawdzić odtwarzanie.';
+	@override String get away => 'Poza domem';
+	@override String get relay => 'URL przekaźnika muzyki';
+	@override String get relayHint => 'Włącz na urządzeniu odbierającym i sparuj raz w tej samej sieci. Pozostaw Pleazyng otwarty. Przekaźnik przesyła zaszyfrowane polecenia muzyczne i widzi adresy sieciowe. Każdy odtwarzacz korzysta ze swojego serwera multimediów.';
+	@override String get relayInvalid => 'Wpisz adres HTTPS przekaźnika.';
 }
 
 // Path: appIcon.names
@@ -9583,6 +9587,10 @@ extension on TranslationsPl {
 			'musicDevices.receiverHint' => 'Pozostaw Pleazyng otwarte, aby odbierać muzykę. Sparuj raz przy użyciu tego kodu.',
 			'musicDevices.moveFailed' => 'Nie udało się przenieść odtwarzania. Sprawdź, czy urządzenie jest aktywne, sparowane i ma dostęp do serwera muzyki.',
 			'musicDevices.uncertain' => 'Połączenie przerwane. Połącz się ponownie z wybranym urządzeniem, aby sprawdzić odtwarzanie.',
+			'musicDevices.away' => 'Poza domem',
+			'musicDevices.relay' => 'URL przekaźnika muzyki',
+			'musicDevices.relayHint' => 'Włącz na urządzeniu odbierającym i sparuj raz w tej samej sieci. Pozostaw Pleazyng otwarty. Przekaźnik przesyła zaszyfrowane polecenia muzyczne i widzi adresy sieciowe. Każdy odtwarzacz korzysta ze swojego serwera multimediów.',
+			'musicDevices.relayInvalid' => 'Wpisz adres HTTPS przekaźnika.',
 			_ => null,
 		};
 	}

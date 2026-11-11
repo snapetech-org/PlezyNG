@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$de extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Lass Pleazyng geöffnet, um Musik zu empfangen. Kopple einmal mit diesem Code.';
 	@override String get moveFailed => 'Wiedergabe konnte nicht verschoben werden. Prüfe, ob das Gerät aktiv und gekoppelt ist und deinen Musikserver erreicht.';
 	@override String get uncertain => 'Verbindung unterbrochen. Verbinde dich erneut mit dem gewählten Gerät, um die Wiedergabe zu prüfen.';
+	@override String get away => 'Unterwegs';
+	@override String get relay => 'URL des Musik-Relays';
+	@override String get relayHint => 'Auf dem Empfangsgerät aktivieren und einmal im selben Netzwerk koppeln. Pleazyng geöffnet lassen. Das Relay überträgt verschlüsselte Musikbefehle und sieht Netzwerkadressen. Jeder Player streamt vom eigenen Medienserver.';
+	@override String get relayInvalid => 'Eine HTTPS-Adresse für das Relay eingeben.';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsDe {
 			'musicDevices.receiverHint' => 'Lass Pleazyng geöffnet, um Musik zu empfangen. Kopple einmal mit diesem Code.',
 			'musicDevices.moveFailed' => 'Wiedergabe konnte nicht verschoben werden. Prüfe, ob das Gerät aktiv und gekoppelt ist und deinen Musikserver erreicht.',
 			'musicDevices.uncertain' => 'Verbindung unterbrochen. Verbinde dich erneut mit dem gewählten Gerät, um die Wiedergabe zu prüfen.',
+			'musicDevices.away' => 'Unterwegs',
+			'musicDevices.relay' => 'URL des Musik-Relays',
+			'musicDevices.relayHint' => 'Auf dem Empfangsgerät aktivieren und einmal im selben Netzwerk koppeln. Pleazyng geöffnet lassen. Das Relay überträgt verschlüsselte Musikbefehle und sieht Netzwerkadressen. Jeder Player streamt vom eigenen Medienserver.',
+			'musicDevices.relayInvalid' => 'Eine HTTPS-Adresse für das Relay eingeben.',
 			_ => null,
 		};
 	}

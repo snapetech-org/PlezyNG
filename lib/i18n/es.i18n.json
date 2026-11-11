@@ -5653,6 +5653,10 @@
     "nearbyHint": "Abre el selector de dispositivos en el otro dispositivo y permite la reproducción allí.",
     "receiverHint": "Mantén Pleazyng abierto para recibir música. Vincula una vez con este código.",
     "moveFailed": "No se pudo mover la reproducción. Comprueba que el dispositivo esté activo, vinculado y tenga acceso a tu servidor de música.",
-    "uncertain": "Conexión interrumpida. Vuelve a conectarte al dispositivo seleccionado para comprobar la reproducción."
+    "uncertain": "Conexión interrumpida. Vuelve a conectarte al dispositivo seleccionado para comprobar la reproducción.",
+    "away": "Fuera de casa",
+    "relay": "URL del relé de música",
+    "relayHint": "Actívalo en el dispositivo receptor y vincula una vez en la misma red. Mantén Pleazyng abierto. El relé transmite controles de música cifrados y ve las direcciones de red. Cada reproductor transmite desde su propio servidor multimedia.",
+    "relayInvalid": "Introduce una dirección HTTPS del relé."
   }
 }

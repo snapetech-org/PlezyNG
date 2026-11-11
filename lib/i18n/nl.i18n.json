@@ -5571,6 +5571,10 @@
     "nearbyHint": "Open de apparaatkiezer op het andere apparaat en sta afspelen daar toe.",
     "receiverHint": "Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.",
     "moveFailed": "Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.",
-    "uncertain": "Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren."
+    "uncertain": "Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.",
+    "away": "Buitenshuis",
+    "relay": "URL van muziekrelais",
+    "relayHint": "Schakel in op het ontvangende apparaat en koppel eenmaal op hetzelfde netwerk. Houd Pleazyng open. Het relais verstuurt versleutelde muziekbediening en ziet netwerkadressen. Elke speler streamt vanaf zijn eigen mediaserver.",
+    "relayInvalid": "Voer een HTTPS-adres voor het relais in."
   }
 }

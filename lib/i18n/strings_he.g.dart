@@ -4363,6 +4363,10 @@ class _Translations$musicDevices$he extends Translations$musicDevices$en {
 	@override String get receiverHint => 'השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.';
 	@override String get moveFailed => 'לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.';
 	@override String get uncertain => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.';
+	@override String get away => 'מחוץ לבית';
+	@override String get relay => 'כתובת ממסר המוזיקה';
+	@override String get relayHint => 'יש להפעיל במכשיר המקבל ולצמד פעם אחת באותה רשת. יש להשאיר את Pleazyng פתוח. הממסר מעביר פקודות מוזיקה מוצפנות ורואה כתובות רשת. כל נגן מזרים משרת המדיה שלו.';
+	@override String get relayInvalid => 'יש להזין כתובת HTTPS של הממסר.';
 }
 
 // Path: appIcon.names
@@ -9541,6 +9545,10 @@ extension on TranslationsHe {
 			'musicDevices.receiverHint' => 'השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.',
 			'musicDevices.moveFailed' => 'לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.',
 			'musicDevices.uncertain' => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.',
+			'musicDevices.away' => 'מחוץ לבית',
+			'musicDevices.relay' => 'כתובת ממסר המוזיקה',
+			'musicDevices.relayHint' => 'יש להפעיל במכשיר המקבל ולצמד פעם אחת באותה רשת. יש להשאיר את Pleazyng פתוח. הממסר מעביר פקודות מוזיקה מוצפנות ורואה כתובות רשת. כל נגן מזרים משרת המדיה שלו.',
+			'musicDevices.relayInvalid' => 'יש להזין כתובת HTTPS של הממסר.',
 			_ => null,
 		};
 	}

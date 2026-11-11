@@ -65,6 +65,7 @@ class MusicDevicePicker extends StatefulWidget {
 class _MusicDevicePickerState extends State<MusicDevicePicker> {
   late final CompanionRemoteProvider _companion;
   final _address = TextEditingController();
+  final _relay = TextEditingController();
   StreamSubscription<List<DiscoveredHost>>? _discovery;
   List<DiscoveredHost> _nearby = const [];
   List<DiscoveredHost> _remembered = const [];
@@ -81,7 +82,10 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
 
   Future<void> _initialize() async {
     try {
-      await ensureCompanionRemoteCryptoFromContext(context);
+      if (!_companion.isCryptoReady) await ensureCompanionRemoteCryptoFromContext(context);
+      await _companion.loadMusicRelayConfiguration();
+      if (!mounted) return;
+      _relay.text = _companion.musicRelayUrl;
       final remembered = await _companion.rememberedMusicDevices();
       if (!mounted) return;
       _discovery = _companion.discoverMusicDevices()?.listen((devices) {
@@ -161,6 +165,14 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
     if (mounted) setState(() => _remembered = devices);
   });
 
+  Future<void> _configureRelay(bool enabled) => _run(() async {
+    try {
+      await _companion.configureMusicRelay(_relay.text.trim(), enabled);
+    } catch (_) {
+      if (mounted) setState(() => _error = t.musicDevices.relayInvalid);
+    }
+  });
+
   Future<void> _cast() => _run(() async {
     final music = context.read<MusicPlaybackService>();
     if (music is! MusicOutputControls) return;
@@ -186,6 +198,7 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
     _discovery?.cancel();
     _companion.stopMusicDiscovery();
     _address.dispose();
+    _relay.dispose();
     super.dispose();
   }
 
@@ -291,6 +304,39 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
                   title: Text(t.musicDevices.receive),
                   subtitle: Text(t.musicDevices.receiverHint),
                   onTap: () => unawaited(RemoteSessionDialog.show(context)),
+                ),
+                ExpansionTile(
+                  title: Text(t.musicDevices.away),
+                  children: [
+                    Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(t.musicDevices.relayHint)),
+                    FocusableTextField(
+                      controller: _relay,
+                      keyboardType: TextInputType.url,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      decoration: InputDecoration(labelText: t.musicDevices.relay, hintText: 'https://music.example'),
+                    ),
+                    FocusableListTile(
+                      enabled: !busy,
+                      title: Text(t.musicDevices.away),
+                      subtitle: companion.musicRelayEnabled
+                          ? Text(
+                              companion.musicRelayConnected
+                                  ? t.companionRemote.session.connected
+                                  : t.companionRemote.remote.reconnecting,
+                            )
+                          : null,
+                      trailing: Switch(
+                        value: companion.musicRelayEnabled,
+                        onChanged: busy ? null : (enabled) => unawaited(_configureRelay(enabled)),
+                      ),
+                      onTap: () => unawaited(_configureRelay(!companion.musicRelayEnabled)),
+                    ),
+                    TextButton(
+                      onPressed: busy ? null : () => unawaited(_configureRelay(companion.musicRelayEnabled)),
+                      child: Text(t.common.save),
+                    ),
+                  ],
                 ),
                 if (_error != null)
                   Padding(

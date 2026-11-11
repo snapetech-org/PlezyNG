@@ -5571,6 +5571,10 @@
     "nearbyHint": "Öppna enhetsväljaren på den andra enheten och tillåt uppspelning där.",
     "receiverHint": "Håll Pleazyng öppet för att ta emot musik. Parkoppla en gång med den här koden.",
     "moveFailed": "Det gick inte att flytta uppspelningen. Kontrollera att enheten är vaken, parkopplad och når musikservern.",
-    "uncertain": "Anslutningen avbröts. Anslut till den valda enheten igen för att kontrollera uppspelningen."
+    "uncertain": "Anslutningen avbröts. Anslut till den valda enheten igen för att kontrollera uppspelningen.",
+    "away": "Utanför hemmet",
+    "relay": "URL till musikrelä",
+    "relayHint": "Aktivera på mottagaren och parkoppla en gång på samma nätverk. Håll Pleazyng öppet. Reläet skickar krypterade musikkommandon och ser nätverksadresser. Varje spelare strömmar från sin egen medieserver.",
+    "relayInvalid": "Ange en HTTPS-adress till reläet."
   }
 }

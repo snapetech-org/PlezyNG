@@ -5650,6 +5650,10 @@
     "nearbyHint": "Open Play on on the other device and allow playback there.",
     "receiverHint": "Keep Pleazyng open to receive music. Pair once using this code.",
     "moveFailed": "Could not move playback. Check that the device is awake, paired, and can access your music server.",
-    "uncertain": "Connection interrupted. Reconnect to the selected device to check playback."
+    "uncertain": "Connection interrupted. Reconnect to the selected device to check playback.",
+    "away": "Away from home",
+    "relay": "Music relay URL",
+    "relayHint": "Enable this on the receiving device, then pair once on the same network. Keep Pleazyng open. The relay carries encrypted music controls and sees network addresses. Each player streams from its own media server.",
+    "relayInvalid": "Enter an HTTPS relay address."
   }
 }

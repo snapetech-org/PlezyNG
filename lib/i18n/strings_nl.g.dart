@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$nl extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.';
 	@override String get moveFailed => 'Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.';
 	@override String get uncertain => 'Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.';
+	@override String get away => 'Buitenshuis';
+	@override String get relay => 'URL van muziekrelais';
+	@override String get relayHint => 'Schakel in op het ontvangende apparaat en koppel eenmaal op hetzelfde netwerk. Houd Pleazyng open. Het relais verstuurt versleutelde muziekbediening en ziet netwerkadressen. Elke speler streamt vanaf zijn eigen mediaserver.';
+	@override String get relayInvalid => 'Voer een HTTPS-adres voor het relais in.';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsNl {
 			'musicDevices.receiverHint' => 'Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.',
 			'musicDevices.moveFailed' => 'Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.',
 			'musicDevices.uncertain' => 'Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.',
+			'musicDevices.away' => 'Buitenshuis',
+			'musicDevices.relay' => 'URL van muziekrelais',
+			'musicDevices.relayHint' => 'Schakel in op het ontvangende apparaat en koppel eenmaal op hetzelfde netwerk. Houd Pleazyng open. Het relais verstuurt versleutelde muziekbediening en ziet netwerkadressen. Elke speler streamt vanaf zijn eigen mediaserver.',
+			'musicDevices.relayInvalid' => 'Voer een HTTPS-adres voor het relais in.',
 			_ => null,
 		};
 	}

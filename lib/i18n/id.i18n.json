@@ -5544,6 +5544,10 @@
     "nearbyHint": "Buka pemilih perangkat di perangkat lain dan izinkan pemutaran di sana.",
     "receiverHint": "Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.",
     "moveFailed": "Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.",
-    "uncertain": "Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran."
+    "uncertain": "Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.",
+    "away": "Di luar rumah",
+    "relay": "URL relai musik",
+    "relayHint": "Aktifkan di perangkat penerima, lalu pasangkan sekali di jaringan yang sama. Biarkan Pleazyng terbuka. Relai meneruskan kontrol musik terenkripsi dan melihat alamat jaringan. Setiap pemutar melakukan streaming dari server medianya sendiri.",
+    "relayInvalid": "Masukkan alamat relai HTTPS."
   }
 }

@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$kk extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.';
 	@override String get moveFailed => 'Ойнатуды көшіру мүмкін болмады. Құрылғының қосулы, жұптастырылған және музыка серверіне қолжетімді екенін тексеріңіз.';
 	@override String get uncertain => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.';
+	@override String get away => 'Үйден тыс жерде';
+	@override String get relay => 'Музыка релесінің URL мекенжайы';
+	@override String get relayHint => 'Қабылдаушы құрылғыда қосып, бір желіде бір рет жұптастырыңыз. Pleazyng ашық тұрсын. Реле шифрланған музыка пәрмендерін тасымалдайды және желі мекенжайларын көреді. Әр ойнатқыш өз медиа серверінен ағын алады.';
+	@override String get relayInvalid => 'Реленің HTTPS мекенжайын енгізіңіз.';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsKk {
 			'musicDevices.receiverHint' => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.',
 			'musicDevices.moveFailed' => 'Ойнатуды көшіру мүмкін болмады. Құрылғының қосулы, жұптастырылған және музыка серверіне қолжетімді екенін тексеріңіз.',
 			'musicDevices.uncertain' => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.',
+			'musicDevices.away' => 'Үйден тыс жерде',
+			'musicDevices.relay' => 'Музыка релесінің URL мекенжайы',
+			'musicDevices.relayHint' => 'Қабылдаушы құрылғыда қосып, бір желіде бір рет жұптастырыңыз. Pleazyng ашық тұрсын. Реле шифрланған музыка пәрмендерін тасымалдайды және желі мекенжайларын көреді. Әр ойнатқыш өз медиа серверінен ағын алады.',
+			'musicDevices.relayInvalid' => 'Реленің HTTPS мекенжайын енгізіңіз.',
 			_ => null,
 		};
 	}

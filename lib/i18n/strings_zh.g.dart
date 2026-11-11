@@ -4350,6 +4350,10 @@ class Translations$musicDevices$zh extends Translations$musicDevices$en {
 	@override String get receiverHint => '保持 Pleazyng 打开以接收音乐。使用此代码配对一次。';
 	@override String get moveFailed => '无法转移播放。请检查设备已唤醒、已配对并能访问音乐服务器。';
 	@override String get uncertain => '连接中断。请重新连接所选设备以检查播放状态。';
+	@override String get away => '外出时';
+	@override String get relay => '音乐中继 URL';
+	@override String get relayHint => '在接收设备上启用，然后在同一网络中配对一次。保持 Pleazyng 打开。中继传递加密的音乐控制，并能看到网络地址。每个播放器从自己的媒体服务器串流。';
+	@override String get relayInvalid => '请输入 HTTPS 中继地址。';
 }
 
 // Path: appIcon.names
@@ -9528,6 +9532,10 @@ extension on TranslationsZh {
 			'musicDevices.receiverHint' => '保持 Pleazyng 打开以接收音乐。使用此代码配对一次。',
 			'musicDevices.moveFailed' => '无法转移播放。请检查设备已唤醒、已配对并能访问音乐服务器。',
 			'musicDevices.uncertain' => '连接中断。请重新连接所选设备以检查播放状态。',
+			'musicDevices.away' => '外出时',
+			'musicDevices.relay' => '音乐中继 URL',
+			'musicDevices.relayHint' => '在接收设备上启用，然后在同一网络中配对一次。保持 Pleazyng 打开。中继传递加密的音乐控制，并能看到网络地址。每个播放器从自己的媒体服务器串流。',
+			'musicDevices.relayInvalid' => '请输入 HTTPS 中继地址。',
 			_ => null,
 		};
 	}

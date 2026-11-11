@@ -4355,6 +4355,10 @@ class _Translations$musicDevices$uz extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.';
 	@override String get moveFailed => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.';
 	@override String get uncertain => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.';
+	@override String get away => 'Uydan tashqarida';
+	@override String get relay => 'Musiqa relesi URL manzili';
+	@override String get relayHint => 'Qabul qiluvchi qurilmada yoqing, so‘ng bir tarmoqda bir marta juftlang. Pleazyng ochiq tursin. Rele shifrlangan musiqa buyruqlarini uzatadi va tarmoq manzillarini ko‘radi. Har bir pleyer o‘z media serveridan uzatadi.';
+	@override String get relayInvalid => 'HTTPS rele manzilini kiriting.';
 }
 
 // Path: appIcon.names
@@ -9533,6 +9537,10 @@ extension on TranslationsUz {
 			'musicDevices.receiverHint' => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.',
 			'musicDevices.moveFailed' => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.',
 			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
+			'musicDevices.away' => 'Uydan tashqarida',
+			'musicDevices.relay' => 'Musiqa relesi URL manzili',
+			'musicDevices.relayHint' => 'Qabul qiluvchi qurilmada yoqing, so‘ng bir tarmoqda bir marta juftlang. Pleazyng ochiq tursin. Rele shifrlangan musiqa buyruqlarini uzatadi va tarmoq manzillarini ko‘radi. Har bir pleyer o‘z media serveridan uzatadi.',
+			'musicDevices.relayInvalid' => 'HTTPS rele manzilini kiriting.',
 			_ => null,
 		};
 	}

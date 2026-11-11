@@ -4445,6 +4445,10 @@ class Translations$musicDevices$es extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Mantén Pleazyng abierto para recibir música. Vincula una vez con este código.';
 	@override String get moveFailed => 'No se pudo mover la reproducción. Comprueba que el dispositivo esté activo, vinculado y tenga acceso a tu servidor de música.';
 	@override String get uncertain => 'Conexión interrumpida. Vuelve a conectarte al dispositivo seleccionado para comprobar la reproducción.';
+	@override String get away => 'Fuera de casa';
+	@override String get relay => 'URL del relé de música';
+	@override String get relayHint => 'Actívalo en el dispositivo receptor y vincula una vez en la misma red. Mantén Pleazyng abierto. El relé transmite controles de música cifrados y ve las direcciones de red. Cada reproductor transmite desde su propio servidor multimedia.';
+	@override String get relayInvalid => 'Introduce una dirección HTTPS del relé.';
 }
 
 // Path: appIcon.names
@@ -9759,6 +9763,10 @@ extension on TranslationsEs {
 			'musicDevices.receiverHint' => 'Mantén Pleazyng abierto para recibir música. Vincula una vez con este código.',
 			'musicDevices.moveFailed' => 'No se pudo mover la reproducción. Comprueba que el dispositivo esté activo, vinculado y tenga acceso a tu servidor de música.',
 			'musicDevices.uncertain' => 'Conexión interrumpida. Vuelve a conectarte al dispositivo seleccionado para comprobar la reproducción.',
+			'musicDevices.away' => 'Fuera de casa',
+			'musicDevices.relay' => 'URL del relé de música',
+			'musicDevices.relayHint' => 'Actívalo en el dispositivo receptor y vincula una vez en la misma red. Mantén Pleazyng abierto. El relé transmite controles de música cifrados y ve las direcciones de red. Cada reproductor transmite desde su propio servidor multimedia.',
+			'musicDevices.relayInvalid' => 'Introduce una dirección HTTPS del relé.',
 			_ => null,
 		};
 	}

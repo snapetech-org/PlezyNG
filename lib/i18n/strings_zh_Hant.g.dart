@@ -4351,6 +4351,10 @@ class _Translations$musicDevices$zh_Hant extends Translations$musicDevices$zh {
 	@override String get receiverHint => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。';
 	@override String get moveFailed => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。';
 	@override String get uncertain => '連線中斷。請重新連線所選裝置以檢查播放狀態。';
+	@override String get away => '外出時';
+	@override String get relay => '音樂中繼 URL';
+	@override String get relayHint => '在接收裝置上啟用，然後在同一網路中配對一次。保持 Pleazyng 開啟。中繼傳遞加密的音樂控制，並能看到網路位址。每個播放器從自己的媒體伺服器串流。';
+	@override String get relayInvalid => '請輸入 HTTPS 中繼位址。';
 }
 
 // Path: appIcon.names
@@ -9529,6 +9533,10 @@ extension on TranslationsZhHant {
 			'musicDevices.receiverHint' => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。',
 			'musicDevices.moveFailed' => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。',
 			'musicDevices.uncertain' => '連線中斷。請重新連線所選裝置以檢查播放狀態。',
+			'musicDevices.away' => '外出時',
+			'musicDevices.relay' => '音樂中繼 URL',
+			'musicDevices.relayHint' => '在接收裝置上啟用，然後在同一網路中配對一次。保持 Pleazyng 開啟。中繼傳遞加密的音樂控制，並能看到網路位址。每個播放器從自己的媒體伺服器串流。',
+			'musicDevices.relayInvalid' => '請輸入 HTTPS 中繼位址。',
 			_ => null,
 		};
 	}

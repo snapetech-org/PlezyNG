@@ -5571,6 +5571,10 @@
     "nearbyHint": "Boshqa qurilmada qurilma tanlovini oching va ijroga ruxsat bering.",
     "receiverHint": "Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.",
     "moveFailed": "Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.",
-    "uncertain": "Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning."
+    "uncertain": "Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.",
+    "away": "Uydan tashqarida",
+    "relay": "Musiqa relesi URL manzili",
+    "relayHint": "Qabul qiluvchi qurilmada yoqing, so‘ng bir tarmoqda bir marta juftlang. Pleazyng ochiq tursin. Rele shifrlangan musiqa buyruqlarini uzatadi va tarmoq manzillarini ko‘radi. Har bir pleyer o‘z media serveridan uzatadi.",
+    "relayInvalid": "HTTPS rele manzilini kiriting."
   }
 }

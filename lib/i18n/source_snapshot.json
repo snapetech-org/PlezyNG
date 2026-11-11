@@ -5287,5 +5287,9 @@
   "musicDevices.nearbyHint": "aeb06da0c301293d",
   "musicDevices.receiverHint": "319e52af6677e0fe",
   "musicDevices.moveFailed": "0640dcf088156378",
-  "musicDevices.uncertain": "e9077ac67dcd4e9f"
+  "musicDevices.uncertain": "e9077ac67dcd4e9f",
+  "musicDevices.away": "cb111660c7e9ef41",
+  "musicDevices.relay": "dcc60f3bfb59b66d",
+  "musicDevices.relayHint": "04b45d9a183d3957",
+  "musicDevices.relayInvalid": "ac9aa40be144e464"
 }

@@ -4332,6 +4332,10 @@ class _Translations$musicDevices$ms extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.';
 	@override String get moveFailed => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.';
 	@override String get uncertain => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.';
+	@override String get away => 'Di luar rumah';
+	@override String get relay => 'URL geganti muzik';
+	@override String get relayHint => 'Aktifkan pada peranti penerima, kemudian pasangkan sekali pada rangkaian yang sama. Biarkan Pleazyng terbuka. Geganti menghantar kawalan muzik yang disulitkan dan melihat alamat rangkaian. Setiap pemain menstrim daripada pelayan medianya sendiri.';
+	@override String get relayInvalid => 'Masukkan alamat geganti HTTPS.';
 }
 
 // Path: appIcon.names
@@ -9508,6 +9512,10 @@ extension on TranslationsMs {
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.',
 			'musicDevices.moveFailed' => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.',
 			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
+			'musicDevices.away' => 'Di luar rumah',
+			'musicDevices.relay' => 'URL geganti muzik',
+			'musicDevices.relayHint' => 'Aktifkan pada peranti penerima, kemudian pasangkan sekali pada rangkaian yang sama. Biarkan Pleazyng terbuka. Geganti menghantar kawalan muzik yang disulitkan dan melihat alamat rangkaian. Setiap pemain menstrim daripada pelayan medianya sendiri.',
+			'musicDevices.relayInvalid' => 'Masukkan alamat geganti HTTPS.',
 			_ => null,
 		};
 	}

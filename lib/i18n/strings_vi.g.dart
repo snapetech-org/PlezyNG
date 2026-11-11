@@ -4332,6 +4332,10 @@ class _Translations$musicDevices$vi extends Translations$musicDevices$en {
 	@override String get receiverHint => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.';
 	@override String get moveFailed => 'Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.';
 	@override String get uncertain => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.';
+	@override String get away => 'Khi xa nhà';
+	@override String get relay => 'URL chuyển tiếp nhạc';
+	@override String get relayHint => 'Bật trên thiết bị nhận rồi ghép đôi một lần trên cùng mạng. Giữ Pleazyng mở. Máy chuyển tiếp truyền lệnh nhạc được mã hóa và thấy địa chỉ mạng. Mỗi trình phát truyền từ máy chủ phương tiện riêng.';
+	@override String get relayInvalid => 'Nhập địa chỉ chuyển tiếp HTTPS.';
 }
 
 // Path: appIcon.names
@@ -9508,6 +9512,10 @@ extension on TranslationsVi {
 			'musicDevices.receiverHint' => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.',
 			'musicDevices.moveFailed' => 'Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.',
 			'musicDevices.uncertain' => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.',
+			'musicDevices.away' => 'Khi xa nhà',
+			'musicDevices.relay' => 'URL chuyển tiếp nhạc',
+			'musicDevices.relayHint' => 'Bật trên thiết bị nhận rồi ghép đôi một lần trên cùng mạng. Giữ Pleazyng mở. Máy chuyển tiếp truyền lệnh nhạc được mã hóa và thấy địa chỉ mạng. Mỗi trình phát truyền từ máy chủ phương tiện riêng.',
+			'musicDevices.relayInvalid' => 'Nhập địa chỉ chuyển tiếp HTTPS.',
 			_ => null,
 		};
 	}

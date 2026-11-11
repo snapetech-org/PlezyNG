@@ -199,11 +199,14 @@ Future<MediaNavigationResult> navigateToMediaItem(
   bool playDirectly = false,
 }) async {
   if (item is MediaPlaylist) {
+    var changed = false;
     final result = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (context) => PlaylistDetailScreen(playlist: item)),
+      MaterialPageRoute(
+        builder: (context) => PlaylistDetailScreen(playlist: item, onChanged: () => changed = true),
+      ),
     );
-    return result == true ? MediaNavigationResult.listRefreshNeeded : MediaNavigationResult.navigated;
+    return result == true || changed ? MediaNavigationResult.listRefreshNeeded : MediaNavigationResult.navigated;
   }
 
   if (item is! MediaItem) {

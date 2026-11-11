@@ -7,6 +7,13 @@ import '../../focus/focusable_action_bar.dart';
 import '../../media/library_query.dart';
 import '../../media/media_item.dart';
 import '../../media/media_playlist.dart';
+import '../../media/media_server_client.dart';
+import '../../media/ids.dart';
+import '../../services/music/music_account_scope.dart';
+import '../../profiles/active_profile_provider.dart';
+import '../../providers/multi_server_provider.dart';
+import '../../utils/provider_extensions.dart';
+import 'playlist_metadata_editor.dart';
 import '../../services/media_list_playback_launcher.dart';
 import '../../services/playlist_items_loader.dart';
 import '../../services/repeating_playlist_launcher.dart';
@@ -41,8 +48,9 @@ import '../../widgets/system_bottom_inset.dart';
 /// Screen to display the contents of a playlist
 class PlaylistDetailScreen extends StatefulWidget {
   final MediaPlaylist playlist;
+  final VoidCallback? onChanged;
 
-  const PlaylistDetailScreen({super.key, required this.playlist});
+  const PlaylistDetailScreen({super.key, required this.playlist, this.onChanged});
 
   @override
   State<PlaylistDetailScreen> createState() => _PlaylistDetailScreenState();
@@ -52,11 +60,73 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     with GridFocusNodeMixin<PlaylistDetailScreen>, FocusableDetailScreenMixin<PlaylistDetailScreen> {
   static const int _pageSize = playlistItemsPageSize;
 
-  @override
-  Object get mediaItem => widget.playlist;
+  late MediaPlaylist _playlist = widget.playlist;
+  ({MediaServerClient client, Object authentication, String scope, String? profile})? _metadataOwner;
+  bool _editingMetadata = false;
+
+  void _bindMetadataOwner() {
+    if (_metadataOwner != null) return;
+    final client = context.tryGetMediaClientForServer(serverIdOrNull(_playlist.serverId));
+    if (client == null || client is! PlaylistMetadataClient || client.backend != _playlist.backend) return;
+    _metadataOwner = (
+      client: client,
+      authentication: client.authenticationSessionId,
+      scope: musicAccountScope(client),
+      profile: context.read<ActiveProfileProvider>().activeId,
+    );
+  }
+
+  bool _metadataSourceCurrent() {
+    final owner = _metadataOwner;
+    return mounted &&
+        owner != null &&
+        !owner.client.isOfflineMode &&
+        owner.profile == context.read<ActiveProfileProvider>().activeId &&
+        identical(owner.client, context.tryGetMediaClientForServer(serverIdOrNull(_playlist.serverId))) &&
+        identical(owner.authentication, owner.client.authenticationSessionId) &&
+        owner.scope == musicAccountScope(owner.client);
+  }
+
+  Future<void> _editMetadata() async {
+    if (_editingMetadata || _isPlaylistMutationPending || !_metadataSourceCurrent()) return;
+    final owner = _metadataOwner!;
+    setState(() => _editingMetadata = true);
+    try {
+      final fresh = await owner.client.fetchPlaylistMetadata(_playlist.id);
+      if (!mounted || !_metadataSourceCurrent()) return;
+      if (fresh == null ||
+          fresh.id != _playlist.id ||
+          fresh.serverId != _playlist.serverId ||
+          fresh.backend != _playlist.backend ||
+          fresh.playlistType != _playlist.playlistType ||
+          fresh.smart != _playlist.smart) {
+        throw StateError('Playlist is no longer available');
+      }
+      final updated = await showDialog<MediaPlaylist>(
+        context: context,
+        builder: (_) => PlaylistMetadataEditor(
+          playlist: fresh,
+          client: owner.client as PlaylistMetadataClient,
+          isCurrent: _metadataSourceCurrent,
+        ),
+      );
+      if (!mounted || !_metadataSourceCurrent()) return;
+      setState(() => _playlist = updated ?? fresh);
+      if (updated != null) widget.onChanged?.call();
+    } catch (error, stack) {
+      if (mounted && _metadataSourceCurrent()) {
+        showErrorSnackBar(context, localizedLoadErrorMessage(error, stack, context: _playlist.title));
+      }
+    } finally {
+      if (mounted) setState(() => _editingMetadata = false);
+    }
+  }
 
   @override
-  String get title => widget.playlist.title;
+  Object get mediaItem => _playlist;
+
+  @override
+  String get title => _playlist.title;
 
   @override
   String get emptyMessage => t.playlists.emptyPlaylist;
@@ -70,9 +140,9 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   /// True when the playlist can't be reordered or have items removed.
   /// Currently only Plex smart playlists (server-side rule-based; managed via
   /// filter rules, not direct edits). Jellyfin has no equivalent concept.
-  bool get _isReadOnly => widget.playlist.smart;
+  bool get _isReadOnly => _playlist.smart;
 
-  String get _normalizedPlaylistType => widget.playlist.playlistType.trim().toLowerCase();
+  String get _normalizedPlaylistType => _playlist.playlistType.trim().toLowerCase();
 
   /// Audio playlists play through the music session (mini-player /
   /// now-playing) instead of the video play-queue launcher.
@@ -105,12 +175,12 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     await playAudioPlaylist(
       context,
       client: mediaClient,
-      playlist: widget.playlist,
+      playlist: _playlist,
       shuffle: shuffle,
       startTrack: startTrack,
       preloadedItems: _isPlaylistFullyLoaded ? items : null,
       onError: (e, stackTrace) =>
-          showErrorSnackBar(context, localizedLoadErrorMessage(e, stackTrace, context: widget.playlist.title)),
+          showErrorSnackBar(context, localizedLoadErrorMessage(e, stackTrace, context: _playlist.title)),
     );
   }
 
@@ -125,7 +195,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     }
 
     final playbackState = context.read<PlaybackStateProvider>();
-    final repeatEnabled = playbackState.isRepeatEnabledFor(widget.playlist.globalKey);
+    final repeatEnabled = playbackState.isRepeatEnabledFor(_playlist.globalKey);
 
     if (!repeatEnabled) {
       if (startIndex == null) {
@@ -138,9 +208,9 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
       }
 
       if (startIndex < 0 || startIndex >= items.length) return;
-      final launcher = MediaListPlaybackLauncher.forItem(context, widget.playlist);
+      final launcher = MediaListPlaybackLauncher.forItem(context, _playlist);
       await launcher.launchFromCollectionOrPlaylist(
-        item: widget.playlist,
+        item: _playlist,
         shuffle: false,
         startItem: items[startIndex],
         showLoadingIndicator: true,
@@ -151,7 +221,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     try {
       final allItems = _isPlaylistFullyLoaded
           ? List<MediaItem>.of(items)
-          : await fetchAllPlaylistItems(mediaClient, widget.playlist.id);
+          : await fetchAllPlaylistItems(mediaClient, _playlist.id);
       if (!mounted) return;
       if (allItems.isEmpty) {
         showAppSnackBar(context, emptyMessage);
@@ -160,7 +230,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
 
       await launchRepeatingVideoPlaylist(
         context: context,
-        playlistContextKey: widget.playlist.globalKey,
+        playlistContextKey: _playlist.globalKey,
         items: allItems,
         shuffle: shuffle,
         startIndex: startIndex,
@@ -168,14 +238,14 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     } catch (e, stackTrace) {
       appLogger.e('Failed to launch repeating video playlist', error: e, stackTrace: stackTrace);
       if (mounted) {
-        showErrorSnackBar(context, localizedLoadErrorMessage(e, stackTrace, context: widget.playlist.title));
+        showErrorSnackBar(context, localizedLoadErrorMessage(e, stackTrace, context: _playlist.title));
       }
     }
   }
 
   void _toggleVideoPlaylistRepeat() {
     final playbackState = context.read<PlaybackStateProvider>();
-    final playlistContextKey = widget.playlist.globalKey;
+    final playlistContextKey = _playlist.globalKey;
     playbackState.setRepeatForContext(playlistContextKey, !playbackState.isRepeatEnabledFor(playlistContextKey));
   }
 
@@ -190,17 +260,24 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     final hasRule = isDownloadablePlaylist && context.select<DownloadProvider, bool>((p) => p.hasSyncRule(ruleKey));
 
     final repeatEnabled = context.select<PlaybackStateProvider, bool>(
-      (provider) => provider.isRepeatEnabledFor(widget.playlist.globalKey),
+      (provider) => provider.isRepeatEnabledFor(_playlist.globalKey),
     );
     return [
-      if (_isAudioPlaylist && widget.playlist.smart)
+      if (_metadataOwner != null && _metadataSourceCurrent())
+        FocusableAction(
+          debugLabel: 'playlist_edit_metadata',
+          icon: Symbols.edit_note_rounded,
+          tooltip: t.metadataEdit.editMetadata,
+          onPressed: _editingMetadata || _isPlaylistMutationPending ? null : _editMetadata,
+        ),
+      if (_isAudioPlaylist && _playlist.smart)
         FocusableAction(
           icon: Symbols.edit_rounded,
           tooltip: t.musicTools.rules,
           onPressed: () async {
             await Navigator.of(
               context,
-            ).push<void>(MaterialPageRoute(builder: (_) => MusicSmartPlaylistScreen(playlist: widget.playlist)));
+            ).push<void>(MaterialPageRoute(builder: (_) => MusicSmartPlaylistScreen(playlist: _playlist)));
             if (mounted) await loadItems();
           },
         ),
@@ -229,7 +306,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
       ...buildSyncRuleActions(
         context,
         ruleKey: ruleKey,
-        displayTitle: widget.playlist.title,
+        displayTitle: _playlist.title,
         hasRule: hasRule,
         showDownload: isDownloadablePlaylist && (items.isNotEmpty || hasRule),
         onDownload: _downloadPlaylist,
@@ -238,11 +315,11 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
       // wrapped in the neutral [MediaServerClient.deletePlaylist]). Smart
       // playlists are still skipped — they're a Plex concept and are
       // managed server-side via filter rules, not via DELETE.
-      if (!widget.playlist.smart)
+      if (!_playlist.smart)
         FocusableAction(
           icon: Symbols.delete_rounded,
           tooltip: t.playlists.delete,
-          onPressed: _deletePlaylist,
+          onPressed: _editingMetadata || _isPlaylistMutationPending ? null : _deletePlaylist,
           iconColor: Colors.red,
         ),
     ];
@@ -288,7 +365,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   bool get _isPlaylistFullyLoaded => _continuation.totalCount != null && items.length >= _continuation.totalCount!;
 
   bool get _canEditPlaylist => !_isReadOnly && _isPlaylistFullyLoaded;
-  bool get _canMutatePlaylist => _canEditPlaylist && !_isPlaylistMutationPending;
+  bool get _canMutatePlaylist => _canEditPlaylist && !_isPlaylistMutationPending && !_editingMetadata;
 
   @override
   void dispose() {
@@ -303,6 +380,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
 
   @override
   Future<void> loadItems() async {
+    _bindMetadataOwner();
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -319,7 +397,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     try {
       LibraryPage<MediaItem>? firstPage;
       final applied = await _continuation.runNewGeneration(() async {
-        firstPage = await mediaClient.fetchPlaylistPage(widget.playlist.id, start: 0, size: _pageSize);
+        firstPage = await mediaClient.fetchPlaylistPage(_playlist.id, start: 0, size: _pageSize);
       });
       if (!mounted || !applied) return;
       final page = firstPage!;
@@ -331,12 +409,12 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
         isLoading = false;
       });
 
-      appLogger.d('Loaded ${page.items.length} of ${page.totalCount} items for playlist: ${widget.playlist.title}');
+      appLogger.d('Loaded ${page.items.length} of ${page.totalCount} items for playlist: ${_playlist.title}');
       _autoFocusAfterLoad();
 
       if (_continuation.hasMore) unawaited(_continuation.loadRemaining());
     } catch (e, stackTrace) {
-      final message = localizedLoadErrorMessage(e, stackTrace, context: widget.playlist.title);
+      final message = localizedLoadErrorMessage(e, stackTrace, context: _playlist.title);
       if (!mounted) return;
       setState(() {
         errorMessage = message;
@@ -346,7 +424,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   }
 
   Future<ContinuationPage<MediaItem>> _fetchPlaylistContinuationPage(int startIndex) async {
-    final page = await mediaClient.fetchPlaylistPage(widget.playlist.id, start: startIndex, size: _pageSize);
+    final page = await mediaClient.fetchPlaylistPage(_playlist.id, start: startIndex, size: _pageSize);
     return ContinuationPage(items: page.items, totalCount: page.totalCount, consumedCount: page.items.length);
   }
 
@@ -407,13 +485,13 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     context,
     client: mediaClient,
     downloadProvider: Provider.of<DownloadProvider>(context, listen: false),
-    playlist: widget.playlist,
+    playlist: _playlist,
   );
 
   Future<void> _deletePlaylist() => deletePlaylistWithConfirm(
     context,
     client: mediaClient,
-    playlist: widget.playlist,
+    playlist: _playlist,
     confirmTitle: t.playlists.deleteConfirm,
     // Signal the parent list to refresh.
     onDeleted: () => Navigator.pop(context, true),
@@ -469,7 +547,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     try {
       try {
         success = await mediaClient.movePlaylistItem(
-          playlistId: widget.playlist.id,
+          playlistId: _playlist.id,
           item: movedItem,
           newIndex: newIndex,
           afterItem: afterItem,
@@ -514,7 +592,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     var success = false;
     try {
       try {
-        success = await mediaClient.removeFromPlaylist(playlistId: widget.playlist.id, item: item);
+        success = await mediaClient.removeFromPlaylist(playlistId: _playlist.id, item: item);
       } catch (e, stackTrace) {
         failure = e;
         appLogger.e('Failed to remove playlist item', error: e, stackTrace: stackTrace);
@@ -780,6 +858,8 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
 
   @override
   Widget build(BuildContext context) {
+    context.watch<MultiServerProvider>();
+    context.watch<ActiveProfileProvider>();
     final isKeyboardMode = InputModeTracker.isKeyboardMode(context);
     final allowsNativeBackGesture = PlatformDetector.isHandheldIOS(context);
 
@@ -794,8 +874,8 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
           title: Column(
             crossAxisAlignment: .start,
             children: [
-              Text(widget.playlist.title, style: const TextStyle(fontSize: 16)),
-              if (widget.playlist.smart)
+              Text(_playlist.title, style: const TextStyle(fontSize: 16)),
+              if (_playlist.smart)
                 Row(
                   mainAxisSize: .min,
                   children: [
@@ -837,7 +917,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
               error: _continuation.error,
               onRetry: _retryPlaylistContinuation,
               retryFocusNode: _continuationRetryFocusNode,
-              errorContext: widget.playlist.title,
+              errorContext: _playlist.title,
               onNavigateUp: _isReadOnly ? navigateToGrid : _listFocusNode.requestFocus,
               onBack: onBackFromContent,
             ),

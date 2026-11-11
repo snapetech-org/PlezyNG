@@ -47,6 +47,7 @@ import 'package:plezy/utils/media_image_helper.dart';
 import 'package:provider/provider.dart';
 
 import '../test_helpers/media_items.dart';
+import '../test_helpers/backend_client_fixtures.dart';
 import '../test_helpers/multi_server_fixtures.dart';
 import '../test_helpers/paged_fakes.dart';
 import '../test_helpers/prefs.dart';
@@ -64,6 +65,70 @@ void main() {
 
   tearDown(() {
     TvDetectionService.debugSetAppleTVOverride(null);
+  });
+
+  testWidgets('playlist metadata action reloads the title and notifies the browse route', (tester) async {
+    final client = _MetadataEditingClient(_mediaItems(1));
+    final harness = await _createHarness(client.items, client: client);
+    var changes = 0;
+    await tester.pumpWidget(harness.wrap(PlaylistDetailScreen(playlist: _audioPlaylist, onChanged: () => changes++)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.metadataEdit.editMetadata));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('playlist_metadata_title')), 'Updated playlist');
+    await tester.tap(find.byKey(const ValueKey('playlist_metadata_save')));
+    await tester.pumpAndSettle();
+    expect(client.metadataWrites, 1);
+    expect(changes, 1);
+    expect(find.text('Updated playlist'), findsOneWidget);
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('playlist metadata form cannot save after the owning authentication changes', (tester) async {
+    final client = _MetadataEditingClient(_mediaItems(1));
+    final harness = await _createHarness(client.items, client: client);
+    await tester.pumpWidget(harness.wrap(const PlaylistDetailScreen(playlist: _audioPlaylist)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.metadataEdit.editMetadata));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('playlist_metadata_title')), 'Stale draft');
+    client.authentication = Object();
+    await tester.tap(find.byKey(const ValueKey('playlist_metadata_save')));
+    await tester.pumpAndSettle();
+    expect(client.metadataWrites, 0);
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('metadata edits refresh the browse caller even when the route pops without a result', (tester) async {
+    final client = _MetadataEditingClient(_mediaItems(1));
+    final harness = await _createHarness(client.items, client: client);
+    MediaNavigationResult? result;
+    await tester.pumpWidget(
+      harness.wrap(
+        Builder(
+          builder: (context) => TextButton(
+            onPressed: () async {
+              result = await navigateToMediaItem(context, _audioPlaylist);
+            },
+            child: const Text('Open playlist'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open playlist'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.metadataEdit.editMetadata));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('playlist_metadata_title')), 'Changed');
+    await tester.tap(find.byKey(const ValueKey('playlist_metadata_save')));
+    await tester.pumpAndSettle();
+    final routeContext = tester.element(find.byType(PlaylistDetailScreen));
+    Navigator.of(routeContext).pop();
+    await tester.pumpAndSettle();
+    expect(result, MediaNavigationResult.listRefreshNeeded);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('loads playlist continuation pages from an unmodifiable first page', (tester) async {
@@ -934,6 +999,40 @@ class _PlaylistHarness {
   }
 }
 
+class _MetadataEditingClient extends _PagedPlaylistClient implements PlaylistMetadataClient {
+  _MetadataEditingClient(List<MediaItem> items) : super._(items, null, false, MediaBackend.plex);
+  Object authentication = Object();
+  MediaPlaylist metadata = _audioPlaylist;
+  int metadataWrites = 0;
+
+  @override
+  Object get authenticationSessionId => authentication;
+  @override
+  bool get isOfflineMode => false;
+  @override
+  Future<MediaPlaylist?> fetchPlaylistMetadata(String id) async => metadata;
+
+  @override
+  Future<MediaPlaylist> updatePlaylistMetadata({
+    required MediaPlaylist playlist,
+    String? title,
+    String? summary,
+    bool Function()? isCurrent,
+  }) async {
+    if (isCurrent?.call() == false) throw StateError('Account changed');
+    metadataWrites++;
+    return metadata = MediaPlaylist(
+      id: playlist.id,
+      backend: playlist.backend,
+      title: title ?? playlist.title,
+      summary: summary ?? playlist.summary,
+      playlistType: playlist.playlistType,
+      serverId: playlist.serverId,
+      smart: playlist.smart,
+    );
+  }
+}
+
 class _PagedPlaylistClient implements MediaServerClient {
   final List<MediaItem> items;
   final int? failOnceAt;
@@ -1090,6 +1189,17 @@ class _PlexQueuePlaylistClient extends _PagedPlaylistClient implements PlexClien
   _PlexQueuePlaylistClient(List<MediaItem> items)
     : profileScopeId = buildPlexProfileScopeId(serverId: ServerId('server_1'), profileId: 'profile_1'),
       super._(items, null, false, MediaBackend.plex);
+
+  @override
+  final Object authenticationSessionId = Object();
+  @override
+  bool get isOfflineMode => false;
+  @override
+  final config = testPlexConfig();
+  @override
+  String? get plexAccountId => null;
+  @override
+  String? get plexMusicUserIdentifier => null;
 
   final List<_QueueRequest> queueRequests = [];
 

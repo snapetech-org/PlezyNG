@@ -352,10 +352,17 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
+      - name: Verify Apple processing guard offline
+        run: |
+          ruby scripts/checks/test_apple_store_processing.rb
+          python3 -m unittest scripts.checks.test_apple_store_lane
+
       - name: Upload binary to App Store Connect without submitting for review
         env:
           APPLE_IPA_PATH: ${{ runner.temp }}/store-assets/${{ steps.apple-asset.outputs.asset }}
           APPLE_STORE_PLATFORM: ${{ steps.apple-asset.outputs.platform }}
+          APPLE_RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
+          APPLE_PROCESSING_RECEIPT_PATH: ${{ runner.temp }}/store-assets/apple-processing-receipt.json
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
           APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
@@ -365,3 +372,11 @@ jobs:
             exit 1
           fi
           bundle exec fastlane ios upload_appstore_build
+
+      - name: Retain verified App Store processing receipt
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: apple-processing-${{ inputs.channel }}-${{ needs.validate-release.outputs.release_tag }}
+          path: ${{ runner.temp }}/store-assets/apple-processing-receipt.json
+          if-no-files-found: error
+          overwrite: true

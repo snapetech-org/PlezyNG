@@ -1,3 +1,5 @@
+require_relative 'apple_store_processing'
+
 default_platform(:android)
 
 platform :android do
@@ -42,6 +44,12 @@ end
 platform :ios do
   desc "Upload a signed iOS or tvOS Pleazyng IPA to App Store Connect without submitting it for review."
   lane :upload_appstore_build do
+    ipa = ENV.fetch('APPLE_IPA_PATH')
+    release_tag = ENV.fetch('APPLE_RELEASE_TAG')
+    expected = AppleStoreProcessing.expected(
+      plist: FastlaneCore::IpaFileAnalyser.fetch_info_plist_file(ipa),
+      platform: ENV.fetch('APPLE_STORE_PLATFORM'), release_tag: release_tag
+    )
     api_key = app_store_connect_api_key(
       key_id: ENV.fetch("APPLE_API_KEY_ID"),
       issuer_id: ENV.fetch("APPLE_API_ISSUER_ID"),
@@ -51,17 +59,39 @@ platform :ios do
       in_house: false
     )
 
-    upload_to_app_store(
-      api_key: api_key,
-      ipa: ENV.fetch("APPLE_IPA_PATH"),
-      app_identifier: ENV.fetch("APPLE_BUNDLE_ID", "org.snapetech.pleazyng"),
-      platform: ENV.fetch("APPLE_STORE_PLATFORM", "ios"),
-      force: true,
-      skip_metadata: true,
-      skip_screenshots: true,
-      skip_app_version_update: true,
-      submit_for_review: false,
-      automatic_release: false
+    app = Spaceship::ConnectAPI.get_app(app_id: expected[:app_id]).first
+    AppleStoreProcessing.verify_app!(app)
+    fetch = lambda do |identity|
+      token = Spaceship::ConnectAPI.token
+      token.refresh! if token&.expired?
+      Spaceship::ConnectAPI::Build.all(
+        app_id: identity[:app_id], version: identity[:version],
+        build_number: identity[:build], platform: identity[:platform]
+      )
+    end
+    upload = lambda do
+      upload_to_app_store(
+        api_key: api_key,
+        ipa: ipa,
+        app_identifier: expected[:bundle_id],
+        platform: ENV.fetch('APPLE_STORE_PLATFORM'),
+        force: true,
+        skip_metadata: true,
+        skip_screenshots: true,
+        skip_app_version_update: true,
+        submit_for_review: false,
+        automatic_release: false
+      )
+    end
+    build, uploaded = AppleStoreProcessing.wait_for_valid(
+      expected: expected, fetch: fetch, upload: upload,
+      clock: -> { Process.clock_gettime(Process::CLOCK_MONOTONIC) },
+      pause: ->(seconds) { sleep(seconds) }
     )
+    receipt = AppleStoreProcessing.receipt(
+      expected: expected, build: build, ipa_path: ipa, release_tag: release_tag,
+      run_id: ENV.fetch('GITHUB_RUN_ID'), run_attempt: ENV.fetch('GITHUB_RUN_ATTEMPT'), uploaded: uploaded
+    )
+    File.write(ENV.fetch('APPLE_PROCESSING_RECEIPT_PATH'), JSON.pretty_generate(receipt) + "\n")
   end
 end

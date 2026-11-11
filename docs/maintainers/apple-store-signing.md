@@ -24,3 +24,15 @@ Keep `include_apple_store_build=true` for the first coordinated signed qualifica
 The helper's public receipt records archive/export completion separately from purchase and application qualification. Run the exact intended release revision through the existing coordinated full build; do not dispatch a duplicate matrix just for these secrets. A signed IPA must still process in App Store Connect and pass actual device, StoreKit purchase/restore, reviewer-access and screenshot checks. `APPLE_STORE_UPLOAD_READY` stays false until that signed-build/upload path is verified. Upload automation is separate from TestFlight tester invitations and App Review submission.
 
 App Store Connect API credentials remain required for uploads. Mac direct Developer ID signing uses its separate `MACOS_CERTIFICATE_*` secrets. A Mac App Store sandbox package is still a separate implementation and qualification task.
+
+The explicit `publish-app-stores.yml` Apple lanes inspect the checksum-verified,
+attested IPA's bundle, platform, marketing version, and build number before
+upload. They target the existing App Store Connect app ID `6826955231`, reuse
+an already valid exact version/build without a duplicate upload, and wait up to
+15 minutes for a new upload to reach `VALID`. `FAILED`, `INVALID`, duplicate,
+or mismatched records fail closed. The workflow retains a public processing
+receipt with the release IPA hash and GitHub run identity. App Store Connect
+does not expose an IPA hash for an already existing build, so that receipt
+marks reused builds as a version/build identity match. Upload success and
+processing do not create a matching draft version, invite TestFlight users,
+or submit App Review.

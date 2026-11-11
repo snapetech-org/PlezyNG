@@ -791,6 +791,10 @@ If a signed tvOS repair succeeds while iOS fails, retain its compiler run and us
 previous packaging revision must independently qualify as an approved sibling of
 the same frozen product. The prior run must contain the actual successful signed
 TV build, both package attestations and upload, with no publication attempt.
+For `v3.0.33`, the original hosted iOS archive reached GitHub's six-hour limit
+after the unsigned checkpoint. Route its focused signed rebuild to the private
+Apple Silicon runner after the tvOS job finishes; keep the source version and
+successful platform artifacts unchanged.
 The producer pins the exact TV artifact ID and digest, verifies both IPA
 certificates against their original workflow/run, and publishes a distinct
 `tvos_source` proof. Ordinary Linux/Mac repair reuse keeps its existing meaning.

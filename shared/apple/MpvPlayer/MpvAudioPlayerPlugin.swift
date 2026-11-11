@@ -89,6 +89,8 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
   func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     if call.method.hasPrefix("visualizer") { handleVisualizer(call, result: result); return }
     switch call.method {
+    case "musicPcmCaptureAvailable", "setMusicPcmCaptureEnabled", "drainMusicPcmCapture":
+      handleMusicPcmCapture(call: call, result: result)
     case "initialize":
       handleInitialize(result: result)
     case "dispose":

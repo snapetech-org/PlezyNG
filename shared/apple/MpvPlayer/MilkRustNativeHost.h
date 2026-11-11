@@ -10,6 +10,11 @@ extern "C" {
 BOOL PlezyVisualizationTapAvailable(void);
 int PlezyVisualizationTapEnable(void* player, BOOL enabled);
 int PlezyVisualizationTapRead(void* player, double pts, void* output, size_t size);
+int PlezyMusicPcmCaptureEnable(void* player, BOOL enabled);
+void PlezyMusicPcmCaptureForget(void* player);
+int PlezyMusicPcmCaptureReadNext(
+    void* player, double playback_pts, double* pts, uint32_t* frames, uint32_t* sample_rate, uint32_t* channels,
+    uint32_t* dropped_frames, uint32_t* generation, void* samples, size_t sample_capacity);
 BOOL PlezySubtitlePcmCaptureAvailable(void);
 int PlezySubtitlePcmCaptureEnable(void* player, BOOL enabled);
 int PlezySubtitlePcmCaptureReadNext(

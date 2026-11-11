@@ -482,19 +482,22 @@ void MpvPlayerPlugin::HandleMethodCall(
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   const auto& method = method_call.method_name();
 
-  if (method == "subtitlePcmCaptureAvailable") {
-    const bool available =
-        !audio_only_ && player_ && player_->IsInitialized() && MpvPlayer::SubtitlePcmCaptureAvailable();
+  const bool music_pcm =
+      method == "musicPcmCaptureAvailable" || method == "setMusicPcmCaptureEnabled" || method == "drainMusicPcmCapture";
+  if (method == "subtitlePcmCaptureAvailable" || method == "musicPcmCaptureAvailable") {
+    const bool available = player_ && player_->IsInitialized() &&
+                           (music_pcm ? audio_only_ && player_->MusicPcmCaptureAvailable()
+                                      : !audio_only_ && MpvPlayer::SubtitlePcmCaptureAvailable());
     result->Success(flutter::EncodableValue(available));
     return;
   }
-  if (method == "setSubtitlePcmCaptureEnabled" || method == "drainSubtitlePcmCapture") {
-    if (audio_only_ || !player_ || !player_->IsInitialized()) {
+  if (method == "setSubtitlePcmCaptureEnabled" || method == "drainSubtitlePcmCapture" || music_pcm) {
+    if ((music_pcm ? !audio_only_ : audio_only_) || !player_ || !player_->IsInitialized()) {
       result->Error("SUBTITLE_PCM_UNAVAILABLE", "The video MPV session is not available.");
       return;
     }
     using V = flutter::EncodableValue;
-    if (method == "setSubtitlePcmCaptureEnabled") {
+    if (method == "setSubtitlePcmCaptureEnabled" || method == "setMusicPcmCaptureEnabled") {
       const auto* args =
           method_call.arguments() ? std::get_if<flutter::EncodableMap>(method_call.arguments()) : nullptr;
       const bool* enabled = nullptr;
@@ -506,7 +509,9 @@ void MpvPlayerPlugin::HandleMethodCall(
         result->Error("INVALID_ARGS", "An enabled boolean is required.");
         return;
       }
-      result->Success(V(player_->SetSubtitlePcmCaptureEnabled(*enabled) >= 0));
+      result->Success(
+          V((music_pcm ? player_->SetMusicPcmCaptureEnabled(*enabled)
+                       : player_->SetSubtitlePcmCaptureEnabled(*enabled)) >= 0));
       return;
     }
 
@@ -514,7 +519,8 @@ void MpvPlayerPlugin::HandleMethodCall(
     constexpr int kMaximumBlocksPerDrain = 32;
     for (int i = 0; i < kMaximumBlocksPerDrain; ++i) {
       mpv_plezy_audio_block block{};
-      const int read_result = player_->ReadSubtitlePcmCapture(&block);
+      const int read_result =
+          music_pcm ? player_->ReadMusicPcmCapture(&block) : player_->ReadSubtitlePcmCapture(&block);
       if (read_result == 0) break;
       if (read_result < 0) {
         result->Error("SUBTITLE_PCM_READ", "The native PCM capture tap failed.");
@@ -534,6 +540,7 @@ void MpvPlayerPlugin::HandleMethodCall(
       std::memcpy(pcm.data(), block.samples, pcm.size());
       flutter::EncodableMap packet;
       packet[V("presentationTimeUs")] = V(static_cast<int64_t>(std::llround(pts_us)));
+      packet[V("generation")] = V(static_cast<int64_t>(block.generation));
       packet[V("sampleRate")] = V(static_cast<int32_t>(block.sample_rate));
       packet[V("channels")] = V(static_cast<int32_t>(block.channels));
       packet[V("encoding")] = V("float32");

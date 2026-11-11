@@ -74,6 +74,47 @@ extension MpvPluginShared {
     }
   }
 
+  func handleMusicPcmCapture(call: FlutterMethodCall, result: @escaping FlutterResult) {
+    guard let core = coreBase else {
+      result(
+        FlutterError(code: "MUSIC_PCM_UNAVAILABLE", message: "The music MPV session is not available.", details: nil)
+      )
+      return
+    }
+    switch call.method {
+    case "musicPcmCaptureAvailable":
+      result(core.subtitlePcmCaptureAvailable())
+    case "setMusicPcmCaptureEnabled":
+      guard let args = call.arguments as? [String: Any], let enabled = args["enabled"] as? Bool else {
+        result(FlutterError(code: "INVALID_ARGS", message: "An enabled boolean is required.", details: nil))
+        return
+      }
+      result(core.setMusicPcmCaptureEnabled(enabled) >= 0)
+    case "drainMusicPcmCapture":
+      guard let batch = core.drainSubtitlePcmCapture(music: true) else {
+        result(
+          FlutterError(code: "MUSIC_PCM_UNAVAILABLE", message: "The music MPV session has ended.", details: nil))
+        return
+      }
+      if batch.error < 0 {
+        result(
+          FlutterError(
+            code: "MUSIC_PCM_READ", message: "The native PCM capture tap failed (\(batch.error)).", details: nil))
+        return
+      }
+      let packets = batch.packets.map { packet -> [String: Any] in
+        var encoded = packet
+        if let pcm = packet["pcm"] as? Data {
+          encoded["pcm"] = FlutterStandardTypedData(bytes: pcm)
+        }
+        return encoded
+      }
+      result(packets)
+    default:
+      result(FlutterMethodNotImplemented)
+    }
+  }
+
   func handleSetProperty(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let args = call.arguments as? [String: Any],
       let name = args["name"] as? String,

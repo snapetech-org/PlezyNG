@@ -3559,6 +3559,14 @@ class MpvPlayerCore private constructor(
       if (alreadySettled) onComplete?.invoke()
       return
     }
+    // Engine detach can dispose a core without a final Dart channel call.
+    visualizationSessionId()?.let { session ->
+      if (MilkRustNativeBridge.loadError == null) {
+        try {
+          MilkRustNativeBridge.musicPcmCaptureForget(session)
+        } catch (_: Throwable) {}
+      }
+    }
     disposing = true
     check(Looper.myLooper() == Looper.getMainLooper())
     PlayerDebugLog.d(TAG) { "Disposing" }

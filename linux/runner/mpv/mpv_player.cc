@@ -5,6 +5,8 @@
 #include <flutter_linux/flutter_linux.h>
 #include <gdk/gdk.h>
 
+#include "../../../shared/visualization/music_pcm_fanout.h"
+
 #ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/gdkwayland.h>
 #endif
@@ -342,7 +344,8 @@ bool MpvPlayer::VisualizationTapAvailable() { return TapApi().available(); }
 int MpvPlayer::SetVisualizationTap(bool enabled) {
   std::lock_guard<std::mutex> lock(native_mutex_);
   if (!audio_only_ || disposed_ || !mpv_ || !TapApi().available()) return MPV_ERROR_UNSUPPORTED;
-  return TapApi().enable(mpv_, enabled ? 1 : 0);
+  return plezy::visualization::SharedMusicPcmFanout().EnableVisual(
+      reinterpret_cast<uintptr_t>(mpv_), enabled, [this](bool value) { return TapApi().enable(mpv_, value ? 1 : 0); });
 }
 
 int MpvPlayer::ReadVisualizationAudio(mpv_plezy_audio_block* block) {
@@ -350,12 +353,32 @@ int MpvPlayer::ReadVisualizationAudio(mpv_plezy_audio_block* block) {
   if (!audio_only_ || disposed_ || !mpv_ || !TapApi().available()) return MPV_ERROR_UNSUPPORTED;
   const double pts = visualization_pts_.load();
   if (!std::isfinite(pts)) return 0;
-  return TapApi().read(mpv_, pts, block, sizeof(*block));
+  return plezy::visualization::SharedMusicPcmFanout().ReadVisual(
+      reinterpret_cast<uintptr_t>(mpv_), block, pts,
+      [this, pts](mpv_plezy_audio_block* output) { return TapApi().read(mpv_, pts, output, sizeof(*output)); });
 }
 
 bool MpvPlayer::SubtitlePcmCaptureAvailable() const {
   std::lock_guard<std::mutex> lock(native_mutex_);
   return !audio_only_ && !disposed_ && mpv_ && TapApi().capture_available();
+}
+
+bool MpvPlayer::MusicPcmCaptureAvailable() const {
+  std::lock_guard<std::mutex> lock(native_mutex_);
+  return audio_only_ && !disposed_ && mpv_ && TapApi().capture_available();
+}
+int MpvPlayer::SetMusicPcmCaptureEnabled(bool enabled) {
+  std::lock_guard<std::mutex> lock(native_mutex_);
+  if (!(audio_only_ && !disposed_ && mpv_) || !TapApi().capture_available()) return MPV_ERROR_UNSUPPORTED;
+  return plezy::visualization::SharedMusicPcmFanout().EnableCapture(
+      reinterpret_cast<uintptr_t>(mpv_), enabled, [this](bool value) { return TapApi().enable(mpv_, value ? 1 : 0); });
+}
+int MpvPlayer::ReadMusicPcmCapture(mpv_plezy_audio_block* block) {
+  std::lock_guard<std::mutex> lock(native_mutex_);
+  if (!(audio_only_ && !disposed_ && mpv_) || !TapApi().capture_available()) return MPV_ERROR_UNSUPPORTED;
+  return plezy::visualization::SharedMusicPcmFanout().ReadCapture(
+      reinterpret_cast<uintptr_t>(mpv_), block, visualization_pts_.load(),
+      [this](mpv_plezy_audio_block* output) { return TapApi().read_next(mpv_, output, sizeof(*output)); });
 }
 
 int MpvPlayer::SetSubtitlePcmCaptureEnabled(bool enabled) {
@@ -442,6 +465,7 @@ bool MpvPlayer::Initialize() {
   if (err < 0) {
     g_warning("MPV: mpv_initialize() failed: %s", mpv_error_string(err));
     mpv_destroy(mpv_);
+    plezy::visualization::SharedMusicPcmFanout().Forget(reinterpret_cast<uintptr_t>(mpv_));
     mpv_ = nullptr;
     return false;
   }
@@ -849,6 +873,7 @@ void MpvPlayer::Dispose() {
     teardown.handle = mpv_;
     teardown.callback_keep_alive = callback_context_;
     mpv_gl_ = nullptr;
+    plezy::visualization::SharedMusicPcmFanout().Forget(reinterpret_cast<uintptr_t>(mpv_));
     mpv_ = nullptr;
     dv_renderer_status_ = "not-initialized";
     egl_display_ = EGL_NO_DISPLAY;

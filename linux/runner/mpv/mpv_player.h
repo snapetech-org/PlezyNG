@@ -99,6 +99,9 @@ class MpvPlayer {
   bool SubtitlePcmCaptureAvailable() const;
   int SetSubtitlePcmCaptureEnabled(bool enabled);
   int ReadSubtitlePcmCapture(mpv_plezy_audio_block* block);
+  bool MusicPcmCaptureAvailable() const;
+  int SetMusicPcmCaptureEnabled(bool enabled);
+  int ReadMusicPcmCapture(mpv_plezy_audio_block* block);
 
   // Set before initialization, on the platform thread. Never mutates a live renderer.
   void ConfigureDolbyVisionExperiment(bool enabled, bool allow_fallback) {

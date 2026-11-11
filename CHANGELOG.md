@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Expose ordered, bounded music PCM capture on Android, Apple, Linux and Windows, sharing the native tap with presentation-timed visualizations and releasing capture on player teardown.
+
 - Receive a selected Caldera / Plexamp source through the shared music player using bounded Xita framing, clock mapping, packet reordering and loss concealment. Retire the stream on account, profile or playback ownership changes; send the native Hello handshake for manual connections. Physical synchronization remains unmeasured.
 
 - Enter and verify native Open Media qualification fields through the real keyboard on Wayland before accepting HTTP consent or starting playback.

@@ -1,3 +1,4 @@
+#include "../../visualization/music_pcm_fanout.h"
 // SPDX-License-Identifier: AGPL-3.0-only
 #import "MilkRustNativeHost.h"
 #import <TargetConditionals.h>
@@ -155,11 +156,16 @@ void SetError(NSError** error, const std::exception& ex) {
 }
 BOOL PlezyVisualizationTapAvailable() { return Tap().available(); }
 int PlezyVisualizationTapEnable(void* player, BOOL enabled) {
-  return player && Tap().available() ? Tap().enable(static_cast<mpv_handle*>(player), enabled ? 1 : 0) : MPV_PLEZY_AUDIO_UNSUPPORTED;
+  if (!player || !Tap().available()) return MPV_PLEZY_AUDIO_UNSUPPORTED;
+  return SharedMusicPcmFanout().EnableVisual(reinterpret_cast<uintptr_t>(player), enabled,
+      [player](bool value) { return Tap().enable(static_cast<mpv_handle*>(player), value ? 1 : 0); });
 }
 int PlezyVisualizationTapRead(void* player, double pts, void* output, size_t size) {
   return player && std::isfinite(pts) && size == sizeof(mpv_plezy_audio_block) && Tap().available()
-      ? Tap().read(static_cast<mpv_handle*>(player), pts, static_cast<mpv_plezy_audio_block*>(output), size) : (std::isfinite(pts) ? MPV_PLEZY_AUDIO_UNSUPPORTED : 0);
+      ? SharedMusicPcmFanout().ReadVisual(reinterpret_cast<uintptr_t>(player),
+          static_cast<mpv_plezy_audio_block*>(output), pts,
+          [player, pts](mpv_plezy_audio_block* block) { return Tap().read(static_cast<mpv_handle*>(player), pts, block, sizeof(*block)); })
+      : (std::isfinite(pts) ? MPV_PLEZY_AUDIO_UNSUPPORTED : 0);
 }
 BOOL PlezySubtitlePcmCaptureAvailable(void) { return Tap().subtitle_available(); }
 int PlezySubtitlePcmCaptureEnable(void* player, BOOL enabled) {
@@ -185,6 +191,37 @@ int PlezySubtitlePcmCaptureReadNext(void* player, double* pts, uint32_t* frames,
   *sample_rate = block.sample_rate;
   *channels = block.channels;
   *dropped_frames = block.dropped_frames;
+  return 1;
+}
+int PlezyMusicPcmCaptureEnable(void* player, BOOL enabled) {
+  if (!player || !Tap().subtitle_available()) return MPV_PLEZY_AUDIO_UNSUPPORTED;
+  return SharedMusicPcmFanout().EnableCapture(reinterpret_cast<uintptr_t>(player), enabled,
+      [player](bool value) { return Tap().enable(static_cast<mpv_handle*>(player), value ? 1 : 0); });
+}
+void PlezyMusicPcmCaptureForget(void* player) {
+  SharedMusicPcmFanout().Forget(reinterpret_cast<uintptr_t>(player));
+}
+int PlezyMusicPcmCaptureReadNext(void* player, double playback_pts, double* pts, uint32_t* frames, uint32_t* sample_rate,
+                                    uint32_t* channels, uint32_t* dropped_frames, uint32_t* generation, void* samples,
+                                    size_t sample_capacity) {
+  if (!player || !pts || !frames || !sample_rate || !channels || !dropped_frames || !samples ||
+      !Tap().subtitle_available()) return MPV_PLEZY_AUDIO_UNSUPPORTED;
+  mpv_plezy_audio_block block{};
+  const int result = SharedMusicPcmFanout().ReadCapture(reinterpret_cast<uintptr_t>(player), &block, playback_pts,
+      [player](mpv_plezy_audio_block* output) { return Tap().read_next(static_cast<mpv_handle*>(player), output, sizeof(*output)); });
+  if (result <= 0) return result;
+  if (!std::isfinite(block.pts) || block.frames == 0 || block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
+      block.sample_rate == 0 || block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS)
+    return MPV_PLEZY_AUDIO_UNSUPPORTED;
+  const size_t sample_bytes = static_cast<size_t>(block.frames) * block.channels * sizeof(float);
+  if (sample_bytes > sample_capacity) return MPV_PLEZY_AUDIO_UNSUPPORTED;
+  std::memcpy(samples, block.samples, sample_bytes);
+  *pts = block.pts;
+  *frames = block.frames;
+  *sample_rate = block.sample_rate;
+  *channels = block.channels;
+  *dropped_frames = block.dropped_frames;
+  if (generation) *generation = block.generation;
   return 1;
 }
 @interface PlezyMilkRustHost ()

@@ -377,10 +377,13 @@ class MpvPlayerCoreBase: NSObject {
   func subtitlePcmCaptureAvailable() -> Bool {
     isInitialized && PlezySubtitlePcmCaptureAvailable()
   }
+  func setMusicPcmCaptureEnabled(_ enabled: Bool) -> Int32 {
+    withActiveMpv { PlezyMusicPcmCaptureEnable(UnsafeMutableRawPointer($0), enabled) } ?? -1001
+  }
   func setSubtitlePcmCaptureEnabled(_ enabled: Bool) -> Int32 {
     withActiveMpv { PlezySubtitlePcmCaptureEnable(UnsafeMutableRawPointer($0), enabled) } ?? -1001
   }
-  func drainSubtitlePcmCapture(maxPackets: Int = 32) -> (packets: [[String: Any]], error: Int32)? {
+  func drainSubtitlePcmCapture(maxPackets: Int = 32, music: Bool = false) -> (packets: [[String: Any]], error: Int32)? {
     withActiveMpv { player in
       let limit = max(0, min(maxPackets, 32))
       let maximumFrames: UInt32 = 512
@@ -393,9 +396,15 @@ class MpvPlayerCoreBase: NSObject {
         var sampleRate: UInt32 = 0
         var channels: UInt32 = 0
         var droppedFrames: UInt32 = 0
+        var generation: UInt32 = 0
         var pcm = Data(count: Int(maximumFrames * maximumChannels) * MemoryLayout<Float>.size)
         let readResult = pcm.withUnsafeMutableBytes { buffer -> Int32 in
           guard let baseAddress = buffer.baseAddress else { return -1001 }
+          if music {
+            return PlezyMusicPcmCaptureReadNext(
+              UnsafeMutableRawPointer(player), lifecycleState.visualizationPTS, &pts, &frames, &sampleRate,
+              &channels, &droppedFrames, &generation, baseAddress, buffer.count)
+          }
           return PlezySubtitlePcmCaptureReadNext(
             UnsafeMutableRawPointer(player), &pts, &frames, &sampleRate, &channels, &droppedFrames,
             baseAddress, buffer.count)
@@ -417,6 +426,7 @@ class MpvPlayerCoreBase: NSObject {
           "encoding": "float32",
           "pcm": pcm,
           "droppedFrames": Int(droppedFrames),
+          "generation": Int(generation),
         ])
       }
       return (packets, error)
@@ -685,6 +695,7 @@ class MpvPlayerCoreBase: NSObject {
     let initResult = mpv_initialize(mpv)
     if initResult < 0 {
       MpvLog.error("[MpvPlayerCore] mpv_initialize failed: \(safeString(mpv_error_string(initResult)))")
+      PlezyMusicPcmCaptureForget(UnsafeMutableRawPointer(mpv))
       mpv_terminate_destroy(mpv)
       return false
     }
@@ -701,6 +712,7 @@ class MpvPlayerCoreBase: NSObject {
     lifecycleLock.lock()
     guard !lifecycleState.isTerminal, lifecycleState.mpv == nil else {
       lifecycleLock.unlock()
+      PlezyMusicPcmCaptureForget(UnsafeMutableRawPointer(mpv))
       mpv_terminate_destroy(mpv)
       Unmanaged<MpvWakeupCallbackContext>.fromOpaque(wakeupContext).release()
       return false
@@ -1213,6 +1225,7 @@ class MpvPlayerCoreBase: NSObject {
     let destroy = {
       if let mpvHandle {
         mpv_set_wakeup_callback(mpvHandle, nil, nil)
+        PlezyMusicPcmCaptureForget(UnsafeMutableRawPointer(mpvHandle))
         mpv_terminate_destroy(mpvHandle)
       }
       if let callbackContext {

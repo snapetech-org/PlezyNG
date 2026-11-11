@@ -22,6 +22,9 @@ internal object MilkRustNativeBridge {
   external fun setMouseState(handle: Long, down: Boolean, x: Double, y: Double, dx: Double, dy: Double)
   external fun pause(handle: Long, paused: Boolean)
   external fun status(handle: Long): Array<String>
+  external fun musicPcmCaptureForget(playerSession: Long)
+  external fun musicPcmCaptureEnable(playerSession: Long, enabled: Boolean): Int
+  external fun musicPcmCaptureRead(playerSession: Long, playbackPts: Double): ByteArray?
   external fun subtitlePcmCaptureAvailable(): Boolean
   external fun subtitlePcmCaptureEnable(playerSession: Long, enabled: Boolean): Int
 

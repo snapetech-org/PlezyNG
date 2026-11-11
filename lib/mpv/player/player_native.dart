@@ -18,6 +18,7 @@ import 'player_base.dart';
 import 'video_decoder_hold.dart';
 import 'video_rect_support.dart';
 import 'subtitle_pcm_capture_source.dart';
+import 'music_pcm_capture_source.dart';
 import 'mpv_certificate_trust.dart';
 
 typedef _AudioStateRequest = ({
@@ -47,6 +48,7 @@ class PlayerNative extends PlayerBase
         PlayerAudioFocusControl,
         AudioSpectrumAnalyzer,
         SubtitlePcmCaptureSource,
+        MusicPcmCaptureSource,
         NativeVisualizationAudioSource,
         NativeVideoWindowSource {
   final StreamController<AudioSpectrumSample?> _audioSpectrumController =
@@ -1161,6 +1163,14 @@ class PlayerNative extends PlayerBase
     if (disposed) {
       return;
     }
+    if (_musicPcmCaptureEnabled && initialized) {
+      try {
+        await super.invoke<bool>('setMusicPcmCaptureEnabled', {'enabled': false});
+      } on Object {
+        /* Native teardown owns the remaining lease. */
+      }
+      _musicPcmCaptureEnabled = false;
+    }
     _clearNativeVideoWindow();
     _audioSpectrumAnalysisRequested = false;
     // Settle an armed-but-unconsumed content fd before the base teardown
@@ -1913,6 +1923,46 @@ class PlayerNative extends PlayerBase
       return;
     }
     await invoke('clearVideoFrameRate');
+  }
+
+  bool _musicPcmCaptureEnabled = false;
+
+  @override
+  Future<bool> musicPcmCaptureAvailable() async {
+    if (!audioOnly || _nativeCoreUnavailable) return false;
+    await _ensureInitialized();
+    if (_nativeCoreUnavailable || !initialized) return false;
+    try {
+      return await invoke<bool>('musicPcmCaptureAvailable') ?? false;
+    } on Object {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> setMusicPcmCaptureEnabled(bool enabled) async {
+    if (!audioOnly || _nativeCoreUnavailable || !initialized) return false;
+    try {
+      final accepted = await invoke<bool>('setMusicPcmCaptureEnabled', {'enabled': enabled}) ?? false;
+      if (accepted) _musicPcmCaptureEnabled = enabled;
+      return accepted;
+    } on Object {
+      return false;
+    }
+  }
+
+  @override
+  Future<List<MusicPcmBlock>> drainMusicPcmCapture() async {
+    if (!audioOnly || _nativeCoreUnavailable || !_musicPcmCaptureEnabled || !initialized) return const [];
+    final packets = await invoke<List<dynamic>>('drainMusicPcmCapture', {
+      'presentationTimeUs': currentPosition.inMicroseconds,
+    });
+    if (_nativeCoreUnavailable || !_musicPcmCaptureEnabled) return const [];
+    return [
+      for (final packet in packets ?? const [])
+        if (packet is Map)
+          if (MusicPcmBlock.parse(Map<Object?, Object?>.from(packet)) case final MusicPcmBlock block) block,
+    ];
   }
 
   @override

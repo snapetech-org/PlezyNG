@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 
+#include "../../../../../shared/visualization/music_pcm_fanout.h"
 #include "../../../../../shared/visualization/native_worker.h"
 #include "../../../../../shared/visualization/render_helper.h"
 #include "../../../../../shared/visualization/render_socket.h"
@@ -257,7 +258,9 @@ struct Host {
   ~Host() {
     if (cancel) cancel();  // Also interrupts a handshake before the worker publishes its callback.
     worker.reset();
-    if (player && Tap().available()) Tap().enable(player, 0);
+    if (player && Tap().available())
+      SharedMusicPcmFanout().EnableVisual(
+          player, false, [this](bool value) { return Tap().enable(player, value ? 1 : 0); });
   }
 };
 std::mutex registry_mutex;
@@ -377,6 +380,64 @@ extern "C" JNIEXPORT jbyteArray JNICALL JNI_NAME(subtitlePcmCaptureRead)(JNIEnv*
     return nullptr;
   }
 }
+extern "C" JNIEXPORT jint JNICALL
+JNI_NAME(musicPcmCaptureEnable)(JNIEnv* env, jobject, jlong session, jboolean enabled) {
+  try {
+    if (session <= 0 || !Tap().subtitle_available()) return MPV_PLEZY_AUDIO_UNSUPPORTED;
+    return SharedMusicPcmFanout().EnableCapture(static_cast<uint64_t>(session), enabled, [session](bool value) {
+      return Tap().enable(static_cast<uint64_t>(session), value ? 1 : 0);
+    });
+  } catch (const std::exception& ex) {
+    Error(env, ex);
+    return -1;
+  }
+}
+extern "C" JNIEXPORT jbyteArray JNICALL
+JNI_NAME(musicPcmCaptureRead)(JNIEnv* env, jobject, jlong session, jdouble playback_pts) {
+  try {
+    if (session <= 0 || !Tap().subtitle_available())
+      throw std::runtime_error("The Android MPV PCM capture ABI is unavailable.");
+    mpv_plezy_audio_block block{};
+    const int status = SharedMusicPcmFanout().ReadCapture(
+        static_cast<uint64_t>(session), &block, playback_pts, [session](mpv_plezy_audio_block* output) {
+          return Tap().read_next(static_cast<uint64_t>(session), output, sizeof(*output));
+        });
+    if (status == 0) return nullptr;
+    if (status < 0)
+      throw std::runtime_error("The Android MPV PCM capture tap failed (" + std::to_string(status) + ").");
+    if (!std::isfinite(block.pts) || block.frames == 0 || block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
+        block.sample_rate == 0 || block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS)
+      throw std::runtime_error("The Android MPV PCM capture packet was invalid.");
+    const size_t sample_bytes = static_cast<size_t>(block.frames) * block.channels * sizeof(float);
+    constexpr size_t header_bytes = sizeof(double) + 5 * sizeof(uint32_t);
+    std::vector<uint8_t> encoded(header_bytes + sample_bytes);
+    size_t offset = 0;
+    std::memcpy(encoded.data() + offset, &block.pts, sizeof(block.pts));
+    offset += sizeof(block.pts);
+    std::memcpy(encoded.data() + offset, &block.frames, sizeof(block.frames));
+    offset += sizeof(block.frames);
+    std::memcpy(encoded.data() + offset, &block.sample_rate, sizeof(block.sample_rate));
+    offset += sizeof(block.sample_rate);
+    std::memcpy(encoded.data() + offset, &block.channels, sizeof(block.channels));
+    offset += sizeof(block.channels);
+    std::memcpy(encoded.data() + offset, &block.dropped_frames, sizeof(block.dropped_frames));
+    offset += sizeof(block.dropped_frames);
+    std::memcpy(encoded.data() + offset, &block.generation, sizeof(block.generation));
+    offset += sizeof(block.generation);
+    std::memcpy(encoded.data() + offset, block.samples, sample_bytes);
+    auto result = env->NewByteArray(static_cast<jsize>(encoded.size()));
+    if (!result) return nullptr;
+    env->SetByteArrayRegion(
+        result, 0, static_cast<jsize>(encoded.size()), reinterpret_cast<const jbyte*>(encoded.data()));
+    return result;
+  } catch (const std::exception& ex) {
+    Error(env, ex);
+    return nullptr;
+  }
+}
+extern "C" JNIEXPORT void JNICALL JNI_NAME(musicPcmCaptureForget)(JNIEnv*, jobject, jlong session) {
+  SharedMusicPcmFanout().Forget(static_cast<uint64_t>(session));
+}
 extern "C" JNIEXPORT void JNICALL JNI_NAME(startHelper)(JNIEnv* env, jobject owner, jint channel, jobject surface) {
   HelperDescriptor descriptor;
   try {
@@ -408,7 +469,8 @@ extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject, jlong 
     auto host = std::make_shared<Host>();
     auto connection = std::make_shared<RenderConnection>(ConnectRenderSocket(channel));
     host->cancel = connection->cancel;
-    if (player <= 0 || Tap().enable(player, 1) < 0)
+    if (player <= 0 || SharedMusicPcmFanout().EnableVisual(
+                           player, true, [player](bool value) { return Tap().enable(player, value ? 1 : 0); }) < 0)
       throw std::runtime_error("Could not attach to the music session PCM.");
     host->player = player;
     host->worker = std::make_unique<NativeWorker>(
@@ -416,7 +478,11 @@ extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject, jlong 
           return std::make_unique<RemoteRenderBackend>(
               std::move(*connection), render_protocol::Backend::MilkRust, true);
         },
-        [player](mpv_plezy_audio_block* block) { return Tap().read(player, block, sizeof(*block)); },
+        [player](mpv_plezy_audio_block* block) {
+          return SharedMusicPcmFanout().ReadVisual(player, block, NAN, [player](mpv_plezy_audio_block* output) {
+            return Tap().read(player, output, sizeof(*output));
+          });
+        },
         [](std::shared_ptr<const NativeFrame>) {});
     std::lock_guard<std::mutex> lock(registry_mutex);
     if (registry.size() >= 4) throw std::runtime_error("Too many native visualization sessions.");

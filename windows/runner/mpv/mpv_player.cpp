@@ -10,6 +10,7 @@
 #include <exception>
 #include <unordered_map>
 
+#include "../../../shared/visualization/music_pcm_fanout.h"
 #include "sanitize_utf8.h"
 
 namespace mpv {
@@ -594,14 +595,34 @@ bool MpvPlayer::VisualizationTapAvailable() { return TapApi().available(); }
 bool MpvPlayer::SubtitlePcmCaptureAvailable() { return TapApi().subtitle_available(); }
 int MpvPlayer::SetVisualizationTap(bool enabled) {
   std::lock_guard<std::mutex> lock(visualization_mutex_);
-  return audio_only_ && mpv_ && TapApi().available() ? TapApi().enable(mpv_, enabled ? 1 : 0) : MPV_ERROR_UNSUPPORTED;
+  if (!audio_only_ || !mpv_ || !TapApi().available()) return MPV_ERROR_UNSUPPORTED;
+  return plezy::visualization::SharedMusicPcmFanout().EnableVisual(
+      reinterpret_cast<uintptr_t>(mpv_), enabled, [this](bool value) { return TapApi().enable(mpv_, value ? 1 : 0); });
 }
 int MpvPlayer::ReadVisualizationAudio(mpv_plezy_audio_block* block) {
   std::lock_guard<std::mutex> lock(visualization_mutex_);
   if (!audio_only_ || !mpv_ || !TapApi().available()) return MPV_ERROR_UNSUPPORTED;
   const auto pts = visualization_pts_.load();
-  return std::isfinite(pts) ? TapApi().read(mpv_, pts, block, sizeof(*block)) : 0;
+  if (!std::isfinite(pts)) return 0;
+  return plezy::visualization::SharedMusicPcmFanout().ReadVisual(
+      reinterpret_cast<uintptr_t>(mpv_), block, pts,
+      [this, pts](mpv_plezy_audio_block* output) { return TapApi().read(mpv_, pts, output, sizeof(*output)); });
 }
+bool MpvPlayer::MusicPcmCaptureAvailable() const { return audio_only_ && mpv_ && TapApi().subtitle_available(); }
+int MpvPlayer::SetMusicPcmCaptureEnabled(bool enabled) {
+  std::lock_guard<std::mutex> lock(visualization_mutex_);
+  if (!(audio_only_ && mpv_) || !TapApi().subtitle_available()) return MPV_ERROR_UNSUPPORTED;
+  return plezy::visualization::SharedMusicPcmFanout().EnableCapture(
+      reinterpret_cast<uintptr_t>(mpv_), enabled, [this](bool value) { return TapApi().enable(mpv_, value ? 1 : 0); });
+}
+int MpvPlayer::ReadMusicPcmCapture(mpv_plezy_audio_block* block) {
+  std::lock_guard<std::mutex> lock(visualization_mutex_);
+  if (!(audio_only_ && mpv_) || !TapApi().subtitle_available()) return MPV_ERROR_UNSUPPORTED;
+  return plezy::visualization::SharedMusicPcmFanout().ReadCapture(
+      reinterpret_cast<uintptr_t>(mpv_), block, visualization_pts_.load(),
+      [this](mpv_plezy_audio_block* output) { return TapApi().read_next(mpv_, output, sizeof(*output)); });
+}
+
 int MpvPlayer::SetSubtitlePcmCaptureEnabled(bool enabled) {
   std::lock_guard<std::mutex> lock(visualization_mutex_);
   return !audio_only_ && mpv_ && TapApi().subtitle_available() ? TapApi().enable(mpv_, enabled ? 1 : 0)
@@ -668,6 +689,7 @@ bool MpvPlayer::Initialize(HWND view) {
         GetModuleHandle(nullptr), nullptr);
     if (!hwnd_) {
       mpv_destroy(mpv_);
+      plezy::visualization::SharedMusicPcmFanout().Forget(reinterpret_cast<uintptr_t>(mpv_));
       mpv_ = nullptr;
       return false;
     }
@@ -727,6 +749,7 @@ bool MpvPlayer::Initialize(HWND view) {
       hwnd_ = nullptr;
     }
     mpv_destroy(mpv_);
+    plezy::visualization::SharedMusicPcmFanout().Forget(reinterpret_cast<uintptr_t>(mpv_));
     mpv_ = nullptr;
     return false;
   }
@@ -780,6 +803,7 @@ void MpvPlayer::Dispose() {
   {
     std::lock_guard<std::mutex> lock(visualization_mutex_);
     handle = mpv_;
+    plezy::visualization::SharedMusicPcmFanout().Forget(reinterpret_cast<uintptr_t>(mpv_));
     mpv_ = nullptr;
     visualization_pts_.store(std::numeric_limits<double>::quiet_NaN());
   }

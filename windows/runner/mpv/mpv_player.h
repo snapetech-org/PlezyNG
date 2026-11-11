@@ -62,6 +62,9 @@ class MpvPlayer {
   int ReadVisualizationAudio(mpv_plezy_audio_block* block);
   int SetSubtitlePcmCaptureEnabled(bool enabled);
   int ReadSubtitlePcmCapture(mpv_plezy_audio_block* block);
+  bool MusicPcmCaptureAvailable() const;
+  int SetMusicPcmCaptureEnabled(bool enabled);
+  int ReadMusicPcmCapture(mpv_plezy_audio_block* block);
 
   // Returns true if mpv is initialized.
   bool IsInitialized() const { return mpv_ != nullptr; }

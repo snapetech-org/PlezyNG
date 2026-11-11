@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add finite, bounded parametric EQ to the native audio-state reconciler, preserving independent ten-band/effect state and rolling back rejected graphs. Require executable native DSP verification before qualifying the dependency; the previous Linux/Android filter lists omitted EQ.
+
 - Accept native per-player volume relays on hosted, source and receiver mesh connections. Serialize bounded commands, recheck account/connection ownership and publish accepted state without reopening audio or forwarding receiver gain to the source.
 
 - Retire stalled or disconnected native metadata streams through their socket deadline, avoiding synchronous close errors during pending HTTP flushes. Apply the same safe teardown to the live PCM bridge.

@@ -237,6 +237,24 @@ The official Caldera 1.1 controller's own setSinkVolume route sent a volume of
 source audio continued. There are 139 focused control, socket and session
 regressions, including malformed payloads, pending limits and retired scopes.
 
+## Parametric DSP foundation and dependency qualification
+
+The native player has a separate finite parametric EQ capability with peak,
+low-shelf and high-shelf bands, gain and enable state. It composes with existing
+ten-band/effect state, copies caller lists and serializes native reconciliation.
+A rejected graph restores the accepted DSP state without poisoning later
+requests or applying filters to passthrough. There are 85 focused player/policy
+tests, including rollback and concurrent unrelated audio changes.
+
+Execution against the pinned Linux library exposed absent FFmpeg equalizer
+support; accepting Dart strings does not qualify DSP. Producer repair eb78e98
+retains the required filters in the deliberately pruned Linux/Android builds and
+adds Apple's missing shelf/effect filters. Linux publication now executes
+generated tone checks before packaging. The checker measured the expected peak,
+shelf and gain output using the system decoder as a harness check. Promotion of
+rebuilt, receipt-checked artifacts and native command integration are still
+required; this foundation alone does not claim working native EQ on the old pin.
+
 ## Backpressure retirement
 
 Metadata writes have a 500 ms flush budget. Retirement uses the HTTP response

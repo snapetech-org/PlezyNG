@@ -28,6 +28,7 @@ typedef _AudioStateRequest = ({
   int downmixCenterBoostDb,
   bool downmixNormalize,
   List<double> equalizerGains,
+  PlayerParametricEqualizer parametric,
   PlayerAudioEffects effects,
   double rate,
 });
@@ -37,6 +38,7 @@ typedef _AudioStateGenerations = ({
   int normalization,
   int downmix,
   int equalizer,
+  int parametric,
   int effects,
   int rate,
 });
@@ -1325,6 +1327,7 @@ class PlayerNative extends PlayerBase
           downmixCenterBoostDb: accepted.downmixCenterBoostDb,
           downmixNormalize: accepted.downmixNormalize,
           equalizerGains: accepted.equalizerGains,
+          parametric: accepted.parametric,
           effects: accepted.effects,
           rate: rate,
         );
@@ -1493,6 +1496,7 @@ class PlayerNative extends PlayerBase
   static const int _rateAudioField = 1 << 3;
   static const int _equalizerAudioField = 1 << 4;
   static const int _effectsAudioField = 1 << 5;
+  static const int _parametricAudioField = 1 << 6;
 
   bool _passthroughRequested = false;
   bool _passthroughActive = false;
@@ -1508,6 +1512,9 @@ class PlayerNative extends PlayerBase
   List<double> _activeEqualizerGains = const [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   PlayerAudioEffects _effectsRequested = (stereoWidth: 0, spatializer: false, pitchSemitones: 0);
   PlayerAudioEffects _activeEffects = (stereoWidth: 0, spatializer: false, pitchSemitones: 0);
+  PlayerParametricEqualizer _parametricRequested = const PlayerParametricEqualizer();
+  PlayerParametricEqualizer _activeParametric = const PlayerParametricEqualizer();
+  int _parametricGeneration = 0;
   double _currentRate = 1.0;
   int _passthroughGeneration = 0;
   int _normalizationGeneration = 0;
@@ -1522,6 +1529,7 @@ class PlayerNative extends PlayerBase
     downmixCenterBoostDb: 0,
     downmixNormalize: false,
     equalizerGains: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    parametric: PlayerParametricEqualizer(),
     effects: (stereoWidth: 0, spatializer: false, pitchSemitones: 0),
     rate: 1.0,
   );
@@ -1564,6 +1572,7 @@ class PlayerNative extends PlayerBase
     downmixCenterBoostDb: _downmixCenterBoostDb,
     downmixNormalize: _downmixNormalize,
     equalizerGains: _equalizerGainsRequested,
+    parametric: _parametricRequested,
     effects: _effectsRequested,
     rate: _requestedRate,
   );
@@ -1577,6 +1586,7 @@ class PlayerNative extends PlayerBase
         : accepted.downmixCenterBoostDb,
     downmixNormalize: fields & _downmixAudioField != 0 ? requested.downmixNormalize : accepted.downmixNormalize,
     equalizerGains: fields & _equalizerAudioField != 0 ? requested.equalizerGains : accepted.equalizerGains,
+    parametric: fields & _parametricAudioField != 0 ? requested.parametric : accepted.parametric,
     effects: fields & _effectsAudioField != 0 ? requested.effects : accepted.effects,
     rate: fields & _rateAudioField != 0 ? requested.rate : accepted.rate,
   );
@@ -1595,6 +1605,9 @@ class PlayerNative extends PlayerBase
     }
     if (fields & _equalizerAudioField != 0 && generations.equalizer == _equalizerGeneration) {
       _equalizerGainsRequested = previous.equalizerGains;
+    }
+    if (fields & _parametricAudioField != 0 && generations.parametric == _parametricGeneration) {
+      _parametricRequested = previous.parametric;
     }
     if (fields & _effectsAudioField != 0 && generations.effects == _effectsGeneration) {
       _effectsRequested = previous.effects;
@@ -1618,6 +1631,9 @@ class PlayerNative extends PlayerBase
     if (fields & _equalizerAudioField != 0) {
       _equalizerGeneration++;
     }
+    if (fields & _parametricAudioField != 0) {
+      _parametricGeneration++;
+    }
     if (fields & _effectsAudioField != 0) {
       _effectsGeneration++;
     }
@@ -1629,6 +1645,7 @@ class PlayerNative extends PlayerBase
       normalization: _normalizationGeneration,
       downmix: _downmixGeneration,
       equalizer: _equalizerGeneration,
+      parametric: _parametricGeneration,
       effects: _effectsGeneration,
       rate: _rateGeneration,
     );
@@ -1660,6 +1677,7 @@ class PlayerNative extends PlayerBase
           forceDownmix: fields & _downmixAudioField != 0,
           forceNormalization: fields & _downmixAudioField != 0,
           forceEqualizer: fields & _equalizerAudioField != 0,
+          forceParametric: fields & _parametricAudioField != 0,
           forceEffects: fields & _effectsAudioField != 0,
         );
       } catch (rollbackError, rollbackStackTrace) {
@@ -1679,6 +1697,7 @@ class PlayerNative extends PlayerBase
     bool forceDownmix = false,
     bool forceNormalization = false,
     bool forceEqualizer = false,
+    bool forceParametric = false,
     bool forceEffects = false,
   }) async {
     if (_nativeCoreUnavailable) {
@@ -1697,6 +1716,7 @@ class PlayerNative extends PlayerBase
         target.channelLimit != AudioChannelLimit.stereo &&
         !target.normalization &&
         !target.equalizerGains.any((gain) => gain.abs() >= 0.05) &&
+        target.parametric.filters.isEmpty &&
         target.effects.stereoWidth < 0.01 &&
         !target.effects.spatializer &&
         target.effects.pitchSemitones.abs() < 0.05;
@@ -1735,6 +1755,10 @@ class PlayerNative extends PlayerBase
     if (forceEqualizer || !listEquals(_activeEqualizerGains, target.equalizerGains)) {
       await super.setAudioEqualizer(target.equalizerGains);
       _activeEqualizerGains = List<double>.unmodifiable(target.equalizerGains);
+    }
+    if (forceParametric || _activeParametric != target.parametric) {
+      await super.setParametricEqualizer(target.parametric);
+      _activeParametric = target.parametric;
     }
     if (forceEffects || _activeEffects != target.effects) {
       await super.setAudioEffects(target.effects);
@@ -1857,6 +1881,13 @@ class PlayerNative extends PlayerBase
       bandGains.map((gain) => gain.isFinite ? gain.clamp(-12.0, 12.0).toDouble() : 0.0),
     );
     return _enqueueAudioStateReconciliation(_equalizerAudioField);
+  }
+
+  @override
+  Future<void> setParametricEqualizer(PlayerParametricEqualizer equalizer) {
+    if (_nativeCoreUnavailable) return Future<void>.value();
+    _parametricRequested = equalizer.snapshot();
+    return _enqueueAudioStateReconciliation(_parametricAudioField);
   }
 
   @override

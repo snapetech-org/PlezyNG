@@ -66,6 +66,10 @@ Native per-player volume relays now use bounded serial shared controls on
 hosted and dedicated audio connections, rechecking queued ownership and retaining
 audio/queue state. Receiver gain remains local. The official controller applied
 37 through its native relay; 139 focused tests pass.
+A bounded, rollback-safe parametric EQ player layer passes 85 player/policy
+tests. Actual pinned Linux execution found missing FFmpeg EQ filters; producer
+repair eb78e98 is building with a generated-audio publish gate. Rebuilt artifact
+promotion and mesh EQ integration remain required.
 Remaining code/integration includes parametric EQ relays, multichannel wire output and physical
 output-latency qualification. Renderer
 feedback now reads the current core's audible audio-PTS, maps its WAV clock to

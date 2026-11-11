@@ -13,7 +13,9 @@ import '../font_loader.dart';
 import '../models.dart';
 import 'mpv_node_decoder.dart';
 import 'audio_rendering_mode.dart';
-import 'player.dart';
+import 'player.dart' show Player, VideoDecoderHold;
+import 'player_parametric_equalizer.dart';
+export 'player_parametric_equalizer.dart';
 import 'player_state.dart';
 import 'player_stream_controllers.dart';
 import 'player_streams.dart';
@@ -64,7 +66,12 @@ extension PlayerAudioFocusOwnership on Player {
 /// - Common lifecycle methods
 abstract class PlayerBase
     with PlayerStreamControllersMixin
-    implements Player, AudioEqualizerCapable, AudioEffectsCapable, SubtitlePcmTimelineSource {
+    implements
+        Player,
+        AudioEqualizerCapable,
+        ParametricEqualizerCapable,
+        AudioEffectsCapable,
+        SubtitlePcmTimelineSource {
   int _subtitlePcmSeekGeneration = 0;
   Duration? _subtitlePcmSeekTarget;
   @override
@@ -1567,6 +1574,21 @@ abstract class PlayerBase
     }
   }
 
+  PlayerParametricEqualizer _parametricEqualizer = const PlayerParametricEqualizer();
+
+  @override
+  Future<void> setParametricEqualizer(PlayerParametricEqualizer equalizer) async {
+    if (playerType != 'mpv') throw UnsupportedError('Parametric EQ unavailable');
+    final copy = equalizer.snapshot(), previous = _parametricEqualizer;
+    _parametricEqualizer = copy;
+    try {
+      await _applyAudioFilters();
+    } catch (_) {
+      _parametricEqualizer = previous;
+      rethrow;
+    }
+  }
+
   Future<void> _applyAudioFilters() async {
     if (Platform.isAndroid && playerType != 'mpv') return;
     final filters = <String>[];
@@ -1594,6 +1616,7 @@ abstract class PlayerBase
     if (_audioNormalizationEnabled) {
       filters.add(Platform.isAndroid ? _androidNormalizationFilter : _loudnormFilter);
     }
+    filters.addAll(_parametricEqualizer.filters);
     if (_audioSpectrumAnalysisEnabled) filters.add(_spectrumAnalysisFilter);
     await setProperty('af', filters.join(','));
   }

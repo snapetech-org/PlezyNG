@@ -194,8 +194,11 @@ class XitaClock {
   void observe(XitaAudio packet, int arrivalMicros) {
     final frame = unwrap(packet.frame);
     if (_latestFrame != null && frame <= _latestFrame!) return;
-    _latestFrame = frame;
-    if (!packet.timed) return;
+    if (!packet.timed) {
+      if (_latestFrame != null && frame - _latestFrame! > sampleRate * 2) return;
+      _latestFrame = frame;
+      return;
+    }
     final sent = arrivalMicros - packet.transmitDelayMicros;
     if (_originFrame == null) {
       _originFrame = frame;
@@ -219,6 +222,7 @@ class XitaClock {
         _lastObservationMicros = sent;
       }
     }
+    _latestFrame = frame;
     _lastObservationFrame ??= frame;
     _lastObservationMicros ??= sent;
   }

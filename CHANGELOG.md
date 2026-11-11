@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Follow native music-source hardware drift with bounded transmit-clock feedback and monotonic descriptor timestamps; prevent rejected receive timing outliers from changing frame unwrapping. Accept the empty HTTP 200 command acknowledgements emitted by current native Companion players.
+
 - Send the shared music queue to explicitly selected native Caldera / Plexamp speakers after acknowledged membership, with bounded PCM mixing, resampling, clocked UDP output and account-scoped cleanup. Keep queue occurrences and local transport authoritative, and restore prior local muting on departure.
 
 - Expose ordered, bounded music PCM capture on Android, Apple, Linux and Windows, sharing the native tap with presentation-timed visualizations and releasing capture on player teardown.

@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
 import 'xita_packet.dart';
+import 'xita_transmit_clock.dart';
 import 'xita_pcm_mixer.dart';
 
 /// A live decoder lease supplied by the shared session. Volume/EQ and listen
@@ -51,7 +52,8 @@ class CalderaAudioSource {
   Timer? _timer;
   Future<void>? _closing, _polling;
   bool _closed = false, _started = false;
-  int _lastPoll = 0, _epoch = 0, _period = 0, _lastPing = 0;
+  int _lastPoll = 0, _period = 0, _lastPing = 0;
+  XitaTransmitClock? _sendClock;
   static const _periodFrames = 1024;
   bool get active => _started && _valid;
   bool get _valid => !_closed && current();
@@ -161,7 +163,10 @@ class CalderaAudioSource {
         if (identical(_polling, initial)) _polling = null;
       }
       if (!_valid || _leases.isEmpty) throw StateError('Music PCM capture unavailable');
-      _epoch = _clock.elapsedMicroseconds + 100000;
+      _sendClock = XitaTransmitClock(
+        startMicros: _clock.elapsedMicroseconds + 100000,
+        timestamp: DateTime.now().toUtc().add(const Duration(milliseconds: 100)),
+      );
       _started = true;
       _timer = Timer.periodic(const Duration(milliseconds: 5), (_) => _tick());
     } catch (_) {
@@ -266,19 +271,21 @@ class CalderaAudioSource {
     if (_clock.elapsedMilliseconds - _lastPing > 2000) {
       _lastPing = _clock.elapsedMilliseconds;
       for (final peer in _peers) {
+        if (peer.socket.readyState != WebSocket.open) {
+          unawaited(close());
+          return;
+        }
         peer.socket.add('{"data":"ping"}');
       }
     }
-    final elapsed = _clock.elapsedMicroseconds - _epoch;
-    if (elapsed < 0) return;
-    final due = elapsed * XitaPcmMixer.sampleRate ~/ 1000000;
-    if (due - _mixer.cursor > XitaPcmMixer.sampleRate ~/ 4) {
-      unawaited(close()); // Never replay a stalled clock in an unbounded burst.
-      return;
-    }
+    final clock = _sendClock;
+    if (clock == null) return;
     var budget = 2;
     try {
-      while (budget-- > 0 && due >= _mixer.cursor) {
+      while (budget-- > 0 && clock.due(_clock.elapsedMicroseconds)) {
+        final scheduled = clock.nextMicros;
+        final delay = clock.lateness(_clock.elapsedMicroseconds);
+        clock.advance(_clock.elapsedMicroseconds, bufferedFrames: _mixer.bufferedFrames);
         final frame = _mixer.cursor;
         // Repeated descriptors permit recovery without changing format or clock.
         if (_period++ % 16 == 0) {
@@ -288,7 +295,7 @@ class CalderaAudioSource {
               channels: 2,
               periodFrames: _periodFrames,
               frame: frame,
-              timestamp: DateTime.now().toUtc(),
+              timestamp: clock.timestampAt(scheduled),
             ),
           );
         }
@@ -301,8 +308,7 @@ class CalderaAudioSource {
               channels: 2,
               samples: Float32List.sublistView(pcm, offset * 2, (offset + packetFrames) * 2),
               flags: offset == 0 ? 1 : 0,
-              transmitDelayMicros: (_clock.elapsedMicroseconds - _epoch - frame * 1000000 ~/ XitaPcmMixer.sampleRate)
-                  .clamp(0, 1000000),
+              transmitDelayMicros: delay,
             ),
           );
         }

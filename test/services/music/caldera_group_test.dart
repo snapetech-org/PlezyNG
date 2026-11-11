@@ -111,7 +111,7 @@ void main() {
             'event: ping\ndata: {}\n\nevent: state\ndata: ${jsonEncode({'meshVersion': meshVersion, 'playerIdentifier': player, 'type': 'track', 'title': 'A track', 'state': 'playing', 'time': 1200, 'duration': 60000, 'volume': 60})}\n\n',
           );
         } else {
-          request.response.write('<Response code="$replyCode" status="accepted"/>');
+          if (replyCode != 'empty') request.response.write('<Response code="$replyCode" status="accepted"/>');
         }
         await request.response.close();
       });
@@ -166,6 +166,13 @@ void main() {
       }
       expect(stateCount, greaterThanOrEqualTo(5));
     });
+    test('accepts the empty HTTP 200 acknowledgement emitted by native 1.1.0', () async {
+      final state = await client.state(leader, current: () => current);
+      replyCode = 'empty';
+      await client.transport(leader, state, 'pause', current: () => current);
+      expect(requests.last.path, '/player/playback/pause');
+    });
+
     test('refuses protocol changes, replacement identities, redirects and lost profile scope', () async {
       final state = await client.state(leader, current: () => current);
       meshVersion = '3.0.0';

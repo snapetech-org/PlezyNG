@@ -63,6 +63,14 @@ The shipped dependency lock still lacks the native ordered PCM extension.
 A built and promoted dependency artifact is required to enable source capture
 in packaged applications; no unproduced artifact or hash is substituted.
 
+Transmit deadlines now follow bounded PCM-buffer feedback (at most 2000 ppm)
+instead of accumulating differences between hardware and monotonic rates.
+Ten-minute simulations cover both directions at 200 and 1000 ppm. Descriptor
+timestamps use a fixed wall anchor plus monotonic elapsed time. Rejected timing
+outliers cannot change receive frame unwrapping. Current native Companion
+commands can acknowledge with an empty HTTP 200 body; the controller also
+retains the older XML acknowledgement validation.
+
 ## Protocol sources
 
 - Fons Adriaensen's [Zita tools](https://kokkinizita.linuxaudio.org/linuxaudio/downloads/index.html)

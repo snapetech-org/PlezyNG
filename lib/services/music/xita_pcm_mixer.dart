@@ -9,6 +9,7 @@ class XitaPcmMixer {
   int cursor = 0;
   final _lanes = <Object, _PcmLane>{};
 
+  int get bufferedFrames => _lanes.values.fold(0, (maximum, lane) => math.max(maximum, lane.endFrame - cursor));
   void clear() => _lanes.clear();
   void remove(Object key) => _lanes.remove(key);
 

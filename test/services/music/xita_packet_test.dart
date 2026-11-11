@@ -17,6 +17,16 @@ XitaAudio audio(int frame, {int flags = 1, int delay = 0}) =>
         as XitaAudio;
 
 void main() {
+  test('timing outliers cannot poison frame unwrapping for subsequent valid audio', () {
+    final clock = XitaClock(48000);
+    clock.observe(audio(0xffff0000), 0);
+    clock.observe(audio(0x70000000), 1000);
+    clock.observe(audio(0x70000000, flags: 0), 1000);
+    clock.observe(audio((0xffff0000 + 48000) & 0xffffffff), 1000000);
+    expect(clock.rateRatio, 1);
+    expect(clock.presentationMicros((0xffff0000 + 48000) & 0xffffffff), 1150000);
+  });
+
   test('captured native descriptor has 32-byte header, NTP and network byte order', () {
     final packet =
         XitaPacket.decode(hex('7a6e6a6200000202000005c00000ac440000040000c6c400edd66a0f2f603925'))! as XitaDescriptor;

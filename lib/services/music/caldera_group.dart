@@ -361,6 +361,9 @@ class CalderaGroupClient {
       {...parameters, 'commandID': '${++_command}', 'type': 'music'},
       (response) async {
         final text = await _bounded(response).transform(utf8.decoder).join();
+        // Current native Companion builds acknowledge accepted commands with
+        // an empty HTTP 200 body; older builds return an XML Response.
+        if (text.trim().isEmpty) return;
         final reply = XmlDocument.parse(text).rootElement;
         if (reply.name.local != 'Response' || reply.getAttribute('code') != '200') {
           throw StateError('Native group command rejected');

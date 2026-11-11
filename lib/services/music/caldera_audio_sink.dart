@@ -157,11 +157,13 @@ class XitaJitterBuffer {
 /// An explicitly selected native peer is the sole allowed UDP and mesh source.
 /// No Plex credentials, raw library data or write authority cross this channel.
 class CalderaAudioSink {
-  CalderaAudioSink({required this.leader, required this.output, required this.current});
+  CalderaAudioSink({required this.leader, required this.output, required this.current, this.onClosed, String? id})
+    : id = id ?? const Uuid().v4();
   final CalderaNode leader;
   final CalderaAudioOutput output;
   final bool Function() current;
-  final id = const Uuid().v4();
+  final String id;
+  final void Function()? onClosed;
   final _owner = Object();
   final _clock = Stopwatch()..start();
   RawDatagramSocket? _udp;
@@ -172,7 +174,7 @@ class CalderaAudioSink {
   CalderaStateFeed? _stateFeed;
   final _controller = CalderaGroupClient();
   CalderaNowPlaying? _state;
-  bool _suspended = false;
+  bool _suspended = false, _joined = false;
   int _lastPumpMicros = 0, _queuedControls = 0;
   Future<void> _controls = Future.value();
   XitaJitterBuffer? _audio;
@@ -359,7 +361,8 @@ class CalderaAudioSink {
                 if (data is! Map || data['version'] != '1.0.0') throw const FormatException('Unsupported native peer');
                 if (!_meshReady.isCompleted) _meshReady.complete();
               }
-              if (const ['SetState', 'SetNodeState'].contains(message['method']) &&
+              if (_joined &&
+                  const ['SetState', 'SetNodeState'].contains(message['method']) &&
                   data is Map &&
                   data['source'] != leader.id) {
                 unawaited(close());
@@ -376,6 +379,7 @@ class CalderaAudioSink {
       _send('Hello', {'capabilities': null, 'version': '1.0.0'});
       await _meshReady.future.timeout(const Duration(seconds: 5));
       if (!_valid) throw StateError('Native audio scope changed');
+      _joined = true;
       _send('SetSinksForSource', {
         'source': leader.id,
         'sinks': [leader.id, id],
@@ -542,6 +546,10 @@ class CalderaAudioSink {
     _response = null;
     await _http?.close(force: true);
     _http = null;
-    await output.closeCalderaAudio(_owner);
+    try {
+      await output.closeCalderaAudio(_owner);
+    } finally {
+      onClosed?.call();
+    }
   }
 }

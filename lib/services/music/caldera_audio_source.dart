@@ -49,7 +49,10 @@ class CalderaAudioSource {
     this.onClosed,
     this.metadata,
     this.control,
-  }) : sinks = List.unmodifiable(sinks);
+    this.serveCompanion = true,
+    String? id,
+  }) : sinks = List.unmodifiable(sinks),
+       id = id ?? const Uuid().v4();
   final List<CalderaNode> sinks;
   final List<CalderaPcmFeed> Function() feeds;
   final bool Function() current;
@@ -57,7 +60,8 @@ class CalderaAudioSource {
   final CalderaSourceMetadata Function()? metadata;
   final Future<void> Function(String action, int? value)? control;
   CalderaSourceEndpoint? _endpoint;
-  final id = const Uuid().v4();
+  final String id;
+  final bool serveCompanion;
   final _mixer = XitaPcmMixer();
   final _clock = Stopwatch();
   final _peers = <_SourcePeer>[];
@@ -97,7 +101,8 @@ class CalderaAudioSource {
           throw StateError('Music PCM capture unavailable');
         }
       }
-      if (metadata case final readMetadata?) {
+      if (serveCompanion && metadata != null) {
+        final readMetadata = metadata!;
         final handleControl = control;
         if (handleControl == null) throw StateError('Native source control unavailable');
         _endpoint = CalderaSourceEndpoint(

@@ -408,8 +408,8 @@ class CalderaGroupClient {
     for (final sink in sinks) {
       await state(sink, current: current);
     }
-    // The HTTP controller route takes the additional sinks. Native mesh
-    // broadcasts include the source itself in the resulting sink set.
+    // The HTTP controller route takes additional sinks. A native mesh relay
+    // can omit the source too; source-originated broadcasts can include it.
     await _control(leader, expected, 'setSinksForSource', {
       'source': leader.id,
       'sinks': sinks.map((sink) => sink.id).join(','),

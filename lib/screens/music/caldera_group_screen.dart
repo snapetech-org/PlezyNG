@@ -7,6 +7,7 @@ import '../../i18n/strings.g.dart';
 import '../../services/music/caldera_group.dart';
 import '../../services/music/caldera_audio_sink.dart';
 import '../../services/music/caldera_audio_source.dart';
+import '../../services/music/caldera_native_host.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
 
@@ -53,6 +54,7 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.audio case final Listenable audio) audio.addListener(_audioChanged);
     _subscription = _discovery.changes.listen(
       _received,
       onError: (Object _) {
@@ -68,6 +70,10 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
       final leader = _leader;
       if (!_busy && leader != null) unawaited(_run(() => _read(leader)));
     });
+  }
+
+  void _audioChanged() {
+    if (mounted) setState(() {});
   }
 
   void _received(List<CalderaNode> discovered) {
@@ -155,6 +161,7 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
 
   @override
   void dispose() {
+    if (widget.audio case final Listenable audio) audio.removeListener(_audioChanged);
     _refresh?.cancel();
     unawaited(_subscription?.cancel());
     _discovery.dispose();
@@ -179,6 +186,20 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (widget.audio case final NativeMusicGroupAvailabilityControls availability)
+            SwitchListTile.adaptive(
+              title: Text(t.musicDevices.receive),
+              subtitle: Text(t.watchTogether.anyoneCanControl),
+              value: availability.nativeMusicGroupAvailable,
+              onChanged: _busy || !_current
+                  ? null
+                  : (value) => unawaited(
+                      _run(() async {
+                        await availability.setNativeMusicGroupAvailable(value, current: widget.current);
+                        if (mounted) setState(() {});
+                      }),
+                    ),
+            ),
           DropdownButtonFormField<String>(
             key: ValueKey(_source),
             initialValue: _source,

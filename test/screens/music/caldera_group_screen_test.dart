@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/screens/music/caldera_group_screen.dart';
 import 'package:plezy/services/music/caldera_group.dart';
+import 'package:plezy/services/music/caldera_native_host.dart';
 import 'package:plezy/services/music/caldera_audio_source.dart';
 import 'package:plezy/services/music/caldera_audio_sink.dart';
 import '../../test_helpers/theme.dart';
@@ -79,7 +80,17 @@ class _Client extends CalderaGroupClient {
   }
 }
 
-class _Audio implements NativeMusicGroupControls, NativeMusicGroupSourceControls {
+class _Audio implements NativeMusicGroupControls, NativeMusicGroupSourceControls, NativeMusicGroupAvailabilityControls {
+  @override
+  bool nativeMusicGroupAvailable = false;
+  final availability = <bool>[];
+  @override
+  Future<void> setNativeMusicGroupAvailable(bool value, {required bool Function() current}) async {
+    if (!current()) return;
+    availability.add(value);
+    nativeMusicGroupAvailable = value;
+  }
+
   @override
   bool receivingNativeMusicGroup = false;
   @override
@@ -105,6 +116,34 @@ class _Audio implements NativeMusicGroupControls, NativeMusicGroupSourceControls
 }
 
 void main() {
+  testWidgets('native availability is explicit and scoped to the active profile', (tester) async {
+    final discovery = _Discovery(), audio = _Audio();
+    var current = true;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testMonoTokens]),
+        home: CalderaGroupScreen(
+          current: () => current,
+          audio: audio,
+          discoveryFactory: () => discovery,
+          clientFactory: _Client.new,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(audio.nativeMusicGroupAvailable, isFalse);
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    expect(audio.availability, [true]);
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    expect(audio.availability, [true, false]);
+    current = false;
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    expect(audio.availability, [true, false]);
+  });
+
   testWidgets('native output sends the shared queue to the selected speakers and can release it', (tester) async {
     final discovery = _Discovery(), client = _Client(), audio = _Audio();
     await tester.pumpWidget(

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add explicit native Caldera / Plexamp availability, multicast discovery, mesh hosting and incoming source/sink membership through the shared music session. Bound peer controls and replaceable group setup, accept native additional-sink relays, and retire availability with the active profile/account.
+
 - Open native group WAV audio without multi-second format probing and cap priming silence while the audible clock warms up. Verify scheduled pulse timing against the actual pinned Linux decoder with a timed null output.
 
 - Match native music gain to the pinned decoder's cubic volume curve and ReplayGain, preserving equal-power fades and EQ headroom. Update queued group PCM gain at render time and discard late gain reads from retired decoders; keep synthetic native receive tracks out of session persistence.

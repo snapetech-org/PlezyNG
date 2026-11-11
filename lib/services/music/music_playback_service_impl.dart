@@ -1,3 +1,4 @@
+import 'package:uuid/uuid.dart';
 import 'music_discovery.dart';
 import 'music_account_scope.dart';
 import 'music_audio_policy.dart';
@@ -60,6 +61,7 @@ import 'caldera_audio_source.dart';
 import 'caldera_source_endpoint.dart';
 import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
+import 'caldera_native_host.dart';
 import 'music_playback_output.dart';
 
 /// A gapless-armed next track: what [Player.setNext] was fed, so the
@@ -131,6 +133,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicDeviceSession,
         NativeMusicGroupControls,
         NativeMusicGroupSourceControls,
+        NativeMusicGroupAvailabilityControls,
         CalderaAudioOutput,
         CalderaAudioMetadataOutput,
         CalderaAudioClockOutput {
@@ -152,6 +155,122 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         );
   }
 
+  CalderaNativeHost? _calderaHost;
+  final CalderaNativeHostFactory _nativeHostFactory;
+  int _nativeTransitions = 0;
+
+  @override
+  bool get nativeMusicGroupAvailable => _calderaHost?.active == true;
+
+  CalderaSourceMetadata _nativeMetadata() => CalderaSourceMetadata(
+    title: _currentTrack?.title ?? 'Pleazyng',
+    artist: _currentTrack?.grandparentTitle ?? '',
+    album: _currentTrack?.parentTitle ?? '',
+    state: switch (_status) {
+      MusicPlaybackStatus.playing => 'playing',
+      MusicPlaybackStatus.paused => 'paused',
+      MusicPlaybackStatus.loading => 'buffering',
+      _ => 'stopped',
+    },
+    position: position,
+    duration: duration ?? Duration.zero,
+    volume: _volume,
+  );
+
+  Future<void> _nativeControl(String action, int? value) async {
+    switch (action) {
+      case 'play':
+        await play();
+      case 'pause':
+        await pause();
+      case 'stop':
+        await stop();
+      case 'skipNext':
+        await next();
+      case 'skipPrevious':
+        await previous();
+      case 'seekTo':
+        await seek(Duration(milliseconds: value!));
+      case 'setParameters':
+        await setVolume(value!.toDouble());
+      default:
+        throw ArgumentError('Unsupported native music command');
+    }
+  }
+
+  void _syncNativeHost() {
+    final host = _calderaHost;
+    if (_nativeTransitions != 0 || host?.active != true) return;
+    final source = _calderaSource, sink = _calderaSink;
+    if (source?.active == true) {
+      host!.synchronize(CalderaMembership(host.id, [host.id, ...source!.sinks.map((node) => node.id)]));
+    } else if (sink?.active == true) {
+      if (host!.membership.source != sink!.leader.id || !host.membership.sinks.contains(host.id)) {
+        host.synchronize(CalderaMembership(sink.leader.id, [sink.leader.id, host.id]));
+      }
+    } else {
+      host!.synchronize(CalderaMembership(host.id, [host.id]));
+    }
+  }
+
+  @override
+  Future<void> setNativeMusicGroupAvailable(bool value, {required bool Function() current}) async {
+    if (value && nativeMusicGroupAvailable) return;
+    final previous = _calderaHost;
+    _calderaHost = null;
+    await previous?.close();
+    await leaveNativeMusicGroup();
+    if (!value) {
+      if (!_disposed) notifyListeners();
+      return;
+    }
+    final scope = _nativeMusicScope(current);
+    if (!scope()) throw StateError('Native music scope changed');
+    late final CalderaNativeHost host;
+    bool owns() => scope() && identical(_calderaHost, host);
+    host = _nativeHostFactory(
+      id: const Uuid().v4(),
+      name: 'Pleazyng',
+      current: owns,
+      metadata: _nativeMetadata,
+      control: (action, value) async {
+        if (!owns()) throw StateError('Native music scope changed');
+        await _nativeControl(action, value);
+      },
+      assign: (membership, assigned) async {
+        bool authorized() => owns() && assigned();
+        if (!authorized()) throw StateError('Native membership changed');
+        if (membership.source == host.id) {
+          final sinks = membership.sinks.where((id) => id != host.id).map(host.resolve).toList();
+          if (sinks.isEmpty) {
+            await leaveNativeMusicGroup();
+          } else {
+            await sendNativeMusicGroup(sinks, current: authorized);
+          }
+        } else {
+          await receiveNativeMusicGroup(host.resolve(membership.source), current: authorized);
+        }
+      },
+      onClosed: () {
+        if (identical(_calderaHost, host)) {
+          _calderaHost = null;
+          unawaited(leaveNativeMusicGroup());
+          if (!_disposed) notifyListeners();
+        }
+      },
+    );
+    _calderaHost = host;
+    try {
+      await host.start();
+      if (!owns()) throw StateError('Native availability retired');
+      notifyListeners();
+    } catch (_) {
+      if (identical(_calderaHost, host)) _calderaHost = null;
+      await host.close();
+      rethrow;
+    }
+  }
+
   CalderaAudioSource? _calderaSource;
 
   @override
@@ -159,6 +278,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> sendNativeMusicGroup(List<CalderaNode> sinks, {required bool Function() current}) async {
+    _nativeTransitions++;
+    try {
+      await _sendNativeMusicGroup(sinks, current: current);
+    } finally {
+      _nativeTransitions--;
+      _syncNativeHost();
+    }
+  }
+
+  Future<void> _sendNativeMusicGroup(List<CalderaNode> sinks, {required bool Function() current}) async {
     await leaveNativeMusicGroup();
     if (_disposed ||
         !current() ||
@@ -177,7 +306,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _playbackOutput == null &&
         _musicDeviceOutput == null &&
         !_musicGroupFollower;
+    final host = _calderaHost;
+    host?.remember(sinks);
     source = CalderaAudioSource(
+      id: host?.id,
+      serveCompanion: host == null,
       sinks: List.unmodifiable(sinks),
       current: authorized,
       feeds: () {
@@ -189,44 +322,15 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
             if (player != null && !player.disposed) _nativePcmFeed(player, source, primary: identical(player, primary)),
         ];
       },
-      metadata: () => CalderaSourceMetadata(
-        title: _currentTrack?.title ?? 'Pleazyng',
-        artist: _currentTrack?.grandparentTitle ?? '',
-        album: _currentTrack?.parentTitle ?? '',
-        state: switch (_status) {
-          MusicPlaybackStatus.playing => 'playing',
-          MusicPlaybackStatus.paused => 'paused',
-          MusicPlaybackStatus.loading => 'buffering',
-          _ => 'stopped',
-        },
-        position: position,
-        duration: duration ?? Duration.zero,
-        volume: _volume,
-      ),
+      metadata: _nativeMetadata,
       control: (action, value) async {
         if (!authorized()) throw StateError('Native music scope changed');
-        switch (action) {
-          case 'play':
-            await play();
-          case 'pause':
-            await pause();
-          case 'stop':
-            await stop();
-          case 'skipNext':
-            await next();
-          case 'skipPrevious':
-            await previous();
-          case 'seekTo':
-            await seek(Duration(milliseconds: value!));
-          case 'setParameters':
-            await setVolume(value!.toDouble());
-          default:
-            throw ArgumentError('Unsupported native music command');
-        }
+        await _nativeControl(action, value);
       },
       onClosed: () {
         if (identical(_calderaSource, source)) {
           _calderaSource = null;
+          _syncNativeHost();
           if (!_disposed) notifyListeners();
         }
       },
@@ -293,10 +397,34 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> receiveNativeMusicGroup(CalderaNode leader, {required bool Function() current}) async {
+    _nativeTransitions++;
+    try {
+      await _receiveNativeMusicGroup(leader, current: current);
+    } finally {
+      _nativeTransitions--;
+      _syncNativeHost();
+    }
+  }
+
+  Future<void> _receiveNativeMusicGroup(CalderaNode leader, {required bool Function() current}) async {
     await leaveNativeMusicGroup();
     if (_disposed || !current()) throw StateError('Native music scope changed');
     final authorized = _nativeMusicScope(current);
-    final sink = CalderaAudioSink(leader: leader, output: this, current: authorized);
+    _calderaHost?.remember([leader]);
+    late final CalderaAudioSink sink;
+    sink = CalderaAudioSink(
+      id: _calderaHost?.id,
+      leader: leader,
+      output: this,
+      current: authorized,
+      onClosed: () {
+        if (identical(_calderaSink, sink)) {
+          _calderaSink = null;
+          _syncNativeHost();
+          if (!_disposed) notifyListeners();
+        }
+      },
+    );
     _calderaSink = sink;
     try {
       await sink.start();
@@ -319,6 +447,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _calderaSource = null;
     await source?.close();
     await sink?.close();
+    _syncNativeHost();
   }
 
   @override
@@ -1024,6 +1153,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     @visibleForTesting Future<void> Function(double)? volumePersistenceWriter,
     @visibleForTesting Random? queueRandom,
     this.onDispose,
+    @visibleForTesting this._nativeHostFactory = CalderaNativeHost.new,
   }) : assert(resolver != null || database != null, 'database is required to build the default resolver'),
        _serverManager = serverManager,
        _resolver = resolver ?? ServerMusicSourceResolver(serverManager: serverManager, database: database!),
@@ -4096,6 +4226,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _calderaSink = null;
       unawaited(nativeSink.close());
     }
+    _syncNativeHost();
     _calderaAudioOwner = null;
     _calderaAudioGeneration = null;
     _nativeNowPlaying = null;
@@ -4442,6 +4573,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void dispose() {
+    final nativeHost = _calderaHost;
+    _calderaHost = null;
+    unawaited(nativeHost?.close());
     unawaited(leaveNativeMusicGroup());
     _musicDeviceOutput?.removeListener(_onMusicDeviceChanged);
     _musicDeviceOutput = null;

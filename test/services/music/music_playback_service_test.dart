@@ -21,6 +21,7 @@ import 'package:plezy/media/media_source_info.dart';
 import 'package:plezy/mpv/models.dart';
 import 'package:plezy/mpv/player/music_pcm_capture_source.dart';
 import 'package:plezy/services/music/caldera_group.dart';
+import 'package:plezy/services/music/caldera_native_host.dart';
 import 'package:plezy/models/audio_channel_limit.dart';
 import 'package:plezy/models/companion_remote/remote_command.dart';
 import 'package:plezy/models/download_models.dart';
@@ -759,6 +760,14 @@ class _CapturingPlayer extends FakePlayer implements MusicPcmCaptureSource {
   Future<String?> getProperty(String name) async => properties[name];
 }
 
+class _NativeDiscovery extends CalderaDiscovery {
+  final entries = <CalderaNode>[];
+  @override
+  List<CalderaNode> get nodes => entries;
+  @override
+  Future<void> start() async {}
+}
+
 class _Harness {
   _Harness._(
     this.service,
@@ -792,6 +801,7 @@ class _Harness {
     MusicLibraryStore? libraryStore,
     bool overlapDecoder = false,
     bool pcmCapture = false,
+    CalderaNativeHostFactory? nativeHostFactory,
   }) {
     final queueRandom = _ScriptedRandom();
     final client = FakeMediaServerClient();
@@ -809,6 +819,7 @@ class _Harness {
 
     final service = MusicPlaybackServiceImpl(
       serverManager: serverManager,
+      nativeHostFactory: nativeHostFactory ?? CalderaNativeHost.new,
       sessionStore: sessionStore,
       libraryStore: libraryStore,
       resolver: resolver,
@@ -1246,6 +1257,205 @@ void main() {
     expect(player.properties['mute'], 'no');
     expect(h.service.currentTrack?.id, t1.id);
     expect(player.disposed, isFalse);
+  });
+
+  test('native availability exposes an idle endpoint and retires with its account set', () async {
+    h.dispose();
+    late CalderaNativeHost host;
+    h = _Harness.create(
+      nativeHostFactory:
+          ({
+            required id,
+            required name,
+            required current,
+            required metadata,
+            required control,
+            required assign,
+            required onClosed,
+          }) => host = CalderaNativeHost(
+            id: id,
+            name: name,
+            current: current,
+            metadata: metadata,
+            control: control,
+            assign: assign,
+            onClosed: onClosed,
+            meshPort: 0,
+            companionPort: 0,
+            advertise: false,
+            discovery: _NativeDiscovery(),
+          ),
+    );
+    await HttpOverrides.runWithHttpOverrides(() async {
+      await h.service.setNativeMusicGroupAvailable(true, current: () => true);
+      expect(h.service.nativeMusicGroupAvailable, isTrue);
+      expect(h.players, isEmpty, reason: 'Availability alone does not open or claim audio');
+      final address = (await NetworkInterface.list(
+        type: InternetAddressType.IPv4,
+      )).expand((interface) => interface.addresses).firstWhere(CalderaNode.privateAddress);
+      final node = await CalderaGroupClient().inspect(
+        '${address.address}:${host.boundCompanionPort}',
+        meshPort: host.boundMeshPort,
+        current: () => true,
+      );
+      expect(node.id, host.id);
+      h.serverManager.debugRegisterClientForTesting(_AdditionalNativeAccountClient());
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+      expect(h.service.nativeMusicGroupAvailable, isFalse);
+      expect(host.boundMeshPort, 0);
+      expect(host.boundCompanionPort, 0);
+      expect(h.players, isEmpty);
+    }, _MusicNetworkHttp());
+  });
+
+  test('native initiated membership shares stable identity, queue, controls and departure', () async {
+    h.dispose();
+    final discovery = _NativeDiscovery();
+    late CalderaNativeHost host;
+    h = _Harness.create(
+      pcmCapture: true,
+      nativeHostFactory:
+          ({
+            required id,
+            required name,
+            required current,
+            required metadata,
+            required control,
+            required assign,
+            required onClosed,
+          }) => host = CalderaNativeHost(
+            id: id,
+            name: name,
+            current: current,
+            metadata: metadata,
+            control: control,
+            assign: assign,
+            onClosed: onClosed,
+            meshPort: 0,
+            companionPort: 0,
+            advertise: false,
+            discovery: discovery,
+          ),
+    );
+    await h.playTracks([t1, t1, t2]);
+    final player = h.player as _CapturingPlayer;
+    final address = (await NetworkInterface.list(
+      type: InternetAddressType.IPv4,
+    )).expand((interface) => interface.addresses).firstWhere(CalderaNode.privateAddress);
+    final mesh = await HttpServer.bind(address, 0);
+    final sockets = <WebSocket>[];
+    const peer = '11111111-1111-4111-8111-111111111111';
+    final node = CalderaNode(
+      id: peer,
+      name: 'Native fixture',
+      address: address,
+      companionPort: 32500,
+      meshPort: mesh.port,
+      expires: DateTime.now().add(const Duration(minutes: 1)),
+    );
+    discovery.entries.add(node);
+    final accepted = <Map<String, dynamic>>[];
+    mesh.listen((request) async {
+      final socket = await WebSocketTransformer.upgrade(request);
+      sockets.add(socket);
+      socket.listen((frame) {
+        for (final message in CalderaGroupClient.meshMessages(frame as String)) {
+          if (message['data'] == 'ping') {
+            socket.add('{"data":"ping"}');
+            continue;
+          }
+          if (message['method'] == 'Hello') {
+            socket.add(
+              jsonEncode({
+                'method': 'SetState',
+                'source': peer,
+                'data': {'version': '1.0.0', 'source': peer},
+              }),
+            );
+          } else if (message['method'] == 'SetSinksForSource') {
+            accepted.add(message);
+            socket.add(
+              jsonEncode({
+                'method': 'SetNodeState',
+                'source': peer,
+                'data': {'version': '1.0.0', 'source': (message['data'] as Map)['source']},
+              }),
+            );
+          }
+        }
+      });
+    });
+    addTearDown(() async {
+      await h.service.setNativeMusicGroupAvailable(false, current: () => true);
+      for (final socket in sockets) {
+        unawaited(socket.close());
+      }
+      await mesh.close(force: true);
+    });
+    Future<void> until(bool Function() value) async {
+      for (var i = 0; i < 300 && !value(); i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      expect(value(), isTrue);
+    }
+
+    final resolves = Map<String, int>.of(h.resolver.resolveCounts);
+    await HttpOverrides.runWithHttpOverrides(() async {
+      await h.service.setNativeMusicGroupAvailable(true, current: () => true);
+      final controller = await WebSocket.connect('ws://${address.address}:${host.boundMeshPort}/');
+      sockets.add(controller);
+      var ready = false;
+      controller.listen((frame) {
+        for (final value in CalderaGroupClient.meshMessages(frame as String)) {
+          if (value['method'] == 'SetState') ready = true;
+          if (value['data'] == 'ping') controller.add('{"data":"ping"}');
+        }
+      });
+      controller.add(
+        jsonEncode({
+          'method': 'Hello',
+          'source': peer,
+          'data': {'version': '1.0.0'},
+        }),
+      );
+      await until(() => ready);
+      controller.add(
+        jsonEncode({
+          'method': 'SetSinksForSource',
+          'source': peer,
+          'data': {
+            'source': host.id,
+            'sinks': [host.id, peer],
+          },
+        }),
+      );
+      await until(() => h.service.sendingNativeMusicGroup);
+      expect(accepted.single['source'], host.id);
+      expect(player.captureEnabled, isTrue);
+      expect(player.properties['mute'], 'yes');
+      expect(h.service.queue.map((track) => track.id), [t1.id, t1.id, t2.id]);
+      expect(h.resolver.resolveCounts, resolves);
+      final local = CalderaNode(
+        id: host.id,
+        name: 'Pleazyng',
+        address: address,
+        companionPort: host.boundCompanionPort,
+        meshPort: host.boundMeshPort,
+        expires: node.expires,
+      );
+      final client = CalderaGroupClient();
+      final state = await client.state(local, current: () => true);
+      expect(state.player, host.id);
+      await client.transport(local, state, 'pause', current: () => true);
+      expect(h.service.isPlaying, isFalse);
+      await client.group(local, state, [], current: () => true);
+      await until(() => !h.service.sendingNativeMusicGroup && !player.captureEnabled);
+      expect(player.properties['mute'], 'no');
+      expect(player.disposed, isFalse);
+      expect(h.service.currentTrack?.id, t1.id);
+      expect(h.service.queue.map((track) => track.id), [t1.id, t1.id, t2.id]);
+      expect(h.service.nativeMusicGroupAvailable, isTrue, reason: 'Leaving audio retains explicit availability');
+    }, _MusicNetworkHttp());
   });
 
   test('revoked native PCM scope cannot create an audio core or replace playback', () async {

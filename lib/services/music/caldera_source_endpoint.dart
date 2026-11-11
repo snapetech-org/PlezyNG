@@ -34,7 +34,7 @@ class CalderaSourceMetadata {
 }
 
 /// Native peers fetch their source's state on Companion port 32500. This host
-/// serves only the explicitly selected peers and never exposes stream URLs,
+/// serves selected peers, or the active native availability lease, and never exposes stream URLs,
 /// credentials, media-server identifiers or arbitrary queue-loading routes.
 class CalderaSourceEndpoint {
   CalderaSourceEndpoint({
@@ -44,6 +44,8 @@ class CalderaSourceEndpoint {
     required this.control,
     required this.current,
     this.port = 32500,
+    this.allowsPeer,
+    this.group,
   }) : peers = Set.unmodifiable(peers);
   final String id;
   final Set<String> peers;
@@ -51,6 +53,9 @@ class CalderaSourceEndpoint {
   final Future<void> Function(String action, int? value) control;
   final bool Function() current;
   final int port;
+  final bool Function(InternetAddress address)? allowsPeer;
+  final Future<void> Function(String source, List<String> sinks)? group;
+  bool _allowed(InternetAddress address) => peers.contains(address.address) || allowsPeer?.call(address) == true;
   HttpServer? _server;
   Timer? _timer;
   final _streams = <HttpResponse, _StateStream>{};
@@ -99,15 +104,12 @@ class CalderaSourceEndpoint {
     response.persistentConnection = false;
     try {
       final remote = request.connectionInfo?.remoteAddress;
-      if (_closed ||
-          !current() ||
-          remote == null ||
-          !CalderaNode.privateAddress(remote) ||
-          !peers.contains(remote.address)) {
+      if (_closed || !current() || remote == null || !CalderaNode.privateAddress(remote) || !_allowed(remote)) {
         await _reply(response, 403);
         return;
       }
-      if (request.method != 'GET' ||
+      if (request.headers.value('Origin') != null ||
+          request.method != 'GET' ||
           request.uri.toString().length > 2048 ||
           request.contentLength > 0 ||
           request.headers.chunkedTransferEncoding) {
@@ -122,7 +124,7 @@ class CalderaSourceEndpoint {
         }
         response.headers.contentType = ContentType('text', 'event-stream');
         response.bufferOutput = false;
-        final stream = _StateStream(response);
+        final stream = _StateStream(response, remote);
         _streams[response] = stream;
         unawaited(
           response.done.then<void>((_) => _streams.remove(response), onError: (Object _) => _streams.remove(response)),
@@ -187,7 +189,25 @@ class CalderaSourceEndpoint {
       }
       final action = path.substring(prefix.length);
       int? value;
-      if (action == 'seekTo') {
+      String? groupSource, groupSignature;
+      List<String>? groupSinks;
+      if (action == 'setSinksForSource' && group != null) {
+        final source = request.uri.queryParameters['source'] ?? '';
+        final additional = request.uri.queryParameters['sinks'] ?? '';
+        final provided = additional.isEmpty ? <String>[] : additional.split(',');
+        final sinks = [if (!provided.contains(source)) source, ...provided];
+        bool identity(String value) => RegExp(r'^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$').hasMatch(value);
+        if (!identity(source) ||
+            sinks.length > 9 ||
+            sinks.any((value) => !identity(value)) ||
+            sinks.toSet().length != sinks.length) {
+          await _reply(response, 400);
+          return;
+        }
+        groupSource = source;
+        groupSinks = List.unmodifiable(sinks);
+        groupSignature = '$source:${(sinks.toList()..sort()).join(',')}';
+      } else if (action == 'seekTo') {
         value = int.tryParse(request.uri.queryParameters['offset'] ?? '');
         if (value == null || value < 0 || value > 86400000) {
           await _reply(response, 400);
@@ -205,7 +225,10 @@ class CalderaSourceEndpoint {
       }
       final prior = _receipts[client];
       if (prior != null && command <= prior.id) {
-        if (command != prior.id || prior.action != action || prior.value != value) {
+        if (command != prior.id ||
+            prior.action != action ||
+            prior.value != value ||
+            prior.groupSignature != groupSignature) {
           await _reply(response, 409);
           return;
         }
@@ -217,16 +240,20 @@ class CalderaSourceEndpoint {
         await _reply(response, 503);
         return;
       }
-      final receipt = _CommandReceipt(command, action, value);
+      final receipt = _CommandReceipt(command, action, value, groupSignature);
       _receipts[client] = receipt;
       _queued++;
       final queued = _commands.then((_) async {
         var status = 200;
         try {
-          if (_closed || !current()) {
+          if (_closed || !current() || !_allowed(remote)) {
             status = 409;
           } else {
-            await control(action, value);
+            if (groupSource != null) {
+              await group!(groupSource, groupSinks!);
+            } else {
+              await control(action, value);
+            }
           }
         } on Object {
           status = 500;
@@ -258,6 +285,11 @@ class CalderaSourceEndpoint {
     }
     final now = _clock.elapsedMilliseconds;
     for (final stream in _streams.values.toList()) {
+      if (!_allowed(stream.address)) {
+        _streams.remove(stream.response);
+        unawaited(stream.response.close());
+        continue;
+      }
       if (stream.writing) {
         if (now - stream.started > 500) {
           _streams.remove(stream.response);
@@ -304,14 +336,16 @@ class CalderaSourceEndpoint {
 }
 
 class _StateStream {
-  _StateStream(this.response);
+  _StateStream(this.response, this.address);
+  final InternetAddress address;
   final HttpResponse response;
   bool writing = false;
   int started = 0;
 }
 
 class _CommandReceipt {
-  _CommandReceipt(this.id, this.action, this.value);
+  _CommandReceipt(this.id, this.action, this.value, this.groupSignature);
+  final String? groupSignature;
   final int id;
   final String action;
   final int? value;

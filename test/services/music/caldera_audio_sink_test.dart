@@ -244,11 +244,18 @@ void main() {
                   jsonEncode({
                     'method': 'SetState',
                     'source': native,
-                    'data': {'version': '1.0.0', 'source': native, 'volume': 50},
+                    'data': {'version': '1.0.0', 'source': '22222222-2222-4222-8222-222222222222', 'volume': 50},
                   }),
                 );
               } else if (message['method'] == 'SetSinksForSource') {
                 group.complete(message);
+                socket!.add(
+                  jsonEncode({
+                    'method': 'SetNodeState',
+                    'source': native,
+                    'data': {'version': '1.0.0', 'source': native, 'volume': 50},
+                  }),
+                );
                 udp.send(
                   XitaDescriptor.encode(
                     sampleRate: 8000,
@@ -346,7 +353,17 @@ void main() {
           for (var i = 0; i + 4 <= resumed.lengthInBytes; i += 4) resumed.getFloat32(i, Endian.little),
         ], contains(-.5));
         expect(controls, ['pause', 'seekTo', 'skipNext', 'skipPrevious', 'play']);
-        authorized = false;
+        if (warmup == 600000) {
+          socket!.add(
+            jsonEncode({
+              'method': 'SetNodeState',
+              'source': native,
+              'data': {'version': '1.0.0', 'source': '22222222-2222-4222-8222-222222222222'},
+            }),
+          );
+        } else {
+          authorized = false;
+        }
         await Future<void>.delayed(const Duration(milliseconds: 600));
         expect(sink.active, isFalse);
         expect(output.closes, 1);

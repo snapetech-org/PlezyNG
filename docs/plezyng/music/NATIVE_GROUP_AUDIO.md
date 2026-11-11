@@ -33,9 +33,42 @@ started its LiveSender to port 5000, and supplied 160,652 bytes through the
 Dart WAV bridge. No actual account or speaker was used. The independent player
 and protocol logs are retained under build/native-groups-20261111/.
 
-Unsolicited native group discovery/membership and physical output latency
-qualification are not yet complete. This result establishes receive
-transport interoperability; it does not establish acoustic synchronization.
+Native availability and incoming membership are implemented below. These
+transport results do not establish acoustic synchronization or physical output
+latency qualification.
+
+## Native availability and incoming membership
+
+The native group screen has an explicit Allow playback switch. While enabled,
+the active profile advertises its lease UUID on private IPv4 interfaces using
+the native multicast beacon, serves mesh WebSockets on 1998 and bounded
+Companion metadata/controls on 32500. Availability alone opens no audio player.
+Other native players/controllers can assign Pleazyng as source or sink. This
+native LAN protocol has no paired-account authentication: the switch permits
+nearby native music control, and is off by default. The paired encrypted
+Pleazyng device protocol retains its separate authentication.
+
+Incoming clients must send a supported Hello before commands. Private-peer,
+identity, connection, byte, rate, source/sink-count and queue bounds apply.
+Membership resolves only currently known private endpoints; both full and
+additional-sink native forms canonicalize to the same idempotent assignment.
+Reserved source state is acknowledged before audio setup, because a native
+sender waits for that acknowledgement. Replaced assignments lose their scope
+immediately and only the latest pending operation runs. Group changes reuse the
+shared session; departure restores local output without stopping other players.
+Profile/account/client-set retirement closes discovery, controls and audio.
+
+Initial peer state can still describe its previous source before membership is
+requested. The receiver accepts this handshake state, then enforces the assigned
+source for subsequent updates. Native-controller tests cover that transition,
+the exact additional-sink relay payload, duplicate commands and scope races.
+
+In two isolated network namespaces, the official Caldera 1.1.0 reference
+discovered Pleazyng's advertisement and was discovered in return. Commands to
+the official player's own group endpoint assigned Pleazyng as a source, then as
+a sink. The source supplied 76,800 generated frames; the receive bridge supplied
+176,540 WAV bytes. These runs use generated/idle audio and null outputs, not a
+physical account or speaker.
 
 ## Receive metadata and controls
 

@@ -3,17 +3,90 @@ import importlib.util
 import json
 from pathlib import Path
 import struct
+import subprocess
 import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, call, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'aerynos'))
 from qualify import AppQA, capture_audio
 
 
 class PlaybackMeasurementsTests(unittest.TestCase):
+    def test_hide_controls_clicks_visible_controls_without_an_extra_tree_read(self):
+        app = AppQA.__new__(AppQA)
+        app.ui = Mock(return_value=True)
+        app.hide_controls()
+        app.ui.assert_called_once_with('click', 'Hide playback controls')
+
+    def test_hide_controls_accepts_only_fresh_confirmed_auto_hide_after_click_failure(self):
+        app = AppQA.__new__(AppQA)
+        failure = subprocess.CalledProcessError(1, ['qa-ui', 'click'])
+        app.ui = Mock(side_effect=[failure, [{'name': 'Show playback controls'}]])
+        app.hide_controls()
+        self.assertEqual(app.ui.call_args_list, [call('click', 'Hide playback controls'), call()])
+
+    def test_hide_controls_preserves_failure_when_hidden_state_is_not_confirmed(self):
+        for nodes in ([], [{'name': 'Hide playback controls'}],
+                      [{'name': 'Show playback controls'}, {'name': 'Hide playback controls'}],
+                      [{'name': 'Back'}]):
+            with self.subTest(nodes=nodes):
+                app = AppQA.__new__(AppQA)
+                failure = subprocess.CalledProcessError(1, ['qa-ui', 'click'])
+                app.ui = Mock(side_effect=[failure, nodes])
+                with self.assertRaises(subprocess.CalledProcessError) as raised:
+                    app.hide_controls()
+                self.assertIs(raised.exception, failure)
+
+    def test_hide_controls_does_not_swallow_other_click_or_fresh_tree_errors(self):
+        for failure in (ValueError('invalid response'), json.JSONDecodeError('invalid JSON', '', 0)):
+            with self.subTest(failure=type(failure).__name__):
+                app = AppQA.__new__(AppQA)
+                app.ui = Mock(side_effect=failure)
+                with self.assertRaises(type(failure)) as raised:
+                    app.hide_controls()
+                self.assertIs(raised.exception, failure)
+                app.ui.assert_called_once()
+        app = AppQA.__new__(AppQA)
+        failure = subprocess.CalledProcessError(1, ['qa-ui', 'dump'])
+        app.ui = Mock(side_effect=[subprocess.CalledProcessError(1, ['qa-ui', 'click']), failure])
+        with self.assertRaises(subprocess.CalledProcessError) as raised:
+            app.hide_controls()
+        self.assertIs(raised.exception, failure)
+
+    @unittest.skipUnless(importlib.util.find_spec('PIL'), 'Pillow required for video measurements')
+    def test_auto_hide_recovery_still_measures_and_rejects_failed_playback(self):
+        from PIL import Image
+        for defect, after, moving, rms, frequency in (
+                (None, 14, True, 2000, 440), ('clock', 10, True, 2000, 440),
+                ('motion', 14, False, 2000, 440), ('silence', 14, True, 0, None),
+                ('wrong audio', 14, True, 2000, 880)):
+            with self.subTest(defect=defect), tempfile.TemporaryDirectory() as directory:
+                app = AppQA.__new__(AppQA)
+                app.evidence = Path(directory)
+                (app.evidence / 'audio.wav').write_bytes(bytes(44))
+                colors = iter(('red', 'lime' if moving else 'red'))
+                def screenshot(path):
+                    Image.new('RGB', (1280, 800), next(colors)).save(path)
+                app.guest = SimpleNamespace(root=app.evidence, screenshot=screenshot)
+                app.controls = Mock(return_value={'Pause'})
+                app.clock = Mock(side_effect=[10, after])
+                app.ui = Mock(side_effect=[subprocess.CalledProcessError(1, ['qa-ui', 'click']),
+                                           [{'name': 'Show playback controls'}]])
+                app.audio_since = Mock(return_value={'rms': rms, 'peak_frequency_hz': frequency})
+                with patch('qualify.time.sleep'):
+                    if defect:
+                        with self.assertRaisesRegex(RuntimeError, 'moving video, advancing clock and authored audio'):
+                            app.observe_playback('auto-hide')
+                    else:
+                        app.observe_playback('auto-hide')
+                measured = json.loads((app.evidence / 'auto-hide.json').read_text())
+                self.assertEqual(measured['clock_after'], after)
+                self.assertEqual(measured['audio']['rms'], rms)
+                app.audio_since.assert_called_once_with(44)
+
     def test_search_navigation_does_not_require_an_offscreen_floating_header(self):
         with tempfile.TemporaryDirectory() as directory:
             app = AppQA.__new__(AppQA)

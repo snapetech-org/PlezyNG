@@ -326,6 +326,16 @@ class AppQA:
             self.ui('click', 'Show playback controls')
         return {n['name'] for n in self.ui()}
 
+    def hide_controls(self):
+        try:
+            self.ui('click', 'Hide playback controls')
+        except subprocess.SubprocessError:
+            # Controls can auto-hide after the clock read, before the click.
+            # A fresh tree must confirm that the intended state was reached.
+            names = {node['name'] for node in self.ui()}
+            if 'Show playback controls' not in names or 'Hide playback controls' in names:
+                raise
+
     def clock(self, timeout=5):
         deadline = time.monotonic() + timeout
         while True:
@@ -386,7 +396,7 @@ class AppQA:
         if expected not in names:
             raise RuntimeError(f'{label}: expected {expected} control')
         before = self.clock()
-        self.ui('click', 'Hide playback controls')
+        self.hide_controls()
         time.sleep(0.6)
         offset = (self.guest.root / 'audio.wav').stat().st_size
         first, second = (self.evidence / f'{label}-{n}.png' for n in (1, 2))

@@ -1428,6 +1428,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   });
 
   Future<void> _stopHostServerLocked() async {
+    _musicDeviceEndpoint?.reset();
     _retireMusicRelay();
     _steamInternetHost?.close();
     _steamInternetHost = null;

@@ -245,6 +245,21 @@ void main() {
     expect(link.state?.queue, hasLength(3));
   });
 
+  test('stopping receiving invalidates prepared tickets before pairing rotation', () async {
+    final session = _Session(null);
+    final endpoint = MusicDeviceEndpoint(session, allowed: () => true);
+    addTearDown(() {
+      endpoint.close();
+      session.dispose();
+    });
+    final ready = await endpoint.handle({'op': 'prepare', 'queue': _queue().toJson()});
+    expect(ready?['ok'], isTrue);
+    endpoint.reset();
+    final reply = await endpoint.handle({'op': 'commit', 'ticket': ready?['ticket'], 'position': 31, 'playing': true});
+    expect(reply?['ok'], isFalse);
+    expect(session.opens, 0);
+  });
+
   test('a newer receiver edit rejects an old controller command', () async {
     final session = _Session(_queue());
     final endpoint = MusicDeviceEndpoint(session, allowed: () => true);

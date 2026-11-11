@@ -3219,7 +3219,8 @@
     "country": "País",
     "collection": "Coleção",
     "label": "Rótulo",
-    "quickTag": "Tag rápida..."
+    "quickTag": "Tag rápida...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Associar...",

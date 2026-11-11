@@ -2674,6 +2674,7 @@ class Translations$metadataEdit$es extends Translations$metadataEdit$en {
 	@override String get collection => 'Colección';
 	@override String get label => 'Etiqueta';
 	@override String get quickTag => 'Etiqueta rápida...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8243,6 +8244,7 @@ extension on TranslationsEs {
 			'metadataEdit.collection' => 'Colección',
 			'metadataEdit.label' => 'Etiqueta',
 			'metadataEdit.quickTag' => 'Etiqueta rápida...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Asociar...',
 			'matchScreen.fixMatch' => 'Corregir asociación...',
 			'matchScreen.unmatch' => 'Desasociar',
@@ -8684,9 +8686,9 @@ extension on TranslationsEs {
 			'homeLayout.resetHeroButton' => 'Reset el layout de héroe a stock Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Reorganización desbloqueada',
 			'homeLayout.reorderingLocked' => 'Reorganización localizada',
-			'homeLayout.rowsCanBeDragged' => 'Las rayas pueden ser atraídas — tapar el cierre para evitar que',
 			_ => null,
 		} ?? switch (path) {
+			'homeLayout.rowsCanBeDragged' => 'Las rayas pueden ser atraídas — tapar el cierre para evitar que',
 			'homeLayout.tapLockToDrag' => 'Toma el cierre para sacar líneas',
 			'homeLayout.customRowLabel' => ({required Object title}) => 'Cálculo: ${title}',
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
@@ -9198,9 +9200,9 @@ extension on TranslationsEs {
 			'sourceSetup.dlnaNone' => 'No se encontraron servidores DLNA. Introduce manualmente la URL de descripción del dispositivo.',
 			'sourceSetup.dlnaServers' => 'Servidores multimedia DLNA',
 			'sourceSetup.dlnaUnavailable' => 'La detección DLNA no está disponible en esta red. Introduce manualmente la URL de descripción del dispositivo.',
-			'sourceSetup.dlnaSearching' => 'Buscando servidores DLNA en la red local',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.dlnaSearching' => 'Buscando servidores DLNA en la red local',
 			'sourceSetup.networkSearching' => 'Buscando en la red local…',
 			'sourceSetup.dlnaDiscover' => 'Detectar servidores DLNA',
 			'sourceSetup.dlnaHelp' => 'La detección depende de la multidifusión de la red local. Si no aparece ningún servidor, introduce arriba su URL de descripción del dispositivo.',
@@ -9712,9 +9714,9 @@ extension on TranslationsEs {
 			'musicExperience.error' => 'La solicitud de música ha fallado',
 			'musicExperience.on' => 'En',
 			'musicExperience.off' => 'Desactivado',
-			'musicExperience.unknown' => 'Desconocido',
 			_ => null,
 		} ?? switch (path) {
+			'musicExperience.unknown' => 'Desconocido',
 			'musicExperience.routeLost' => 'Salida de audio desconectada. Reproducción pausada.',
 			'musicExperience.autoDriving' => 'Abrir la vista de conducción al conectar con un coche',
 			'musicExperience.routeHint' => 'El sistema del coche decide si la aplicación puede aparecer automáticamente.',

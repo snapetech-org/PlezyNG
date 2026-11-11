@@ -3216,7 +3216,8 @@
     "country": "کشور",
     "collection": "مجموعه",
     "label": "برچسب ها",
-    "quickTag": "Tag سریع..."
+    "quickTag": "Tag سریع...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "مسابقه...",

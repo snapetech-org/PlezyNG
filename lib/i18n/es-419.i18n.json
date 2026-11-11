@@ -462,7 +462,8 @@
     "genre": "Género",
     "writer": "Escritor",
     "producer": "Productor",
-    "collection": "Colección"
+    "collection": "Colección",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "titleHint": "Título",

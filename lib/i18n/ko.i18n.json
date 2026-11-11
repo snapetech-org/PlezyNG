@@ -3212,7 +3212,8 @@
     "country": "국가",
     "collection": "컬렉션",
     "label": "라벨",
-    "quickTag": "빠른 태그…"
+    "quickTag": "빠른 태그…",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "일치...",

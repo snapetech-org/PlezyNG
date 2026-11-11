@@ -3220,7 +3220,8 @@
     "country": "ארץ",
     "collection": "אוספים",
     "label": "תווית",
-    "quickTag": "Tag מהיר"
+    "quickTag": "Tag מהיר",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "משחק ...",

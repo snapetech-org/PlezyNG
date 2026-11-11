@@ -2700,6 +2700,7 @@ class _Translations$metadataEdit$cs extends Translations$metadataEdit$en {
 	@override String get collection => 'Kolekce';
 	@override String get label => 'Značka';
 	@override String get quickTag => 'Rychlý Tag...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8144,6 +8145,7 @@ extension on TranslationsCs {
 			'metadataEdit.collection' => 'Kolekce',
 			'metadataEdit.label' => 'Značka',
 			'metadataEdit.quickTag' => 'Rychlý Tag...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Zápas...',
 			'matchScreen.fixMatch' => 'Fixní zápas...',
 			'matchScreen.unmatch' => 'neshody',
@@ -8604,9 +8606,9 @@ extension on TranslationsCs {
 			'universalMedia.stream' => 'Streamová adresa',
 			'universalMedia.playlist' => 'Playlisty',
 			'universalMedia.files' => 'Přístrojové soubory',
-			'universalMedia.favorites' => 'Úsporný stream oblíbené',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Úsporný stream oblíbené',
 			'universalMedia.address' => 'Mediální adresa',
 			'universalMedia.addressHelp' => 'URL s uznanými parametry ověřování nebo podpisů se používají pouze pro tuto schůzku a nelze je uložit jako oblíbené.',
 			'universalMedia.displayName' => 'Název zobrazení (volitelné)',
@@ -9118,9 +9120,9 @@ extension on TranslationsCs {
 			'sourceSetup.addTrustCertificate' => 'Přidat vlastní důvěryhodný certifikát',
 			'sourceSetup.replaceTrustCertificate' => 'Nahradit uložený vlastní certifikát',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS používá běžné porty NFS a služby připojení a vyžaduje podporu RFC 9289 na NAS. Je nutné TLS 1.3. Název hostitele nebo IP adresa musí odpovídat certifikátu. UID/GID AUTH_SYS nadále platí i v šifrovaném kanálu.',
-			'sourceSetup.clientCertificate' => 'Klientský certifikát (nepovinné)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Klientský certifikát (nepovinné)',
 			'sourceSetup.clientCertificateHelp' => 'Umožňuje NAS ověřit tohoto klienta; ID AUTH_SYS stále podléhají pravidlům exportu NFS na NAS.',
 			'sourceSetup.savedIdentity' => 'Bude použita uložená identita klienta.',
 			'sourceSetup.replaceIdentity' => 'Nahradit uloženou identitu klienta',

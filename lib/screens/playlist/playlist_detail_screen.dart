@@ -16,6 +16,7 @@ import '../../profiles/active_profile_provider.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../utils/provider_extensions.dart';
 import 'playlist_metadata_editor.dart';
+import 'playlist_artwork_editor.dart';
 import '../../services/media_list_playback_launcher.dart';
 import '../../services/playlist_items_loader.dart';
 import '../../services/repeating_playlist_launcher.dart';
@@ -237,6 +238,25 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     }
   }
 
+  Future<void> _editArtwork() async {
+    if (_editingMetadata || _isPlaylistMutationPending || !_metadataSourceCurrent()) return;
+    final owner = _metadataOwner!;
+    if (owner.client is! PlaylistArtworkClient) return;
+    setState(() => _editingMetadata = true);
+    try {
+      final updated = await showDialog<MediaPlaylist>(
+        context: context,
+        builder: (_) =>
+            PlaylistArtworkEditor(playlist: _playlist, client: owner.client, isCurrent: _metadataSourceCurrent),
+      );
+      if (!mounted || !_metadataSourceCurrent() || updated == null) return;
+      setState(() => _playlist = updated);
+      widget.onChanged?.call();
+    } finally {
+      if (mounted) setState(() => _editingMetadata = false);
+    }
+  }
+
   @override
   Object get mediaItem => _playlist;
 
@@ -394,6 +414,13 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
           icon: Symbols.edit_note_rounded,
           tooltip: t.metadataEdit.editMetadata,
           onPressed: _editingMetadata || _isPlaylistMutationPending || _selectingEntries ? null : _editMetadata,
+        ),
+      if (_metadataOwner?.client is PlaylistArtworkClient && _metadataSourceCurrent())
+        FocusableAction(
+          debugLabel: 'playlist_edit_artwork',
+          icon: Symbols.image_rounded,
+          tooltip: t.metadataEdit.artwork,
+          onPressed: _editingMetadata || _isPlaylistMutationPending || _selectingEntries ? null : _editArtwork,
         ),
       if (_isAudioPlaylist && _playlist.smart)
         FocusableAction(

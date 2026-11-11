@@ -3216,7 +3216,8 @@
     "country": "Land",
     "collection": "Samling",
     "label": "Etikett",
-    "quickTag": "Snabbtagg..."
+    "quickTag": "Snabbtagg...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Matcha...",

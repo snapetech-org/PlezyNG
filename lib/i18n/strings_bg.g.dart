@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$bg extends Translations$metadataEdit$en {
 	@override String get collection => 'Колекция';
 	@override String get label => 'Етикет';
 	@override String get quickTag => 'Бърз таг...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsBg {
 			'metadataEdit.collection' => 'Колекция',
 			'metadataEdit.label' => 'Етикет',
 			'metadataEdit.quickTag' => 'Бърз таг...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Съпостави...',
 			'matchScreen.fixMatch' => 'Поправи съвпадение...',
 			'matchScreen.unmatch' => 'Премахни съвпадение',
@@ -8560,9 +8562,9 @@ extension on TranslationsBg {
 			'universalMedia.stream' => 'Поток адреси',
 			'universalMedia.playlist' => 'Playlist игра',
 			'universalMedia.files' => 'Филми на устройството',
-			'universalMedia.favorites' => 'Спасените любимци на потока',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Спасените любимци на потока',
 			'universalMedia.address' => 'Медиен адрес',
 			'universalMedia.addressHelp' => 'URL адресите с разпознати параметри на акредитация или подпис се използват само за тази сесия и не могат да бъдат запазени като любими.',
 			'universalMedia.displayName' => 'Името на екрана (опционално)',
@@ -9074,9 +9076,9 @@ extension on TranslationsBg {
 			'sourceSetup.addTrustCertificate' => 'Добавяне на персонализиран доверен сертификат',
 			'sourceSetup.replaceTrustCertificate' => 'Замяна на запазения персонализиран сертификат',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS използва обичайните портове на NFS и услугата за монтиране и изисква NAS да поддържа RFC 9289. Изисква се TLS 1.3. Името на хоста или IP адресът трябва да съответства на сертификата. AUTH_SYS UID/GID продължават да важат в шифрования канал.',
-			'sourceSetup.clientCertificate' => 'Клиентски сертификат (незадължително)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Клиентски сертификат (незадължително)',
 			'sourceSetup.clientCertificateHelp' => 'Позволява на NAS да удостовери този клиент; ID на AUTH_SYS все още зависят от правилата на NFS експорта на NAS.',
 			'sourceSetup.savedIdentity' => 'Ще се използва запазена клиентска самоличност.',
 			'sourceSetup.replaceIdentity' => 'Замяна на запазената клиентска самоличност',

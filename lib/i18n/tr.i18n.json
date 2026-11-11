@@ -3216,7 +3216,8 @@
     "country": "Ülke",
     "collection": "Koleksiyon",
     "label": "Etiket",
-    "quickTag": "Hızlı etiket..."
+    "quickTag": "Hızlı etiket...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Eşleştir...",

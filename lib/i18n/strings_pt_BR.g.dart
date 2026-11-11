@@ -681,6 +681,7 @@ class Translations$metadataEdit$pt_BR extends Translations$metadataEdit$pt {
 	@override String get writer => 'Escritor';
 	@override String get producer => 'Produtor';
 	@override String get collection => 'Coleção';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -1681,6 +1682,7 @@ extension on TranslationsPtBr {
 			'metadataEdit.writer' => 'Escritor',
 			'metadataEdit.producer' => 'Produtor',
 			'metadataEdit.collection' => 'Coleção',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.titleHint' => 'Título',
 			'matchScreen.yearHint' => 'Ano',
 			'matchScreen.search' => 'Busca',
@@ -1849,9 +1851,9 @@ extension on TranslationsPtBr {
 			'romm.replaceServer' => 'Replace server copy',
 			'romm.pendingSaves' => 'Saves waiting to sync',
 			'romm.sync' => 'Sync saves',
-			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
 			_ => null,
 		} ?? switch (path) {
+			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
 			'romm.pause' => 'Pause',
 			'romm.kContinue' => 'Continue',
 			'romm.saveState' => 'Save state',

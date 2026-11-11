@@ -3216,7 +3216,8 @@
     "country": "Land",
     "collection": "Samling",
     "label": "Etikett",
-    "quickTag": "Hurtigtagg..."
+    "quickTag": "Hurtigtagg...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Finn treff...",

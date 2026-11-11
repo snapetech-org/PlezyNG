@@ -3195,7 +3195,8 @@
     "country": "đất nước",
     "collection": "Bộ Sưu Tập",
     "label": "Nhãn hiệu",
-    "quickTag": "Tag nhanh..."
+    "quickTag": "Tag nhanh...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "trận đấu...",

@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$bn extends Translations$metadataEdit$en {
 	@override String get collection => 'সংগ্রহ';
 	@override String get label => 'লেবেল';
 	@override String get quickTag => 'দ্রুত Tag...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsBn {
 			'metadataEdit.collection' => 'সংগ্রহ',
 			'metadataEdit.label' => 'লেবেল',
 			'metadataEdit.quickTag' => 'দ্রুত Tag...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'খেলা...',
 			'matchScreen.fixMatch' => 'খেলা ফ্যাক্ট...',
 			'matchScreen.unmatch' => 'খেলা',
@@ -8560,9 +8562,9 @@ extension on TranslationsBn {
 			'universalMedia.stream' => 'স্ট্রিম ঠিকানা',
 			'universalMedia.playlist' => 'Playlist খেলা',
 			'universalMedia.files' => 'ডিভাইস ফাইল',
-			'universalMedia.favorites' => 'সুরক্ষিত প্রদর্শন পছন্দ',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'সুরক্ষিত প্রদর্শন পছন্দ',
 			'universalMedia.address' => 'মিডিয়া ঠিকানা',
 			'universalMedia.addressHelp' => 'HTTPS preferred. recognized credential বা signature parameters সঙ্গে URLs শুধুমাত্র এই session জন্য ব্যবহার করা হয় এবং পছন্দ হিসাবে সংরক্ষণ করা যাবে না।',
 			'universalMedia.displayName' => 'ডাউনলোড নাম (অ্যাপ্লিকেশন)',
@@ -9074,9 +9076,9 @@ extension on TranslationsBn {
 			'sourceSetup.addTrustCertificate' => 'কাস্টম বিশ্বস্ত সার্টিফিকেট যোগ করুন',
 			'sourceSetup.replaceTrustCertificate' => 'সংরক্ষিত কাস্টম সার্টিফিকেট প্রতিস্থাপন করুন',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS সাধারণ NFS ও মাউন্ট সেবার পোর্ট ব্যবহার করে এবং NAS-এ RFC 9289 সমর্থন থাকা প্রয়োজন। TLS 1.3 বাধ্যতামূলক। হোস্টের নাম বা IP সার্টিফিকেটের সঙ্গে মিলতে হবে। এনক্রিপ্ট করা চ্যানেলের ভেতরেও AUTH_SYS UID/GID প্রযোজ্য থাকে।',
-			'sourceSetup.clientCertificate' => 'ক্লায়েন্ট সার্টিফিকেট (ঐচ্ছিক)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'ক্লায়েন্ট সার্টিফিকেট (ঐচ্ছিক)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-কে এই ক্লায়েন্টের পরিচয় যাচাই করতে দেয়; AUTH_SYS ID এখনো NAS এক্সপোর্টের নীতির ওপর নির্ভর করে।',
 			'sourceSetup.savedIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র ব্যবহার করা হবে।',
 			'sourceSetup.replaceIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র প্রতিস্থাপন করুন',

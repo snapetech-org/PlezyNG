@@ -3219,7 +3219,8 @@
     "country": "Paese",
     "collection": "Raccolta",
     "label": "Etichetta",
-    "quickTag": "Tag rapido..."
+    "quickTag": "Tag rapido...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Abbina...",

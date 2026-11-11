@@ -3216,7 +3216,8 @@
     "country": "দেশ",
     "collection": "সংগ্রহ",
     "label": "লেবেল",
-    "quickTag": "দ্রুত Tag..."
+    "quickTag": "দ্রুত Tag...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "খেলা...",

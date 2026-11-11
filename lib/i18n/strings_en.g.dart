@@ -7635,6 +7635,9 @@ class Translations$metadataEdit$en {
 
 	/// en: 'Quick Tag...'
 	String get quickTag => 'Quick Tag...';
+
+	/// en: '≤ 10 MiB · ≤ 64 MP'
+	String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -20438,6 +20441,7 @@ extension on Translations {
 			'metadataEdit.collection' => 'Collection',
 			'metadataEdit.label' => 'Label',
 			'metadataEdit.quickTag' => 'Quick Tag...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Match...',
 			'matchScreen.fixMatch' => 'Fix Match...',
 			'matchScreen.unmatch' => 'Unmatch',
@@ -20541,9 +20545,9 @@ extension on Translations {
 			'seerr.invalidUrl' => 'Enter a server address like https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'This Seerr instance does not support Quick Connect. It needs Seerr 3.4 or newer.',
 			'seerr.notInitialized' => 'This Seerr instance has not completed first-run setup',
-			'seerr.noPlexTokenForReauth' => 'No Plex token is available to sign in again',
 			_ => null,
 		} ?? switch (path) {
+			'seerr.noPlexTokenForReauth' => 'No Plex token is available to sign in again',
 			'seerr.noStoredCredentials' => 'No stored credentials are available to sign in again',
 			'seerr.signInRejected' => 'Sign-in was rejected',
 			'seerr.noSessionCookie' => 'Seerr did not issue a session cookie',
@@ -21055,9 +21059,9 @@ extension on Translations {
 			'universalMedia.mediaToolsShortcut' => 'Capture or share media, add search extensions, or use the command line.',
 			'universalMedia.mediaToolsIntro' => 'Choose a focused tool. Capture and stream-out use FFmpeg installed on this desktop. Extensions and CLI commands use bounded HTTPS requests and the existing Open media flow.',
 			'universalMedia.mediaToolsAccessibility' => 'Tool choices and controls work with touch, pointer, keyboard, and D-pad focus. Recording, sharing, and search status changes are announced.',
-			'universalMedia.mediaTool' => 'Media tool',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.mediaTool' => 'Media tool',
 			'universalMedia.captureIntro' => 'Record your screen or a camera to an MP4 file, or preview a live input in the player. FFmpeg must be installed and include the H.264 encoder for recording.',
 			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
 			'universalMedia.captureSource' => 'Screen or camera',
@@ -21569,9 +21573,9 @@ extension on Translations {
 			'games.qrHelp' => 'Scan to open the PIN page. The QR code contains only the computer address, never a password or pairing credential.',
 			'games.refreshGames' => 'Refresh games',
 			'games.play' => 'Play',
-			'games.recent' => 'Recently played',
 			_ => null,
 		} ?? switch (path) {
+			'games.recent' => 'Recently played',
 			'games.favorites' => 'Favorites',
 			'games.allGames' => 'All games',
 			'games.search' => 'Find a game',
@@ -22083,9 +22087,9 @@ extension on Translations {
 			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
 			'subtitleAiUi.inferenceBackend' => 'Inference backend',
 			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
-			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
 			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
 			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
 			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
@@ -22597,9 +22601,9 @@ extension on Translations {
 			'karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire' => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.',
 			'karaokeUi.hostExitPIN' => 'Host exit PIN',
 			'karaokeUi.unlock' => 'Unlock',
-			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
 			'karaokeUi.requestASong' => 'Request a song',
 			'karaokeUi.hostUnlock' => 'Host unlock',
 			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',

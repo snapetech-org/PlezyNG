@@ -2647,6 +2647,7 @@ class _Translations$metadataEdit$th extends Translations$metadataEdit$en {
 	@override String get collection => 'การจัดเก็บ';
 	@override String get label => 'แท็ก';
 	@override String get quickTag => 'Tag อัตรา...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8075,6 +8076,7 @@ extension on TranslationsTh {
 			'metadataEdit.collection' => 'การจัดเก็บ',
 			'metadataEdit.label' => 'แท็ก',
 			'metadataEdit.quickTag' => 'Tag อัตรา...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'การแข่งขัน',
 			'matchScreen.fixMatch' => 'ปรับการแข่งขัน',
 			'matchScreen.unmatch' => 'การแข่งขัน',
@@ -8535,9 +8537,9 @@ extension on TranslationsTh {
 			'universalMedia.stream' => 'หมายเลข Stream',
 			'universalMedia.playlist' => 'เล่น',
 			'universalMedia.files' => 'ไฟล์อุปกรณ์',
-			'universalMedia.favorites' => 'เก็บ Stream มือสมัครเล่น',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'เก็บ Stream มือสมัครเล่น',
 			'universalMedia.address' => 'อ้างอิงสื่อ',
 			'universalMedia.addressHelp' => 'HTTPS เป็นความต้องการ URL ที่มีพารามิเตอร์การรับรองหรือสัญญาที่ได้รับการยอมรับจะใช้เฉพาะสําหรับเซสชั่นนี้และไม่สามารถบันทึกเป็นโปรด',
 			'universalMedia.displayName' => 'ชื่อแสดงผล (ตัวเลือก)',
@@ -9049,9 +9051,9 @@ extension on TranslationsTh {
 			'sourceSetup.addTrustCertificate' => 'เพิ่มใบรับรองความเชื่อถือที่กำหนดเอง',
 			'sourceSetup.replaceTrustCertificate' => 'แทนที่ใบรับรองที่กำหนดเองซึ่งบันทึกไว้',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS ใช้พอร์ต NFS และบริการเมานต์ตามปกติ และ NAS ต้องรองรับ RFC 9289 ต้องใช้ TLS 1.3 ชื่อโฮสต์หรือ IP ต้องตรงกับใบรับรอง AUTH_SYS UID/GID ยังคงมีผลภายในช่องทางที่เข้ารหัส',
-			'sourceSetup.clientCertificate' => 'ใบรับรองไคลเอนต์ (ไม่บังคับ)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'ใบรับรองไคลเอนต์ (ไม่บังคับ)',
 			'sourceSetup.clientCertificateHelp' => 'ช่วยให้ NAS ยืนยันตัวตนของไคลเอนต์นี้ได้ โดย ID ของ AUTH_SYS ยังขึ้นอยู่กับนโยบายส่วนแบ่งปัน NFS ของ NAS',
 			'sourceSetup.savedIdentity' => 'จะใช้ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
 			'sourceSetup.replaceIdentity' => 'แทนที่ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',

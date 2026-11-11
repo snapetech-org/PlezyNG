@@ -2663,6 +2663,7 @@ class _Translations$metadataEdit$zh_Hant extends Translations$metadataEdit$zh {
 	@override String get collection => '收藏集';
 	@override String get label => '標記';
 	@override String get quickTag => '快速標籤…';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8096,6 +8097,7 @@ extension on TranslationsZhHant {
 			'metadataEdit.collection' => '收藏集',
 			'metadataEdit.label' => '標記',
 			'metadataEdit.quickTag' => '快速標籤…',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => '配對…',
 			'matchScreen.fixMatch' => '修正配對…',
 			'matchScreen.unmatch' => '取消配對',
@@ -8556,9 +8558,9 @@ extension on TranslationsZhHant {
 			'universalMedia.stream' => '流地址',
 			'universalMedia.playlist' => '播放列表',
 			'universalMedia.files' => '裝置檔案',
-			'universalMedia.favorites' => '儲存流喜愛',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => '儲存流喜愛',
 			'universalMedia.address' => '媒體地址',
 			'universalMedia.addressHelp' => 'HTTPS 是優先的. 有認可或簽名引數的 URL 僅用於此會議,並且不能儲存為喜愛。',
 			'universalMedia.displayName' => '顯示名稱(可選)',
@@ -9070,9 +9072,9 @@ extension on TranslationsZhHant {
 			'sourceSetup.addTrustCertificate' => '新增自訂信任憑證',
 			'sourceSetup.replaceTrustCertificate' => '取代已儲存的自訂憑證',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用一般的 NFS 和掛載服務連接埠，並要求 NAS 支援 RFC 9289。必須使用 TLS 1.3。主機名稱或 IP 位址必須與憑證相符。加密通道內仍須使用 AUTH_SYS UID/GID。',
-			'sourceSetup.clientCertificate' => '用戶端憑證（選填）',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => '用戶端憑證（選填）',
 			'sourceSetup.clientCertificateHelp' => '讓 NAS 驗證此用戶端的身分；AUTH_SYS ID 仍受 NAS 匯出原則約束。',
 			'sourceSetup.savedIdentity' => '將使用已儲存的用戶端身分憑證。',
 			'sourceSetup.replaceIdentity' => '取代已儲存的用戶端身分憑證',

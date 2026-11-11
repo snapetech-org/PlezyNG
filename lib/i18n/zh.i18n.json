@@ -3212,7 +3212,8 @@
     "country": "国家",
     "collection": "合集",
     "label": "标记",
-    "quickTag": "快速标签…"
+    "quickTag": "快速标签…",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "匹配…",

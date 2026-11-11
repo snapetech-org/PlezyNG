@@ -2662,6 +2662,7 @@ class Translations$metadataEdit$zh extends Translations$metadataEdit$en {
 	@override String get collection => '合集';
 	@override String get label => '标记';
 	@override String get quickTag => '快速标签…';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8095,6 +8096,7 @@ extension on TranslationsZh {
 			'metadataEdit.collection' => '合集',
 			'metadataEdit.label' => '标记',
 			'metadataEdit.quickTag' => '快速标签…',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => '匹配…',
 			'matchScreen.fixMatch' => '修正匹配…',
 			'matchScreen.unmatch' => '取消匹配',
@@ -8555,9 +8557,9 @@ extension on TranslationsZh {
 			'universalMedia.stream' => '流地址',
 			'universalMedia.playlist' => '播放列表',
 			'universalMedia.files' => '设备文件',
-			'universalMedia.favorites' => '保存流喜爱',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => '保存流喜爱',
 			'universalMedia.address' => '媒體地址',
 			'universalMedia.addressHelp' => 'HTTPS 是优先的. 有认可或签名参数的 URL 仅用于此会议,并且不能保存为喜爱。',
 			'universalMedia.displayName' => '显示名称(可选)',
@@ -9069,9 +9071,9 @@ extension on TranslationsZh {
 			'sourceSetup.addTrustCertificate' => '添加自定义信任证书',
 			'sourceSetup.replaceTrustCertificate' => '替换已保存的自定义证书',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用常规 NFS 和挂载服务端口，并要求 NAS 支持 RFC 9289。必须使用 TLS 1.3。主机名或 IP 地址必须与证书匹配。加密通道内仍需使用 AUTH_SYS UID/GID。',
-			'sourceSetup.clientCertificate' => '客户端证书（可选）',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => '客户端证书（可选）',
 			'sourceSetup.clientCertificateHelp' => '允许 NAS 验证此客户端的身份；AUTH_SYS ID 仍受 NAS 导出策略约束。',
 			'sourceSetup.savedIdentity' => '将使用已保存的客户端身份凭据。',
 			'sourceSetup.replaceIdentity' => '替换已保存的客户端身份凭据',

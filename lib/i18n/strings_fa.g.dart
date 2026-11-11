@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$fa extends Translations$metadataEdit$en {
 	@override String get collection => 'مجموعه';
 	@override String get label => 'برچسب ها';
 	@override String get quickTag => 'Tag سریع...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsFa {
 			'metadataEdit.collection' => 'مجموعه',
 			'metadataEdit.label' => 'برچسب ها',
 			'metadataEdit.quickTag' => 'Tag سریع...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'مسابقه...',
 			'matchScreen.fixMatch' => 'مسابقه اصلاحی...',
 			'matchScreen.unmatch' => 'عدم مسابقه',
@@ -8560,9 +8562,9 @@ extension on TranslationsFa {
 			'universalMedia.stream' => 'آدرس جریان',
 			'universalMedia.playlist' => 'بازی لیست',
 			'universalMedia.files' => 'فایل های دستگاه',
-			'universalMedia.favorites' => 'ذخیره جریان مورد علاقه',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'ذخیره جریان مورد علاقه',
 			'universalMedia.address' => 'آدرس رسانه ها',
 			'universalMedia.addressHelp' => 'URL ها با پارامترهای اعتباربخشی یا امضای شناخته شده تنها برای این جلسه مورد استفاده قرار می گیرند و نمی توانند به عنوان محبوب ذخیره شوند.',
 			'universalMedia.displayName' => 'نام نمایش (اختیاری)',
@@ -9074,9 +9076,9 @@ extension on TranslationsFa {
 			'sourceSetup.addTrustCertificate' => 'افزودن گواهی اعتماد سفارشی',
 			'sourceSetup.replaceTrustCertificate' => 'جایگزینی گواهی سفارشی ذخیره‌شده',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS از درگاه‌های معمول NFS و سرویس mount استفاده می‌کند و به پشتیبانی NAS از RFC 9289 نیاز دارد. TLS 1.3 الزامی است. نام میزبان یا IP باید با گواهی مطابقت داشته باشد. AUTH_SYS UID/GID در کانال رمزگذاری‌شده نیز اعمال می‌شوند.',
-			'sourceSetup.clientCertificate' => 'گواهی کارخواه (اختیاری)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'گواهی کارخواه (اختیاری)',
 			'sourceSetup.clientCertificateHelp' => 'به NAS اجازه می‌دهد هویت این کارخواه را تأیید کند؛ شناسه‌های AUTH_SYS همچنان تابع سیاست اشتراک‌گذاری NAS هستند.',
 			'sourceSetup.savedIdentity' => 'از هویت ذخیره‌شدهٔ کارخواه استفاده می‌شود.',
 			'sourceSetup.replaceIdentity' => 'جایگزینی هویت ذخیره‌شدهٔ کارخواه',

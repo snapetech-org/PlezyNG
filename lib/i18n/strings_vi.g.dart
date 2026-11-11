@@ -2647,6 +2647,7 @@ class _Translations$metadataEdit$vi extends Translations$metadataEdit$en {
 	@override String get collection => 'Bộ Sưu Tập';
 	@override String get label => 'Nhãn hiệu';
 	@override String get quickTag => 'Tag nhanh...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8075,6 +8076,7 @@ extension on TranslationsVi {
 			'metadataEdit.collection' => 'Bộ Sưu Tập',
 			'metadataEdit.label' => 'Nhãn hiệu',
 			'metadataEdit.quickTag' => 'Tag nhanh...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'trận đấu...',
 			'matchScreen.fixMatch' => 'Đặt trận đấu...',
 			'matchScreen.unmatch' => 'Hủy khớp',
@@ -8535,9 +8537,9 @@ extension on TranslationsVi {
 			'universalMedia.stream' => 'Địa chỉ Stream',
 			'universalMedia.playlist' => 'Danh sách Playlist',
 			'universalMedia.files' => 'Thiết bị file',
-			'universalMedia.favorites' => 'Save Stream yêu thích',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Save Stream yêu thích',
 			'universalMedia.address' => 'Địa chỉ Media',
 			'universalMedia.addressHelp' => 'URL với các thông số xác nhận hoặc ký tự được công nhận chỉ được sử dụng cho phiên này và không thể được lưu như là yêu thích.',
 			'universalMedia.displayName' => 'Tên hiển thị (tùy chọn)',
@@ -9049,9 +9051,9 @@ extension on TranslationsVi {
 			'sourceSetup.addTrustCertificate' => 'Thêm chứng chỉ tin cậy tùy chỉnh',
 			'sourceSetup.replaceTrustCertificate' => 'Thay chứng chỉ tùy chỉnh đã lưu',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS dùng các cổng thông thường của NFS và dịch vụ gắn kết, đồng thời yêu cầu NAS hỗ trợ RFC 9289. Bắt buộc dùng TLS 1.3. Tên máy chủ hoặc địa chỉ IP phải khớp với chứng chỉ. AUTH_SYS UID/GID vẫn áp dụng trong kênh được mã hóa.',
-			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
 			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
 			'sourceSetup.savedIdentity' => 'Sẽ dùng danh tính máy khách đã lưu.',
 			'sourceSetup.replaceIdentity' => 'Thay danh tính máy khách đã lưu',

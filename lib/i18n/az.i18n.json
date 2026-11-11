@@ -3216,7 +3216,8 @@
     "country": "Ölkə",
     "collection": "Kolleksiya",
     "label": "Etiket",
-    "quickTag": "Sürətli etiket..."
+    "quickTag": "Sürətli etiket...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Uyğunlaşdır...",

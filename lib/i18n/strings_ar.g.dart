@@ -2742,6 +2742,7 @@ class _Translations$metadataEdit$ar extends Translations$metadataEdit$en {
 	@override String get collection => 'مجموعة';
 	@override String get label => 'العلامة';
 	@override String get quickTag => 'Tag سريع ..';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8200,6 +8201,7 @@ extension on TranslationsAr {
 			'metadataEdit.collection' => 'مجموعة',
 			'metadataEdit.label' => 'العلامة',
 			'metadataEdit.quickTag' => 'Tag سريع ..',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'المباراة...',
 			'matchScreen.fixMatch' => 'إصلاح المباراة ..',
 			'matchScreen.unmatch' => 'عدم المباراة',
@@ -8660,9 +8662,9 @@ extension on TranslationsAr {
 			'universalMedia.stream' => 'البريد الإلكتروني Stream',
 			'universalMedia.playlist' => 'لعبة',
 			'universalMedia.files' => 'أجهزة الملفات',
-			'universalMedia.favorites' => 'المفضلة التي تم إنقاذها',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'المفضلة التي تم إنقاذها',
 			'universalMedia.address' => 'عناوين وسائل الإعلام',
 			'universalMedia.addressHelp' => 'يتم استخدام عناوين URL مع المعلمات الاعتمادية أو التوقيع المعترف بها فقط لهذا الجلسة ولا يمكن حفظها على أنها المفضلة.',
 			'universalMedia.displayName' => 'اسم العرض (اختياري )',
@@ -9174,9 +9176,9 @@ extension on TranslationsAr {
 			'sourceSetup.addTrustCertificate' => 'إضافة شهادة ثقة مخصّصة',
 			'sourceSetup.replaceTrustCertificate' => 'استبدال الشهادة المخصّصة المحفوظة',
 			'sourceSetup.nfsTlsHelp' => 'يستخدم RPC-with-TLS منافذ NFS وخدمة التركيب المعتادة، ويتطلب دعم NAS للمعيار RFC 9289. يلزم TLS 1.3. يجب أن يطابق اسم المضيف أو عنوان IP الشهادة. تظل معرّفات AUTH_SYS UID/GID سارية داخل القناة المشفّرة.',
-			'sourceSetup.clientCertificate' => 'شهادة العميل (اختيارية)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'شهادة العميل (اختيارية)',
 			'sourceSetup.clientCertificateHelp' => 'تتيح لـ NAS التحقّق من هوية هذا العميل؛ تظل معرّفات AUTH_SYS خاضعة لسياسة تصدير NAS.',
 			'sourceSetup.savedIdentity' => 'ستُستخدم هوية العميل المحفوظة.',
 			'sourceSetup.replaceIdentity' => 'استبدال هوية العميل المحفوظة',

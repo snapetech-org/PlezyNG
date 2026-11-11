@@ -2669,6 +2669,7 @@ class Translations$metadataEdit$pt extends Translations$metadataEdit$en {
 	@override String get collection => 'Coleção';
 	@override String get label => 'Rótulo';
 	@override String get quickTag => 'Tag rápida...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8107,6 +8108,7 @@ extension on TranslationsPt {
 			'metadataEdit.collection' => 'Coleção',
 			'metadataEdit.label' => 'Rótulo',
 			'metadataEdit.quickTag' => 'Tag rápida...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Associar...',
 			'matchScreen.fixMatch' => 'Corrigir correspondência...',
 			'matchScreen.unmatch' => 'Desassociar',
@@ -8567,9 +8569,9 @@ extension on TranslationsPt {
 			'universalMedia.stream' => 'Endereço de Stream',
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Arquivos de dispositivos',
-			'universalMedia.favorites' => 'Redução dos favoritos',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Redução dos favoritos',
 			'universalMedia.address' => 'Endereço de mídia',
 			'universalMedia.addressHelp' => 'URLs com parâmetros de autenticação ou assinatura reconhecidos são usados apenas para esta sessão e não podem ser salvos como favoritos.',
 			'universalMedia.displayName' => 'Nome de exibição (opcional)',
@@ -9081,9 +9083,9 @@ extension on TranslationsPt {
 			'sourceSetup.addTrustCertificate' => 'Adicionar certificado de confiança personalizado',
 			'sourceSetup.replaceTrustCertificate' => 'Substituir o certificado personalizado salvo',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS usa as portas habituais de NFS e do serviço de montagem e exige que o NAS ofereça suporte a RFC 9289. TLS 1.3 é obrigatório. O nome do host ou o IP deve corresponder ao certificado. Os UID/GID de AUTH_SYS continuam valendo no canal criptografado.',
-			'sourceSetup.clientCertificate' => 'Certificado do cliente (opcional)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Certificado do cliente (opcional)',
 			'sourceSetup.clientCertificateHelp' => 'Permite que o NAS autentique este cliente; os IDs de AUTH_SYS continuam sujeitos à política do compartilhamento NFS do NAS.',
 			'sourceSetup.savedIdentity' => 'Será usada uma identidade de cliente salva.',
 			'sourceSetup.replaceIdentity' => 'Substituir a identidade de cliente salva',

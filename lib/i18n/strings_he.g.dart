@@ -2670,6 +2670,7 @@ class _Translations$metadataEdit$he extends Translations$metadataEdit$en {
 	@override String get collection => 'אוספים';
 	@override String get label => 'תווית';
 	@override String get quickTag => 'Tag מהיר';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8108,6 +8109,7 @@ extension on TranslationsHe {
 			'metadataEdit.collection' => 'אוספים',
 			'metadataEdit.label' => 'תווית',
 			'metadataEdit.quickTag' => 'Tag מהיר',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'משחק ...',
 			'matchScreen.fixMatch' => 'קבע את המשחק',
 			'matchScreen.unmatch' => 'ביטול התאמה',
@@ -8568,9 +8570,9 @@ extension on TranslationsHe {
 			'universalMedia.stream' => 'כתובת זרם',
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'מכשיר קבצים',
-			'universalMedia.favorites' => 'זרם אחסון האהובים',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'זרם אחסון האהובים',
 			'universalMedia.address' => 'כתובת התקשורת',
 			'universalMedia.addressHelp' => 'כתובות URL עם פרמטרים של זיהוי או חתימה מוכרים משמשים רק עבור הפגישה הזו ולא ניתן לשמור אותם כפופולריים.',
 			'universalMedia.displayName' => 'שם התצוגה (אופציונלי)',
@@ -9082,9 +9084,9 @@ extension on TranslationsHe {
 			'sourceSetup.addTrustCertificate' => 'הוספת אישור אמון מותאם אישית',
 			'sourceSetup.replaceTrustCertificate' => 'החלפת האישור המותאם אישית השמור',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS משתמש ביציאות הרגילות של NFS ושירות ה־mount, ודורש תמיכה ב־RFC 9289 מצד ה־NAS. נדרש TLS 1.3. שם המארח או כתובת ה־IP חייבים להתאים לאישור. מזהי AUTH_SYS UID/GID עדיין חלים בתוך הערוץ המוצפן.',
-			'sourceSetup.clientCertificate' => 'אישור לקוח (רשות)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'אישור לקוח (רשות)',
 			'sourceSetup.clientCertificateHelp' => 'מאפשר ל־NAS לאמת את הלקוח הזה; מזהי AUTH_SYS עדיין כפופים למדיניות הייצוא של ה־NAS.',
 			'sourceSetup.savedIdentity' => 'ייעשה שימוש בפרטי הזיהוי השמורים של הלקוח.',
 			'sourceSetup.replaceIdentity' => 'החלפת פרטי הזיהוי השמורים של הלקוח',

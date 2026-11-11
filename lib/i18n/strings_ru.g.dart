@@ -2704,6 +2704,7 @@ class _Translations$metadataEdit$ru extends Translations$metadataEdit$en {
 	@override String get collection => 'Коллекция';
 	@override String get label => 'Метка';
 	@override String get quickTag => 'Быстрый тег...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8150,6 +8151,7 @@ extension on TranslationsRu {
 			'metadataEdit.collection' => 'Коллекция',
 			'metadataEdit.label' => 'Метка',
 			'metadataEdit.quickTag' => 'Быстрый тег...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Сопоставить...',
 			'matchScreen.fixMatch' => 'Исправить сопоставление...',
 			'matchScreen.unmatch' => 'Сбросить сопоставление',
@@ -8610,9 +8612,9 @@ extension on TranslationsRu {
 			'universalMedia.stream' => 'Поток адресов',
 			'universalMedia.playlist' => 'Playlist →',
 			'universalMedia.files' => 'Устройство файлы',
-			'universalMedia.favorites' => 'Спасенные потоки любимцы',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Спасенные потоки любимцы',
 			'universalMedia.address' => 'Медийный адрес',
 			'universalMedia.addressHelp' => 'URL-адреса с признанными параметрами аккредитации или подписки используются только для этой сессии и не могут быть сохранены в качестве любимых.',
 			'universalMedia.displayName' => 'Название изображения (опционально)',
@@ -9124,9 +9126,9 @@ extension on TranslationsRu {
 			'sourceSetup.addTrustCertificate' => 'Добавить собственный доверенный сертификат',
 			'sourceSetup.replaceTrustCertificate' => 'Заменить сохранённый собственный сертификат',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS использует обычные порты NFS и службы монтирования и требует поддержки RFC 9289 на NAS. Требуется TLS 1.3. Имя хоста или IP-адрес должны соответствовать сертификату. UID/GID AUTH_SYS по-прежнему применяются внутри зашифрованного канала.',
-			'sourceSetup.clientCertificate' => 'Сертификат клиента (необязательно)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Сертификат клиента (необязательно)',
 			'sourceSetup.clientCertificateHelp' => 'Позволяет NAS аутентифицировать этого клиента; ID AUTH_SYS по-прежнему зависят от правил экспорта NFS на NAS.',
 			'sourceSetup.savedIdentity' => 'Будут использованы сохранённые данные идентификации клиента.',
 			'sourceSetup.replaceIdentity' => 'Заменить сохранённые данные идентификации клиента',

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Edit playlist artwork from the detail screen: select a current server image, upload a bounded image or restore default artwork. Retire picker results and accepted writes when the owning account changes.
+
 - Add guarded Plex playlist artwork listing, selection, bounded image upload and default restoration, with fresh identity checks and propagated permission failures.
 
 - Retire playlist deletion confirmations and single-entry write acknowledgements after an account or route change. Refresh browse callers after accepted moves/removals and keep uncertain stale writes from reloading a different account.

@@ -2685,6 +2685,7 @@ class Translations$metadataEdit$fr extends Translations$metadataEdit$en {
 	@override String get collection => 'Collection';
 	@override String get label => 'Libellé';
 	@override String get quickTag => 'Tag rapide...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8171,6 +8172,7 @@ extension on TranslationsFr {
 			'metadataEdit.collection' => 'Collection',
 			'metadataEdit.label' => 'Libellé',
 			'metadataEdit.quickTag' => 'Tag rapide...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Associer...',
 			'matchScreen.fixMatch' => 'Corriger l\'association...',
 			'matchScreen.unmatch' => 'Dissocier',
@@ -8624,9 +8626,9 @@ extension on TranslationsFr {
 			'platform.locationPermission' => 'Pleazyng utilise l\'accès à la localisation lorsque iOS l\'exige pour détecter votre réseau local et se connecter à vos serveurs de médias.',
 			'platform.photoLibraryPermission' => 'Choisissez des images de votre photothèque pour illustrer vos médias.',
 			'platform.cameraPermission' => 'Scannez des codes QR pour associer une Companion Remote.',
-			'universalMedia.title' => 'Médias ouverts',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.title' => 'Médias ouverts',
 			'universalMedia.shortcutHelp' => 'Jouez à un lien, une playlist ou un fichier pour cette session.',
 			'universalMedia.intro' => 'Ouvrez un lien, une liste de lecture ou un fichier. Playback utilise le lecteur standard de Pleazyng et n’ajoute pas d’historique à votre bibliothèque.',
 			'universalMedia.openWhat' => 'Que voudriez-vous ouvrir ?',
@@ -9138,9 +9140,9 @@ extension on TranslationsFr {
 			'sourceSetup.nfsUserId' => 'Identifiant utilisateur NFS (AUTH_SYS)',
 			'sourceSetup.nfsUserIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsGroupId' => 'Identifiant de groupe NFS (AUTH_SYS)',
-			'sourceSetup.nfsGroupIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant de groupe autorisé par le partage NFS du NAS.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.nfsGroupIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant de groupe autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsEncryption' => 'Exiger NFS chiffré (RPC-with-TLS)',
 			'sourceSetup.nfsEncryptionHelp' => 'Exiger TLS 1.3 pour NFS et le service de montage. Si le NAS ne le prend pas en charge, la connexion est refusée.',
 			'sourceSetup.nfsTrustCertificate' => 'CA NFS personnalisée ou certificat du serveur (PEM, facultatif)',

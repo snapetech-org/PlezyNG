@@ -3216,7 +3216,8 @@
     "country": "Ел",
     "collection": "Топтама",
     "label": "Белгі",
-    "quickTag": "Жылдам тег..."
+    "quickTag": "Жылдам тег...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Сәйкестендіру...",

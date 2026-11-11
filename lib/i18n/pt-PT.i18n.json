@@ -473,7 +473,8 @@
     "director": "Realizador",
     "writer": "Argumentista",
     "producer": "Produtor",
-    "collection": "Coleção"
+    "collection": "Coleção",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "titleHint": "Título",

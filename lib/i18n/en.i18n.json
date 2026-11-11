@@ -3217,7 +3217,8 @@
     "country": "Country",
     "collection": "Collection",
     "label": "Label",
-    "quickTag": "Quick Tag..."
+    "quickTag": "Quick Tag...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Match...",

@@ -3195,7 +3195,8 @@
     "country": "ประเทศ",
     "collection": "การจัดเก็บ",
     "label": "แท็ก",
-    "quickTag": "Tag อัตรา..."
+    "quickTag": "Tag อัตรา...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "การแข่งขัน",

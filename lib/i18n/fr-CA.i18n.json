@@ -444,7 +444,8 @@
     "tags": "Étiquettes",
     "director": "Réalisateur",
     "writer": "Scénariste",
-    "producer": "Producteur"
+    "producer": "Producteur",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "titleHint": "Titre",

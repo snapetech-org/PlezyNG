@@ -3212,7 +3212,8 @@
     "country": "国",
     "collection": "コレクション",
     "label": "ラベル",
-    "quickTag": "クイックタグ…"
+    "quickTag": "クイックタグ…",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "照合…",

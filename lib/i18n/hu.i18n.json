@@ -3216,7 +3216,8 @@
     "country": "Ország",
     "collection": "Gyűjtemény",
     "label": "Kiadó",
-    "quickTag": "Gyors címke..."
+    "quickTag": "Gyors címke...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Párosítás...",

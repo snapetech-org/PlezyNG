@@ -3258,7 +3258,8 @@
     "country": "Страна",
     "collection": "Коллекция",
     "label": "Метка",
-    "quickTag": "Быстрый тег..."
+    "quickTag": "Быстрый тег...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Сопоставить...",

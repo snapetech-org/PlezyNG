@@ -3216,7 +3216,8 @@
     "country": "Държава",
     "collection": "Колекция",
     "label": "Етикет",
-    "quickTag": "Бърз таг..."
+    "quickTag": "Бърз таг...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Съпостави...",

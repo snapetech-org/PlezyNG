@@ -3216,7 +3216,8 @@
     "country": "Mamlakat",
     "collection": "Toʻplam",
     "label": "Yorliq",
-    "quickTag": "Tezkor teg..."
+    "quickTag": "Tezkor teg...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Moslashtirish...",

@@ -3212,7 +3212,8 @@
     "country": "國家/地區",
     "collection": "收藏集",
     "label": "標記",
-    "quickTag": "快速標籤…"
+    "quickTag": "快速標籤…",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "配對…",

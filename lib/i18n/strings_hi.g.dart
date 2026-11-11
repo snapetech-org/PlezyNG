@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$hi extends Translations$metadataEdit$en {
 	@override String get collection => 'संग्रह';
 	@override String get label => 'लेबल';
 	@override String get quickTag => 'त्वरित टैग...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsHi {
 			'metadataEdit.collection' => 'संग्रह',
 			'metadataEdit.label' => 'लेबल',
 			'metadataEdit.quickTag' => 'त्वरित टैग...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'मैच...',
 			'matchScreen.fixMatch' => 'फिक्स मैच...',
 			'matchScreen.unmatch' => 'असंगत',
@@ -8560,9 +8562,9 @@ extension on TranslationsHi {
 			'universalMedia.stream' => 'स्ट्रीम एड्रेस',
 			'universalMedia.playlist' => 'प्लेलिस्ट',
 			'universalMedia.files' => 'डिवाइस फ़ाइल',
-			'universalMedia.favorites' => 'बचाए गए स्ट्रीम पसंदीदा',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'बचाए गए स्ट्रीम पसंदीदा',
 			'universalMedia.address' => 'मीडिया संदेश',
 			'universalMedia.addressHelp' => 'मान्यता प्राप्त क्रेडिट या हस्ताक्षर पैरामीटर वाले URL का उपयोग केवल इस सत्र के लिए किया जाता है और पसंदीदा के रूप में संग्रहीत नहीं किया जा सकता है।',
 			'universalMedia.displayName' => 'डिस्प्ले नाम (वैकल्पिक)',
@@ -9074,9 +9076,9 @@ extension on TranslationsHi {
 			'sourceSetup.addTrustCertificate' => 'कस्टम भरोसेमंद प्रमाणपत्र जोड़ें',
 			'sourceSetup.replaceTrustCertificate' => 'सहेजा गया कस्टम प्रमाणपत्र बदलें',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS सामान्य NFS और माउंट सेवा पोर्ट इस्तेमाल करता है और NAS में RFC 9289 का समर्थन होना ज़रूरी है। TLS 1.3 अनिवार्य है। होस्ट का नाम या IP प्रमाणपत्र से मेल खाना चाहिए। एन्क्रिप्टेड चैनल में भी AUTH_SYS UID/GID लागू रहते हैं।',
-			'sourceSetup.clientCertificate' => 'क्लाइंट प्रमाणपत्र (वैकल्पिक)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'क्लाइंट प्रमाणपत्र (वैकल्पिक)',
 			'sourceSetup.clientCertificateHelp' => 'NAS को इस क्लाइंट की पहचान सत्यापित करने देता है; AUTH_SYS ID अब भी NAS की एक्सपोर्ट नीति पर निर्भर रहते हैं।',
 			'sourceSetup.savedIdentity' => 'सहेजी गई क्लाइंट पहचान इस्तेमाल की जाएगी।',
 			'sourceSetup.replaceIdentity' => 'सहेजी गई क्लाइंट पहचान बदलें',

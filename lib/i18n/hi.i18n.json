@@ -3216,7 +3216,8 @@
     "country": "देश",
     "collection": "संग्रह",
     "label": "लेबल",
-    "quickTag": "त्वरित टैग..."
+    "quickTag": "त्वरित टैग...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "मैच...",

@@ -2647,6 +2647,7 @@ class _Translations$metadataEdit$ms extends Translations$metadataEdit$en {
 	@override String get collection => 'Koleksi';
 	@override String get label => 'Label';
 	@override String get quickTag => 'Tag yang cepat...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8075,6 +8076,7 @@ extension on TranslationsMs {
 			'metadataEdit.collection' => 'Koleksi',
 			'metadataEdit.label' => 'Label',
 			'metadataEdit.quickTag' => 'Tag yang cepat...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Perlawanan ...',
 			'matchScreen.fixMatch' => 'Menyelesaikan perlawanan...',
 			'matchScreen.unmatch' => 'Perlawanan',
@@ -8535,9 +8537,9 @@ extension on TranslationsMs {
 			'universalMedia.stream' => 'Alamat aliran',
 			'universalMedia.playlist' => 'Senarai Playlist',
 			'universalMedia.files' => 'Peranti fail',
-			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
 			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diiktiraf hanya digunakan untuk sesi ini dan tidak boleh disimpan sebagai kegemaran.',
 			'universalMedia.displayName' => 'Nama Pameran ( opsional )',
@@ -9049,9 +9051,9 @@ extension on TranslationsMs {
 			'sourceSetup.addTrustCertificate' => 'Tambah sijil kepercayaan tersuai',
 			'sourceSetup.replaceTrustCertificate' => 'Gantikan sijil tersuai yang disimpan',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan perkhidmatan lekap yang biasa serta memerlukan sokongan RFC 9289 pada NAS. TLS 1.3 diwajibkan. Nama hos atau IP mesti sepadan dengan sijil. AUTH_SYS UID/GID masih terpakai dalam saluran yang disulitkan.',
-			'sourceSetup.clientCertificate' => 'Sijil klien (pilihan)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Sijil klien (pilihan)',
 			'sourceSetup.clientCertificateHelp' => 'Membolehkan NAS mengesahkan klien ini; ID AUTH_SYS masih bergantung pada dasar perkongsian NFS pada NAS.',
 			'sourceSetup.savedIdentity' => 'Identiti klien yang disimpan akan digunakan.',
 			'sourceSetup.replaceIdentity' => 'Gantikan identiti klien yang disimpan',

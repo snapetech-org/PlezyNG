@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$tr extends Translations$metadataEdit$en {
 	@override String get collection => 'Koleksiyon';
 	@override String get label => 'Etiket';
 	@override String get quickTag => 'Hızlı etiket...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsTr {
 			'metadataEdit.collection' => 'Koleksiyon',
 			'metadataEdit.label' => 'Etiket',
 			'metadataEdit.quickTag' => 'Hızlı etiket...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Eşleştir...',
 			'matchScreen.fixMatch' => 'Eşleşmeyi Düzelt...',
 			'matchScreen.unmatch' => 'Eşleşmeyi Kaldır',
@@ -8560,9 +8562,9 @@ extension on TranslationsTr {
 			'universalMedia.stream' => 'Stream Adresi',
 			'universalMedia.playlist' => 'Oyun Listesi',
 			'universalMedia.files' => 'cihaz dosyaları',
-			'universalMedia.favorites' => 'Saved Stream Favori',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Saved Stream Favori',
 			'universalMedia.address' => 'Medya Adresi',
 			'universalMedia.addressHelp' => 'HTTPS tercih edilir. tanınmış kimlik veya imza parametreleri olan URL\'ler yalnızca bu oturum için kullanılır ve favori olarak kaydedilemez.',
 			'universalMedia.displayName' => 'Gösterim Adı (Seçmeli)',
@@ -9074,9 +9076,9 @@ extension on TranslationsTr {
 			'sourceSetup.addTrustCertificate' => 'Özel güven sertifikası ekle',
 			'sourceSetup.replaceTrustCertificate' => 'Kaydedilmiş özel sertifikayı değiştir',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS normal NFS ve bağlama hizmeti bağlantı noktalarını kullanır ve NAS’ta RFC 9289 desteği gerektirir. TLS 1.3 zorunludur. Ana makine adı veya IP adresi sertifikayla eşleşmelidir. Şifreli kanal içinde de AUTH_SYS UID/GID geçerlidir.',
-			'sourceSetup.clientCertificate' => 'İstemci sertifikası (isteğe bağlı)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'İstemci sertifikası (isteğe bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS’ın bu istemcinin kimliğini doğrulamasını sağlar; AUTH_SYS kimlikleri hâlâ NAS’ın NFS paylaşım ilkesine bağlıdır.',
 			'sourceSetup.savedIdentity' => 'Kaydedilmiş bir istemci kimliği kullanılacak.',
 			'sourceSetup.replaceIdentity' => 'Kaydedilmiş istemci kimliğini değiştir',

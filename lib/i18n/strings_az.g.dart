@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$az extends Translations$metadataEdit$en {
 	@override String get collection => 'Kolleksiya';
 	@override String get label => 'Etiket';
 	@override String get quickTag => 'Sürətli etiket...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsAz {
 			'metadataEdit.collection' => 'Kolleksiya',
 			'metadataEdit.label' => 'Etiket',
 			'metadataEdit.quickTag' => 'Sürətli etiket...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Uyğunlaşdır...',
 			'matchScreen.fixMatch' => 'Uyğunluğu düzəlt...',
 			'matchScreen.unmatch' => 'Uyğunluğu ləğv et',
@@ -8560,9 +8562,9 @@ extension on TranslationsAz {
 			'universalMedia.stream' => 'Trafik adresi',
 			'universalMedia.playlist' => 'Oyunçı',
 			'universalMedia.files' => 'Fillər',
-			'universalMedia.favorites' => 'Sürücüsüz favoritlər',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Sürücüsüz favoritlər',
 			'universalMedia.address' => 'Medyanın adresi',
 			'universalMedia.addressHelp' => 'HTTPS-i tercih edilir. tanınmış kimlik və ya imza parametrləri olan URL-lər yalnız bu oturum üçün istifadə edilir və favori olarak saklanamaz.',
 			'universalMedia.displayName' => 'Görüntülər adı (optional)',
@@ -9074,9 +9076,9 @@ extension on TranslationsAz {
 			'sourceSetup.addTrustCertificate' => 'Xüsusi etibar sertifikatı əlavə et',
 			'sourceSetup.replaceTrustCertificate' => 'Yadda saxlanmış xüsusi sertifikatı əvəz et',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS adi NFS və mount xidməti portlarını istifadə edir və NAS-da RFC 9289 dəstəyi tələb edir. TLS 1.3 tələb olunur. Host adı və ya IP ünvanı sertifikata uyğun gəlməlidir. Şifrələnmiş kanalda da AUTH_SYS UID/GID qüvvədə qalır.',
-			'sourceSetup.clientCertificate' => 'Klient sertifikatı (istəyə bağlı)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Klient sertifikatı (istəyə bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-a bu klientin kimliyini təsdiqləməyə imkan verir; AUTH_SYS ID-ləri yenə NAS-ın NFS paylaşım qaydalarından asılıdır.',
 			'sourceSetup.savedIdentity' => 'Yadda saxlanmış klient kimlik məlumatları istifadə olunacaq.',
 			'sourceSetup.replaceIdentity' => 'Yadda saxlanmış klient kimlik məlumatlarını əvəz et',

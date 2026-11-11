@@ -3252,7 +3252,8 @@
     "country": "Země",
     "collection": "Kolekce",
     "label": "Značka",
-    "quickTag": "Rychlý Tag..."
+    "quickTag": "Rychlý Tag...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Zápas...",

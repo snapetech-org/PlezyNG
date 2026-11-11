@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$kk extends Translations$metadataEdit$en {
 	@override String get collection => 'Топтама';
 	@override String get label => 'Белгі';
 	@override String get quickTag => 'Жылдам тег...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsKk {
 			'metadataEdit.collection' => 'Топтама',
 			'metadataEdit.label' => 'Белгі',
 			'metadataEdit.quickTag' => 'Жылдам тег...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Сәйкестендіру...',
 			'matchScreen.fixMatch' => 'Сәйкестікті түзету...',
 			'matchScreen.unmatch' => 'Сәйкестікті жою',
@@ -8560,9 +8562,9 @@ extension on TranslationsKk {
 			'universalMedia.stream' => 'Тегін адресы',
 			'universalMedia.playlist' => 'Жүзілік',
 			'universalMedia.files' => 'Файлы',
-			'universalMedia.favorites' => 'Алдыңғы ең айқын көргенде',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Алдыңғы ең айқын көргенде',
 			'universalMedia.address' => 'Медыялық адресы',
 			'universalMedia.addressHelp' => 'Өзі сүйікті жабдықтардан тұрып қара сөздерін, аудармаларын жазды.',
 			'universalMedia.displayName' => 'Алдыңғы қағидалар (опциональ)',
@@ -9074,9 +9076,9 @@ extension on TranslationsKk {
 			'sourceSetup.addTrustCertificate' => 'Теңшелетін сенім сертификатын қосу',
 			'sourceSetup.replaceTrustCertificate' => 'Сақталған теңшелетін сертификатты ауыстыру',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS әдеттегі NFS және mount қызметінің порттарын пайдаланады және NAS-та RFC 9289 қолдауын талап етеді. TLS 1.3 қажет. Хост атауы немесе IP мекенжайы сертификатқа сәйкес болуы керек. Шифрланған арнада да AUTH_SYS UID/GID қолданылады.',
-			'sourceSetup.clientCertificate' => 'Клиент сертификаты (міндетті емес)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Клиент сертификаты (міндетті емес)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-қа осы клиентті аутентификациялауға мүмкіндік береді; AUTH_SYS ID мәндері әлі де NAS-тағы NFS ортақ ресурсының ережелеріне тәуелді.',
 			'sourceSetup.savedIdentity' => 'Сақталған клиенттің сәйкестендіру деректері пайдаланылады.',
 			'sourceSetup.replaceIdentity' => 'Сақталған клиенттің сәйкестендіру деректерін ауыстыру',

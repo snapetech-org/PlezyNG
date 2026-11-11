@@ -55,6 +55,22 @@ import '../test_helpers/prefs.dart';
 import '../test_helpers/profile_stack.dart';
 
 void main() {
+  testWidgets('accepted artwork from the detail action refreshes its browse caller', (tester) async {
+    final client = _ArtworkPlaylistClient(_mediaItems(1));
+    final harness = await _createHarness(client.items, client: client);
+    var changes = 0;
+    await tester.pumpWidget(harness.wrap(PlaylistDetailScreen(playlist: _audioPlaylist, onChanged: () => changes++)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.metadataEdit.artwork));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('playlist_artwork_reset')));
+    await tester.pumpAndSettle();
+    expect(client.artworkWrites, 1);
+    expect(changes, 1);
+    expect(find.byType(PlaylistDetailScreen), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('playlist deletion confirmation retires on account change', (tester) async {
     final harness = await _createHarness(_mediaItems(1), deleteResult: true);
     await tester.pumpWidget(harness.wrap(const PlaylistDetailScreen(playlist: _playlist)));
@@ -1225,6 +1241,28 @@ class _MetadataEditingClient extends _PagedPlaylistClient implements PlaylistMet
       serverId: playlist.serverId,
       smart: playlist.smart,
     );
+  }
+}
+
+class _ArtworkPlaylistClient extends _MetadataEditingClient implements PlaylistArtworkClient {
+  _ArtworkPlaylistClient(super.items);
+  int artworkWrites = 0;
+  @override
+  Future<List<PlaylistArtworkOption>> fetchPlaylistArtwork(
+    MediaPlaylist playlist, {
+    bool Function()? isCurrent,
+  }) async => [];
+  @override
+  Future<MediaPlaylist> updatePlaylistArtwork({
+    required MediaPlaylist playlist,
+    String? artworkKey,
+    List<int>? bytes,
+    bool reset = false,
+    bool Function()? isCurrent,
+  }) async {
+    if (isCurrent?.call() == false) throw StateError('Retired');
+    artworkWrites++;
+    return metadata;
   }
 }
 

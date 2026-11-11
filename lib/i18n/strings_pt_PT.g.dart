@@ -687,6 +687,7 @@ class Translations$metadataEdit$pt_PT extends Translations$metadataEdit$pt {
 	@override String get writer => 'Argumentista';
 	@override String get producer => 'Produtor';
 	@override String get collection => 'Coleção';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -1702,6 +1703,7 @@ extension on TranslationsPtPt {
 			'metadataEdit.writer' => 'Argumentista',
 			'metadataEdit.producer' => 'Produtor',
 			'metadataEdit.collection' => 'Coleção',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.titleHint' => 'Título',
 			'matchScreen.yearHint' => 'Ano',
 			'matchScreen.search' => 'Pesquisar',
@@ -1866,9 +1868,9 @@ extension on TranslationsPtPt {
 			'romm.engine' => 'Emulator identity',
 			'romm.slot' => 'Save slot',
 			'romm.core' => 'Core identity',
-			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
 			_ => null,
 		} ?? switch (path) {
+			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
 			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
 			'romm.keepBoth' => 'Keep both',
 			'romm.useServer' => 'Use server copy',

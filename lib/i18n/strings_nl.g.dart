@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$nl extends Translations$metadataEdit$en {
 	@override String get collection => 'Collectie';
 	@override String get label => 'Label';
 	@override String get quickTag => 'Snel taggen...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsNl {
 			'metadataEdit.collection' => 'Collectie',
 			'metadataEdit.label' => 'Label',
 			'metadataEdit.quickTag' => 'Snel taggen...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Koppelen...',
 			'matchScreen.fixMatch' => 'Koppeling herstellen...',
 			'matchScreen.unmatch' => 'Ontkoppelen',
@@ -8560,9 +8562,9 @@ extension on TranslationsNl {
 			'universalMedia.stream' => 'Streamadres',
 			'universalMedia.playlist' => 'Playlijst',
 			'universalMedia.files' => 'Gerelateerde bestanden',
-			'universalMedia.favorites' => 'Save Stream favorieten',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Save Stream favorieten',
 			'universalMedia.address' => 'Media adres',
 			'universalMedia.addressHelp' => 'URL\'s met geïdentificeerde credentiale of signature parameters worden alleen gebruikt voor deze sessie en kunnen niet als favorieten worden opgeslagen.',
 			'universalMedia.displayName' => 'Display naam (optional)',
@@ -9074,9 +9076,9 @@ extension on TranslationsNl {
 			'sourceSetup.addTrustCertificate' => 'Aangepast vertrouwenscertificaat toevoegen',
 			'sourceSetup.replaceTrustCertificate' => 'Opgeslagen aangepast certificaat vervangen',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS gebruikt de gebruikelijke poorten van NFS en de mountservice en vereist RFC 9289-ondersteuning op de NAS. TLS 1.3 is verplicht. De hostnaam of het IP-adres moet overeenkomen met het certificaat. AUTH_SYS-UID/GID blijven ook binnen het versleutelde kanaal gelden.',
-			'sourceSetup.clientCertificate' => 'Clientcertificaat (optioneel)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Clientcertificaat (optioneel)',
 			'sourceSetup.clientCertificateHelp' => 'Hiermee kan de NAS deze client authenticeren; AUTH_SYS-ID’s blijven afhankelijk van het beleid van de NFS-share op de NAS.',
 			'sourceSetup.savedIdentity' => 'Er wordt een opgeslagen clientidentiteit gebruikt.',
 			'sourceSetup.replaceIdentity' => 'Opgeslagen clientidentiteit vervangen',

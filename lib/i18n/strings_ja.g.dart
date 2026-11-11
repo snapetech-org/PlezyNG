@@ -2662,6 +2662,7 @@ class _Translations$metadataEdit$ja extends Translations$metadataEdit$en {
 	@override String get collection => 'コレクション';
 	@override String get label => 'ラベル';
 	@override String get quickTag => 'クイックタグ…';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8095,6 +8096,7 @@ extension on TranslationsJa {
 			'metadataEdit.collection' => 'コレクション',
 			'metadataEdit.label' => 'ラベル',
 			'metadataEdit.quickTag' => 'クイックタグ…',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => '照合…',
 			'matchScreen.fixMatch' => '照合を修正…',
 			'matchScreen.unmatch' => '照合を解除',
@@ -8555,9 +8557,9 @@ extension on TranslationsJa {
 			'universalMedia.stream' => 'ストリームアドレス',
 			'universalMedia.playlist' => 'プレイリスト',
 			'universalMedia.files' => 'デバイスファイル',
-			'universalMedia.favorites' => 'お気に入りのSave Stream',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'お気に入りのSave Stream',
 			'universalMedia.address' => 'メディアアドレス',
 			'universalMedia.addressHelp' => '認定認証またはサインパラメーターを持つURLは、このセッションのみに使用され、お気に入りとして保存することはできません。',
 			'universalMedia.displayName' => 'ディスプレイ名(オプション)',
@@ -9069,9 +9071,9 @@ extension on TranslationsJa {
 			'sourceSetup.addTrustCertificate' => 'カスタムの信頼証明書を追加',
 			'sourceSetup.replaceTrustCertificate' => '保存済みのカスタム証明書を置き換え',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS は通常の NFS およびマウントサービスのポートを使用し、NAS の RFC 9289 対応が必要です。TLS 1.3 が必須です。ホスト名または IP アドレスは証明書と一致する必要があります。暗号化された通信でも AUTH_SYS UID/GID は引き続き適用されます。',
-			'sourceSetup.clientCertificate' => 'クライアント証明書（任意）',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'クライアント証明書（任意）',
 			'sourceSetup.clientCertificateHelp' => 'NAS がこのクライアントを認証できるようにします。AUTH_SYS ID は引き続き NAS のエクスポートポリシーに従います。',
 			'sourceSetup.savedIdentity' => '保存済みのクライアント認証情報を使用します。',
 			'sourceSetup.replaceIdentity' => '保存済みのクライアント認証情報を置き換え',

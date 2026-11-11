@@ -2662,6 +2662,7 @@ class _Translations$metadataEdit$ko extends Translations$metadataEdit$en {
 	@override String get collection => '컬렉션';
 	@override String get label => '라벨';
 	@override String get quickTag => '빠른 태그…';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8095,6 +8096,7 @@ extension on TranslationsKo {
 			'metadataEdit.collection' => '컬렉션',
 			'metadataEdit.label' => '라벨',
 			'metadataEdit.quickTag' => '빠른 태그…',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => '일치...',
 			'matchScreen.fixMatch' => '일치 수정...',
 			'matchScreen.unmatch' => '일치 해제',
@@ -8555,9 +8557,9 @@ extension on TranslationsKo {
 			'universalMedia.stream' => '흐름 주소',
 			'universalMedia.playlist' => '플레이리스트',
 			'universalMedia.files' => '장치 파일',
-			'universalMedia.favorites' => '저장된 스트림 좋아하는',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => '저장된 스트림 좋아하는',
 			'universalMedia.address' => '미디어 주소',
 			'universalMedia.addressHelp' => '인증 또는 서명 매개 변수를 가진 URL은 이 세션에만 사용되며 좋아하는 것으로 저장될 수 없습니다.',
 			'universalMedia.displayName' => '디스플레이 이름 (선택)',
@@ -9069,9 +9071,9 @@ extension on TranslationsKo {
 			'sourceSetup.addTrustCertificate' => '사용자 지정 신뢰 인증서 추가',
 			'sourceSetup.replaceTrustCertificate' => '저장된 사용자 지정 인증서 교체',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS는 일반 NFS 및 마운트 서비스 포트를 사용하며, NAS가 RFC 9289를 지원해야 합니다. TLS 1.3이 필수입니다. 호스트 이름 또는 IP가 인증서와 일치해야 합니다. 암호화된 채널에서도 AUTH_SYS UID/GID가 적용됩니다.',
-			'sourceSetup.clientCertificate' => '클라이언트 인증서(선택 사항)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => '클라이언트 인증서(선택 사항)',
 			'sourceSetup.clientCertificateHelp' => 'NAS가 이 클라이언트를 인증하도록 합니다. AUTH_SYS ID에는 여전히 NAS 내보내기 정책이 적용됩니다.',
 			'sourceSetup.savedIdentity' => '저장된 클라이언트 인증 정보를 사용합니다.',
 			'sourceSetup.replaceIdentity' => '저장된 클라이언트 인증 정보 교체',

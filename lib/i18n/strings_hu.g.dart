@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$hu extends Translations$metadataEdit$en {
 	@override String get collection => 'Gyűjtemény';
 	@override String get label => 'Kiadó';
 	@override String get quickTag => 'Gyors címke...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsHu {
 			'metadataEdit.collection' => 'Gyűjtemény',
 			'metadataEdit.label' => 'Kiadó',
 			'metadataEdit.quickTag' => 'Gyors címke...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Párosítás...',
 			'matchScreen.fixMatch' => 'Párosítás javítása...',
 			'matchScreen.unmatch' => 'Párosítás megszüntetése',
@@ -8560,9 +8562,9 @@ extension on TranslationsHu {
 			'universalMedia.stream' => 'Stream cím',
 			'universalMedia.playlist' => 'játéklisták',
 			'universalMedia.files' => 'készülék fájl',
-			'universalMedia.favorites' => 'Megtakarított stream kedvencek',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Megtakarított stream kedvencek',
 			'universalMedia.address' => 'média cím',
 			'universalMedia.addressHelp' => 'Az elismert hitelesítési vagy aláírási paraméterekkel rendelkező URL-k csak ebben az ülésen használhatók, és nem menthetők kedvencként.',
 			'universalMedia.displayName' => 'A kijelző neve (opcionális)',
@@ -9074,9 +9076,9 @@ extension on TranslationsHu {
 			'sourceSetup.addTrustCertificate' => 'Egyéni megbízható tanúsítvány hozzáadása',
 			'sourceSetup.replaceTrustCertificate' => 'Mentett egyéni tanúsítvány cseréje',
 			'sourceSetup.nfsTlsHelp' => 'Az RPC-with-TLS a szokásos NFS- és csatolásiszolgáltatás-portokat használja, és RFC 9289-támogatást igényel a NAS-on. TLS 1.3 szükséges. A gépnévnek vagy IP-címnek egyeznie kell a tanúsítvánnyal. Az AUTH_SYS UID/GID a titkosított csatornán belül is érvényes.',
-			'sourceSetup.clientCertificate' => 'Kliens tanúsítványa (nem kötelező)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Kliens tanúsítványa (nem kötelező)',
 			'sourceSetup.clientCertificateHelp' => 'Lehetővé teszi, hogy a NAS hitelesítse ezt a klienst; az AUTH_SYS-azonosítók továbbra is a NAS NFS-megosztásának szabályaitól függenek.',
 			'sourceSetup.savedIdentity' => 'A mentett kliensazonosság lesz használva.',
 			'sourceSetup.replaceIdentity' => 'Mentett kliensazonosság cseréje',

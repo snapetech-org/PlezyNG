@@ -2704,6 +2704,7 @@ class _Translations$metadataEdit$pl extends Translations$metadataEdit$en {
 	@override String get collection => 'Kolekcja';
 	@override String get label => 'Etykieta';
 	@override String get quickTag => 'Szybki tag...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8150,6 +8151,7 @@ extension on TranslationsPl {
 			'metadataEdit.collection' => 'Kolekcja',
 			'metadataEdit.label' => 'Etykieta',
 			'metadataEdit.quickTag' => 'Szybki tag...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Dopasuj...',
 			'matchScreen.fixMatch' => 'Popraw dopasowanie...',
 			'matchScreen.unmatch' => 'Usuń dopasowanie',
@@ -8610,9 +8612,9 @@ extension on TranslationsPl {
 			'universalMedia.stream' => 'adres strumieniowy',
 			'universalMedia.playlist' => 'Playlisty',
 			'universalMedia.files' => 'Archiwum urządzeń',
-			'universalMedia.favorites' => 'Zbawiony strumień ulubionych',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Zbawiony strumień ulubionych',
 			'universalMedia.address' => 'Adres medialny',
 			'universalMedia.addressHelp' => 'URL z rozpoznawalnymi parametrami uwierzytelniania lub podpisów są używane tylko do tej sesji i nie mogą być przechowywane jako ulubione.',
 			'universalMedia.displayName' => 'Nazwa wyświetlacza (opcjonalnie)',
@@ -9124,9 +9126,9 @@ extension on TranslationsPl {
 			'sourceSetup.addTrustCertificate' => 'Dodaj własny zaufany certyfikat',
 			'sourceSetup.replaceTrustCertificate' => 'Zastąp zapisany własny certyfikat',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS używa standardowych portów NFS i usługi montowania oraz wymaga obsługi RFC 9289 przez NAS. Wymagany jest TLS 1.3. Nazwa hosta lub adres IP musi odpowiadać certyfikatowi. UID/GID AUTH_SYS nadal obowiązują wewnątrz szyfrowanego kanału.',
-			'sourceSetup.clientCertificate' => 'Certyfikat klienta (opcjonalnie)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Certyfikat klienta (opcjonalnie)',
 			'sourceSetup.clientCertificateHelp' => 'Pozwala NAS uwierzytelnić tego klienta; ID AUTH_SYS nadal zależą od zasad eksportu NFS na NAS.',
 			'sourceSetup.savedIdentity' => 'Zostanie użyta zapisana tożsamość klienta.',
 			'sourceSetup.replaceIdentity' => 'Zastąp zapisaną tożsamość klienta',

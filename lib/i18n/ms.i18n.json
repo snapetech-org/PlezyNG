@@ -3195,7 +3195,8 @@
     "country": "negara",
     "collection": "Koleksi",
     "label": "Label",
-    "quickTag": "Tag yang cepat..."
+    "quickTag": "Tag yang cepat...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Perlawanan ...",

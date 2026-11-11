@@ -3300,7 +3300,8 @@
     "country": "البلد",
     "collection": "مجموعة",
     "label": "العلامة",
-    "quickTag": "Tag سريع .."
+    "quickTag": "Tag سريع ..",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "المباراة...",

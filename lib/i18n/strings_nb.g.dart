@@ -2666,6 +2666,7 @@ class _Translations$metadataEdit$nb extends Translations$metadataEdit$en {
 	@override String get collection => 'Samling';
 	@override String get label => 'Etikett';
 	@override String get quickTag => 'Hurtigtagg...';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -8100,6 +8101,7 @@ extension on TranslationsNb {
 			'metadataEdit.collection' => 'Samling',
 			'metadataEdit.label' => 'Etikett',
 			'metadataEdit.quickTag' => 'Hurtigtagg...',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.match' => 'Finn treff...',
 			'matchScreen.fixMatch' => 'Korriger treff...',
 			'matchScreen.unmatch' => 'Fjern treff',
@@ -8560,9 +8562,9 @@ extension on TranslationsNb {
 			'universalMedia.stream' => 'Stream adresse',
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Device filer',
-			'universalMedia.favorites' => 'Saved stream favoritter',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.favorites' => 'Saved stream favoritter',
 			'universalMedia.address' => 'Media adresser',
 			'universalMedia.addressHelp' => 'URLer med anerkjente akkrediterings- eller signaturparameter brukes kun for denne sesjonen og kan ikke lagres som favoritter.',
 			'universalMedia.displayName' => 'Visningsnavnet (alternativt)',
@@ -9074,9 +9076,9 @@ extension on TranslationsNb {
 			'sourceSetup.addTrustCertificate' => 'Legg til egendefinert tillitssertifikat',
 			'sourceSetup.replaceTrustCertificate' => 'Erstatt lagret egendefinert sertifikat',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS bruker de vanlige portene for NFS og monteringstjenesten og krever RFC 9289-støtte på NAS-enheten. TLS 1.3 er påkrevd. Vertsnavnet eller IP-adressen må samsvare med sertifikatet. AUTH_SYS UID/GID gjelder fortsatt i den krypterte kanalen.',
-			'sourceSetup.clientCertificate' => 'Klientsertifikat (valgfritt)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificate' => 'Klientsertifikat (valgfritt)',
 			'sourceSetup.clientCertificateHelp' => 'Lar NAS-enheten autentisere denne klienten; AUTH_SYS-ID-er avhenger fortsatt av reglene for NAS-enhetens NFS-deling.',
 			'sourceSetup.savedIdentity' => 'En lagret klientidentitet vil bli brukt.',
 			'sourceSetup.replaceIdentity' => 'Erstatt lagret klientidentitet',

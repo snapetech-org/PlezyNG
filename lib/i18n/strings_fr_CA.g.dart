@@ -666,6 +666,7 @@ class _Translations$metadataEdit$fr_CA extends Translations$metadataEdit$fr {
 	@override String get director => 'Réalisateur';
 	@override String get writer => 'Scénariste';
 	@override String get producer => 'Producteur';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -1620,6 +1621,7 @@ extension on TranslationsFrCa {
 			'metadataEdit.director' => 'Réalisateur',
 			'metadataEdit.writer' => 'Scénariste',
 			'metadataEdit.producer' => 'Producteur',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.titleHint' => 'Titre',
 			'matchScreen.yearHint' => 'Année',
 			'matchScreen.search' => 'Rechercher',
@@ -1811,9 +1813,9 @@ extension on TranslationsFrCa {
 			'romm.touchControls' => 'Touch controls',
 			'romm.controls' => 'Controls',
 			'romm.resetControls' => 'Reset controls',
-			'romm.playerOne' => 'Player 1',
 			_ => null,
 		} ?? switch (path) {
+			'romm.playerOne' => 'Player 1',
 			'romm.select' => 'Select',
 			'romm.start' => 'Start',
 			'romm.up' => 'Up',

@@ -3258,7 +3258,8 @@
     "country": "Kraj",
     "collection": "Kolekcja",
     "label": "Etykieta",
-    "quickTag": "Szybki tag..."
+    "quickTag": "Szybki tag...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Dopasuj...",

@@ -3216,7 +3216,8 @@
     "country": "Land",
     "collection": "Sammlung",
     "label": "Label",
-    "quickTag": "Schnell-Tag..."
+    "quickTag": "Schnell-Tag...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Zuordnen...",

@@ -3252,7 +3252,8 @@
     "country": "країна",
     "collection": "Колекція",
     "label": "Етикетка",
-    "quickTag": "Швидкий Tag..."
+    "quickTag": "Швидкий Tag...",
+    "imageUploadLimits": "≤ 10 MiB · ≤ 64 MP"
   },
   "matchScreen": {
     "match": "Матч...",

@@ -677,6 +677,7 @@ class _Translations$metadataEdit$es_419 extends Translations$metadataEdit$es {
 	@override String get writer => 'Escritor';
 	@override String get producer => 'Productor';
 	@override String get collection => 'Colección';
+	@override String get imageUploadLimits => '≤ 10 MiB · ≤ 64 MP';
 }
 
 // Path: matchScreen
@@ -1665,6 +1666,7 @@ extension on TranslationsEs419 {
 			'metadataEdit.writer' => 'Escritor',
 			'metadataEdit.producer' => 'Productor',
 			'metadataEdit.collection' => 'Colección',
+			'metadataEdit.imageUploadLimits' => '≤ 10 MiB · ≤ 64 MP',
 			'matchScreen.titleHint' => 'Título',
 			'matchScreen.yearHint' => 'Año',
 			'matchScreen.search' => 'Buscar',
@@ -1840,9 +1842,9 @@ extension on TranslationsEs419 {
 			'romm.exitWithoutSaving' => 'Exit without saving',
 			'romm.exitConfirm' => 'Finish this game session?',
 			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
-			'romm.starting' => 'Starting game…',
 			_ => null,
 		} ?? switch (path) {
+			'romm.starting' => 'Starting game…',
 			'romm.connecting' => 'Connecting…',
 			'romm.busy' => 'The streaming computer is occupied.',
 			'romm.streamEnded' => 'The streaming session ended.',

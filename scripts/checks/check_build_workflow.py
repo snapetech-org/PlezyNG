@@ -1062,10 +1062,21 @@ require(
 require(
     re.search(
         r"(?ms)^      action:\n.*?^        required: true\n        type: choice\n"
-        r".*?^        options:\n          - build\n          - release$",
+        r".*?^        options:\n          - build\n          - release\n          - apple-signing-preflight\n(?=      runner_pool:)",
         text,
     ) is not None,
-    "platform workflow must require an explicit build or release action",
+    "platform workflow must require an explicit build, release or bounded signing-preflight action",
+)
+profile_preflight = job("apple-signing-preflight")
+require(
+    "    if: github.repository == 'snapetech-org/pleazyng' && github.ref == 'refs/heads/main' && inputs.action == 'apple-signing-preflight'" in profile_preflight.splitlines()
+    and "    runs-on: macos-26-intel" in profile_preflight.splitlines()
+    and "    timeout-minutes: 10" in profile_preflight.splitlines()
+    and '        run: python3 scripts/build_apple_store_archive.py --prepare-ios-worker-profile --public-report "$RUNNER_TEMP/ios-profile-public-report.json"' in profile_preflight.splitlines()
+    and len(re.findall(r'(?m)^(?:        run:|      - run:)', profile_preflight)) == 1
+    and 'persist-credentials: false' in profile_preflight
+    and "  group: ${{ inputs.action == 'apple-signing-preflight' && 'pleazyng-apple-signing-preflight' || 'pleazyng-core-release' }}" in text.splitlines(),
+    "iOS profile preflight must be bounded on trusted native macOS and preserve core-build serialization",
 )
 require(
     re.search(

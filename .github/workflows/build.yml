@@ -8,12 +8,13 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Build artifacts without changing a release, or create/update the draft release
+        description: Build artifacts, create/update the draft release, or qualify iOS signing profiles without an app build
         required: true
         type: choice
         options:
           - build
           - release
+          - apple-signing-preflight
       runner_pool:
         description: Private JIT pool for jobs that need constrained resources
         required: true
@@ -161,10 +162,40 @@ env:
     ruby ruby-dev rubygems build-essential rpm libarchive-tools imagemagick libcurl4-openssl-dev
 
 concurrency:
-  group: pleazyng-core-release
+  group: ${{ inputs.action == 'apple-signing-preflight' && 'pleazyng-apple-signing-preflight' || 'pleazyng-core-release' }}
   cancel-in-progress: false
 
 jobs:
+  apple-signing-preflight:
+    name: Qualify iOS worker signing material
+    if: github.repository == 'snapetech-org/pleazyng' && github.ref == 'refs/heads/main' && inputs.action == 'apple-signing-preflight'
+    runs-on: macos-26-intel
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Prepare and validate only the iOS signing profiles
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
+        run: python3 scripts/build_apple_store_archive.py --prepare-ios-worker-profile --public-report "$RUNNER_TEMP/ios-profile-public-report.json"
+      - name: Retain only the public profile qualification report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ios-profile-public-report
+          path: ${{ runner.temp }}/ios-profile-public-report.json
+          if-no-files-found: error
+          retention-days: 30
+
   capture-candidate:
     name: Validate captured source
     if: ${{ inputs.action == 'release' && inputs.candidate_ref != '' && github.ref == 'refs/heads/main' }}
@@ -1356,7 +1387,8 @@ jobs:
                 exit 1
               fi
             done
-            python3 "$GITHUB_WORKSPACE/scripts/build_apple_store_archive.py" --prepare-ios-worker-profile
+            python3 "$GITHUB_WORKSPACE/scripts/build_apple_store_archive.py" --prepare-ios-worker-profile \
+              --public-report "$PLEZYNG_APPLE_WORKSPACE/pleazyng-ios-profile-report.json"
           fi
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
@@ -1470,11 +1502,13 @@ jobs:
           subject-path: pleazyng-ios-appstore.ipa
 
       - name: Retain iOS signing report
-        if: always() && steps.ios-signing.outputs.configured == 'true'
+        if: always() && needs.validate-trusted-ref.outputs.include_apple_store_build == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: ios-store-signing-report
-          path: ${{ env.PLEZYNG_APPLE_WORKSPACE }}/pleazyng-ios-signing-report.json
+          path: |
+            ${{ env.PLEZYNG_APPLE_WORKSPACE }}/pleazyng-ios-signing-report.json
+            ${{ env.PLEZYNG_APPLE_WORKSPACE }}/pleazyng-ios-profile-report.json
           if-no-files-found: warn
           retention-days: 7
 

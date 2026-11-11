@@ -43,6 +43,16 @@ class AppleStoreSigningTests(unittest.TestCase):
                 profile = self.profile(); profile[key] = value
                 with self.assertRaises(ValueError): check(profile)
 
+    def test_bundle_case_is_insensitive_but_team_namespace_and_full_bundle_remain_exact(self):
+        profile = self.profile()
+        profile['Entitlements']['application-identifier'] = TEAM + '.' + BUNDLE.upper()
+        self.assertEqual(validate_profile(profile, bundle=BUNDLE, platform='ios', team=TEAM, certificate=CERT), UUID)
+        for identifier in (TEAM.lower() + '.' + BUNDLE, TEAM + '.' + BUNDLE + '.extra',
+                           TEAM + '.org.snapetech.*', TEAM + '.' + BUNDLE.replace('s', '\u017f')):
+            with self.subTest(identifier=identifier), self.assertRaises(ValueError):
+                profile['Entitlements']['application-identifier'] = identifier
+                validate_profile(profile, bundle=BUNDLE, platform='ios', team=TEAM, certificate=CERT)
+
     def test_development_adhoc_enterprise_and_missing_group_are_rejected(self):
         for change in ('development', 'adhoc', 'enterprise', 'group'):
             with self.subTest(kind=change):
@@ -169,10 +179,10 @@ class AppleStoreSigningTests(unittest.TestCase):
 
 
 class AppleProfileBootstrapTests(unittest.TestCase):
-    def api(self, *, existing=True, wrong_certificate=False):
+    def api(self, *, existing=True, wrong_certificate=False, platform='IOS', identifier=None):
         import base64
         worker = {'type': 'bundleIds', 'id': 'worker-id', 'attributes': {
-            'identifier': BUNDLE + '.RommWorker', 'platform': 'IOS'}}
+            'identifier': identifier or BUNDLE + '.RommWorker', 'platform': platform}}
         profile = {'id': 'profile-id', 'attributes': {'profileType': 'IOS_APP_STORE',
             'profileState': 'ACTIVE', 'profileContent': base64.b64encode(b'fixture-profile').decode(),
             'expirationDate': '2030-01-01'}}
@@ -218,6 +228,88 @@ class AppleProfileBootstrapTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             api = self.api(existing=False, wrong_certificate=True)
             with self.assertRaisesRegex(ValueError, 'matching the existing'):
+                archive_helper._worker_profile(api, Path(temporary), CERT, TEAM)
+            api.request.assert_not_called()
+
+    def test_universal_and_case_normalized_worker_reused_without_new_registration(self):
+        for platform in ('IOS', 'UNIVERSAL'):
+            with self.subTest(platform=platform), tempfile.TemporaryDirectory() as temporary, \
+                    patch.object(archive_helper, 'run', return_value=b'cms'), \
+                    patch.object(archive_helper.plistlib, 'loads', return_value={'fixture': True}), \
+                    patch.object(archive_helper, 'validate_profile', return_value=UUID):
+                api = self.api(platform=platform, identifier=(BUNDLE + '.RommWorker').lower())
+                report = {}
+                self.assertEqual(archive_helper._worker_profile(api, Path(temporary), CERT, TEAM, report), (b'fixture-profile', UUID))
+                api.request.assert_not_called()
+                self.assertEqual(report['worker_registration']['resource_platform'], platform)
+                self.assertFalse(report['worker_registration']['identifier_case_matches'])
+                self.assertNotIn('fixture-profile', str(report))
+
+    def test_new_ios_registration_can_return_universal_resource(self):
+        with tempfile.TemporaryDirectory() as temporary, patch.object(archive_helper, 'run', return_value=b'cms'), \
+                patch.object(archive_helper.plistlib, 'loads', return_value={'fixture': True}), \
+                patch.object(archive_helper, 'validate_profile', return_value=UUID):
+            api = self.api(existing=False, platform='UNIVERSAL')
+            archive_helper._worker_profile(api, Path(temporary), CERT, TEAM)
+            self.assertEqual(api.request.call_args_list[0].args[1]['data']['attributes']['platform'], 'IOS')
+            self.assertEqual(api.request.call_args_list[1].args[1]['data']['attributes']['profileType'], 'IOS_APP_STORE')
+
+    def test_case_preserving_api_filter_does_not_create_duplicate_registration(self):
+        with tempfile.TemporaryDirectory() as temporary, patch.object(archive_helper, 'run', return_value=b'cms'), \
+                patch.object(archive_helper.plistlib, 'loads', return_value={'fixture': True}), \
+                patch.object(archive_helper, 'validate_profile', return_value=UUID):
+            api = self.api(identifier=(BUNDLE + '.RommWorker').lower())
+            original = api.items.side_effect
+            def items(path):
+                if path.startswith('/v1/bundleIds?'):
+                    query = archive_helper.urllib.parse.parse_qs(path.split('?', 1)[1])
+                    if query['filter[identifier]'] == [BUNDLE + '.RommWorker']:
+                        return []
+                return original(path)
+            api.items.side_effect = items
+            archive_helper._worker_profile(api, Path(temporary), CERT, TEAM)
+            api.request.assert_not_called()
+
+    def test_public_bootstrap_report_excludes_profiles_and_does_not_claim_app_build(self):
+        for failure in (False, True):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as temporary:
+                stage = Path(temporary)
+                environment, report = stage / 'job-env', stage / 'public.json'
+                identity = contextlib.nullcontext((stage, CERT, 'fingerprint', TEAM, stage / 'keychain'))
+                with patch.dict(archive_helper.os.environ, {'GITHUB_ENV': str(environment)}), \
+                        patch.object(archive_helper, 'signing_identity', return_value=identity), \
+                        patch.object(archive_helper, 'decode_secret', return_value=b'runner-private-profile'), \
+                        patch.object(archive_helper, 'run', return_value=b'cms'), \
+                        patch.object(archive_helper.plistlib, 'loads', return_value={}), \
+                        patch.object(archive_helper, 'validate_profile', return_value=UUID), \
+                        patch.object(archive_helper, '_apple_api_token', return_value='fixture-private-token'), \
+                        patch.object(archive_helper, '_worker_profile', side_effect=ValueError('fixture-private-error') if failure else None,
+                                     return_value=(b'worker-private-profile', UUID)), \
+                        contextlib.redirect_stdout(io.StringIO()):
+                    if failure:
+                        with self.assertRaises(ValueError):
+                            archive_helper.prepare_ios_worker_profile(report)
+                    else:
+                        archive_helper.prepare_ios_worker_profile(report)
+                content = report.read_text()
+                data = archive_helper.json.loads(content)
+                self.assertEqual(data['profile_bootstrap_qualified'], not failure)
+                self.assertFalse(data['app_build_qualified'])
+                for secret in ('runner-private-profile', 'worker-private-profile',
+                               'fixture-private-token', 'fixture-private-error'):
+                    self.assertNotIn(secret, content)
+                self.assertEqual(environment.exists(), not failure)
+
+    def test_mac_only_or_ambiguous_worker_registration_never_creates_profile(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            api = self.api(platform='MAC_OS')
+            with self.assertRaisesRegex(ValueError, 'iOS-capable'):
+                archive_helper._worker_profile(api, Path(temporary), CERT, TEAM)
+            api.request.assert_not_called()
+            api = self.api()
+            original = api.items.side_effect
+            api.items.side_effect = lambda path: original(path) * 2 if path.startswith('/v1/bundleIds?') else original(path)
+            with self.assertRaisesRegex(ValueError, 'iOS-capable'):
                 archive_helper._worker_profile(api, Path(temporary), CERT, TEAM)
             api.request.assert_not_called()
 

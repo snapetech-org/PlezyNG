@@ -34,6 +34,24 @@ STEAM_CMAKE = ROOT / "native/games/steam/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
+    def test_profile_preflight_cannot_leave_trusted_native_bounded_route_or_break_core_serialization(self):
+        original = self._workflow()
+        begin = original.index('  apple-signing-preflight:\n')
+        end = original.index('  capture-candidate:\n', begin)
+        job = original[begin:end]
+        for invalid in (job.replace("github.ref == 'refs/heads/main'", 'true'),
+                        job.replace('macos-26-intel', 'ubuntu-24.04'),
+                        job.replace('timeout-minutes: 10', 'timeout-minutes: 100'),
+                        job.replace('--prepare-ios-worker-profile --public-report', '--platform ios'),
+                        job.replace("inputs.action == 'apple-signing-preflight'", "inputs.action == 'apple-signing-preflight' || true"),
+                        job + '      - run: xcodebuild build\n'):
+            with self.subTest(invalid=invalid):
+                result = self._run(original[:begin] + invalid + original[end:])
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('profile preflight must be bounded', result.stderr)
+        changed = original.replace("|| 'pleazyng-core-release'", "|| github.run_id")
+        self.assertNotEqual(self._run(changed).returncode, 0)
+
     def test_ios_steam_preparation_retries_network_failure_and_stops_at_bound(self):
         step = next(step for step in yaml.safe_load(self._workflow())['jobs']['build-ios']['steps']
                     if step.get('name') == 'Prepare pinned iOS Steam sources before Xcode')

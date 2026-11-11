@@ -41,10 +41,20 @@ def music_nfc_allowed(profile: dict, platform: str) -> bool:
     return platform == 'ios' and isinstance(formats, list) and 'TAG' in formats
 
 
+def same_bundle_identifier(value, expected: str) -> bool:
+    # Apple's Bundle Resources reference defines bundle IDs as case-insensitive.
+    # Keep the character grammar and full identity exact; no wildcards/prefixes.
+    return (isinstance(value, str) and re.fullmatch(r'[A-Za-z0-9.-]+', value) is not None
+            and value.casefold() == expected.casefold())
+
+
 def validate_profile(profile: dict, *, bundle: str, platform: str, team: str, certificate: bytes) -> str:
     entitlements = profile.get('Entitlements', {})
     expected = f'{team}.{bundle}'
-    if entitlements.get('application-identifier') != expected or profile.get('TeamIdentifier') != [team]:
+    identifier = entitlements.get('application-identifier', '')
+    prefix, separator, suffix = identifier.partition('.') if isinstance(identifier, str) else ('', '', '')
+    if (not separator or prefix != team or not same_bundle_identifier(suffix, bundle)
+            or profile.get('TeamIdentifier') != [team]):
         raise ValueError(f'Profile does not match {expected}')
     if certificate not in profile.get('DeveloperCertificates', []):
         raise ValueError('Profile does not include the imported distribution certificate')
@@ -291,11 +301,17 @@ class AppleProfileAPI:
         return values
 
 
-def _worker_profile(api, stage: Path, certificate: bytes, team: str) -> tuple[bytes, str]:
+def _worker_profile(api, stage: Path, certificate: bytes, team: str, report: dict | None = None) -> tuple[bytes, str]:
     worker_bundle = BUNDLE + '.RommWorker'
     bundles = api.items('/v1/bundleIds?' + urllib.parse.urlencode({'filter[identifier]': worker_bundle, 'limit': 200}))
-    bundles = [item for item in bundles if item.get('attributes', {}).get('identifier') == worker_bundle
-               and item.get('attributes', {}).get('platform') == 'IOS']
+    bundles = [item for item in bundles
+               if same_bundle_identifier(item.get('attributes', {}).get('identifier'), worker_bundle)]
+    if not bundles and worker_bundle.lower() != worker_bundle:
+        # Some API filters preserve case even though bundle identity does not.
+        bundles = api.items('/v1/bundleIds?' + urllib.parse.urlencode({
+            'filter[identifier]': worker_bundle.lower(), 'limit': 200}))
+        bundles = [item for item in bundles
+                   if same_bundle_identifier(item.get('attributes', {}).get('identifier'), worker_bundle)]
     # Match the already imported certificate; never create or rotate identities.
     certificates = []
     for item in api.items('/v1/certificates?limit=200'):
@@ -314,8 +330,16 @@ def _worker_profile(api, stage: Path, certificate: bytes, team: str) -> tuple[by
     if not bundles:
         bundles = [api.request('/v1/bundleIds', {'data': {'type': 'bundleIds', 'attributes': {
             'identifier': worker_bundle, 'name': 'Pleazyng RommWorker', 'platform': 'IOS'}}}).get('data', {})]
-    if len(bundles) != 1 or bundles[0].get('attributes', {}).get('identifier') != worker_bundle or bundles[0].get('attributes', {}).get('platform') != 'IOS':
-        raise ValueError('Expected one exact iOS RommWorker bundle ID')
+    if (len(bundles) != 1
+            or not same_bundle_identifier(bundles[0].get('attributes', {}).get('identifier'), worker_bundle)
+            or bundles[0].get('attributes', {}).get('platform') not in ('IOS', 'UNIVERSAL')):
+        raise ValueError('Expected one exact iOS-capable RommWorker bundle identity')
+    attributes = bundles[0]['attributes']
+    registration = {'bundle': worker_bundle, 'resource_platform': attributes['platform'],
+                    'identifier_case_matches': attributes['identifier'] == worker_bundle}
+    if report is not None:
+        report['worker_registration'] = registration
+    print('Validated Apple worker registration: ' + json.dumps(registration, sort_keys=True))
     bundle_id = bundles[0]['id']
 
     def decode(item):
@@ -344,29 +368,36 @@ def _worker_profile(api, stage: Path, certificate: bytes, team: str) -> tuple[by
     return decode(created.get('data', {}))
 
 
-def prepare_ios_worker_profile() -> None:
+def prepare_ios_worker_profile(public_report: Path | None = None) -> None:
     """Create/reuse the worker profile, validate both targets, export only masked data."""
     output = os.environ.get('GITHUB_ENV')
     if not output:
         raise ValueError('Worker profile preparation requires the current GitHub job environment')
-    report = {}
-    with signing_identity(report) as (stage, certificate, _fingerprint, team, _keychain):
-        host_path = stage / 'Runner.mobileprovision'
-        host_path.write_bytes(decode_secret('IOS_PROVISIONING_PROFILE_BASE64'))
-        host_path.chmod(0o600)
-        host = plistlib.loads(run(['security', 'cms', '-D', '-i', str(host_path)]))
-        validate_profile(host, bundle=BUNDLE, platform='ios', team=team, certificate=certificate)
-        data, _uuid = _worker_profile(AppleProfileAPI(_apple_api_token(stage)), stage, certificate, team)
-        encoded = base64.b64encode(data).decode()
-        print(f'::add-mask::{encoded}', flush=True)
-        with Path(output).open('a') as stream:
-            stream.write('IOS_ROMMWORKER_PROVISIONING_PROFILE_BASE64=' + encoded + '\n')
-        print('Validated separate iOS Runner and RommWorker App Store profiles against the existing distribution identity.')
+    report = {'profile_bootstrap_qualified': False, 'app_build_qualified': False}
+    try:
+        with signing_identity(report) as (stage, certificate, _fingerprint, team, _keychain):
+            host_path = stage / 'Runner.mobileprovision'
+            host_path.write_bytes(decode_secret('IOS_PROVISIONING_PROFILE_BASE64'))
+            host_path.chmod(0o600)
+            host = plistlib.loads(run(['security', 'cms', '-D', '-i', str(host_path)]))
+            validate_profile(host, bundle=BUNDLE, platform='ios', team=team, certificate=certificate)
+            data, uuid = _worker_profile(AppleProfileAPI(_apple_api_token(stage)), stage, certificate, team, report)
+            encoded = base64.b64encode(data).decode()
+            print(f'::add-mask::{encoded}', flush=True)
+            with Path(output).open('a') as stream:
+                stream.write('IOS_ROMMWORKER_PROVISIONING_PROFILE_BASE64=' + encoded + '\n')
+            report.update(profile_bootstrap_qualified=True, worker_profile_uuid=uuid)
+            print('Validated separate iOS Runner and RommWorker App Store profiles against the existing distribution identity.')
+    finally:
+        if public_report is not None:
+            public_report.parent.mkdir(parents=True, exist_ok=True)
+            public_report.write_text(json.dumps(report, indent=2) + '\n')
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--prepare-ios-worker-profile', action='store_true')
+    parser.add_argument('--public-report', type=Path)
     parser.add_argument('--platform', choices=PROFILE_KEYS)
     parser.add_argument('--archive-path', type=Path)
     parser.add_argument('--export-path', type=Path)
@@ -374,7 +405,7 @@ def main() -> None:
     parser.add_argument('--source-packages', type=Path)
     args = parser.parse_args()
     if args.prepare_ios_worker_profile:
-        prepare_ios_worker_profile()
+        prepare_ios_worker_profile(args.public_report)
         return
     if not all((args.platform, args.archive_path, args.export_path, args.derived_data)):
         parser.error('Archive mode requires platform, archive-path, export-path and derived-data')

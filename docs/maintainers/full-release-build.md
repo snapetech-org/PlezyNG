@@ -1,5 +1,23 @@
 # Complete Pleazyng releases
 
+## iOS signing preflight
+
+`build.yml` action `apple-signing-preflight` qualifies the existing distribution
+identity and the distinct Runner/RommWorker App Store profiles on native hosted
+macOS without compiling an application or changing a release. It is main-only,
+has a ten-minute limit and uses a separate concurrency group; normal core builds
+remain serialized. The retained report contains public certificate checks,
+worker registration platform/case status and profile UUID, never a profile
+payload or API credential. A successful preflight does not qualify an archive,
+App Store processing, purchase/restore or device playback.
+
+Apple defines [bundle IDs as case-insensitive](https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleidentifier)
+and [`UNIVERSAL` registrations as supporting all platforms](https://developer.apple.com/documentation/appstoreconnectapi/bundleidplatform).
+The helper accepts those identities while requiring the exact full identifier,
+case-sensitive team prefix, existing certificate, active `IOS_APP_STORE` profile
+and native iOS CMS platform. Mac-only registrations, wildcard/prefix identities,
+wrong teams/certificates, development/ad-hoc profiles and expired profiles fail.
+
 ## Current native dependency
 
 Every new application build must use the latest verified

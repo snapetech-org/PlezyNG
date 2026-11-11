@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Validate Apple's case-insensitive bundle identities and iOS-capable universal worker registrations against strict iOS App Store profiles; provide a native signing preflight without rebuilding the application.
+
 - Isolate the relay store write queue between widget test clocks, retaining ordered account teardown, download preservation and same-account re-login coverage.
 
 - Align Apple native qualification and tvOS AOT with the Apple Silicon macOS 26 / Xcode 26.5 release toolchain, preserving the layered icon, pinned native Swift features and SDK-matched native tests.

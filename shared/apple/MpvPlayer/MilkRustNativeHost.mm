@@ -211,7 +211,7 @@ int PlezyMusicPcmCaptureReadNext(void* player, double playback_pts, double* pts,
   const int result = SharedMusicPcmFanout().ReadCapture(reinterpret_cast<uintptr_t>(player), &block, playback_pts,
       [player](mpv_plezy_audio_block* output) { return Tap().read_next(static_cast<mpv_handle*>(player), output, sizeof(*output)); });
   if (result <= 0) return result;
-  if (!DownmixMusicPcm(&block)) return MPV_PLEZY_AUDIO_UNSUPPORTED;
+  if (!PrepareMusicPcm(&block)) return MPV_PLEZY_AUDIO_UNSUPPORTED;
   if (!std::isfinite(block.pts) || block.frames == 0 || block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
       block.sample_rate == 0 || block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS)
     return MPV_PLEZY_AUDIO_UNSUPPORTED;

@@ -95,4 +95,38 @@ inline bool DownmixMusicPcm(mpv_plezy_audio_block* block) {
   block->speaker_ids[1] = 1;
   return true;
 }
+
+// Preserve canonical surround only after checking every channel assignment and
+// sample. This boundary has no speaker-map field in Dart, so reorder explicitly.
+// Other supported arrangements (including height) retain the bounded Lo/Ro path.
+inline bool PrepareMusicPcm(mpv_plezy_audio_block* block) {
+  if (!block || block->frames < 1 || block->frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
+      (block->channels != 6 && block->channels != 8))
+    return DownmixMusicPcm(block);
+  constexpr std::array<uint8_t, 8> speakers{0, 1, 2, 3, 4, 5, 9, 10};
+  std::array<int, 8> order{};
+  order.fill(-1);
+  for (uint32_t input = 0; input < block->channels; ++input) {
+    auto speaker = block->speaker_ids[input];
+    if (block->channels == 6 && (speaker == 9 || speaker == 10)) speaker -= 5;
+    auto found = std::find(speakers.begin(), speakers.begin() + block->channels, speaker);
+    if (found == speakers.begin() + block->channels) return DownmixMusicPcm(block);
+    const auto output = static_cast<size_t>(found - speakers.begin());
+    if (order[output] != -1) return false;
+    order[output] = static_cast<int>(input);
+  }
+  std::array<float, MPV_PLEZY_AUDIO_TAP_FRAMES * MPV_PLEZY_AUDIO_TAP_CHANNELS> canonical{};
+  for (uint32_t frame = 0; frame < block->frames; ++frame) {
+    for (uint32_t channel = 0; channel < block->channels; ++channel) {
+      if (order[channel] < 0) return false;
+      const float value = block->samples[frame * block->channels + order[channel]];
+      if (!std::isfinite(value)) return false;
+      canonical[frame * block->channels + channel] = std::clamp(value, -1.0f, 1.0f);
+    }
+  }
+  std::memcpy(block->samples, canonical.data(), block->frames * block->channels * sizeof(float));
+  std::copy(speakers.begin(), speakers.begin() + block->channels, block->speaker_ids);
+  return true;
+}
+
 }  // namespace plezy::visualization

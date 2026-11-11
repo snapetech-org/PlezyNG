@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Negotiate native speaker channel preferences and send synchronized stereo, 5.1 and 7.1 PCM without exceeding the UDP MTU. Preserve/reorder known surround capture layouts, downmix other supported layouts, and retire changed or invalid peer formats independently.
+
 - Apply native per-player parametric EQ relays through the shared music session, persist bounded profile settings and publish accepted state. Preserve other speakers' PCM while transmitting, roll back rejected changes and keep ordinary playback available when a restored preset lacks decoder support.
 
 - Add finite, bounded parametric EQ to the native audio-state reconciler, preserving independent ten-band/effect state and rolling back rejected graphs. Require executable native DSP verification before qualifying the dependency; the previous Linux/Android filter lists omitted EQ.

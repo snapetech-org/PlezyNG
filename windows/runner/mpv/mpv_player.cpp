@@ -622,7 +622,7 @@ int MpvPlayer::ReadMusicPcmCapture(mpv_plezy_audio_block* block) {
   const int result = plezy::visualization::SharedMusicPcmFanout().ReadCapture(
       reinterpret_cast<uintptr_t>(mpv_), block, visualization_pts_.load(),
       [this](mpv_plezy_audio_block* output) { return TapApi().read_next(mpv_, output, sizeof(*output)); });
-  return result > 0 && !plezy::visualization::DownmixMusicPcm(block) ? MPV_ERROR_UNSUPPORTED : result;
+  return result > 0 && !plezy::visualization::PrepareMusicPcm(block) ? MPV_ERROR_UNSUPPORTED : result;
 }
 
 int MpvPlayer::SetSubtitlePcmCaptureEnabled(bool enabled) {

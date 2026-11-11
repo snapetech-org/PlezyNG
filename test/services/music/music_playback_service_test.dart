@@ -1206,6 +1206,11 @@ void main() {
     WebSocket? socket;
     const peer = '11111111-1111-4111-8111-111111111111';
     mesh.listen((request) async {
+      if (!WebSocketTransformer.isUpgradeRequest(request)) {
+        request.response.statusCode = 404;
+        await request.response.close();
+        return;
+      }
       socket = await WebSocketTransformer.upgrade(request);
       socket!.listen((value) {
         for (final message in CalderaGroupClient.meshMessages(value as String)) {
@@ -1242,7 +1247,7 @@ void main() {
           id: peer,
           name: 'Native speaker',
           address: address,
-          companionPort: 32500,
+          companionPort: mesh.port,
           meshPort: mesh.port,
           expires: DateTime.now().add(const Duration(minutes: 1)),
         ),
@@ -1404,13 +1409,18 @@ void main() {
       id: peer,
       name: 'Native fixture',
       address: address,
-      companionPort: 32500,
+      companionPort: mesh.port,
       meshPort: mesh.port,
       expires: DateTime.now().add(const Duration(minutes: 1)),
     );
     discovery.entries.add(node);
     final accepted = <Map<String, dynamic>>[];
     mesh.listen((request) async {
+      if (!WebSocketTransformer.isUpgradeRequest(request)) {
+        request.response.statusCode = 404;
+        await request.response.close();
+        return;
+      }
       final socket = await WebSocketTransformer.upgrade(request);
       sockets.add(socket);
       socket.listen((frame) {

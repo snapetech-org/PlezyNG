@@ -406,7 +406,7 @@ JNI_NAME(musicPcmCaptureRead)(JNIEnv* env, jobject, jlong session, jdouble playb
     if (status == 0) return nullptr;
     if (status < 0)
       throw std::runtime_error("The Android MPV PCM capture tap failed (" + std::to_string(status) + ").");
-    if (!DownmixMusicPcm(&block)) throw std::runtime_error("Unknown music PCM speaker map.");
+    if (!PrepareMusicPcm(&block)) throw std::runtime_error("Unknown music PCM speaker map.");
     if (!std::isfinite(block.pts) || block.frames == 0 || block.frames > MPV_PLEZY_AUDIO_TAP_FRAMES ||
         block.sample_rate == 0 || block.channels == 0 || block.channels > MPV_PLEZY_AUDIO_TAP_CHANNELS)
       throw std::runtime_error("The Android MPV PCM capture packet was invalid.");

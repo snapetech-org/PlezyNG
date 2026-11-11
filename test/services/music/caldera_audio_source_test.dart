@@ -55,6 +55,7 @@ class _Fixture {
   final mutes = <bool>[];
   bool muted = false, current = true, feedCurrent = true;
   double replayGain = 1, volume = 50;
+  int channels = 2;
   Completer<double>? gainGate;
   CalderaAudioSource? source;
   Future<void> open() async {
@@ -67,7 +68,7 @@ class _Fixture {
       id: '11111111-1111-4111-8111-111111111111',
       name: 'Fixture',
       address: address,
-      companionPort: 32500,
+      companionPort: mesh.port,
       meshPort: mesh.port,
       expires: DateTime.now().add(const Duration(minutes: 1)),
     );
@@ -80,6 +81,11 @@ class _Fixture {
       }
     });
     mesh.listen((request) async {
+      if (!WebSocketTransformer.isUpgradeRequest(request)) {
+        request.response.write(jsonEncode(channels));
+        await request.response.close();
+        return;
+      }
       socket = await WebSocketTransformer.upgrade(request);
       socket!.listen((frame) {
         for (final message in CalderaGroupClient.meshMessages(frame as String)) {
@@ -163,6 +169,48 @@ Future<void> waitFor(bool Function() predicate) async {
 }
 
 void main() {
+  for (final width in [2, 6, 8]) {
+    test('native source negotiates $width channels without exceeding the wire MTU', () async {
+      final f = _Fixture()..channels = width;
+      await f.open();
+      addTearDown(f.close);
+      final source = f.create();
+      await source.start();
+      await waitFor(() => f.packets.whereType<XitaAudio>().any((p) => p.samples.any((s) => s != 0)));
+      expect(f.packets.whereType<XitaDescriptor>().map((p) => p.channels), everyElement(width));
+      final audio = f.packets.whereType<XitaAudio>().toList();
+      expect(audio.map((p) => p.channels), everyElement(width));
+      expect(audio.every((p) => p.samples.length * 4 + 20 <= 1472), isTrue);
+      if (width > 2) {
+        for (final packet in audio) {
+          for (var frame = 0; frame < packet.frames; frame++) {
+            expect(packet.samples.sublist(frame * width + 2, (frame + 1) * width), everyElement(0));
+          }
+        }
+      }
+    });
+  }
+
+  test('unsupported negotiated layout fails before capture or membership changes', () async {
+    final f = _Fixture()..channels = 3;
+    await f.open();
+    addTearDown(f.close);
+    await expectLater(f.create().start(), throwsFormatException);
+    expect(f.capture.toggles, isEmpty);
+    expect(f.mutes, isEmpty);
+    expect(f.messages.any((message) => message['method'] == 'SetSinksForSource'), isFalse);
+  });
+
+  test('changing a verified output width retires its stream and restores local output', () async {
+    final f = _Fixture()..channels = 8;
+    await f.open();
+    addTearDown(f.close);
+    final source = f.create();
+    await source.start();
+    f.channels = 2;
+    await waitFor(() => !source.active && !f.capture.enabled && !f.muted);
+  });
+
   test('native source accepts independent parametric fields without replacing capture', () async {
     final f = _Fixture();
     await f.open();

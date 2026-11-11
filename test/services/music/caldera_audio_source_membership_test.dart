@@ -12,7 +12,7 @@ import 'package:plezy/services/music/xita_packet.dart';
 class _Capture implements MusicPcmCaptureSource {
   final clock = Stopwatch();
   final toggles = <bool>[];
-  int frames = 0;
+  int frames = 0, channels = 2;
   bool enabled = false;
   @override
   Future<bool> musicPcmCaptureAvailable() async => true;
@@ -32,8 +32,10 @@ class _Capture implements MusicPcmCaptureSource {
         MusicPcmBlock(
           presentationTime: Duration(microseconds: frames * 1000000 ~/ 48000),
           sampleRate: 48000,
-          channels: 2,
-          samples: Float32List.fromList(List.filled(960, .25)),
+          channels: channels,
+          samples: Float32List.fromList(
+            List.generate(480 * channels, (i) => channels == 2 ? .25 : .05 * (i % channels + 1)),
+          ),
           droppedFrames: 0,
           generation: 1,
         ),
@@ -54,7 +56,7 @@ class _Peer {
   WebSocket? socket;
   bool acknowledge = true, badVersion = false;
   String? source;
-  int connections = 0;
+  int connections = 0, channels = 2, oversized = 0;
   final received = <({XitaAudio packet, int port})>[];
   final membership = Completer<void>();
   Future<void> start() async {
@@ -65,18 +67,24 @@ class _Peer {
       name: 'Fixture',
       address: address,
       meshPort: server.port,
-      companionPort: 32500,
+      companionPort: server.port,
       expires: DateTime.now().add(const Duration(minutes: 1)),
     );
     udp.listen((event) {
       if (event != RawSocketEvent.read) return;
       Datagram? datagram;
       while ((datagram = udp.receive()) != null) {
-        final packet = XitaPacket.decode(datagram!.data);
+        if (datagram!.data.length > 1472) oversized++;
+        final packet = XitaPacket.decode(datagram.data);
         if (packet is XitaAudio) received.add((packet: packet, port: datagram.port));
       }
     });
     server.listen((request) async {
+      if (!WebSocketTransformer.isUpgradeRequest(request)) {
+        request.response.write(jsonEncode(channels));
+        await request.response.close();
+        return;
+      }
       socket = await WebSocketTransformer.upgrade(request);
       connections++;
       socket!.listen((frame) {
@@ -173,6 +181,36 @@ Future<void> main() async {
       ),
     ],
   );
+
+  test('stereo and surround speakers share a clock and a changed peer retires independently', () async {
+    capture.channels = 8;
+    second.channels = 8;
+    final source = create([first.node, second.node]);
+    await source.start();
+    await until(() => second.received.any((p) => p.packet.samples.any((s) => s != 0)));
+    final wide = second.received.firstWhere((p) => p.packet.samples.any((s) => s != 0)).packet;
+    expect(wide.channels, 8);
+    for (var channel = 0; channel < 8; channel++) {
+      expect(wide.samples[channel], closeTo(.05 * (channel + 1), .000001));
+    }
+    final stereo = first.received.firstWhere((p) => p.packet.samples.any((s) => s != 0)).packet;
+    expect(stereo.channels, 2);
+    expect(
+      stereo.samples.first,
+      closeTo((.05 + .7071067811865476 * (.15 + .25 + .35)) / (1 + 3 * .7071067811865476), .000001),
+    );
+    final wideAnchors = second.received.where((p) => p.packet.flags == 1).map((p) => p.packet.frame).toSet();
+    expect(first.received.any((p) => p.packet.flags == 1 && wideAnchors.contains(p.packet.frame)), isTrue);
+    expect(first.oversized + second.oversized, 0);
+    final port = first.received.last.port;
+    second.channels = 2;
+    await until(() => source.sinks.length == 1);
+    final previous = first.received.last.packet.frame;
+    await until(() => first.received.last.packet.frame > previous);
+    expect(source.active, isTrue);
+    expect(first.received.last.port, port);
+    expect(capture.toggles, [true]);
+  }, skip: skip);
 
   test('add/remove peers retain UDP port, decoder leases and advancing frame counter', () async {
     final source = create([first.node]);

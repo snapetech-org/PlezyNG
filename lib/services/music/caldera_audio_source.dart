@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
+import 'caldera_audio_format.dart';
 import 'caldera_mesh_volume.dart';
 import 'caldera_mesh_equalizer.dart';
 import 'caldera_source_endpoint.dart';
@@ -41,7 +42,7 @@ abstract interface class NativeMusicGroupSourceControls {
 }
 
 /// Explicit native audio source. Only selected, version-checked private peers
-/// receive PCM. Every native sink gets identical frames from one monotonic
+/// receive PCM. Every native sink gets layout-matched frames from one monotonic
 /// clock. Local decoder AO is muted while the group is the selected output.
 class CalderaAudioSource {
   CalderaAudioSource({
@@ -88,7 +89,12 @@ class CalderaAudioSource {
     }
   }
 
-  final _mixer = XitaPcmMixer();
+  final _mixers = {
+    for (final width in [2, 6, 8]) width: XitaPcmMixer(channels: width),
+  };
+  XitaPcmMixer get _mixer => _mixers[2]!;
+  Future<void>? _formatPolling;
+  int _lastFormats = 0;
   final _clock = Stopwatch();
   final _peers = <_SourcePeer>[];
   final _leases = <MusicPcmCaptureSource, _CaptureLease>{};
@@ -312,6 +318,10 @@ class CalderaAudioSource {
       _send(peer, 'Hello', {'capabilities': null, 'version': '1.0.0'});
       await peer.ready.future.timeout(const Duration(seconds: 5));
       if (!valid() || peer.retired) throw StateError('Native music selection changed');
+      final format = await CalderaAudioFormat.read(node, current: () => valid() && !peer.retired);
+      if (!valid() || peer.retired) throw StateError('Native music selection changed');
+      peer.channels = format.channels;
+      peer.negotiated = format.negotiated;
       return peer;
     } catch (_) {
       _retirePeer(peer);
@@ -435,23 +445,33 @@ class CalderaAudioSource {
         if (!_valid) return;
         if (blocks.length > 32) throw const FormatException('Music PCM batch too large');
         if (!feed.playing) {
-          _mixer.remove(feed.capture);
+          for (final mixer in _mixers.values) {
+            mixer.remove(feed.capture);
+          }
           continue;
         }
         final gain = feed.gain * (await feed.readGain?.call() ?? 1);
         if (!_valid) return;
         if (feed.current?.call() == false) {
-          _mixer.remove(feed.capture);
+          for (final mixer in _mixers.values) {
+            mixer.remove(feed.capture);
+          }
           continue;
         }
-        _mixer.setGain(feed.capture, gain);
+        for (final mixer in _mixers.values) {
+          mixer.setGain(feed.capture, gain);
+        }
         for (final block in blocks) {
-          _mixer.add(feed.capture, block, position: feed.position, gain: gain);
+          for (final mixer in _mixers.values) {
+            mixer.add(feed.capture, block, position: feed.position, gain: gain);
+          }
         }
       } catch (_) {
         if (!_valid) return;
         if (feed.current?.call() == false) {
-          _mixer.remove(feed.capture);
+          for (final mixer in _mixers.values) {
+            mixer.remove(feed.capture);
+          }
           continue;
         }
         rethrow;
@@ -459,9 +479,25 @@ class CalderaAudioSource {
     }
     final retired = _leases.keys.where((key) => !sources.any((feed) => identical(feed.capture, key))).toList();
     for (final key in retired) {
+      for (final mixer in _mixers.values) {
+        mixer.remove(key);
+      }
       await _release(_leases.remove(key)!);
     }
     _lastPoll = _clock.elapsedMilliseconds;
+  }
+
+  Future<void> _checkFormats() async {
+    for (final peer in _peers.where((peer) => peer.adopted && peer.negotiated && !peer.retired).toList()) {
+      bool owns() => _valid && !peer.retired;
+      if (!owns()) continue;
+      try {
+        final format = await CalderaAudioFormat.read(peer.node, current: owns);
+        if (owns() && (!format.negotiated || format.channels != peer.channels)) _retirePeer(peer);
+      } catch (_) {
+        if (owns()) _retirePeer(peer);
+      }
+    }
   }
 
   void _tick() {
@@ -488,6 +524,16 @@ class CalderaAudioSource {
         ),
       );
     }
+    if (_formatPolling == null && _clock.elapsedMilliseconds - _lastFormats > 2000) {
+      _lastFormats = _clock.elapsedMilliseconds;
+      final pending = _checkFormats();
+      _formatPolling = pending;
+      unawaited(
+        pending.whenComplete(() {
+          if (identical(_formatPolling, pending)) _formatPolling = null;
+        }),
+      );
+    }
     if (_clock.elapsedMilliseconds - _lastPing > 2000) {
       _lastPing = _clock.elapsedMilliseconds;
       for (final peer in _peers.toList()) {
@@ -507,30 +553,45 @@ class CalderaAudioSource {
         final delay = clock.lateness(_clock.elapsedMicroseconds);
         clock.advance(_clock.elapsedMicroseconds, bufferedFrames: _mixer.bufferedFrames);
         final frame = _mixer.cursor;
-        // Repeated descriptors permit recovery without changing format or clock.
-        if (_period++ % 16 == 0) {
-          _broadcast(
-            XitaDescriptor.encode(
-              sampleRate: XitaPcmMixer.sampleRate,
-              channels: 2,
-              periodFrames: _periodFrames,
-              frame: frame,
-              timestamp: clock.timestampAt(scheduled),
-            ),
-          );
-        }
-        final pcm = _mixer.render(_periodFrames);
-        const packetFrames = 128;
-        for (var offset = 0; offset < _periodFrames; offset += packetFrames) {
-          _broadcast(
-            XitaAudio.encode(
-              frame: frame + offset,
-              channels: 2,
-              samples: Float32List.sublistView(pcm, offset * 2, (offset + packetFrames) * 2),
-              flags: offset == 0 ? 1 : 0,
-              transmitDelayMicros: delay,
-            ),
-          );
+        // All layout buses advance together, including formats with no peers.
+        // A late speaker joins the same frame clock without replaying old PCM.
+        final descriptor = _period++ % 16 == 0;
+        final widths = _peers.where((peer) => peer.adopted && !peer.retired).map((peer) => peer.channels).toSet();
+        for (final entry in _mixers.entries) {
+          final channels = entry.key;
+          final pcm = entry.value.render(_periodFrames);
+          if (!widths.contains(channels)) continue;
+          if (descriptor) {
+            _broadcast(
+              XitaDescriptor.encode(
+                sampleRate: XitaPcmMixer.sampleRate,
+                channels: channels,
+                periodFrames: _periodFrames,
+                frame: frame,
+                timestamp: clock.timestampAt(scheduled),
+              ),
+              channels,
+            );
+          }
+          // Fit float PCM plus the 20-byte Xita header inside the native MTU.
+          final packetFrames = channels == 8
+              ? 45
+              : channels == 6
+              ? 60
+              : 128;
+          for (var offset = 0; offset < _periodFrames; offset += packetFrames) {
+            final end = (offset + packetFrames).clamp(0, _periodFrames);
+            _broadcast(
+              XitaAudio.encode(
+                frame: frame + offset,
+                channels: channels,
+                samples: Float32List.sublistView(pcm, offset * channels, end * channels),
+                flags: offset == 0 ? 1 : 0,
+                transmitDelayMicros: delay,
+              ),
+              channels,
+            );
+          }
         }
       }
     } catch (_) {
@@ -538,10 +599,10 @@ class CalderaAudioSource {
     }
   }
 
-  void _broadcast(Uint8List packet) {
+  void _broadcast(Uint8List packet, int channels) {
     if (!_valid) return;
-    for (final node in sinks) {
-      _udp?.send(packet, node.address, 5000);
+    for (final peer in _peers.where((peer) => peer.adopted && !peer.retired && peer.channels == channels)) {
+      _udp?.send(packet, peer.node.address, 5000);
     }
   }
 
@@ -576,7 +637,9 @@ class CalderaAudioSource {
       }
     }
     _leases.clear();
-    _mixer.clear();
+    for (final mixer in _mixers.values) {
+      mixer.clear();
+    }
     onClosed?.call();
   }
 }
@@ -587,7 +650,8 @@ class _SourcePeer {
   final WebSocket socket;
   final ready = Completer<void>();
   final accepted = Completer<void>();
-  int lastMessage = 0;
+  int lastMessage = 0, channels = 2;
+  bool negotiated = false;
   bool joined = false, adopted = false, retired = false;
 }
 

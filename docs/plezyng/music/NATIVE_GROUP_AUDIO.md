@@ -130,19 +130,20 @@ The native group screen can send the current shared music session to selected
 native speakers. Each peer must acknowledge its new source before capture and
 local muting begin. Missing capture support fails before native membership is
 changed. No additional media-server stream is opened. Ordered PCM from the
-primary and overlap decoders is mixed onto a bounded 48 kHz stereo frame clock;
+primary and overlap decoders is mixed onto bounded 48 kHz stereo/5.1/7.1 buses sharing one frame clock;
 seek generations, pause, track changes and native ownership changes retire stale
 samples. A source preserves the local queue, duplicate occurrences, transport
 controls and listen-reporting authority. Closing restores the prior local mute.
 
 The native bridge shares one tap with the visualizer using an independent,
-presentation-timed bounded copy queue. Native capture folds known mono, stereo,
-surround and height speaker assignments into the stereo wire bus, normalizing
-summed weights and excluding LFE and silent padding. The original multichannel
-copy remains available to visualizations. Unknown/duplicate speaker assignments
-and non-finite samples fail closed. Native multichannel wire output is not
-implemented; the negotiated source format remains stereo. Shared downmix tests
-pass in C++17 and C++20, and the changed Linux wrapper compiles.
+presentation-timed bounded copy queue. Native capture preserves and reorders
+canonical 5.1/7.1 speaker assignments into WAVE order (FL FR FC LFE RL RR SL SR).
+5.1 side assignments map into the six-channel rear slots. Other known layouts,
+including height, fold into stereo with normalized summed weights, excluding LFE
+and silent padding. The original multichannel copy remains available to
+visualizations. Unknown/duplicate assignments and non-finite samples fail closed.
+Shared preservation/downmix tests pass in C++17 and C++20; the current Linux
+wrapper also compiles.
 
 Verification: 116 focused source, mixer, shared-session and UI regressions pass.
 The production Dart source, driven by generated PCM in an isolated namespace,
@@ -306,3 +307,32 @@ executed generated PCM checks: flat 0.1999817, peak EQ 0.3990173, low/high shelv
 0.2825012 and global attenuation 0.0999908. The all-platform publication run and
 atomic application lock promotion are still pending; the application remains
 pinned to its previous decoder until verified artifacts are available.
+
+
+## Per-peer channel negotiation
+
+After a supported mesh Hello and before membership/capture, the source reads
+/api/prefs?name=audio.channels from the pinned private peer. Reads have a
+three-second deadline, 64-byte limit, no redirects and ownership checks.
+Only saved widths 0/2/6/8 are accepted; automatic 0 and legacy 404/405 retain the
+established stereo contract. This preference is not a physical device probe:
+a native command-line channel override does not update the saved value. Widths
+must not be inferred from null mesh capabilities or a track's audioChannels.
+
+All three bounded output buses advance together, so new or differently configured
+speakers use the existing clock. Stereo expands with silent extra channels;
+7.1-to-5.1 folds side into rear, and surround-to-stereo uses a normalized Lo/Ro
+fold excluding LFE. Packet payloads include the 20-byte header within 1472 bytes;
+trailing partial packets retain the same period counter. A periodic preference
+check retires changed, malformed or unreachable verified peers independently,
+without restarting capture or disturbing siblings. This does not provide an
+atomic handshake with an external decoder changing its configuration.
+
+307 combined format/mixer/source/membership/mesh/clock/player tests pass. Tests
+exercise mixed stereo/surround peers, common anchors, exact channel samples,
+MTU limits, invalid input, cancellation and independent retirement. The official
+Caldera 1.1.0 reference, with saved preferences matching output width, received
+production 48 kHz 6-channel PCM (1,608 packets) and 8-channel PCM (2,053 packets),
+both with zero drops. Each supplied 95,520 capture frames and remained alive.
+Automatic-preference runs correctly retained stereo. Null-device underruns
+remain unqualified and these runs do not establish acoustic synchronization.

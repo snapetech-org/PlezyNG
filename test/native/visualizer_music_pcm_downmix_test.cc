@@ -45,5 +45,33 @@ int main() {
   assert(!DownmixMusicPcm(&block));
   block.frames = MPV_PLEZY_AUDIO_TAP_FRAMES + 1;
   assert(!DownmixMusicPcm(&block));
+
+  for (const uint32_t channels : {6, 8}) {
+    block.frames = 2; block.channels = channels;
+    for (uint32_t channel = 0; channel < channels; ++channel) {
+      block.speaker_ids[channel] = surround[channels - 1 - channel];
+      block.samples[channel] = .05f * (channels - channel);
+      block.samples[channels + channel] = -.05f * (channels - channel);
+    }
+    assert(PrepareMusicPcm(&block) && block.channels == channels);
+    for (uint32_t channel = 0; channel < channels; ++channel) {
+      assert(block.speaker_ids[channel] == surround[channel]);
+      assert(std::abs(block.samples[channel] - .05f * (channel + 1)) < .000001f);
+      assert(std::abs(block.samples[channels + channel] + .05f * (channel + 1)) < .000001f);
+    }
+  }
+  block.frames = 1; block.channels = 6;
+  std::copy(surround.begin(), surround.begin() + 6, block.speaker_ids);
+  block.speaker_ids[4] = 9; block.speaker_ids[5] = 10;
+  assert(PrepareMusicPcm(&block) && block.channels == 6);
+  assert(block.speaker_ids[4] == 4 && block.speaker_ids[5] == 5);
+  block.speaker_ids[4] = 12; block.speaker_ids[5] = 14;
+  assert(PrepareMusicPcm(&block) && block.channels == 2);
+  block.channels = 8;
+  std::copy(surround.begin(), surround.end(), block.speaker_ids);
+  block.samples[7] = std::numeric_limits<float>::quiet_NaN();
+  assert(!PrepareMusicPcm(&block));
+  block.samples[7] = 0; block.speaker_ids[7] = 9;
+  assert(!PrepareMusicPcm(&block));
   std::cout << "Music PCM speaker downmix passed.\n";
 }

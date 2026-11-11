@@ -78,7 +78,84 @@ void main() {
     expect(mixer.render(4096), everyElement(0));
     mixer.remove('decoder');
     expect(mixer.render(4096), everyElement(0));
-    expect(() => mixer.add('bad', block(channels: 8), position: Duration.zero, gain: 1), throwsFormatException);
+    expect(() => mixer.add('bad', block(channels: 3), position: Duration.zero, gain: 1), throwsFormatException);
     expect(() => mixer.add('bad', block(), position: Duration.zero, gain: double.nan), throwsFormatException);
+  });
+
+  for (final width in [6, 8]) {
+    test('canonical $width channels preserve speaker order and independent overlap gain', () {
+      final samples = Float32List.fromList(List.generate(width * 4, (i) => .05 * (i % width + 1)));
+      final input = MusicPcmBlock(
+        presentationTime: Duration.zero,
+        sampleRate: 48000,
+        channels: width,
+        samples: samples,
+        droppedFrames: 0,
+        generation: 1,
+      );
+      final mixer = XitaPcmMixer(channels: width);
+      mixer.add('a', input, position: Duration.zero, gain: 1);
+      mixer.add('b', input, position: Duration.zero, gain: -.0);
+      expect(mixer.render(4), samples);
+      expect(mixer.cursor, 4);
+    });
+  }
+  test('5.1 side routing expands to 7.1 with silent side channels; 7.1 folds sides into rear', () {
+    final six = XitaPcmMixer(channels: 8);
+    six.add('a', block(channels: 6, frames: 1), position: Duration.zero, gain: 1);
+    expect(six.render(1), [.5, .5, .5, .5, .5, .5, 0, 0]);
+    final eight = XitaPcmMixer(channels: 6);
+    eight.add(
+      'a',
+      MusicPcmBlock(
+        presentationTime: Duration.zero,
+        sampleRate: 48000,
+        channels: 8,
+        samples: Float32List.fromList([.1, .2, .3, .4, .5, .6, -.5, -.6]),
+        droppedFrames: 0,
+        generation: 1,
+      ),
+      position: Duration.zero,
+      gain: 1,
+    );
+    final result = eight.render(1);
+    expect(result.sublist(0, 4), [.1, .2, .3, .4].map((n) => Float32List.fromList([n]).first));
+    expect(result.sublist(4), [0, 0]);
+  });
+  test('surround stereo fold preserves headroom and excludes LFE', () {
+    final mixer = XitaPcmMixer();
+    mixer.add(
+      'a',
+      MusicPcmBlock(
+        presentationTime: Duration.zero,
+        sampleRate: 48000,
+        channels: 8,
+        samples: Float32List.fromList([0, 0, 0, 1, 0, 0, 0, 0]),
+        droppedFrames: 0,
+        generation: 1,
+      ),
+      position: Duration.zero,
+      gain: 1,
+    );
+    expect(mixer.render(1), [0, 0]);
+    mixer.add('a', block(channels: 8, frames: 1, value: 1), position: Duration.zero, gain: 1);
+    expect(mixer.render(1), [1, 1]);
+  });
+  test('a decoder layout change retires stale surround PCM on every output bus', () {
+    for (final width in [2, 6, 8]) {
+      final mixer = XitaPcmMixer(channels: width);
+      mixer.add('a', block(channels: 8, frames: 10), position: Duration.zero, gain: 1);
+      mixer.render(1);
+      mixer.add('a', block(channels: 2, frames: 1, value: -.5), position: Duration.zero, gain: 1);
+      expect(mixer.render(1), [-.5, -.5, ...List.filled(width - 2, 0)]);
+      expect(mixer.render(1), everyElement(0));
+    }
+  });
+  test('invalid input cannot partially overwrite accepted PCM', () {
+    final mixer = XitaPcmMixer(channels: 8);
+    mixer.add('a', block(channels: 8, frames: 4), position: Duration.zero, gain: 1);
+    final invalid = block(channels: 8, frames: 4)..samples[31] = double.nan;
+    expect(() => mixer.add('a', invalid, position: Duration.zero, gain: 1), throwsFormatException);
+    expect(mixer.render(4), everyElement(.5));
   });
 }

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Build the relay and its health check with Go 1.27.4 to address the standard-library HTTP server race in [GO-2026-6859](https://pkg.go.dev/vuln/GO-2026-6859), including the matching immutable multi-platform container builder.
+
 - Require native qualification to show moving video and audio on the untouched Open Media route as well as the standard server player; seeking or reattaching cannot stand in for initial-frame readiness.
 
 - Reveal native video when playback renders its first frame before the view mounts or a playing surface is reattached. The shared widget reads current frame readiness across player backends while preserving explicit loading and display-negotiation holds.

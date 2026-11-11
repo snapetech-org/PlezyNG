@@ -79,6 +79,7 @@ platform :ios do
         skip_metadata: true,
         skip_screenshots: true,
         skip_app_version_update: true,
+        run_precheck_before_submit: false,
         submit_for_review: false,
         automatic_release: false
       )

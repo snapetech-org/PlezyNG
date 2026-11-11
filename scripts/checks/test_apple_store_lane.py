@@ -101,6 +101,7 @@ class AppleStoreLaneTest(unittest.TestCase):
         receipt, upload = self.run_lane('absent')
         self.assertEqual(upload['app_identifier'], 'org.snapetech.pleazyng')
         self.assertIs(upload['submit_for_review'], False)
+        self.assertIs(upload['run_precheck_before_submit'], False)
         self.assertIs(upload['skip_app_version_update'], True)
         self.assertEqual(receipt['asc_linkage'], 'transported_this_run')
 

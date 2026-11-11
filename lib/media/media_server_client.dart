@@ -1110,6 +1110,19 @@ abstract interface class SeasonEpisodePagingClient {
   });
 }
 
+/// Optional playlist presentation editing. Implementations must recheck the
+/// current authentication/source after reads, propagate server permission
+/// failures and return reloaded metadata. Null fields are left unchanged;
+/// an empty summary clears it. Item order and smart rules are independent.
+abstract interface class PlaylistMetadataClient {
+  Future<MediaPlaylist> updatePlaylistMetadata({
+    required MediaPlaylist playlist,
+    String? title,
+    String? summary,
+    bool Function()? isCurrent,
+  });
+}
+
 /// Optional capability for clients whose server can answer "may the signed-in
 /// user delete *this* item?" per item.
 ///

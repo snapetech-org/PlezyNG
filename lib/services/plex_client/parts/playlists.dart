@@ -1,9 +1,75 @@
 part of '../../plex_client.dart';
 
-mixin _PlexPlaylistMethods on _PlexClientInternals {
+mixin _PlexPlaylistMethods on _PlexClientInternals implements PlaylistMetadataClient {
   static const int _defaultPlaylistContainerSize = 100;
   @override
   Object get authenticationSessionId;
+
+  /// Playlist fields use the playlist endpoint, not a library-section edit.
+  /// Wire shape follows Python PlexAPI Playlist._edit / EditFieldMixin.
+  /// https://python-plexapi.readthedocs.io/en/latest/_modules/plexapi/playlist.html
+  @override
+  Future<MediaPlaylist> updatePlaylistMetadata({
+    required MediaPlaylist playlist,
+    String? title,
+    String? summary,
+    bool Function()? isCurrent,
+  }) async {
+    if (playlist.backend != MediaBackend.plex ||
+        playlist.serverId != serverId ||
+        !RegExp(r'^[A-Za-z0-9_-]{1,128}$').hasMatch(playlist.id) ||
+        (title == null && summary == null) ||
+        (title != null && (title.trim().isEmpty || title.length > 255 || RegExp(r'[\x00-\x1f]').hasMatch(title))) ||
+        (summary != null && (summary.length > 10000 || RegExp(r'[\x00-\x08\x0b\x0c\x0e-\x1f]').hasMatch(summary)))) {
+      throw ArgumentError('Invalid playlist metadata edit');
+    }
+    final authentication = authenticationSessionId;
+    bool current() =>
+        !isOfflineMode && identical(authentication, authenticationSessionId) && (isCurrent?.call() ?? true);
+    void requireCurrent() {
+      if (!current()) throw StateError('Playlist source changed');
+    }
+
+    requireCurrent();
+    final fresh = await fetchPlaylistMetadata(playlist.id);
+    requireCurrent();
+    if (fresh == null ||
+        fresh.id != playlist.id ||
+        fresh.serverId != playlist.serverId ||
+        fresh.backend != playlist.backend ||
+        fresh.smart != playlist.smart ||
+        fresh.playlistType != playlist.playlistType) {
+      throw StateError('Playlist is no longer available');
+    }
+    // Avoid overwriting edits observed since the form opened. PMS has no
+    // atomic compare-and-swap here; only changed fields are submitted.
+    if ((title != null && fresh.title != playlist.title) ||
+        (summary != null && (fresh.summary ?? '') != (playlist.summary ?? ''))) {
+      throw StateError('Playlist metadata changed');
+    }
+    final response = await _http.put(
+      '/playlists/${playlist.id}',
+      queryParameters: {
+        if (title != null) ...{'title.value': title.trim(), 'title.locked': '1'},
+        if (summary != null) ...{'summary.value': summary, 'summary.locked': '1'},
+      },
+    );
+    throwIfHttpError(response);
+    requireCurrent();
+    final updated = await fetchPlaylistMetadata(playlist.id);
+    requireCurrent();
+    if (updated == null ||
+        updated.id != playlist.id ||
+        updated.serverId != playlist.serverId ||
+        updated.backend != playlist.backend ||
+        updated.smart != playlist.smart ||
+        updated.playlistType != playlist.playlistType ||
+        (title != null && updated.title != title.trim()) ||
+        (summary != null && (updated.summary ?? '') != summary)) {
+      throw StateError('Playlist update could not be reloaded');
+    }
+    return updated;
+  }
 
   Future<LibraryPage<MediaItem>> previewSmartMusicPlaylist(MusicSmartPlaylistRules rules) async {
     final result = await _fetchPaginatedList(

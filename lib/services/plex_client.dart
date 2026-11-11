@@ -465,6 +465,7 @@ class PlexClient
         GracefullyCloseable,
         ConvertedDownloadClient,
         MediaDeletionPermissionClient,
+        PlaylistMetadataClient,
         PlexLoudnessProfileClient,
         SonicMusicClient {
   @override

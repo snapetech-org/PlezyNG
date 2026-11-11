@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add guarded Plex playlist title and summary updates, preserving entries and smart rules, rejecting observed edit conflicts and reloading accepted server state.
+
 - Persist only changed music queue rows in bounded transactional batches, safely stage cyclic shuffle/reorder updates and fence retired profile stores.
 
 - Show pinned music on Music Home with removal and drag ordering. Pin artists, albums and tracks from music actions, and reopen current authorized detail routes through the shared session.

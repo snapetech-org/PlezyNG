@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'caldera_group.dart';
+import 'caldera_mesh_volume.dart';
 import 'caldera_source_endpoint.dart';
 
 abstract interface class NativeMusicGroupAvailabilityControls {
@@ -78,6 +79,10 @@ class CalderaNativeHost {
   final int meshPort, companionPort;
   final bool advertise;
   final CalderaDiscovery _discovery;
+  late final _volumeCommands = CalderaMeshVolume(
+    read: () => metadata().volume,
+    write: (value) => control('setParameters', value.round()),
+  );
   final _connections = <_MeshConnection>{};
   final _advertisers = <RawDatagramSocket>[];
   final _remembered = <String, CalderaNode>{};
@@ -215,12 +220,8 @@ class CalderaNativeHost {
     );
   }
 
-  void _state(_MeshConnection peer, {bool initial = false}) => _send(peer, initial ? 'SetState' : 'SetNodeState', {
-    'version': '1.0.0',
-    'capabilities': null,
-    'source': _membership.source,
-    'volume': metadata().volume.round().clamp(0, 100),
-  });
+  void _state(_MeshConnection peer, {bool initial = false}) =>
+      _send(peer, initial ? 'SetState' : 'SetNodeState', _volumeCommands.state(_membership.source));
   void _publish() {
     if (!active) return;
     for (final peer in _connections.where((peer) => peer.identity != null).toList()) {
@@ -286,6 +287,18 @@ class CalderaNativeHost {
                 peer.identity = identity as String;
                 _state(peer, initial: true);
                 _send(peer, 'MeshUpdate', const []);
+              } else if (method == 'SetSinkVolume') {
+                final operation = _volumeCommands.apply(
+                  data,
+                  current: () => active && _connections.contains(peer),
+                  changed: _publish,
+                );
+                unawaited(
+                  operation.catchError((Object _) {
+                    _connections.remove(peer);
+                    unawaited(socket.close());
+                  }),
+                );
               } else if (method == 'SetSinksForSource') {
                 _requestMembership(CalderaMembership.parse(data));
                 _state(peer);

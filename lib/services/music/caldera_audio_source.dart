@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
+import 'caldera_mesh_volume.dart';
 import 'caldera_source_endpoint.dart';
 import 'xita_packet.dart';
 import 'xita_transmit_clock.dart';
@@ -64,6 +65,21 @@ class CalderaAudioSource {
   CalderaSourceEndpoint? _endpoint;
   final String id;
   final bool serveCompanion;
+  late final _volumeCommands = CalderaMeshVolume(
+    read: () => metadata?.call().volume ?? 100,
+    write: (value) async {
+      final handler = control;
+      if (handler == null) throw StateError('Native volume unavailable');
+      await handler('setParameters', value.round());
+    },
+  );
+  void _publishVolume() {
+    if (!_valid) return;
+    for (final peer in _peers.where((peer) => peer.adopted && !peer.retired).toList()) {
+      _send(peer, 'SetNodeState', _volumeCommands.state(id));
+    }
+  }
+
   final _mixer = XitaPcmMixer();
   final _clock = Stopwatch();
   final _peers = <_SourcePeer>[];
@@ -187,7 +203,7 @@ class CalderaAudioSource {
   void _join(_SourcePeer peer, List<CalderaNode> nodes) {
     peer.joined = true;
     _send(peer, 'SetSinksForSource', _membership(nodes));
-    _send(peer, 'SetState', {'capabilities': null, 'version': '1.0.0', 'source': id, 'volume': 100});
+    _send(peer, 'SetState', _volumeCommands.state(id));
   }
 
   void _retirePeer(_SourcePeer peer) {
@@ -244,6 +260,15 @@ class CalderaAudioSource {
             }
             if (value['source'] != node.id) throw const FormatException('Native identity changed');
             peer.lastMessage = _clock.elapsedMilliseconds;
+            if (value['method'] == 'SetSinkVolume') {
+              if (!peer.ready.isCompleted) throw const FormatException('Native Hello required');
+              final operation = _volumeCommands.apply(
+                value['data'],
+                current: () => _valid && !peer.retired,
+                changed: _publishVolume,
+              );
+              unawaited(operation.catchError((Object _) => _retirePeer(peer)));
+            }
             if (const ['Hello', 'SetState', 'SetNodeState'].contains(value['method'])) {
               final data = value['data'];
               if (data is! Map || data['version'] != '1.0.0') {

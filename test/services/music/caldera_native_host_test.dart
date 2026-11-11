@@ -89,6 +89,7 @@ void main() {
   final actions = <String>[];
   final connections = <_Connection>[];
   bool current = true;
+  double volume = 50;
   Completer<void>? gate;
 
   setUp(() async {
@@ -97,6 +98,7 @@ void main() {
     actions.clear();
     connections.clear();
     current = true;
+    volume = 50;
     gate = null;
     address = (await NetworkInterface.list(
       type: InternetAddressType.IPv4,
@@ -121,16 +123,19 @@ void main() {
       companionPort: 0,
       advertise: false,
       discovery: discovery,
-      metadata: () => const CalderaSourceMetadata(
+      metadata: () => CalderaSourceMetadata(
         title: 'A title',
         artist: 'An artist',
         album: 'An album',
         state: 'playing',
         position: Duration(seconds: 3),
         duration: Duration(minutes: 3),
-        volume: 50,
+        volume: volume,
       ),
-      control: (action, value) async => actions.add('$action:$value'),
+      control: (action, value) async {
+        actions.add('$action:$value');
+        if (action == 'setParameters') volume = value!.toDouble();
+      },
       assign: (membership, current) async {
         assignments.add(membership);
         scopes.add(current);
@@ -321,6 +326,24 @@ void main() {
     );
     expect(await request('/player/playback/pause', query: {'type': 'music', 'commandID': '2'}), 200);
     expect(actions, ['pause:null']);
+  });
+
+  test('native relayed sink volume reaches shared controls and publishes accepted state', () async {
+    final peer = await connect();
+    await peer.hello();
+    peer.send('SetSinkVolume', {'volume': 37});
+    await until(() => actions.contains('setParameters:37'));
+    await until(
+      () => peer.messages.any(
+        (message) => message['method'] == 'SetNodeState' && (message['data'] as Map)['volume'] == 37,
+      ),
+    );
+    expect(host.active, isTrue);
+    expect(assignments, isEmpty);
+    peer.send('SetSinkVolume', {'volume': 1000});
+    await until(() => peer.closed);
+    expect(actions, ['setParameters:37']);
+    expect(host.active, isTrue);
   });
 
   test('browser origins cannot use native LAN controls or mesh', () async {

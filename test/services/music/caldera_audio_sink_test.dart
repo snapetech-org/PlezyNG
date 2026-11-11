@@ -29,7 +29,15 @@ XitaAudio audio(int frame, {int count = 80, double value = .5, int flags = 1}) =
         )!
         as XitaAudio;
 
-class _Output implements CalderaAudioOutput, CalderaAudioMetadataOutput {
+class _Output implements CalderaAudioOutput, CalderaAudioMetadataOutput, CalderaAudioVolumeOutput {
+  @override
+  double calderaAudioVolume = 50;
+  @override
+  Future<void> setCalderaAudioVolume(Object key, double value) async {
+    if (!ownsCalderaAudio(key)) throw StateError('Output changed');
+    calderaAudioVolume = value;
+  }
+
   final metadata = <CalderaNowPlaying>[];
   @override
   void updateCalderaMetadata(Object key, CalderaNowPlaying value) {
@@ -309,6 +317,19 @@ void main() {
         expect([for (var i = 0; i + 4 <= pcm.lengthInBytes; i += 4) pcm.getFloat32(i, Endian.little)], contains(.25));
         expect(output.metadata.last.snapshot.title, 'Remote track');
         expect(output.metadata.last.artist, 'Remote artist');
+        socket!.add(
+          jsonEncode({
+            'source': native,
+            'method': 'SetSinkVolume',
+            'data': {'volume': 37},
+          }),
+        );
+        for (var i = 0; i < 100 && output.calderaAudioVolume != 37; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
+        expect(output.calderaAudioVolume, 37);
+        expect(controls, isEmpty, reason: 'Sink volume must not change source transport');
+
         await sink.control('pause');
         producer?.cancel();
         udp.send(

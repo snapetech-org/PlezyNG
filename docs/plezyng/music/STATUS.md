@@ -62,7 +62,11 @@ the capture lease, source UDP port and frame clock. Failed/cancelled additions
 preserve existing outputs and one peer departure leaves siblings playing.
 Two official receivers exercised native-initiated changes with 613/686 packets,
 zero drops and one uninterrupted 120,960-frame capture lease.
-Remaining code/integration includes multichannel wire output and physical
+Native per-player volume relays now use bounded serial shared controls on
+hosted and dedicated audio connections, rechecking queued ownership and retaining
+audio/queue state. Receiver gain remains local. The official controller applied
+37 through its native relay; 139 focused tests pass.
+Remaining code/integration includes parametric EQ relays, multichannel wire output and physical
 output-latency qualification. Renderer
 feedback now reads the current core's audible audio-PTS, maps its WAV clock to
 monotonic time and resamples source frames for actual presentation. Bounded

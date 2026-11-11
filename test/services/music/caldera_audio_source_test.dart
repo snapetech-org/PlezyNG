@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/mpv/player/music_pcm_capture_source.dart';
 import 'package:plezy/services/music/caldera_audio_source.dart';
 import 'package:plezy/services/music/caldera_group.dart';
+import 'package:plezy/services/music/caldera_source_endpoint.dart';
 import 'package:plezy/services/music/xita_packet.dart';
 
 class _Capture implements MusicPcmCaptureSource {
@@ -50,7 +51,7 @@ class _Fixture {
   final capture = _Capture();
   final mutes = <bool>[];
   bool muted = false, current = true, feedCurrent = true;
-  double replayGain = 1;
+  double replayGain = 1, volume = 50;
   Completer<double>? gainGate;
   CalderaAudioSource? source;
   Future<void> open() async {
@@ -109,6 +110,19 @@ class _Fixture {
   CalderaAudioSource create() {
     return source = CalderaAudioSource(
       sinks: [node],
+      serveCompanion: false,
+      metadata: () => CalderaSourceMetadata(
+        title: 'Fixture',
+        artist: '',
+        album: '',
+        state: 'playing',
+        position: Duration.zero,
+        duration: Duration.zero,
+        volume: volume,
+      ),
+      control: (action, value) async {
+        if (action == 'setParameters') volume = value!.toDouble();
+      },
       current: () => current,
       feeds: () => [
         CalderaPcmFeed(
@@ -145,6 +159,35 @@ Future<void> waitFor(bool Function() predicate) async {
 }
 
 void main() {
+  test('native source accepts relayed volume without restarting capture or membership', () async {
+    final f = _Fixture();
+    await f.open();
+    final source = f.create();
+    try {
+      await source.start();
+      f.socket!.add(
+        jsonEncode({
+          'source': f.node.id,
+          'method': 'SetSinkVolume',
+          'data': {'volume': 37},
+        }),
+      );
+      for (var i = 0; i < 100 && f.volume != 37; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      expect(f.volume, 37);
+      expect(source.active, isTrue);
+      expect(f.capture.toggles, [true]);
+      expect(f.messages.where((message) => message['method'] == 'SetSinksForSource'), hasLength(1));
+      expect(
+        f.messages.any((message) => message['method'] == 'SetNodeState' && (message['data'] as Map)['volume'] == 37),
+        isTrue,
+      );
+    } finally {
+      await f.close();
+    }
+  });
+
   test('native AO gain updates queued audio and a retired decoder cannot apply a late gain read', () async {
     final f = _Fixture();
     await f.open();

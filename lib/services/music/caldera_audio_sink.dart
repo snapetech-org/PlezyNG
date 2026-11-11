@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 import 'caldera_group.dart';
+import 'caldera_mesh_volume.dart';
 import 'caldera_state_feed.dart';
 import 'xita_packet.dart';
 import 'xita_output_clock.dart';
@@ -15,6 +16,11 @@ abstract interface class CalderaAudioOutput {
   Future<bool> openCalderaAudio(Object owner, Uri source, String title, bool Function() current);
   bool ownsCalderaAudio(Object owner);
   Future<void> closeCalderaAudio(Object owner);
+}
+
+abstract interface class CalderaAudioVolumeOutput {
+  double get calderaAudioVolume;
+  Future<void> setCalderaAudioVolume(Object owner, double value);
 }
 
 abstract interface class CalderaAudioClockOutput {
@@ -194,6 +200,18 @@ class CalderaAudioSink {
   bool get active => !_closed && _opened && output.ownsCalderaAudio(_owner);
   bool get _valid => !_closed && current() && (!_opened || output.ownsCalderaAudio(_owner));
 
+  late final _volumeCommands = CalderaMeshVolume(
+    read: () => output is CalderaAudioVolumeOutput ? (output as CalderaAudioVolumeOutput).calderaAudioVolume : 100,
+    write: (value) async {
+      if (output case final CalderaAudioVolumeOutput volume) {
+        if (!_opened || !output.ownsCalderaAudio(_owner)) throw StateError('Native output unavailable');
+        await volume.setCalderaAudioVolume(_owner, value);
+      } else {
+        throw UnsupportedError('Native output volume unavailable');
+      }
+    },
+  );
+
   bool get _silent => _suspended || _state?.snapshot.state != 'playing';
 
   void _resetTimeline() {
@@ -359,6 +377,15 @@ class CalderaAudioSink {
               if (message['source'] != leader.id) throw const FormatException('Native peer identity changed');
               _lastMesh = _clock.elapsedMilliseconds;
               final data = message['data'];
+              if (message['method'] == 'SetSinkVolume') {
+                if (!_meshReady.isCompleted) throw const FormatException('Native Hello required');
+                final operation = _volumeCommands.apply(
+                  data,
+                  current: () => _valid,
+                  changed: () => _send('SetNodeState', _volumeCommands.state(leader.id)),
+                );
+                unawaited(operation.catchError((Object _) => close()));
+              }
               if (const ['Hello', 'SetState', 'SetNodeState'].contains(message['method'])) {
                 if (data is! Map || data['version'] != '1.0.0') throw const FormatException('Unsupported native peer');
                 if (!_meshReady.isCompleted) _meshReady.complete();

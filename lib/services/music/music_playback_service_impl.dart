@@ -136,7 +136,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         NativeMusicGroupAvailabilityControls,
         CalderaAudioOutput,
         CalderaAudioMetadataOutput,
-        CalderaAudioClockOutput {
+        CalderaAudioClockOutput,
+        CalderaAudioVolumeOutput {
   bool Function() _nativeMusicScope(bool Function() current) {
     Iterable<MediaServerClient> clients() => _serverManager.serverIds
         .map((id) => _serverManager.getClient(ServerId(id)))
@@ -153,6 +154,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
               identical(_serverManager.getClient(entry.key.serverId), entry.key) &&
               _serverManager.isServerVisible(entry.key.serverId),
         );
+  }
+
+  @override
+  double get calderaAudioVolume => _volume;
+  @override
+  Future<void> setCalderaAudioVolume(Object owner, double value) async {
+    if (!ownsCalderaAudio(owner)) throw StateError('Native output changed');
+    await setVolume(value);
   }
 
   CalderaNativeHost? _calderaHost;

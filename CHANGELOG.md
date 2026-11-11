@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Accept native per-player volume relays on hosted, source and receiver mesh connections. Serialize bounded commands, recheck account/connection ownership and publish accepted state without reopening audio or forwarding receiver gain to the source.
+
 - Retire stalled or disconnected native metadata streams through their socket deadline, avoiding synchronous close errors during pending HTTP flushes. Apply the same safe teardown to the live PCM bridge.
 
 - Keep native music capture and its source clock running while speakers join or leave. Gate new PCM on acknowledgement, preserve existing output on failed/cancelled additions and let one peer depart without stopping its siblings.

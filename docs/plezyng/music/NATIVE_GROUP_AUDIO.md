@@ -222,6 +222,21 @@ the source's EventSource. An allowed peer read the metadata and paused the
 source through the native control route; 589 audio packets arrived with zero
 packet drops. This remains generated audio through an unpaced null device.
 
+## Native volume relays
+
+Native controllers relay per-player volume as SetSinkVolume with a single
+finite 0–100 volume value. Hosted and dedicated source/receiver links handle
+this command through a bounded serial queue. Each queued operation rechecks its
+connection and account; accepted changes publish updated mesh state. A receiver
+applies its own shared-session volume without forwarding it to the source.
+Volume changes retain capture, queue and membership. Parametric EQ relays are
+separate and remain to be integrated.
+
+The official Caldera 1.1 controller's own setSinkVolume route sent a volume of
+37 to the production host. Exactly one shared control write occurred while
+source audio continued. There are 139 focused control, socket and session
+regressions, including malformed payloads, pending limits and retired scopes.
+
 ## Backpressure retirement
 
 Metadata writes have a 500 ms flush budget. Retirement uses the HTTP response

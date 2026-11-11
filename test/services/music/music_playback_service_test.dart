@@ -1431,6 +1431,16 @@ void main() {
       );
       await until(() => h.service.sendingNativeMusicGroup);
       expect(accepted.single['source'], host.id);
+      controller.add(
+        jsonEncode({
+          'source': peer,
+          'method': 'SetSinkVolume',
+          'data': {'volume': 37},
+        }),
+      );
+      await until(() => h.service.volume == 37);
+      expect(player.volumes.last, 37);
+
       final selection = host.membership;
       host.synchronize(CalderaMembership(host.id, [host.id, peer, '22222222-2222-4222-8222-222222222222']));
       await Future<void>.delayed(const Duration(milliseconds: 40));

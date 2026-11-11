@@ -19,6 +19,8 @@ import '../../i18n/strings.g.dart';
 import '../../media/ids.dart';
 import '../../media/lyrics.dart';
 import '../../media/media_item.dart';
+import '../../media/media_backend.dart';
+import '../../media/media_kind.dart';
 import '../../media/media_server_client.dart';
 import '../../media/media_source_info.dart';
 import '../../models/companion_remote/remote_command.dart';
@@ -52,6 +54,8 @@ import 'music_source_resolver.dart';
 import 'music_transfer_snapshot.dart';
 import 'music_device_session.dart';
 import 'music_group_playback.dart';
+import 'caldera_audio_sink.dart';
+import 'caldera_group.dart';
 import 'music_playback_output.dart';
 
 /// A gapless-armed next track: what [Player.setNext] was fed, so the
@@ -120,7 +124,102 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicTransferSession,
         MusicGroupSession,
         MusicOutputControls,
-        MusicDeviceSession {
+        MusicDeviceSession,
+        NativeMusicGroupControls,
+        CalderaAudioOutput {
+  CalderaAudioSink? _calderaSink;
+  Object? _calderaAudioOwner;
+  int? _calderaAudioGeneration;
+
+  @override
+  bool get receivingNativeMusicGroup => _calderaSink?.active == true;
+
+  @override
+  Future<void> receiveNativeMusicGroup(CalderaNode leader, {required bool Function() current}) async {
+    await leaveNativeMusicGroup();
+    if (_disposed || !current()) throw StateError('Native music scope changed');
+    final accounts = {
+      for (final client in _serverManager.visibleOnlineClients.values) client: client.authenticationSessionId,
+    };
+    bool authorized() =>
+        current() &&
+        !_disposed &&
+        accounts.entries.every(
+          (entry) =>
+              identical(entry.key.authenticationSessionId, entry.value) &&
+              identical(_serverManager.getClient(entry.key.serverId), entry.key) &&
+              _serverManager.isServerVisible(entry.key.serverId),
+        );
+    final sink = CalderaAudioSink(leader: leader, output: this, current: authorized);
+    _calderaSink = sink;
+    try {
+      await sink.start();
+      if (_disposed || !identical(_calderaSink, sink) || !current()) {
+        await sink.close();
+        return;
+      }
+      notifyListeners();
+    } catch (_) {
+      if (identical(_calderaSink, sink)) _calderaSink = null;
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> leaveNativeMusicGroup() async {
+    final sink = _calderaSink;
+    _calderaSink = null;
+    await sink?.close();
+  }
+
+  @override
+  bool ownsCalderaAudio(Object owner) =>
+      !_disposed && identical(_calderaAudioOwner, owner) && _calderaAudioGeneration == _generation;
+
+  @override
+  Future<bool> openCalderaAudio(Object owner, Uri source, String title, bool Function() current) async {
+    if (_disposed || !current() || source.scheme != 'http' || source.host != '127.0.0.1') return false;
+    final stopping = _stopSession(endStatus: MusicPlaybackStatus.idle);
+    final generation = _generation;
+    await stopping;
+    if (_disposed || generation != _generation || !current()) return false;
+    _calderaAudioOwner = owner;
+    _calderaAudioGeneration = generation;
+    bool owns() => ownsCalderaAudio(owner) && current();
+    final track = MediaItem(id: 'native-group', backend: MediaBackend.plex, kind: MediaKind.track, title: title);
+    _queue.load([track]);
+    _currentTrack = track;
+    _musicGroupFollower = true;
+    _setStatus(MusicPlaybackStatus.loading, forceNotify: true);
+    try {
+      await _coordinator.claimMusic();
+      if (!owns()) return false;
+      final player = await _ensurePlayer();
+      if (!owns() || !identical(_player, player)) return false;
+      _workspaceAudioEnabled = !_coordinator.workspaceHasCompetingAudioOwner;
+      await player.setWorkspaceAudioFocusEnabled(_workspaceAudioEnabled);
+      if (!owns()) return false;
+      _ensureMediaControls();
+      await player.setProperty('cache', 'no');
+      await player.setProperty('demuxer-readahead-secs', '0');
+      if (!owns()) return false;
+      await player.open(Media(source.toString()), isLive: true, play: automotiveMusicPlaybackAllowedNow());
+      if (!owns()) return false;
+      _setStatus(player.state.playing ? MusicPlaybackStatus.playing : MusicPlaybackStatus.paused, forceNotify: true);
+      await _mediaControls?.updateMetadata(metadata: track);
+      return true;
+    } catch (_) {
+      await closeCalderaAudio(owner);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> closeCalderaAudio(Object owner) async {
+    if (!ownsCalderaAudio(owner)) return;
+    await _stopSession(endStatus: MusicPlaybackStatus.idle);
+  }
+
   MusicDevicePlayback? _musicDeviceOutput;
   int _musicDeviceRevision = 0;
   String? _remoteQueueSession;
@@ -1442,7 +1541,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (batch.tracks.isEmpty) {
       return InstantMixOutcome.empty;
     }
-    final expectedRevision = _queueSessionRevision + 1;
+    final expectedRevision = _queueSessionRevision + (_calderaAudioOwner != null ? 2 : 1);
     await _startQueue(
       tracks: batch.tracks,
       playContext: MusicPlayContext(title: seed.displayTitle, kind: MusicPlayContextKind.mix),
@@ -1476,6 +1575,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
     beginPlayIntent();
+    final nativeOwner = _calderaAudioOwner;
+    if (nativeOwner != null) {
+      final ending = closeCalderaAudio(nativeOwner);
+      final stoppingIntent = _playIntentGeneration;
+      unawaited(leaveNativeMusicGroup());
+      await ending;
+      if (!isPlayIntentCurrent(stoppingIntent)) return;
+    }
     _queueSessionRevision++;
     _continuationEpoch++;
     _continuationSeed = null;
@@ -1873,6 +1980,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// Re-arm only when queue/mode changes altered what plays next — queue
   /// edits that keep the same next track cost no server round-trip.
   void _rearmIfNeeded() {
+    if (_calderaAudioOwner != null) return;
     if (_player == null || _currentTrack == null) {
       return;
     }
@@ -2041,6 +2149,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _onPosition(Duration position) {
+    if (_calderaAudioOwner != null) {
+      _positionController.add(position);
+      return;
+    }
     if (_musicDeviceOutput != null) return;
     final reportingPlayer = _player;
     _positionController.add(position);
@@ -2187,6 +2299,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// sleep-at-end-of-track, or failed arm it stays true, and the confirmed
   /// handler advances explicitly or parks.
   void _onCompleted(bool done) {
+    if (_calderaAudioOwner != null) {
+      if (done) unawaited(leaveNativeMusicGroup());
+      return;
+    }
     if (!done || _currentTrack == null || _status == MusicPlaybackStatus.idle) {
       return;
     }
@@ -3723,6 +3839,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<void> _stopForVideoClaim() => _stopSession(endStatus: MusicPlaybackStatus.idle);
 
   Future<void> _stopSession({required MusicPlaybackStatus endStatus}) async {
+    _calderaAudioOwner = null;
+    _calderaAudioGeneration = null;
+    _musicGroupFollower = false;
     _cancelOverlap();
     _continuationEpoch++;
     _continuationSeed = null;
@@ -4062,6 +4181,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void dispose() {
+    unawaited(leaveNativeMusicGroup());
     _musicDeviceOutput?.removeListener(_onMusicDeviceChanged);
     _musicDeviceOutput = null;
     if (_disposed) {

@@ -14,6 +14,8 @@ import '../../widgets/companion_remote/discovery_view.dart';
 import '../../widgets/companion_remote/remote_pairing_dialog.dart';
 import '../../profiles/active_profile_provider.dart';
 import 'caldera_group_screen.dart';
+import '../../services/music/caldera_audio_sink.dart';
+import '../../services/music/music_playback_service.dart';
 
 class MusicGroupScreen extends StatefulWidget {
   const MusicGroupScreen({super.key});
@@ -105,10 +107,14 @@ class _MusicGroupScreenState extends State<MusicGroupScreen> {
             onTap: () {
               final active = context.read<ActiveProfileProvider>();
               final profile = active.activeId;
+              final music = context.read<MusicPlaybackService>();
               unawaited(
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
-                    builder: (_) => CalderaGroupScreen(current: () => profile != null && active.activeId == profile),
+                    builder: (_) => CalderaGroupScreen(
+                      current: () => profile != null && active.activeId == profile,
+                      audio: music is NativeMusicGroupControls ? music as NativeMusicGroupControls : null,
+                    ),
                   ),
                 ),
               );

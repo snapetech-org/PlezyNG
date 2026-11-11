@@ -14,10 +14,11 @@ class CalderaNode {
     required this.address,
     required this.companionPort,
     required this.expires,
+    this.meshPort = 1998,
   });
   final String id, name;
   final InternetAddress address;
-  final int companionPort;
+  final int companionPort, meshPort;
   final DateTime expires;
   String get endpoint => '${address.address}:$companionPort';
 
@@ -43,8 +44,17 @@ class CalderaNode {
           interval > 60000) {
         return null;
       }
-      final node = data['node'], port = data['companionPort'];
-      if (node is! Map || node['version'] != 1 || port is! int || port < 1024 || port > 65535) return null;
+      final node = data['node'], port = data['companionPort'], meshPort = data['port'];
+      if (node is! Map ||
+          node['version'] != 1 ||
+          port is! int ||
+          port < 1024 ||
+          port > 65535 ||
+          meshPort is! int ||
+          meshPort < 1024 ||
+          meshPort > 65535) {
+        return null;
+      }
       final id = node['uuid'], addresses = node['addresses'];
       if (id is! String ||
           !RegExp(r'^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$').hasMatch(id) ||
@@ -58,6 +68,7 @@ class CalderaNode {
         name: name,
         address: source,
         companionPort: port,
+        meshPort: meshPort,
         expires: (now ?? DateTime.now()).add(Duration(milliseconds: (interval * 3).clamp(5000, 15000))),
       );
     } on FormatException {
@@ -203,13 +214,26 @@ class CalderaGroupClient {
         customClient: http,
       ).timeout(const Duration(seconds: 5));
       socket.pingInterval = const Duration(seconds: 2);
-      final hello = await socket
+      final response = socket
           .expand((value) {
             if (value is! String) throw const FormatException('Invalid native mesh frame');
             return meshMessages(value);
           })
-          .firstWhere((value) => const ['Hello', 'SetNodeState'].contains(value['method']))
+          .firstWhere((value) => const ['Hello', 'SetState', 'SetNodeState'].contains(value['method']))
           .timeout(const Duration(seconds: 5));
+      socket.add(
+        jsonEncode({
+          'method': 'Hello',
+          'source': const Uuid().v4(),
+          'sentAt': DateTime.now().millisecondsSinceEpoch,
+          'data': {'capabilities': null, 'version': '1.0.0'},
+        }),
+      );
+      final hello = await response;
+      final data = hello['data'];
+      if (data is! Map || data['version'] != '1.0.0') {
+        throw const FormatException('Unsupported native mesh version');
+      }
       final id = hello['source'];
       if (id is! String ||
           !RegExp(r'^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$').hasMatch(id) ||
@@ -221,6 +245,7 @@ class CalderaGroupClient {
         name: endpoint,
         address: address,
         companionPort: port,
+        meshPort: meshPort,
         expires: DateTime.now().add(const Duration(days: 1)),
       );
       await state(node, current: current);

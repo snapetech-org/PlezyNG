@@ -917,6 +917,66 @@ void main() {
 
   tearDown(() => h.dispose());
 
+  test('native PCM uses the shared audio owner and never reports a synthetic library listen', () async {
+    await h.playTracks([t1, t2]);
+    final old = h.player;
+    final owner = Object();
+    expect(
+      await h.service.openCalderaAudio(
+        owner,
+        Uri.parse('http://127.0.0.1:12345/pcm.wav'),
+        'Native fixture',
+        () => true,
+      ),
+      isTrue,
+    );
+    expect(old.disposed, isTrue);
+    expect(h.service.ownsCalderaAudio(owner), isTrue);
+    expect(h.service.isMusicGroupFollower, isTrue);
+    expect(h.service.currentTrack?.serverId, isNull);
+    expect(h.player.openedUris.last, 'http://127.0.0.1:12345/pcm.wav');
+    final nativePlayer = h.player;
+    final reports = h.client.reports.length;
+    nativePlayer.setPosition(const Duration(seconds: 30));
+    nativePlayer.playingCtrl.add(true);
+    await pumpEventQueue();
+    expect(h.client.reports.length, reports);
+    await h.playTracks([t3]);
+    expect(nativePlayer.disposed, isTrue);
+    expect(h.service.ownsCalderaAudio(owner), isFalse);
+    expect(h.service.isMusicGroupFollower, isFalse);
+    expect(h.service.currentTrack?.id, t3.id);
+    await h.service.closeCalderaAudio(owner);
+    expect(h.service.currentTrack?.id, t3.id);
+    expect(h.service.isPlaying, isTrue);
+  });
+
+  test('revoked native PCM scope cannot create an audio core or replace playback', () async {
+    await h.playTracks([t1]);
+    final count = h.players.length;
+    expect(
+      await h.service.openCalderaAudio(
+        Object(),
+        Uri.parse('http://127.0.0.1:12345/pcm.wav'),
+        'Native fixture',
+        () => false,
+      ),
+      isFalse,
+    );
+    expect(h.players.length, count);
+    expect(h.service.currentTrack?.id, t1.id);
+    expect(
+      await h.service.openCalderaAudio(
+        Object(),
+        Uri.parse('https://example.com/pcm.wav'),
+        'Native fixture',
+        () => true,
+      ),
+      isFalse,
+    );
+    expect(h.service.currentTrack?.id, t1.id);
+  });
+
   test('remote output preserves the queue, playhead and listening occurrence', () async {
     await h.playTracks([t1, t2, t1]);
     h.player.setPosition(const Duration(seconds: 40));

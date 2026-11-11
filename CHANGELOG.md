@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Receive a selected Caldera / Plexamp source through the shared music player using bounded Xita framing, clock mapping, packet reordering and loss concealment. Retire the stream on account, profile or playback ownership changes; send the native Hello handshake for manual connections. Physical synchronization remains unmeasured.
+
 - Enter and verify native Open Media qualification fields through the real keyboard on Wayland before accepting HTTP consent or starting playback.
 
 - Reject iOS worker signing profiles that omit requested Enhanced Security grants before native compilation, preserving the extension's security settings and existing distribution identity.

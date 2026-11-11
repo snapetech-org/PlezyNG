@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../i18n/strings.g.dart';
 import '../../services/music/caldera_group.dart';
+import '../../services/music/caldera_audio_sink.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
 
@@ -14,10 +15,12 @@ class CalderaGroupScreen extends StatefulWidget {
   const CalderaGroupScreen({
     super.key,
     required this.current,
+    this.audio,
     this.discoveryFactory = CalderaDiscovery.new,
     this.clientFactory = CalderaGroupClient.new,
   });
   final bool Function() current;
+  final NativeMusicGroupControls? audio;
   final CalderaDiscovery Function() discoveryFactory;
   final CalderaGroupClient Function() clientFactory;
   @override
@@ -201,6 +204,30 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
                     if (selected != null) unawaited(_run(() => _read(selected)));
                   },
           ),
+          if (widget.audio != null && leader != null)
+            ListTile(
+              leading: const AppIcon(Symbols.speaker_rounded),
+              title: Text(t.musicDevices.thisDevice),
+              subtitle: Text(leader.name),
+              trailing: IconButton(
+                tooltip: widget.audio!.receivingNativeMusicGroup ? t.music.stopPlayback : t.common.play,
+                icon: AppIcon(
+                  widget.audio!.receivingNativeMusicGroup ? Symbols.stop_rounded : Symbols.play_arrow_rounded,
+                ),
+                onPressed: _busy
+                    ? null
+                    : () => unawaited(
+                        _run(() async {
+                          if (widget.audio!.receivingNativeMusicGroup) {
+                            await widget.audio!.leaveNativeMusicGroup();
+                          } else {
+                            await widget.audio!.receiveNativeMusicGroup(leader, current: widget.current);
+                          }
+                          if (mounted) setState(() {});
+                        }),
+                      ),
+              ),
+            ),
           if (state != null) ...[
             const SizedBox(height: 12),
             Text(state.title),

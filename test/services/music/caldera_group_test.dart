@@ -40,6 +40,7 @@ void main() {
     final now = DateTime(2026);
     final node = CalderaNode.parse(utf8.encode(jsonEncode(_beacon(address.address))), address, now: now)!;
     expect(node.id, _leaderId);
+    expect(node.meshPort, 1998);
     expect(node.expires.difference(now), const Duration(seconds: 5));
     for (final invalid in [
       _beacon(address.address, version: 2),
@@ -123,14 +124,16 @@ void main() {
       mesh.listen((request) async {
         final socket = await WebSocketTransformer.upgrade(request);
         try {
+          final hello = CalderaGroupClient.meshMessages(await socket.first as String).single;
+          expect(hello['method'], 'Hello');
+          expect(hello['data'], {'capabilities': null, 'version': '1.0.0'});
           socket.add(
             jsonEncode({
-              'method': 'Hello',
+              'method': 'SetState',
               'source': _leaderId,
               'data': {'version': '1.0.0'},
             }),
           );
-          await socket.drain<void>();
         } finally {
           await socket.close();
         }
@@ -138,6 +141,7 @@ void main() {
       final node = await client.inspect(leader.endpoint, meshPort: mesh.port, current: () => current);
       expect(node.id, leader.id);
       expect(node.endpoint, leader.endpoint);
+      expect(node.meshPort, mesh.port);
       await expectLater(client.inspect('8.8.8.8:32500', current: () => current), throwsArgumentError);
       await expectLater(client.inspect('user:secret@192.168.1.1:32500', current: () => current), throwsArgumentError);
     });

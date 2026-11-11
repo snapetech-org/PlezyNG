@@ -6,6 +6,37 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 “Existing” means retained application behavior, not a new reference comparison.
 “Partial” identifies concrete remaining implementation, not just testing.
 
+## Personal history, offline ratings and receiver recovery, 2026-11-10
+
+The following tested slices were pushed individually to main:
+
+- `039f2e632`: managed/shared Plex personal history through the active user
+  token, with numeric account pinning and mixed-account rejection. The separate
+  owner-only permission for requesting audio analysis is unchanged.
+- `f5a63359c`: cold-start rating intents use unique persisted profile/account
+  bindings before clients exist. Reconnection compares the original remote
+  base. `78ba41ab4` preserves the exact saved MediaBrowser namespace as well.
+- `a3f572d45`: detached Cast control recovers from a bounded profile-owned
+  document only when the receiver session, acknowledged media session, owner
+  token, occurrence and account scopes match. Recovery stores no stream URLs
+  and does not reload or autoplay the receiver.
+- `d1dee5b78`: native Caldera/Plexamp group control is reachable from music
+  synchronization, with multicast/manual discovery, versioned state, grouping,
+  transport and volume. Native players retain their existing queues and clocks.
+
+Validation: **494 music/integration tests** and **125 server/companion-provider
+tests** passed. The final account-namespace correction passed **17 focused
+rating tests**. The complete `scripts/ci_checks.sh` gate subsequently passed,
+including codegen, localization, formatting, workflow guards, analyzer, icon and
+unused-code/file checks. These are automated results, not physical-device
+qualification.
+
+**Remaining native group implementation:** Pleazyng is not an xita audio
+sink/source. The available protocol research leaves audio-port negotiation and
+clock mapping unresolved. Controlling an existing native group does not close
+that gap or establish acoustic synchronization. Full Plexamp parity remains
+incomplete.
+
 ## Current continuation, 2026-11-10
 
 Confidence is **high** for the automated results described here and **unknown**

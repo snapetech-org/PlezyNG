@@ -406,6 +406,7 @@ This list covers the current Pleazyng codebase, including additions since the fo
 ### <img src="assets/readme_icons/music.svg" height="20" alt="" align="center" /> Music
 
 - Music libraries — artist, album, and track browsing with square artwork
+- [Play on another Pleazyng device](docs/plezyng/music/PLAY_ON.md) — paired handoff, live queue controls, return-to-device and optional encrypted cross-network relay
 - Album and artist screens with play, shuffle, and Instant Mix
 - Gapless playback with a full play queue — reorder, remove, play next, add to queue
 - Now Playing with synced lyrics[^lyrics], persistent mini-player, and sleep timer

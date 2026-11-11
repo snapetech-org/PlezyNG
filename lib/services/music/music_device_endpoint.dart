@@ -150,7 +150,7 @@ class MusicDeviceEndpoint {
         final args = message['args'];
         if (action is! String || args is! Map<String, dynamic>) return const {'ok': false};
         final success = await _control(action, args);
-        return {'ok': success, if (success) 'state': _state(null)};
+        return {'ok': success, if (success) 'state': _state(message['revision'] as String?)};
       default:
         return const {'ok': false};
     }

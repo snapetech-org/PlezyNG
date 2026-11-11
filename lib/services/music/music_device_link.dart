@@ -114,7 +114,7 @@ class MusicDeviceLink extends ChangeNotifier implements MusicDevicePlayback {
     if (!connected) return;
     final value = reply?['state'];
     if (value is Map<String, dynamic>) {
-      final state = MusicDeviceState.read(value, null);
+      final state = MusicDeviceState.read(value, _state);
       if (state != null) {
         _state = state;
         notifyListeners();

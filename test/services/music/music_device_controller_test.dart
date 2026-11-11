@@ -47,8 +47,11 @@ class _Session extends StubMusicPlaybackService implements MusicDeviceSession {
   MusicDevicePlayback? get musicDeviceOutput => output;
   @override
   void setMusicDeviceOutput(MusicDevicePlayback? output) => this.output = output;
+  double deviceVolume = 70;
   @override
-  double get volume => 70;
+  double get volume => deviceVolume;
+  @override
+  Future<void> setVolume(double value, {bool persist = true}) async => deviceVolume = value;
   @override
   Future<void> pause() async {
     revision++;
@@ -219,6 +222,27 @@ void main() {
     expect(link.connected, isTrue);
     expect(link.state?.snapshot?.playing, isTrue);
     expect(there.opens, 1);
+  });
+
+  test('volume acknowledgement keeps the queue without retransmitting it', () async {
+    final session = _Session(_queue());
+    final endpoint = MusicDeviceEndpoint(session, allowed: () => true);
+    MusicConnectMessage? lastReply;
+    final link = MusicDeviceLink(
+      name: 'Receiver',
+      isConnected: () => true,
+      request: (message) async => lastReply = await endpoint.handle(message),
+    );
+    addTearDown(() {
+      link.dispose();
+      endpoint.close();
+      session.dispose();
+    });
+    expect(await link.refresh(full: true), isTrue);
+    await link.control('volume', {'volume': 42});
+    expect((lastReply?['state'] as Map).containsKey('queue'), isFalse);
+    expect(link.state?.volume, 42);
+    expect(link.state?.queue, hasLength(3));
   });
 
   test('a newer receiver edit rejects an old controller command', () async {

@@ -202,3 +202,11 @@ Detached playback does not produce local listening history. Restoring detached
 control after app restart, receiver codec/device qualification and Google Cast
 speaker-group management remain separate. Paired synchronization uses Pleazyng
 endpoints.
+
+## Play on another device
+
+The shared **Play on** picker moves playback to one receiver and then controls
+its independent session. It is available from Music home, Now Playing and the
+mini-player, including receiver setup, remembered devices, return-to-device
+and optional away-from-home relay settings. Follow [the Play on guide](PLAY_ON.md)
+for pairing, server access, recovery and current queue limits.

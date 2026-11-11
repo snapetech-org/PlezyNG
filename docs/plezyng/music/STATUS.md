@@ -82,6 +82,24 @@ acoustic qualification remain. No complete-parity claim is made.
   formatter, targeted fatal-info analysis and diff check also passed for those
   changes. The full repository gate result above is from `222d97ae8`.
 
+## Play on a device, 2026-11-11
+
+The shared Play on picker is available from Music home, Now Playing and the
+mini-player. It connects nearby and remembered paired receivers, exposes
+receiver setup and Cast, and returns a receiver-owned session to this device.
+Modern handoff supports 4,096 queue occurrences and bounded chunked messages.
+Plex account, direct Plex, Jellyfin and Emby profiles share this path.
+
+Receiver revision checks, prepare/freeze/commit, replay-safe receipts and
+uncertain-result reconciliation preserve ownership. Normal player and queue
+controls address the selected receiver. Optional music-only E2E relay clients
+use outbound connections, encrypted invitations and automatic active-controller
+reconnection. The Go route includes admission, bandwidth and queue limits.
+
+See [Play on](PLAY_ON.md) for setup and limits and
+[relay deployment](../../../server/MUSIC_CONNECT.md) for service activation.
+Hardware qualification and native-language review remain open.
+
 ## Added and connected on main
 
 - Music discovery from existing artist, album and Now Playing actions: multi-seed
@@ -182,7 +200,7 @@ acoustic qualification remain. No complete-parity claim is made.
 | U06 | Links/NFC | Durable server-qualified links resolve through profile authorization, including owned offline copies. Android and provisioned iPhones support foreground reads and writes with the same token-free NDEF link contract. Native writes check tag capacity and reader ownership; foreground scans reject profile changes and extra parameters. | Dart payload/cancellation/link-validation and signing-capability regressions pass. Signed iPhone builds and physical tag qualification remain pending. |
 | R01 | Chromecast music | Shared Cast output keeps queue edits, repeats, shuffle, duplicate occurrences and OS controls in the music session. A separate bounded handoff transfers an online queue with repeat and continuation off to an idle receiver. It preserves playback order and occurrence, prepares paused, and confirms playback before pausing the sender. The receiver can advance that queue after sender disconnect. The sender can return at the current occurrence and playhead after a matching pause acknowledgement. Both modes check the receiver connection and media ownership; local DSP is bypassed. Detached controls are not restored after app restart. | Output switching, takeover, authorization and timeout regressions pass. Detached queue tests cover duplicate occurrences, scoped source preparation, byte budgets, matching acknowledgement, safe return/rollback and both native bridge payloads. No live Cast or codec qualification. |
 | R02 | AirPlay/system routes | Existing native routing retained; no general cross-platform sender added. New output diagnostics/recovery parity remains. | No new route hardware evidence. |
-| R03 | Control/transfer distinction | Version-negotiated transfer sends a bounded credential-free queue snapshot; receivers validate their own source access and matching acknowledgement pauses only an unchanged sender. Transfer and paired synchronization are separate explicit actions; selecting a control target starts neither. | Snapshot/protocol/receiver/provider/Now Playing regressions pass; live paired-device qualification remains. |
+| R03 | Device control and handoff | One Play on picker connects paired nearby and remembered receivers. Receiver-authoritative controls and queue state use versioned bounded RPC, up to 4,096 occurrences, transactional prepare/freeze/commit, retry receipts, return-to-device and active-controller reconnect. Optional outbound E2E relay presence supports saved cross-network invitations. Existing version-1 transfer remains compatible. | Music/protocol/provider/player checks pass at the recorded checkpoints. Final real-transport/picker regressions are tracked in PLAY_ON_PLAN.md. Relay deployment, physical-device qualification and native-language review remain. |
 | R04 | Headless Raspberry Pi | Linux ARM64 endpoint packaging, explicit headless launch mode and a managed user-service installer are present. Configure and authorize the profile normally first; virtual X11 dependencies remain. | Mode/profile and installer regressions pass; focused Linux x64 checks are not physical Pi or ARM64 package qualification. |
 | R05 | Interoperability/grouping | Now Playing manages an existing control peer plus up to sixteen independently paired receivers. Each channel prepares paused, estimates monotonic clock offset/RTT, applies sequenced anchors and corrects drift above 250 ms. Per-endpoint departure leaves siblings and leader intact. Missing heartbeats, local edits and account/profile revocation retire ownership. Only the leader records progress/listens. Queue/mode replacement ends the group. Reference protocol interoperability and acoustic latency calibration remain. | Independent multi-endpoint, legacy rejection, stale connection, clock skew, replay, heartbeat, duplicate cursor and account-revocation regressions pass. No acoustic/device qualification. |
 | C01 | Apple CarPlay | CarPlay lists/Now Playing share the explicit phone/headless engine; pagination updates the current template. Siri media intents use the same catalog. Entitlement activation, native artwork, native compilation and physical qualification remain. | Plist parses; Dart catalog/voice loaders pass. No new Xcode/device result claimed. |

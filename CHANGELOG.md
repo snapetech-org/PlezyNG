@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Serialize native music group joins, replacements and departures so a new source waits for the retiring speaker, capture lease and Companion listener. Rejoining during a slow output close no longer collides with the old port or disables the replacement capture.
+
 - Browse played music occurrences with Back To and upcoming occurrences with Up Next. Preserve full queue access, map filtered edits to the correct occurrence, retire stale callbacks and duplicate swipe widgets, and fit queue controls and track text at larger accessibility sizes.
 
 - Keep native source-speaker volume and mute local to that speaker. Preserve remote PCM and shared fade/headroom envelopes when changing or muting the source, and restore direct local output correctly on departure.

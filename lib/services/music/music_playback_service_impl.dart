@@ -172,6 +172,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   CalderaNativeHost? _calderaHost;
   final CalderaNativeHostFactory _nativeHostFactory;
   int _nativeTransitions = 0;
+  final _nativeMembershipChanges = SerialFutureQueue();
 
   @override
   bool get nativeMusicGroupAvailable => _calderaHost?.active == true;
@@ -295,7 +296,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<void> sendNativeMusicGroup(List<CalderaNode> sinks, {required bool Function() current}) async {
     _nativeTransitions++;
     try {
-      await _sendNativeMusicGroup(sinks, current: current);
+      await _nativeMembershipChanges.run(() => _sendNativeMusicGroup(sinks, current: current));
     } finally {
       _nativeTransitions--;
       _syncNativeHost();
@@ -311,7 +312,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       if (!_disposed) notifyListeners();
       return;
     }
-    await leaveNativeMusicGroup();
+    await _leaveNativeMusicGroup();
     if (_disposed ||
         !current() ||
         _currentTrack == null ||
@@ -503,7 +504,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<void> receiveNativeMusicGroup(CalderaNode leader, {required bool Function() current}) async {
     _nativeTransitions++;
     try {
-      await _receiveNativeMusicGroup(leader, current: current);
+      await _nativeMembershipChanges.run(() => _receiveNativeMusicGroup(leader, current: current));
     } finally {
       _nativeTransitions--;
       _syncNativeHost();
@@ -519,7 +520,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         existing.leader.meshPort == leader.meshPort) {
       return;
     }
-    await leaveNativeMusicGroup();
+    await _leaveNativeMusicGroup();
     if (_disposed || !current()) throw StateError('Native music scope changed');
     final host = _calderaHost;
     var selecting = true;
@@ -558,6 +559,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> leaveNativeMusicGroup() async {
+    _nativeTransitions++;
+    try {
+      await _nativeMembershipChanges.run(_leaveNativeMusicGroup);
+    } finally {
+      _nativeTransitions--;
+      _syncNativeHost();
+    }
+  }
+
+  Future<void> _leaveNativeMusicGroup() async {
     final sink = _calderaSink;
     final source = _calderaSource;
     _calderaSink = null;

@@ -1500,13 +1500,41 @@ void main() {
     );
     final secondSpeaker = h.nativeGroupPlayers.last as _GroupOutputPlayer;
     final gate = secondSpeaker.disposeGate = Completer<void>();
+    final leaving = h.service.leaveNativeMusicGroup();
+    await pumpEventQueue();
+    final joining = HttpOverrides.runWithHttpOverrides(
+      () => h.service.sendNativeMusicGroup([
+        CalderaNode(
+          id: peer,
+          name: 'Native speaker',
+          address: address,
+          companionPort: mesh.port,
+          meshPort: mesh.port,
+          expires: DateTime.now().add(const Duration(minutes: 1)),
+        ),
+      ], current: () => true),
+      _MusicNetworkHttp(),
+    );
+    try {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(h.nativeGroupPlayers, hasLength(2), reason: 'a new capture must wait for the retiring speaker lease');
+    } finally {
+      gate.complete();
+      await leaving;
+      await joining;
+    }
+    expect(player.captureEnabled, isTrue, reason: 'late retirement must not disable the new source capture');
+    expect(player.properties['mute'], 'yes');
+    final thirdSpeaker = h.nativeGroupPlayers.last as _GroupOutputPlayer;
+    final stopGate = thirdSpeaker.disposeGate = Completer<void>();
     var stopped = false;
     final stopping = h.service.stop().then((_) => stopped = true);
     await pumpEventQueue();
     expect(stopped, isFalse, reason: 'stop must await the physical renderer before returning');
-    gate.complete();
+    stopGate.complete();
     await stopping;
     expect(secondSpeaker.disposed, isTrue);
+    expect(thirdSpeaker.disposed, isTrue);
     expect(player.disposed, isTrue);
   });
 

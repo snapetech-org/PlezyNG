@@ -386,3 +386,9 @@ unchanged. This generated execution validates the software timing and gain
 paths; it is not a measurement of a physical speaker, Bluetooth transport or
 acoustic alignment. Android ARM64 and Linux debug application builds include
 the independent source-speaker core.
+
+Membership changes run serially through the shared music session. A replacement
+source or sink waits for the previous physical renderer, capture lease and
+Companion listener to retire. A blocked-output regression reproduces the old
+port collision and verifies that the eventual replacement keeps its capture
+enabled and direct output muted; failed requests do not poison later changes.

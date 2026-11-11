@@ -51,6 +51,7 @@ class MusicRelayCipher {
   int _sent = 0;
   int _received = 0;
   int _queuedBytes = 0;
+  int _sendingBytes = 0;
   bool _closed = false;
   bool _disposed = false;
   bool _ready = false;
@@ -234,12 +235,17 @@ class MusicRelayCipher {
 
   void _sendFrame(Map<String, dynamic> frame) {
     if (!ready) return;
+    final bytes = utf8.encode(jsonEncode(frame)).length;
+    if (_sendingBytes + bytes > 8 * 1024 * 1024) return close();
+    _sendingBytes += bytes;
     unawaited(
       _outgoing.run(() async {
         try {
           if (ready) await _encrypt(frame);
         } catch (_) {
           close();
+        } finally {
+          _sendingBytes -= bytes;
         }
       }),
     );

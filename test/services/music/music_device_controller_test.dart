@@ -182,6 +182,45 @@ void main() {
     expect(here.snapshot!.playing, isFalse);
   });
 
+  test('an unknown commit retains a paused queue and reconciles without duplicate playback', () async {
+    final here = _Session(_queue());
+    final there = _Session(null);
+    final local = MusicDeviceEndpoint(here, allowed: () => true);
+    final remote = MusicDeviceEndpoint(there, allowed: () => true);
+    var partitioned = false;
+    Future<MusicConnectMessage?> request(MusicConnectMessage message) async {
+      if (partitioned) return null;
+      final reply = await remote.handle(message);
+      if (message['op'] == 'commit') {
+        partitioned = true;
+        return null;
+      }
+      return reply;
+    }
+
+    final link = MusicDeviceLink(name: 'Receiver', request: request, isConnected: () => true);
+    final controller = MusicDeviceController(local, here);
+    addTearDown(() {
+      controller.dispose();
+      link.dispose();
+      remote.close();
+      here.dispose();
+      there.dispose();
+    });
+    expect(await controller.moveTo(link), MusicDeviceMoveResult.uncertain);
+    expect(here.snapshot!.playing, isFalse);
+    expect(there.snapshot!.playing, isTrue);
+    expect(there.opens, 1);
+    expect(link.state?.track?.id, 'a');
+    expect(link.state?.snapshot?.playing, isFalse);
+    expect(link.connected, isFalse);
+    partitioned = false;
+    expect(await link.refresh(full: true), isTrue);
+    expect(link.connected, isTrue);
+    expect(link.state?.snapshot?.playing, isTrue);
+    expect(there.opens, 1);
+  });
+
   test('a newer receiver edit rejects an old controller command', () async {
     final session = _Session(_queue());
     final endpoint = MusicDeviceEndpoint(session, allowed: () => true);

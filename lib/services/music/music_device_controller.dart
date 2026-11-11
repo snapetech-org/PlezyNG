@@ -77,7 +77,12 @@ class MusicDeviceController extends ChangeNotifier {
       // With an unknown commit result the source stays paused. Reconnecting
       // the target reconciles its independently owned state without starting
       // a second output during a network partition.
-      await target?.refresh(full: true);
+      if (target != null && !await target.refresh(full: true)) {
+        final snapshot = MusicDeviceState.read(state!, null)?.snapshot;
+        if (snapshot != null) {
+          target.retainPendingSnapshot(snapshot.at(Duration(milliseconds: frozen!['position'] as int), playing: false));
+        }
+      }
       _activate(target);
       return accepted?['ok'] == true ? MusicDeviceMoveResult.completed : MusicDeviceMoveResult.uncertain;
     } catch (_) {

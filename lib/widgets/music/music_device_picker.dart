@@ -230,6 +230,11 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(t.musicDevices.playingOn(device: activeName)),
                   ),
+                if (active != null && !active.connected)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Semantics(liveRegion: true, child: Text(t.companionRemote.remote.reconnecting)),
+                  ),
                 FocusableListTile(
                   autofocus: true,
                   selected: activeName == null,

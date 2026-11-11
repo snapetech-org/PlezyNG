@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 import '../base_shared_preferences_service.dart';
+import '../../utils/serial_future_queue.dart';
 import '../companion_remote/lan_discovery_service.dart';
 
 /// Remembered network coordinates are profile-scoped metadata. Pairing
 /// capabilities stay separately encrypted in RemotePairingStore.
 abstract final class MusicDeviceStore {
+  static final _writes = SerialFutureQueue();
   static String _key(String profile) => 'music_devices_${sha256.convert(utf8.encode(profile))}';
 
   static Future<List<DiscoveredHost>> read(String profile) async {
@@ -58,18 +60,18 @@ abstract final class MusicDeviceStore {
     );
   }
 
-  static Future<void> remember(String profile, DiscoveredHost host) async {
+  static Future<void> remember(String profile, DiscoveredHost host) => _writes.run(() async {
     final devices = await read(profile);
     devices.removeWhere((entry) => entry.authContextId == host.authContextId && entry.clientId == host.clientId);
     devices.insert(0, host);
     await _write(profile, devices.take(32).toList());
-  }
+  });
 
-  static Future<void> forget(String profile, DiscoveredHost host) async {
+  static Future<void> forget(String profile, DiscoveredHost host) => _writes.run(() async {
     final devices = await read(profile);
     devices.removeWhere((entry) => entry.authContextId == host.authContextId && entry.clientId == host.clientId);
     await _write(profile, devices);
-  }
+  });
 
   static Future<void> _write(String profile, List<DiscoveredHost> hosts) async {
     final prefs = await BaseSharedPreferencesService.sharedCache();

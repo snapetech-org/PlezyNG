@@ -61,6 +61,19 @@ class MusicDeviceLink extends ChangeNotifier implements MusicDevicePlayback {
     }
   }
 
+  /// Keep the requested queue visible while an unknown commit is reconciled.
+  /// Controls remain unavailable until the receiver supplies its own revision.
+  void retainPendingSnapshot(MusicTransferSnapshot snapshot) {
+    if (_closed) return;
+    _state = MusicDeviceState(
+      revision: 'pending',
+      snapshot: snapshot.at(snapshot.position, playing: false),
+      volume: _state?.volume ?? 100,
+    );
+    _responsive = false;
+    notifyListeners();
+  }
+
   void start() {
     _poll ??= Timer.periodic(const Duration(seconds: 1), (_) {
       if (_pollQueued || _closed || !isConnected()) return;

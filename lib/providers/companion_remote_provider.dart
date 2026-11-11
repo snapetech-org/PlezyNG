@@ -101,6 +101,47 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   final _musicPeers = <String, MusicDeviceConnection>{};
   LanDiscoveryService? _musicDiscovery;
   int _musicPeerGeneration = 0;
+  Timer? _musicReconnectTimer;
+  bool _musicReconnecting = false;
+  DateTime? _musicReconnectAfter;
+
+  void _onMusicDevicesChanged() {
+    if (_musicDevices?.active == null) {
+      _musicReconnectTimer?.cancel();
+      _musicReconnectTimer = null;
+    } else {
+      _musicReconnectTimer ??= Timer.periodic(const Duration(seconds: 3), (_) => unawaited(_reconnectActiveMusic()));
+    }
+    safeNotifyListeners();
+  }
+
+  Future<void> _reconnectActiveMusic() async {
+    final active = _musicDevices?.active;
+    if (isDisposed ||
+        _appBackgrounded ||
+        _musicReconnecting ||
+        musicDeviceBusy ||
+        active == null ||
+        active.connected ||
+        (_musicReconnectAfter?.isAfter(DateTime.now()) ?? false)) {
+      return;
+    }
+    final entry = _musicPeers.entries.where((entry) => identical(entry.value.output, active)).firstOrNull;
+    if (entry == null) return;
+    final generation = _musicPeerGeneration;
+    _musicReconnecting = true;
+    try {
+      final remembered = await rememberedMusicDevices();
+      if (isDisposed || generation != _musicPeerGeneration || !identical(_musicDevices?.active, active)) return;
+      final host = remembered.where((host) => '${host.authContextId}:${host.clientId}' == entry.key).firstOrNull;
+      if (host != null) await connectMusicDevice(host);
+    } catch (_) {
+      if (generation == _musicPeerGeneration) _musicReconnectAfter = DateTime.now().add(const Duration(seconds: 15));
+    } finally {
+      if (generation == _musicPeerGeneration) _musicReconnecting = false;
+    }
+  }
+
   MusicRelayHost? _musicRelayHost;
   int _musicRelayGeneration = 0;
   String _musicRelayUrl = '';
@@ -384,6 +425,10 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _resetMusicDevices() {
+    _musicReconnectTimer?.cancel();
+    _musicReconnectTimer = null;
+    _musicReconnecting = false;
+    _musicReconnectAfter = null;
     _retireMusicRelay();
     _musicPeerGeneration++;
     _musicDevices?.disconnect();
@@ -718,7 +763,10 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     if (identical(_musicSession, session)) return;
     _closeMusicEndpoints();
     _musicGroup?.leave();
+    _resetMusicDevices();
     _musicDevices?.dispose();
+    _musicDevices = null;
+    _musicDeviceEndpoint = null;
     _musicSession = session;
     if (session is MusicDeviceSession) {
       final endpoint = MusicDeviceEndpoint(
@@ -727,7 +775,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
         relayInfo: () => _musicRelayHost?.invitation,
       );
       _musicDeviceEndpoint = endpoint;
-      _musicDevices = MusicDeviceController(endpoint, session)..addListener(safeNotifyListeners);
+      _musicDevices = MusicDeviceController(endpoint, session)..addListener(_onMusicDevicesChanged);
       if (isHostServerRunning) unawaited(_refreshMusicRelay());
     }
     _musicGroupPlayback = session is MusicGroupSession && session is MusicPlaybackService
@@ -740,6 +788,10 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     _closeMusicEndpoints();
     _musicGroup?.leave();
     _musicGroupPlayback = null;
+    _resetMusicDevices();
+    _musicDevices?.dispose();
+    _musicDevices = null;
+    _musicDeviceEndpoint = null;
     _musicSession = null;
   }
 

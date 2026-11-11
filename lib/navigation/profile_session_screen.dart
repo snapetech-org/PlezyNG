@@ -402,6 +402,20 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                       store: MusicLibraryStore(context.read<AppDatabase>(), activeId),
                       connectionChanges: manager.statusStream,
                       offlineRatingAccountFor: offlineRatings.forItem,
+                      pinReady: hidden.ensureInitialized,
+                      pinVisible: (item) =>
+                          !libraries.isDisposed &&
+                          !hidden.isDisposed &&
+                          hidden.isInitialized &&
+                          item.libraryId != null &&
+                          libraries.libraries.any(
+                            (library) =>
+                                library.kind == MediaKind.artist &&
+                                library.serverId == item.serverId &&
+                                library.id == item.libraryId &&
+                                !library.hidden &&
+                                !hidden.hiddenLibraryKeys.contains(library.globalKey),
+                          ),
                       syncClients: () => manager.visibleOnlineClients.values,
                       onDispose: (value) {
                         companion.unbindMusicHistory(value.history);

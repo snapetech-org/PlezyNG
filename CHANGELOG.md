@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Store bounded Music Home artist, album and track pins for the active profile and account. Refresh authorized metadata before saving or opening, and retire stale account, library and profile operations.
+
 - Keep local headphone/output correction out of native group source PCM. Apply the general music curve while transmitting and restore the latest local output preset on departure without replacing the shared queue.
 
 - Apply speaker edits to the current local native music source without promoting a remote player. Keep native source/receiver Stop controls available when discovery loses the selected peer.

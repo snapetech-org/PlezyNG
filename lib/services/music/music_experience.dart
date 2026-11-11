@@ -12,6 +12,7 @@ import 'music_rating_journal.dart';
 import 'music_account_scope.dart';
 import 'music_history_reconciliation.dart';
 import 'music_offline_rating_account.dart';
+import 'music_home_pins.dart';
 
 /// Created eagerly with the profile session, independent of music screens.
 class MusicExperience extends ChangeNotifier {
@@ -24,6 +25,8 @@ class MusicExperience extends ChangeNotifier {
     Iterable<MediaServerClient> Function()? syncClients,
     Future<MusicRatingAccount?> Function(MediaItem)? offlineRatingAccountFor,
     this.onDispose,
+    bool Function(MediaItem)? pinVisible,
+    Future<void> Function()? pinReady,
   }) {
     dj = MusicGuestDj(music, clientFor, sharedSources: sharedSources)..addListener(notifyListeners);
     recorder = MusicListeningRecorder(
@@ -34,9 +37,14 @@ class MusicExperience extends ChangeNotifier {
         return client == null ? null : musicHistoryAccountScope(client);
       },
     );
+    pins = MusicHomePins(store: store, clientFor: clientFor, visible: pinVisible, ready: pinReady)
+      ..addListener(notifyListeners);
     ratings = MusicRatingJournal(store, clientFor, offlineAccountFor: offlineRatingAccountFor);
     history = MusicHistoryReconciliation(store: store, clients: syncClients ?? () => []);
-    _connections = connectionChanges?.listen((_) => _syncRatings());
+    _connections = connectionChanges?.listen((_) {
+      _syncRatings();
+      pins.refresh();
+    });
     _syncRatings();
   }
   final MusicPlaybackService music;
@@ -45,6 +53,7 @@ class MusicExperience extends ChangeNotifier {
   late final MusicGuestDj dj;
   late final MusicListeningRecorder recorder;
   late final MusicRatingJournal ratings;
+  late final MusicHomePins pins;
   late final MusicHistoryReconciliation history;
   final void Function(MusicExperience)? onDispose;
   StreamSubscription<Object?>? _connections;
@@ -63,6 +72,8 @@ class MusicExperience extends ChangeNotifier {
     dj.dispose();
     recorder.dispose();
     ratings.dispose();
+    pins.removeListener(notifyListeners);
+    pins.dispose();
     unawaited(_connections?.cancel());
     super.dispose();
   }

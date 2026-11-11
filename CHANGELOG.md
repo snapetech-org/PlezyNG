@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Reveal native video when playback renders its first frame before the view mounts or a playing surface is reattached. The shared widget reads current frame readiness across player backends while preserving explicit loading and display-negotiation holds.
+
 - Include XKB keyboard data in the Nix runtime so GTK can initialize and accept keyboard input inside the package environment.
 
 - Prepare and validate distinct iOS Runner and RommWorker App Store profiles before compilation, using the existing distribution identity and Apple API access. Retain the attested unsigned IPA before Store packaging, so a signing failure preserves the successful developer artifact.

@@ -25,7 +25,29 @@ These changes preserve the bundled FEL and neural paths and their persisted
 Settings choices. Native package qualification does not establish the physical display's black level or scanout
 timing; those observations require the affected hardware.
 
+## Late-mounted video surfaces
+
+Open Media, source workspaces and karaoke can begin playback before mounting
+`Video`. A broadcast playback-restart event may already have fired by then.
+Without an external loading gate, `Video` reads the current player's persisted
+`hasRenderedFrame` state at mount, player replacement and notifier rebinding.
+Queued restart events read the current snapshot, so an old load's event cannot
+reveal a newer load before it renders. An explicit first-frame notifier retains
+control while the main player negotiates its display mode. This is shared Dart
+behavior rather than a platform-specific rendering workaround.
+
+Native qualification must exercise both the standard server player and Open
+Media. Record moving video, elapsed time and audio before seeking, changing
+fullscreen mode or reattaching the view: those actions can emit another restart
+and hide a missed initial event. Widget pixel tests cover late mounting,
+replacement, stale events and explicit holds across Linux, Windows, Apple MPV
+and Android ExoPlayer; they do not establish physical-device output quality.
+
 ## Upstream sources
+
+The records below informed the shader and TV behavior above. The late-mount
+frame binding was independently developed from Pleazyng's regression tests and
+native playback observations.
 
 [@edde746](https://github.com/edde746) contributed the
 [Amlogic letterbox correction](https://github.com/edde746/plezy/commit/63f8cd5a054e2ecc5c28dd30fe8066f4356a10c4),

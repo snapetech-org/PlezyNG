@@ -58,8 +58,8 @@ class _VideoState extends State<Video> {
   @override
   void initState() {
     super.initState();
-    _hasFirstFrame = widget.hasFirstFrame?.value ?? false;
-    widget.hasFirstFrame?.addListener(_syncExternalFirstFrame);
+    _hasFirstFrame = widget.hasFirstFrame?.value ?? widget.player.state.hasRenderedFrame;
+    widget.hasFirstFrame?.addListener(_syncFirstFrame);
     _listenForPlaybackRestart();
   }
 
@@ -67,14 +67,14 @@ class _VideoState extends State<Video> {
   void didUpdateWidget(covariant Video oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.hasFirstFrame != widget.hasFirstFrame) {
-      oldWidget.hasFirstFrame?.removeListener(_syncExternalFirstFrame);
-      widget.hasFirstFrame?.addListener(_syncExternalFirstFrame);
+      oldWidget.hasFirstFrame?.removeListener(_syncFirstFrame);
+      widget.hasFirstFrame?.addListener(_syncFirstFrame);
       _listenForPlaybackRestart();
-      _syncExternalFirstFrame();
+      _syncFirstFrame();
     }
     if (oldWidget.player != widget.player) {
       _listenForPlaybackRestart();
-      _syncExternalFirstFrame();
+      _syncFirstFrame();
       // The cache describes the old player's native surface. Keeping it would
       // let the next frame short-circuit as "geometry unchanged", and the
       // replacement surface stays sizeless — invisible, with no Texture
@@ -85,13 +85,14 @@ class _VideoState extends State<Video> {
 
   @override
   void dispose() {
-    widget.hasFirstFrame?.removeListener(_syncExternalFirstFrame);
+    widget.hasFirstFrame?.removeListener(_syncFirstFrame);
     _playbackRestartSubscription?.cancel();
     super.dispose();
   }
 
-  /// Without an external notifier the first playback-restart reveals the
-  /// surface. With one, the owner decides: the player screen holds the first
+  /// Without an external notifier use the current load's persisted frame state:
+  /// playback may already have restarted before this widget mounts. With an
+  /// external notifier the owner decides: the player screen holds the first
   /// frame behind its loading UI while it negotiates the display mode from
   /// that frame, and revealing on the restart would show the frame frozen
   /// through the HDMI blank.
@@ -100,14 +101,12 @@ class _VideoState extends State<Video> {
     _playbackRestartSubscription = null;
     if (widget.hasFirstFrame != null) return;
     _playbackRestartSubscription = widget.player.streams.playbackRestart.listen((_) {
-      _setHasFirstFrame(true);
+      _syncFirstFrame();
     });
   }
 
-  void _syncExternalFirstFrame() {
-    final external = widget.hasFirstFrame;
-    if (external == null) return;
-    _setHasFirstFrame(external.value);
+  void _syncFirstFrame() {
+    _setHasFirstFrame(widget.hasFirstFrame?.value ?? widget.player.state.hasRenderedFrame);
   }
 
   void _setHasFirstFrame(bool value) {

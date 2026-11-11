@@ -62,8 +62,13 @@ equivalence checks; do not dispatch another complete build for a delivery error.
 
 ## Apple native qualification
 
-ARM native CI and tvOS release AOT default to the hosted `macos-15` ARM image
-with explicit Xcode 26.3 (build 17C529) and iOS/tvOS 26.2 SDK checks. Select
+Apple native CI and tvOS release AOT default to the hosted `macos-26` ARM
+image with explicit Xcode 26.5. This matches the release compiler and supplies
+the host asset-rendering frameworks and Swift overlays used by the layered
+icons and pinned native libraries. Every native CI leg and tvOS AOT job verifies
+an ARM64 host before setup. Simulator selection derives the matching installed
+runtime from the selected SDK; keep icon assets, native features and all test
+coverage intact. Select
 `--apple-arm-runner-pool private` only when hosted ARM capacity cannot meet the
 requirement. This uses the existing private ARM lane for native CI and tvOS;
 other compatible jobs retain their hosted routes. Check live architecture,

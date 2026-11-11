@@ -148,7 +148,7 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
         original = self._workflow()
         start = original.index("  build-tvos:\n")
         end = original.index("  build-macos:\n", start)
-        incompatible = (original[:start] + original[start:end].replace("&& 'macos-15' ||", "&& 'macos-15-intel' ||")
+        incompatible = (original[:start] + original[start:end].replace("&& 'macos-26' ||", "&& 'macos-26-intel' ||")
                         + original[end:])
         skipped = original.replace("inputs.rebuild_tvos && needs.build-tvos.result == 'success'",
                                    "inputs.rebuild_tvos && needs.build-tvos.result == 'skipped'")
@@ -263,23 +263,36 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
         self.assertNotEqual(changed, signing, "signer mutation must match")
         return prefix + "      - name: Sign installer for WinSparkle (EdDSA)\n" + changed
 
-    def test_apple_arm64_native_tests_reject_an_intel_host(self):
+    def test_apple_native_tests_preserve_architecture_and_asset_compatible_toolchains(self):
         ci_path = ROOT / '.github/workflows/ci.yml'
         original = Path.read_text
         ci = original(ci_path, encoding='utf-8')
-        selection = "inputs.execution_profile == 'hybrid' && inputs.apple_runner_pool != 'private' && 'macos-15' || fromJSON(format("
+        selection = "inputs.execution_profile == 'hybrid' && inputs.apple_runner_pool != 'private' && 'macos-26' || fromJSON(format("
         self.assertIn(selection, ci)
-        invalid = ci.replace(selection, selection.replace("'macos-15'", "'macos-15-intel'"), 1)
-
-        def read(path, *args, **kwargs):
-            return invalid if path == ci_path else original(path, *args, **kwargs)
-
-        errors = io.StringIO()
-        with patch.object(Path, 'read_text', read), patch.object(sys, 'argv', [str(CHECKER)]):
-            with redirect_stderr(errors), self.assertRaises(SystemExit) as result:
-                runpy.run_path(str(CHECKER), run_name='__main__')
-        self.assertEqual(result.exception.code, 1)
-        self.assertIn('Apple arm64 native qualification', errors.getvalue())
+        changes = [
+            ("'macos-26'", "'macos-26-intel'"),
+            ("'macos-26'", "'macos-15'"),
+            ("hosted-xcode-version: '26.5'",
+             "hosted-xcode-version: '26.3'"),
+            ('test "$(uname -m)" = arm64', 'true'),
+        ]
+        for before, after in changes:
+            with self.subTest(before=before, after=after):
+                # Restrict label mutations to this native matrix, preserving
+                # unrelated jobs so a different guard cannot mask this check.
+                if before.startswith("'macos-"):
+                    invalid = ci.replace(selection, selection.replace(before, after), 1)
+                else:
+                    invalid = ci.replace(before, after, 1)
+                self.assertNotEqual(invalid, ci)
+                def read(path, *args, **kwargs):
+                    return invalid if path == ci_path else original(path, *args, **kwargs)
+                errors = io.StringIO()
+                with patch.object(Path, 'read_text', read), patch.object(sys, 'argv', [str(CHECKER)]):
+                    with redirect_stderr(errors), self.assertRaises(SystemExit) as result:
+                        runpy.run_path(str(CHECKER), run_name='__main__')
+                self.assertEqual(result.exception.code, 1)
+                self.assertIn('Apple arm64 native qualification', errors.getvalue())
 
     def test_locked_root_signer_passes(self) -> None:
         result = self._run(self._workflow())

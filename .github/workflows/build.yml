@@ -1521,7 +1521,7 @@ jobs:
     if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build tvOS developer package (arm64)
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
     permissions:
       id-token: write
       attestations: write
@@ -1535,6 +1535,10 @@ jobs:
           ref: ${{ inputs.recovery_source_sha || github.sha }}
           persist-credentials: false
 
+      - name: Require native ARM host for tvOS AOT
+        shell: bash
+        run: test "$(uname -m)" = arm64
+
       - name: Load pinned Flutter SDK
         shell: bash
         run: python3 scripts/flutter/load_sdk_pin.py --github-env
@@ -1542,7 +1546,7 @@ jobs:
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter-apple
         with:
-          hosted-xcode-version: '26.3'
+          hosted-xcode-version: '26.5'
           flutter-version: ${{ env.TVOS_FLUTTER_VERSION }}
 
       - name: Cache Pub dependencies

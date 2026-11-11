@@ -1383,10 +1383,11 @@ for apple_job_name in ("build-ios", "build-tvos"):
         f"{apple_job_name} signing archives and DerivedData must stay on local APFS",
     )
 require(
-    "inputs.execution_profile == 'hybrid' && inputs.apple_runner_pool != 'private' && 'macos-15' || fromJSON(format(" in apple_native
-    and "hosted-xcode-version: '26.3'" in apple_native
+    "inputs.execution_profile == 'hybrid' && inputs.apple_runner_pool != 'private' && 'macos-26' || fromJSON(format(" in apple_native
+    and "hosted-xcode-version: '26.5'" in apple_native
+    and 'test "$(uname -m)" = arm64' in named_step(apple_native, "Require native Apple Silicon host")
     and "ARCHS=arm64" in apple_native,
-    "Apple arm64 native qualification must select an Apple Silicon hosted runner",
+    "Apple arm64 native qualification must select compatible Apple Silicon hosts and toolchains",
 )
 require(
     "scripts/refresh_apple_spm.sh ios" in apple_native
@@ -1737,8 +1738,9 @@ require(
     "iOS recovery must stage the locked device worker and require a successful fresh artifact",
 )
 require(
-    "&& 'macos-15' ||" in job("build-tvos").split("permissions:", 1)[0]
-    and "hosted-xcode-version: '26.3'" in job("build-tvos")
+    "&& 'macos-26' ||" in job("build-tvos").split("permissions:", 1)[0]
+    and "hosted-xcode-version: '26.5'" in job("build-tvos")
+    and 'test "$(uname -m)" = arm64' in named_step(job("build-tvos"), "Require native ARM host for tvOS AOT")
     and "(inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos)" in job("build-tvos")
     and "--rebuild-tvos" in recovery_gate and "--rebuild-tvos" in recovery_download
     and "inputs.rebuild_tvos && needs.build-tvos.result == 'success'" in release_condition

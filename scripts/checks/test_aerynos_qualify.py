@@ -1,5 +1,9 @@
 """Check native QA measurements against known clocks and authored PCM payloads."""
 import importlib.util
+import contextlib
+import io
+import os
+import runpy
 import hashlib
 import json
 from pathlib import Path
@@ -8,13 +12,68 @@ import shlex
 import subprocess
 import sys
 import tempfile
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 import unittest
 import urllib.parse
 from unittest.mock import Mock, call, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'aerynos'))
 from qualify import AppQA, capture_audio, check_playback_routes
+
+
+class GuestFormReadbackTests(unittest.TestCase):
+    def read(self, label, fields):
+        # PyGObject returns an Accessible implementing Text: its get_text()
+        # shadows Text.get_text(start, end). Model that actual binding collision.
+        class Node:
+            def __init__(self, name, role='text', children=()):
+                self.name, self.role, self.children = name, role, children
+            def get_name(self): return self.name
+            def get_role_name(self): return self.role
+            def get_child_count(self): return len(self.children)
+            def get_child_at_index(self, i): return self.children[i]
+            def get_text_iface(self): return self
+            def get_text(self): return self
+            def get_character_count(self): return len(self.value)
+        nodes = []
+        for name, role, value in fields:
+            node = Node(name, role)
+            node.value = value
+            nodes.append(node)
+        desktop = Node('desktop', children=[Node('pleazyng', children=nodes)])
+        read_text = Mock(side_effect=lambda node, start, end: node.value[start:end])
+        gi = ModuleType('gi')
+        gi.require_version = Mock()
+        repository = ModuleType('gi.repository')
+        repository.Atspi = SimpleNamespace(get_desktop=lambda _: desktop,
+                                          Text=SimpleNamespace(get_text=read_text))
+        repository.GLib = None
+        path = Path(__file__).resolve().parents[1] / 'aerynos/guest_ui.py'
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.dict(os.environ, {'XDG_RUNTIME_DIR': directory}), \
+                patch.dict(sys.modules, {'gi': gi, 'gi.repository': repository}), \
+                patch.object(sys, 'argv', ['guest-ui']):
+            module = runpy.run_path(str(path), run_name='qa_guest_ui')
+        with patch.object(sys, 'argv', ['guest-ui', 'form-text', label]), \
+                contextlib.redirect_stdout(io.StringIO()) as output:
+            module['main']()
+        read_text.assert_called_once_with(nodes[0], 0, len(nodes[0].value))
+        return json.loads(output.getvalue())
+
+    def test_form_readback_uses_text_interface_despite_accessible_method_collision(self):
+        for label, value in (('Media address', 'http://10.0.2.2:12345/Maestro%20Movie.mp4'),
+                             ('Display name (optional)', 'QA direct H264')):
+            with self.subTest(label=label):
+                self.assertEqual(self.read(label, [(label, 'text', value)]), value)
+
+    def test_form_readback_rejects_secret_labels_protected_fields_and_duplicates(self):
+        cases = [('Password', [('Password', 'password text', 'do not read')]),
+                 ('Media address', [('Media address', 'password text', 'do not read')]),
+                 ('Media address', [('Media address', 'text', 'one'),
+                                    ('Media address', 'text', 'two')])]
+        for label, fields in cases:
+            with self.subTest(label=label, fields=fields), self.assertRaises(RuntimeError):
+                self.read(label, fields)
 
 
 class PlaybackMeasurementsTests(unittest.TestCase):

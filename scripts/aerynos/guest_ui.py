@@ -99,7 +99,8 @@ def main():
         text = node.get_text_iface()
         if text is None:
             raise RuntimeError('Open media field has no accessible text')
-        result = text.get_text(0, text.get_character_count())
+        # Accessible.get_text() shadows Text.get_text() on PyGObject wrappers.
+        result = Atspi.Text.get_text(text, 0, text.get_character_count())
     elif command == 'length':
         result = node.get_text_iface().get_character_count()
     elif command == 'state':

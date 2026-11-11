@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fold known surround and height speaker layouts into native group stereo output while retaining original multichannel PCM for visualizations. Reject unknown, duplicate or non-finite capture data before transmission.
+
 - Serve bounded native-source metadata and target-qualified, replay-protected transport controls to selected group peers through the shared music session. Correct stale documentation: the current dependency lock already includes the ordered PCM ABI.
 
 - Follow native music-source hardware drift with bounded transmit-clock feedback and monotonic descriptor timestamps; prevent rejected receive timing outliers from changing frame unwrapping. Accept the empty HTTP 200 command acknowledgements emitted by current native Companion players.

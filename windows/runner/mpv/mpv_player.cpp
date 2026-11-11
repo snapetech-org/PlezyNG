@@ -10,6 +10,7 @@
 #include <exception>
 #include <unordered_map>
 
+#include "../../../shared/visualization/music_pcm_downmix.h"
 #include "../../../shared/visualization/music_pcm_fanout.h"
 #include "sanitize_utf8.h"
 
@@ -618,9 +619,10 @@ int MpvPlayer::SetMusicPcmCaptureEnabled(bool enabled) {
 int MpvPlayer::ReadMusicPcmCapture(mpv_plezy_audio_block* block) {
   std::lock_guard<std::mutex> lock(visualization_mutex_);
   if (!(audio_only_ && mpv_) || !TapApi().subtitle_available()) return MPV_ERROR_UNSUPPORTED;
-  return plezy::visualization::SharedMusicPcmFanout().ReadCapture(
+  const int result = plezy::visualization::SharedMusicPcmFanout().ReadCapture(
       reinterpret_cast<uintptr_t>(mpv_), block, visualization_pts_.load(),
       [this](mpv_plezy_audio_block* output) { return TapApi().read_next(mpv_, output, sizeof(*output)); });
+  return result > 0 && !plezy::visualization::DownmixMusicPcm(block) ? MPV_ERROR_UNSUPPORTED : result;
 }
 
 int MpvPlayer::SetSubtitlePcmCaptureEnabled(bool enabled) {

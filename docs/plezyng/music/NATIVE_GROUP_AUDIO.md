@@ -49,8 +49,13 @@ samples. A source preserves the local queue, duplicate occurrences, transport
 controls and listen-reporting authority. Closing restores the prior local mute.
 
 The native bridge shares one tap with the visualizer using an independent,
-presentation-timed bounded copy queue. Source capture currently accepts mono and
-stereo decoder output. Multichannel decoder capture fails closed.
+presentation-timed bounded copy queue. Native capture folds known mono, stereo,
+surround and height speaker assignments into the stereo wire bus, normalizing
+summed weights and excluding LFE and silent padding. The original multichannel
+copy remains available to visualizations. Unknown/duplicate speaker assignments
+and non-finite samples fail closed. Native multichannel wire output is not
+implemented; the negotiated source format remains stereo. Shared downmix tests
+pass in C++17 and C++20, and the changed Linux wrapper compiles.
 
 Verification: 116 focused source, mixer, shared-session and UI regressions pass.
 The production Dart source, driven by generated PCM in an isolated namespace,

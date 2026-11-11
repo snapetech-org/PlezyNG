@@ -189,6 +189,8 @@ bool FlutterWindow::OnCreate() {
       flutter_controller_->engine()->GetRegistrarForPlugin("MpvAudioPlayerPlugin"));
   MpvAudioOverlapPluginRegisterWithRegistrar(
       flutter_controller_->engine()->GetRegistrarForPlugin("MpvAudioOverlapPlugin"));
+  MpvAudioGroupOutputPluginRegisterWithRegistrar(
+      flutter_controller_->engine()->GetRegistrarForPlugin("MpvAudioGroupOutputPlugin"));
 
   workspace_views_ = std::make_unique<WorkspaceViews>(flutter_controller_->engine());
   RegisterWindowChannel();

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Register a third audio-only music core for the clocked native-group source speaker, independent of both fade decoders on every native platform.
+
 - Share bounded native group PCM rendering across output roles and retire late accepted decoder opens after their owner has closed.
 
 - Let an approved tvOS-only release repair build on the private Mac while the original iOS release job continues; keep other core release runs serialized.

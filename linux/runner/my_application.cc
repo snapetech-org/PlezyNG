@@ -130,6 +130,9 @@ static void my_application_activate(GApplication* application) {
   FlPluginRegistrar* overlap_registrar =
       fl_plugin_registry_get_registrar_for_plugin(FL_PLUGIN_REGISTRY(self->flutter_view), "MpvAudioOverlapPlugin");
   mpv_audio_overlap_plugin_register_with_registrar(overlap_registrar);
+  FlPluginRegistrar* group_output_registrar =
+      fl_plugin_registry_get_registrar_for_plugin(FL_PLUGIN_REGISTRY(self->flutter_view), "MpvAudioGroupOutputPlugin");
+  mpv_audio_group_output_plugin_register_with_registrar(group_output_registrar);
 
   bool preparation_worker = false;
   for (char** arg = self->dart_entrypoint_arguments; arg && *arg; ++arg) {

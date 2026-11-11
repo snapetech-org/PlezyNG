@@ -44,6 +44,10 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
     register(with: registrar, channelName: "com.plezy/mpv_audio_player/overlap")
   }
 
+  static func registerGroupOutput(with registrar: FlutterPluginRegistrar) {
+    register(with: registrar, channelName: "com.plezy/mpv_audio_player/group_output")
+  }
+
   private static func register(with registrar: FlutterPluginRegistrar, channelName: String) {
     #if os(macOS)
       let messenger = registrar.messenger

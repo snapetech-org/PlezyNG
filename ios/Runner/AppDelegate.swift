@@ -158,6 +158,9 @@ enum DownloadBackupPolicy {
     if let registrar = registry.registrar(forPlugin: "MpvAudioOverlapPlugin") {
       MpvAudioPlayerPlugin.registerOverlap(with: registrar)
     }
+    if let registrar = registry.registrar(forPlugin: "MpvAudioGroupOutputPlugin") {
+      MpvAudioPlayerPlugin.registerGroupOutput(with: registrar)
+    }
 
     if let registrar = registry.registrar(forPlugin: "VideoDecodeCapabilitiesPlugin") {
       VideoDecodeCapabilitiesPlugin.register(with: registrar)

@@ -1355,6 +1355,7 @@ MpvPlugin* mpv_plugin_new(FlPluginRegistrar* registrar, const gchar* channel_nam
 [[maybe_unused]] static MpvPlugin* g_mpv_workspace_plugin = nullptr;
 [[maybe_unused]] static MpvPlugin* g_mpv_audio_plugin = nullptr;
 [[maybe_unused]] static MpvPlugin* g_mpv_audio_overlap_plugin = nullptr;
+[[maybe_unused]] static MpvPlugin* g_mpv_audio_group_output_plugin = nullptr;
 
 void mpv_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
   g_mpv_plugin = mpv_plugin_new(registrar, "com.plezy/mpv_player", FALSE);
@@ -1370,6 +1371,10 @@ void mpv_audio_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
 
 void mpv_audio_overlap_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
   g_mpv_audio_overlap_plugin = mpv_plugin_new(registrar, "com.plezy/mpv_audio_player/overlap", TRUE);
+}
+
+void mpv_audio_group_output_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
+  g_mpv_audio_group_output_plugin = mpv_plugin_new(registrar, "com.plezy/mpv_audio_player/group_output", TRUE);
 }
 
 // fl_method_success_response_new() takes its own reference to the result, so

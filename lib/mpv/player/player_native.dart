@@ -248,6 +248,15 @@ class PlayerNative extends PlayerBase
       audioOnly = true,
       _hardwareDecoding = true;
 
+  /// Independent renderer for the source speaker while both music decoders
+  /// supply the native group. It never owns the shared queue or media controls.
+  PlayerNative.audioGroupOutput()
+    : methodChannel = const MethodChannel('com.plezy/mpv_audio_player/group_output'),
+      eventChannel = const EventChannel('com.plezy/mpv_audio_player/group_output/events'),
+      audioOnly = true,
+      _hardwareDecoding = true,
+      _exclusiveAudio = false;
+
   @override
   Set<String> get supportedLocalSubtitleExtensions =>
       audioOnly ? const <String>{} : const <String>{'srt', 'ass', 'ssa', 'vtt', 'sub', 'idx', 'sup'};

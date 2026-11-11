@@ -36,6 +36,7 @@ void mpv_workspace_plugin_register_with_registrar(FlPluginRegistrar* registrar);
 /// Registers the audio-only (music) plugin with Flutter.
 void mpv_audio_plugin_register_with_registrar(FlPluginRegistrar* registrar);
 void mpv_audio_overlap_plugin_register_with_registrar(FlPluginRegistrar* registrar);
+void mpv_audio_group_output_plugin_register_with_registrar(FlPluginRegistrar* registrar);
 
 G_END_DECLS
 

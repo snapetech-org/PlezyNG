@@ -10,6 +10,7 @@ import androidx.media.MediaSessionManager
 import com.edde746.os_media_controls.MediaSessionHolder
 import com.edde746.os_media_controls.MusicCarApi
 import com.edde746.plezy.BuildConfig
+import com.edde746.plezy.mpv.MpvAudioGroupOutputPlugin
 import com.edde746.plezy.mpv.MpvAudioOverlapPlugin
 import com.edde746.plezy.mpv.MpvAudioPlayerPlugin
 import io.flutter.embedding.engine.FlutterEngine
@@ -31,6 +32,7 @@ class MusicBrowserService : MediaBrowserServiceCompat() {
     engine.plugins.add(MusicBackgroundPlatformPlugin())
     engine.plugins.add(MpvAudioPlayerPlugin())
     engine.plugins.add(MpvAudioOverlapPlugin())
+    engine.plugins.add(MpvAudioGroupOutputPlugin())
     FlutterEngineCache.getInstance().put(ENGINE_ID, engine)
     engine.dartExecutor.executeDartEntrypoint(
       DartExecutor.DartEntrypoint.createDefault(),

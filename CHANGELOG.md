@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Require native qualification to show moving video and audio on the untouched Open Media route as well as the standard server player; seeking or reattaching cannot stand in for initial-frame readiness.
+
 - Reveal native video when playback renders its first frame before the view mounts or a playing surface is reattached. The shared widget reads current frame readiness across player backends while preserving explicit loading and display-negotiation holds.
 
 - Include XKB keyboard data in the Nix runtime so GTK can initialize and accept keyboard input inside the package environment.

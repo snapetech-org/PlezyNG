@@ -19,6 +19,7 @@ import sys
 import tarfile
 import threading
 import time
+import urllib.parse
 import urllib.request
 
 from vm import Guest, ISO_SHA256, ISO_URL, port, run
@@ -158,13 +159,15 @@ class AppQA:
             time.sleep(2)
         raise TimeoutError('GNOME did not start after normal fixture login')
 
-    def launch(self, preload=None):
+    def launch(self, preload=None, *, link=None):
         self.guest.user('gsettings set org.gnome.desktop.session idle-delay 0')
         self.guest.user('gsettings set org.gnome.desktop.interface toolkit-accessibility true')
         env = ['--setenv=LD_PRELOAD=' + preload] if preload else []
-        self.guest.user(shlex.join(['systemd-run', '--user', '--unit=pleazyng-qa', *env, '/usr/bin/pleazyng']))
+        self.guest.user(shlex.join(['systemd-run', '--user', '--unit=pleazyng-qa', *env, '/usr/bin/pleazyng',
+                                   *([link] if link is not None else [])]))
         time.sleep(3)
-        self.key('esc')
+        if link is None:
+            self.key('esc')
         self.key('alt-f10')
 
     def stop(self):
@@ -363,6 +366,31 @@ class AppQA:
             # later frame, particularly in software-rendered hosted guests.
             time.sleep(0.2)
 
+    def source_clock(self, timeout=5):
+        deadline = time.monotonic() + timeout
+        clock = r'\d+:[0-5]\d(?::[0-5]\d)?'
+        while True:
+            nodes = self.ui()
+            positions = [i for i, node in enumerate(nodes)
+                         if node['name'] == 'Position' and node['role'] == 'slider']
+            if len(positions) == 1:
+                elapsed = []
+                for node in nodes[positions[0] + 1:]:
+                    label = node['name'] or ''
+                    if re.fullmatch(clock + ' remaining', label):
+                        if len(elapsed) == 1:
+                            value = 0
+                            for part in elapsed[0].split(':'):
+                                value = value * 60 + int(part)
+                            return value
+                        break
+                    if re.fullmatch(clock, label):
+                        elapsed.append(label)
+            if time.monotonic() >= deadline:
+                (self.evidence / 'source-clock-timeout.json').write_text(json.dumps(nodes, indent=2) + '\n')
+                raise RuntimeError('No unique Open media elapsed clock between Position and remaining time')
+            time.sleep(0.2)
+
     def audio_since(self, offset):
         import numpy as np
         import struct
@@ -389,22 +417,25 @@ class AppQA:
                 'start_byte': start, 'end_byte': end, 'channels': channels, 'bits_per_sample': bits,
                 'note': 'PCM payload read without relying on QEMU placeholder RIFF/data lengths'}
 
-    def observe_playback(self, label, paused=False):
+    def observe_playback(self, label, paused=False, *, source_route=False):
         from PIL import Image, ImageChops
-        names = self.controls()
-        expected = 'Play' if paused else 'Pause'
-        if expected not in names:
-            raise RuntimeError(f'{label}: expected {expected} control')
-        before = self.clock()
-        self.hide_controls()
-        time.sleep(0.6)
+        if source_route:
+            before = self.source_clock()
+        else:
+            names = self.controls()
+            expected = 'Play' if paused else 'Pause'
+            if expected not in names:
+                raise RuntimeError(f'{label}: expected {expected} control')
+            before = self.clock()
+            self.hide_controls()
+            time.sleep(0.6)
         offset = (self.guest.root / 'audio.wav').stat().st_size
         first, second = (self.evidence / f'{label}-{n}.png' for n in (1, 2))
         self.guest.screenshot(first)
         time.sleep(3)
         self.guest.screenshot(second)
         audio = self.audio_since(offset)
-        after = self.clock()
+        after = self.source_clock() if source_route else self.clock()
         a = Image.open(first).convert('RGB').crop((100, 150, 1180, 550))
         b = Image.open(second).convert('RGB').crop((100, 150, 1180, 550))
         pixels = getattr(b, 'get_flattened_data', b.getdata)()
@@ -413,7 +444,8 @@ class AppQA:
         pixels = getattr(difference, 'get_flattened_data', difference.getdata)()
         changed = sum(max(p) > 20 for p in pixels) / (b.width * b.height)
         result = {'clock_before': before, 'clock_after': after, 'vivid_fraction': vivid,
-                  'changed_frame_fraction': changed, 'paused': paused, 'audio': audio}
+                  'changed_frame_fraction': changed, 'paused': paused, 'audio': audio,
+                  'route': 'open-media' if source_route else 'jellyfin'}
         (self.evidence / f'{label}.json').write_text(json.dumps(result, indent=2) + '\n')
         if vivid < 0.4:
             raise RuntimeError(label + ': authored video pattern is not visible')
@@ -500,6 +532,37 @@ class AppQA:
         self.wait('Back')
         self.ui('click', 'Back')
 
+    def direct_playback(self, server_port):
+        if type(server_port) is not int or not 0 < server_port < 65536:
+            raise ValueError('Expected the authored loopback fixture server port')
+        address = f'http://10.0.2.2:{server_port}/Maestro%20Movie.mp4'
+        # App links accept HTTPS only. Open the normal form without fetching,
+        # then enter the authored HTTP fixture and grant per-stream consent.
+        link = 'pleazyng://open-media?' + urllib.parse.urlencode({'url': address.replace('http:', 'https:', 1)})
+        # Linux allows multiple app instances. Restart our owned ordinary app
+        # with the same URI argument accepted by its desktop entry.
+        self.stop()
+        self.launch(link=link)
+        self.wait('Media address')
+        self.ui('fill', 'Media address', address)
+        self.ui('fill', 'Display name (optional)', 'QA direct H264')
+        http_consent = 'Allow an unencrypted HTTP connection'
+        self.wait(http_consent)
+        if self.ui('state', http_consent) is False:
+            self.ui('click', http_consent)
+        if self.ui('state', http_consent) is not True:
+            raise RuntimeError('Open media did not grant the authored stream HTTP consent')
+        if self.ui('state', 'Treat as live') is True:
+            self.ui('click', 'Treat as live')
+        if self.ui('state', 'Treat as live') is not False:
+            raise RuntimeError('Authored Open media recording must not be treated as live')
+        self.ui('click', 'Play now')
+        self.wait('Position', timeout=30)
+        # A seek or fullscreen change can conceal a late-mount first-frame bug.
+        # Measure this route before any playback or window intervention.
+        self.observe_playback('open-media-initial', source_route=True)
+        self.ui('click', 'Back')
+
 
 
 def fixture(source, root):
@@ -525,6 +588,20 @@ def fixture(source, root):
         raise
     (root / 'fixture.json').write_text(json.dumps({'container': name, 'server_port': server_port, 'image': image}, indent=2) + '\n')
     return name, server_port
+
+
+def check_playback_routes(app, fixture_root):
+    app.verify_default()
+    app.visible_h264()
+    app.lifecycle()
+    movie_dir = fixture_root.resolve() / 'jellyfin/media/movies/maestro-movie'
+    (app.evidence / 'open-media-fixture.json').write_text(json.dumps({
+        'sha256': digest(movie_dir / 'Maestro Movie.mp4'), 'duration_seconds': 180,
+        'video': 'authored H264 testsrc2', 'audio_hz': 440,
+        'entry': 'ordinary installed app Open media URI argument and per-stream HTTP consent',
+        'host_binding': '127.0.0.1', 'guest_host_alias': '10.0.2.2'}, indent=2) + '\n')
+    with serve(movie_dir) as direct_port:
+        app.direct_playback(direct_port)
 
 
 def qualify(args):
@@ -604,9 +681,7 @@ def qualify(args):
         app.login_desktop()
         app.launch()
         app.sign_in(server_port)
-        app.verify_default()
-        app.visible_h264()
-        app.lifecycle()
+        check_playback_routes(app, args.scratch)
         app.stop()
         guest.screenshot(evidence / 'after-playback.png')
         command(guest, 'journalctl _COMM=pleazyng --no-pager', evidence / 'runtime.log')
@@ -622,7 +697,8 @@ def qualify(args):
                          'audio_capture': audio_capture,
                          'checks': ['native_boulder_build', 'native_moss_install', 'native_moss_upgrade', 'installed_elf', 'bundled_im_cache', 'ordinary_release_launch',
                                     'background_return_playing', 'background_return_paused', 'route_resume', 'bookmark_resume', 'audio_clock',
-                                    'jellyfin_sign_in', 'dv_default_on', 'fallback_default_on', 'visible_h264', 'pause', 'seek', 'fullscreen'],
+                                    'jellyfin_sign_in', 'dv_default_on', 'fallback_default_on', 'visible_h264', 'pause', 'seek', 'fullscreen',
+                                    'open_media_direct_h264'],
                          'not_qualified': ['physical HDR/Dolby Vision output', 'FEL reference picture accuracy', 'physical GPU/NPU execution'],
                          'stone': names[0], 'stone_sha256': digest(output / names[0]), 'build': build, 'baseline': baseline,
                          'same_app_version_upgrade': baseline.get('version', '').split('+')[0] == version,

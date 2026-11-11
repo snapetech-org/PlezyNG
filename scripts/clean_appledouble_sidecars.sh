@@ -38,10 +38,6 @@ if [[ "${RUNNER_ENVIRONMENT:-}" == "github-hosted" ]]; then
     echo "Refusing to clean an unexpected or redirected hosted Apple workspace: $workspace" >&2
     exit 1
   fi
-  if [[ ! "${GITHUB_SHA:-}" =~ ^[0-9a-f]{40}$ || "$(git -C "$workspace" rev-parse HEAD)" != "$GITHUB_SHA" ]]; then
-    echo "Hosted Apple workspace does not contain the exact requested source." >&2
-    exit 1
-  fi
 else
   task_root="$NFS_RUNS_ROOT/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}"
   owner_file="$NFS_RUNS_ROOT/.plezyng-apple-scratch-p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}.owner"
@@ -80,6 +76,15 @@ else
       exit 1
     fi
   done
+fi
+
+
+# Workflow ownership retains GITHUB_SHA; an approved frozen repair may check out
+# a different, independently verified packaging source. Never conflate the two.
+source_sha="${COMPILE_SOURCE_SHA:-${GITHUB_SHA:-}}"
+if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ || "$(git -C "$workspace" rev-parse HEAD)" != "$source_sha" ]]; then
+  echo "Apple workspace does not contain the exact requested source revision." >&2
+  exit 1
 fi
 
 before_count="$(/usr/bin/find "$task_root" -name '._*' -print | /usr/bin/wc -l | /usr/bin/tr -d ' ')"

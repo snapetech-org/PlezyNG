@@ -120,8 +120,9 @@ def archive(platform: str, archive_path: Path, export_path: Path, derived_data: 
                        'COMPILER_INDEX_STORE_ENABLE=NO']
             if source_packages:
                 command += ['-clonedSourcePackagesDirPath', str(source_packages)]
-            if platform == 'tvos':
-                command += ['ARCHS=arm64']
+            # Both Store platforms and their embedded native workers ship the
+            # arm64 device ABI. Do not let an SDK add an unsupported arm64e slice.
+            command += ['ARCHS=arm64']
             subprocess.run(command, env=env, check=True)
             subprocess.run(['xcodebuild', '-exportArchive', '-archivePath', str(archive_path),
                             '-exportPath', str(export_path), '-exportOptionsPlist', str(options)], env=env, check=True)

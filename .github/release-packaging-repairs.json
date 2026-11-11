@@ -106,6 +106,18 @@
         "scripts/build_apple_store_archive.py": "31978a785db68c4603dea1a2cc4e5047c8c85b62",
         "scripts/test_build_apple_store_archive.py": "86b0925df94cf3bea211273a7aca74e47cdabd6c"
       }
+    },
+    {
+      "product_source_sha": "240994590dd3e5411ee3b02c2bcfc0a1fd51a431",
+      "packaging_source_sha": "6168aca9ad93e6a4336c11843f4904b923444b18",
+      "files": {
+        "CHANGELOG.md": "13da36359f9cab29aac3cd20d20ce122d5024321",
+        "docs/maintainers/full-release-build.md": "8798f33738e902b3b4ca9048f701e5526d914817",
+        "scripts/build_apple_store_archive.py": "31978a785db68c4603dea1a2cc4e5047c8c85b62",
+        "scripts/checks/test_recover_release_platforms.py": "849c793c59df671eb950f84cf307c3095c950211",
+        "scripts/recover_release_platforms.py": "681edcf76c1e0d6de47c4efaa66d83ee7cce4dc8",
+        "scripts/test_build_apple_store_archive.py": "86b0925df94cf3bea211273a7aca74e47cdabd6c"
+      }
     }
   ]
 }

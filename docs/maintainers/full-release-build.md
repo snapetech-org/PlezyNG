@@ -742,3 +742,20 @@ inventory proves approved source validation succeeded, every other job (includin
 both repaired platforms and release creation) skipped without steps, and no
 artifacts exist. Preserve that validation-only run as evidence. Any actual build,
 publication attempt, artifact or incomplete inventory blocks this exception.
+
+
+Apple workspace cleanup binds source validation to `COMPILE_SOURCE_SHA` while
+private scratch ownership remains bound to the real workflow `GITHUB_SHA`.
+The two identities differ in an approved frozen repair; do not overwrite workflow
+identity globally or weaken task-path/owner checks.
+
+If a signed tvOS repair succeeds while iOS fails, retain its compiler run and use
+`--reuse-tvos-run` during the next approved, iOS-only packaging recovery. Its
+previous packaging revision must independently qualify as an approved sibling of
+the same frozen product. The prior run must contain the actual successful signed
+TV build, both package attestations and upload, with no publication attempt.
+The producer pins the exact TV artifact ID and digest, verifies both IPA
+certificates against their original workflow/run, and publishes a distinct
+`tvos_source` proof. Ordinary Linux/Mac repair reuse keeps its existing meaning.
+The existing workflow `reuse_repaired_run_id` slot is interpreted as TV reuse only
+for this explicit frozen Apple mode; no additional dispatch input is required.

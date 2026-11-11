@@ -1671,6 +1671,13 @@ require(
     and 'blob/v%s/UPSTREAM_ATTRIBUTION.md' in release,
     "public release notes must include the upstream people/source ledger and tag-pinned link",
 )
+apple_sidecar_cleanup = (ROOT / 'scripts/clean_appledouble_sidecars.sh').read_text()
+require(
+    'source_sha="${COMPILE_SOURCE_SHA:-${GITHUB_SHA:-}}"' in apple_sidecar_cleanup
+    and '"$(git -C "$workspace" rev-parse HEAD)" != "$source_sha"' in apple_sidecar_cleanup
+    and '"sha=${GITHUB_SHA:-}"' in apple_sidecar_cleanup,
+    "Apple sidecar cleanup must separate approved source validation from workflow ownership",
+)
 ios_arch = named_step(job("build-ios"), "Pin iOS device builds to the packaged native ABI")
 require(
     r'ARCHS = arm64\nONLY_ACTIVE_ARCH = NO\n' in ios_arch and 'ONLY_ACTIVE_ARCH = NO' in ios_arch
@@ -1697,6 +1704,13 @@ require(
 )
 recovery_gate = named_step(trusted_ref, "Verify reusable platform source")
 recovery_download = named_step(release, "Recover verified platform artifacts")
+require(
+    '--tvos-run "$REPAIRED_RUN"' in recovery_gate
+    and '--tvos-run "$REPAIRED_RUN"' in recovery_download
+    and 'if [[ -n "$PACKAGING_SHA" ]]' in recovery_gate
+    and '--repaired-run "$REPAIRED_RUN"' in recovery_gate,
+    "approved Apple recovery must distinguish signed TV reuse from legacy Linux/Mac repair reuse",
+)
 ios_worker_stage = named_step(job("build-ios"), "Stage locked iOS worker frameworks for Release")
 require(
     "(inputs.reuse_platform_run_id == '' || inputs.rebuild_ios)" in job("build-ios")

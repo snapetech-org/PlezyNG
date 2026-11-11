@@ -89,7 +89,7 @@ on:
         required: false
         type: string
       reuse_repaired_run_id:
-        description: Reuse verified Linux and fully qualified Mac jobs from a prior repair run
+        description: Reuse signed tvOS from an approved Apple repair, or legacy repaired Linux and Mac outputs
         required: false
         type: string
       reuse_platform_run_id:
@@ -665,7 +665,9 @@ jobs:
           if [[ "$REBUILD_MACOS" == true ]]; then options+=(--rebuild-macos); fi
           if [[ "$REBUILD_TVOS" == true ]]; then options+=(--rebuild-tvos); fi
           if [[ "$REBUILD_IOS" == true ]]; then options+=(--rebuild-ios); fi
-          if [[ -n "$REPAIRED_RUN" ]]; then options+=(--repaired-run "$REPAIRED_RUN"); fi
+          if [[ -n "$REPAIRED_RUN" ]]; then
+            if [[ -n "$PACKAGING_SHA" ]]; then options+=(--tvos-run "$REPAIRED_RUN"); else options+=(--repaired-run "$REPAIRED_RUN"); fi
+          fi
           if [[ -n "$WEBOS_RUN" ]]; then options+=(--webos-run "$WEBOS_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
@@ -3196,7 +3198,9 @@ jobs:
           if [[ "$REBUILD_MACOS" == true ]]; then options+=(--rebuild-macos); fi
           if [[ "$REBUILD_TVOS" == true ]]; then options+=(--rebuild-tvos); fi
           if [[ "$REBUILD_IOS" == true ]]; then options+=(--rebuild-ios); fi
-          if [[ -n "$REPAIRED_RUN" ]]; then options+=(--repaired-run "$REPAIRED_RUN"); fi
+          if [[ -n "$REPAIRED_RUN" ]]; then
+            if [[ -n "$PACKAGING_SHA" ]]; then options+=(--tvos-run "$REPAIRED_RUN"); else options+=(--repaired-run "$REPAIRED_RUN"); fi
+          fi
           if [[ -n "$WEBOS_RUN" ]]; then options+=(--webos-run "$WEBOS_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi

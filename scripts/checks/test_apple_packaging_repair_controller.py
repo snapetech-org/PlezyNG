@@ -49,6 +49,20 @@ class PackagingRepairControllerTests(unittest.TestCase):
         self.assertTrue(dispatch.call_args.kwargs['expected_title'].endswith(':repair:' + self.repair))
         self.assertEqual(dispatch.call_args.args[2], 'main')
 
+    def test_signed_tv_reuse_occupies_only_existing_repair_input_and_forwards_typed_verification(self):
+        with patch.object(release, 'matching_packaging_repair_run', return_value=None), \
+                patch.object(release, 'verify_platform_recovery', return_value=self.proof()) as verify, \
+                patch.object(release, 'ensure_frozen_release_source'), \
+                patch.object(release, 'ensure_remote_main_sha'), \
+                patch.object(release, 'run_has_successful_step', return_value=True), \
+                patch.object(release, 'dispatch', return_value={'databaseId': 99}) as dispatch:
+            release.ensure_release(self.tag, self.repair, **{
+                **self.options(), 'rebuild_tvos': False, 'reuse_tvos_run_id': 84})
+        self.assertEqual(verify.call_args.kwargs['tvos_run'], 84)
+        self.assertNotIn('repaired_run', verify.call_args.kwargs)
+        self.assertEqual(dispatch.call_args.args[3]['reuse_repaired_run_id'], '84')
+        self.assertNotIn('rebuild_tvos', dispatch.call_args.args[3])
+
     def test_completed_repair_is_reused_after_main_advances_and_all_signed_steps_are_required(self):
         existing = {'databaseId': 99, 'headSha': self.workflow, 'status': 'completed', 'conclusion': 'success'}
         for missing in (None, 'Build signed iOS App Store IPA', 'Build signed tvOS App Store IPA',
@@ -250,15 +264,26 @@ class PackagingRepairControllerTests(unittest.TestCase):
         self.assertTrue(verify.call_args.kwargs['include_apple_store_build'])
 
     def test_assembly_receipt_requires_checksum_certificate_and_exact_approved_run_sources(self):
-        for invalid in (None, 'checksum', 'certificate', 'assembly', 'checkout', 'artifact', 'linux'):
+        for invalid in (None, 'checksum', 'certificate', 'assembly', 'checkout', 'artifact', 'linux',
+                        'tv-source', 'tv-artifact', 'tv-hash-coverage', 'tv-checksum', 'tv-public-digest'):
             with self.subTest(invalid=invalid), tempfile.TemporaryDirectory() as temp:
-                receipt = {**self.proof(), 'assembly_run_id': 99, 'actual_checkout_sha': self.repair,
+                tv = {'source_run_id': 84, 'source_sha': 'd' * 40, 'workflow_source_sha': 'e' * 40,
+                      'artifact_id': 124, 'artifact_digest': 'sha256:' + 'f' * 64}
+                hashes = {'pleazyng-tvos-unsigned.ipa': '1' * 64, 'pleazyng-tvos-appstore.ipa': '2' * 64}
+                source_proof = {**self.proof(), 'tvos_source': tv}
+                receipt = {**source_proof, 'tvos_source': {**tv, 'package_sha256': dict(hashes)},
+                           'assembly_run_id': 99, 'actual_checkout_sha': self.repair,
                            'linux_archive_sha256': 'e' * 64,
                            'artifacts': [{'name': 'linux-x64', 'artifact_id': 123, 'source_run_id': 42,
-                                          'source_sha': self.product, 'digest': 'sha256:' + 'f' * 64}]}
+                                          'source_sha': self.product, 'digest': 'sha256:' + 'f' * 64},
+                                         {'name': 'tvos-ipa', 'artifact_id': 124, 'source_run_id': 84,
+                                          'source_sha': tv['source_sha'], 'digest': tv['artifact_digest']}]}
                 if invalid == 'assembly': receipt['assembly_run_id'] = 100
                 if invalid == 'checkout': receipt['actual_checkout_sha'] = self.workflow
                 if invalid == 'artifact': receipt['artifacts'][0]['source_sha'] = self.workflow
+                if invalid == 'tv-source': receipt['tvos_source']['source_sha'] = self.product
+                if invalid == 'tv-artifact': receipt['artifacts'][1]['artifact_id'] = 125
+                if invalid == 'tv-hash-coverage': receipt['tvos_source']['package_sha256'].pop('pleazyng-tvos-unsigned.ipa')
                 certificate = {'sourceRepositoryIdentifier': '1433487464', 'sourceRepositoryDigest': self.workflow,
                                'runInvocationURI': f'https://github.com/{release.PLEZY_REPO}/actions/runs/99'}
                 if invalid == 'certificate': certificate['runInvocationURI'] += '0'
@@ -268,23 +293,31 @@ class PackagingRepairControllerTests(unittest.TestCase):
                         content = json.dumps(receipt).encode()
                         (directory / 'platform-reuse-provenance.json').write_bytes(content)
                         checksum = '0' * 64 if invalid == 'checksum' else hashlib.sha256(content).hexdigest()
-                        (directory / 'SHA256SUMS.txt').write_text(checksum + '  platform-reuse-provenance.json\n')
+                        (directory / 'SHA256SUMS.txt').write_text(checksum + '  platform-reuse-provenance.json\n' +
+                            ''.join(('0' * 64 if invalid == 'tv-checksum' else digest) + '  ' + name + '\n'
+                                    for name, digest in hashes.items()))
                         return subprocess.CompletedProcess(args, 0, '', '')
                     return subprocess.CompletedProcess(args, 0, json.dumps([{
                         'verificationResult': {'signature': {'certificate': certificate}}}]), '')
                 metadata = {'assets': [{'name': 'pleazyng-linux-x64.tar.gz',
-                                       'digest': 'sha256:' + ('0' if invalid == 'linux' else 'e') * 64}]}
+                                       'digest': 'sha256:' + ('0' if invalid == 'linux' else 'e') * 64},
+                                      *({'name': name, 'digest': 'sha256:' + ('0' * 64 if invalid == 'tv-public-digest' else digest)}
+                                        for name, digest in hashes.items())]}
                 with patch.object(release, 'command', side_effect=command), \
                         patch.object(release, 'ensure_frozen_release_source'), \
                         patch.object(release, 'release_metadata', return_value=metadata):
                     if invalid:
                         with self.assertRaises(release.ReleaseError):
-                            release.verify_packaging_repair_assembly(Path(temp), self.tag, self.proof(), {'databaseId': 99})
+                            release.verify_packaging_repair_assembly(Path(temp), self.tag, source_proof, {'databaseId': 99})
                     else:
                         self.assertEqual(release.verify_packaging_repair_assembly(
-                            Path(temp), self.tag, self.proof(), {'databaseId': 99}), receipt)
+                            Path(temp), self.tag, source_proof, {'databaseId': 99}), receipt)
 
     def test_signed_publication_cli_keeps_product_and_packaging_sources_separate(self):
+        self.signed_publication_cli(reuse_tvos=False)
+        self.signed_publication_cli(reuse_tvos=True)
+
+    def signed_publication_cli(self, *, reuse_tvos):
         with tempfile.TemporaryDirectory() as temp, contextlib.ExitStack() as stack:
             scratch = Path(temp) / 'release'
             args = ['release', '--version', '3.0.31', '--source-commit', self.repair,
@@ -292,6 +325,9 @@ class PackagingRepairControllerTests(unittest.TestCase):
                     '--rebuild-ios', '--rebuild-tvos', '--include-apple-store-build',
                     '--apple-arm-runner-pool', 'private',
                     '--prepare-homebrew-cask', '--publish', '--scratch', str(scratch)]
+            if reuse_tvos:
+                args.remove('--rebuild-tvos')
+                args.extend(['--reuse-tvos-run', '84'])
             stack.enter_context(patch.object(sys, 'argv', args))
             command = stack.enter_context(patch.object(release, 'command', return_value=subprocess.CompletedProcess([], 0, self.repair, '')))
             create = stack.enter_context(patch.object(release, 'create_plezy_worktree', return_value=Path(temp) / 'checkout'))
@@ -301,7 +337,7 @@ class PackagingRepairControllerTests(unittest.TestCase):
                 stack.enter_context(patch.object(release, name, return_value=self.workflow))
             stack.enter_context(patch.object(release, 'gh_json', return_value={'commit': {'sha': self.workflow}}))
             stack.enter_context(patch.object(release, 'matching_packaging_repair_run', return_value=None))
-            stack.enter_context(patch.object(release, 'verify_platform_recovery', return_value=self.proof()))
+            verify = stack.enter_context(patch.object(release, 'verify_platform_recovery', return_value=self.proof()))
             stack.enter_context(patch.object(release, 'verify_packaging_repair_assembly', return_value=self.proof()))
             native = stack.enter_context(patch.object(release, 'prepare_native_checkout'))
             build = stack.enter_context(patch.object(release, 'ensure_release', return_value={'databaseId': 99}))
@@ -315,6 +351,11 @@ class PackagingRepairControllerTests(unittest.TestCase):
             self.assertTrue(build.call_args.kwargs['include_apple_store_build'])
             self.assertEqual(build.call_args.kwargs['tvos_runner_pool'], 'private')
             self.assertNotIn('candidate_ref', build.call_args.kwargs)
+            if reuse_tvos:
+                self.assertEqual(build.call_args.kwargs['reuse_tvos_run_id'], 84)
+                self.assertEqual(verify.call_args.kwargs['tvos_run'], 84)
+                self.assertNotIn('rebuild_tvos', build.call_args.kwargs)
+                self.assertNotIn('reuse_repaired_run_id', build.call_args.kwargs)
             self.assertFalse(build.call_args.kwargs.get('rebuild_macos', False))
             self.assertFalse(any('scripts/sync_native_revision.py' in call.args[0] for call in command.call_args_list))
             report = json.loads((scratch / 'release-summary.json').read_text())

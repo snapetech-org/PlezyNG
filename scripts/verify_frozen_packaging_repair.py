@@ -25,6 +25,8 @@ ALLOWED_REPAIR_FILES = frozenset({
     'scripts/release_all_platforms.py',
     'scripts/recover_release_platforms.py',
     'scripts/build_apple_store_archive.py',
+    'scripts/clean_appledouble_sidecars.sh',
+    'scripts/checks/test_clean_appledouble_sidecars.py',
     'scripts/test_build_apple_store_archive.py',
     'scripts/verify_frozen_packaging_repair.py',
     'scripts/checks/test_verify_frozen_packaging_repair.py',

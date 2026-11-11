@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep Apple workflow ownership separate from the approved source checkout when cleaning build workspaces. Reuse a separately verified signed tvOS repair output when only iOS still needs building, preserving the same qualified product source and native dependencies.
+
 - Preserve the explicitly selected tvOS runner pool when recovering signed Apple packages, without adding a candidate source reference.
 
 - Refresh music rating conflicts when another device changes the server value during resolution. Choices from the older conflict cannot overwrite or discard the updated decision.

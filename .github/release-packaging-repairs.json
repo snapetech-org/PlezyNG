@@ -64,6 +64,29 @@
         "tools/dv-engine/build_apple_runtime.py": "3fe644fa9f7f25f869208100233944560ab1637f",
         "tools/dv-engine/test_apple_runtime.py": "79ebf789bf155047f18e58592960e24f44ca839b"
       }
+    },
+    {
+      "product_source_sha": "1f2f77f8b6ace65286140d3eaeb207b1c1d5accc",
+      "packaging_source_sha": "16045c028052326e77e0835a469867f223a3f71d",
+      "files": {
+        ".github/workflows/build.yml": "987a234ac6fe8099964b2e5ddd889855162243a8",
+        "CHANGELOG.md": "60aa835fafaf48e065bbb53b86a47ab3e6f5a7e2",
+        "docs/maintainers/full-release-build.md": "61b6cbc051161f2149f80e12ffd6473c7d641e28",
+        "scripts/build_apple_store_archive.py": "0f8b66c9bf7e7ad20c60905335d0562b8be29218",
+        "scripts/checks/check_build_workflow.py": "942507ebee11188b04381bbc2b0d058266d6e955",
+        "scripts/checks/test_apple_packaging_repair_controller.py": "c418014a27ce502f9ec5412d15f98d1687401f2c",
+        "scripts/checks/test_check_build_workflow.py": "459f813d567e98c870fc2e93a3b43c1cf7530ba9",
+        "scripts/checks/test_clean_appledouble_sidecars.py": "98f3f5aecbb081160df1fc9a816b60a9c241e6ae",
+        "scripts/checks/test_recover_release_platforms.py": "c13c93e80b05761770d563bf032576515fee5811",
+        "scripts/checks/test_verify_frozen_packaging_repair.py": "e530282e1eb79900bf1b98ed51e828414bdc9de0",
+        "scripts/clean_appledouble_sidecars.sh": "40168ebeeeea548ae67ba20444fdf46bf43c0ffc",
+        "scripts/recover_release_platforms.py": "72a795e043a45f1fb4db2d6a313b08c79244247a",
+        "scripts/release_all_platforms.py": "b17d826b6b1eaddf94fdc54802d5512ad3a88522",
+        "scripts/test_build_apple_store_archive.py": "db5c0d75bfeca555a739b3b16c512bf38a23b9a2",
+        "scripts/verify_frozen_packaging_repair.py": "dbf49537bf0f39285e67c9e6ac0c16e8e4dc459c",
+        "tools/dv-engine/build_apple_runtime.py": "3fe644fa9f7f25f869208100233944560ab1637f",
+        "tools/dv-engine/test_apple_runtime.py": "79ebf789bf155047f18e58592960e24f44ca839b"
+      }
     }
   ]
 }

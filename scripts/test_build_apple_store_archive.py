@@ -24,6 +24,59 @@ CERT = b'fixture-distribution-certificate'
 UUID = '4fce21b1-451d-4b19-805c-530c11be00e9'
 
 
+def worker_profile_fixture():
+    security = plistlib.loads(archive_helper.WORKER_ENTITLEMENTS.read_bytes())
+    return {'UUID': UUID, 'TeamIdentifier': [TEAM], 'DeveloperCertificates': [CERT],
+            'Platform': ['iOS'], 'ExpirationDate': datetime.now() + timedelta(days=365),
+            'Entitlements': {'application-identifier': f'{TEAM}.{BUNDLE}.RommWorker', **security}}
+
+
+class WorkerSecurityProfileTests(unittest.TestCase):
+    def validate(self, profile):
+        return validate_profile(profile, bundle=BUNDLE + '.RommWorker', platform='ios', team=TEAM, certificate=CERT)
+
+    def test_worker_authorizes_every_checked_in_security_requirement_without_host_group(self):
+        profile = worker_profile_fixture()
+        required, source_hash = archive_helper.worker_security_requirements()
+        self.assertEqual(len(required), 7)
+        self.assertRegex(source_hash, r'^[0-9a-f]{64}$')
+        self.assertNotIn('com.apple.security.application-groups', profile['Entitlements'])
+        self.assertEqual(self.validate(profile), UUID)
+
+    def test_every_missing_security_grant_is_rejected(self):
+        for key in archive_helper.worker_security_requirements()[0]:
+            with self.subTest(entitlement=key):
+                profile = worker_profile_fixture()
+                del profile['Entitlements'][key]
+                with self.assertRaisesRegex(ValueError, 'required Enhanced Security entitlement'):
+                    self.validate(profile)
+
+    def test_boolean_security_grants_require_true_without_coercion(self):
+        for key, requested in archive_helper.worker_security_requirements()[0].items():
+            if requested is not True:
+                continue
+            for grant in (False, 1, 'true', '*'):
+                with self.subTest(entitlement=key, grant=grant):
+                    profile = worker_profile_fixture()
+                    profile['Entitlements'][key] = grant
+                    with self.assertRaises(ValueError):
+                        self.validate(profile)
+
+    def test_string_security_grants_accept_exact_or_full_profile_wildcard(self):
+        for key, requested in archive_helper.worker_security_requirements()[0].items():
+            if not isinstance(requested, str):
+                continue
+            profile = worker_profile_fixture()
+            profile['Entitlements'][key] = '*'
+            self.assertEqual(self.validate(profile), UUID)
+            for grant in ('unexpected', '', int(requested), True, requested + '*'):
+                with self.subTest(entitlement=key, grant=grant):
+                    profile = worker_profile_fixture()
+                    profile['Entitlements'][key] = grant
+                    with self.assertRaises(ValueError):
+                        self.validate(profile)
+
+
 class AppleStoreSigningTests(unittest.TestCase):
     def profile(self):
         return {'UUID': UUID, 'TeamIdentifier': [TEAM], 'DeveloperCertificates': [CERT],
@@ -210,6 +263,28 @@ class AppleProfileBootstrapTests(unittest.TestCase):
             api.request.assert_not_called()
             self.assertEqual(validate.call_args.kwargs, dict(bundle=BUNDLE+'.RommWorker', platform='ios', team=TEAM, certificate=CERT))
 
+    def test_profile_missing_security_is_skipped_and_fresh_authorized_profile_selected(self):
+        old = worker_profile_fixture()
+        del old['Entitlements']['com.apple.security.hardened-process']
+        good = worker_profile_fixture()
+        with tempfile.TemporaryDirectory() as temporary, patch.object(archive_helper, 'run',
+                side_effect=[plistlib.dumps(old), plistlib.dumps(good)]):
+            api = self.api()
+            self.assertEqual(archive_helper._worker_profile(api, Path(temporary), CERT, TEAM), (b'fixture-profile', UUID))
+            self.assertEqual([call.args[0] for call in api.request.call_args_list], ['/v1/profiles'])
+            body = api.request.call_args.args[1]['data']['relationships']
+            self.assertEqual(body['bundleId']['data']['id'], 'worker-id')
+            self.assertEqual(body['certificates']['data'], [{'type': 'certificates', 'id': 'cert-id'}])
+
+    def test_fresh_profile_still_missing_security_is_rejected_without_repeated_creation(self):
+        bad = worker_profile_fixture()
+        del bad['Entitlements']['com.apple.security.hardened-process']
+        with tempfile.TemporaryDirectory() as temporary, patch.object(archive_helper, 'run', return_value=plistlib.dumps(bad)):
+            api = self.api()
+            with self.assertRaisesRegex(ValueError, 'required Enhanced Security entitlement'):
+                archive_helper._worker_profile(api, Path(temporary), CERT, TEAM)
+            self.assertEqual([call.args[0] for call in api.request.call_args_list], ['/v1/profiles'])
+
     def test_create_only_exact_bundle_and_profile_with_existing_certificate(self):
         with tempfile.TemporaryDirectory() as temporary, patch.object(archive_helper, 'run', return_value=b'cms'), \
                 patch.object(archive_helper.plistlib, 'loads', return_value={'fixture': True}), \
@@ -281,6 +356,8 @@ class AppleProfileBootstrapTests(unittest.TestCase):
                         patch.object(archive_helper, 'decode_secret', return_value=b'runner-private-profile'), \
                         patch.object(archive_helper, 'run', return_value=b'cms'), \
                         patch.object(archive_helper.plistlib, 'loads', return_value={}), \
+                        patch.object(archive_helper, 'worker_security_requirements',
+                                     return_value=({'com.apple.security.hardened-process': True}, 'f' * 64)), \
                         patch.object(archive_helper, 'validate_profile', return_value=UUID), \
                         patch.object(archive_helper, '_apple_api_token', return_value='fixture-private-token'), \
                         patch.object(archive_helper, '_worker_profile', side_effect=ValueError('fixture-private-error') if failure else None,
@@ -294,6 +371,7 @@ class AppleProfileBootstrapTests(unittest.TestCase):
                 content = report.read_text()
                 data = archive_helper.json.loads(content)
                 self.assertEqual(data['profile_bootstrap_qualified'], not failure)
+                self.assertEqual(data['worker_security_qualified'], not failure)
                 self.assertFalse(data['app_build_qualified'])
                 for secret in ('runner-private-profile', 'worker-private-profile',
                                'fixture-private-token', 'fixture-private-error'):

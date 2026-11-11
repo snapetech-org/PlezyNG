@@ -34,6 +34,18 @@ PROFILE_KEYS = {
 }
 MUSIC_NFC_ENTITLEMENT = 'com.apple.developer.nfc.readersession.formats'
 MUSIC_NFC_FILE = 'Runner/MusicNFC.entitlements'
+WORKER_ENTITLEMENTS = (Path(__file__).resolve().parents[1]
+                       / 'native/games/romm/apple/extension/RommWorker.entitlements')
+
+
+def worker_security_requirements() -> tuple[dict, str]:
+    raw = WORKER_ENTITLEMENTS.read_bytes()
+    required = plistlib.loads(raw)
+    if (not isinstance(required, dict) or not required
+            or any(not isinstance(key, str) or not key.startswith('com.apple.security.hardened-process')
+                   or type(value) not in (bool, str) for key, value in required.items())):
+        raise ValueError('Worker Enhanced Security entitlement requirements are invalid')
+    return required, hashlib.sha256(raw).hexdigest()
 
 
 def music_nfc_allowed(profile: dict, platform: str) -> bool:
@@ -68,6 +80,14 @@ def validate_profile(profile: dict, *, bundle: str, platform: str, team: str, ce
         raise ValueError('Archive requires an App Store distribution profile')
     # The enhanced-security worker does not use the host's shared app group.
     worker = platform == 'ios' and bundle == BUNDLE + '.RommWorker'
+    if worker:
+        required, _ = worker_security_requirements()
+        for key, expected_value in required.items():
+            granted = entitlements.get(key)
+            allowed = (granted is expected_value if type(expected_value) is bool else
+                       isinstance(granted, str) and granted in (expected_value, '*'))
+            if not allowed:
+                raise ValueError('Worker profile does not authorize required Enhanced Security entitlement: ' + key)
     if not worker and GROUP not in entitlements.get('com.apple.security.application-groups', []):
         raise ValueError('Profile does not include the Pleazyng app group')
     uuid = profile.get('UUID', '')
@@ -373,7 +393,8 @@ def prepare_ios_worker_profile(public_report: Path | None = None) -> None:
     output = os.environ.get('GITHUB_ENV')
     if not output:
         raise ValueError('Worker profile preparation requires the current GitHub job environment')
-    report = {'profile_bootstrap_qualified': False, 'app_build_qualified': False}
+    report = {'profile_bootstrap_qualified': False, 'app_build_qualified': False,
+              'worker_security_qualified': False}
     try:
         with signing_identity(report) as (stage, certificate, _fingerprint, team, _keychain):
             host_path = stage / 'Runner.mobileprovision'
@@ -382,6 +403,9 @@ def prepare_ios_worker_profile(public_report: Path | None = None) -> None:
             host = plistlib.loads(run(['security', 'cms', '-D', '-i', str(host_path)]))
             validate_profile(host, bundle=BUNDLE, platform='ios', team=team, certificate=certificate)
             data, uuid = _worker_profile(AppleProfileAPI(_apple_api_token(stage)), stage, certificate, team, report)
+            required, security_source_sha256 = worker_security_requirements()
+            report.update(worker_security_qualified=True, worker_security_required_entitlements=sorted(required),
+                          worker_security_source_sha256=security_source_sha256)
             encoded = base64.b64encode(data).decode()
             print(f'::add-mask::{encoded}', flush=True)
             with Path(output).open('a') as stream:

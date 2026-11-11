@@ -889,7 +889,12 @@ class CompanionRemotePeerService with KeepaliveMixin {
               if (decrypted == null || !_ownsRemoteChannel(channel, connectionGeneration)) return;
 
               final json = jsonDecode(decrypted) as Map<String, dynamic>;
-              if (json['type'] == 'authSuccess') {
+              // Another frame can arrive while authSuccess is decrypting.
+              // Once that acknowledgement commits, dispatch the next frame
+              // through the authenticated command path instead of dropping it.
+              if (_isAuthenticated) {
+                _dispatchEncryptedCommand(json);
+              } else if (json['type'] == 'authSuccess') {
                 _authenticationCommitGeneration++;
                 _isAuthenticated = true;
                 appLogger.d('CompanionRemote: Authentication successful');
@@ -1344,9 +1349,12 @@ class CompanionRemotePeerService with KeepaliveMixin {
   Future<void> _handleEncryptedCommand(dynamic data) async {
     final key = _sessionEncKey;
     final decrypted = await _decryptIncoming(data);
-    if (decrypted == null || !identical(_sessionEncKey, key)) return;
+    if (decrypted == null || !identical(_sessionEncKey, key) || !_isAuthenticated) return;
+    _dispatchEncryptedCommand(jsonDecode(decrypted) as Map<String, dynamic>);
+  }
 
-    final command = RemoteCommand.fromJson(jsonDecode(decrypted) as Map<String, dynamic>);
+  void _dispatchEncryptedCommand(Map<String, dynamic> value) {
+    final command = RemoteCommand.fromJson(value);
     appLogger.d('CompanionRemote: Received command: ${command.type}');
 
     if (_shouldSendAck(command)) {

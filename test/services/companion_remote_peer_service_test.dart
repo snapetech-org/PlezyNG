@@ -639,6 +639,8 @@ void main() {
     });
 
     final session = await host.createSessionForContexts('Test Host', 'macos', [_authContext]);
+    final hostInfo = remote.onCommandReceived.firstWhere((command) => command.type == RemoteCommandType.deviceInfo);
+    final remoteInfo = host.onCommandReceived.firstWhere((command) => command.type == RemoteCommandType.deviceInfo);
     await remote.joinSessionWithContexts(
       'Test Remote',
       'ios',
@@ -648,6 +650,8 @@ void main() {
       expectedHostClientId: _authContext.clientIdentifier,
     );
 
+    expect((await hostInfo.timeout(_ioTimeout)).data?['musicConnectVersion'], 1);
+    expect((await remoteInfo.timeout(_ioTimeout)).data?['musicConnectVersion'], 1);
     final hostCommand = host.onCommandReceived.firstWhere((command) => command.type == RemoteCommandType.play);
     remote.sendCommand(const RemoteCommand(type: RemoteCommandType.play, data: {'source': 'remote'}));
     expect(

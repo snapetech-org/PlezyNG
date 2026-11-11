@@ -54,6 +54,12 @@ jobs:
       - name: Analyze music device integration
         run: |
           dart analyze lib/services/music lib/providers/companion_remote_provider.dart lib/services/companion_remote lib/widgets/music lib/screens/music
+      - name: Verify encrypted handoff through loopback sockets
+        run: |
+          flutter test --no-pub -j 1 --timeout=90s \
+            test/services/companion_remote_peer_service_test.dart \
+            test/services/music/music_playback_service_test.dart \
+            --name 'host and remote dispatch encrypted commands|paired encrypted transport moves the real session'
       - name: Test music ownership, handoff, controls and player surfaces
         run: |
           flutter test --no-pub -j 2 --timeout=180s \

@@ -466,6 +466,7 @@ class PlexClient
         ConvertedDownloadClient,
         MediaDeletionPermissionClient,
         PlaylistMetadataClient,
+        PlaylistArtworkClient,
         PlexLoudnessProfileClient,
         SonicMusicClient {
   @override

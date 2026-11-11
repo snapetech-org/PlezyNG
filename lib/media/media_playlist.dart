@@ -66,3 +66,13 @@ class MediaPlaylist {
 
   String get globalKey => serverId != null ? buildGlobalKey(ServerId(serverId!), id) : id;
 }
+
+/// Artwork returned by the playlist's owning server. [key] is an opaque
+/// selection identifier; it is not an arbitrary URL supplied by a caller.
+class PlaylistArtworkOption {
+  final String key;
+  final String thumbnailPath;
+  final bool selected;
+
+  const PlaylistArtworkOption({required this.key, required this.thumbnailPath, required this.selected});
+}

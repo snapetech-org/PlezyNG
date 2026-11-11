@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add guarded Plex playlist artwork listing, selection, bounded image upload and default restoration, with fresh identity checks and propagated permission failures.
+
 - Retire playlist deletion confirmations and single-entry write acknowledgements after an account or route change. Refresh browse callers after accepted moves/removals and keep uncertain stale writes from reloading a different account.
 
 - Use bounded Plex track and album loudness analysis when file ReplayGain tags are absent. Carry independent, peak-limited gain through offline, cached, gapless and overlapping playback, and refresh current/armed modes when leveling or shuffle changes.

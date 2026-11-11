@@ -1123,6 +1123,22 @@ abstract interface class PlaylistMetadataClient {
   });
 }
 
+/// Optional playlist artwork editing. Selections must be revalidated against
+/// the owning server's current options. Exactly one update operation is allowed.
+abstract interface class PlaylistArtworkClient {
+  static const int maxUploadBytes = 10 * 1024 * 1024;
+
+  Future<List<PlaylistArtworkOption>> fetchPlaylistArtwork(MediaPlaylist playlist, {bool Function()? isCurrent});
+
+  Future<MediaPlaylist> updatePlaylistArtwork({
+    required MediaPlaylist playlist,
+    String? artworkKey,
+    List<int>? bytes,
+    bool reset = false,
+    bool Function()? isCurrent,
+  });
+}
+
 /// Optional capability for clients whose server can answer "may the signed-in
 /// user delete *this* item?" per item.
 ///

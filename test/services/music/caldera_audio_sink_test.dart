@@ -63,6 +63,8 @@ class _Output implements CalderaAudioOutput, CalderaAudioMetadataOutput {
 }
 
 class _ClockOutput extends _Output implements CalderaAudioClockOutput {
+  _ClockOutput({this.warmupMicros = 50000});
+  final int warmupMicros;
   final clock = Stopwatch();
   @override
   Future<bool> openCalderaAudio(Object key, Uri uri, String title, bool Function() current) {
@@ -74,9 +76,9 @@ class _ClockOutput extends _Output implements CalderaAudioClockOutput {
   bool hasCalderaAudioClock(Object key) => ownsCalderaAudio(key);
   @override
   Future<Duration?> readCalderaAudioClock(Object key) async {
-    if (!ownsCalderaAudio(key) || clock.elapsedMicroseconds < 50000) return null;
+    if (!ownsCalderaAudio(key) || clock.elapsedMicroseconds < warmupMicros) return null;
     final available = (bytes.length - 44).clamp(0, 1 << 40) ~/ 8;
-    final pts = ((clock.elapsedMicroseconds - 50000) * .999).round();
+    final pts = ((clock.elapsedMicroseconds - warmupMicros) * .999).round();
     return Duration(microseconds: pts.clamp(0, available * 1000000 ~/ 8000));
   }
 }
@@ -143,9 +145,10 @@ void main() {
     expect(data.getUint16(34, Endian.little), 32);
   });
 
-  for (final clocked in [false, true]) {
+  for (final warmup in [null, 50000, 600000]) {
+    final clocked = warmup != null;
     test(
-      'real mesh and UDP sockets negotiate, pin source and feed bounded PCM to the output (renderer clock=$clocked)',
+      'real mesh and UDP sockets negotiate, pin source and feed bounded PCM to the output (renderer warmup=$warmup)',
       () async {
         const native = '11111111-1111-4111-8111-111111111111';
         final address = (await NetworkInterface.list(
@@ -153,7 +156,7 @@ void main() {
         )).expand((e) => e.addresses).firstWhere(CalderaNode.privateAddress);
         final mesh = await HttpServer.bind(address, 0);
         final udp = await RawDatagramSocket.bind(address, 0);
-        final output = clocked ? _ClockOutput() : _Output();
+        final output = clocked ? _ClockOutput(warmupMicros: warmup) : _Output();
         final states = <HttpResponse>{};
         final controls = <String>[];
         var remoteState = 'playing';
@@ -284,6 +287,16 @@ void main() {
         });
         await Future<void>.delayed(const Duration(milliseconds: 300));
         expect(output.bytes.length, greaterThan(44));
+        if (warmup == 600000) {
+          expect(
+            output.bytes.length,
+            lessThanOrEqualTo(44 + 800 * 8),
+            reason: 'Unavailable audible clock must not accumulate more than 100 ms of priming silence',
+          );
+          expect(output.bytes.sublist(44), everyElement(0));
+          await Future<void>.delayed(const Duration(milliseconds: 650));
+          expect(sink.active, isTrue);
+        }
         expect(ascii.decode(output.bytes.sublist(0, 4)), 'RIFF');
         final pcm = ByteData.sublistView(Uint8List.fromList(output.bytes), 44);
         expect([for (var i = 0; i + 4 <= pcm.lengthInBytes; i += 4) pcm.getFloat32(i, Endian.little)], contains(.25));

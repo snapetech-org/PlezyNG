@@ -432,7 +432,10 @@ class CalderaAudioSink {
           }
           final desired = waveClock.ready
               ? (waveClock.frameAtMicros(nowMicros) + _waveLeadFrames).round()
-              : ((nowMicros - _waveStartedMicros) * descriptor.sampleRate / 1000000).floor();
+              : ((nowMicros - _waveStartedMicros) * descriptor.sampleRate / 1000000).floor().clamp(
+                  0,
+                  descriptor.sampleRate ~/ 10,
+                );
           final frames = desired - _waveFrames;
           if (frames > 4096) {
             unawaited(close());

@@ -349,6 +349,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       await player.setWorkspaceAudioFocusEnabled(_workspaceAudioEnabled);
       if (!owns()) return false;
       _ensureMediaControls();
+      // This is our fixed-format live WAV. Stream-info probing otherwise buffers
+      // several seconds before audio-PTS becomes available.
+      await player.setProperty('demuxer-lavf-format', 'wav');
+      await player.setProperty('demuxer-lavf-probe-info', 'no');
       await player.setProperty('audio-buffer', '0.02');
       if (!owns()) return false;
       await player.setProperty('cache', 'no');

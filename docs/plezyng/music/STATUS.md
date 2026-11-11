@@ -43,7 +43,7 @@ source track/artist/album and progress; shared controls forward to the separatel
 verified Companion playback identity. Paused/suspended membership remains open
 with silence and resumes on a fresh frame timeline. State subscriptions have
 per-event bounds and retire with the owning source/account. The combined native
-group, clock, bridge, controller and shared-player suite passes 250 tests.
+group, clock, bridge, controller and shared-player suite passes 251 tests.
 
 Confidence is **high** for protocol and automated code results. The official
 Caldera 1.1.0 reference accepted both directions in isolated generated-audio
@@ -57,7 +57,10 @@ multichannel wire output and physical output-latency qualification. Renderer
 feedback now reads the current core's audible audio-PTS, maps its WAV clock to
 monotonic time and resamples source frames for actual presentation. Bounded
 output priming, drift/phase correction and stale-clock retirement have automated
-coverage, including delay/impulse simulations and clocked socket playback. Known
+coverage, including delay/impulse simulations and clocked socket playback.
+Known-format WAV startup disables multi-second probing and caps pre-clock
+silence at 100 ms. The actual pinned Linux decoder rendered a scheduled generated
+pulse through a timed null output within 15 ms; this is not acoustic qualification. Known
 multichannel decoder layouts now fold into the stereo group bus without changing
 visualizer PCM; speaker routing and invalid-data regressions pass in both native
 language modes. Selected

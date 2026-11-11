@@ -70,10 +70,19 @@ Fractional source-frame lookup schedules each PCM sample for the estimated
 audible presentation time, including interpolation across UDP packet boundaries
 and 32-bit frame-counter wrap. Paused silence keeps this clock running.
 
-The receive core requests a small audio buffer and disables read-ahead; normal
+The receive core specifies its owned WAV format and disables stream-info probing,
+which otherwise accumulated several seconds of silence before the actual pinned
+decoder began rendering. Priming is capped at 100 ms even if audio-PTS remains
+unavailable. It requests a small audio buffer and disables read-ahead; normal
 queues open a fresh core with their normal policy. A stalled/unsupported native
 clock retires after five seconds. Non-MPV output adapters retain the bounded
 packet-clock path and are not claimed to provide renderer synchronization.
+
+The actual pinned Linux decoder, run asynchronously in an isolated namespace,
+rendered a generated scheduled pulse through a timed null output within 15 ms of
+its expected audible time. The same probe before the format/probing correction
+did not render that pulse within five seconds. A delayed-clock socket regression
+checks the priming cap and recovery. Null output is not acoustic qualification.
 
 Ten-minute simulations cover opposite 1000 ppm hardware drift at 8/48/96 kHz.
 Generated impulse tests reconcile 20/50/80 ms renderer delay with independent
@@ -158,6 +167,7 @@ packet drops. This remains generated audio through an unpaced null device.
 
 ## Protocol sources
 
+- mpv's [demuxer options](https://mpv.io/manual/stable/) document the known-format and stream-info probing controls used for this owned WAV.
 - mpv's [audio-PTS property](https://github.com/mpv-player/mpv/blob/master/DOCS/man/input.rst)
   defines the audible position used for renderer feedback.
 - Fons Adriaensen's [Zita tools](https://kokkinizita.linuxaudio.org/linuxaudio/downloads/index.html)

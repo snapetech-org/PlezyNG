@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 
 import '../../utils/serial_future_queue.dart';
 import '../base_shared_preferences_service.dart';
@@ -50,7 +51,14 @@ class MusicRelayHostCredentials {
 }
 
 abstract final class MusicRelayStore {
-  static final _writes = SerialFutureQueue();
+  static SerialFutureQueue? _writeQueue;
+  static SerialFutureQueue get _writes => _writeQueue ??= SerialFutureQueue();
+
+  /// Reset alongside preference mocks so a completed tail does not retain a
+  /// previous widget test's fake-async zone. Only call after consumers exit.
+  @visibleForTesting
+  static void resetForTesting() => _writeQueue = null;
+
   static String prefix(String profile) => 'music_pairing_relay_${sha256.convert(utf8.encode(profile))}_';
 
   static Future<({String url, bool enabled})> configuration(String profile) async {

@@ -4,6 +4,7 @@ import 'package:plezy/services/credential_vault.dart';
 import 'package:plezy/services/base_shared_preferences_service.dart';
 import 'package:plezy/services/prefs_recovery.dart';
 import 'package:plezy/services/settings_service.dart';
+import 'package:plezy/services/music/music_relay_configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
@@ -14,6 +15,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 void resetSharedPreferencesForTest({Map<String, Object> initialAsync = const {}}) {
   FlutterSecureStorage.setMockInitialValues({});
   CredentialVault.resetKeyForTesting();
+  MusicRelayStore.resetForTesting();
   final previousLegacyPlatform = SharedPreferencesStorePlatform.instance;
   final previousAsyncPlatform = SharedPreferencesAsyncPlatform.instance;
   addTearDown(() {
@@ -22,6 +24,7 @@ void resetSharedPreferencesForTest({Map<String, Object> initialAsync = const {}}
     SharedPreferences.resetStatic();
     SettingsService.resetForTesting();
     BaseSharedPreferencesService.resetForTesting();
+    MusicRelayStore.resetForTesting();
     PrefsRecovery.debugSetSupportedPlatformOverride(null);
   });
   TestWidgetsFlutterBinding.ensureInitialized();

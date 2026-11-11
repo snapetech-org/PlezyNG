@@ -23,6 +23,21 @@ void main() {
     expect(MusicRelayTarget.read({'url': 'https://music.example', 'room': 'bad', 'control': 'bad'}), isNull);
   });
 
+  // Exercise successive widget fake-async zones against the same static store.
+  // A completed tail retained from an earlier test cannot make the next test
+  // depend on that earlier zone being pumped again.
+  for (var iteration = 1; iteration <= 2; iteration++) {
+    testWidgets('relay profile cleanup completes in widget test $iteration', (tester) async {
+      await MusicRelayStore.configure('removed', 'https://music.example', true);
+      await MusicRelayStore.configure('retained', 'https://retained.example', true);
+
+      await MusicRelayStore.removeProfile('removed');
+
+      expect((await MusicRelayStore.configuration('removed')).enabled, isFalse);
+      expect(await MusicRelayStore.configuration('retained'), (url: 'https://retained.example', enabled: true));
+    });
+  }
+
   test('relay secrets are profile scoped, encrypted, stable and rotated with pairing', () async {
     final first = await MusicRelayStore.host('one', 'pairing-a');
     expect(await MusicRelayStore.host('one', 'pairing-a').then((value) => value.secret), first.secret);

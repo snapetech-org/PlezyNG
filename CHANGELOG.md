@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Isolate the relay store write queue between widget test clocks, retaining ordered account teardown, download preservation and same-account re-login coverage.
+
 - Align Apple native qualification and tvOS AOT with the Apple Silicon macOS 26 / Xcode 26.5 release toolchain, preserving the layered icon, pinned native Swift features and SDK-matched native tests.
 
 - Build the relay and its health check with Go 1.27.4 to address the standard-library HTTP server race in [GO-2026-6859](https://pkg.go.dev/vuln/GO-2026-6859), including the matching immutable multi-platform container builder.

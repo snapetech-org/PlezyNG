@@ -1085,8 +1085,8 @@ require(
     and '        run: python3 scripts/build_apple_store_archive.py --prepare-ios-worker-profile --public-report "$RUNNER_TEMP/ios-profile-public-report.json"' in profile_preflight.splitlines()
     and len(re.findall(r'(?m)^(?:        run:|      - run:)', profile_preflight)) == 1
     and 'persist-credentials: false' in profile_preflight
-    and "  group: ${{ inputs.action == 'apple-signing-preflight' && 'pleazyng-apple-signing-preflight' || 'pleazyng-core-release' }}" in text.splitlines(),
-    "iOS profile preflight must be bounded on trusted native macOS and preserve core-build serialization",
+    and "  group: ${{ inputs.action == 'apple-signing-preflight' && 'pleazyng-apple-signing-preflight' || (inputs.recovery_source_sha != '' && inputs.rebuild_tvos && !inputs.rebuild_ios && format('pleazyng-tvos-repair-{0}', inputs.build_version)) || 'pleazyng-core-release' }}" in text.splitlines(),
+    "iOS profile preflight must be bounded on trusted native macOS and serialize core builds while allowing approved tvOS-only repair",
 )
 require(
     re.search(

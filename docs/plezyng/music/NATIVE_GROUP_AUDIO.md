@@ -165,8 +165,12 @@ this run cannot qualify acoustic synchronization or real output latency.
 Native capture is before AO volume/mute and after decoded filters/resampling.
 Music fade and headroom scalars now account for MPV's cubic user volume curve;
 an equal-power envelope remains an equal-power envelope at the actual output.
-Transmission reapplies the native AO volume, ReplayGain mode/tag/preamp/peak
-clipping policy, fallback and additional volume gain once. It does not repeat
+Transmission reapplies the shared fade/headroom envelope, ReplayGain
+mode/tag/preamp/peak clipping policy, fallback and additional volume gain once.
+The source speaker's user volume is applied only by its physical renderer;
+changing or muting that addressed player preserves the other speakers' PCM.
+The capture decoders retain their existing AO level while membership is staged,
+so selecting a group cannot briefly raise local volume before muting. It does not repeat
 decoded filters. Short-lived revision-bound gain caches cannot cross a decoder
 handoff, and render-time lane gain updates already queued PCM without waiting
 for another capture. Synthetic received tracks never enter session persistence.
@@ -370,3 +374,15 @@ A full Linux debug application built successfully at a64e31c8b, including the
 native capture/channel registration and pinned MilkRust runtime. This is a
 compiler result with the existing decoder pin, not physical output or native
 mobile-platform qualification.
+
+## Source-speaker verification
+
+A generated impulse sent through the production Dart source and its clocked
+local renderer, using the pinned Linux native library and timed null output,
+reached the reported audible clock within 8.7 ms of the independent UDP wire
+clock in the recorded run. Both clocks continued reading throughout the live
+WAV. Socket regressions also verify that source volume zero leaves remote PCM
+unchanged. This generated execution validates the software timing and gain
+paths; it is not a measurement of a physical speaker, Bluetooth transport or
+acoustic alignment. Android ARM64 and Linux debug application builds include
+the independent source-speaker core.

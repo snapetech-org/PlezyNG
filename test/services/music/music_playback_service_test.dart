@@ -763,7 +763,17 @@ class _GroupOutputPlayer extends FakePlayer {
 }
 
 class _CapturingPlayer extends FakePlayer implements MusicPcmCaptureSource {
-  bool captureEnabled = false;
+  bool captureEnabled = false, generatePcm = false;
+  int captureFrame = 0;
+  double captureVolume = 100;
+  @override
+  PlayerState get state => super.state.copyWith(volume: captureVolume);
+  @override
+  Future<void> setVolume(double value) async {
+    captureVolume = value;
+    await super.setVolume(value);
+  }
+
   final properties = <String, String>{};
   @override
   Future<bool> musicPcmCaptureAvailable() async => !disposed;
@@ -774,7 +784,22 @@ class _CapturingPlayer extends FakePlayer implements MusicPcmCaptureSource {
   }
 
   @override
-  Future<List<MusicPcmBlock>> drainMusicPcmCapture() async => const [];
+  Future<List<MusicPcmBlock>> drainMusicPcmCapture() async {
+    if (!generatePcm || !captureEnabled) return const [];
+    final frame = captureFrame;
+    captureFrame += 480;
+    return [
+      MusicPcmBlock(
+        presentationTime: Duration(microseconds: frame * 1000000 ~/ 48000),
+        sampleRate: 48000,
+        channels: 2,
+        samples: Float32List.fromList(List.filled(960, .25)),
+        droppedFrames: 0,
+        generation: 1,
+      ),
+    ];
+  }
+
   @override
   Future<void> setProperty(String name, String value) async {
     properties[name] = value;
@@ -1345,10 +1370,24 @@ void main() {
     );
     await h.playTracks([t1, t1, t2]);
     final player = h.player as _CapturingPlayer;
+    player.generatePcm = true;
     final address = (await NetworkInterface.list(
       type: InternetAddressType.IPv4,
     )).expand((e) => e.addresses).firstWhere(CalderaNode.privateAddress);
     final mesh = await HttpServer.bind(address, 0);
+    final wire = await RawDatagramSocket.bind(address, 5000);
+    final peaks = <double>[];
+    wire.listen((event) {
+      if (event != RawSocketEvent.read) return;
+      Datagram? datagram;
+      while ((datagram = wire.receive()) != null) {
+        final packet = XitaPacket.decode(datagram!.data);
+        if (packet is XitaAudio && packet.samples.any((sample) => sample > 0)) {
+          peaks.add(packet.samples.reduce(max));
+        }
+      }
+    });
+    addTearDown(wire.close);
     WebSocket? socket;
     const peer = '11111111-1111-4111-8111-111111111111';
     mesh.listen((request) async {
@@ -1411,11 +1450,22 @@ void main() {
     expect(speaker.parametric.last.gain, -6);
     expect(player.parametric.last.enabled, isFalse);
     await h.service.setVolume(37, persist: false);
-    expect(speaker.volumes.last, 100, reason: 'user volume is already in shared PCM');
+    expect(speaker.volumes.last, 37, reason: 'source user volume is local to its physical renderer');
+    expect(player.state.volume, 37, reason: 'capture AO keeps its existing local level until muted');
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    expect(peaks, isNotEmpty);
+    expect(peaks, everyElement(closeTo(.25, .00001)));
+    peaks.clear();
+    await h.service.setVolume(0, persist: false);
+    expect(speaker.volumes.last, 0);
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    expect(peaks, isNotEmpty, reason: 'muting this speaker must preserve remote PCM');
+    expect(peaks, everyElement(closeTo(.25, .00001)));
+    await h.service.setVolume(37, persist: false);
     await h.service.setWorkspaceAudioEnabled(false);
     expect(speaker.volumes.last, 0, reason: 'queued PCM must become silent immediately');
     await h.service.setWorkspaceAudioEnabled(true);
-    expect(speaker.volumes.last, 100);
+    expect(speaker.volumes.last, 37);
     expect(speaker.audioFocusRequests, 0);
     expect(player.captureEnabled, isTrue);
     expect(player.properties['mute'], 'yes');
@@ -1690,7 +1740,8 @@ void main() {
         }),
       );
       await until(() => h.service.volume == 37);
-      expect(player.volumes.last, 37);
+      await until(() => h.nativeGroupPlayers.single.volumes.last == 37);
+      expect(player.volumes.last, 37, reason: 'capture AO can keep the user level without changing shared PCM');
 
       controller.add(
         jsonEncode({

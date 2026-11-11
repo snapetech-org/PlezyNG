@@ -3,24 +3,30 @@ import 'dart:math' as math;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/music/music_gain.dart';
 
+// The native AO volume curve; wire capture deliberately excludes user volume.
+double _nativeAmplitude(double volume, {required bool nativeCubic}) {
+  final normalized = volume.clamp(0.0, 100.0) / 100;
+  return nativeCubic ? math.pow(normalized, 3).toDouble() : normalized;
+}
+
 void main() {
   test('native volume keeps its cubic user curve and applies equal-power fades linearly', () {
     for (final volume in [25.0, 50.0, 100.0]) {
-      final base = musicCaptureGain(volume, nativeCubic: true);
+      final base = _nativeAmplitude(volume, nativeCubic: true);
       for (final progress in [0.0, .25, .5, .75, 1.0]) {
-        final left = musicCaptureGain(
+        final left = _nativeAmplitude(
           musicVolumeForGain(volume, math.cos(progress * math.pi / 2), nativeCubic: true),
           nativeCubic: true,
         );
-        final right = musicCaptureGain(
+        final right = _nativeAmplitude(
           musicVolumeForGain(volume, math.sin(progress * math.pi / 2), nativeCubic: true),
           nativeCubic: true,
         );
         expect(left * left + right * right, closeTo(base * base, 1e-9));
       }
     }
-    expect(musicCaptureGain(50, nativeCubic: true), .125);
-    expect(musicCaptureGain(50, nativeCubic: false), .5);
+    expect(_nativeAmplitude(50, nativeCubic: true), .125);
+    expect(_nativeAmplitude(50, nativeCubic: false), .5);
     expect(musicVolumeForGain(50, .5, nativeCubic: false), 25);
   });
   test('native track/album gain, preamp, clipping and missing tags match AO semantics', () async {

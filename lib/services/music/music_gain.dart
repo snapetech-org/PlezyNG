@@ -6,12 +6,6 @@ double musicVolumeForGain(double volume, double gain, {required bool nativeCubic
   return (volume.clamp(0.0, 100.0) * (nativeCubic ? math.pow(gain, 1 / 3) : gain)).clamp(0.0, 100.0).toDouble();
 }
 
-double musicCaptureGain(double volume, {required bool nativeCubic}) {
-  if (!volume.isFinite) throw ArgumentError('Invalid music volume');
-  final normalized = volume.clamp(0.0, 100.0) / 100;
-  return nativeCubic ? math.pow(normalized, 3).toDouble() : normalized;
-}
-
 /// The ordered tap precedes MPV's AO gain/mute. Reapply its native ReplayGain
 /// and additional volume gain once, without repeating filters already in PCM.
 class NativeMusicPcmGainReader {

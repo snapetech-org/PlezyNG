@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep native source-speaker volume and mute local to that speaker. Preserve remote PCM and shared fade/headroom envelopes when changing or muting the source, and restore direct local output correctly on departure.
+
 - Reuse the existing Apple ARM runner-pool input for iOS and tvOS recovery so the release workflow stays within GitHub's 25-input limit.
 
 - Freeze official Apple authentication podspec metadata so unchanged AppAuth and Google Sign-In versions pass locked native dependency installation after CDN metadata edits.

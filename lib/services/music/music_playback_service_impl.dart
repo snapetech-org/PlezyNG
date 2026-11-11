@@ -431,7 +431,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     // General EQ, ReplayGain, fades and user volume are already in wire PCM.
     // Only the physical output correction and its headroom belong here.
     await player.setVolume(
-      musicVolumeForGain(100, _workspaceAudioEnabled ? eq?.gain ?? 1 : 0, nativeCubic: player.playerType == 'mpv'),
+      musicVolumeForGain(_volume, _workspaceAudioEnabled ? eq?.gain ?? 1 : 0, nativeCubic: player.playerType == 'mpv'),
     );
   }
 
@@ -448,6 +448,19 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     nativeCubic: player.playerType == 'mpv',
   );
 
+  double _nativeCaptureEnvelope(Player player, {required bool primary}) {
+    if (!_workspaceAudioEnabled) return 0;
+    // The tap is before AO volume/mute. Carry the shared fade/headroom only:
+    // every speaker, including this source, applies its user volume locally.
+    if (primary) return _musicGain * _outputGain;
+    final overlap = _overlap;
+    if (overlap == null || !identical(overlap.player, player)) return 0;
+    final remaining = (duration ?? Duration.zero) - (_player?.currentPosition ?? Duration.zero);
+    const fadeDuration = Duration(milliseconds: 1800);
+    final progress = (1 - remaining.inMicroseconds / fadeDuration.inMicroseconds).clamp(0.0, 1.0).toDouble();
+    return _outputGain * sin(progress * pi / 2);
+  }
+
   CalderaPcmFeed _nativePcmFeed(Player player, CalderaAudioSource source, {required bool primary}) {
     if (player is! MusicPcmCaptureSource || player.audioPassthroughActive) {
       throw StateError('Native music PCM unavailable');
@@ -458,7 +471,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     return CalderaPcmFeed(
       capture: player as MusicPcmCaptureSource,
       position: player.currentPosition,
-      gain: _workspaceAudioEnabled ? musicCaptureGain(player.state.volume, nativeCubic: player.playerType == 'mpv') : 0,
+      gain: _nativeCaptureEnvelope(player, primary: primary),
       readGain: player.playerType == 'mpv' ? () => reader.read(revision) : null,
       current: () =>
           !_disposed &&
@@ -965,6 +978,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
               _outputEqSignature = null;
               await _applyOutputEqualizerNow(player);
               await _restoreNativeEqualizerForPlayback(player);
+              _setMusicGain(_musicGain, force: true);
             }
           })
           .catchError((Object error) {
@@ -4199,6 +4213,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       await playerUpdate;
       await persistence;
     }
+    await _refreshNativeGroupOutput();
   }
 
   @override

@@ -1679,6 +1679,17 @@ require(
     "Apple sidecar cleanup must separate approved source validation from workflow ownership",
 )
 ios_arch = named_step(job("build-ios"), "Pin iOS device builds to the packaged native ABI")
+ios_steam = named_step(job("build-ios"), "Prepare pinned iOS Steam sources before Xcode")
+require(
+    'working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}' in ios_steam
+    and 'timeout-minutes: 15\n' in ios_steam and '        if:' not in ios_steam
+    and 'for attempt in 1 2 3; do' in ios_steam
+    and 'if python3 scripts/games/prepare_steam.py; then' in ios_steam
+    and 'if (( attempt == 3 )); then' in ios_steam and 'exit 1' in ios_steam
+    and job("build-ios").index('Prepare pinned iOS Steam sources before Xcode')
+        < job("build-ios").index('Stage locked iOS worker frameworks for Release'),
+    "iOS must prepare pinned Steam sources in the compiler workspace with bounded retries before Xcode",
+)
 require(
     r'ARCHS = arm64\nONLY_ACTIVE_ARCH = NO\n' in ios_arch and 'ONLY_ACTIVE_ARCH = NO' in ios_arch
     and 'XCODE_XCCONFIG_FILE=$override' in ios_arch,

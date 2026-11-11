@@ -34,6 +34,52 @@ STEAM_CMAKE = ROOT / "native/games/steam/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
+    def test_ios_steam_preparation_retries_network_failure_and_stops_at_bound(self):
+        step = next(step for step in yaml.safe_load(self._workflow())['jobs']['build-ios']['steps']
+                    if step.get('name') == 'Prepare pinned iOS Steam sources before Xcode')
+        self.assertEqual(step['working-directory'], '${{ env.PLEZYNG_APPLE_WORKSPACE }}')
+        with tempfile.TemporaryDirectory(prefix='ios-steam-prefetch-') as directory:
+            root = Path(directory)
+            tools = root / 'tools'
+            tools.mkdir()
+            script = tools / 'python3'
+            script.write_text(f'#!{sys.executable}\n' + '''import json, os, pathlib, sys
+p = pathlib.Path(os.environ['CALLS'])
+calls = json.loads(p.read_text()) if p.exists() else []
+calls.append({'cwd': os.getcwd(), 'args': sys.argv[1:]})
+p.write_text(json.dumps(calls))
+sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
+''')
+            script.chmod(0o700)
+            sleep = tools / 'sleep'
+            sleep.write_text('#!/bin/sh\nexit 0\n')
+            sleep.chmod(0o700)
+            for failures, expected_calls, success in [(0, 1, True), (2, 3, True), (3, 3, False)]:
+                calls = root / f'calls-{failures}.json'
+                result = subprocess.run(['bash', '-c', step['run']], cwd=root,
+                                        env={**os.environ, 'PATH': str(tools) + os.pathsep + os.environ['PATH'],
+                                             'CALLS': str(calls), 'FAIL_UNTIL': str(failures)},
+                                        capture_output=True, text=True)
+                self.assertEqual(result.returncode == 0, success, result.stderr)
+                observed = json.loads(calls.read_text())
+                self.assertEqual(len(observed), expected_calls)
+                self.assertTrue(all(call == {'cwd': str(root), 'args': ['scripts/games/prepare_steam.py']}
+                                    for call in observed))
+
+    def test_ios_steam_preparation_cannot_be_skipped_or_use_original_checkout(self):
+        original = self._workflow()
+        start = original.index('      - name: Prepare pinned iOS Steam sources before Xcode\n')
+        end = original.index('      - name: Refresh pinned mpv Swift packages\n', start)
+        step = original[start:end]
+        for invalid in [step.replace('        working-directory:', '        if: false\n        working-directory:'),
+                        step.replace('${{ env.PLEZYNG_APPLE_WORKSPACE }}', '${{ github.workspace }}'),
+                        step.replace('timeout-minutes: 15', 'timeout-minutes: 150'),
+                        step.replace('for attempt in 1 2 3;', 'for attempt in 1 2 3 4;')]:
+            with self.subTest(invalid=invalid):
+                result = self._run(original[:start] + invalid + original[end:])
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('iOS must prepare pinned Steam sources', result.stderr)
+
     def test_recovery_builds_must_evaluate_after_skipped_capture_ancestors(self):
         original = self._workflow()
         for prefix in ("always() && ", "!cancelled() && ", "needs.validate-trusted-ref.result == 'success' && "):

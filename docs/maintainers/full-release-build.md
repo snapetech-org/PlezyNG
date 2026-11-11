@@ -710,6 +710,12 @@ late assembly failure after successful platform builds.
 
 ### Frozen Apple packaging recovery
 
+Prepare pinned iOS Steam sources in `PLEZYNG_APPLE_WORKSPACE` before Xcode.
+The bounded preflight retries preparation three times within 15 minutes and
+keeps the existing dependency revisions and patch verification. The later
+Xcode phase reuses the matching recipe marker from that same source copy;
+preparing only the original checkout does not populate its inputs.
+
 When only Apple packaging fails after source qualification, preserve the stable
 product tag and successful platform artifacts. Create one reviewed packaging
 commit whose sole parent is the qualified product commit; it may change only the

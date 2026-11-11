@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Prepare the unchanged pinned iOS Steam sources before Xcode with bounded retries, so dependency-network failures stop before expensive compilation and the Xcode phase reuses the verified source recipe.
+
 - Keep cold offline Jellyfin/Emby rating intents in the exact saved client namespace so they can reconcile after discovery.
 
 - Control existing Caldera/Plexamp groups from music synchronization: discover native speakers or connect manually, select a source and additional speakers, and send native group, transport and volume commands. Native audio-node interoperability and physical synchronization remain unqualified. Independently implemented using [anatosun’s protocol research](https://github.com/anatosun/caldera-snapjack).

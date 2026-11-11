@@ -1299,6 +1299,25 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: python3 "$GITHUB_WORKSPACE/scripts/prepare_native_downloads.py" --sqlite-platform ios
 
+      - name: Prepare pinned iOS Steam sources before Xcode
+        working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
+        timeout-minutes: 15
+        env:
+          GIT_TERMINAL_PROMPT: '0'
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if python3 scripts/games/prepare_steam.py; then
+              exit 0
+            fi
+            if (( attempt == 3 )); then
+              echo "Pinned iOS Steam source preparation failed after three attempts." >&2
+              exit 1
+            fi
+            echo "Retrying pinned iOS Steam source preparation ($attempt/3)." >&2
+            sleep "$((attempt * 5))"
+          done
+
       - name: Refresh pinned mpv Swift packages
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: scripts/refresh_apple_spm.sh ios

@@ -87,6 +87,15 @@
         "tools/dv-engine/build_apple_runtime.py": "3fe644fa9f7f25f869208100233944560ab1637f",
         "tools/dv-engine/test_apple_runtime.py": "79ebf789bf155047f18e58592960e24f44ca839b"
       }
+    },
+    {
+      "product_source_sha": "240994590dd3e5411ee3b02c2bcfc0a1fd51a431",
+      "packaging_source_sha": "1b55a3c46afc842f33e810de899cd7b9c8f16f61",
+      "files": {
+        "docs/maintainers/full-release-build.md": "598d30a307e02456496f2dfbf833cc04fec7d29f",
+        "scripts/build_apple_store_archive.py": "31978a785db68c4603dea1a2cc4e5047c8c85b62",
+        "scripts/test_build_apple_store_archive.py": "86b0925df94cf3bea211273a7aca74e47cdabd6c"
+      }
     }
   ]
 }

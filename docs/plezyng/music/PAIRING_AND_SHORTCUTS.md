@@ -36,13 +36,15 @@ deduplicated by track. New database writes refresh the loaded window without
 resetting it to the first page.
 
 Use the server button in Recently Played to browse playback history for a
-visible music library on an owned Plex server. Pleazyng only enables this when
-the active Plex identity is the verified account owner. Pages come from the
+visible music library using a verified Plex account or Home-user binding.
+Owners request only owner events; managed and shared users use their own
+token, which Plex restricts to personal history. Validated pages pin the server's
+numeric account ID and reject other users or libraries. Pages come from the
 [Plex Media Server API](https://developer.plex.tv/pms/).
 Provider plays are not inserted into local listening history, charts or paired
 sync: the server does not expose Pleazyng occurrence IDs or listened duration
-for a safe merge. Direct, shared and managed bindings without a verified owner
-identity do not expose the server view.
+for a safe merge. Direct bindings without a verified account identity do not
+expose the server view.
 
 The music-home Sync action shows conflicting offline rating/favorite decisions.
 Choose the reviewed local or remote value explicitly. A stale conflict revision

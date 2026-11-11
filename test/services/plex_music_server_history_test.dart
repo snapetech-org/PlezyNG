@@ -77,22 +77,52 @@ void main() {
     expect(second.nextStart, isNull);
   });
 
-  test('unverified direct, managed and shared bindings never request history', () async {
+  test('unverified direct bindings never request history', () async {
     final history = client((_) async => throw StateError('Unexpected HTTP request'));
     expect(history.supportsMusicServerHistory, isTrue);
-    history
-      ..plexMusicUserIdentifier = 'managed'
-      ..bindMusicHistoryResource(owned: true);
-    expect(history.supportsMusicServerHistory, isFalse);
-    await expectLater(history.fetchMusicServerHistory(libraryId: '3'), throwsStateError);
-    history
-      ..plexMusicUserIdentifier = 'owner'
-      ..bindMusicHistoryResource(owned: false);
-    expect(history.supportsMusicServerHistory, isFalse);
     history
       ..plexMusicUserIdentifier = null
       ..bindMusicHistoryResource(owned: true);
     expect(history.supportsMusicServerHistory, isFalse);
+    await expectLater(history.fetchMusicServerHistory(libraryId: '3'), throwsStateError);
+  });
+
+  for (final owned in [true, false]) {
+    test('${owned ? 'managed' : 'shared'} user history uses its own token and pins the returned account', () async {
+      var requests = 0;
+      final history =
+          client((request) async {
+              final query = request.url.queryParameters;
+              expect(request.headers['x-plex-token'], 'token');
+              expect(query['accountID'], requests++ == 0 ? isNull : '77');
+              return query['X-Plex-Container-Start'] == '0'
+                  ? _page([_entry(2, account: 77)], total: 2)
+                  : _page([_entry(1, account: 77)], offset: 1, total: 2);
+            })
+            ..plexMusicUserIdentifier = 'home-user-uuid'
+            ..bindMusicHistoryResource(owned: owned);
+      expect(history.supportsMusicServerHistory, isTrue);
+      expect(history.hasVerifiedMusicServerOwner, isFalse);
+      final page = await history.fetchMusicServerHistory(libraryId: '3');
+      expect(page.nextStart, 1);
+      final next = await history.fetchMusicServerHistory(libraryId: '3', start: 1);
+      expect(next.entries.single.id, '1');
+      expect(requests, 2);
+    });
+  }
+
+  test('non-owner history rejects owner, mixed and changed numeric accounts', () async {
+    var result = _page([_entry(1)]);
+    final history = client((_) async => result)
+      ..plexMusicUserIdentifier = 'managed'
+      ..bindMusicHistoryResource(owned: true);
+    await expectLater(history.fetchMusicServerHistory(libraryId: '3'), throwsFormatException);
+    result = _page([_entry(2, account: 77), _entry(1, account: 78)]);
+    await expectLater(history.fetchMusicServerHistory(libraryId: '3'), throwsFormatException);
+    result = _page([_entry(1, account: 77)]);
+    await history.fetchMusicServerHistory(libraryId: '3');
+    result = _page([_entry(1, account: 78)]);
+    await expectLater(history.fetchMusicServerHistory(libraryId: '3'), throwsFormatException);
   });
 
   test('history rejects other users, hidden section results and stalled paging', () async {

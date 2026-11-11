@@ -9,6 +9,7 @@ extension PlexMusicServerHistory on PlexClient {
 
   void bindMusicHistoryResource({required bool owned}) {
     final user = plexMusicUserIdentifier;
+    final account = plexAccountId;
     _musicHistoryOwner =
         owned &&
             user != null &&
@@ -18,9 +19,26 @@ extension PlexMusicServerHistory on PlexClient {
             config.token?.isNotEmpty == true
         ? (authentication: authenticationSessionId, user: user)
         : null;
+    _musicHistoryBinding =
+        user != null &&
+            user.isNotEmpty &&
+            user != config.clientIdentifier &&
+            account != null &&
+            account.isNotEmpty &&
+            config.token?.isNotEmpty == true
+        ? (authentication: authenticationSessionId, account: account, user: user, owner: _musicHistoryOwner != null)
+        : null;
+    _musicHistoryAccount = _musicHistoryOwner == null ? null : _ownerId;
   }
 
-  bool get supportsMusicServerHistory => hasVerifiedMusicServerOwner;
+  bool get supportsMusicServerHistory {
+    final binding = _musicHistoryBinding;
+    return binding != null &&
+        identical(binding.authentication, authenticationSessionId) &&
+        binding.account == plexAccountId &&
+        binding.user == plexMusicUserIdentifier &&
+        !isOfflineMode;
+  }
 
   bool get hasVerifiedMusicServerOwner {
     final owner = _musicHistoryOwner;
@@ -38,19 +56,20 @@ extension PlexMusicServerHistory on PlexClient {
     if (start < 0 || start > 10000000 || !RegExp(r'^\d{1,16}$').hasMatch(libraryId)) {
       throw ArgumentError('Invalid music history page');
     }
-    final owner = _musicHistoryOwner;
-    if (!supportsMusicServerHistory) throw StateError('Music history owner unavailable');
+    final binding = _musicHistoryBinding;
+    if (!supportsMusicServerHistory) throw StateError('Music history account unavailable');
+    final requestedAccount = _musicHistoryAccount;
     final response = await _getWithFailover(
       '/status/sessions/history/all',
       queryParameters: {
-        'accountID': _ownerId,
+        'accountID': ?requestedAccount,
         'librarySectionID': libraryId,
         'sort': 'viewedAt:desc',
         ..._buildPaginationParams(start, _pageSize),
       },
       abort: abort,
     );
-    if (owner != _musicHistoryOwner || !supportsMusicServerHistory) {
+    if (binding != _musicHistoryBinding || !supportsMusicServerHistory) {
       throw StateError('Music history account changed');
     }
     final container = _getMediaContainer(response);
@@ -69,6 +88,7 @@ extension PlexMusicServerHistory on PlexClient {
     if (raw.isEmpty && total > end) throw const FormatException('Music history page made no progress');
     final entries = <PlexMusicHistoryEntry>[];
     final seen = <String>{};
+    int? responseAccount = requestedAccount;
     String? label(Object? value) => value is String && value.length <= 1024 ? value : null;
     String? itemId(Object? value) {
       final string = value is int || value is String ? value.toString() : '';
@@ -76,11 +96,17 @@ extension PlexMusicServerHistory on PlexClient {
     }
 
     for (final row in raw) {
+      final account = row is Map ? int.tryParse('${row['accountID']}') : null;
       if (row is! Map ||
-          int.tryParse('${row['accountID']}') != _ownerId ||
+          account == null ||
+          account < 1 ||
+          account > 9007199254740991 ||
+          (binding?.owner != true && account == _ownerId) ||
+          (responseAccount != null && account != responseAccount) ||
           itemId(row['librarySectionID']) != libraryId) {
         throw const FormatException('Music history row is outside the requested scope');
       }
+      responseAccount = account;
       if (row['type'] != 'track') continue;
       final key = _historyPath.firstMatch(label(row['historyKey']) ?? '')?.group(1);
       final id = itemId(row['ratingKey']);
@@ -111,6 +137,13 @@ extension PlexMusicServerHistory on PlexClient {
         playedAt: DateTime.fromMillisecondsSinceEpoch(playedAt * 1000, isUtc: true),
       ));
     }
+    // PMS restricts non-admin tokens to their own history. Pin its numeric
+    // account after a fully validated page instead of confusing a Home UUID
+    // with the server's account ID. Never substitute an administrator token.
+    if (_musicHistoryAccount != null && responseAccount != _musicHistoryAccount) {
+      throw StateError('Music history account changed during pagination');
+    }
+    _musicHistoryAccount = responseAccount;
     return (entries: entries, nextStart: end < total ? end : null);
   }
 }

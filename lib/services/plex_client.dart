@@ -502,6 +502,8 @@ class PlexClient
   String? plexMusicUserIdentifier;
 
   ({Object authentication, String user})? _musicHistoryOwner;
+  ({Object authentication, String account, String user, bool owner})? _musicHistoryBinding;
+  int? _musicHistoryAccount;
 
   /// plex.tv token of the [plexAccountId] account, set alongside it.
   /// Plex's cloud Discover service ([fetchPersonDetails]) takes only plex.tv

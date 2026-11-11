@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Pin Apple authentication dependency metadata to its immutable official specification, preserving the same code and dependency versions when CocoaPods CDN metadata changes.
+
 - Provision and verify the Tizen Rust launcher before native compilation, keeping the pinned MilkRust compiler isolated without modifying the host launcher.
 
 - Keep Nix package versions and hashes synchronized with complete, authenticated releases, retrying concurrent metadata updates without rebuilding the application.

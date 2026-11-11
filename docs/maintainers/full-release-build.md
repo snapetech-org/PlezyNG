@@ -807,3 +807,15 @@ not establish whether the independently authorized API key works. The unsigned
 iOS IPA is attested and uploaded as `ios-unsigned-checkpoint` before Store
 packaging; it does not substitute for the complete final `ios-ipa` artifact or
 qualify Store distribution. Final assembly still requires the signed archive.
+
+### Immutable Apple authentication podspec
+
+The iOS and macOS Podfiles fetch GTMAppAuth 5.0.0 metadata from
+[the exact official CocoaPods specification](https://github.com/CocoaPods/Specs/blob/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/2/c/c/GTMAppAuth/5.0.0/GTMAppAuth.podspec.json).
+The upstream edit added only `deprecated: true`; its Google source tag and
+all dependency versions remain unchanged. CDN edges returned both metadata
+versions and broke `pod install --deployment`. Keep the immutable URL and
+checksum together in both lockfiles. `check_podspec_locks.rb` verifies that
+contract before native compilation; do not bypass deployment enforcement or
+accept whichever checksum an edge returns. A future dependency upgrade must
+review its source, metadata and both resolved dependency graphs together.

@@ -52,6 +52,23 @@ specs.each do |platform, paths|
   lock_path.write(source) if update && source != lock_path.read
 end
 
+# Trunk may edit metadata for an existing version (for example deprecation).
+# Keep the reviewed official document immutable instead of trusting a CDN edge.
+gtm_spec = 'https://raw.githubusercontent.com/CocoaPods/Specs/fd8ca834492e570dddaffabba6a5a1c12b5e92c3/Specs/2/c/c/GTMAppAuth/5.0.0/GTMAppAuth.podspec.json'
+%w[ios macos].each do |platform|
+  podfile = root.join(platform, 'Podfile').read
+  lock = Pod::Lockfile.from_file(root.join(platform, 'Podfile.lock')).to_hash
+  declaration = "pod 'GTMAppAuth', :podspec => '#{gtm_spec}'"
+  pinned = podfile.lines.count { |line| line.strip == declaration } == 1 &&
+    lock.fetch('DEPENDENCIES').count("GTMAppAuth (from `#{gtm_spec}`)") == 1 &&
+    lock.fetch('EXTERNAL SOURCES').fetch('GTMAppAuth', {}) == { podspec: gtm_spec } &&
+    lock.fetch('SPEC REPOS').values.none? { |names| names.include?('GTMAppAuth') } &&
+    lock.fetch('SPEC CHECKSUMS').fetch('GTMAppAuth') == '9566e1a3451fd6967b58188fa15286fb6ae7914f' &&
+    lock.fetch('PODS').any? { |item| item.is_a?(Hash) && item.key?('GTMAppAuth (5.0.0)') } &&
+    lock.fetch('PODFILE CHECKSUM') == Digest::SHA1.hexdigest(podfile)
+  errors << "#{platform}: GTMAppAuth must retain its immutable official podspec and matching lockfile" unless pinned
+end
+
 unless errors.empty?
   abort "#{errors.join("\n")}\nRun ruby scripts/check_podspec_locks.rb --update with the pinned CocoaPods version."
 end

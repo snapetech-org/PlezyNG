@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/mpv/player/music_pcm_capture_source.dart';
 import 'package:plezy/services/music/caldera_audio_source.dart';
+import 'package:plezy/services/music/caldera_audio_output.dart';
 import 'package:plezy/services/music/caldera_group.dart';
 import 'package:plezy/services/music/caldera_source_endpoint.dart';
 import 'package:plezy/services/music/xita_packet.dart';
@@ -53,7 +54,7 @@ class _Fixture {
   final capture = _Capture();
   final equalizer = FakeCalderaEqualizer();
   final mutes = <bool>[];
-  bool muted = false, current = true, feedCurrent = true;
+  bool muted = false, current = true, feedCurrent = true, playing = true;
   double replayGain = 1, volume = 50;
   int channels = 2;
   Completer<double>? gainGate;
@@ -116,16 +117,17 @@ class _Fixture {
     });
   }
 
-  CalderaAudioSource create() {
+  CalderaAudioSource create({CalderaAudioOutput? localOutput}) {
     return source = CalderaAudioSource(
       sinks: [node],
+      localOutput: localOutput,
       serveCompanion: false,
       equalizer: equalizer,
       metadata: () => CalderaSourceMetadata(
         title: 'Fixture',
         artist: '',
         album: '',
-        state: 'playing',
+        state: playing ? 'playing' : 'paused',
         position: Duration.zero,
         duration: Duration.zero,
         volume: volume,
@@ -141,7 +143,7 @@ class _Fixture {
           gain: .5,
           readGain: () => gainGate?.future ?? Future.value(replayGain),
           current: () => feedCurrent,
-          playing: true,
+          playing: playing,
           readMuted: () async => muted,
           setMuted: (value) async {
             muted = value;
@@ -168,7 +170,98 @@ Future<void> waitFor(bool Function() predicate) async {
   }
 }
 
+class _LocalOutput implements CalderaAudioOutput {
+  Object? owner;
+  final client = HttpClient();
+  StreamSubscription<List<int>>? subscription;
+  final bytes = <int>[];
+  bool accept = true;
+  int opens = 0, closes = 0;
+  void Function()? beforeClose;
+  @override
+  Future<bool> openCalderaAudio(Object key, Uri uri, String title, bool Function() current) async {
+    opens++;
+    if (!accept || !current()) return false;
+    owner = key;
+    subscription = (await (await client.getUrl(uri)).close()).listen(bytes.addAll);
+    return current();
+  }
+
+  @override
+  bool ownsCalderaAudio(Object key) => identical(owner, key);
+  @override
+  Future<void> closeCalderaAudio(Object key) async {
+    if (!ownsCalderaAudio(key)) return;
+    beforeClose?.call();
+    owner = null;
+    closes++;
+    await subscription?.cancel();
+    client.close(force: true);
+  }
+
+  List<double> get samples {
+    if (bytes.length <= 44) return [];
+    final data = ByteData.sublistView(Uint8List.fromList(bytes));
+    return [for (var i = 44; i + 4 <= bytes.length; i += 4) data.getFloat32(i, Endian.little)];
+  }
+}
+
 void main() {
+  for (final width in [2, 6, 8]) {
+    test('source speaker renders the same gain-qualified PCM beside $width-channel peers', () async {
+      final f = _Fixture()..channels = width;
+      await f.open();
+      final local = _LocalOutput();
+      addTearDown(f.close);
+      final source = f.create(localOutput: local);
+      await source.start();
+      await waitFor(() => local.samples.any((sample) => sample > .1));
+      expect(local.samples.where((sample) => sample != 0), everyElement(closeTo(.125, .00001)));
+      expect(f.packets.whereType<XitaAudio>().map((packet) => packet.channels), everyElement(width));
+      expect(local.opens, 1);
+      expect(f.muted, isTrue);
+      local.beforeClose = () => expect(f.muted, isTrue, reason: 'close delayed output before unmuting direct AO');
+      await source.close();
+      expect(local.closes, 1);
+      expect(f.muted, isFalse);
+      expect(f.capture.enabled, isFalse);
+    });
+  }
+  test('source speaker pause/resume discards queued PCM and keeps its one renderer', () async {
+    final f = _Fixture();
+    await f.open();
+    final local = _LocalOutput();
+    addTearDown(f.close);
+    final source = f.create(localOutput: local);
+    await source.start();
+    await waitFor(() => local.samples.any((sample) => sample > .1));
+    f.playing = false;
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+    expect(local.samples.reversed.take(300), everyElement(0));
+    final pausedLength = local.bytes.length;
+    f.playing = true;
+    await waitFor(
+      () =>
+          local.bytes.length > pausedLength + 3000 &&
+          local.samples.skip((pausedLength - 44) ~/ 4).any((sample) => sample > .1),
+    );
+    expect(local.opens, 1);
+    expect(f.capture.enabled, isTrue);
+  });
+  test('rejected source speaker stops before capture or muting', () async {
+    final f = _Fixture();
+    await f.open();
+    final local = _LocalOutput()..accept = false;
+    addTearDown(() {
+      local.client.close(force: true);
+      return f.close();
+    });
+    await expectLater(f.create(localOutput: local).start(), throwsStateError);
+    expect(f.mutes, isEmpty);
+    expect(f.capture.toggles, isEmpty);
+    expect(f.source!.active, isFalse);
+  });
+
   for (final width in [2, 6, 8]) {
     test('native source negotiates $width channels without exceeding the wire MTU', () async {
       final f = _Fixture()..channels = width;

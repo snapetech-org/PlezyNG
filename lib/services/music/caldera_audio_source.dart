@@ -5,6 +5,8 @@ import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
+import 'caldera_audio_output.dart';
+import 'xita_audio_renderer.dart';
 import 'caldera_audio_format.dart';
 import 'caldera_mesh_volume.dart';
 import 'caldera_mesh_equalizer.dart';
@@ -43,7 +45,8 @@ abstract interface class NativeMusicGroupSourceControls {
 
 /// Explicit native audio source. Only selected, version-checked private peers
 /// receive PCM. Every native sink gets layout-matched frames from one monotonic
-/// clock. Local decoder AO is muted while the group is the selected output.
+/// clock. Local capture AO is muted; an independent clocked renderer can keep
+/// the source speaker in the group without replaying source DSP.
 class CalderaAudioSource {
   CalderaAudioSource({
     required List<CalderaNode> sinks,
@@ -54,6 +57,7 @@ class CalderaAudioSource {
     this.metadata,
     this.control,
     this.equalizer,
+    this.localOutput,
     this.serveCompanion = true,
     String? id,
   }) : _sinks = List.unmodifiable(sinks),
@@ -69,6 +73,9 @@ class CalderaAudioSource {
   final String id;
   final bool serveCompanion;
   final CalderaEqualizerControls? equalizer;
+  final CalderaAudioOutput? localOutput;
+  XitaAudioRenderer? _localRenderer;
+  final _localOwner = Object();
   late final _equalizerCommands = equalizer == null ? null : CalderaMeshEqualizer(equalizer!);
   Map<String, Object?> _settingsState() => {
     ..._volumeCommands.state(id),
@@ -168,6 +175,33 @@ class CalderaAudioSource {
       if (!_valid || initialPeers.any((peer) => peer.retired)) throw StateError('Native music scope changed');
       for (final peer in initialPeers) {
         peer.adopted = true;
+      }
+      final local = localOutput;
+      if (local != null) {
+        final descriptor =
+            XitaPacket.decode(
+                  XitaDescriptor.encode(
+                    sampleRate: XitaPcmMixer.sampleRate,
+                    channels: 2,
+                    periodFrames: _periodFrames,
+                    frame: 0,
+                    timestamp: DateTime.now().toUtc(),
+                  ),
+                )!
+                as XitaDescriptor;
+        final renderer = XitaAudioRenderer(
+          descriptor: descriptor,
+          output: local,
+          owner: _localOwner,
+          current: () => _valid,
+          silent: () => !feeds().any((feed) => feed.playing && feed.current?.call() != false),
+          title: metadata?.call().title ?? '',
+          monotonicMicros: () => _clock.elapsedMicroseconds,
+          onClosed: () => unawaited(close()),
+        );
+        _localRenderer = renderer;
+        await renderer.start();
+        if (!_valid) throw StateError('Native source speaker retired');
       }
       final initial = _poll();
       _polling = initial;
@@ -556,7 +590,10 @@ class CalderaAudioSource {
         // All layout buses advance together, including formats with no peers.
         // A late speaker joins the same frame clock without replaying old PCM.
         final descriptor = _period++ % 16 == 0;
-        final widths = _peers.where((peer) => peer.adopted && !peer.retired).map((peer) => peer.channels).toSet();
+        final widths = {
+          if (_localRenderer != null) 2,
+          ..._peers.where((peer) => peer.adopted && !peer.retired).map((peer) => peer.channels),
+        };
         for (final entry in _mixers.entries) {
           final channels = entry.key;
           final pcm = entry.value.render(_periodFrames);
@@ -601,6 +638,11 @@ class CalderaAudioSource {
 
   void _broadcast(Uint8List packet, int channels) {
     if (!_valid) return;
+    final local = _localRenderer;
+    if (local != null && channels == 2) {
+      final decoded = XitaPacket.decode(packet);
+      if (decoded is XitaAudio) local.add(decoded);
+    }
     for (final peer in _peers.where((peer) => peer.adopted && !peer.retired && peer.channels == channels)) {
       _udp?.send(packet, peer.node.address, 5000);
     }
@@ -611,6 +653,13 @@ class CalderaAudioSource {
     _closed = true;
     _started = false;
     _timer?.cancel();
+    // Retire the delayed physical renderer before restoring direct local AO.
+    try {
+      await _localRenderer?.close();
+    } on Object {
+      // Releasing a failed physical core must still restore capture leases.
+    }
+    _localRenderer = null;
     await _endpoint?.close();
     _endpoint = null;
     _udp?.close();

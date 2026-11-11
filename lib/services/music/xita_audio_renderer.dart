@@ -42,8 +42,16 @@ class XitaAudioRenderer {
   bool get active => _opened && _valid;
   bool get _valid => !_closed && current() && (!_opened || output.ownsCalderaAudio(owner));
   void reset() => _audio = XitaJitterBuffer(descriptor);
+  bool? _wasSilent;
+  bool get _silent {
+    final value = silent();
+    if (_wasSilent != null && _wasSilent != value) reset();
+    _wasSilent = value;
+    return value;
+  }
+
   bool add(XitaAudio packet, {int? arrivalMicros}) =>
-      _valid && !silent() && _audio.add(packet, arrivalMicros ?? monotonicMicros());
+      _valid && !_silent && _audio.add(packet, arrivalMicros ?? monotonicMicros());
 
   Future<void> _observeOutput(CalderaAudioClockOutput output, XitaOutputClock clock) async {
     if (_timingPending) return;
@@ -140,7 +148,7 @@ class XitaAudioRenderer {
             return;
           }
           if (frames > 0) {
-            bytes = silent() || !waveClock.ready
+            bytes = _silent || !waveClock.ready
                 ? Uint8List(frames * descriptor.channels * 4)
                 : _audio.renderScheduled(
                     frames,
@@ -150,7 +158,7 @@ class XitaAudioRenderer {
           }
         } else {
           final frames = (elapsed * descriptor.sampleRate / 1000000).floor().clamp(0, 4096);
-          bytes = silent() ? Uint8List(frames * descriptor.channels * 4) : _audio.render(nowMicros);
+          bytes = _silent ? Uint8List(frames * descriptor.channels * 4) : _audio.render(nowMicros);
         }
         if (bytes != null && bytes.isNotEmpty) {
           _waveFrames += bytes.length ~/ (descriptor.channels * 4);

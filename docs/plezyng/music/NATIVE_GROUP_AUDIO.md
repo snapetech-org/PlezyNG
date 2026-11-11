@@ -133,7 +133,17 @@ changed. No additional media-server stream is opened. Ordered PCM from the
 primary and overlap decoders is mixed onto bounded 48 kHz stereo/5.1/7.1 buses sharing one frame clock;
 seek generations, pause, track changes and native ownership changes retire stale
 samples. A source preserves the local queue, duplicate occurrences, transport
-controls and listen-reporting authority. Closing restores the prior local mute.
+controls and listen-reporting authority. An independent audio-only core now
+renders the source speaker from the same stereo Xita packets and audible-clock
+mapping used by remote sinks. It retains bounded PCM/reorder/HTTP windows, drops
+queued samples on pause/resume, and adds only local physical-output and native
+per-speaker EQ; shared gain, ReplayGain, fades and general EQ are not repeated.
+Workspace muting also silences the renderer immediately. Stop and video claims
+await its teardown, and closing retires delayed output before restoring the
+capture decoders' prior local mute. Stereo rendering beside stereo/5.1/7.1 peers,
+ownership retirement, per-speaker EQ isolation and stopped-renderer races have
+direct socket/session regression coverage. Acoustic alignment still requires
+device qualification.
 
 The native bridge shares one tap with the visualizer using an independent,
 presentation-timed bounded copy queue. Native capture preserves and reorders
@@ -168,7 +178,7 @@ native amplitude, and at 0.099990845 with a -6.0206 dB ReplayGain tag. These
 measurements qualify this generated native capture/gain path, not a complete
 platform application or a physical audio device.
 
-The current dependency lock (mpv-build d74e7a4a) already records the ordered
+The current dependency lock (mpv-build 3e674d64) already records the ordered
 PCM ABI for Android, Apple, Linux and Windows. Its pinned Linux x86_64 archive
 was checksum-verified and all four tap exports, including read_next, inspected.
 Older notes claiming that binary promotion is still pending were stale.

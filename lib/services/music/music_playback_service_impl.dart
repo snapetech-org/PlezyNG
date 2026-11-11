@@ -59,6 +59,7 @@ import 'music_device_session.dart';
 import 'music_group_playback.dart';
 import 'caldera_audio_sink.dart';
 import 'caldera_audio_source.dart';
+import 'caldera_local_audio_output.dart';
 import 'caldera_source_endpoint.dart';
 import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
@@ -349,6 +350,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       },
       metadata: _nativeMetadata,
       equalizer: this,
+      localOutput: CalderaLocalAudioOutput(
+        createPlayer: _nativeGroupOutputFactory,
+        configure: _configureNativeGroupOutput,
+        current: authorized,
+        onFailed: () => unawaited(source.close()),
+      ),
       control: (action, value) async {
         if (!authorized()) throw StateError('Native music scope changed');
         await _nativeControl(action, value);
@@ -397,6 +404,40 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       }
       rethrow;
     }
+  }
+
+  Future<void> _configureNativeGroupOutput(Player player, bool Function() current) async {
+    if (!current()) return;
+    final output = await _player?.getProperty('audio-device') ?? audioPolicy.output;
+    if (!current()) return;
+    if ((await player.getProperty('audio-device') ?? 'auto') != output) {
+      await applyPreferredAudioDevice(player, output);
+      if (!current()) return;
+    }
+    final eq = await outputEqualizer(output);
+    if (!current()) return;
+    if (player case final AudioEqualizerCapable correction) {
+      await correction.setAudioEqualizer(eq?.bands ?? const [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    } else if (eq != null) {
+      throw UnsupportedError('Native source speaker EQ unavailable');
+    }
+    if (!current()) return;
+    if (player case final ParametricEqualizerCapable correction) {
+      await correction.setParametricEqualizer(_nativeEqualizer);
+    } else if (_nativeEqualizer.filters.isNotEmpty) {
+      throw UnsupportedError('Native source speaker EQ unavailable');
+    }
+    if (!current()) return;
+    // General EQ, ReplayGain, fades and user volume are already in wire PCM.
+    // Only the physical output correction and its headroom belong here.
+    await player.setVolume(
+      musicVolumeForGain(100, _workspaceAudioEnabled ? eq?.gain ?? 1 : 0, nativeCubic: player.playerType == 'mpv'),
+    );
+  }
+
+  Future<void> _refreshNativeGroupOutput() async {
+    final output = _calderaSource?.localOutput;
+    if (output is CalderaLocalAudioOutput) await output.refresh();
   }
 
   final _nativeGainReaders = Expando<NativeMusicPcmGainReader>();
@@ -875,6 +916,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _nativeEqualizer = copy;
       try {
         if (player != null) await _applyNativeEqualizer(player);
+        await _refreshNativeGroupOutput();
         if (!scope()) throw StateError('Native equalizer scope changed');
         await _libraryStore?.saveDocument('audio', 'nativeEqualizer', {
           'version': 1,
@@ -886,6 +928,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _nativeEqualizer = previous;
         if (player != null && identical(_player, player) && !player.disposed && !_disposed) {
           await _applyNativeEqualizer(player);
+          await _refreshNativeGroupOutput();
         }
         rethrow;
       }
@@ -903,6 +946,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _nativeEqualizer = value;
         final player = _player;
         if (player != null) await _restoreNativeEqualizerForPlayback(player);
+        await _refreshNativeGroupOutput();
         if (!_disposed) notifyListeners();
       });
     } catch (error) {
@@ -973,6 +1017,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
           }
         }
         _setMusicGain(_musicGain, force: true);
+        await _refreshNativeGroupOutput();
         await _libraryStore?.saveDocument('audio', 'active', policy.toJson());
         if (!_disposed) {
           _requestArmNext();
@@ -1094,6 +1139,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _outputEqSignature = null;
       final player = _player;
       if (!_disposed && player != null && !player.disposed) await _applyOutputEqualizerNow(player);
+      await _refreshNativeGroupOutput();
       if (!_disposed) notifyListeners();
     });
   }
@@ -1131,10 +1177,15 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   void _onAudioOutputChanged(Player player) {
     unawaited(
-      _audioChanges.run(() => _applyOutputEqualizerNow(player)).catchError((Object error, StackTrace stack) {
-        appLogger.w('Music output EQ could not be applied', error: error, stackTrace: stack);
-        if (!_disposed) _errorsController.add(error);
-      }),
+      _audioChanges
+          .run(() async {
+            await _applyOutputEqualizerNow(player);
+            await _refreshNativeGroupOutput();
+          })
+          .catchError((Object error, StackTrace stack) {
+            appLogger.w('Music output EQ could not be applied', error: error, stackTrace: stack);
+            if (!_disposed) _errorsController.add(error);
+          }),
     );
   }
 
@@ -1335,6 +1386,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     this._offlineWatchService,
     MusicSourceResolver? resolver,
     this._audioPlayerFactory = Player.audio,
+    @visibleForTesting this._nativeGroupOutputFactory = PlayerNative.audioGroupOutput,
     @visibleForTesting Player Function(bool overlapCore)? overlapPlayerFactory,
     this._mediaControlsFactory = MediaControlsManager.new,
     this._completedConfirmDelay = const Duration(milliseconds: 400),
@@ -1402,6 +1454,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   final OfflineWatchSyncService? _offlineWatchService;
   final MusicSourceResolver _resolver;
   final Player Function() _audioPlayerFactory;
+  final Player Function() _nativeGroupOutputFactory;
   final Player Function(bool overlapCore)? _overlapPlayerFactory;
   final MediaControlsManager Function() _mediaControlsFactory;
   final PlaybackCoordinator _coordinator;
@@ -4154,6 +4207,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
     _workspaceAudioEnabled = enabled;
+    await _refreshNativeGroupOutput();
     if (!enabled) _cancelOverlap();
     final player = _player;
     if (player == null || player.disposed) {
@@ -4443,7 +4497,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<void> _stopSession({required MusicPlaybackStatus endStatus}) async {
     final nativeSource = _calderaSource;
     _calderaSource = null;
-    unawaited(nativeSource?.close());
+    final nativeClosing = nativeSource?.close();
     final nativeSink = _calderaAudioOwner == null ? null : _calderaSink;
     if (nativeSink != null) {
       _calderaSink = null;
@@ -4497,7 +4551,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _pausedByCarRestriction = false;
     _setStatus(endStatus, forceNotify: true);
 
-    await _teardownPlayerAndControls(awaitStop: true);
+    await Future.wait<void>([?nativeClosing, _teardownPlayerAndControls(awaitStop: true)]);
   }
 
   /// Kills the completion/sleep timers and flushes the track's final progress

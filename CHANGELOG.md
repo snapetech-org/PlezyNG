@@ -6,6 +6,8 @@
 
 - Recover the signed iOS package on the private Apple Silicon runner after the hosted archive reached its job limit, reusing the same qualified product and successful platform outputs.
 
+- Keep the source speaker audible in native music groups through an independent clocked PCM renderer. Apply its output and per-speaker EQ locally, mute buffered audio immediately during workspace handoff, and await speaker teardown when stopping.
+
 - Register a third audio-only music core for the clocked native-group source speaker, independent of both fade decoders on every native platform.
 
 - Share bounded native group PCM rendering across output roles and retire late accepted decoder opens after their owner has closed.

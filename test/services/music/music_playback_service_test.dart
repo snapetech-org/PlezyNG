@@ -753,6 +753,15 @@ class _AdditionalNativeAccountClient extends FakeMediaServerClient {
   ServerId get serverId => ServerId('new-account-server');
 }
 
+class _GroupOutputPlayer extends FakePlayer {
+  Completer<void>? disposeGate;
+  @override
+  Future<void> dispose({bool preserveDisplayMode = false}) async {
+    await disposeGate?.future;
+    await super.dispose(preserveDisplayMode: preserveDisplayMode);
+  }
+}
+
 class _CapturingPlayer extends FakePlayer implements MusicPcmCaptureSource {
   bool captureEnabled = false;
   final properties = <String, String>{};
@@ -799,6 +808,7 @@ class _Harness {
   final FakeMediaServerClient client;
   final FakeMediaControlsManager controls;
   final List<FakePlayer> players;
+  final nativeGroupPlayers = <FakePlayer>[];
   final MultiServerManager serverManager;
 
   /// Drives the queue's shuffle; script it before starting a shuffled queue.
@@ -843,6 +853,11 @@ class _Harness {
       libraryStore: libraryStore,
       resolver: resolver,
       audioPlayerFactory: newPlayer,
+      nativeGroupOutputFactory: () {
+        final player = _GroupOutputPlayer();
+        harness.nativeGroupPlayers.add(player);
+        return player;
+      },
       overlapPlayerFactory: overlapDecoder ? (_) => newPlayer() : null,
       mediaControlsFactory: () => controls,
       // Collapse the boundary-pulse confirmation window so completed-driven
@@ -872,7 +887,7 @@ class _Harness {
 
   void dispose() {
     service.dispose();
-    for (final player in players) {
+    for (final player in [...players, ...nativeGroupPlayers]) {
       player.closeControllers();
     }
     controls.closeControllers();
@@ -1324,6 +1339,10 @@ void main() {
   test('native source retains queue occurrences, reports and local transport through account retirement', () async {
     h.dispose();
     h = _Harness.create(pcmCapture: true);
+    await h.service.setCalderaEqualizer(
+      const PlayerParametricEqualizer(enabled: true, gain: -3.5),
+      current: () => true,
+    );
     await h.playTracks([t1, t1, t2]);
     final player = h.player as _CapturingPlayer;
     final address = (await NetworkInterface.list(
@@ -1382,6 +1401,22 @@ void main() {
       _MusicNetworkHttp(),
     );
     expect(h.service.sendingNativeMusicGroup, isTrue);
+    final speaker = h.nativeGroupPlayers.single;
+    expect(speaker.openedUris.single, startsWith('http://127.0.0.1:'));
+    expect(speaker.audioFocusChanges, [false]);
+    expect(speaker.parametric.last.gain, -3.5);
+    expect(player.parametric.last.enabled, isFalse);
+    expect(speaker.volumes.last, 100);
+    await h.service.setCalderaEqualizer(const PlayerParametricEqualizer(enabled: true, gain: -6), current: () => true);
+    expect(speaker.parametric.last.gain, -6);
+    expect(player.parametric.last.enabled, isFalse);
+    await h.service.setVolume(37, persist: false);
+    expect(speaker.volumes.last, 100, reason: 'user volume is already in shared PCM');
+    await h.service.setWorkspaceAudioEnabled(false);
+    expect(speaker.volumes.last, 0, reason: 'queued PCM must become silent immediately');
+    await h.service.setWorkspaceAudioEnabled(true);
+    expect(speaker.volumes.last, 100);
+    expect(speaker.audioFocusRequests, 0);
     expect(player.captureEnabled, isTrue);
     expect(player.properties['mute'], 'yes');
     expect(h.service.queue.map((track) => track.id), [t1.id, t1.id, t2.id]);
@@ -1395,10 +1430,34 @@ void main() {
     h.serverManager.debugRegisterClientForTesting(_AdditionalNativeAccountClient());
     await Future<void>.delayed(const Duration(milliseconds: 30));
     expect(h.service.sendingNativeMusicGroup, isFalse);
+    expect(speaker.disposed, isTrue);
     expect(player.captureEnabled, isFalse);
     expect(player.properties['mute'], 'no');
     expect(h.service.currentTrack?.id, t1.id);
     expect(player.disposed, isFalse);
+    await HttpOverrides.runWithHttpOverrides(
+      () => h.service.sendNativeMusicGroup([
+        CalderaNode(
+          id: peer,
+          name: 'Native speaker',
+          address: address,
+          companionPort: mesh.port,
+          meshPort: mesh.port,
+          expires: DateTime.now().add(const Duration(minutes: 1)),
+        ),
+      ], current: () => true),
+      _MusicNetworkHttp(),
+    );
+    final secondSpeaker = h.nativeGroupPlayers.last as _GroupOutputPlayer;
+    final gate = secondSpeaker.disposeGate = Completer<void>();
+    var stopped = false;
+    final stopping = h.service.stop().then((_) => stopped = true);
+    await pumpEventQueue();
+    expect(stopped, isFalse, reason: 'stop must await the physical renderer before returning');
+    gate.complete();
+    await stopping;
+    expect(secondSpeaker.disposed, isTrue);
+    expect(player.disposed, isTrue);
   });
 
   test('an idle EQ preset cannot prevent playback on a decoder lacking DSP', () async {

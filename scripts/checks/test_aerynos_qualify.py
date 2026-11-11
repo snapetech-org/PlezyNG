@@ -91,6 +91,7 @@ class PlaybackMeasurementsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             app = AppQA.__new__(AppQA)
             app.evidence = Path(directory)
+            app.guest = SimpleNamespace(qmp=Mock())
             calls = []
             def ui(*args):
                 calls.append(args)
@@ -98,20 +99,46 @@ class PlaybackMeasurementsTests(unittest.TestCase):
                         {'name': 'Maestro Movie', 'role': 'text'}]
             app.ui = ui
             app.open_search()
-            self.assertEqual(calls[0], ('click', 'Search'))
+            app.guest.qmp.assert_called_once_with('human-monitor-command', {'command-line': 'sendkey ctrl-f'})
+            self.assertEqual(calls, [()])
             self.assertTrue((app.evidence / 'search-ready.json').exists())
 
     def test_search_requires_one_editable_field_and_retains_failure_evidence(self):
         with tempfile.TemporaryDirectory() as directory:
             app = AppQA.__new__(AppQA)
             app.evidence = Path(directory)
-            app.guest = SimpleNamespace(screenshot=lambda path: path.write_bytes(b'fixture screenshot'))
+            app.guest = SimpleNamespace(qmp=Mock(), screenshot=lambda path: path.write_bytes(b'fixture screenshot'))
             for fields in ([], [{'name': '', 'role': 'text'}] * 2):
                 app.ui = lambda *args: [{'name': 'Search', 'role': 'header'}, *fields]
                 with self.subTest(fields=fields), self.assertRaises(RuntimeError):
                     app.open_search(timeout=0)
             self.assertTrue((app.evidence / 'search-timeout.json').exists())
             self.assertTrue((app.evidence / 'search-timeout.png').exists())
+
+    def test_search_shortcut_waits_for_the_input_to_arrive_on_a_later_frame(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = AppQA.__new__(AppQA)
+            app.evidence = Path(directory)
+            app.guest = SimpleNamespace(qmp=Mock())
+            app.ui = Mock(side_effect=[[{'name': 'Search', 'role': 'panel'}],
+                                       [{'name': 'Search query', 'role': 'text'}]])
+            with patch('qualify.time.sleep') as sleep:
+                app.open_search()
+            sleep.assert_called_once_with(0.25)
+            self.assertEqual(app.ui.call_count, 2)
+            app.guest.qmp.assert_called_once()
+            self.assertEqual(json.loads((app.evidence / 'search-ready.json').read_text()),
+                             [{'name': 'Search query', 'role': 'text'}])
+
+    def test_search_shortcut_delivery_failure_cannot_qualify_a_stale_editable_field(self):
+        app = AppQA.__new__(AppQA)
+        failure = subprocess.CalledProcessError(1, ['qmp', 'sendkey'])
+        app.guest = SimpleNamespace(qmp=Mock(side_effect=failure))
+        app.ui = Mock(return_value=[{'name': 'Unrelated field', 'role': 'text'}])
+        with self.assertRaises(subprocess.CalledProcessError) as raised:
+            app.open_search()
+        self.assertIs(raised.exception, failure)
+        app.ui.assert_not_called()
 
     def test_clock_reads_elapsed_time_from_merged_semantics(self):
         with tempfile.TemporaryDirectory() as directory:

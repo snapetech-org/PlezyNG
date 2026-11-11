@@ -242,9 +242,9 @@ class AppQA:
         self.key('esc')
 
     def open_search(self, timeout=15):
-        # Floating desktop headers can be offscreen. Navigate explicitly and
-        # require the unique editable field, including when it already has text.
-        self.ui('click', 'Search')
+        # The normal desktop shortcut opens Search and focuses its input;
+        # sidebar panels may expose no AT-SPI activation action.
+        self.key('ctrl-f')
         deadline = time.monotonic() + timeout
         while True:
             nodes = self.ui()

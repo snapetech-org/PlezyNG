@@ -11,6 +11,7 @@ import 'music_playback_service.dart';
 import 'music_rating_journal.dart';
 import 'music_account_scope.dart';
 import 'music_history_reconciliation.dart';
+import 'music_offline_rating_account.dart';
 
 /// Created eagerly with the profile session, independent of music screens.
 class MusicExperience extends ChangeNotifier {
@@ -21,6 +22,7 @@ class MusicExperience extends ChangeNotifier {
     Future<List<MusicDjSource>> Function()? sharedSources,
     Stream<Object?>? connectionChanges,
     Iterable<MediaServerClient> Function()? syncClients,
+    Future<MusicRatingAccount?> Function(MediaItem)? offlineRatingAccountFor,
     this.onDispose,
   }) {
     dj = MusicGuestDj(music, clientFor, sharedSources: sharedSources)..addListener(notifyListeners);
@@ -32,7 +34,7 @@ class MusicExperience extends ChangeNotifier {
         return client == null ? null : musicHistoryAccountScope(client);
       },
     );
-    ratings = MusicRatingJournal(store, clientFor);
+    ratings = MusicRatingJournal(store, clientFor, offlineAccountFor: offlineRatingAccountFor);
     history = MusicHistoryReconciliation(store: store, clients: syncClients ?? () => []);
     _connections = connectionChanges?.listen((_) => _syncRatings());
     _syncRatings();

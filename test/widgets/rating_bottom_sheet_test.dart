@@ -22,6 +22,12 @@ import 'package:plezy/utils/platform_detector.dart';
 import 'package:plezy/widgets/overlay_sheet.dart';
 import 'package:plezy/widgets/rating_bottom_sheet.dart';
 import 'package:provider/provider.dart';
+import 'package:plezy/widgets/backend_badge.dart';
+import 'package:drift/native.dart';
+import 'package:plezy/database/app_database.dart';
+import 'package:plezy/services/music/music_experience.dart';
+import 'package:plezy/services/music/music_library_store.dart';
+import '../test_helpers/music_experience_fakes.dart';
 
 import '../test_helpers/io_fakes.dart';
 import '../test_helpers/media_items.dart';
@@ -41,6 +47,24 @@ void main() {
     _resetTrackerBindings();
   });
   tearDown(_resetTrackerBindings);
+
+  testWidgets('cold music rating sheet shows the saved account control without a client', (tester) async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    final music = ExperienceMusic();
+    final experience = MusicExperience(
+      music: music,
+      store: MusicLibraryStore(db, 'p'),
+      clientFor: (_) => null,
+      offlineRatingAccountFor: (_) async => (scope: 's', capabilities: ServerCapabilities.plex),
+    );
+    await _pumpRatingSheet(tester, viewport: const Size(1280, 800), item: musicTrack('cold'), experience: experience);
+    expect(find.text(t.rateSheet.server), findsOneWidget);
+    expect(find.byType(BackendBadge), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    experience.dispose();
+    music.dispose();
+    await tester.runAsync(db.close);
+  });
 
   testWidgets('an unratable tracker keeps its row so the sheet cannot resize under the user', (tester) async {
     // The score load resolves asynchronously and finds every tracker unratable
@@ -112,6 +136,7 @@ Future<void> _pumpRatingSheet(
   MediaServerClient? serverClient,
   String? profileUuid,
   MediaItem? item,
+  MusicExperience? experience,
 }) async {
   tester.view.physicalSize = viewport;
   tester.view.devicePixelRatio = 1.0;
@@ -133,8 +158,11 @@ Future<void> _pumpRatingSheet(
   final resolvedItem = item ?? testMediaItem(id: 'item-1', serverId: 'server-1', serverName: 'Living Room');
 
   await tester.pumpWidget(
-    ChangeNotifierProvider<TrackersProvider>.value(
-      value: trackers,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<TrackersProvider>.value(value: trackers),
+        if (experience != null) ChangeNotifierProvider<MusicExperience>.value(value: experience),
+      ],
       child: MaterialApp(
         theme: ThemeData(platform: TargetPlatform.macOS, extensions: const [testMonoTokens]),
         home: OverlaySheetHost(
@@ -143,7 +171,11 @@ Future<void> _pumpRatingSheet(
               child: Builder(
                 builder: (context) => ElevatedButton(
                   onPressed: () => OverlaySheetController.of(context).show<void>(
-                    builder: (_) => RatingBottomSheet(item: resolvedItem, serverClient: serverClient),
+                    builder: (_) => RatingBottomSheet(
+                      item: resolvedItem,
+                      serverClient: serverClient,
+                      offlineCapabilities: experience == null ? null : ServerCapabilities.plex,
+                    ),
                   ),
                   child: const Text('Open'),
                 ),

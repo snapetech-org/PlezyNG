@@ -1,6 +1,7 @@
 import '../utils/platform_detector.dart';
 import '../services/music/music_car_host.dart';
 import '../services/music/music_experience.dart';
+import '../services/music/music_offline_rating_account.dart';
 import '../services/music/music_guest_dj.dart';
 import '../media/media_backend.dart';
 import '../media/media_kind.dart';
@@ -389,10 +390,18 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                     final libraries = context.read<LibrariesProvider>();
                     final hidden = context.read<HiddenLibrariesProvider>();
                     final companion = context.read<CompanionRemoteProvider>();
+                    final active = context.read<ActiveProfileProvider>();
+                    final offlineRatings = MusicOfflineRatingAccounts(
+                      store: MusicLibraryStore(context.read<AppDatabase>(), activeId),
+                      connections: context.read<ConnectionRegistry>(),
+                      profiles: context.read<ProfileConnectionRegistry>(),
+                      current: () => active.activeId == activeId,
+                    );
                     final experience = MusicExperience(
                       music: context.read<MusicPlaybackService>(),
                       store: MusicLibraryStore(context.read<AppDatabase>(), activeId),
                       connectionChanges: manager.statusStream,
+                      offlineRatingAccountFor: offlineRatings.forItem,
                       syncClients: () => manager.visibleOnlineClients.values,
                       onDispose: (value) => companion.unbindMusicHistory(value.history),
                       sharedSources: () async {

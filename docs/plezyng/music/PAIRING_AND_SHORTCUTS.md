@@ -46,6 +46,11 @@ sync: the server does not expose Pleazyng occurrence IDs or listened duration
 for a safe merge. Direct bindings without a verified account identity do not
 expose the server view.
 
+Music ratings are available from the item menu during cold offline startup.
+The saved profile must have one unambiguous account binding for that server.
+Decisions stay local until the same account reconnects; a different account
+cannot receive them.
+
 The music-home Sync action shows conflicting offline rating/favorite decisions.
 Choose the reviewed local or remote value explicitly. A stale conflict revision
 cannot overwrite a newer decision; an already-applied remote value clears its

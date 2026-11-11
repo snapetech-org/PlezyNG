@@ -32,10 +32,16 @@ String? musicHistoryAccountScope(MediaServerClient client) {
 String musicAccountScope(MediaServerClient client) {
   final server = client.cacheServerId;
   if (client is! PlexClient) return server;
-  final account = client.plexAccountId;
-  final token = client.config.token;
+  return plexMusicAccountScope(
+    server: server,
+    account: client.plexAccountId,
+    user: client.plexMusicUserIdentifier,
+    token: client.config.token,
+  );
+}
+
+String plexMusicAccountScope({required String server, String? account, String? user, String? token}) {
   final owner = account == null || account.isEmpty ? 'direct' : 'plex:$account';
-  final user = client.plexMusicUserIdentifier;
   if (account != null && account.isNotEmpty && user != null && user.isNotEmpty) {
     return '$server|$owner:user:${sha256.convert(utf8.encode(user))}';
   }

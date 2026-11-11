@@ -14,6 +14,7 @@ import '../media/media_kind.dart';
 import '../services/music/music_experience.dart';
 import '../services/music/music_rating_journal.dart';
 import '../media/media_server_client.dart';
+import '../media/server_capabilities.dart';
 import '../models/catalog/catalog_item.dart';
 import '../providers/trackers_provider.dart';
 import '../screens/settings/tracker_service_info.dart';
@@ -31,6 +32,7 @@ import 'clickable_cursor.dart';
 class RatingBottomSheet extends StatefulWidget {
   final MediaItem item;
   final MediaServerClient? serverClient;
+  final ServerCapabilities? offlineCapabilities;
   final ValueChanged<double>? onServerRatingChanged;
   final ValueChanged<bool>? onServerFavoriteChanged;
 
@@ -38,6 +40,7 @@ class RatingBottomSheet extends StatefulWidget {
     super.key,
     required this.item,
     required this.serverClient,
+    this.offlineCapabilities,
     this.onServerRatingChanged,
     this.onServerFavoriteChanged,
   });
@@ -124,7 +127,8 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
         _resolverNeedsFribb = trackers.isMalConnected || trackers.isAnilistConnected;
         _queueTrackerScoreLoad(trackerSources);
 
-        final serverCaps = widget.serverClient?.capabilities;
+        final serverCaps =
+            widget.serverClient?.capabilities ?? (_musicRatings == null ? null : widget.offlineCapabilities);
         final showServerRow = serverCaps != null && (serverCaps.numericUserRating || serverCaps.userFavorites);
         final focusNodes = <FocusNode>[
           if (showServerRow) _serverFocusNode,
@@ -145,7 +149,7 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
             children: [
               if (showServerRow)
                 _buildServerRow(
-                  widget.serverClient!,
+                  serverCaps,
                   _serverFocusNode,
                   autofocus: focusIndex == 0,
                   onNavigateUp: _navTo(focusNodes, focusIndex - 1),
@@ -177,7 +181,7 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
   }
 
   Widget _buildServerRow(
-    MediaServerClient client,
+    ServerCapabilities capabilities,
     FocusNode focusNode, {
     required bool autofocus,
     required VoidCallback? onNavigateUp,
@@ -185,15 +189,16 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
   }) {
     final loading = _loading.contains(_serverKey);
     final status = _statuses[_serverKey];
+    final backend = widget.serverClient?.backend ?? widget.item.backend;
     final subtitle =
-        '${_backendLabel(client.backend)} - ${client.serverName ?? widget.item.serverName ?? t.common.unknown}';
+        '${_backendLabel(backend)} - ${widget.serverClient?.serverName ?? widget.item.serverName ?? t.common.unknown}';
 
-    if (client.capabilities.numericUserRating) {
+    if (capabilities.numericUserRating) {
       final value = (_serverStars * 2).round().clamp(0, 10).toInt();
       return _RatingRow(
         focusNode: focusNode,
         autofocus: autofocus,
-        leading: BackendBadge(backend: client.backend, size: 22),
+        leading: BackendBadge(backend: backend, size: 22),
         title: t.rateSheet.server,
         subtitle: subtitle,
         loading: loading,
@@ -216,7 +221,7 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
     return _RatingRow(
       focusNode: focusNode,
       autofocus: autofocus,
-      leading: BackendBadge(backend: client.backend, size: 22),
+      leading: BackendBadge(backend: backend, size: 22),
       title: t.rateSheet.server,
       subtitle: subtitle,
       loading: loading,
@@ -540,11 +545,12 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
   }
 
   Future<void> _saveServerRatingDetached() async {
-    final client = widget.serverClient;
-    if (client == null) return;
+    final capabilities =
+        widget.serverClient?.capabilities ?? (_musicRatings == null ? null : widget.offlineCapabilities);
+    if (capabilities == null) return;
 
     try {
-      if (client.capabilities.numericUserRating) {
+      if (capabilities.numericUserRating) {
         final rating = _serverStars <= 0 ? -1.0 : _serverStars * 2.0;
         await _rateMusicOrServer(rating);
         widget.onServerRatingChanged?.call(rating < 0 ? 0 : rating);

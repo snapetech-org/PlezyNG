@@ -6,6 +6,7 @@ import 'package:plezy/database/app_database.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/services/music/music_library_store.dart';
 import 'package:plezy/services/music/music_rating_journal.dart';
+import 'package:plezy/media/server_capabilities.dart';
 
 import '../../test_helpers/music_experience_fakes.dart';
 
@@ -29,6 +30,44 @@ void main() {
   tearDown(() async {
     journal.dispose();
     await db.close();
+  });
+  test('cold edits survive journal recreation and compare the remote base on reconnect', () async {
+    journal.dispose();
+    ExperienceClient? available;
+    journal = MusicRatingJournal(
+      store,
+      (_) => available,
+      offlineAccountFor: (_) async => (scope: 's/user', capabilities: ServerCapabilities.plex),
+    );
+    final track = musicTrack('cold').copyWith(userRating: 4);
+    expect(await journal.rate(track, 6), isFalse);
+    expect(await journal.rate(track, 8), isFalse);
+    final pending = (await store.documents('ratingPending')).single;
+    expect(pending['base'], 4);
+    expect(pending['value'], 8);
+    journal.dispose();
+    available = client;
+    (client as _RatingClient).remote = track.copyWith(userRating: 9);
+    journal = MusicRatingJournal(store, (_) => available);
+    await journal.sync();
+    expect(client.mutations, isEmpty);
+    expect((await store.documents('ratingConflict')).single['remote'], 9);
+  });
+  test('cold edits reject revoked bindings and unsupported favorites', () async {
+    journal.dispose();
+    var calls = 0;
+    journal = MusicRatingJournal(
+      store,
+      (_) => null,
+      offlineAccountFor: (_) async {
+        calls++;
+        return calls == 1 ? (scope: 's', capabilities: ServerCapabilities.plex) : null;
+      },
+    );
+    await expectLater(journal.rate(musicTrack('a'), 8), throwsStateError);
+    expect(await store.documents('ratingPending'), isEmpty);
+    calls = 0;
+    await expectLater(journal.favorite(musicTrack('a'), true), throwsUnsupportedError);
   });
   test('offline edits coalesce to the last decision and sync idempotently', () async {
     client.isOfflineMode = true;

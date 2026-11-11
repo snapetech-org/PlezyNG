@@ -66,6 +66,8 @@ import '../widgets/file_info_bottom_sheet.dart';
 import '../widgets/overlay_sheet.dart';
 import 'watchlist_source_chooser.dart';
 import '../widgets/rating_bottom_sheet.dart';
+import '../media/server_capabilities.dart';
+import '../services/music/music_experience.dart';
 import '../i18n/strings.g.dart';
 import '../utils/error_message_utils.dart';
 
@@ -720,7 +722,8 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         ),
       if (widget.isInContinueWatching && isVideoKind)
         _MenuAction(value: 'details', icon: Symbols.info_rounded, label: t.mediaMenu.viewDetails),
-      if (isVideoKind) _MenuAction(value: 'rate', icon: Symbols.star_rounded, label: t.mediaMenu.rate),
+      if (isVideoKind || mediaKind.isMusic)
+        _MenuAction(value: 'rate', icon: Symbols.star_rounded, label: t.mediaMenu.rate),
       // Edit Metadata — admin-only and backend-capability gated.
       if (menu.canEditMetadata)
         _MenuAction(value: 'edit_metadata', icon: Symbols.edit_rounded, label: t.metadataEdit.editMetadata),
@@ -1146,6 +1149,17 @@ class MediaContextMenuState extends State<MediaContextMenu> {
 
   Future<void> _handleRate(BuildContext context, MediaItem item) async {
     try {
+      if (item.kind.isMusic) {
+        final journal = context.read<MusicExperience?>()?.ratings;
+        final capabilities = await journal?.capabilitiesFor(item);
+        if (!context.mounted) return;
+        if (capabilities == null) throw StateError('Music account unavailable');
+        final client = item.serverId == null
+            ? null
+            : context.read<MultiServerProvider>().getClientForServer(ServerId(item.serverId!));
+        await _showRatingSheet(context, item, client, offlineCapabilities: capabilities);
+        return;
+      }
       final client = _getMediaClientForItem();
       await _showRatingSheet(context, item, client);
     } catch (e) {
@@ -1742,7 +1756,12 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     }
   }
 
-  Future<void> _showRatingSheet(BuildContext context, MediaItem item, MediaServerClient client) async {
+  Future<void> _showRatingSheet(
+    BuildContext context,
+    MediaItem item,
+    MediaServerClient? client, {
+    ServerCapabilities? offlineCapabilities,
+  }) async {
     if (!mounted) return;
     // Presented from the menu's own context so a screen-level
     // OverlaySheetHost is found (see _showContextMenu).
@@ -1753,6 +1772,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       builder: (context) => RatingBottomSheet(
         item: item,
         serverClient: client,
+        offlineCapabilities: offlineCapabilities,
         onServerRatingChanged: (_) => _notifyRefresh(item),
         onServerFavoriteChanged: (_) => _notifyRefresh(item),
       ),

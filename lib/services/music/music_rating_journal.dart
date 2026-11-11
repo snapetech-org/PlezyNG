@@ -9,14 +9,19 @@ import '../../media/media_server_client.dart';
 import '../../utils/serial_future_queue.dart';
 import 'music_account_scope.dart';
 import 'music_library_store.dart';
+import 'music_offline_rating_account.dart';
+import '../../media/server_capabilities.dart';
 
 /// Last explicit rating/favorite decision wins locally. Remote writes are
 /// idempotent setters, serialized per profile and bound to their user scope.
 /// A successful old acknowledgement never deletes a more recent queued edit.
 class MusicRatingJournal {
-  MusicRatingJournal(this.store, this.clientFor);
+  MusicRatingJournal(this.store, this.clientFor, {this.offlineAccountFor});
   final MusicLibraryStore store;
   final MediaServerClient? Function(MediaItem) clientFor;
+  final Future<MusicRatingAccount?> Function(MediaItem)? offlineAccountFor;
+  Future<ServerCapabilities?> capabilitiesFor(MediaItem item) async =>
+      clientFor(item)?.capabilities ?? (await offlineAccountFor?.call(item))?.capabilities;
   final SerialFutureQueue _operations = SerialFutureQueue();
   bool _disposed = false;
 
@@ -25,19 +30,24 @@ class MusicRatingJournal {
   Future<bool> _queue(MediaItem item, String kind, Object value) => _operations.run(() async {
     if (_disposed || !store.active) throw StateError('Music profile is no longer active');
     final client = clientFor(item);
-    if (client == null) throw StateError('Music account unavailable');
+    final offline = client == null ? await offlineAccountFor?.call(item) : null;
+    final capabilities = client?.capabilities ?? offline?.capabilities;
+    if (capabilities == null) throw StateError('Music account unavailable');
     if (kind == 'rating' &&
-        (!client.capabilities.numericUserRating ||
+        (!capabilities.numericUserRating ||
             value is! double ||
             !value.isFinite ||
             value != -1 && (value < 0 || value > 10))) {
       throw ArgumentError('Unsupported numeric rating');
     }
-    if (kind == 'favorite' && !client.capabilities.userFavorites) throw UnsupportedError('No favorite flag');
-    final scope = musicAccountScope(client);
+    if (kind == 'favorite' && !capabilities.userFavorites) throw UnsupportedError('No favorite flag');
+    final scope = client == null ? offline!.scope : musicAccountScope(client);
     final id = '$kind:${sha256.convert(utf8.encode(scope))}:${item.globalKey}';
     final previous = await store.document('ratingPending', id);
-    if (_disposed || !store.active || !identical(clientFor(item), client) || musicAccountScope(client) != scope) {
+    final stillCurrent = client == null
+        ? (await offlineAccountFor?.call(item))?.scope == scope
+        : identical(clientFor(item), client) && musicAccountScope(client) == scope;
+    if (_disposed || !store.active || !stillCurrent) {
       throw StateError('Music account changed');
     }
     final entry = {
@@ -54,7 +64,9 @@ class MusicRatingJournal {
     };
     await store.saveDocument('ratingPending', entry['id'] as String, entry);
     await store.deleteDocument('ratingConflict', id);
-    return _send(entry);
+    // A cold-start edit has not observed the current remote value. Always
+    // compare its original base on reconnection, even if discovery just ended.
+    return client == null ? false : _send(entry);
   });
 
   Future<bool> _send(Map<String, dynamic> entry, {bool verifyRemote = false}) async {

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Record music ratings during a cold offline start using the saved profile account, and review remote conflicts before replaying them after reconnection.
+
 - Keep Apple workflow ownership separate from the approved source checkout when cleaning build workspaces. Reuse a separately verified signed tvOS repair output when only iOS still needs building, preserving the same qualified product source and native dependencies.
 
 - Preserve the explicitly selected tvOS runner pool when recovering signed Apple packages, without adding a candidate source reference.

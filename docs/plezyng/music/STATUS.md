@@ -75,8 +75,13 @@ volume/EQ/mesh/player suite passes 227 tests. An official Caldera controller
 applied enable, -3.5 dB gain and two exact bands to the production host.
 Actual pinned Linux execution found missing FFmpeg EQ filters. Producer repair
 eb78e98 now builds and executes generated flat/peak/shelf/global-gain PCM checks
-successfully on the rebuilt Linux binary. The all-platform publication run and
-atomic application dependency promotion remain pending. Both Linux architectures passed actual DSP execution and their immutable artifacts are published at producer fb65bcb. Android native ABIs/AAR built successfully; their publication is pending retrieval/hosted startup recovery.
+successfully on the rebuilt Linux binary. Producer 3e674d64a821 now publishes
+verified Apple, Android, Linux and Windows artifacts, and every application pin
+and verification receipt moves to that revision together. Both Linux architectures
+passed actual DSP execution. All six Apple targets passed native builds; assembly
+and Objective-C-only iOS/tvOS SwiftPM link checks passed before immutable publication.
+The Android ARM64 debug application compiles from 740e2df28 with these native pins.
+Application builds on other platforms and physical output qualification remain separate.
 Native source output now negotiates saved audio.channels preferences with bounded,
 non-redirecting reads and preserves stereo for automatic or legacy peers.
 Known 5.1/7.1 capture is canonicalized; stereo/5.1/7.1 buses advance on one clock
@@ -90,7 +95,7 @@ Local physical-output/headphone correction is now excluded from wire PCM while
 retaining the general source curve. Leaving restores the latest saved output
 preset without changing queue ownership; 113 focused output/shared-session
 tests pass. The full Linux debug application compiles at a64e31c8b with the
-pinned MilkRust runtime. The full Android ARM64 debug application also compiles at 2144d0300; Apple native builds and acoustic evidence remain.
+pinned MilkRust runtime. The full Android ARM64 debug application also compiles at 2144d0300; Apple application builds and acoustic evidence remain.
  Renderer
 feedback now reads the current core's audible audio-PTS, maps its WAV clock to
 monotonic time and resamples source frames for actual presentation. Bounded

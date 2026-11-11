@@ -4,6 +4,8 @@
 
 - Let an approved tvOS-only release repair build on the private Mac while the original iOS release job continues; keep other core release runs serialized.
 
+- Promote verified native music DSP artifacts across Apple, Android, Linux and Windows together, including the rebuilt EQ filters, ordered PCM hooks and matching package verification receipts.
+
 - Reject playlist artwork with corrupt pixel data before upload and preserve the original upload bytes across asynchronous playlist identity checks.
 
 - Show bounded, account-scoped artwork in CarPlay music lists, including owned offline artwork. Discard stale browse/image replies and keep image requests, decoding and presentation caches bounded.

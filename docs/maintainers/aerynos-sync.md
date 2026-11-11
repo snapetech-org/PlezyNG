@@ -7,11 +7,27 @@ Tracking an unreleased source commit never compiles the app or advances the feed
 Published core releases from 3.0.29 onward enter the package delivery queue.
 Consult downstream Actions and `sync-state/last-good.json` for actual status.
 
+Canonical pushes invoke `aerynos-source-push.yml`, which wakes the downstream
+`source-sync.yml` receiver. The receiver verifies both repository identities,
+fetches current canonical `main` itself, and updates only the source pointer
+with a bounded compare-and-swap. The receiver selects the source independently;
+package qualification remains part of the native delivery pipeline.
+
+The caller uses the canonical Actions secret `AERYNOS_SOURCE_DISPATCH_TOKEN`.
+Its fine-grained token is restricted to `snapetech-org/pleazyng-aerynos`, with
+Contents read/write and required Metadata read-only, and no organization
+permissions. The token provisioned on 2026-11-11 expires on **2027-11-11**.
+Preserve this single-repository scope when rotating it. Trusted
+`refresh-release-metadata.yml` explicitly invokes the caller after successful
+reconciliation, including runs that commit using `GITHUB_TOKEN`; those commits
+do not start push-triggered workflows.
+
 ## Pipeline
 
 The release controller wakes downstream reconciliation after core publication.
-The channel also polls every five minutes, subject to GitHub scheduling and
-compatible runner availability. Manual dispatch is supported. A shared concurrency group
+A workflow scheduled every five minutes provides catch-up, subject to GitHub
+scheduling and compatible runner availability. Manual dispatch is supported.
+A shared concurrency group
 preserves active work and coalesces pending polls. Release receipts prevent
 repeat publication; failed deliveries back off for thirty minutes.
 
@@ -44,7 +60,10 @@ repeat publication; failed deliveries back off for thirty minutes.
    audio, pause/seek/fullscreen, playing and paused background return, route
    resume and bookmark resume must pass. Playing phases require moving authored
    frames and advancing clocks; paused return requires fixed pixels and clock
-   with no audio. Only authored fixtures and accounts are used.
+   with no audio. The direct OpenMedia route must also show moving authored
+   H.264, audio and advancing clocks on initial playback, before seeking or any
+   other playback intervention. Both routes are mandatory. Only authored fixtures
+   and accounts are used.
 4. Revalidate the qualified binary digest, source, app version, original producer
    and still-published successful core. Attach `core-release.json` with original
    compiler and final assembler identities. Publish immutable package assets,
@@ -120,8 +139,9 @@ effect. The publisher refreshes hold/feed state after uploads immediately before
 making a release public. Scheduled workflow activation is explicit; neither
 controller re-enables schedules automatically. The legacy unreleased-source
 compilation lane has been removed. A weekly health commit keeps release polling
-active without building an app. No cross-repository secret, deployment key, App
-grant or canonical push hook is required.
+active without building an app. Package reconciliation uses the consumer
+repository's `GITHUB_TOKEN`; the dedicated source-dispatch credential is used
+only by the canonical source caller.
 
 A native or channel delivery failure is separate from core success. Repair or
 retry delivery with existing immutable artifacts; do not rebuild all platforms,

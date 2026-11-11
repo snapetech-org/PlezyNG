@@ -29,6 +29,62 @@ void main() {
   Future<void> peerSawClose(Socket peer) => peer.drain<void>().timeout(const Duration(seconds: 5));
 
   group('WebSocketConnectAttempt', () {
+    test('scoped relay credentials are never forwarded through an HTTP redirect', () async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(() => server.close(force: true));
+      var redirected = 0;
+      server.listen((request) async {
+        if (request.uri.path == '/destination') redirected++;
+        request.response.statusCode = HttpStatus.temporaryRedirect;
+        request.response.headers.set(HttpHeaders.locationHeader, '/destination');
+        await request.response.close();
+      });
+      final attempt = WebSocketConnectAttempt(
+        Uri.parse('ws://127.0.0.1:${server.port}/relay'),
+        connectTimeout: const Duration(seconds: 2),
+        followRedirects: false,
+        maxPayloadLength: 64 * 1024,
+        headers: {'Authorization': 'Bearer private-capability'},
+      );
+      addTearDown(attempt.cancel);
+      await expectLater(attempt.socket, throwsA(isA<WebSocketException>()));
+      expect(redirected, 0);
+    });
+
+    test('relay transport rejects a message above its payload bound', () async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      final peers = <WebSocket>[];
+      addTearDown(() async {
+        for (final peer in peers) {
+          await peer.close();
+        }
+        await server.close(force: true);
+      });
+      server.listen((request) async {
+        final socket = await WebSocketTransformer.upgrade(request, compression: CompressionOptions.compressionOff);
+        peers.add(socket);
+        socket.add('x' * 4096);
+      });
+      final attempt = WebSocketConnectAttempt(
+        Uri.parse('ws://127.0.0.1:${server.port}/relay'),
+        connectTimeout: const Duration(seconds: 2),
+        maxPayloadLength: 1024,
+        followRedirects: false,
+      );
+      final socket = await attempt.socket;
+      addTearDown(socket.close);
+      final messages = <Object?>[];
+      try {
+        await for (final message in socket) {
+          messages.add(message);
+        }
+      } on WebSocketException {
+        // A protocol-size failure can be reported as an error or close event.
+      }
+      expect(messages, isEmpty);
+      expect(socket.closeCode, WebSocketStatus.messageTooBig);
+    });
+
     test('same-turn cancellation settles without admitting a later connection', () async {
       final attempt = WebSocketConnectAttempt(blackHoleUri(), connectTimeout: const Duration(seconds: 30));
       final result = expectLater(attempt.socket, throwsA(isA<SocketException>()));

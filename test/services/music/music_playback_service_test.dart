@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:dart_discord_presence/dart_discord_presence.dart';
@@ -29,6 +30,11 @@ import 'package:plezy/services/agent_control_protocol.dart';
 import 'package:plezy/services/agent_playback_commands.dart';
 import 'package:plezy/services/base_shared_preferences_service.dart';
 import 'package:plezy/services/companion_remote/companion_remote_receiver.dart';
+import 'package:plezy/services/companion_remote/companion_remote_peer_service.dart';
+import 'package:plezy/services/companion_remote/remote_auth_context.dart';
+import 'package:plezy/services/music/music_device_controller.dart';
+import 'package:plezy/services/music/music_device_endpoint.dart';
+import 'package:plezy/services/music/music_device_peer.dart';
 import 'package:plezy/services/discord_rpc_service.dart';
 import 'package:plezy/services/media_controls_manager.dart';
 import 'package:plezy/services/multi_server_manager.dart';
@@ -1601,6 +1607,85 @@ void main() {
     expect(h.service.queue.map((track) => track.id), [t3.id]);
   });
 
+  test('paired encrypted transport moves the real session, controls it and returns its current playhead', () async {
+    final receiver = _Harness.create();
+    final sourceEndpoint = MusicDeviceEndpoint(h.service, allowed: () => true);
+    final receiverEndpoint = MusicDeviceEndpoint(receiver.service, allowed: () => true);
+    final hostTransport = CompanionRemotePeerService.forTesting(
+      listNetworkInterfaces: () async => [_MusicNetworkInterface()],
+    );
+    final remoteTransport = CompanionRemotePeerService();
+    RemoteAuthContext identity(String device) => RemoteAuthContext(
+      id: 'music-pair',
+      backend: 'plex',
+      connectionId: 'srv',
+      homeSecret: List.filled(32, 7),
+      discoveryKey: const [],
+      clientIdentifier: device,
+      userUuid: 'user',
+      allowedUserUuids: const ['user'],
+      isPaired: true,
+    );
+    final session = await hostTransport.createSessionForContexts('Receiver', 'linux', [identity('receiver')]);
+    final incoming = MusicDevicePeer(
+      transport: hostTransport,
+      endpoint: receiverEndpoint,
+      current: () => true,
+      ownsTransport: false,
+      changed: () {},
+    );
+    final outgoing = MusicDevicePeer(
+      transport: remoteTransport,
+      endpoint: sourceEndpoint,
+      current: () => true,
+      ownsTransport: false,
+      changed: () {},
+      name: 'Receiver',
+    );
+    final controller = MusicDeviceController(sourceEndpoint, h.service);
+    addTearDown(() async {
+      controller.dispose();
+      await outgoing.close();
+      await incoming.close();
+      await remoteTransport.dispose();
+      await hostTransport.dispose();
+      receiverEndpoint.close();
+      receiver.dispose();
+    });
+    await remoteTransport.joinSessionWithContexts(
+      'Phone',
+      'ios',
+      '127.0.0.1:${session.port}',
+      [identity('phone')],
+      authContextId: 'music-pair',
+      expectedHostClientId: 'receiver',
+    );
+    expect(await outgoing.ready(), isTrue);
+    expect(await incoming.ready(), isTrue);
+    expect(outgoing.output.connected, isTrue);
+    await h.playTracks([t1, t2, t1]);
+    h.player.setPosition(const Duration(seconds: 33));
+    expect(await controller.moveTo(outgoing.output), MusicDeviceMoveResult.completed);
+    expect(h.service.remoteOutputName, 'Receiver');
+    expect(receiver.service.currentTrack?.id, 't1');
+    expect(receiver.service.isPlaying, isTrue);
+    await h.service.next();
+    expect(h.service.currentTrack?.id, 't2');
+    expect(receiver.service.currentTrack?.id, 't2');
+    receiver.player.setPosition(const Duration(seconds: 53));
+    expect(await controller.moveTo(null), MusicDeviceMoveResult.completed);
+    expect(h.service.remoteOutputName, isNull);
+    expect(h.service.currentTrack?.id, 't2');
+    expect(h.service.position, const Duration(seconds: 53));
+    expect(h.service.isPlaying, isTrue);
+    expect(receiver.service.isPlaying, isFalse);
+    expect(await controller.moveTo(outgoing.output), MusicDeviceMoveResult.completed);
+    await remoteTransport.disconnect();
+    await pumpEventQueue();
+    expect(receiver.service.isPlaying, isTrue);
+    expect(outgoing.output.connected, isFalse);
+  });
+
   group('remote transfer receiver', () {
     MusicTransferSnapshot transfer({MediaItem? current}) => MusicTransferSnapshot(
       queue: MusicQueueState(
@@ -2920,4 +3005,20 @@ void main() {
       },
     );
   });
+}
+
+class _MusicNetworkInterface extends Fake implements NetworkInterface {
+  @override
+  String get name => 'test0';
+  @override
+  List<InterfaceAddress> get addresses => [_MusicInterfaceAddress()];
+}
+
+class _MusicInterfaceAddress extends Fake implements InterfaceAddress {
+  @override
+  String get address => '192.0.2.1';
+  @override
+  InternetAddressType get type => InternetAddressType.IPv4;
+  @override
+  bool get isLoopback => false;
 }

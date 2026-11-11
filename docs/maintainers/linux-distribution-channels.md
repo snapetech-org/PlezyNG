@@ -210,3 +210,14 @@ conversion. Never treat an upload or completed workflow as review approval.
 
 These candidates package Pleazyng's own release bundles. They do not copy the
 upstream Plezy recipes or imply participation by their maintainers.
+
+### aerynOS source synchronization
+
+Canonical main pushes wake the consumer's metadata-only `source-sync.yml`
+receiver through `aerynos-source-push.yml`. The receiver ignores event payloads,
+resolves authoritative canonical main, and advances only its source-tracking
+record after identity, ancestry and compare-and-swap checks. The scheduled
+consumer reconciliation remains a catch-up path subject to GitHub availability.
+A source record does not qualify or publish a package; native acceptance and
+last-good public-feed promotion retain their separate gates. Dispatch credential
+failures are source-delivery follow-up work and never request a core rebuild.

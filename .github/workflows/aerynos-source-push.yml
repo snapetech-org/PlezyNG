@@ -1,0 +1,26 @@
+name: Wake aerynOS source tracking
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: aerynos-source-wake
+  cancel-in-progress: false
+jobs:
+  wake:
+    if: github.repository == 'snapetech-org/pleazyng' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Wake metadata-only source receiver
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$GH_TOKEN" ]]; then
+            echo 'Existing cross-repository dispatch credentials are unavailable.' >&2
+            exit 1
+          fi
+          gh api --method POST repos/snapetech-org/pleazyng-aerynos/dispatches \
+            -f event_type=canonical-main-updated

@@ -55,6 +55,8 @@ import 'music_transfer_snapshot.dart';
 import 'music_device_session.dart';
 import 'music_group_playback.dart';
 import 'caldera_audio_sink.dart';
+import 'caldera_audio_source.dart';
+import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
 import 'music_playback_output.dart';
 
@@ -126,7 +128,95 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicOutputControls,
         MusicDeviceSession,
         NativeMusicGroupControls,
+        NativeMusicGroupSourceControls,
         CalderaAudioOutput {
+  CalderaAudioSource? _calderaSource;
+
+  @override
+  bool get sendingNativeMusicGroup => _calderaSource?.active == true;
+
+  @override
+  Future<void> sendNativeMusicGroup(List<CalderaNode> sinks, {required bool Function() current}) async {
+    await leaveNativeMusicGroup();
+    if (_disposed ||
+        !current() ||
+        _currentTrack == null ||
+        _player == null ||
+        _playbackOutput != null ||
+        _musicDeviceOutput != null ||
+        _musicGroupFollower) {
+      throw StateError('Local music output unavailable');
+    }
+    final accounts = {
+      for (final client in _serverManager.serverIds.map((id) => _serverManager.getClient(ServerId(id))).nonNulls)
+        if (_serverManager.isServerVisible(client.serverId)) client: client.authenticationSessionId,
+    };
+    late final CalderaAudioSource source;
+    bool authorized() =>
+        !_disposed &&
+        current() &&
+        identical(_calderaSource, source) &&
+        _playbackOutput == null &&
+        _musicDeviceOutput == null &&
+        !_musicGroupFollower &&
+        accounts.entries.every(
+          (entry) =>
+              identical(entry.key.authenticationSessionId, entry.value) &&
+              identical(_serverManager.getClient(entry.key.serverId), entry.key) &&
+              _serverManager.isServerVisible(entry.key.serverId),
+        );
+    source = CalderaAudioSource(
+      sinks: List.unmodifiable(sinks),
+      current: authorized,
+      feeds: () {
+        if (!authorized()) return const [];
+        final primary = _player;
+        final overlap = _overlap?.player ?? _overlapStartingPlayer;
+        return [
+          for (final player in [primary, overlap])
+            if (player != null && !player.disposed) _nativePcmFeed(player, source, primary: identical(player, primary)),
+        ];
+      },
+      onClosed: () {
+        if (identical(_calderaSource, source)) {
+          _calderaSource = null;
+          if (!_disposed) notifyListeners();
+        }
+      },
+    );
+    _calderaSource = source;
+    try {
+      await source.start();
+      if (!authorized()) {
+        await source.close();
+        return;
+      }
+      notifyListeners();
+    } catch (_) {
+      if (identical(_calderaSource, source)) _calderaSource = null;
+      rethrow;
+    }
+  }
+
+  CalderaPcmFeed _nativePcmFeed(Player player, CalderaAudioSource source, {required bool primary}) {
+    if (player is! MusicPcmCaptureSource || player.audioPassthroughActive) {
+      throw StateError('Native music PCM unavailable');
+    }
+    return CalderaPcmFeed(
+      capture: player as MusicPcmCaptureSource,
+      position: player.currentPosition,
+      gain: primary
+          ? _volume * _musicGain * _outputGain * (_workspaceAudioEnabled ? .01 : 0)
+          : player.state.volume * (_workspaceAudioEnabled ? .01 : 0),
+      playing: player.state.isActive && _status == MusicPlaybackStatus.playing,
+      readMuted: () async => (await player.getProperty('mute')) == 'yes',
+      setMuted: (muted) async {
+        if (player.disposed || _calderaSource != null && !identical(_calderaSource, source)) return;
+        await player.setProperty('mute', muted ? 'yes' : 'no');
+      },
+    );
+  }
+
   CalderaAudioSink? _calderaSink;
   Object? _calderaAudioOwner;
   int? _calderaAudioGeneration;
@@ -168,7 +258,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<void> leaveNativeMusicGroup() async {
     final sink = _calderaSink;
+    final source = _calderaSource;
     _calderaSink = null;
+    _calderaSource = null;
+    await source?.close();
     await sink?.close();
   }
 
@@ -2786,6 +2879,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         }
       }
       if (!current()) return;
+      final nativeSource = _calderaSource;
+      if (nativeSource != null) {
+        await nativeSource.prepareFeed(_nativePcmFeed(player, nativeSource, primary: false));
+        if (!current()) return;
+      }
       await player.open(Media(incoming.source.url, headers: incoming.source.headers));
       if (!current()) return;
       // The outgoing playlist must stop at this file. Keep its arm until the
@@ -3839,6 +3937,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<void> _stopForVideoClaim() => _stopSession(endStatus: MusicPlaybackStatus.idle);
 
   Future<void> _stopSession({required MusicPlaybackStatus endStatus}) async {
+    final nativeSource = _calderaSource;
+    _calderaSource = null;
+    unawaited(nativeSource?.close());
     _calderaAudioOwner = null;
     _calderaAudioGeneration = null;
     _musicGroupFollower = false;

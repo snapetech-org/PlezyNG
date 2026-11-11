@@ -33,9 +33,35 @@ started its LiveSender to port 5000, and supplied 160,652 bytes through the
 Dart WAV bridge. No actual account or speaker was used. The independent player
 and protocol logs are retained under build/native-groups-20261111/.
 
-Source transmission, unsolicited native group discovery/membership and physical
-output latency calibration are not yet complete. This result establishes receive
+Unsolicited native group discovery/membership and physical output latency
+calibration are not yet complete. This result establishes receive
 transport interoperability; it does not establish acoustic synchronization.
+
+## Native source output
+
+The native group screen can send the current shared music session to selected
+native speakers. Each peer must acknowledge its new source before capture and
+local muting begin. Missing capture support fails before native membership is
+changed. No additional media-server stream is opened. Ordered PCM from the
+primary and overlap decoders is mixed onto a bounded 48 kHz stereo frame clock;
+seek generations, pause, track changes and native ownership changes retire stale
+samples. A source preserves the local queue, duplicate occurrences, transport
+controls and listen-reporting authority. Closing restores the prior local mute.
+
+The native bridge shares one tap with the visualizer using an independent,
+presentation-timed bounded copy queue. Source capture currently accepts mono and
+stereo decoder output. Multichannel decoder capture fails closed.
+
+Verification: 116 focused source, mixer, shared-session and UI regressions pass.
+The production Dart source, driven by generated PCM in an isolated namespace,
+was accepted by the official Caldera 1.1.0 receiver. The receiver negotiated
+48 kHz stereo, resampled to its 44.1 kHz null device and reported 718 packets
+received with zero packet drops. Its unpaced null device reported underruns;
+this run cannot qualify acoustic synchronization or real output latency.
+
+The shipped dependency lock still lacks the native ordered PCM extension.
+A built and promoted dependency artifact is required to enable source capture
+in packaged applications; no unproduced artifact or hash is substituted.
 
 ## Protocol sources
 

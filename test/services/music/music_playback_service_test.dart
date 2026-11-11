@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'dart:convert';
 
 import 'package:dart_discord_presence/dart_discord_presence.dart';
 import 'package:drift/native.dart';
@@ -16,6 +17,8 @@ import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/media/media_server_client.dart';
 import 'package:plezy/media/media_source_info.dart';
 import 'package:plezy/mpv/models.dart';
+import 'package:plezy/mpv/player/music_pcm_capture_source.dart';
+import 'package:plezy/services/music/caldera_group.dart';
 import 'package:plezy/models/audio_channel_limit.dart';
 import 'package:plezy/models/companion_remote/remote_command.dart';
 import 'package:plezy/models/download_models.dart';
@@ -725,6 +728,28 @@ class _ScriptedRandom implements Random {
   double nextDouble() => _real.nextDouble();
 }
 
+class _CapturingPlayer extends FakePlayer implements MusicPcmCaptureSource {
+  bool captureEnabled = false;
+  final properties = <String, String>{};
+  @override
+  Future<bool> musicPcmCaptureAvailable() async => !disposed;
+  @override
+  Future<bool> setMusicPcmCaptureEnabled(bool value) async {
+    captureEnabled = value;
+    return true;
+  }
+
+  @override
+  Future<List<MusicPcmBlock>> drainMusicPcmCapture() async => const [];
+  @override
+  Future<void> setProperty(String name, String value) async {
+    properties[name] = value;
+  }
+
+  @override
+  Future<String?> getProperty(String name) async => properties[name];
+}
+
 class _Harness {
   _Harness._(
     this.service,
@@ -757,6 +782,7 @@ class _Harness {
     MusicSessionStore? sessionStore,
     MusicLibraryStore? libraryStore,
     bool overlapDecoder = false,
+    bool pcmCapture = false,
   }) {
     final queueRandom = _ScriptedRandom();
     final client = FakeMediaServerClient();
@@ -766,7 +792,7 @@ class _Harness {
     final serverManager = MultiServerManager()..debugRegisterClientForTesting(client);
     late final _Harness harness;
     FakePlayer newPlayer() {
-      final player = FakePlayer();
+      final player = pcmCapture ? _CapturingPlayer() : FakePlayer();
       player.failingSetNextUris.addAll(harness.failingSetNextUris);
       players.add(player);
       return player;
@@ -949,6 +975,82 @@ void main() {
     await h.service.closeCalderaAudio(owner);
     expect(h.service.currentTrack?.id, t3.id);
     expect(h.service.isPlaying, isTrue);
+  });
+
+  test('native source retains queue occurrences, reports and local transport through account retirement', () async {
+    h.dispose();
+    h = _Harness.create(pcmCapture: true);
+    await h.playTracks([t1, t1, t2]);
+    final player = h.player as _CapturingPlayer;
+    final address = (await NetworkInterface.list(
+      type: InternetAddressType.IPv4,
+    )).expand((e) => e.addresses).firstWhere(CalderaNode.privateAddress);
+    final mesh = await HttpServer.bind(address, 0);
+    WebSocket? socket;
+    const peer = '11111111-1111-4111-8111-111111111111';
+    mesh.listen((request) async {
+      socket = await WebSocketTransformer.upgrade(request);
+      socket!.listen((value) {
+        for (final message in CalderaGroupClient.meshMessages(value as String)) {
+          if (message['method'] == 'Hello') {
+            socket!.add(
+              jsonEncode({
+                'method': 'SetState',
+                'source': peer,
+                'data': {'version': '1.0.0', 'source': peer},
+              }),
+            );
+          } else if (message['method'] == 'SetSinksForSource') {
+            socket!.add(
+              jsonEncode({
+                'method': 'SetNodeState',
+                'source': peer,
+                'data': {'version': '1.0.0', 'source': (message['data'] as Map)['source']},
+              }),
+            );
+          } else if (message['data'] == 'ping') {
+            socket!.add('{"data":"ping"}');
+          }
+        }
+      });
+    });
+    addTearDown(() async {
+      await socket?.close();
+      await mesh.close(force: true);
+    });
+    var current = true;
+    final before = Map<String, int>.of(h.resolver.resolveCounts);
+    await HttpOverrides.runWithHttpOverrides(
+      () => h.service.sendNativeMusicGroup([
+        CalderaNode(
+          id: peer,
+          name: 'Native speaker',
+          address: address,
+          companionPort: 32500,
+          meshPort: mesh.port,
+          expires: DateTime.now().add(const Duration(minutes: 1)),
+        ),
+      ], current: () => current),
+      _MusicNetworkHttp(),
+    );
+    expect(h.service.sendingNativeMusicGroup, isTrue);
+    expect(player.captureEnabled, isTrue);
+    expect(player.properties['mute'], 'yes');
+    expect(h.service.queue.map((track) => track.id), [t1.id, t1.id, t2.id]);
+    expect(h.resolver.resolveCounts, before);
+    expect(h.service.isMusicGroupFollower, isFalse);
+    player.setPosition(const Duration(seconds: 12));
+    await h.service.pause();
+    expect(h.service.isPlaying, isFalse);
+    await h.service.play();
+    expect(h.service.isPlaying, isTrue);
+    current = false;
+    await Future<void>.delayed(const Duration(milliseconds: 30));
+    expect(h.service.sendingNativeMusicGroup, isFalse);
+    expect(player.captureEnabled, isFalse);
+    expect(player.properties['mute'], 'no');
+    expect(h.service.currentTrack?.id, t1.id);
+    expect(player.disposed, isFalse);
   });
 
   test('revoked native PCM scope cannot create an audio core or replace playback', () async {

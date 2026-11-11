@@ -43,8 +43,10 @@ adjusted media duration, generation and dropped-frame counts. The native
 consumer supplies playback PTS; future blocks stay queued and old blocks are
 discarded. The visualizer consumes these blocks entirely in native code. The
 transcription bridge uses the additive `read_next` API to drain media-ordered
-blocks without presentation-clock dropping; only an explicit live-caption
-session returns bounded float PCM packets over the method channel.
+blocks without presentation-clock dropping. Explicit live-caption or native
+music-source sessions return bounded float PCM packets over the method channel.
+Music capture owns the ordered native read and supplies a bounded independent
+presentation queue to an active visualizer, preserving one native tap consumer.
 
 Seek/stream resets and format changes advance the generation. Consumers must
 reset their resampling/equation/feedback state on generation changes. Enable,

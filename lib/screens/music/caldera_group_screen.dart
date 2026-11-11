@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../i18n/strings.g.dart';
 import '../../services/music/caldera_group.dart';
 import '../../services/music/caldera_audio_sink.dart';
+import '../../services/music/caldera_audio_source.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
 
@@ -222,6 +223,36 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
                             await widget.audio!.leaveNativeMusicGroup();
                           } else {
                             await widget.audio!.receiveNativeMusicGroup(leader, current: widget.current);
+                          }
+                          if (mounted) setState(() {});
+                        }),
+                      ),
+              ),
+            ),
+          if (widget.audio case final NativeMusicGroupSourceControls source)
+            ListTile(
+              leading: const AppIcon(Symbols.speaker_group_rounded),
+              title: Text(t.musicDevices.playOn),
+              subtitle: Text(
+                [
+                  for (final node in _nodes)
+                    if (node.id == _source || _members.contains(node.id)) node.name,
+                ].join(', '),
+              ),
+              trailing: IconButton(
+                tooltip: source.sendingNativeMusicGroup ? t.music.stopPlayback : t.common.play,
+                icon: AppIcon(source.sendingNativeMusicGroup ? Symbols.stop_rounded : Symbols.play_arrow_rounded),
+                onPressed: _busy || leader == null
+                    ? null
+                    : () => unawaited(
+                        _run(() async {
+                          if (source.sendingNativeMusicGroup) {
+                            await widget.audio!.leaveNativeMusicGroup();
+                          } else {
+                            await source.sendNativeMusicGroup([
+                              for (final node in _nodes)
+                                if (node.id == _source || _members.contains(node.id)) node,
+                            ], current: widget.current);
                           }
                           if (mounted) setState(() {});
                         }),

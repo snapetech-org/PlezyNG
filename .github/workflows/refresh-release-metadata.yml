@@ -7,7 +7,7 @@ on:
     - cron: '17,47 * * * *'
 permissions:
   contents: write
-  actions: read
+  actions: write
   attestations: read
 concurrency:
   group: published-release-metadata
@@ -25,6 +25,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/reconcile_release_metadata.py --scratch "$RUNNER_TEMP/release-metadata"
+      - name: Wake aerynOS tracking after repository-token metadata updates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run aerynos-source-push.yml --repo "$GITHUB_REPOSITORY" --ref main
       - name: Retain verification and retry evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7

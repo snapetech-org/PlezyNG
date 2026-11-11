@@ -218,6 +218,10 @@ receiver through `aerynos-source-push.yml`. The receiver ignores event payloads,
 resolves authoritative canonical main, and advances only its source-tracking
 record after identity, ancestry and compare-and-swap checks. The scheduled
 consumer reconciliation remains a catch-up path subject to GitHub availability.
+Successful release-metadata reconciliation explicitly dispatches the same main
+source wake workflow, covering Nix metadata commits made with GitHub's repository
+token, which do not trigger push workflows. It passes no code, artifacts or
+source payload and also covers reconciliation started by a release event.
 A source record does not qualify or publish a package; native acceptance and
 last-good public-feed promotion retain their separate gates. Dispatch credential
 failures are source-delivery follow-up work and never request a core rebuild.

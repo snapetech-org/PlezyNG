@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Wake aerynOS source tracking after canonical main updates using a dedicated repository-scoped credential, retaining scheduled catch-up and independent native qualification before package publication.
+- Wake aerynOS source tracking after canonical main updates and automated release-metadata reconciliation using a dedicated repository-scoped credential, retaining scheduled catch-up and independent native qualification before package publication.
 
 - Pin Apple authentication dependency metadata to its immutable official specification and normalized sandbox checksum, preserving the same code and dependency versions when CocoaPods CDN metadata changes.
 

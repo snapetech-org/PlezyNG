@@ -2126,6 +2126,8 @@ class _Translations$music$ko extends Translations$music$en {
 	@override String get instantMixEmpty => '인스턴트 믹스에 트랙이 없습니다';
 	@override String noAudioUrl({required Object track}) => '${track}에 사용할 수 있는 오디오 URL이 없습니다';
 	@override late final _Translations$music$discography$ko discography = _Translations$music$discography$ko._(_root);
+	@override String get backTo => '이전에 재생한 곡';
+	@override String get upNext => '다음 재생';
 }
 
 // Path: watchTogether
@@ -7511,6 +7513,8 @@ extension on TranslationsKo {
 			'music.discography.singlesAndEps' => '싱글 및 EP',
 			'music.discography.live' => '라이브',
 			'music.discography.compilations' => '컴필레이션',
+			'music.backTo' => '이전에 재생한 곡',
+			'music.upNext' => '다음 재생',
 			'watchTogether.title' => '함께 보기',
 			'watchTogether.description' => '친구 및 가족과 콘텐츠를 동시에 시청하세요',
 			'watchTogether.createRoom' => '방 만들기',
@@ -7527,10 +7531,10 @@ extension on TranslationsKo {
 			'watchTogether.enterRoomCode' => '호스트에게 받은 6자리 코드를 입력하세요.',
 			'watchTogether.roomCode' => '방 코드',
 			'watchTogether.paste' => '붙여넣기',
-			'watchTogether.noCodeInClipboard' => '클립보드에 방 코드가 없습니다',
-			'watchTogether.copyCode' => '코드 복사',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => '클립보드에 방 코드가 없습니다',
+			'watchTogether.copyCode' => '코드 복사',
 			'watchTogether.codeCopied' => '방 코드가 복사되었습니다',
 			'watchTogether.shareInvite' => '초대 공유',
 			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
@@ -8041,10 +8045,10 @@ extension on TranslationsKo {
 			'metadataEdit.selectLogo' => '로고 선택',
 			'metadataEdit.selectSquareArt' => '정사각형 아트 선택',
 			'metadataEdit.fromUrl' => 'URL에서',
-			'metadataEdit.uploadFile' => '파일 업로드',
-			'metadataEdit.enterImageUrl' => '이미지 URL 입력',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => '파일 업로드',
+			'metadataEdit.enterImageUrl' => '이미지 URL 입력',
 			'metadataEdit.imageUrl' => '이미지 URL',
 			'metadataEdit.metadataUpdated' => '메타데이터가 업데이트되었습니다',
 			'metadataEdit.metadataUpdateFailed' => '메타데이터 업데이트 실패',
@@ -8555,10 +8559,10 @@ extension on TranslationsKo {
 			'universalMedia.intro' => 'Playback은 Pleazyng의 표준 플레이어를 사용하고 도서관에 역사를 추가하지 않습니다.',
 			'universalMedia.openWhat' => '무엇을 열고 싶으신가요?',
 			'universalMedia.stream' => '흐름 주소',
-			'universalMedia.playlist' => '플레이리스트',
-			'universalMedia.files' => '장치 파일',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => '플레이리스트',
+			'universalMedia.files' => '장치 파일',
 			'universalMedia.favorites' => '저장된 스트림 좋아하는',
 			'universalMedia.address' => '미디어 주소',
 			'universalMedia.addressHelp' => '인증 또는 서명 매개 변수를 가진 URL은 이 세션에만 사용되며 좋아하는 것으로 저장될 수 없습니다.',
@@ -9069,10 +9073,10 @@ extension on TranslationsKo {
 			'sourceSetup.nfsTrustHelp' => '이 장치에서 신뢰하는 인증서를 사용하려면 비워 두세요. 필요하면 사설 CA 또는 자체 서명 서버 인증서를 추가하세요. 인증서의 이름은 NFS URL의 호스트와 일치해야 합니다.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM 형식의 CA 또는 서버 인증서를 사용하세요. 개인 키는 포함하지 마세요.',
 			'sourceSetup.addTrustCertificate' => '사용자 지정 신뢰 인증서 추가',
-			'sourceSetup.replaceTrustCertificate' => '저장된 사용자 지정 인증서 교체',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS는 일반 NFS 및 마운트 서비스 포트를 사용하며, NAS가 RFC 9289를 지원해야 합니다. TLS 1.3이 필수입니다. 호스트 이름 또는 IP가 인증서와 일치해야 합니다. 암호화된 채널에서도 AUTH_SYS UID/GID가 적용됩니다.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => '저장된 사용자 지정 인증서 교체',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS는 일반 NFS 및 마운트 서비스 포트를 사용하며, NAS가 RFC 9289를 지원해야 합니다. TLS 1.3이 필수입니다. 호스트 이름 또는 IP가 인증서와 일치해야 합니다. 암호화된 채널에서도 AUTH_SYS UID/GID가 적용됩니다.',
 			'sourceSetup.clientCertificate' => '클라이언트 인증서(선택 사항)',
 			'sourceSetup.clientCertificateHelp' => 'NAS가 이 클라이언트를 인증하도록 합니다. AUTH_SYS ID에는 여전히 NAS 내보내기 정책이 적용됩니다.',
 			'sourceSetup.savedIdentity' => '저장된 클라이언트 인증 정보를 사용합니다.',

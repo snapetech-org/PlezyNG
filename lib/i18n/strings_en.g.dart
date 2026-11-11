@@ -5891,6 +5891,12 @@ class Translations$music$en {
 	String noAudioUrl({required Object track}) => 'No audio URL is available for ${track}';
 
 	late final Translations$music$discography$en discography = Translations$music$discography$en.internal(_root);
+
+	/// en: 'Back To'
+	String get backTo => 'Back To';
+
+	/// en: 'Up Next'
+	String get upNext => 'Up Next';
 }
 
 // Path: watchTogether
@@ -19750,6 +19756,8 @@ extension on Translations {
 			'music.discography.singlesAndEps' => 'Singles & EPs',
 			'music.discography.live' => 'Live',
 			'music.discography.compilations' => 'Compilations',
+			'music.backTo' => 'Back To',
+			'music.upNext' => 'Up Next',
 			'watchTogether.title' => 'Watch Together',
 			'watchTogether.description' => 'Watch content in sync with friends and family',
 			'watchTogether.createRoom' => 'Create Room',
@@ -20029,10 +20037,10 @@ extension on Translations {
 			'downloads.storageUsed' => ({required Object size}) => 'Storage used: ${size}',
 			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} download', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} downloads', ), 
 			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} show', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} shows', ), 
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ), 
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ), 
 			_ => null,
 		} ?? switch (path) {
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ), 
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ), 
 			'downloads.errorFileNotFound' => 'File not found (404)',
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
@@ -20543,10 +20551,10 @@ extension on Translations {
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'No Seerr instance at ${url} (HTTP ${status})',
 			'seerr.behindAuthProxy' => 'An authenticating reverse proxy (SSO or HTTP auth) answered instead of Seerr. Pleazyng cannot sign in through it: let Seerr\'s /api/v1 path bypass the proxy for this app, or use an address that reaches Seerr directly.',
 			'seerr.invalidUrl' => 'Enter a server address like https://seerr.example.com',
-			'seerr.quickConnectUnsupported' => 'This Seerr instance does not support Quick Connect. It needs Seerr 3.4 or newer.',
-			'seerr.notInitialized' => 'This Seerr instance has not completed first-run setup',
 			_ => null,
 		} ?? switch (path) {
+			'seerr.quickConnectUnsupported' => 'This Seerr instance does not support Quick Connect. It needs Seerr 3.4 or newer.',
+			'seerr.notInitialized' => 'This Seerr instance has not completed first-run setup',
 			'seerr.noPlexTokenForReauth' => 'No Plex token is available to sign in again',
 			'seerr.noStoredCredentials' => 'No stored credentials are available to sign in again',
 			'seerr.signInRejected' => 'Sign-in was rejected',
@@ -21057,10 +21065,10 @@ extension on Translations {
 			'universalMedia.converterStart' => 'Convert file',
 			'universalMedia.mediaToolsTitle' => 'Media tools',
 			'universalMedia.mediaToolsShortcut' => 'Capture or share media, add search extensions, or use the command line.',
-			'universalMedia.mediaToolsIntro' => 'Choose a focused tool. Capture and stream-out use FFmpeg installed on this desktop. Extensions and CLI commands use bounded HTTPS requests and the existing Open media flow.',
-			'universalMedia.mediaToolsAccessibility' => 'Tool choices and controls work with touch, pointer, keyboard, and D-pad focus. Recording, sharing, and search status changes are announced.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.mediaToolsIntro' => 'Choose a focused tool. Capture and stream-out use FFmpeg installed on this desktop. Extensions and CLI commands use bounded HTTPS requests and the existing Open media flow.',
+			'universalMedia.mediaToolsAccessibility' => 'Tool choices and controls work with touch, pointer, keyboard, and D-pad focus. Recording, sharing, and search status changes are announced.',
 			'universalMedia.mediaTool' => 'Media tool',
 			'universalMedia.captureIntro' => 'Record your screen or a camera to an MP4 file, or preview a live input in the player. FFmpeg must be installed and include the H.264 encoder for recording.',
 			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
@@ -21571,10 +21579,10 @@ extension on Translations {
 			'games.pairHelp' => 'Connect this computer again to approve or renew pairing.',
 			'games.openPairingPage' => 'Open Sunshine PIN page',
 			'games.qrHelp' => 'Scan to open the PIN page. The QR code contains only the computer address, never a password or pairing credential.',
-			'games.refreshGames' => 'Refresh games',
-			'games.play' => 'Play',
 			_ => null,
 		} ?? switch (path) {
+			'games.refreshGames' => 'Refresh games',
+			'games.play' => 'Play',
 			'games.recent' => 'Recently played',
 			'games.favorites' => 'Favorites',
 			'games.allGames' => 'All games',
@@ -22085,10 +22093,10 @@ extension on Translations {
 			'subtitleAiUi.autoDetect' => 'Auto-detect',
 			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
 			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
-			'subtitleAiUi.inferenceBackend' => 'Inference backend',
-			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.inferenceBackend' => 'Inference backend',
+			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
 			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
 			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
@@ -22599,10 +22607,10 @@ extension on Translations {
 			'karaokeUi.thisBuild' => 'This build',
 			'karaokeUi.packageImportLyricStageCDGHostingQuizzesEditing' => 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.',
 			'karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire' => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.',
-			'karaokeUi.hostExitPIN' => 'Host exit PIN',
-			'karaokeUi.unlock' => 'Unlock',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.hostExitPIN' => 'Host exit PIN',
+			'karaokeUi.unlock' => 'Unlock',
 			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
 			'karaokeUi.requestASong' => 'Request a song',
 			'karaokeUi.hostUnlock' => 'Host unlock',

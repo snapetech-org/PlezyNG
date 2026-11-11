@@ -2462,7 +2462,9 @@
       "singlesAndEps": "Đĩa đơn và EP",
       "live": "Trực tiếp",
       "compilations": "Tuyển tập"
-    }
+    },
+    "backTo": "Quay lại",
+    "upNext": "Tiếp theo"
   },
   "watchTogether": {
     "title": "Xem cùng nhau",

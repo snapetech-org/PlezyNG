@@ -2474,7 +2474,9 @@
       "singlesAndEps": "싱글 및 EP",
       "live": "라이브",
       "compilations": "컴필레이션"
-    }
+    },
+    "backTo": "이전에 재생한 곡",
+    "upNext": "다음 재생"
   },
   "watchTogether": {
     "title": "함께 보기",

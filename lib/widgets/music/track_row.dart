@@ -30,8 +30,15 @@ import 'equalizer_icon.dart';
 /// returns; SELECT there opens the same context menu as long-press /
 /// right-click). Focus is rendered as a background fill, never an outline.
 class TrackRow extends StatefulWidget {
-  /// Fixed row height, sized for title + optional subtitle.
+  /// Base row height at the default text size.
   static const double height = 56;
+
+  /// Keep two text lines readable under nonlinear accessibility scaling.
+  /// All rows share the same extent so queue scroll anchors remain exact.
+  static double heightFor(BuildContext context) {
+    final scaler = MediaQuery.textScalerOf(context);
+    return (1.5 * (scaler.scale(14) + scaler.scale(12)) + 16).clamp(height, double.infinity);
+  }
 
   final MediaItem item;
   final VoidCallback? onTap;
@@ -214,7 +221,7 @@ class _TrackRowState extends State<TrackRow> with ContextMenuTapMixin<TrackRow>,
           onSecondaryTapDown: withContextMenu ? storeTapPosition : null,
           onSecondaryTap: withContextMenu ? showContextMenuFromTap : null,
           child: Container(
-            height: TrackRow.height,
+            height: TrackRow.heightFor(context),
             // Text-based fill (mono theme focusColor convention) — the
             // white-based FocusTheme fill is invisible on the light row
             // surface.

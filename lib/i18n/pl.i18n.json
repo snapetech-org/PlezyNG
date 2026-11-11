@@ -2510,7 +2510,9 @@
       "singlesAndEps": "Single i EP",
       "live": "Na żywo",
       "compilations": "Kompilacje"
-    }
+    },
+    "backTo": "Wróć do",
+    "upNext": "Następne"
   },
   "watchTogether": {
     "title": "Oglądaj razem",

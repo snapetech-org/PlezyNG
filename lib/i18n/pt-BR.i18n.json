@@ -394,7 +394,9 @@
       "one": "${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minuto",
       "other": "${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos",
       "many": "${n: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos"
-    }
+    },
+    "backTo": "Voltar para",
+    "upNext": "A seguir"
   },
   "watchTogether": {
     "removeRoom": "Remover",

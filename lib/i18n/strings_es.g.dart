@@ -2138,6 +2138,8 @@ class Translations$music$es extends Translations$music$en {
 	@override String get instantMixEmpty => 'La mezcla instantánea no devolvió ninguna canción';
 	@override String noAudioUrl({required Object track}) => 'No hay ninguna URL de audio disponible para ${track}';
 	@override late final Translations$music$discography$es discography = Translations$music$discography$es.internal(_root);
+	@override String get backTo => 'Volver a';
+	@override String get upNext => 'A continuación';
 }
 
 // Path: watchTogether
@@ -7661,6 +7663,8 @@ extension on TranslationsEs {
 			_ => null,
 		} ?? switch (path) {
 			'music.discography.compilations' => 'Recopilaciones',
+			'music.backTo' => 'Volver a',
+			'music.upNext' => 'A continuación',
 			'watchTogether.title' => 'Ver juntos',
 			'watchTogether.description' => 'Mira contenido sincronizado con amigos y familiares',
 			'watchTogether.createRoom' => 'Crear sala',
@@ -8170,10 +8174,10 @@ extension on TranslationsEs {
 			'metadataEdit.editMetadata' => 'Editar...',
 			'metadataEdit.screenTitle' => 'Editar metadatos',
 			'metadataEdit.basicInfo' => 'Información básica',
-			'metadataEdit.artwork' => 'Imágenes',
-			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artwork' => 'Imágenes',
+			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
 			'metadataEdit.title' => 'Título',
 			'metadataEdit.sortTitle' => 'Título de ordenación',
 			'metadataEdit.originalTitle' => 'Título original',
@@ -8684,10 +8688,10 @@ extension on TranslationsEs {
 			'homeLayout.layoutNavDescription' => 'Elegir líneas, bibliotecas y categorías de colección',
 			'homeLayout.editHomeRow' => 'Edit Home Rue',
 			'homeLayout.resetHeroButton' => 'Reset el layout de héroe a stock Pleazyng',
-			'homeLayout.reorderingUnlocked' => 'Reorganización desbloqueada',
-			'homeLayout.reorderingLocked' => 'Reorganización localizada',
 			_ => null,
 		} ?? switch (path) {
+			'homeLayout.reorderingUnlocked' => 'Reorganización desbloqueada',
+			'homeLayout.reorderingLocked' => 'Reorganización localizada',
 			'homeLayout.rowsCanBeDragged' => 'Las rayas pueden ser atraídas — tapar el cierre para evitar que',
 			'homeLayout.tapLockToDrag' => 'Toma el cierre para sacar líneas',
 			'homeLayout.customRowLabel' => ({required Object title}) => 'Cálculo: ${title}',
@@ -9198,10 +9202,10 @@ extension on TranslationsEs {
 			'sourceSetup.savedCertificate' => 'Certificado del servidor guardado',
 			'sourceSetup.nfsEndpointInvalid' => 'Introduce una URL NFS, como nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'No se encontraron servidores DLNA. Introduce manualmente la URL de descripción del dispositivo.',
-			'sourceSetup.dlnaServers' => 'Servidores multimedia DLNA',
-			'sourceSetup.dlnaUnavailable' => 'La detección DLNA no está disponible en esta red. Introduce manualmente la URL de descripción del dispositivo.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.dlnaServers' => 'Servidores multimedia DLNA',
+			'sourceSetup.dlnaUnavailable' => 'La detección DLNA no está disponible en esta red. Introduce manualmente la URL de descripción del dispositivo.',
 			'sourceSetup.dlnaSearching' => 'Buscando servidores DLNA en la red local',
 			'sourceSetup.networkSearching' => 'Buscando en la red local…',
 			'sourceSetup.dlnaDiscover' => 'Detectar servidores DLNA',
@@ -9712,10 +9716,10 @@ extension on TranslationsEs {
 			'musicExperience.play' => 'Reproducir selección',
 			'musicExperience.next' => 'Reproducir a continuación',
 			'musicExperience.error' => 'La solicitud de música ha fallado',
-			'musicExperience.on' => 'En',
-			'musicExperience.off' => 'Desactivado',
 			_ => null,
 		} ?? switch (path) {
+			'musicExperience.on' => 'En',
+			'musicExperience.off' => 'Desactivado',
 			'musicExperience.unknown' => 'Desconocido',
 			'musicExperience.routeLost' => 'Salida de audio desconectada. Reproducción pausada.',
 			'musicExperience.autoDriving' => 'Abrir la vista de conducción al conectar con un coche',

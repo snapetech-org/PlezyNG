@@ -2149,6 +2149,8 @@ class Translations$music$fr extends Translations$music$en {
 	@override String get instantMixEmpty => 'Le mix instantané n\'a renvoyé aucun titre';
 	@override String noAudioUrl({required Object track}) => 'Aucune URL audio n’est disponible pour ${track}';
 	@override late final Translations$music$discography$fr discography = Translations$music$discography$fr.internal(_root);
+	@override String get backTo => 'Revenir à';
+	@override String get upNext => 'À suivre';
 }
 
 // Path: watchTogether
@@ -7587,6 +7589,8 @@ extension on TranslationsFr {
 			'music.discography.singlesAndEps' => 'Singles et EP',
 			'music.discography.live' => 'Live',
 			'music.discography.compilations' => 'Compilations',
+			'music.backTo' => 'Revenir à',
+			'music.upNext' => 'À suivre',
 			'watchTogether.title' => 'Regarder ensemble',
 			'watchTogether.description' => 'Regarder du contenu en synchronisation avec vos proches',
 			'watchTogether.createRoom' => 'Créer un salon',
@@ -7596,10 +7600,10 @@ extension on TranslationsFr {
 			'watchTogether.connecting' => 'Connexion...',
 			'watchTogether.relayPublic' => 'Les salons utilisent les relais publics Open Watch Party.',
 			'watchTogether.relayCustom' => ({required Object url}) => 'Les salons utilisent votre relais à l’adresse ${url}.',
-			'watchTogether.recentRooms' => 'Salons récents',
-			'watchTogether.roomActions' => 'Actions du salon',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.recentRooms' => 'Salons récents',
+			'watchTogether.roomActions' => 'Actions du salon',
 			'watchTogether.renameRoom' => 'Renommer le salon',
 			'watchTogether.removeRoom' => 'Supprimer',
 			'watchTogether.enterRoomCode' => 'Saisissez le code à 6 caractères communiqué par l’hôte.',
@@ -8110,10 +8114,10 @@ extension on TranslationsFr {
 			'metadataEdit.summary' => 'Résumé',
 			'metadataEdit.poster' => 'Affiche',
 			'metadataEdit.background' => 'Arrière-plan',
-			'metadataEdit.logo' => 'Logo',
-			'metadataEdit.squareArt' => 'Image carrée',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.logo' => 'Logo',
+			'metadataEdit.squareArt' => 'Image carrée',
 			'metadataEdit.selectPoster' => 'Sélectionner l\'affiche',
 			'metadataEdit.selectBackground' => 'Sélectionner l\'arrière-plan',
 			'metadataEdit.selectLogo' => 'Sélectionner le logo',
@@ -8624,10 +8628,10 @@ extension on TranslationsFr {
 			'homeLayout.heroTapDetailsDescription' => 'Ouvrez les détails de l\'élément sélectionné avant de choisir une action.',
 			'platform.localNetworkPermission' => 'Pleazyng se connecte à vos serveurs multimédias et à vos appareils de lecture sur votre réseau local.',
 			'platform.locationPermission' => 'Pleazyng utilise l\'accès à la localisation lorsque iOS l\'exige pour détecter votre réseau local et se connecter à vos serveurs de médias.',
-			'platform.photoLibraryPermission' => 'Choisissez des images de votre photothèque pour illustrer vos médias.',
-			'platform.cameraPermission' => 'Scannez des codes QR pour associer une Companion Remote.',
 			_ => null,
 		} ?? switch (path) {
+			'platform.photoLibraryPermission' => 'Choisissez des images de votre photothèque pour illustrer vos médias.',
+			'platform.cameraPermission' => 'Scannez des codes QR pour associer une Companion Remote.',
 			'universalMedia.title' => 'Médias ouverts',
 			'universalMedia.shortcutHelp' => 'Jouez à un lien, une playlist ou un fichier pour cette session.',
 			'universalMedia.intro' => 'Ouvrez un lien, une liste de lecture ou un fichier. Playback utilise le lecteur standard de Pleazyng et n’ajoute pas d’historique à votre bibliothèque.',
@@ -9138,10 +9142,10 @@ extension on TranslationsFr {
 			'sourceSetup.nfsMountPort' => 'Port TCP du service de montage NFS',
 			'sourceSetup.nfsMountPortHelp' => 'Par défaut : 20048',
 			'sourceSetup.nfsUserId' => 'Identifiant utilisateur NFS (AUTH_SYS)',
-			'sourceSetup.nfsUserIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant autorisé par le partage NFS du NAS.',
-			'sourceSetup.nfsGroupId' => 'Identifiant de groupe NFS (AUTH_SYS)',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.nfsUserIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant autorisé par le partage NFS du NAS.',
+			'sourceSetup.nfsGroupId' => 'Identifiant de groupe NFS (AUTH_SYS)',
 			'sourceSetup.nfsGroupIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant de groupe autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsEncryption' => 'Exiger NFS chiffré (RPC-with-TLS)',
 			'sourceSetup.nfsEncryptionHelp' => 'Exiger TLS 1.3 pour NFS et le service de montage. Si le NAS ne le prend pas en charge, la connexion est refusée.',

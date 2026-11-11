@@ -2130,6 +2130,8 @@ class _Translations$music$hi extends Translations$music$en {
 	@override String get instantMixEmpty => 'तुरंत मिश्रण कोई ट्रैक के साथ वापस आया';
 	@override String noAudioUrl({required Object track}) => 'कोई ऑडियो URL उपलब्ध नहीं है ${track} के लिए';
 	@override late final _Translations$music$discography$hi discography = _Translations$music$discography$hi._(_root);
+	@override String get backTo => 'वापस जाएँ';
+	@override String get upNext => 'इसके बाद';
 }
 
 // Path: watchTogether
@@ -7516,6 +7518,8 @@ extension on TranslationsHi {
 			'music.discography.singlesAndEps' => 'सींग्स & EPs',
 			'music.discography.live' => 'जीवित',
 			'music.discography.compilations' => 'संकलित',
+			'music.backTo' => 'वापस जाएँ',
+			'music.upNext' => 'इसके बाद',
 			'watchTogether.title' => 'साथ देखें',
 			'watchTogether.description' => 'दोस्तों और परिवार के साथ सिंक्रनाइज़ में सामग्री देखें',
 			'watchTogether.createRoom' => 'कमरे बनाएं',
@@ -7532,10 +7536,10 @@ extension on TranslationsHi {
 			'watchTogether.enterRoomCode' => 'मेजबान से 6 अक्षर कोड दर्ज करें।',
 			'watchTogether.roomCode' => 'कमरे का कोड',
 			'watchTogether.paste' => 'पास्ता',
-			'watchTogether.noCodeInClipboard' => 'क्लिपबोर्ड में कोई कमरे कोड नहीं है',
-			'watchTogether.copyCode' => 'कॉपी कोड',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'क्लिपबोर्ड में कोई कमरे कोड नहीं है',
+			'watchTogether.copyCode' => 'कॉपी कोड',
 			'watchTogether.codeCopied' => 'कमरे का कोड कॉपी',
 			'watchTogether.shareInvite' => 'आमंत्रण साझा',
 			'watchTogether.inviteCopied' => 'इसे कॉपी करें. इसे एक संदेश में डालें.',
@@ -8046,10 +8050,10 @@ extension on TranslationsHi {
 			'metadataEdit.selectLogo' => 'लॉग चुनें',
 			'metadataEdit.selectSquareArt' => 'Square Art का चयन करें',
 			'metadataEdit.fromUrl' => 'URL से',
-			'metadataEdit.uploadFile' => 'फ़ाइल अपलोड करें',
-			'metadataEdit.enterImageUrl' => 'इमेज URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'फ़ाइल अपलोड करें',
+			'metadataEdit.enterImageUrl' => 'इमेज URL',
 			'metadataEdit.imageUrl' => 'इमेज URL',
 			'metadataEdit.metadataUpdated' => 'मेटाडेटा अपडेट',
 			'metadataEdit.metadataUpdateFailed' => 'मेटाडेटा अपडेट करने में असफल',
@@ -8560,10 +8564,10 @@ extension on TranslationsHi {
 			'universalMedia.intro' => 'Playback Pleazyng के मानक प्लेयर का उपयोग करता है और आपकी पुस्तकालय में इतिहास नहीं जोड़ता है।',
 			'universalMedia.openWhat' => 'आप क्या खोलना चाहते हैं?',
 			'universalMedia.stream' => 'स्ट्रीम एड्रेस',
-			'universalMedia.playlist' => 'प्लेलिस्ट',
-			'universalMedia.files' => 'डिवाइस फ़ाइल',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'प्लेलिस्ट',
+			'universalMedia.files' => 'डिवाइस फ़ाइल',
 			'universalMedia.favorites' => 'बचाए गए स्ट्रीम पसंदीदा',
 			'universalMedia.address' => 'मीडिया संदेश',
 			'universalMedia.addressHelp' => 'मान्यता प्राप्त क्रेडिट या हस्ताक्षर पैरामीटर वाले URL का उपयोग केवल इस सत्र के लिए किया जाता है और पसंदीदा के रूप में संग्रहीत नहीं किया जा सकता है।',
@@ -9074,10 +9078,10 @@ extension on TranslationsHi {
 			'sourceSetup.nfsTrustHelp' => 'इस डिवाइस के भरोसेमंद प्रमाणपत्रों के लिए खाली छोड़ें। ज़रूरत होने पर निजी CA या स्वयं हस्ताक्षरित सर्वर प्रमाणपत्र जोड़ें; उसके नाम NFS URL के होस्ट से मेल खाने चाहिए।',
 			'sourceSetup.nfsTrustInvalid' => 'PEM प्रारूप में CA या सर्वर प्रमाणपत्र इस्तेमाल करें। निजी कुंजी शामिल न करें।',
 			'sourceSetup.addTrustCertificate' => 'कस्टम भरोसेमंद प्रमाणपत्र जोड़ें',
-			'sourceSetup.replaceTrustCertificate' => 'सहेजा गया कस्टम प्रमाणपत्र बदलें',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS सामान्य NFS और माउंट सेवा पोर्ट इस्तेमाल करता है और NAS में RFC 9289 का समर्थन होना ज़रूरी है। TLS 1.3 अनिवार्य है। होस्ट का नाम या IP प्रमाणपत्र से मेल खाना चाहिए। एन्क्रिप्टेड चैनल में भी AUTH_SYS UID/GID लागू रहते हैं।',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'सहेजा गया कस्टम प्रमाणपत्र बदलें',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS सामान्य NFS और माउंट सेवा पोर्ट इस्तेमाल करता है और NAS में RFC 9289 का समर्थन होना ज़रूरी है। TLS 1.3 अनिवार्य है। होस्ट का नाम या IP प्रमाणपत्र से मेल खाना चाहिए। एन्क्रिप्टेड चैनल में भी AUTH_SYS UID/GID लागू रहते हैं।',
 			'sourceSetup.clientCertificate' => 'क्लाइंट प्रमाणपत्र (वैकल्पिक)',
 			'sourceSetup.clientCertificateHelp' => 'NAS को इस क्लाइंट की पहचान सत्यापित करने देता है; AUTH_SYS ID अब भी NAS की एक्सपोर्ट नीति पर निर्भर रहते हैं।',
 			'sourceSetup.savedIdentity' => 'सहेजी गई क्लाइंट पहचान इस्तेमाल की जाएगी।',

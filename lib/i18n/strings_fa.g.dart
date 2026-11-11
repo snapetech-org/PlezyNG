@@ -2130,6 +2130,8 @@ class _Translations$music$fa extends Translations$music$en {
 	@override String get instantMixEmpty => 'این ترکیب بلافاصله با هیچ ردیابی برنگشت.';
 	@override String noAudioUrl({required Object track}) => 'هیچ URL صوتی در دسترس نیست برای ${track}';
 	@override late final _Translations$music$discography$fa discography = _Translations$music$discography$fa._(_root);
+	@override String get backTo => 'بازگشت به';
+	@override String get upNext => 'بعدی';
 }
 
 // Path: watchTogether
@@ -7516,6 +7518,8 @@ extension on TranslationsFa {
 			'music.discography.singlesAndEps' => 'تک آهنگ ها و EPs',
 			'music.discography.live' => 'پخش زنده',
 			'music.discography.compilations' => 'جمع آوری',
+			'music.backTo' => 'بازگشت به',
+			'music.upNext' => 'بعدی',
 			'watchTogether.title' => 'تماشای گروهی',
 			'watchTogether.description' => 'مشاهده محتوا در همزمان با دوستان و خانواده',
 			'watchTogether.createRoom' => 'ایجاد اتاق',
@@ -7532,10 +7536,10 @@ extension on TranslationsFa {
 			'watchTogether.enterRoomCode' => 'کد 6 کاراکتر را از میزبان وارد کنید.',
 			'watchTogether.roomCode' => 'کد اتاق',
 			'watchTogether.paste' => 'پستی',
-			'watchTogether.noCodeInClipboard' => 'این صفحه شامل کد اتاق نیست.',
-			'watchTogether.copyCode' => 'کپی کد',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'این صفحه شامل کد اتاق نیست.',
+			'watchTogether.copyCode' => 'کپی کد',
 			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
 			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
 			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
@@ -8046,10 +8050,10 @@ extension on TranslationsFa {
 			'metadataEdit.selectLogo' => 'انتخاب لوگو',
 			'metadataEdit.selectSquareArt' => 'انتخاب میدان هنر',
 			'metadataEdit.fromUrl' => 'از URL',
-			'metadataEdit.uploadFile' => 'دانلود فایل',
-			'metadataEdit.enterImageUrl' => 'URL تصویر را وارد کنید',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'دانلود فایل',
+			'metadataEdit.enterImageUrl' => 'URL تصویر را وارد کنید',
 			'metadataEdit.imageUrl' => 'تصویر URL',
 			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
 			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
@@ -8560,10 +8564,10 @@ extension on TranslationsFa {
 			'universalMedia.intro' => 'لینک، لیست پخش یا فایل را باز کنید Playback از بازیکن استاندارد Pleazyng استفاده می کند و تاریخچه را به کتابخانه شما اضافه نمی کند.',
 			'universalMedia.openWhat' => 'چه چیزی را دوست دارید باز کنید؟',
 			'universalMedia.stream' => 'آدرس جریان',
-			'universalMedia.playlist' => 'بازی لیست',
-			'universalMedia.files' => 'فایل های دستگاه',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'بازی لیست',
+			'universalMedia.files' => 'فایل های دستگاه',
 			'universalMedia.favorites' => 'ذخیره جریان مورد علاقه',
 			'universalMedia.address' => 'آدرس رسانه ها',
 			'universalMedia.addressHelp' => 'URL ها با پارامترهای اعتباربخشی یا امضای شناخته شده تنها برای این جلسه مورد استفاده قرار می گیرند و نمی توانند به عنوان محبوب ذخیره شوند.',
@@ -9074,10 +9078,10 @@ extension on TranslationsFa {
 			'sourceSetup.nfsTrustHelp' => 'برای گواهی‌های مورد اعتماد این دستگاه، خالی بگذارید. در صورت نیاز، گواهی CA خصوصی یا گواهی خودامضای سرور را اضافه کنید؛ نام‌های آن باید با میزبان نشانی NFS مطابقت داشته باشند.',
 			'sourceSetup.nfsTrustInvalid' => 'از گواهی CA یا سرور با قالب PEM استفاده کنید. کلید خصوصی را در آن قرار ندهید.',
 			'sourceSetup.addTrustCertificate' => 'افزودن گواهی اعتماد سفارشی',
-			'sourceSetup.replaceTrustCertificate' => 'جایگزینی گواهی سفارشی ذخیره‌شده',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS از درگاه‌های معمول NFS و سرویس mount استفاده می‌کند و به پشتیبانی NAS از RFC 9289 نیاز دارد. TLS 1.3 الزامی است. نام میزبان یا IP باید با گواهی مطابقت داشته باشد. AUTH_SYS UID/GID در کانال رمزگذاری‌شده نیز اعمال می‌شوند.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'جایگزینی گواهی سفارشی ذخیره‌شده',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS از درگاه‌های معمول NFS و سرویس mount استفاده می‌کند و به پشتیبانی NAS از RFC 9289 نیاز دارد. TLS 1.3 الزامی است. نام میزبان یا IP باید با گواهی مطابقت داشته باشد. AUTH_SYS UID/GID در کانال رمزگذاری‌شده نیز اعمال می‌شوند.',
 			'sourceSetup.clientCertificate' => 'گواهی کارخواه (اختیاری)',
 			'sourceSetup.clientCertificateHelp' => 'به NAS اجازه می‌دهد هویت این کارخواه را تأیید کند؛ شناسه‌های AUTH_SYS همچنان تابع سیاست اشتراک‌گذاری NAS هستند.',
 			'sourceSetup.savedIdentity' => 'از هویت ذخیره‌شدهٔ کارخواه استفاده می‌شود.',

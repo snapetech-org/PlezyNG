@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Single-lar və EP-lər",
       "live": "Canlı",
       "compilations": "Kompilyasiyalar"
-    }
+    },
+    "backTo": "Əvvəl çalınanlar",
+    "upNext": "Növbəti"
   },
   "watchTogether": {
     "title": "Birlikdə İzlə",

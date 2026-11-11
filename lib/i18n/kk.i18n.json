@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Синглдер және EP",
       "live": "Жанды",
       "compilations": "Жинақтар"
-    }
+    },
+    "backTo": "Алдыңғы ойнатылғандар",
+    "upNext": "Келесі"
   },
   "watchTogether": {
     "title": "Бірге көру",

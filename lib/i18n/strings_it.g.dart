@@ -2133,6 +2133,8 @@ class _Translations$music$it extends Translations$music$en {
 	@override String get instantMixEmpty => 'Il mix istantaneo non ha prodotto alcun brano';
 	@override String noAudioUrl({required Object track}) => 'Nessun URL audio disponibile per ${track}';
 	@override late final _Translations$music$discography$it discography = _Translations$music$discography$it._(_root);
+	@override String get backTo => 'Torna a';
+	@override String get upNext => 'In coda';
 }
 
 // Path: watchTogether
@@ -7523,6 +7525,8 @@ extension on TranslationsIt {
 			'music.discography.singlesAndEps' => 'Singoli ed EP',
 			'music.discography.live' => 'Dal vivo',
 			'music.discography.compilations' => 'Compilation',
+			'music.backTo' => 'Torna a',
+			'music.upNext' => 'In coda',
 			'watchTogether.title' => 'Guarda insieme',
 			'watchTogether.description' => 'Guarda contenuti in sincronia con amici e familiari',
 			'watchTogether.createRoom' => 'Crea stanza',
@@ -7539,10 +7543,10 @@ extension on TranslationsIt {
 			'watchTogether.enterRoomCode' => 'Inserisci il codice di 6 caratteri ricevuto dall\'host.',
 			'watchTogether.roomCode' => 'Codice stanza',
 			'watchTogether.paste' => 'Incolla',
-			'watchTogether.noCodeInClipboard' => 'Gli appunti non contengono un codice stanza',
-			'watchTogether.copyCode' => 'Copia codice',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Gli appunti non contengono un codice stanza',
+			'watchTogether.copyCode' => 'Copia codice',
 			'watchTogether.codeCopied' => 'Codice stanza copiato',
 			'watchTogether.shareInvite' => 'Condividi invito',
 			'watchTogether.inviteCopied' => 'Invito copiato. Incollalo in un messaggio.',
@@ -8053,10 +8057,10 @@ extension on TranslationsIt {
 			'metadataEdit.selectLogo' => 'Seleziona logo',
 			'metadataEdit.selectSquareArt' => 'Seleziona immagine quadrata',
 			'metadataEdit.fromUrl' => 'Da URL',
-			'metadataEdit.uploadFile' => 'Carica file',
-			'metadataEdit.enterImageUrl' => 'Inserisci URL immagine',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Carica file',
+			'metadataEdit.enterImageUrl' => 'Inserisci URL immagine',
 			'metadataEdit.imageUrl' => 'URL immagine',
 			'metadataEdit.metadataUpdated' => 'Metadati aggiornati correttamente',
 			'metadataEdit.metadataUpdateFailed' => 'Impossibile aggiornare i metadati',
@@ -8567,10 +8571,10 @@ extension on TranslationsIt {
 			'universalMedia.intro' => 'Apri un link, playlist o file. Playback utilizza il lettore standard di Pleazyng e non aggiunge storia alla tua biblioteca.',
 			'universalMedia.openWhat' => 'Cosa vorresti aprire?',
 			'universalMedia.stream' => 'Indirizzo Stream',
-			'universalMedia.playlist' => 'giocattoli',
-			'universalMedia.files' => 'Dispositivi di file',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'giocattoli',
+			'universalMedia.files' => 'Dispositivi di file',
 			'universalMedia.favorites' => 'Salva i tuoi preferiti',
 			'universalMedia.address' => 'Indirizzo Media',
 			'universalMedia.addressHelp' => 'Gli URL con parametri di credenziale o di firma riconosciuti sono utilizzati solo per questa sessione e non possono essere salvati come preferiti.',
@@ -9081,10 +9085,10 @@ extension on TranslationsIt {
 			'sourceSetup.nfsTrustHelp' => 'Lascia vuoto per usare i certificati considerati attendibili da questo dispositivo. Se necessario, aggiungi un certificato di una CA privata o un certificato del server autofirmato; i nomi indicati devono corrispondere all’host nell’URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Usa un certificato di una CA o del server in formato PEM. Non includere una chiave privata.',
 			'sourceSetup.addTrustCertificate' => 'Aggiungi un certificato attendibile personalizzato',
-			'sourceSetup.replaceTrustCertificate' => 'Sostituisci il certificato personalizzato salvato',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS usa le normali porte NFS e del servizio di montaggio e richiede che il NAS supporti RFC 9289. È necessario TLS 1.3. Il nome host o l’indirizzo IP deve corrispondere al certificato. Gli UID/GID AUTH_SYS restano validi anche nel canale crittografato.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Sostituisci il certificato personalizzato salvato',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS usa le normali porte NFS e del servizio di montaggio e richiede che il NAS supporti RFC 9289. È necessario TLS 1.3. Il nome host o l’indirizzo IP deve corrispondere al certificato. Gli UID/GID AUTH_SYS restano validi anche nel canale crittografato.',
 			'sourceSetup.clientCertificate' => 'Certificato client (facoltativo)',
 			'sourceSetup.clientCertificateHelp' => 'Consente al NAS di autenticare questo client; gli ID AUTH_SYS dipendono comunque dai criteri della condivisione NFS del NAS.',
 			'sourceSetup.savedIdentity' => 'Verrà usata un’identità client salvata.',

@@ -2481,7 +2481,9 @@
       "singlesAndEps": "Singles et EP",
       "live": "Live",
       "compilations": "Compilations"
-    }
+    },
+    "backTo": "Revenir à",
+    "upNext": "À suivre"
   },
   "watchTogether": {
     "title": "Regarder ensemble",

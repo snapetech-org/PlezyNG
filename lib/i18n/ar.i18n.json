@@ -2542,7 +2542,9 @@
       "singlesAndEps": "مجلدات & EPs",
       "live": "مباشر",
       "compilations": "المجموعات"
-    }
+    },
+    "backTo": "العودة إلى",
+    "upNext": "التالي"
   },
   "watchTogether": {
     "title": "المشاهدة معًا",

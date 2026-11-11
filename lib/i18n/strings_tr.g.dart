@@ -2130,6 +2130,8 @@ class _Translations$music$tr extends Translations$music$en {
 	@override String get instantMixEmpty => 'Anında miks hiç parça getirmedi';
 	@override String noAudioUrl({required Object track}) => '${track} için kullanılabilir ses URL\'si yok';
 	@override late final _Translations$music$discography$tr discography = _Translations$music$discography$tr._(_root);
+	@override String get backTo => 'Önceki çalınanlar';
+	@override String get upNext => 'Sıradaki';
 }
 
 // Path: watchTogether
@@ -7516,6 +7518,8 @@ extension on TranslationsTr {
 			'music.discography.singlesAndEps' => 'Single ve EP\'ler',
 			'music.discography.live' => 'Canlı',
 			'music.discography.compilations' => 'Derlemeler',
+			'music.backTo' => 'Önceki çalınanlar',
+			'music.upNext' => 'Sıradaki',
 			'watchTogether.title' => 'Birlikte İzle',
 			'watchTogether.description' => 'Arkadaşlarınızla ve ailenizle eş zamanlı içerik izleyin',
 			'watchTogether.createRoom' => 'Oda Oluştur',
@@ -7532,10 +7536,10 @@ extension on TranslationsTr {
 			'watchTogether.enterRoomCode' => 'Kurucudan aldığınız 6 karakterlik kodu girin.',
 			'watchTogether.roomCode' => 'Oda Kodu',
 			'watchTogether.paste' => 'Yapıştır',
-			'watchTogether.noCodeInClipboard' => 'Panoda oda kodu yok',
-			'watchTogether.copyCode' => 'Kodu Kopyala',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Panoda oda kodu yok',
+			'watchTogether.copyCode' => 'Kodu Kopyala',
 			'watchTogether.codeCopied' => 'Oda kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Daveti Paylaş',
 			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
@@ -8046,10 +8050,10 @@ extension on TranslationsTr {
 			'metadataEdit.selectLogo' => 'Logo Seç',
 			'metadataEdit.selectSquareArt' => 'Kare Görsel Seç',
 			'metadataEdit.fromUrl' => 'URL\'den',
-			'metadataEdit.uploadFile' => 'Dosya Yükle',
-			'metadataEdit.enterImageUrl' => 'Görsel URL\'si girin',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Dosya Yükle',
+			'metadataEdit.enterImageUrl' => 'Görsel URL\'si girin',
 			'metadataEdit.imageUrl' => 'Görsel URL\'si',
 			'metadataEdit.metadataUpdated' => 'Meta veriler güncellendi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta veriler güncellenemedi',
@@ -8560,10 +8564,10 @@ extension on TranslationsTr {
 			'universalMedia.intro' => 'Bir bağlantı, oynatma listesi veya dosyayı açın. Playback Pleazyng\'nin standart oyuncusu kullanır ve kütüphanenize tarih eklemez.',
 			'universalMedia.openWhat' => 'Neyi açmak ister misiniz?',
 			'universalMedia.stream' => 'Stream Adresi',
-			'universalMedia.playlist' => 'Oyun Listesi',
-			'universalMedia.files' => 'cihaz dosyaları',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Oyun Listesi',
+			'universalMedia.files' => 'cihaz dosyaları',
 			'universalMedia.favorites' => 'Saved Stream Favori',
 			'universalMedia.address' => 'Medya Adresi',
 			'universalMedia.addressHelp' => 'HTTPS tercih edilir. tanınmış kimlik veya imza parametreleri olan URL\'ler yalnızca bu oturum için kullanılır ve favori olarak kaydedilemez.',
@@ -9074,10 +9078,10 @@ extension on TranslationsTr {
 			'sourceSetup.nfsTrustHelp' => 'Bu aygıtın güvendiği sertifikalar için boş bırakın. Gerektiğinde özel bir CA sertifikası veya kendinden imzalı sunucu sertifikası ekleyin; sertifikadaki adlar NFS URL’sindeki ana makineyle eşleşmelidir.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM biçiminde bir CA veya sunucu sertifikası kullanın. Özel anahtar eklemeyin.',
 			'sourceSetup.addTrustCertificate' => 'Özel güven sertifikası ekle',
-			'sourceSetup.replaceTrustCertificate' => 'Kaydedilmiş özel sertifikayı değiştir',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS normal NFS ve bağlama hizmeti bağlantı noktalarını kullanır ve NAS’ta RFC 9289 desteği gerektirir. TLS 1.3 zorunludur. Ana makine adı veya IP adresi sertifikayla eşleşmelidir. Şifreli kanal içinde de AUTH_SYS UID/GID geçerlidir.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Kaydedilmiş özel sertifikayı değiştir',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS normal NFS ve bağlama hizmeti bağlantı noktalarını kullanır ve NAS’ta RFC 9289 desteği gerektirir. TLS 1.3 zorunludur. Ana makine adı veya IP adresi sertifikayla eşleşmelidir. Şifreli kanal içinde de AUTH_SYS UID/GID geçerlidir.',
 			'sourceSetup.clientCertificate' => 'İstemci sertifikası (isteğe bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS’ın bu istemcinin kimliğini doğrulamasını sağlar; AUTH_SYS kimlikleri hâlâ NAS’ın NFS paylaşım ilkesine bağlıdır.',
 			'sourceSetup.savedIdentity' => 'Kaydedilmiş bir istemci kimliği kullanılacak.',

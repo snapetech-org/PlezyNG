@@ -576,6 +576,8 @@ class Translations$music$pt_PT extends Translations$music$pt {
 		one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuto',
 		many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos',
 	);
+	@override String get backTo => 'Voltar a';
+	@override String get upNext => 'A seguir';
 }
 
 // Path: watchTogether
@@ -1642,6 +1644,8 @@ extension on TranslationsPtPt {
 			'music.repeatOne' => 'Repetir o item atual',
 			'music.discography.live' => 'Direto',
 			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', ), 
+			'music.backTo' => 'Voltar a',
+			'music.upNext' => 'A seguir',
 			'watchTogether.removeRoom' => 'Remover',
 			'watchTogether.hostBadge' => 'Servidor',
 			'watchTogether.playerIdle' => 'Inativo',
@@ -1866,10 +1870,10 @@ extension on TranslationsPtPt {
 			'romm.saveImported' => 'Save imported',
 			'romm.saveExported' => 'Save exported',
 			'romm.engine' => 'Emulator identity',
-			'romm.slot' => 'Save slot',
-			'romm.core' => 'Core identity',
 			_ => null,
 		} ?? switch (path) {
+			'romm.slot' => 'Save slot',
+			'romm.core' => 'Core identity',
 			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
 			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
 			'romm.keepBoth' => 'Keep both',

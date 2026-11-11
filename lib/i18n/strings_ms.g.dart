@@ -2116,6 +2116,8 @@ class _Translations$music$ms extends Translations$music$en {
 	@override String get instantMixEmpty => 'SeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnyaSeterusnya';
 	@override String noAudioUrl({required Object track}) => 'Tiada URL audio boleh didapati untuk ${track}';
 	@override late final _Translations$music$discography$ms discography = _Translations$music$discography$ms._(_root);
+	@override String get backTo => 'Kembali ke';
+	@override String get upNext => 'Seterusnya';
 }
 
 // Path: watchTogether
@@ -7491,6 +7493,8 @@ extension on TranslationsMs {
 			'music.discography.singlesAndEps' => 'Kumpulan & EPs',
 			'music.discography.live' => 'hidup',
 			'music.discography.compilations' => 'Kompilasi',
+			'music.backTo' => 'Kembali ke',
+			'music.upNext' => 'Seterusnya',
 			'watchTogether.title' => 'Tonton Bersama',
 			'watchTogether.description' => 'Menonton kandungan dalam sinkron dengan rakan-rakan dan keluarga',
 			'watchTogether.createRoom' => 'Mencipta bilik',
@@ -7507,10 +7511,10 @@ extension on TranslationsMs {
 			'watchTogether.enterRoomCode' => 'Masukkan kod 6 aksara daripada tuan rumah.',
 			'watchTogether.roomCode' => 'Kod bilik',
 			'watchTogether.paste' => 'Paste yang',
-			'watchTogether.noCodeInClipboard' => 'Klipboard tidak mengandungi kod bilik',
-			'watchTogether.copyCode' => 'Kode salinan',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Klipboard tidak mengandungi kod bilik',
+			'watchTogether.copyCode' => 'Kode salinan',
 			'watchTogether.codeCopied' => 'Kod bilik disalin',
 			'watchTogether.shareInvite' => 'Memberi jemputan',
 			'watchTogether.inviteCopied' => 'Sila rujuk. masukkan ke dalam mesej.',
@@ -8021,10 +8025,10 @@ extension on TranslationsMs {
 			'metadataEdit.selectLogo' => 'Pilih logo',
 			'metadataEdit.selectSquareArt' => 'Pilih Square Art',
 			'metadataEdit.fromUrl' => 'Daripada URL',
-			'metadataEdit.uploadFile' => 'Muat naik fail',
-			'metadataEdit.enterImageUrl' => 'Masukkan URL imej',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Muat naik fail',
+			'metadataEdit.enterImageUrl' => 'Masukkan URL imej',
 			'metadataEdit.imageUrl' => 'imej URL',
 			'metadataEdit.metadataUpdated' => 'Metadata dikemaskini',
 			'metadataEdit.metadataUpdateFailed' => 'Kegagalan Mengemas kini Metadata',
@@ -8535,10 +8539,10 @@ extension on TranslationsMs {
 			'universalMedia.intro' => 'Buka pautan, senarai main, atau fail. Playback menggunakan pemain standard Pleazyng dan tidak menambah sejarah kepada perpustakaan anda.',
 			'universalMedia.openWhat' => 'Apa yang anda mahu buka?',
 			'universalMedia.stream' => 'Alamat aliran',
-			'universalMedia.playlist' => 'Senarai Playlist',
-			'universalMedia.files' => 'Peranti fail',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Senarai Playlist',
+			'universalMedia.files' => 'Peranti fail',
 			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
 			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diiktiraf hanya digunakan untuk sesi ini dan tidak boleh disimpan sebagai kegemaran.',
@@ -9049,10 +9053,10 @@ extension on TranslationsMs {
 			'sourceSetup.nfsTrustHelp' => 'Biarkan kosong untuk sijil yang dipercayai oleh peranti ini. Jika perlu, tambah sijil CA persendirian atau sijil pelayan yang ditandatangani sendiri; namanya mesti sepadan dengan hos dalam URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Gunakan sijil CA atau pelayan dalam format PEM. Jangan sertakan kunci peribadi.',
 			'sourceSetup.addTrustCertificate' => 'Tambah sijil kepercayaan tersuai',
-			'sourceSetup.replaceTrustCertificate' => 'Gantikan sijil tersuai yang disimpan',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan perkhidmatan lekap yang biasa serta memerlukan sokongan RFC 9289 pada NAS. TLS 1.3 diwajibkan. Nama hos atau IP mesti sepadan dengan sijil. AUTH_SYS UID/GID masih terpakai dalam saluran yang disulitkan.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Gantikan sijil tersuai yang disimpan',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan perkhidmatan lekap yang biasa serta memerlukan sokongan RFC 9289 pada NAS. TLS 1.3 diwajibkan. Nama hos atau IP mesti sepadan dengan sijil. AUTH_SYS UID/GID masih terpakai dalam saluran yang disulitkan.',
 			'sourceSetup.clientCertificate' => 'Sijil klien (pilihan)',
 			'sourceSetup.clientCertificateHelp' => 'Membolehkan NAS mengesahkan klien ini; ID AUTH_SYS masih bergantung pada dasar perkongsian NFS pada NAS.',
 			'sourceSetup.savedIdentity' => 'Identiti klien yang disimpan akan digunakan.',

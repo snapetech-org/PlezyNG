@@ -2134,6 +2134,8 @@ class _Translations$music$he extends Translations$music$en {
 	@override String get instantMixEmpty => 'התערובת החזרה ללא עקבות';
 	@override String noAudioUrl({required Object track}) => 'אין כתובת אודיו זמינה עבור ${track}';
 	@override late final _Translations$music$discography$he discography = _Translations$music$discography$he._(_root);
+	@override String get backTo => 'חזרה אל';
+	@override String get upNext => 'הבאים בתור';
 }
 
 // Path: watchTogether
@@ -7524,6 +7526,8 @@ extension on TranslationsHe {
 			'music.discography.singlesAndEps' => 'סינגלים & EPs',
 			'music.discography.live' => 'שידור חי',
 			'music.discography.compilations' => 'קומפוזיציה',
+			'music.backTo' => 'חזרה אל',
+			'music.upNext' => 'הבאים בתור',
 			'watchTogether.title' => 'צפייה משותפת',
 			'watchTogether.description' => 'צפו בתוכן ב-Sync עם חברים ומשפחה',
 			'watchTogether.createRoom' => 'יצירת חדר',
@@ -7540,10 +7544,10 @@ extension on TranslationsHe {
 			'watchTogether.enterRoomCode' => 'הקלד את הקוד של 6 תווים מהארח.',
 			'watchTogether.roomCode' => 'קוד חדר',
 			'watchTogether.paste' => 'פסטה',
-			'watchTogether.noCodeInClipboard' => 'הקליפ לא מכיל קוד חדר',
-			'watchTogether.copyCode' => 'עותק קוד',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'הקליפ לא מכיל קוד חדר',
+			'watchTogether.copyCode' => 'עותק קוד',
 			'watchTogether.codeCopied' => 'קוד חדר עותק',
 			'watchTogether.shareInvite' => 'שיתוף הזמנה',
 			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
@@ -8054,10 +8058,10 @@ extension on TranslationsHe {
 			'metadataEdit.selectLogo' => 'בחר את הלוגו',
 			'metadataEdit.selectSquareArt' => 'בחר Square Art',
 			'metadataEdit.fromUrl' => 'מתוך URL',
-			'metadataEdit.uploadFile' => 'להעלות קובץ',
-			'metadataEdit.enterImageUrl' => 'כניסת תמונה URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'להעלות קובץ',
+			'metadataEdit.enterImageUrl' => 'כניסת תמונה URL',
 			'metadataEdit.imageUrl' => 'תמונה URL',
 			'metadataEdit.metadataUpdated' => 'נתונים מתעדכנים',
 			'metadataEdit.metadataUpdateFailed' => 'לא הצלחתי לעדכן את הנתונים',
@@ -8568,10 +8572,10 @@ extension on TranslationsHe {
 			'universalMedia.intro' => 'פתח קישור, רשימת משחקים או קובץ.Playback משתמש בשחקן סטנדרטי של Pleazyng ואינו מוסיף היסטוריה לספריה שלך.',
 			'universalMedia.openWhat' => 'מה היית רוצה לפתוח?',
 			'universalMedia.stream' => 'כתובת זרם',
-			'universalMedia.playlist' => 'Playlist',
-			'universalMedia.files' => 'מכשיר קבצים',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Playlist',
+			'universalMedia.files' => 'מכשיר קבצים',
 			'universalMedia.favorites' => 'זרם אחסון האהובים',
 			'universalMedia.address' => 'כתובת התקשורת',
 			'universalMedia.addressHelp' => 'כתובות URL עם פרמטרים של זיהוי או חתימה מוכרים משמשים רק עבור הפגישה הזו ולא ניתן לשמור אותם כפופולריים.',
@@ -9082,10 +9086,10 @@ extension on TranslationsHe {
 			'sourceSetup.nfsTrustHelp' => 'יש להשאיר ריק לאישורים שהתקן זה נותן בהם אמון. לפי הצורך, אפשר להוסיף אישור CA פרטי או אישור שרת בחתימה עצמית; השמות בו חייבים להתאים למארח שבכתובת NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'יש להשתמש באישור CA או שרת בפורמט PEM. אין לכלול מפתח פרטי.',
 			'sourceSetup.addTrustCertificate' => 'הוספת אישור אמון מותאם אישית',
-			'sourceSetup.replaceTrustCertificate' => 'החלפת האישור המותאם אישית השמור',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS משתמש ביציאות הרגילות של NFS ושירות ה־mount, ודורש תמיכה ב־RFC 9289 מצד ה־NAS. נדרש TLS 1.3. שם המארח או כתובת ה־IP חייבים להתאים לאישור. מזהי AUTH_SYS UID/GID עדיין חלים בתוך הערוץ המוצפן.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'החלפת האישור המותאם אישית השמור',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS משתמש ביציאות הרגילות של NFS ושירות ה־mount, ודורש תמיכה ב־RFC 9289 מצד ה־NAS. נדרש TLS 1.3. שם המארח או כתובת ה־IP חייבים להתאים לאישור. מזהי AUTH_SYS UID/GID עדיין חלים בתוך הערוץ המוצפן.',
 			'sourceSetup.clientCertificate' => 'אישור לקוח (רשות)',
 			'sourceSetup.clientCertificateHelp' => 'מאפשר ל־NAS לאמת את הלקוח הזה; מזהי AUTH_SYS עדיין כפופים למדיניות הייצוא של ה־NAS.',
 			'sourceSetup.savedIdentity' => 'ייעשה שימוש בפרטי הזיהוי השמורים של הלקוח.',

@@ -2504,7 +2504,9 @@
       "singlesAndEps": "Епізоди та ЕП",
       "live": "Наживо",
       "compilations": "Компіляції"
-    }
+    },
+    "backTo": "Повернутися до",
+    "upNext": "Далі"
   },
   "watchTogether": {
     "title": "Дивитися разом",

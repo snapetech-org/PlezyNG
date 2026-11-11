@@ -2474,7 +2474,9 @@
       "singlesAndEps": "シングル・EP",
       "live": "ライブ",
       "compilations": "コンピレーション"
-    }
+    },
+    "backTo": "再生済み",
+    "upNext": "次に再生"
   },
   "watchTogether": {
     "title": "一緒に見る",

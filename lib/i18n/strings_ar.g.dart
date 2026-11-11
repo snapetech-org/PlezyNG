@@ -2186,6 +2186,8 @@ class _Translations$music$ar extends Translations$music$en {
 	@override String get instantMixEmpty => 'عودة المزيج الفوري دون أي مسارات';
 	@override String noAudioUrl({required Object track}) => 'لا توجد عناوين URL الصوتية متوفرة على ${track}';
 	@override late final _Translations$music$discography$ar discography = _Translations$music$discography$ar._(_root);
+	@override String get backTo => 'العودة إلى';
+	@override String get upNext => 'التالي';
 }
 
 // Path: watchTogether
@@ -7616,6 +7618,8 @@ extension on TranslationsAr {
 			'music.discography.singlesAndEps' => 'مجلدات & EPs',
 			'music.discography.live' => 'مباشر',
 			'music.discography.compilations' => 'المجموعات',
+			'music.backTo' => 'العودة إلى',
+			'music.upNext' => 'التالي',
 			'watchTogether.title' => 'المشاهدة معًا',
 			'watchTogether.description' => 'مشاهدة المحتوى في مزامنة مع الأصدقاء والعائلة',
 			'watchTogether.createRoom' => 'خلق غرفة',
@@ -7632,10 +7636,10 @@ extension on TranslationsAr {
 			'watchTogether.enterRoomCode' => 'أدخل رمز 6 أحرف من المضيف.',
 			'watchTogether.roomCode' => 'رمز الغرفة',
 			'watchTogether.paste' => 'كعكة',
-			'watchTogether.noCodeInClipboard' => 'لا يحتوي الكليب على رمز غرفة',
-			'watchTogether.copyCode' => 'نسخ الرمز',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'لا يحتوي الكليب على رمز غرفة',
+			'watchTogether.copyCode' => 'نسخ الرمز',
 			'watchTogether.codeCopied' => 'رمز الغرفة نسخة',
 			'watchTogether.shareInvite' => 'مشاركة دعوة',
 			'watchTogether.inviteCopied' => 'إرسال الرسالة - إرسال الرسالة إلى الرسالة',
@@ -8146,10 +8150,10 @@ extension on TranslationsAr {
 			'metadataEdit.selectLogo' => 'اختيار الشعار',
 			'metadataEdit.selectSquareArt' => 'اختيار الفنون الميدانية',
 			'metadataEdit.fromUrl' => 'من URL',
-			'metadataEdit.uploadFile' => 'تحميل الملفات',
-			'metadataEdit.enterImageUrl' => 'إدخال صورة URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'تحميل الملفات',
+			'metadataEdit.enterImageUrl' => 'إدخال صورة URL',
 			'metadataEdit.imageUrl' => 'صورة URL',
 			'metadataEdit.metadataUpdated' => 'متاجدات تحديثات',
 			'metadataEdit.metadataUpdateFailed' => 'فشل في تحديث البيانات الميتا',
@@ -8660,10 +8664,10 @@ extension on TranslationsAr {
 			'universalMedia.intro' => 'افتح رابطًا أو قائمة تشغيل أو ملفًا.تستخدم Playback مشغل Pleazyng القياسي ولا تضاف التاريخ إلى مكتبتك.',
 			'universalMedia.openWhat' => 'ما الذي ترغب في فتحه؟',
 			'universalMedia.stream' => 'البريد الإلكتروني Stream',
-			'universalMedia.playlist' => 'لعبة',
-			'universalMedia.files' => 'أجهزة الملفات',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'لعبة',
+			'universalMedia.files' => 'أجهزة الملفات',
 			'universalMedia.favorites' => 'المفضلة التي تم إنقاذها',
 			'universalMedia.address' => 'عناوين وسائل الإعلام',
 			'universalMedia.addressHelp' => 'يتم استخدام عناوين URL مع المعلمات الاعتمادية أو التوقيع المعترف بها فقط لهذا الجلسة ولا يمكن حفظها على أنها المفضلة.',
@@ -9174,10 +9178,10 @@ extension on TranslationsAr {
 			'sourceSetup.nfsTrustHelp' => 'اتركه فارغًا للشهادات التي يثق بها هذا الجهاز. أضف شهادة CA خاصة أو شهادة خادم موقّعة ذاتيًا عند الحاجة؛ يجب أن تطابق أسماؤها المضيف في عنوان NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'استخدم شهادة CA أو خادم بتنسيق PEM. لا تُضمّن مفتاحًا خاصًا.',
 			'sourceSetup.addTrustCertificate' => 'إضافة شهادة ثقة مخصّصة',
-			'sourceSetup.replaceTrustCertificate' => 'استبدال الشهادة المخصّصة المحفوظة',
-			'sourceSetup.nfsTlsHelp' => 'يستخدم RPC-with-TLS منافذ NFS وخدمة التركيب المعتادة، ويتطلب دعم NAS للمعيار RFC 9289. يلزم TLS 1.3. يجب أن يطابق اسم المضيف أو عنوان IP الشهادة. تظل معرّفات AUTH_SYS UID/GID سارية داخل القناة المشفّرة.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'استبدال الشهادة المخصّصة المحفوظة',
+			'sourceSetup.nfsTlsHelp' => 'يستخدم RPC-with-TLS منافذ NFS وخدمة التركيب المعتادة، ويتطلب دعم NAS للمعيار RFC 9289. يلزم TLS 1.3. يجب أن يطابق اسم المضيف أو عنوان IP الشهادة. تظل معرّفات AUTH_SYS UID/GID سارية داخل القناة المشفّرة.',
 			'sourceSetup.clientCertificate' => 'شهادة العميل (اختيارية)',
 			'sourceSetup.clientCertificateHelp' => 'تتيح لـ NAS التحقّق من هوية هذا العميل؛ تظل معرّفات AUTH_SYS خاضعة لسياسة تصدير NAS.',
 			'sourceSetup.savedIdentity' => 'ستُستخدم هوية العميل المحفوظة.',

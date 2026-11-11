@@ -2462,7 +2462,9 @@
       "singlesAndEps": "Kumpulan & EPs",
       "live": "hidup",
       "compilations": "Kompilasi"
-    }
+    },
+    "backTo": "Kembali ke",
+    "upNext": "Seterusnya"
   },
   "watchTogether": {
     "title": "Tonton Bersama",

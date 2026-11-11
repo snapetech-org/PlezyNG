@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Kislemezek és EP-k",
       "live": "Élő",
       "compilations": "Válogatások"
-    }
+    },
+    "backTo": "Vissza ide",
+    "upNext": "Következik"
   },
   "watchTogether": {
     "title": "Watch Together (Közös nézés)",

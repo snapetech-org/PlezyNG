@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Singler og EP-er",
       "live": "Live",
       "compilations": "Samlealbum"
-    }
+    },
+    "backTo": "Tilbake til",
+    "upNext": "Neste"
   },
   "watchTogether": {
     "title": "Se sammen",

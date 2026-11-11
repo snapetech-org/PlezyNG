@@ -2130,6 +2130,8 @@ class _Translations$music$uz extends Translations$music$en {
 	@override String get instantMixEmpty => 'Tezkor miks hech qanday taronani qaytarmadi';
 	@override String noAudioUrl({required Object track}) => '${track} uchun audio URL mavjud emas';
 	@override late final _Translations$music$discography$uz discography = _Translations$music$discography$uz._(_root);
+	@override String get backTo => 'Oldin ijro etilganlar';
+	@override String get upNext => 'Keyingi';
 }
 
 // Path: watchTogether
@@ -7516,6 +7518,8 @@ extension on TranslationsUz {
 			'music.discography.singlesAndEps' => 'Singllar va EP',
 			'music.discography.live' => 'Jonli',
 			'music.discography.compilations' => 'Toʻplamlar',
+			'music.backTo' => 'Oldin ijro etilganlar',
+			'music.upNext' => 'Keyingi',
 			'watchTogether.title' => 'Birgalikda tomosha qilish',
 			'watchTogether.description' => 'Doʻstlaringiz va oilangiz bilan birga tomosha qiling',
 			'watchTogether.createRoom' => 'Xona yaratish',
@@ -7532,10 +7536,10 @@ extension on TranslationsUz {
 			'watchTogether.enterRoomCode' => 'Tashkilotchidan olingan 6 belgili kodni kiriting.',
 			'watchTogether.roomCode' => 'Xona kodi',
 			'watchTogether.paste' => 'Qoʻyish',
-			'watchTogether.noCodeInClipboard' => 'Almashish buferida xona kodi yoʻq',
-			'watchTogether.copyCode' => 'Kodni nusxalash',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Almashish buferida xona kodi yoʻq',
+			'watchTogether.copyCode' => 'Kodni nusxalash',
 			'watchTogether.codeCopied' => 'Xona kodi nusxalandi',
 			'watchTogether.shareInvite' => 'Taklifni ulashish',
 			'watchTogether.inviteCopied' => 'Taklif nusxalandi. Uni xabarga joylashtiring.',
@@ -8046,10 +8050,10 @@ extension on TranslationsUz {
 			'metadataEdit.selectLogo' => 'Logotipni tanlash',
 			'metadataEdit.selectSquareArt' => 'Kvadrat rasm tanlash',
 			'metadataEdit.fromUrl' => 'URL orqali',
-			'metadataEdit.uploadFile' => 'Fayl yuklash',
-			'metadataEdit.enterImageUrl' => 'Rasm URL-manzilini kiriting',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Fayl yuklash',
+			'metadataEdit.enterImageUrl' => 'Rasm URL-manzilini kiriting',
 			'metadataEdit.imageUrl' => 'Rasm URL-manzili',
 			'metadataEdit.metadataUpdated' => 'Metamaʼlumotlar yangilandi',
 			'metadataEdit.metadataUpdateFailed' => 'Metamaʼlumotlarni yangilab boʻlmadi',
@@ -8560,10 +8564,10 @@ extension on TranslationsUz {
 			'universalMedia.intro' => 'Bir link, playlist, o‘fili. Playback Pleazyng\'nin standart oynatıcını kullanır ve librariyizga istorik qoşmaz.',
 			'universalMedia.openWhat' => 'Siz o‘zʻqʻqqʻʻqō qʻq?',
 			'universalMedia.stream' => 'Adresi',
-			'universalMedia.playlist' => 'Playlist',
-			'universalMedia.files' => 'Filmi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Playlist',
+			'universalMedia.files' => 'Filmi',
 			'universalMedia.favorites' => 'Rashida rashida favoritlar',
 			'universalMedia.address' => 'Medya adresi',
 			'universalMedia.addressHelp' => 'HTTPS is preferred. identifyated credential o signature parametrisli URL\'lar yalnız bu sesyon için kullanılır və favoritlar olarak kaydılamaz.',
@@ -9074,10 +9078,10 @@ extension on TranslationsUz {
 			'sourceSetup.nfsTrustHelp' => 'Ushbu qurilma ishonadigan sertifikatlar uchun bo‘sh qoldiring. Zarur bo‘lsa, xususiy CA sertifikati yoki o‘zi imzolagan server sertifikatini qo‘shing; undagi nomlar NFS URL manzilidagi hostga mos kelishi kerak.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM formatidagi CA yoki server sertifikatidan foydalaning. Maxfiy kalitni qo‘shmang.',
 			'sourceSetup.addTrustCertificate' => 'Maxsus ishonch sertifikatini qo‘shish',
-			'sourceSetup.replaceTrustCertificate' => 'Saqlangan maxsus sertifikatni almashtirish',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS odatiy NFS va ulash xizmati portlaridan foydalanadi va NAS da RFC 9289 qo‘llab-quvvatlanishini talab qiladi. TLS 1.3 zarur. Host nomi yoki IP manzili sertifikatga mos kelishi kerak. Shifrlangan kanal ichida ham AUTH_SYS UID/GID amal qiladi.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Saqlangan maxsus sertifikatni almashtirish',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS odatiy NFS va ulash xizmati portlaridan foydalanadi va NAS da RFC 9289 qo‘llab-quvvatlanishini talab qiladi. TLS 1.3 zarur. Host nomi yoki IP manzili sertifikatga mos kelishi kerak. Shifrlangan kanal ichida ham AUTH_SYS UID/GID amal qiladi.',
 			'sourceSetup.clientCertificate' => 'Klient sertifikati (ixtiyoriy)',
 			'sourceSetup.clientCertificateHelp' => 'NAS ga ushbu klientni autentifikatsiya qilish imkonini beradi; AUTH_SYS ID-lari baribir NAS dagi NFS umumiy katalogining qoidalariga bog‘liq.',
 			'sourceSetup.savedIdentity' => 'Saqlangan klient identifikatsiya ma’lumotlari ishlatiladi.',

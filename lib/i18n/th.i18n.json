@@ -2462,7 +2462,9 @@
       "singlesAndEps": "Singles และ EPs",
       "live": "ชีวิต",
       "compilations": "คอมเพลต"
-    }
+    },
+    "backTo": "กลับไปที่",
+    "upNext": "ถัดไป"
   },
   "watchTogether": {
     "title": "รับชมร่วมกัน",

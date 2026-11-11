@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Singles ও EPs",
       "live": "জীবনযাপন",
       "compilations": "কম্পিউটার"
-    }
+    },
+    "backTo": "আগে শোনা",
+    "upNext": "এরপরে"
   },
   "watchTogether": {
     "title": "একসঙ্গে দেখুন",

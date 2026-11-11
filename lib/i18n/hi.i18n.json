@@ -2478,7 +2478,9 @@
       "singlesAndEps": "सींग्स & EPs",
       "live": "जीवित",
       "compilations": "संकलित"
-    }
+    },
+    "backTo": "वापस जाएँ",
+    "upNext": "इसके बाद"
   },
   "watchTogether": {
     "title": "साथ देखें",

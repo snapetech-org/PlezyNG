@@ -2126,6 +2126,8 @@ class Translations$music$zh extends Translations$music$en {
 	@override String get instantMixEmpty => '即时混合没有生成任何曲目';
 	@override String noAudioUrl({required Object track}) => '没有可供 ${track} 使用的音频 URL';
 	@override late final Translations$music$discography$zh discography = Translations$music$discography$zh.internal(_root);
+	@override String get backTo => '回到已播放';
+	@override String get upNext => '即将播放';
 }
 
 // Path: watchTogether
@@ -7511,6 +7513,8 @@ extension on TranslationsZh {
 			'music.discography.singlesAndEps' => '单曲和 EP',
 			'music.discography.live' => '现场',
 			'music.discography.compilations' => '合集',
+			'music.backTo' => '回到已播放',
+			'music.upNext' => '即将播放',
 			'watchTogether.title' => '一起看',
 			'watchTogether.description' => '与朋友和家人同步观看内容',
 			'watchTogether.createRoom' => '创建房间',
@@ -7527,10 +7531,10 @@ extension on TranslationsZh {
 			'watchTogether.enterRoomCode' => '输入主持人提供的 6 位代码。',
 			'watchTogether.roomCode' => '房间代码',
 			'watchTogether.paste' => '粘贴',
-			'watchTogether.noCodeInClipboard' => '剪贴板中没有房间代码',
-			'watchTogether.copyCode' => '复制代码',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => '剪贴板中没有房间代码',
+			'watchTogether.copyCode' => '复制代码',
 			'watchTogether.codeCopied' => '房间代码已复制',
 			'watchTogether.shareInvite' => '分享邀请',
 			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
@@ -8041,10 +8045,10 @@ extension on TranslationsZh {
 			'metadataEdit.selectLogo' => '选择标志',
 			'metadataEdit.selectSquareArt' => '选择方形图片',
 			'metadataEdit.fromUrl' => '通过 URL',
-			'metadataEdit.uploadFile' => '上传文件',
-			'metadataEdit.enterImageUrl' => '输入图片 URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => '上传文件',
+			'metadataEdit.enterImageUrl' => '输入图片 URL',
 			'metadataEdit.imageUrl' => '图片 URL',
 			'metadataEdit.metadataUpdated' => '元数据已更新',
 			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
@@ -8555,10 +8559,10 @@ extension on TranslationsZh {
 			'universalMedia.intro' => '打开链接、播放列表或文件 Playback 使用 Pleazyng 的标准播放器,并且不会将历史添加到您的图书馆。',
 			'universalMedia.openWhat' => '你想打开什么?',
 			'universalMedia.stream' => '流地址',
-			'universalMedia.playlist' => '播放列表',
-			'universalMedia.files' => '设备文件',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => '播放列表',
+			'universalMedia.files' => '设备文件',
 			'universalMedia.favorites' => '保存流喜爱',
 			'universalMedia.address' => '媒體地址',
 			'universalMedia.addressHelp' => 'HTTPS 是优先的. 有认可或签名参数的 URL 仅用于此会议,并且不能保存为喜爱。',
@@ -9069,10 +9073,10 @@ extension on TranslationsZh {
 			'sourceSetup.nfsTrustHelp' => '使用此设备信任的证书时请留空。需要时可添加私有 CA 或自签名服务器证书；证书中的名称必须与 NFS 地址的主机名匹配。',
 			'sourceSetup.nfsTrustInvalid' => '请使用 PEM 格式的 CA 或服务器证书。不要包含私钥。',
 			'sourceSetup.addTrustCertificate' => '添加自定义信任证书',
-			'sourceSetup.replaceTrustCertificate' => '替换已保存的自定义证书',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用常规 NFS 和挂载服务端口，并要求 NAS 支持 RFC 9289。必须使用 TLS 1.3。主机名或 IP 地址必须与证书匹配。加密通道内仍需使用 AUTH_SYS UID/GID。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => '替换已保存的自定义证书',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用常规 NFS 和挂载服务端口，并要求 NAS 支持 RFC 9289。必须使用 TLS 1.3。主机名或 IP 地址必须与证书匹配。加密通道内仍需使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '客户端证书（可选）',
 			'sourceSetup.clientCertificateHelp' => '允许 NAS 验证此客户端的身份；AUTH_SYS ID 仍受 NAS 导出策略约束。',
 			'sourceSetup.savedIdentity' => '将使用已保存的客户端身份凭据。',

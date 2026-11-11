@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Сингли и EP",
       "live": "Концертни",
       "compilations": "Компилации"
-    }
+    },
+    "backTo": "Вече пуснати",
+    "upNext": "Следващи"
   },
   "watchTogether": {
     "title": "Гледане заедно",

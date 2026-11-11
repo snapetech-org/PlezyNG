@@ -2478,7 +2478,9 @@
       "singlesAndEps": "تک آهنگ ها و EPs",
       "live": "پخش زنده",
       "compilations": "جمع آوری"
-    }
+    },
+    "backTo": "بازگشت به",
+    "upNext": "بعدی"
   },
   "watchTogether": {
     "title": "تماشای گروهی",

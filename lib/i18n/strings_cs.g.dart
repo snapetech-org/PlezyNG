@@ -2154,6 +2154,8 @@ class _Translations$music$cs extends Translations$music$en {
 	@override String get instantMixEmpty => 'Okamžitý mix se vrátil bez stopy';
 	@override String noAudioUrl({required Object track}) => 'Žádný audio URL není k dispozici pro ${track}';
 	@override late final _Translations$music$discography$cs discography = _Translations$music$discography$cs._(_root);
+	@override String get backTo => 'Zpět na';
+	@override String get upNext => 'Následuje';
 }
 
 // Path: watchTogether
@@ -7560,6 +7562,8 @@ extension on TranslationsCs {
 			'music.discography.singlesAndEps' => 'Singles a EPs',
 			'music.discography.live' => 'Živě',
 			'music.discography.compilations' => 'Kompilace',
+			'music.backTo' => 'Zpět na',
+			'music.upNext' => 'Následuje',
 			'watchTogether.title' => 'Společné sledování',
 			'watchTogether.description' => 'Zobrazit obsah v synchronizaci s přáteli a rodinou',
 			'watchTogether.createRoom' => 'Vytvořte místnost',
@@ -7576,10 +7580,10 @@ extension on TranslationsCs {
 			'watchTogether.enterRoomCode' => 'Vložte šesti znakový kód z hostitele.',
 			'watchTogether.roomCode' => 'Kód místnosti',
 			'watchTogether.paste' => 'Vložit',
-			'watchTogether.noCodeInClipboard' => 'Klipboard neobsahuje kód místnosti',
-			'watchTogether.copyCode' => 'Kopírování kódu',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Klipboard neobsahuje kód místnosti',
+			'watchTogether.copyCode' => 'Kopírování kódu',
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
@@ -8090,10 +8094,10 @@ extension on TranslationsCs {
 			'metadataEdit.selectLogo' => 'Vyberte logo',
 			'metadataEdit.selectSquareArt' => 'Výběr Square Art',
 			'metadataEdit.fromUrl' => 'Od URL',
-			'metadataEdit.uploadFile' => 'Upload souborů',
-			'metadataEdit.enterImageUrl' => 'Vložte obrázek URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Upload souborů',
+			'metadataEdit.enterImageUrl' => 'Vložte obrázek URL',
 			'metadataEdit.imageUrl' => 'obrázek URL',
 			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
 			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
@@ -8604,10 +8608,10 @@ extension on TranslationsCs {
 			'universalMedia.intro' => 'Otevřete odkaz, playlist nebo soubor. Playback používá standardní přehrávač Pleazyng a do vaší knihovny nepřidá historii.',
 			'universalMedia.openWhat' => 'Co byste chtěli otevřít?',
 			'universalMedia.stream' => 'Streamová adresa',
-			'universalMedia.playlist' => 'Playlisty',
-			'universalMedia.files' => 'Přístrojové soubory',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Playlisty',
+			'universalMedia.files' => 'Přístrojové soubory',
 			'universalMedia.favorites' => 'Úsporný stream oblíbené',
 			'universalMedia.address' => 'Mediální adresa',
 			'universalMedia.addressHelp' => 'URL s uznanými parametry ověřování nebo podpisů se používají pouze pro tuto schůzku a nelze je uložit jako oblíbené.',
@@ -9118,10 +9122,10 @@ extension on TranslationsCs {
 			'sourceSetup.nfsTrustHelp' => 'Ponechte prázdné pro certifikáty, kterým toto zařízení důvěřuje. V případě potřeby přidejte certifikát soukromé CA nebo certifikát serveru podepsaný sebou samým; jeho názvy se musí shodovat s hostitelem v adrese NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Použijte certifikát CA nebo serveru ve formátu PEM. Nevkládejte soukromý klíč.',
 			'sourceSetup.addTrustCertificate' => 'Přidat vlastní důvěryhodný certifikát',
-			'sourceSetup.replaceTrustCertificate' => 'Nahradit uložený vlastní certifikát',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS používá běžné porty NFS a služby připojení a vyžaduje podporu RFC 9289 na NAS. Je nutné TLS 1.3. Název hostitele nebo IP adresa musí odpovídat certifikátu. UID/GID AUTH_SYS nadále platí i v šifrovaném kanálu.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Nahradit uložený vlastní certifikát',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS používá běžné porty NFS a služby připojení a vyžaduje podporu RFC 9289 na NAS. Je nutné TLS 1.3. Název hostitele nebo IP adresa musí odpovídat certifikátu. UID/GID AUTH_SYS nadále platí i v šifrovaném kanálu.',
 			'sourceSetup.clientCertificate' => 'Klientský certifikát (nepovinné)',
 			'sourceSetup.clientCertificateHelp' => 'Umožňuje NAS ověřit tohoto klienta; ID AUTH_SYS stále podléhají pravidlům exportu NFS na NAS.',
 			'sourceSetup.savedIdentity' => 'Bude použita uložená identita klienta.',

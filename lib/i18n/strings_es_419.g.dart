@@ -568,6 +568,8 @@ class _Translations$music$es_419 extends Translations$music$es {
 		one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuto',
 		many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos',
 	);
+	@override String get backTo => 'Volver a';
+	@override String get upNext => 'A continuación';
 }
 
 // Path: watchTogether
@@ -1607,6 +1609,8 @@ extension on TranslationsEs419 {
 			'music.repeatOne' => 'Repetir uno',
 			'music.discography.live' => 'En vivo',
 			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuto', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', ), 
+			'music.backTo' => 'Volver a',
+			'music.upNext' => 'A continuación',
 			'watchTogether.removeRoom' => 'Remover',
 			'watchTogether.hostBadge' => 'Servidor',
 			'watchTogether.playerIdle' => 'Inactiva',
@@ -1840,10 +1844,10 @@ extension on TranslationsEs419 {
 			'romm.loadState' => 'Load state',
 			'romm.saveAndExit' => 'Save and exit',
 			'romm.exitWithoutSaving' => 'Exit without saving',
-			'romm.exitConfirm' => 'Finish this game session?',
-			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
 			_ => null,
 		} ?? switch (path) {
+			'romm.exitConfirm' => 'Finish this game session?',
+			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
 			'romm.starting' => 'Starting game…',
 			'romm.connecting' => 'Connecting…',
 			'romm.busy' => 'The streaming computer is occupied.',

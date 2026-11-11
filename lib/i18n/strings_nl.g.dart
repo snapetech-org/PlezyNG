@@ -2130,6 +2130,8 @@ class _Translations$music$nl extends Translations$music$en {
 	@override String get instantMixEmpty => 'De instantmix leverde geen nummers op';
 	@override String noAudioUrl({required Object track}) => 'Er is geen audio-URL beschikbaar voor ${track}';
 	@override late final _Translations$music$discography$nl discography = _Translations$music$discography$nl._(_root);
+	@override String get backTo => 'Terug naar';
+	@override String get upNext => 'Hierna';
 }
 
 // Path: watchTogether
@@ -7516,6 +7518,8 @@ extension on TranslationsNl {
 			'music.discography.singlesAndEps' => 'Singles en EP\'s',
 			'music.discography.live' => 'Live',
 			'music.discography.compilations' => 'Compilaties',
+			'music.backTo' => 'Terug naar',
+			'music.upNext' => 'Hierna',
 			'watchTogether.title' => 'Samen kijken',
 			'watchTogether.description' => 'Kijk synchroon met vrienden en familie',
 			'watchTogether.createRoom' => 'Kamer maken',
@@ -7532,10 +7536,10 @@ extension on TranslationsNl {
 			'watchTogether.enterRoomCode' => 'Voer de code van 6 tekens van de host in.',
 			'watchTogether.roomCode' => 'Kamercode',
 			'watchTogether.paste' => 'Plakken',
-			'watchTogether.noCodeInClipboard' => 'Het klembord bevat geen kamercode',
-			'watchTogether.copyCode' => 'Code kopiëren',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Het klembord bevat geen kamercode',
+			'watchTogether.copyCode' => 'Code kopiëren',
 			'watchTogether.codeCopied' => 'Kamercode gekopieerd',
 			'watchTogether.shareInvite' => 'Uitnodiging delen',
 			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
@@ -8046,10 +8050,10 @@ extension on TranslationsNl {
 			'metadataEdit.selectLogo' => 'Logo selecteren',
 			'metadataEdit.selectSquareArt' => 'Vierkante afbeelding selecteren',
 			'metadataEdit.fromUrl' => 'Vanaf URL',
-			'metadataEdit.uploadFile' => 'Bestand uploaden',
-			'metadataEdit.enterImageUrl' => 'Voer de afbeeldings-URL in',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Bestand uploaden',
+			'metadataEdit.enterImageUrl' => 'Voer de afbeeldings-URL in',
 			'metadataEdit.imageUrl' => 'Afbeeldings-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata bijgewerkt',
 			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
@@ -8560,10 +8564,10 @@ extension on TranslationsNl {
 			'universalMedia.intro' => 'Open een link, playlist of bestand.Playback gebruikt de standaardspeler van Pleazyng en voegt geen geschiedenis toe aan uw bibliotheek.',
 			'universalMedia.openWhat' => 'Wat wil je graag openen?',
 			'universalMedia.stream' => 'Streamadres',
-			'universalMedia.playlist' => 'Playlijst',
-			'universalMedia.files' => 'Gerelateerde bestanden',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Playlijst',
+			'universalMedia.files' => 'Gerelateerde bestanden',
 			'universalMedia.favorites' => 'Save Stream favorieten',
 			'universalMedia.address' => 'Media adres',
 			'universalMedia.addressHelp' => 'URL\'s met geïdentificeerde credentiale of signature parameters worden alleen gebruikt voor deze sessie en kunnen niet als favorieten worden opgeslagen.',
@@ -9074,10 +9078,10 @@ extension on TranslationsNl {
 			'sourceSetup.nfsTrustHelp' => 'Laat leeg voor certificaten die dit apparaat vertrouwt. Voeg zo nodig een certificaat van een private CA of een zelfondertekend servercertificaat toe; de namen moeten overeenkomen met de host in de NFS-URL.',
 			'sourceSetup.nfsTrustInvalid' => 'Gebruik een CA- of servercertificaat in PEM-formaat. Voeg geen privésleutel toe.',
 			'sourceSetup.addTrustCertificate' => 'Aangepast vertrouwenscertificaat toevoegen',
-			'sourceSetup.replaceTrustCertificate' => 'Opgeslagen aangepast certificaat vervangen',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS gebruikt de gebruikelijke poorten van NFS en de mountservice en vereist RFC 9289-ondersteuning op de NAS. TLS 1.3 is verplicht. De hostnaam of het IP-adres moet overeenkomen met het certificaat. AUTH_SYS-UID/GID blijven ook binnen het versleutelde kanaal gelden.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Opgeslagen aangepast certificaat vervangen',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS gebruikt de gebruikelijke poorten van NFS en de mountservice en vereist RFC 9289-ondersteuning op de NAS. TLS 1.3 is verplicht. De hostnaam of het IP-adres moet overeenkomen met het certificaat. AUTH_SYS-UID/GID blijven ook binnen het versleutelde kanaal gelden.',
 			'sourceSetup.clientCertificate' => 'Clientcertificaat (optioneel)',
 			'sourceSetup.clientCertificateHelp' => 'Hiermee kan de NAS deze client authenticeren; AUTH_SYS-ID’s blijven afhankelijk van het beleid van de NFS-share op de NAS.',
 			'sourceSetup.savedIdentity' => 'Er wordt een opgeslagen clientidentiteit gebruikt.',

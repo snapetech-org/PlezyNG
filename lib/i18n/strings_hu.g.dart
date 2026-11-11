@@ -2130,6 +2130,8 @@ class _Translations$music$hu extends Translations$music$en {
 	@override String get instantMixEmpty => 'Az azonnali mix nem adott vissza zeneszámokat';
 	@override String noAudioUrl({required Object track}) => 'Nem érhető el hang-URL ehhez: ${track}';
 	@override late final _Translations$music$discography$hu discography = _Translations$music$discography$hu._(_root);
+	@override String get backTo => 'Vissza ide';
+	@override String get upNext => 'Következik';
 }
 
 // Path: watchTogether
@@ -7516,6 +7518,8 @@ extension on TranslationsHu {
 			'music.discography.singlesAndEps' => 'Kislemezek és EP-k',
 			'music.discography.live' => 'Élő',
 			'music.discography.compilations' => 'Válogatások',
+			'music.backTo' => 'Vissza ide',
+			'music.upNext' => 'Következik',
 			'watchTogether.title' => 'Watch Together (Közös nézés)',
 			'watchTogether.description' => 'Nézz tartalmat szinkronban barátaiddal és családoddal',
 			'watchTogether.createRoom' => 'Szoba létrehozása',
@@ -7532,10 +7536,10 @@ extension on TranslationsHu {
 			'watchTogether.enterRoomCode' => 'Add meg a házigazdától kapott 6 karakteres kódot.',
 			'watchTogether.roomCode' => 'Szobakód',
 			'watchTogether.paste' => 'Beillesztés',
-			'watchTogether.noCodeInClipboard' => 'A vágólapon nincs szobakód',
-			'watchTogether.copyCode' => 'Kód másolása',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'A vágólapon nincs szobakód',
+			'watchTogether.copyCode' => 'Kód másolása',
 			'watchTogether.codeCopied' => 'Szobakód másolva',
 			'watchTogether.shareInvite' => 'Meghívó megosztása',
 			'watchTogether.inviteCopied' => 'Meghívó másolva. Illeszd be egy üzenetbe.',
@@ -8046,10 +8050,10 @@ extension on TranslationsHu {
 			'metadataEdit.selectLogo' => 'Logó kiválasztása',
 			'metadataEdit.selectSquareArt' => 'Négyzetes kép kiválasztása',
 			'metadataEdit.fromUrl' => 'URL-ről',
-			'metadataEdit.uploadFile' => 'Fájl feltöltése',
-			'metadataEdit.enterImageUrl' => 'Add meg a kép URL-címét',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Fájl feltöltése',
+			'metadataEdit.enterImageUrl' => 'Add meg a kép URL-címét',
 			'metadataEdit.imageUrl' => 'Kép URL-címe',
 			'metadataEdit.metadataUpdated' => 'Metaadatok frissítve',
 			'metadataEdit.metadataUpdateFailed' => 'Nem sikerült a metaadatok frissítése',
@@ -8560,10 +8564,10 @@ extension on TranslationsHu {
 			'universalMedia.intro' => 'Nyissa meg a linket, a lejátszási listát vagy a fájlt.A Playback használja a Pleazyng szabványos lejátszóját és nem ad hozzá történetet a könyvtárához.',
 			'universalMedia.openWhat' => 'Mit szeretne megnyitni?',
 			'universalMedia.stream' => 'Stream cím',
-			'universalMedia.playlist' => 'játéklisták',
-			'universalMedia.files' => 'készülék fájl',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'játéklisták',
+			'universalMedia.files' => 'készülék fájl',
 			'universalMedia.favorites' => 'Megtakarított stream kedvencek',
 			'universalMedia.address' => 'média cím',
 			'universalMedia.addressHelp' => 'Az elismert hitelesítési vagy aláírási paraméterekkel rendelkező URL-k csak ebben az ülésen használhatók, és nem menthetők kedvencként.',
@@ -9074,10 +9078,10 @@ extension on TranslationsHu {
 			'sourceSetup.nfsTrustHelp' => 'Hagyd üresen az eszköz által megbízhatónak tartott tanúsítványokhoz. Szükség esetén adj hozzá privát CA-tanúsítványt vagy önaláírt szervertanúsítványt; a benne szereplő neveknek egyezniük kell az NFS URL gépnevével.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM-formátumú CA- vagy szervertanúsítványt használj. Ne adj meg privát kulcsot.',
 			'sourceSetup.addTrustCertificate' => 'Egyéni megbízható tanúsítvány hozzáadása',
-			'sourceSetup.replaceTrustCertificate' => 'Mentett egyéni tanúsítvány cseréje',
-			'sourceSetup.nfsTlsHelp' => 'Az RPC-with-TLS a szokásos NFS- és csatolásiszolgáltatás-portokat használja, és RFC 9289-támogatást igényel a NAS-on. TLS 1.3 szükséges. A gépnévnek vagy IP-címnek egyeznie kell a tanúsítvánnyal. Az AUTH_SYS UID/GID a titkosított csatornán belül is érvényes.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Mentett egyéni tanúsítvány cseréje',
+			'sourceSetup.nfsTlsHelp' => 'Az RPC-with-TLS a szokásos NFS- és csatolásiszolgáltatás-portokat használja, és RFC 9289-támogatást igényel a NAS-on. TLS 1.3 szükséges. A gépnévnek vagy IP-címnek egyeznie kell a tanúsítvánnyal. Az AUTH_SYS UID/GID a titkosított csatornán belül is érvényes.',
 			'sourceSetup.clientCertificate' => 'Kliens tanúsítványa (nem kötelező)',
 			'sourceSetup.clientCertificateHelp' => 'Lehetővé teszi, hogy a NAS hitelesítse ezt a klienst; az AUTH_SYS-azonosítók továbbra is a NAS NFS-megosztásának szabályaitól függenek.',
 			'sourceSetup.savedIdentity' => 'A mentett kliensazonosság lesz használva.',

@@ -2482,7 +2482,9 @@
       "singlesAndEps": "סינגלים & EPs",
       "live": "שידור חי",
       "compilations": "קומפוזיציה"
-    }
+    },
+    "backTo": "חזרה אל",
+    "upNext": "הבאים בתור"
   },
   "watchTogether": {
     "title": "צפייה משותפת",

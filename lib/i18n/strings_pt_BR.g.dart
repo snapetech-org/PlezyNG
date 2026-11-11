@@ -573,6 +573,8 @@ class Translations$music$pt_BR extends Translations$music$pt {
 		other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos',
 		many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos',
 	);
+	@override String get backTo => 'Voltar para';
+	@override String get upNext => 'A seguir';
 }
 
 // Path: watchTogether
@@ -1625,6 +1627,8 @@ extension on TranslationsPtBr {
 			'music.repeatOne' => 'Repetir uma vez',
 			'music.discography.live' => 'Ao vivo',
 			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minuto', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutos', ), 
+			'music.backTo' => 'Voltar para',
+			'music.upNext' => 'A seguir',
 			'watchTogether.removeRoom' => 'Remover',
 			'watchTogether.hostBadge' => 'Servidor',
 			'watchTogether.playerIdle' => 'Ocioso',
@@ -1849,10 +1853,10 @@ extension on TranslationsPtBr {
 			'romm.keepBoth' => 'Keep both',
 			'romm.useServer' => 'Use server copy',
 			'romm.replaceServer' => 'Replace server copy',
-			'romm.pendingSaves' => 'Saves waiting to sync',
-			'romm.sync' => 'Sync saves',
 			_ => null,
 		} ?? switch (path) {
+			'romm.pendingSaves' => 'Saves waiting to sync',
+			'romm.sync' => 'Sync saves',
 			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
 			'romm.pause' => 'Pause',
 			'romm.kContinue' => 'Continue',

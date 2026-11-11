@@ -2481,7 +2481,9 @@
       "singlesAndEps": "Singoli ed EP",
       "live": "Dal vivo",
       "compilations": "Compilation"
-    }
+    },
+    "backTo": "Torna a",
+    "upNext": "In coda"
   },
   "watchTogether": {
     "title": "Guarda insieme",

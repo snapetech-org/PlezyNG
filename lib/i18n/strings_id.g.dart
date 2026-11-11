@@ -2116,6 +2116,8 @@ class _Translations$music$id extends Translations$music$en {
 	@override String get instantMixEmpty => 'Tombol ini kembali tanpa jejak.';
 	@override String noAudioUrl({required Object track}) => 'Tidak ada URL audio yang tersedia untuk ${track}';
 	@override late final _Translations$music$discography$id discography = _Translations$music$discography$id._(_root);
+	@override String get backTo => 'Kembali ke';
+	@override String get upNext => 'Berikutnya';
 }
 
 // Path: watchTogether
@@ -7491,6 +7493,8 @@ extension on TranslationsId {
 			'music.discography.singlesAndEps' => 'Singles dan EPs',
 			'music.discography.live' => 'Langsung',
 			'music.discography.compilations' => 'Kompilasi',
+			'music.backTo' => 'Kembali ke',
+			'music.upNext' => 'Berikutnya',
 			'watchTogether.title' => 'Tonton Bersama',
 			'watchTogether.description' => 'Menonton konten dalam sinergitas dengan teman dan keluarga',
 			'watchTogether.createRoom' => 'Membuat ruangan',
@@ -7507,10 +7511,10 @@ extension on TranslationsId {
 			'watchTogether.enterRoomCode' => 'Masukkan kode 6 karakter dari host.',
 			'watchTogether.roomCode' => 'Kode kamar',
 			'watchTogether.paste' => 'Tempel',
-			'watchTogether.noCodeInClipboard' => 'Clipboard tidak mengandung kode kamar',
-			'watchTogether.copyCode' => 'Kopi kode',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Clipboard tidak mengandung kode kamar',
+			'watchTogether.copyCode' => 'Kopi kode',
 			'watchTogether.codeCopied' => 'Kode kamar disalin',
 			'watchTogether.shareInvite' => 'Membagi Jemputan',
 			'watchTogether.inviteCopied' => 'Tuliskan pesan, masukkan ke dalam pesan.',
@@ -8021,10 +8025,10 @@ extension on TranslationsId {
 			'metadataEdit.selectLogo' => 'Pilih Logo',
 			'metadataEdit.selectSquareArt' => 'Seleksi Square Art',
 			'metadataEdit.fromUrl' => 'dari URL',
-			'metadataEdit.uploadFile' => 'Upload file',
-			'metadataEdit.enterImageUrl' => 'Masukkan URL gambar',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Upload file',
+			'metadataEdit.enterImageUrl' => 'Masukkan URL gambar',
 			'metadataEdit.imageUrl' => 'Gambar URL',
 			'metadataEdit.metadataUpdated' => 'Metadata yang diperbarui',
 			'metadataEdit.metadataUpdateFailed' => 'Tidak dapat mengemas kini metadata',
@@ -8535,10 +8539,10 @@ extension on TranslationsId {
 			'universalMedia.intro' => 'Buka link, playlist, atau file. Playback menggunakan pemutar standar Pleazyng dan tidak menambahkan sejarah ke perpustakaan Anda.',
 			'universalMedia.openWhat' => 'Apa yang ingin Anda buka?',
 			'universalMedia.stream' => 'Alamat Stream',
-			'universalMedia.playlist' => 'Daftar Playlist',
-			'universalMedia.files' => 'perangkat file',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Daftar Playlist',
+			'universalMedia.files' => 'perangkat file',
 			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
 			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diakui hanya digunakan untuk sesi ini dan tidak dapat disimpan sebagai favorit.',
@@ -9049,10 +9053,10 @@ extension on TranslationsId {
 			'sourceSetup.nfsTrustHelp' => 'Kosongkan untuk sertifikat yang dipercaya perangkat ini. Jika perlu, tambahkan sertifikat CA privat atau sertifikat server yang ditandatangani sendiri; namanya harus cocok dengan host pada URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Gunakan sertifikat CA atau server dalam format PEM. Jangan sertakan kunci privat.',
 			'sourceSetup.addTrustCertificate' => 'Tambahkan sertifikat kepercayaan khusus',
-			'sourceSetup.replaceTrustCertificate' => 'Ganti sertifikat khusus yang tersimpan',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan layanan mount biasa serta memerlukan dukungan RFC 9289 pada NAS. TLS 1.3 wajib digunakan. Nama host atau IP harus cocok dengan sertifikat. AUTH_SYS UID/GID tetap berlaku di dalam saluran terenkripsi.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Ganti sertifikat khusus yang tersimpan',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan layanan mount biasa serta memerlukan dukungan RFC 9289 pada NAS. TLS 1.3 wajib digunakan. Nama host atau IP harus cocok dengan sertifikat. AUTH_SYS UID/GID tetap berlaku di dalam saluran terenkripsi.',
 			'sourceSetup.clientCertificate' => 'Sertifikat klien (opsional)',
 			'sourceSetup.clientCertificateHelp' => 'Memungkinkan NAS mengautentikasi klien ini; ID AUTH_SYS tetap bergantung pada kebijakan ekspor NFS di NAS.',
 			'sourceSetup.savedIdentity' => 'Identitas klien yang tersimpan akan digunakan.',

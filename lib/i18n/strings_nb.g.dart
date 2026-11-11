@@ -2130,6 +2130,8 @@ class _Translations$music$nb extends Translations$music$en {
 	@override String get instantMixEmpty => 'Direktemiksen ga ingen spor';
 	@override String noAudioUrl({required Object track}) => 'Ingen lyd-URL er tilgjengelig for ${track}';
 	@override late final _Translations$music$discography$nb discography = _Translations$music$discography$nb._(_root);
+	@override String get backTo => 'Tilbake til';
+	@override String get upNext => 'Neste';
 }
 
 // Path: watchTogether
@@ -7516,6 +7518,8 @@ extension on TranslationsNb {
 			'music.discography.singlesAndEps' => 'Singler og EP-er',
 			'music.discography.live' => 'Live',
 			'music.discography.compilations' => 'Samlealbum',
+			'music.backTo' => 'Tilbake til',
+			'music.upNext' => 'Neste',
 			'watchTogether.title' => 'Se sammen',
 			'watchTogether.description' => 'Se innhold synkronisert med venner og familie',
 			'watchTogether.createRoom' => 'Opprett rom',
@@ -7532,10 +7536,10 @@ extension on TranslationsNb {
 			'watchTogether.enterRoomCode' => 'Skriv inn koden på 6 tegn fra verten.',
 			'watchTogether.roomCode' => 'Romkode',
 			'watchTogether.paste' => 'Lim inn',
-			'watchTogether.noCodeInClipboard' => 'Utklippstavlen inneholder ingen romkode',
-			'watchTogether.copyCode' => 'Kopier kode',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Utklippstavlen inneholder ingen romkode',
+			'watchTogether.copyCode' => 'Kopier kode',
 			'watchTogether.codeCopied' => 'Romkode kopiert',
 			'watchTogether.shareInvite' => 'Del invitasjon',
 			'watchTogether.inviteCopied' => 'Invitasjon kopiert. Lim den inn i en melding.',
@@ -8046,10 +8050,10 @@ extension on TranslationsNb {
 			'metadataEdit.selectLogo' => 'Velg logo',
 			'metadataEdit.selectSquareArt' => 'Velg kvadratisk bilde',
 			'metadataEdit.fromUrl' => 'Fra URL',
-			'metadataEdit.uploadFile' => 'Last opp fil',
-			'metadataEdit.enterImageUrl' => 'Skriv inn bilde-URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Last opp fil',
+			'metadataEdit.enterImageUrl' => 'Skriv inn bilde-URL',
 			'metadataEdit.imageUrl' => 'Bilde-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata oppdatert',
 			'metadataEdit.metadataUpdateFailed' => 'Kunne ikke oppdatere metadata',
@@ -8560,10 +8564,10 @@ extension on TranslationsNb {
 			'universalMedia.intro' => 'Åpne en lenke, spillliste eller fil. Playback bruker Pleazyngs standardspiller og legger ikke til historie i biblioteket ditt.',
 			'universalMedia.openWhat' => 'Hva vil du gjerne åpne?',
 			'universalMedia.stream' => 'Stream adresse',
-			'universalMedia.playlist' => 'Playlist',
-			'universalMedia.files' => 'Device filer',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Playlist',
+			'universalMedia.files' => 'Device filer',
 			'universalMedia.favorites' => 'Saved stream favoritter',
 			'universalMedia.address' => 'Media adresser',
 			'universalMedia.addressHelp' => 'URLer med anerkjente akkrediterings- eller signaturparameter brukes kun for denne sesjonen og kan ikke lagres som favoritter.',
@@ -9074,10 +9078,10 @@ extension on TranslationsNb {
 			'sourceSetup.nfsTrustHelp' => 'La stå tomt for sertifikater denne enheten stoler på. Legg ved behov til et sertifikat fra en privat CA eller et selvsignert serversertifikat; navnene må samsvare med verten i NFS-URL-en.',
 			'sourceSetup.nfsTrustInvalid' => 'Bruk et CA- eller serversertifikat i PEM-format. Ikke ta med en privat nøkkel.',
 			'sourceSetup.addTrustCertificate' => 'Legg til egendefinert tillitssertifikat',
-			'sourceSetup.replaceTrustCertificate' => 'Erstatt lagret egendefinert sertifikat',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS bruker de vanlige portene for NFS og monteringstjenesten og krever RFC 9289-støtte på NAS-enheten. TLS 1.3 er påkrevd. Vertsnavnet eller IP-adressen må samsvare med sertifikatet. AUTH_SYS UID/GID gjelder fortsatt i den krypterte kanalen.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Erstatt lagret egendefinert sertifikat',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS bruker de vanlige portene for NFS og monteringstjenesten og krever RFC 9289-støtte på NAS-enheten. TLS 1.3 er påkrevd. Vertsnavnet eller IP-adressen må samsvare med sertifikatet. AUTH_SYS UID/GID gjelder fortsatt i den krypterte kanalen.',
 			'sourceSetup.clientCertificate' => 'Klientsertifikat (valgfritt)',
 			'sourceSetup.clientCertificateHelp' => 'Lar NAS-enheten autentisere denne klienten; AUTH_SYS-ID-er avhenger fortsatt av reglene for NAS-enhetens NFS-deling.',
 			'sourceSetup.savedIdentity' => 'En lagret klientidentitet vil bli brukt.',

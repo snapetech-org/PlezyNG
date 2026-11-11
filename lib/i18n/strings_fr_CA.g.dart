@@ -562,6 +562,8 @@ class _Translations$music$fr_CA extends Translations$music$fr {
 		other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutes',
 		many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutes',
 	);
+	@override String get backTo => 'Revenir à';
+	@override String get upNext => 'À suivre';
 }
 
 // Path: watchTogether
@@ -1568,6 +1570,8 @@ extension on TranslationsFrCa {
 			'music.repeatOne' => 'Répéter ce média en boucle',
 			'music.discography.live' => 'En direct',
 			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minute', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutes', many: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutes', ), 
+			'music.backTo' => 'Revenir à',
+			'music.upNext' => 'À suivre',
 			'watchTogether.removeRoom' => 'Enlever',
 			'watchTogether.hostBadge' => 'Hôte',
 			'watchTogether.playerIdle' => 'Inactif',
@@ -1811,10 +1815,10 @@ extension on TranslationsFrCa {
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',
 			'romm.touchControls' => 'Touch controls',
-			'romm.controls' => 'Controls',
-			'romm.resetControls' => 'Reset controls',
 			_ => null,
 		} ?? switch (path) {
+			'romm.controls' => 'Controls',
+			'romm.resetControls' => 'Reset controls',
 			'romm.playerOne' => 'Player 1',
 			'romm.select' => 'Select',
 			'romm.start' => 'Start',

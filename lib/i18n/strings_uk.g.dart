@@ -2154,6 +2154,8 @@ class _Translations$music$uk extends Translations$music$en {
 	@override String get instantMixEmpty => 'Повернувся мікс без слідів.';
 	@override String noAudioUrl({required Object track}) => 'Немає аудіо-URL для ${track}';
 	@override late final _Translations$music$discography$uk discography = _Translations$music$discography$uk._(_root);
+	@override String get backTo => 'Повернутися до';
+	@override String get upNext => 'Далі';
 }
 
 // Path: watchTogether
@@ -7560,6 +7562,8 @@ extension on TranslationsUk {
 			'music.discography.singlesAndEps' => 'Епізоди та ЕП',
 			'music.discography.live' => 'Наживо',
 			'music.discography.compilations' => 'Компіляції',
+			'music.backTo' => 'Повернутися до',
+			'music.upNext' => 'Далі',
 			'watchTogether.title' => 'Дивитися разом',
 			'watchTogether.description' => 'Переглянути контент в синхроні з друзями та сім\'єю',
 			'watchTogether.createRoom' => 'Створіть кімнату',
@@ -7576,10 +7580,10 @@ extension on TranslationsUk {
 			'watchTogether.enterRoomCode' => 'Введіть 6-картний код з хостингу.',
 			'watchTogether.roomCode' => 'Код кімнати',
 			'watchTogether.paste' => 'Пастир',
-			'watchTogether.noCodeInClipboard' => 'Кліпборд не містить коду кімнати',
-			'watchTogether.copyCode' => 'Копіювати код',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Кліпборд не містить коду кімнати',
+			'watchTogether.copyCode' => 'Копіювати код',
 			'watchTogether.codeCopied' => 'Код кімнати копіюється',
 			'watchTogether.shareInvite' => 'Поділимо запрошення',
 			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
@@ -8090,10 +8094,10 @@ extension on TranslationsUk {
 			'metadataEdit.selectLogo' => 'Вибір логотипу',
 			'metadataEdit.selectSquareArt' => 'Вибір площі мистецтва',
 			'metadataEdit.fromUrl' => 'Від URL',
-			'metadataEdit.uploadFile' => 'Завантажити файл',
-			'metadataEdit.enterImageUrl' => 'Введіть URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Завантажити файл',
+			'metadataEdit.enterImageUrl' => 'Введіть URL',
 			'metadataEdit.imageUrl' => 'Зображення URL',
 			'metadataEdit.metadataUpdated' => 'Актуальні метастази',
 			'metadataEdit.metadataUpdateFailed' => 'Не вдалося оновити метаданни',
@@ -8604,10 +8608,10 @@ extension on TranslationsUk {
 			'universalMedia.intro' => 'Відкрийте посилання, перелік або файл. Playback використовує стандартний гравець Pleazyng і не додає історії до вашої бібліотеки.',
 			'universalMedia.openWhat' => 'Що ви хотіли б відкрити?',
 			'universalMedia.stream' => 'Потік адреси',
-			'universalMedia.playlist' => 'Ігровий список',
-			'universalMedia.files' => 'Файли пристроїв',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Ігровий список',
+			'universalMedia.files' => 'Файли пристроїв',
 			'universalMedia.favorites' => 'Збережений потік улюблених',
 			'universalMedia.address' => 'Медіа адреса',
 			'universalMedia.addressHelp' => 'URL-адреси з визнаними параметрами акредитації або підпису використовуються тільки для цієї сесії і не можуть бути збережені як улюблені.',
@@ -9118,10 +9122,10 @@ extension on TranslationsUk {
 			'sourceSetup.nfsTrustHelp' => 'Залиште порожнім для сертифікатів, яким довіряє цей пристрій. За потреби додайте сертифікат приватного CA або самопідписаний сертифікат сервера; імена в ньому мають відповідати хосту в URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Використайте сертифікат CA або сервера у форматі PEM. Не додавайте приватний ключ.',
 			'sourceSetup.addTrustCertificate' => 'Додати власний довірений сертифікат',
-			'sourceSetup.replaceTrustCertificate' => 'Замінити збережений власний сертифікат',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS використовує звичайні порти NFS і служби монтування та потребує підтримки RFC 9289 на NAS. Потрібен TLS 1.3. Ім’я хоста або IP-адреса мають відповідати сертифікату. UID/GID AUTH_SYS і далі застосовуються в зашифрованому каналі.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Замінити збережений власний сертифікат',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS використовує звичайні порти NFS і служби монтування та потребує підтримки RFC 9289 на NAS. Потрібен TLS 1.3. Ім’я хоста або IP-адреса мають відповідати сертифікату. UID/GID AUTH_SYS і далі застосовуються в зашифрованому каналі.',
 			'sourceSetup.clientCertificate' => 'Сертифікат клієнта (необов’язково)',
 			'sourceSetup.clientCertificateHelp' => 'Дає змогу NAS автентифікувати цього клієнта; ID AUTH_SYS і далі залежать від правил експорту NFS на NAS.',
 			'sourceSetup.savedIdentity' => 'Буде використано збережені ідентифікаційні дані клієнта.',

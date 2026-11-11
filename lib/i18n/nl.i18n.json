@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Singles en EP's",
       "live": "Live",
       "compilations": "Compilaties"
-    }
+    },
+    "backTo": "Terug naar",
+    "upNext": "Hierna"
   },
   "watchTogether": {
     "title": "Samen kijken",

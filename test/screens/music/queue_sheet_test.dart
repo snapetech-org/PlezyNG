@@ -8,6 +8,7 @@ import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
 import 'package:plezy/screens/music/queue_sheet.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
+import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
 import 'package:plezy/widgets/app_icon.dart';
@@ -33,29 +34,65 @@ MediaItem _track(String id, String title) => testMediaItem(
   serverName: 'Server',
 );
 
-/// Fixed-state fake queue: three tracks, playing the middle one — so the
-/// sheet renders history, current, and upcoming rows at once.
 class _FakeQueueService extends StubMusicPlaybackService {
-  final List<MediaItem> tracks;
-  final List<int> jumps = [];
+  final _queue = MusicQueueController();
+  final List<int> jumps = [], removals = [];
+  final List<(int, int)> moves = [];
+  int _session = 0;
 
-  _FakeQueueService(this.tracks);
+  _FakeQueueService(List<MediaItem> tracks, {int start = 1}) {
+    _queue.load(tracks, startIndex: start);
+  }
 
   @override
-  MediaItem? get currentTrack => tracks[1];
-
+  MediaItem? get currentTrack => _queue.current;
   @override
   MusicPlaybackStatus get status => MusicPlaybackStatus.playing;
-
   @override
-  List<MediaItem> get queue => tracks;
-
+  List<MediaItem> get queue => _queue.queue;
   @override
-  int get currentIndex => 1;
+  int get currentIndex => _queue.cursor;
+  @override
+  int get queueSessionRevision => _session;
+  @override
+  bool get shuffled => _queue.shuffled;
+  @override
+  void toggleShuffle() {
+    _queue.toggleShuffle();
+    notifyListeners();
+  }
 
   @override
   Future<void> jumpTo(int index) async {
     jumps.add(index);
+    _queue.jumpTo(index);
+    notifyListeners();
+  }
+
+  @override
+  void removeAt(int index) {
+    removals.add(index);
+    _queue.removeAt(index);
+    notifyListeners();
+  }
+
+  @override
+  void reorder(int from, int to) {
+    moves.add((from, to));
+    _queue.move(from, to);
+    notifyListeners();
+  }
+
+  @override
+  void clearUpcoming() {
+    _queue.clearUpcoming();
+    notifyListeners();
+  }
+
+  void replace(List<MediaItem> tracks) {
+    _session++;
+    _queue.load(tracks);
+    notifyListeners();
   }
 }
 
@@ -132,9 +169,114 @@ void main() {
 
     await tester.tap(find.text('Gamma'));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.ensureVisible(find.text('Alpha'));
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Alpha'));
     await tester.pump();
 
     expect(service.jumps, [2, 0]);
+  });
+
+  Future<void> draw(WidgetTester tester, _FakeQueueService service) async {
+    await tester.pumpWidget(wrap(service));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+  }
+
+  testWidgets('Back To returns to the original occurrence and restores its following queue', (tester) async {
+    final service = _FakeQueueService([_track('t1', 'Alpha'), _track('t2', 'Beta'), _track('t3', 'Gamma')]);
+    await draw(tester, service);
+    await tester.tap(find.text(t.music.backTo));
+    await tester.pump();
+    expect(find.byType(TrackRow), findsOneWidget);
+    expect(find.text('Alpha'), findsOneWidget);
+    expect(find.text('Beta'), findsNothing);
+    await tester.tap(find.text('Alpha'));
+    await tester.pump();
+    expect(service.jumps, [0]);
+    expect(service.queue.map((item) => item.id), ['t1', 't2', 't3']);
+    await tester.tap(find.text(t.music.upNext));
+    await tester.pump();
+    expect(find.text('Beta'), findsOneWidget);
+    expect(find.text('Gamma'), findsOneWidget);
+    expect(find.text('Alpha'), findsNothing);
+  });
+
+  testWidgets('Up Next jumps to the intended duplicate occurrence', (tester) async {
+    final repeated = _track('repeat', 'Repeat');
+    final service = _FakeQueueService([repeated, _track('t2', 'Beta'), _track('t3', 'Gamma'), repeated]);
+    await draw(tester, service);
+    await tester.tap(find.text(t.music.upNext));
+    await tester.pump();
+    await tester.tap(find.text('Repeat'));
+    await tester.pump();
+    expect(service.jumps, [3]);
+    expect(service.queue, hasLength(4));
+  });
+
+  testWidgets('filtered reorder maps playback indices and preserves the playing occurrence', (tester) async {
+    final service = _FakeQueueService([
+      _track('t1', 'Alpha'),
+      _track('t2', 'Beta'),
+      _track('t3', 'Gamma'),
+      _track('t4', 'Delta'),
+    ]);
+    await draw(tester, service);
+    await tester.tap(find.text(t.music.upNext));
+    await tester.pump();
+    tester.widget<ReorderableListView>(find.byType(ReorderableListView)).onReorderItem?.call(0, 1);
+    await tester.pump();
+    expect(service.moves, [(2, 3)]);
+    expect(service.currentTrack?.id, 't2');
+    expect(service.queue.map((item) => item.id), ['t1', 't2', 't4', 't3']);
+  });
+
+  testWidgets('swiping the first identical duplicate retires only that occurrence widget', (tester) async {
+    final repeated = _track('repeat', 'Repeat');
+    final service = _FakeQueueService([_track('t1', 'Alpha'), _track('t2', 'Beta'), repeated, repeated]);
+    await draw(tester, service);
+    await tester.tap(find.text(t.music.upNext));
+    await tester.pump();
+    await tester.drag(find.byType(Dismissible).first, const Offset(-600, 0));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(tester.takeException(), isNull);
+    expect(service.removals, [2]);
+    expect(service.queue, hasLength(3));
+    expect(find.text('Repeat'), findsOneWidget);
+    expect(service.currentTrack?.id, 't2');
+  });
+
+  testWidgets('stale row and reorder callbacks cannot edit a replacement session', (tester) async {
+    final service = _FakeQueueService([_track('t1', 'Alpha'), _track('t2', 'Beta'), _track('t3', 'Gamma')]);
+    await draw(tester, service);
+    final row = tester.widgetList<TrackRow>(find.byType(TrackRow)).last;
+    final reorder = tester.widget<ReorderableListView>(find.byType(ReorderableListView)).onReorderItem;
+    service.replace([_track('new', 'New')]);
+    row.onTap?.call();
+    row.onTrailingTap?.call();
+    reorder?.call(0, 1);
+    await tester.pump();
+    expect(service.jumps, isEmpty);
+    expect(service.removals, isEmpty);
+    expect(service.moves, isEmpty);
+    expect(service.currentTrack?.id, 'new');
+  });
+
+  testWidgets('queue sections and controls fit a narrow screen at 200 percent text', (tester) async {
+    tester.view.physicalSize = const Size(320, 800);
+    tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    final service = _FakeQueueService([_track('t1', 'Alpha'), _track('t2', 'Beta'), _track('t3', 'Gamma')]);
+    await draw(tester, service);
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text(t.music.upNext));
+    await tester.pump();
+    expect(find.text('Gamma'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

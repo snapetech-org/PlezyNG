@@ -2481,7 +2481,9 @@
       "singlesAndEps": "Singles e EPs",
       "live": "Ao vivo",
       "compilations": "Compilações"
-    }
+    },
+    "backTo": "Voltar para",
+    "upNext": "A seguir"
   },
   "watchTogether": {
     "title": "Assistir Juntos",

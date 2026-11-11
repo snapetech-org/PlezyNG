@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Single ve EP'ler",
       "live": "Canlı",
       "compilations": "Derlemeler"
-    }
+    },
+    "backTo": "Önceki çalınanlar",
+    "upNext": "Sıradaki"
   },
   "watchTogether": {
     "title": "Birlikte İzle",

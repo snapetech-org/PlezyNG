@@ -2116,6 +2116,8 @@ class _Translations$music$vi extends Translations$music$en {
 	@override String get instantMixEmpty => 'Tốc độ hỗn hợp đã trở lại với không có dấu vết';
 	@override String noAudioUrl({required Object track}) => 'Không có URL âm thanh có sẵn cho ${track}';
 	@override late final _Translations$music$discography$vi discography = _Translations$music$discography$vi._(_root);
+	@override String get backTo => 'Quay lại';
+	@override String get upNext => 'Tiếp theo';
 }
 
 // Path: watchTogether
@@ -7491,6 +7493,8 @@ extension on TranslationsVi {
 			'music.discography.singlesAndEps' => 'Đĩa đơn và EP',
 			'music.discography.live' => 'Trực tiếp',
 			'music.discography.compilations' => 'Tuyển tập',
+			'music.backTo' => 'Quay lại',
+			'music.upNext' => 'Tiếp theo',
 			'watchTogether.title' => 'Xem cùng nhau',
 			'watchTogether.description' => 'Xem nội dung đồng bộ với bạn bè và gia đình',
 			'watchTogether.createRoom' => 'tạo phòng',
@@ -7507,10 +7511,10 @@ extension on TranslationsVi {
 			'watchTogether.enterRoomCode' => 'Nhập mã 6 ký tự từ host.',
 			'watchTogether.roomCode' => 'Mã phòng',
 			'watchTogether.paste' => 'Ăn bánh',
-			'watchTogether.noCodeInClipboard' => 'Clipboard không chứa mã phòng',
-			'watchTogether.copyCode' => 'Copy mã',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Clipboard không chứa mã phòng',
+			'watchTogether.copyCode' => 'Copy mã',
 			'watchTogether.codeCopied' => 'Mã phòng copy',
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
@@ -8021,10 +8025,10 @@ extension on TranslationsVi {
 			'metadataEdit.selectLogo' => 'Chọn logo',
 			'metadataEdit.selectSquareArt' => 'Chọn Square Art',
 			'metadataEdit.fromUrl' => 'Từ URL',
-			'metadataEdit.uploadFile' => 'tải file',
-			'metadataEdit.enterImageUrl' => 'Nhập hình ảnh URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'tải file',
+			'metadataEdit.enterImageUrl' => 'Nhập hình ảnh URL',
 			'metadataEdit.imageUrl' => 'Ảnh URL',
 			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
@@ -8535,10 +8539,10 @@ extension on TranslationsVi {
 			'universalMedia.intro' => 'Mở một liên kết, danh sách phát hoặc tệp. Playback sử dụng người chơi tiêu chuẩn của Pleazyng và không thêm lịch sử vào thư viện của bạn.',
 			'universalMedia.openWhat' => 'Bạn muốn mở cái gì?',
 			'universalMedia.stream' => 'Địa chỉ Stream',
-			'universalMedia.playlist' => 'Danh sách Playlist',
-			'universalMedia.files' => 'Thiết bị file',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Danh sách Playlist',
+			'universalMedia.files' => 'Thiết bị file',
 			'universalMedia.favorites' => 'Save Stream yêu thích',
 			'universalMedia.address' => 'Địa chỉ Media',
 			'universalMedia.addressHelp' => 'URL với các thông số xác nhận hoặc ký tự được công nhận chỉ được sử dụng cho phiên này và không thể được lưu như là yêu thích.',
@@ -9049,10 +9053,10 @@ extension on TranslationsVi {
 			'sourceSetup.nfsTrustHelp' => 'Để trống để dùng các chứng chỉ được thiết bị này tin cậy. Nếu cần, thêm chứng chỉ của CA riêng hoặc chứng chỉ máy chủ tự ký; các tên trong chứng chỉ phải khớp với máy chủ trong URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Dùng chứng chỉ CA hoặc máy chủ ở định dạng PEM. Không kèm khóa riêng.',
 			'sourceSetup.addTrustCertificate' => 'Thêm chứng chỉ tin cậy tùy chỉnh',
-			'sourceSetup.replaceTrustCertificate' => 'Thay chứng chỉ tùy chỉnh đã lưu',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS dùng các cổng thông thường của NFS và dịch vụ gắn kết, đồng thời yêu cầu NAS hỗ trợ RFC 9289. Bắt buộc dùng TLS 1.3. Tên máy chủ hoặc địa chỉ IP phải khớp với chứng chỉ. AUTH_SYS UID/GID vẫn áp dụng trong kênh được mã hóa.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Thay chứng chỉ tùy chỉnh đã lưu',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS dùng các cổng thông thường của NFS và dịch vụ gắn kết, đồng thời yêu cầu NAS hỗ trợ RFC 9289. Bắt buộc dùng TLS 1.3. Tên máy chủ hoặc địa chỉ IP phải khớp với chứng chỉ. AUTH_SYS UID/GID vẫn áp dụng trong kênh được mã hóa.',
 			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
 			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
 			'sourceSetup.savedIdentity' => 'Sẽ dùng danh tính máy khách đã lưu.',

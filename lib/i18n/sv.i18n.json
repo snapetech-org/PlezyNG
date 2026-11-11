@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Singlar och EP",
       "live": "Live",
       "compilations": "Samlingar"
-    }
+    },
+    "backTo": "Tillbaka till",
+    "upNext": "Härnäst"
   },
   "watchTogether": {
     "title": "Titta tillsammans",

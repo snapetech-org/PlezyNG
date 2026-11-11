@@ -2510,7 +2510,9 @@
       "singlesAndEps": "Синглы и EP",
       "live": "Концертные",
       "compilations": "Сборники"
-    }
+    },
+    "backTo": "Вернуться к",
+    "upNext": "Далее"
   },
   "watchTogether": {
     "title": "Смотреть вместе",

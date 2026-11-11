@@ -2127,6 +2127,8 @@ class _Translations$music$zh_Hant extends Translations$music$zh {
 	@override String get instantMixEmpty => '即時混音沒有產生任何曲目';
 	@override String noAudioUrl({required Object track}) => '${track} 沒有可用的音訊 URL';
 	@override late final _Translations$music$discography$zh_Hant discography = _Translations$music$discography$zh_Hant._(_root);
+	@override String get backTo => '回到已播放';
+	@override String get upNext => '即將播放';
 }
 
 // Path: watchTogether
@@ -7512,6 +7514,8 @@ extension on TranslationsZhHant {
 			'music.discography.singlesAndEps' => '單曲與 EP',
 			'music.discography.live' => '現場',
 			'music.discography.compilations' => '合輯',
+			'music.backTo' => '回到已播放',
+			'music.upNext' => '即將播放',
 			'watchTogether.title' => '一起看',
 			'watchTogether.description' => '與親友同步觀看內容',
 			'watchTogether.createRoom' => '建立房間',
@@ -7528,10 +7532,10 @@ extension on TranslationsZhHant {
 			'watchTogether.enterRoomCode' => '請輸入主持人提供的 6 字元代碼。',
 			'watchTogether.roomCode' => '房間代碼',
 			'watchTogether.paste' => '貼上',
-			'watchTogether.noCodeInClipboard' => '剪貼簿中沒有房間代碼',
-			'watchTogether.copyCode' => '複製代碼',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => '剪貼簿中沒有房間代碼',
+			'watchTogether.copyCode' => '複製代碼',
 			'watchTogether.codeCopied' => '房間代碼已複製',
 			'watchTogether.shareInvite' => '分享邀請',
 			'watchTogether.inviteCopied' => '已複製邀請。請將其貼到訊息中。',
@@ -8042,10 +8046,10 @@ extension on TranslationsZhHant {
 			'metadataEdit.selectLogo' => '選擇標誌',
 			'metadataEdit.selectSquareArt' => '選擇方形圖片',
 			'metadataEdit.fromUrl' => '自訂網址',
-			'metadataEdit.uploadFile' => '上傳檔案',
-			'metadataEdit.enterImageUrl' => '輸入圖片 URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => '上傳檔案',
+			'metadataEdit.enterImageUrl' => '輸入圖片 URL',
 			'metadataEdit.imageUrl' => '圖片 URL',
 			'metadataEdit.metadataUpdated' => '中繼資料已更新',
 			'metadataEdit.metadataUpdateFailed' => '中繼資料更新失敗',
@@ -8556,10 +8560,10 @@ extension on TranslationsZhHant {
 			'universalMedia.intro' => '開啟連結、播放列表或檔案 Playback 使用 Pleazyng 的標準播放器,並且不會將歷史新增到您的圖書館。',
 			'universalMedia.openWhat' => '你想開啟什麼?',
 			'universalMedia.stream' => '流地址',
-			'universalMedia.playlist' => '播放列表',
-			'universalMedia.files' => '裝置檔案',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => '播放列表',
+			'universalMedia.files' => '裝置檔案',
 			'universalMedia.favorites' => '儲存流喜愛',
 			'universalMedia.address' => '媒體地址',
 			'universalMedia.addressHelp' => 'HTTPS 是優先的. 有認可或簽名引數的 URL 僅用於此會議,並且不能儲存為喜愛。',
@@ -9070,10 +9074,10 @@ extension on TranslationsZhHant {
 			'sourceSetup.nfsTrustHelp' => '使用此裝置信任的憑證時請留空。需要時可新增私人 CA 或自我簽署的伺服器憑證；憑證中的名稱必須與 NFS 網址的主機名稱相符。',
 			'sourceSetup.nfsTrustInvalid' => '請使用 PEM 格式的 CA 或伺服器憑證。請勿包含私密金鑰。',
 			'sourceSetup.addTrustCertificate' => '新增自訂信任憑證',
-			'sourceSetup.replaceTrustCertificate' => '取代已儲存的自訂憑證',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用一般的 NFS 和掛載服務連接埠，並要求 NAS 支援 RFC 9289。必須使用 TLS 1.3。主機名稱或 IP 位址必須與憑證相符。加密通道內仍須使用 AUTH_SYS UID/GID。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => '取代已儲存的自訂憑證',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用一般的 NFS 和掛載服務連接埠，並要求 NAS 支援 RFC 9289。必須使用 TLS 1.3。主機名稱或 IP 位址必須與憑證相符。加密通道內仍須使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '用戶端憑證（選填）',
 			'sourceSetup.clientCertificateHelp' => '讓 NAS 驗證此用戶端的身分；AUTH_SYS ID 仍受 NAS 匯出原則約束。',
 			'sourceSetup.savedIdentity' => '將使用已儲存的用戶端身分憑證。',

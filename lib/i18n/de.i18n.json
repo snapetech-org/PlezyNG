@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Singles & EPs",
       "live": "Live",
       "compilations": "Kompilationen"
-    }
+    },
+    "backTo": "Zurück zu",
+    "upNext": "Als Nächstes"
   },
   "watchTogether": {
     "title": "Gemeinsam Schauen",

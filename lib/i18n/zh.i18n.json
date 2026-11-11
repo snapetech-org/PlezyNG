@@ -2474,7 +2474,9 @@
       "singlesAndEps": "单曲和 EP",
       "live": "现场",
       "compilations": "合集"
-    }
+    },
+    "backTo": "回到已播放",
+    "upNext": "即将播放"
   },
   "watchTogether": {
     "title": "一起看",

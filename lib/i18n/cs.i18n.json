@@ -2504,7 +2504,9 @@
       "singlesAndEps": "Singles a EPs",
       "live": "Živě",
       "compilations": "Kompilace"
-    }
+    },
+    "backTo": "Zpět na",
+    "upNext": "Následuje"
   },
   "watchTogether": {
     "title": "Společné sledování",

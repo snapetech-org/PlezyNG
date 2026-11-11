@@ -2462,7 +2462,9 @@
       "singlesAndEps": "Singles dan EPs",
       "live": "Langsung",
       "compilations": "Kompilasi"
-    }
+    },
+    "backTo": "Kembali ke",
+    "upNext": "Berikutnya"
   },
   "watchTogether": {
     "title": "Tonton Bersama",

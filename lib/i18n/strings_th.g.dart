@@ -2116,6 +2116,8 @@ class _Translations$music$th extends Translations$music$en {
 	@override String get instantMixEmpty => 'การผสมทันทีกลับด้วยไม่มีเส้นทาง';
 	@override String noAudioUrl({required Object track}) => 'ไม่มี URL เสียงที่มีอยู่สําหรับ ${track}';
 	@override late final _Translations$music$discography$th discography = _Translations$music$discography$th._(_root);
+	@override String get backTo => 'กลับไปที่';
+	@override String get upNext => 'ถัดไป';
 }
 
 // Path: watchTogether
@@ -7491,6 +7493,8 @@ extension on TranslationsTh {
 			'music.discography.singlesAndEps' => 'Singles และ EPs',
 			'music.discography.live' => 'ชีวิต',
 			'music.discography.compilations' => 'คอมเพลต',
+			'music.backTo' => 'กลับไปที่',
+			'music.upNext' => 'ถัดไป',
 			'watchTogether.title' => 'รับชมร่วมกัน',
 			'watchTogether.description' => 'ดูเนื้อหาในซิงค์กับเพื่อนและครอบครัว',
 			'watchTogether.createRoom' => 'สร้างห้องพัก',
@@ -7507,10 +7511,10 @@ extension on TranslationsTh {
 			'watchTogether.enterRoomCode' => 'ใส่รหัส 6 หมายเลขจากโฮสต์',
 			'watchTogether.roomCode' => 'รหัสห้อง',
 			'watchTogether.paste' => 'แพสติ้ง',
-			'watchTogether.noCodeInClipboard' => 'แผ่นคลิปไม่ได้มีรหัสห้อง',
-			'watchTogether.copyCode' => 'รหัสคัดลอก',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'แผ่นคลิปไม่ได้มีรหัสห้อง',
+			'watchTogether.copyCode' => 'รหัสคัดลอก',
 			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
 			'watchTogether.shareInvite' => 'คู่มือ',
 			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
@@ -8021,10 +8025,10 @@ extension on TranslationsTh {
 			'metadataEdit.selectLogo' => 'เลือกโลโก้',
 			'metadataEdit.selectSquareArt' => 'เลือก Square Art',
 			'metadataEdit.fromUrl' => 'จาก URL',
-			'metadataEdit.uploadFile' => 'ดาวน์โหลดไฟล์',
-			'metadataEdit.enterImageUrl' => 'หมายเลข URL',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'ดาวน์โหลดไฟล์',
+			'metadataEdit.enterImageUrl' => 'หมายเลข URL',
 			'metadataEdit.imageUrl' => 'ภาพ URL',
 			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
 			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
@@ -8535,10 +8539,10 @@ extension on TranslationsTh {
 			'universalMedia.intro' => 'เปิดลิงค์รายการเล่นหรือไฟล์ Playback ใช้ผู้เล่นมาตรฐานของ Pleazyng และไม่เพิ่มประวัติไปยังห้องสมุดของคุณ',
 			'universalMedia.openWhat' => 'สิ่งที่คุณต้องการเปิด',
 			'universalMedia.stream' => 'หมายเลข Stream',
-			'universalMedia.playlist' => 'เล่น',
-			'universalMedia.files' => 'ไฟล์อุปกรณ์',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'เล่น',
+			'universalMedia.files' => 'ไฟล์อุปกรณ์',
 			'universalMedia.favorites' => 'เก็บ Stream มือสมัครเล่น',
 			'universalMedia.address' => 'อ้างอิงสื่อ',
 			'universalMedia.addressHelp' => 'HTTPS เป็นความต้องการ URL ที่มีพารามิเตอร์การรับรองหรือสัญญาที่ได้รับการยอมรับจะใช้เฉพาะสําหรับเซสชั่นนี้และไม่สามารถบันทึกเป็นโปรด',
@@ -9049,10 +9053,10 @@ extension on TranslationsTh {
 			'sourceSetup.nfsTrustHelp' => 'เว้นว่างไว้เพื่อใช้ใบรับรองที่อุปกรณ์นี้เชื่อถือ หากจำเป็น ให้เพิ่มใบรับรองจาก CA ส่วนตัวหรือใบรับรองเซิร์ฟเวอร์ที่ลงนามด้วยตนเอง ชื่อในใบรับรองต้องตรงกับโฮสต์ใน URL ของ NFS',
 			'sourceSetup.nfsTrustInvalid' => 'ใช้ใบรับรอง CA หรือเซิร์ฟเวอร์ในรูปแบบ PEM ห้ามใส่กุญแจส่วนตัว',
 			'sourceSetup.addTrustCertificate' => 'เพิ่มใบรับรองความเชื่อถือที่กำหนดเอง',
-			'sourceSetup.replaceTrustCertificate' => 'แทนที่ใบรับรองที่กำหนดเองซึ่งบันทึกไว้',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS ใช้พอร์ต NFS และบริการเมานต์ตามปกติ และ NAS ต้องรองรับ RFC 9289 ต้องใช้ TLS 1.3 ชื่อโฮสต์หรือ IP ต้องตรงกับใบรับรอง AUTH_SYS UID/GID ยังคงมีผลภายในช่องทางที่เข้ารหัส',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'แทนที่ใบรับรองที่กำหนดเองซึ่งบันทึกไว้',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS ใช้พอร์ต NFS และบริการเมานต์ตามปกติ และ NAS ต้องรองรับ RFC 9289 ต้องใช้ TLS 1.3 ชื่อโฮสต์หรือ IP ต้องตรงกับใบรับรอง AUTH_SYS UID/GID ยังคงมีผลภายในช่องทางที่เข้ารหัส',
 			'sourceSetup.clientCertificate' => 'ใบรับรองไคลเอนต์ (ไม่บังคับ)',
 			'sourceSetup.clientCertificateHelp' => 'ช่วยให้ NAS ยืนยันตัวตนของไคลเอนต์นี้ได้ โดย ID ของ AUTH_SYS ยังขึ้นอยู่กับนโยบายส่วนแบ่งปัน NFS ของ NAS',
 			'sourceSetup.savedIdentity' => 'จะใช้ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',

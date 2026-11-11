@@ -2126,6 +2126,8 @@ class _Translations$music$ja extends Translations$music$en {
 	@override String get instantMixEmpty => 'インスタントミックスにトラックがありませんでした';
 	@override String noAudioUrl({required Object track}) => '${track}で利用可能な音声URLがありません';
 	@override late final _Translations$music$discography$ja discography = _Translations$music$discography$ja._(_root);
+	@override String get backTo => '再生済み';
+	@override String get upNext => '次に再生';
 }
 
 // Path: watchTogether
@@ -7511,6 +7513,8 @@ extension on TranslationsJa {
 			'music.discography.singlesAndEps' => 'シングル・EP',
 			'music.discography.live' => 'ライブ',
 			'music.discography.compilations' => 'コンピレーション',
+			'music.backTo' => '再生済み',
+			'music.upNext' => '次に再生',
 			'watchTogether.title' => '一緒に見る',
 			'watchTogether.description' => '友達や家族と同期してコンテンツを視聴',
 			'watchTogether.createRoom' => 'ルームを作成',
@@ -7527,10 +7531,10 @@ extension on TranslationsJa {
 			'watchTogether.enterRoomCode' => 'ホストから共有された6文字のコードを入力してください。',
 			'watchTogether.roomCode' => 'ルームコード',
 			'watchTogether.paste' => '貼り付け',
-			'watchTogether.noCodeInClipboard' => 'クリップボードにルームコードがありません',
-			'watchTogether.copyCode' => 'コードをコピー',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'クリップボードにルームコードがありません',
+			'watchTogether.copyCode' => 'コードをコピー',
 			'watchTogether.codeCopied' => 'ルームコードをコピーしました',
 			'watchTogether.shareInvite' => '招待を共有',
 			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
@@ -8041,10 +8045,10 @@ extension on TranslationsJa {
 			'metadataEdit.selectLogo' => 'ロゴを選択',
 			'metadataEdit.selectSquareArt' => '正方形アートを選択',
 			'metadataEdit.fromUrl' => 'URLから',
-			'metadataEdit.uploadFile' => 'ファイルをアップロード',
-			'metadataEdit.enterImageUrl' => '画像URLを入力',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'ファイルをアップロード',
+			'metadataEdit.enterImageUrl' => '画像URLを入力',
 			'metadataEdit.imageUrl' => '画像URL',
 			'metadataEdit.metadataUpdated' => 'メタデータを更新しました',
 			'metadataEdit.metadataUpdateFailed' => 'メタデータの更新に失敗しました',
@@ -8555,10 +8559,10 @@ extension on TranslationsJa {
 			'universalMedia.intro' => 'Playback は Pleazyng の標準プレーヤーを使用し、図書館に歴史を追加しない。',
 			'universalMedia.openWhat' => '何を開けたいですか?',
 			'universalMedia.stream' => 'ストリームアドレス',
-			'universalMedia.playlist' => 'プレイリスト',
-			'universalMedia.files' => 'デバイスファイル',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'プレイリスト',
+			'universalMedia.files' => 'デバイスファイル',
 			'universalMedia.favorites' => 'お気に入りのSave Stream',
 			'universalMedia.address' => 'メディアアドレス',
 			'universalMedia.addressHelp' => '認定認証またはサインパラメーターを持つURLは、このセッションのみに使用され、お気に入りとして保存することはできません。',
@@ -9069,10 +9073,10 @@ extension on TranslationsJa {
 			'sourceSetup.nfsTrustHelp' => 'このデバイスが信頼する証明書を使う場合は空欄にします。必要に応じてプライベート CA または自己署名のサーバー証明書を追加してください。証明書の名前は NFS URL のホスト名と一致する必要があります。',
 			'sourceSetup.nfsTrustInvalid' => 'PEM 形式の CA 証明書またはサーバー証明書を使用してください。秘密鍵を含めないでください。',
 			'sourceSetup.addTrustCertificate' => 'カスタムの信頼証明書を追加',
-			'sourceSetup.replaceTrustCertificate' => '保存済みのカスタム証明書を置き換え',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS は通常の NFS およびマウントサービスのポートを使用し、NAS の RFC 9289 対応が必要です。TLS 1.3 が必須です。ホスト名または IP アドレスは証明書と一致する必要があります。暗号化された通信でも AUTH_SYS UID/GID は引き続き適用されます。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => '保存済みのカスタム証明書を置き換え',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS は通常の NFS およびマウントサービスのポートを使用し、NAS の RFC 9289 対応が必要です。TLS 1.3 が必須です。ホスト名または IP アドレスは証明書と一致する必要があります。暗号化された通信でも AUTH_SYS UID/GID は引き続き適用されます。',
 			'sourceSetup.clientCertificate' => 'クライアント証明書（任意）',
 			'sourceSetup.clientCertificateHelp' => 'NAS がこのクライアントを認証できるようにします。AUTH_SYS ID は引き続き NAS のエクスポートポリシーに従います。',
 			'sourceSetup.savedIdentity' => '保存済みのクライアント認証情報を使用します。',

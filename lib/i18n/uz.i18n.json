@@ -2478,7 +2478,9 @@
       "singlesAndEps": "Singllar va EP",
       "live": "Jonli",
       "compilations": "Toʻplamlar"
-    }
+    },
+    "backTo": "Oldin ijro etilganlar",
+    "upNext": "Keyingi"
   },
   "watchTogether": {
     "title": "Birgalikda tomosha qilish",

@@ -2479,7 +2479,9 @@
       "singlesAndEps": "Singles & EPs",
       "live": "Live",
       "compilations": "Compilations"
-    }
+    },
+    "backTo": "Back To",
+    "upNext": "Up Next"
   },
   "watchTogether": {
     "title": "Watch Together",

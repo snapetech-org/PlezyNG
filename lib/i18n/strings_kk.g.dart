@@ -2130,6 +2130,8 @@ class _Translations$music$kk extends Translations$music$en {
 	@override String get instantMixEmpty => 'Сәттік микс ешбір тректі қамтымады';
 	@override String noAudioUrl({required Object track}) => '${track} үшін аудио URL-і қолжетімді емес';
 	@override late final _Translations$music$discography$kk discography = _Translations$music$discography$kk._(_root);
+	@override String get backTo => 'Алдыңғы ойнатылғандар';
+	@override String get upNext => 'Келесі';
 }
 
 // Path: watchTogether
@@ -7516,6 +7518,8 @@ extension on TranslationsKk {
 			'music.discography.singlesAndEps' => 'Синглдер және EP',
 			'music.discography.live' => 'Жанды',
 			'music.discography.compilations' => 'Жинақтар',
+			'music.backTo' => 'Алдыңғы ойнатылғандар',
+			'music.upNext' => 'Келесі',
 			'watchTogether.title' => 'Бірге көру',
 			'watchTogether.description' => 'Достарыңызбен және отбасыңызбен синхронды түрде бірге көріңіз',
 			'watchTogether.createRoom' => 'Бөлме құру',
@@ -7532,10 +7536,10 @@ extension on TranslationsKk {
 			'watchTogether.enterRoomCode' => 'Ұйымдастырушыдан алған 6 таңбалы кодты енгізіңіз.',
 			'watchTogether.roomCode' => 'Бөлме коды',
 			'watchTogether.paste' => 'Қою',
-			'watchTogether.noCodeInClipboard' => 'Алмасу буферінде бөлме коды жоқ',
-			'watchTogether.copyCode' => 'Кодты көшіру',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.noCodeInClipboard' => 'Алмасу буферінде бөлме коды жоқ',
+			'watchTogether.copyCode' => 'Кодты көшіру',
 			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
 			'watchTogether.shareInvite' => 'Шақыру жіберу',
 			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
@@ -8046,10 +8050,10 @@ extension on TranslationsKk {
 			'metadataEdit.selectLogo' => 'Логотипті таңдау',
 			'metadataEdit.selectSquareArt' => 'Шаршы суретті таңдау',
 			'metadataEdit.fromUrl' => 'URL арқылы',
-			'metadataEdit.uploadFile' => 'Файлды жүктеу',
-			'metadataEdit.enterImageUrl' => 'Сурет URL-ін енгізіңіз',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.uploadFile' => 'Файлды жүктеу',
+			'metadataEdit.enterImageUrl' => 'Сурет URL-ін енгізіңіз',
 			'metadataEdit.imageUrl' => 'Сурет URL-і',
 			'metadataEdit.metadataUpdated' => 'Метадеректер жаңартылды',
 			'metadataEdit.metadataUpdateFailed' => 'Метадеректерді жаңарту мүмкін болмады',
@@ -8560,10 +8564,10 @@ extension on TranslationsKk {
 			'universalMedia.intro' => 'Өзі сүйікті жабдықтар, жүктеу спиртке немесе файлға айналады. Playback-ге Pleazyng стандартты фейерверктері бар және библиографиясы көшіру керек емес.',
 			'universalMedia.openWhat' => 'Қанша идеялардан тұрады?',
 			'universalMedia.stream' => 'Тегін адресы',
-			'universalMedia.playlist' => 'Жүзілік',
-			'universalMedia.files' => 'Файлы',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlist' => 'Жүзілік',
+			'universalMedia.files' => 'Файлы',
 			'universalMedia.favorites' => 'Алдыңғы ең айқын көргенде',
 			'universalMedia.address' => 'Медыялық адресы',
 			'universalMedia.addressHelp' => 'Өзі сүйікті жабдықтардан тұрып қара сөздерін, аудармаларын жазды.',
@@ -9074,10 +9078,10 @@ extension on TranslationsKk {
 			'sourceSetup.nfsTrustHelp' => 'Осы құрылғы сенетін сертификаттар үшін бос қалдырыңыз. Қажет болса, жеке CA сертификатын немесе өзі қол қойған сервер сертификатын қосыңыз; ондағы атаулар NFS URL мекенжайындағы хостқа сәйкес болуы керек.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM пішіміндегі CA немесе сервер сертификатын пайдаланыңыз. Жеке кілтті қоспаңыз.',
 			'sourceSetup.addTrustCertificate' => 'Теңшелетін сенім сертификатын қосу',
-			'sourceSetup.replaceTrustCertificate' => 'Сақталған теңшелетін сертификатты ауыстыру',
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS әдеттегі NFS және mount қызметінің порттарын пайдаланады және NAS-та RFC 9289 қолдауын талап етеді. TLS 1.3 қажет. Хост атауы немесе IP мекенжайы сертификатқа сәйкес болуы керек. Шифрланған арнада да AUTH_SYS UID/GID қолданылады.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.replaceTrustCertificate' => 'Сақталған теңшелетін сертификатты ауыстыру',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS әдеттегі NFS және mount қызметінің порттарын пайдаланады және NAS-та RFC 9289 қолдауын талап етеді. TLS 1.3 қажет. Хост атауы немесе IP мекенжайы сертификатқа сәйкес болуы керек. Шифрланған арнада да AUTH_SYS UID/GID қолданылады.',
 			'sourceSetup.clientCertificate' => 'Клиент сертификаты (міндетті емес)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-қа осы клиентті аутентификациялауға мүмкіндік береді; AUTH_SYS ID мәндері әлі де NAS-тағы NFS ортақ ресурсының ережелеріне тәуелді.',
 			'sourceSetup.savedIdentity' => 'Сақталған клиенттің сәйкестендіру деректері пайдаланылады.',

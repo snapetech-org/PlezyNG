@@ -109,6 +109,22 @@ was accepted by the official Caldera 1.1.0 receiver. The receiver negotiated
 received with zero packet drops. Its unpaced null device reported underruns;
 this run cannot qualify acoustic synchronization or real output latency.
 
+Native capture is before AO volume/mute and after decoded filters/resampling.
+Music fade and headroom scalars now account for MPV's cubic user volume curve;
+an equal-power envelope remains an equal-power envelope at the actual output.
+Transmission reapplies the native AO volume, ReplayGain mode/tag/preamp/peak
+clipping policy, fallback and additional volume gain once. It does not repeat
+decoded filters. Short-lived revision-bound gain caches cannot cross a decoder
+handoff, and render-time lane gain updates already queued PCM without waiting
+for another capture. Synthetic received tracks never enter session persistence.
+
+The actual pinned Linux library was executed in an isolated namespace with
+generated audio and null/file outputs. Capture remained nonzero while muted.
+A 0.199981689 peak rendered at 0.024997711 with volume 50, confirming the 1/8
+native amplitude, and at 0.099990845 with a -6.0206 dB ReplayGain tag. These
+measurements qualify this generated native capture/gain path, not a complete
+platform application or a physical audio device.
+
 The current dependency lock (mpv-build d74e7a4a) already records the ordered
 PCM ABI for Android, Apple, Linux and Windows. Its pinned Linux x86_64 archive
 was checksum-verified and all four tap exports, including read_next, inspected.

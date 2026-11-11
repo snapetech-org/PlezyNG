@@ -20,6 +20,8 @@ class CalderaPcmFeed {
     required this.playing,
     required this.readMuted,
     required this.setMuted,
+    this.readGain,
+    this.current,
   });
   final MusicPcmCaptureSource capture;
   final Duration position;
@@ -27,6 +29,8 @@ class CalderaPcmFeed {
   final bool playing;
   final Future<bool> Function() readMuted;
   final Future<void> Function(bool) setMuted;
+  final Future<double> Function()? readGain;
+  final bool Function()? current;
 }
 
 abstract interface class NativeMusicGroupSourceControls {
@@ -248,18 +252,36 @@ class CalderaAudioSource {
     }
     for (final feed in sources) {
       if (!_valid) return;
-      await prepareFeed(feed);
-      if (_leases[feed.capture]?.enabled != true) continue;
-      if (!_valid) return;
-      final blocks = await feed.capture.drainMusicPcmCapture();
-      if (!_valid) return;
-      if (blocks.length > 32) throw const FormatException('Music PCM batch too large');
-      if (!feed.playing) {
-        _mixer.remove(feed.capture);
-        continue;
-      }
-      for (final block in blocks) {
-        _mixer.add(feed.capture, block, position: feed.position, gain: feed.gain);
+      if (feed.current?.call() == false) continue;
+      try {
+        await prepareFeed(feed);
+        if (_leases[feed.capture]?.enabled != true) continue;
+        if (!_valid) return;
+        if (feed.current?.call() == false) continue;
+        final blocks = await feed.capture.drainMusicPcmCapture();
+        if (!_valid) return;
+        if (blocks.length > 32) throw const FormatException('Music PCM batch too large');
+        if (!feed.playing) {
+          _mixer.remove(feed.capture);
+          continue;
+        }
+        final gain = feed.gain * (await feed.readGain?.call() ?? 1);
+        if (!_valid) return;
+        if (feed.current?.call() == false) {
+          _mixer.remove(feed.capture);
+          continue;
+        }
+        _mixer.setGain(feed.capture, gain);
+        for (final block in blocks) {
+          _mixer.add(feed.capture, block, position: feed.position, gain: gain);
+        }
+      } catch (_) {
+        if (!_valid) return;
+        if (feed.current?.call() == false) {
+          _mixer.remove(feed.capture);
+          continue;
+        }
+        rethrow;
       }
     }
     final retired = _leases.keys.where((key) => !sources.any((feed) => identical(feed.capture, key))).toList();

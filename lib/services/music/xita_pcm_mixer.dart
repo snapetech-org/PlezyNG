@@ -10,11 +10,20 @@ class XitaPcmMixer {
   final _lanes = <Object, _PcmLane>{};
 
   int get bufferedFrames => _lanes.values.fold(0, (maximum, lane) => math.max(maximum, lane.endFrame - cursor));
+  void setGain(Object key, double gain) {
+    if (!gain.isFinite || gain < 0 || gain > 1000000) {
+      throw const FormatException('Unsupported PCM gain');
+    }
+    _lanes[key]?.gain = gain;
+  }
+
   void clear() => _lanes.clear();
   void remove(Object key) => _lanes.remove(key);
 
   void add(Object key, MusicPcmBlock block, {required Duration position, required double gain}) {
     if (!gain.isFinite ||
+        gain < 0 ||
+        gain > 1000000 ||
         block.channels > 2 ||
         block.channels < 1 ||
         block.frames < 1 ||
@@ -44,7 +53,7 @@ class XitaPcmMixer {
     final active = lane;
     final start = (active.inputFrames * sampleRate / block.sampleRate).ceil();
     final end = ((active.inputFrames + block.frames) * sampleRate / block.sampleRate).ceil();
-    final level = gain.clamp(0.0, 4.0);
+    active.gain = gain;
     for (var output = start; output < end; output++) {
       final frame = active.origin + output;
       if (frame < cursor || frame >= cursor + capacity) continue;
@@ -59,7 +68,7 @@ class XitaPcmMixer {
         final a = block.samples[first * block.channels + source];
         final b = block.samples[second * block.channels + source];
         if (!a.isFinite || !b.isFinite) throw const FormatException('Non-finite native music PCM');
-        active.samples[slot * 2 + channel] = (a + (b - a) * fraction) * level;
+        active.samples[slot * 2 + channel] = (a + (b - a) * fraction);
       }
     }
     active.inputFrames += block.frames;
@@ -73,8 +82,8 @@ class XitaPcmMixer {
       for (var offset = 0; offset < frames; offset++) {
         final frame = cursor + offset, slot = frame % capacity;
         if (lane.tags[slot] != frame) continue;
-        result[offset * 2] += lane.samples[slot * 2];
-        result[offset * 2 + 1] += lane.samples[slot * 2 + 1];
+        result[offset * 2] += lane.samples[slot * 2] * lane.gain;
+        result[offset * 2 + 1] += lane.samples[slot * 2 + 1] * lane.gain;
         lane.tags[slot] = -1;
       }
     }
@@ -93,4 +102,5 @@ class _PcmLane {
   final samples = Float32List(XitaPcmMixer.capacity * 2);
   final tags = List<int>.filled(XitaPcmMixer.capacity, -1);
   int inputFrames = 0, endFrame = 0;
+  double gain = 1;
 }

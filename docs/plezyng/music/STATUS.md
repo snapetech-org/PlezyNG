@@ -43,7 +43,7 @@ source track/artist/album and progress; shared controls forward to the separatel
 verified Companion playback identity. Paused/suspended membership remains open
 with silence and resumes on a fresh frame timeline. State subscriptions have
 per-event bounds and retire with the owning source/account. The combined native
-group, clock, bridge, controller and shared-player suite passes 244 tests.
+group, clock, bridge, controller and shared-player suite passes 250 tests.
 
 Confidence is **high** for protocol and automated code results. The official
 Caldera 1.1.0 reference accepted both directions in isolated generated-audio
@@ -64,7 +64,11 @@ language modes. Selected
 peers can now fetch bounded source metadata and control the shared queue through
 a target-qualified, replay-protected Companion endpoint. The current binary
 lock already contains the ordered PCM ABI on every platform; the pinned Linux
-archive checksum and four tap exports were verified. The earlier promotion
+archive checksum and four tap exports were verified. Generated tone execution
+against that actual library now also verifies capture while muted, cubic AO
+volume and tagged ReplayGain. Music fades/headroom preserve linear gain under
+the native volume curve; transmitted PCM reapplies native AO gain once, updates
+queued lane gain immediately and rejects late decoder results. The earlier promotion
 warning was stale. Physical speakers and platform builds still need qualification. Full parity is incomplete.
 
 ## Current continuation, 2026-11-10

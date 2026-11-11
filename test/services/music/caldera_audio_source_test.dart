@@ -49,7 +49,9 @@ class _Fixture {
   final messages = <Map<String, dynamic>>[];
   final capture = _Capture();
   final mutes = <bool>[];
-  bool muted = false, current = true;
+  bool muted = false, current = true, feedCurrent = true;
+  double replayGain = 1;
+  Completer<double>? gainGate;
   CalderaAudioSource? source;
   Future<void> open() async {
     final address = (await NetworkInterface.list(
@@ -113,6 +115,8 @@ class _Fixture {
           capture: capture,
           position: Duration(microseconds: capture.frame * 1000000 ~/ 48000),
           gain: .5,
+          readGain: () => gainGate?.future ?? Future.value(replayGain),
+          current: () => feedCurrent,
           playing: true,
           readMuted: () async => muted,
           setMuted: (value) async {
@@ -141,6 +145,31 @@ Future<void> waitFor(bool Function() predicate) async {
 }
 
 void main() {
+  test('native AO gain updates queued audio and a retired decoder cannot apply a late gain read', () async {
+    final f = _Fixture();
+    await f.open();
+    addTearDown(f.close);
+    final source = f.create();
+    await source.start();
+    await waitFor(() => f.packets.whereType<XitaAudio>().any((p) => p.samples.contains(.125)));
+    f.replayGain = .5;
+    f.packets.clear();
+    await waitFor(() => f.packets.whereType<XitaAudio>().any((p) => p.samples.contains(.0625)));
+    f.gainGate = Completer<double>();
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    f.feedCurrent = false;
+    f.packets.clear();
+    f.gainGate!.complete(100);
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    expect(f.packets.whereType<XitaAudio>().any((p) => p.samples.contains(1)), isFalse);
+    expect(source.active, isTrue);
+    f.gainGate = null;
+    f.feedCurrent = true;
+    f.replayGain = .25;
+    f.packets.clear();
+    await waitFor(() => f.packets.whereType<XitaAudio>().any((p) => p.samples.contains(.03125)));
+  });
+
   test('versioned native peer receives clocked PCM and revoked scope releases capture and mute', () async {
     final f = _Fixture();
     await f.open();

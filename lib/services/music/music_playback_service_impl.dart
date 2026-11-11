@@ -1,6 +1,7 @@
 import 'music_discovery.dart';
 import 'music_account_scope.dart';
 import 'music_audio_policy.dart';
+import 'music_gain.dart';
 import 'music_byte_cache.dart';
 import 'music_library_store.dart';
 import 'music_offline_bundle.dart';
@@ -244,16 +245,34 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
   }
 
+  final _nativeGainReaders = Expando<NativeMusicPcmGainReader>();
+
+  double _musicVolume(Player player, {double? volume, double? gain}) => musicVolumeForGain(
+    volume ?? _volume,
+    _workspaceAudioEnabled ? gain ?? _musicGain * _outputGain : 0,
+    nativeCubic: player.playerType == 'mpv',
+  );
+
   CalderaPcmFeed _nativePcmFeed(Player player, CalderaAudioSource source, {required bool primary}) {
     if (player is! MusicPcmCaptureSource || player.audioPassthroughActive) {
       throw StateError('Native music PCM unavailable');
     }
+    final generation = _generation;
+    final revision = (generation, _audioPolicy, _currentTrack?.id);
+    final reader = _nativeGainReaders[player] ??= NativeMusicPcmGainReader(player.getProperty);
     return CalderaPcmFeed(
       capture: player as MusicPcmCaptureSource,
       position: player.currentPosition,
-      gain: primary
-          ? _volume * _musicGain * _outputGain * (_workspaceAudioEnabled ? .01 : 0)
-          : player.state.volume * (_workspaceAudioEnabled ? .01 : 0),
+      gain: _workspaceAudioEnabled ? musicCaptureGain(player.state.volume, nativeCubic: player.playerType == 'mpv') : 0,
+      readGain: player.playerType == 'mpv' ? () => reader.read(revision) : null,
+      current: () =>
+          !_disposed &&
+          !player.disposed &&
+          identical(_calderaSource, source) &&
+          generation == _generation &&
+          (primary
+              ? identical(_player, player)
+              : identical(_overlap?.player, player) || identical(_overlapStartingPlayer, player)),
       playing: player.state.isActive && _status == MusicPlaybackStatus.playing,
       readMuted: () async => (await player.getProperty('mute')) == 'yes',
       setMuted: (muted) async {
@@ -2212,7 +2231,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _player == player &&
         !player.disposed &&
         (_volume != 100.0 || _outputGain != 1 || !_workspaceAudioEnabled)) {
-      unawaited(player.setVolume(_workspaceAudioEnabled ? _volume * _musicGain * _outputGain : 0));
+      unawaited(player.setVolume(_musicVolume(player)));
     }
     if (isNew && _player == player && !player.disposed) {
       await _applyAudioPassthrough(player);
@@ -3169,8 +3188,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       final remaining = trackDuration - position;
       final progress = (1 - remaining.inMicroseconds / fadeDuration.inMicroseconds).clamp(0.0, 1.0).toDouble();
       _setMusicGain(cos(progress * pi / 2));
-      final volume = _volume * _outputGain * (_workspaceAudioEnabled ? 1.0 : 0.0) * sin(progress * pi / 2);
-      unawaited(overlap.player.setVolume(volume.clamp(0.0, 100.0).toDouble()));
+      unawaited(overlap.player.setVolume(_musicVolume(overlap.player, gain: _outputGain * sin(progress * pi / 2))));
       return;
     }
     _tryStartOverlap(position, trackDuration);
@@ -3216,9 +3234,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (player == null || player.disposed) {
       return;
     }
-    final effectiveVolume = (_volume * normalized * _outputGain * (_workspaceAudioEnabled ? 1.0 : 0.0))
-        .clamp(0.0, 100.0)
-        .toDouble();
+    final effectiveVolume = _musicVolume(player);
     unawaited(
       player.setVolume(effectiveVolume).catchError((Object _) {
         appLogger.d('Music fade volume update failed');
@@ -3751,7 +3767,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (clamped != _volume) {
       _volume = clamped;
       _volumeNotifier.value = clamped;
-      playerUpdate = _player?.setVolume(clamped * _musicGain * _outputGain * (_workspaceAudioEnabled ? 1.0 : 0.0));
+      final player = _player;
+      playerUpdate = player?.setVolume(_musicVolume(player, volume: clamped));
       final overlap = _overlap;
       if (overlap != null) {
         final currentDuration = duration ?? Duration.zero;
@@ -3759,7 +3776,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         const fadeDuration = Duration(milliseconds: 1800);
         final progress = (1 - remaining.inMicroseconds / fadeDuration.inMicroseconds).clamp(0.0, 1.0).toDouble();
         unawaited(
-          overlap.player.setVolume((clamped * _outputGain * sin(progress * pi / 2)).clamp(0.0, 100.0).toDouble()),
+          overlap.player.setVolume(
+            _musicVolume(overlap.player, volume: clamped, gain: _outputGain * sin(progress * pi / 2)),
+          ),
         );
       }
     }
@@ -3793,7 +3812,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       } catch (error, stackTrace) {
         appLogger.w('Music workspace audio focus handoff failed', error: error, stackTrace: stackTrace);
       }
-      await player.setVolume(_volume * _musicGain * _outputGain);
+      await player.setVolume(_musicVolume(player));
       return;
     }
 
@@ -4343,7 +4362,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final store = _sessionStore;
     // Guard on the queue, not [_currentTrack]: at [_startQueue] time the
     // queue is already loaded but the track only commits inside [_openCurrent].
-    if (store == null || _disposed || _queue.current == null) {
+    if (store == null || _disposed || _calderaAudioOwner != null || _queue.current == null) {
       return;
     }
     final snapshot = MusicSessionSnapshot(
@@ -4363,7 +4382,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   void _persistSessionProgress({Duration? positionOverride}) {
     final store = _sessionStore;
-    if (store == null || _currentTrack == null) {
+    if (store == null || _calderaAudioOwner != null || _currentTrack == null) {
       return;
     }
     unawaited(

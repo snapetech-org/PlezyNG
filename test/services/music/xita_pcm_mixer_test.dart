@@ -26,6 +26,18 @@ void main() {
     expect(mixer.render(480), everyElement(.5));
     expect(mixer.render(480), everyElement(0));
   });
+  test('gain changes affect already queued PCM without another capture or clipping a lane early', () {
+    final mixer = XitaPcmMixer();
+    mixer.add('decoder', block(value: .25), position: Duration.zero, gain: 1);
+    expect(mixer.render(120), everyElement(.25));
+    mixer.setGain('decoder', .5);
+    expect(mixer.render(120), everyElement(.125));
+    mixer.setGain('decoder', 8);
+    expect(mixer.render(120), everyElement(1));
+    mixer.setGain('decoder', 0);
+    expect(mixer.render(120), everyElement(0));
+  });
+
   test('44.1 kHz mono blocks resample continuously to stereo without a sample gap', () {
     final mixer = XitaPcmMixer();
     for (var i = 0; i < 10; i++) {

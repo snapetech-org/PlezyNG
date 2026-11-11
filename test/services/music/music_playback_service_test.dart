@@ -3059,50 +3059,55 @@ void main() {
       await database.close();
     });
 
-    test('overlaps two decoded songs and promotes the incoming decoder at EOF', () async {
-      resetSharedPreferencesForTest();
-      final settings = await SettingsService.getInstance();
-      await settings.write(SettingsService.musicSweetFades, true);
-      h.dispose();
-      h = _Harness.create(overlapDecoder: true);
-      final profile = AudioLoudnessProfile(levelsDb: [-24, -24, -24], totalSamples: 3000);
-      for (final (track, id) in [(t1, 701), (t2, 702), (t3, 703)]) {
-        h.client.loudnessProfiles[id] = profile;
-        h.resolver.sourceOverrides[track.id] = MusicSource(
-          url: _urlFor(track),
-          reportingClient: h.client,
-          mediaInfo: MediaSourceInfo(
-            videoUrl: _urlFor(track),
-            audioTracks: [MediaAudioTrack(id: id, selected: true)],
-            subtitleTracks: const [],
-            chapters: const [],
-          ),
-        );
-      }
-      await h.playTracks([t1, t2, t3], kind: MusicPlayContextKind.tracks);
-      await pumpEventQueue();
-      final outgoing = h.player;
-      outgoing.setPosition(const Duration(minutes: 2, seconds: 59, milliseconds: 100));
-      await pumpEventQueue();
+    for (final native in [false, true]) {
+      test('overlaps two decoded songs and promotes the incoming decoder at EOF (native=$native)', () async {
+        resetSharedPreferencesForTest();
+        final settings = await SettingsService.getInstance();
+        await settings.write(SettingsService.musicSweetFades, true);
+        h.dispose();
+        h = _Harness.create(overlapDecoder: true);
+        final profile = AudioLoudnessProfile(levelsDb: [-24, -24, -24], totalSamples: 3000);
+        for (final (track, id) in [(t1, 701), (t2, 702), (t3, 703)]) {
+          h.client.loudnessProfiles[id] = profile;
+          h.resolver.sourceOverrides[track.id] = MusicSource(
+            url: _urlFor(track),
+            reportingClient: h.client,
+            mediaInfo: MediaSourceInfo(
+              videoUrl: _urlFor(track),
+              audioTracks: [MediaAudioTrack(id: id, selected: true)],
+              subtitleTracks: const [],
+              chapters: const [],
+            ),
+          );
+        }
+        await h.playTracks([t1, t2, t3], kind: MusicPlayContextKind.tracks);
+        await pumpEventQueue();
+        final outgoing = h.player..nativeClock = native;
+        outgoing.setPosition(const Duration(minutes: 2, seconds: 59, milliseconds: 100));
+        await pumpEventQueue();
 
-      expect(h.players, hasLength(2));
-      final incoming = h.player;
-      expect(incoming.openedUris, [_urlFor(t2)]);
-      expect(outgoing.armed, isNull, reason: 'the first core must not auto-advance into the incoming track');
-      outgoing.setPosition(const Duration(minutes: 2, seconds: 59, milliseconds: 600));
-      expect(outgoing.volumes.last, inInclusiveRange(0, 100));
-      expect(incoming.volumes.last, greaterThan(0));
-      expect(h.service.currentTrack?.id, t1.id, reason: 'outgoing reporting remains authoritative until EOF');
+        expect(h.players, hasLength(2));
+        final incoming = h.player..nativeClock = native;
+        expect(incoming.openedUris, [_urlFor(t2)]);
+        expect(outgoing.armed, isNull, reason: 'the first core must not auto-advance into the incoming track');
+        outgoing.setPosition(const Duration(minutes: 2, seconds: 59, milliseconds: 600));
+        expect(outgoing.volumes.last, inInclusiveRange(0, 100));
+        expect(incoming.volumes.last, greaterThan(0));
+        final outgoingGain = pow(outgoing.volumes.last / 100, native ? 3 : 1).toDouble();
+        final incomingGain = pow(incoming.volumes.last / 100, native ? 3 : 1).toDouble();
+        expect(outgoingGain * outgoingGain + incomingGain * incomingGain, closeTo(1, 1e-6));
+        expect(h.service.currentTrack?.id, t1.id, reason: 'outgoing reporting remains authoritative until EOF');
 
-      outgoing.emitCompleted();
-      await pumpEventQueue();
-      expect(h.service.currentTrack?.id, t2.id);
-      expect(h.service.status, MusicPlaybackStatus.playing);
-      expect(outgoing.disposed, isTrue);
-      expect(incoming.disposed, isFalse);
-      expect(incoming.volumes.last, 100);
-      expect(incoming.armed?.uri, _urlFor(t3), reason: 'the new primary keeps gapless arming');
-    });
+        outgoing.emitCompleted();
+        await pumpEventQueue();
+        expect(h.service.currentTrack?.id, t2.id);
+        expect(h.service.status, MusicPlaybackStatus.playing);
+        expect(outgoing.disposed, isTrue);
+        expect(incoming.disposed, isFalse);
+        expect(incoming.volumes.last, 100);
+        expect(incoming.armed?.uri, _urlFor(t3), reason: 'the new primary keeps gapless arming');
+      });
+    }
 
     test('an ordered playlist uses gapless until an edit turns it into a mixed queue', () async {
       resetSharedPreferencesForTest();

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Match native music gain to the pinned decoder's cubic volume curve and ReplayGain, preserving equal-power fades and EQ headroom. Update queued group PCM gain at render time and discard late gain reads from retired decoders; keep synthetic native receive tracks out of session persistence.
+
 - Schedule native receive PCM on the renderer's audible audio clock, including driver delay, and resample continuously between independent source/output clocks. Bound drift, phase correction, priming and stale-clock lifetime while preserving shared-player ownership.
 
 - Follow native group source metadata in Now Playing and shared media controls, forwarding transport and seek to the verified Companion playback identity. Preserve paused group membership and feed silence until resumed audio establishes a fresh frame clock; retire subscriptions on source or account changes.

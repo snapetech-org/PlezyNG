@@ -815,7 +815,9 @@ The iOS and macOS Podfiles fetch GTMAppAuth 5.0.0 metadata from
 The upstream edit added only `deprecated: true`; its Google source tag and
 all dependency versions remain unchanged. CDN edges returned both metadata
 versions and broke `pod install --deployment`. Keep the immutable URL and
-checksum together in both lockfiles. `check_podspec_locks.rb` verifies that
+checksum together in both lockfiles. External podspecs are normalized into
+sandbox JSON: use its CocoaPods 1.17 checksum, not the raw Trunk document hash.
+`check_podspec_locks.rb` verifies that
 contract before native compilation; do not bypass deployment enforcement or
 accept whichever checksum an edge returns. A future dependency upgrade must
 review its source, metadata and both resolved dependency graphs together.

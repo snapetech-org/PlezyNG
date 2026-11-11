@@ -302,16 +302,36 @@ def verify_frozen_tvos_run(run_id, proof, repository=REPOSITORY):
     jobs = collection(f'repos/{repository}/actions/runs/{run_id}/attempts/{run["run_attempt"]}/jobs', 'jobs')
     tv_name = 'Build tvOS developer package (arm64)'
     selected = {}
-    for name, conclusion in (('Validate release request', 'success'), (tv_name, 'success'), ('build-ios', 'failure')):
+    for name, conclusion in (('Validate release request', 'success'), (tv_name, 'success')):
         matches = [job for job in jobs if job.get('name') == name]
         if (len(matches) != 1 or matches[0].get('status') != 'completed'
                 or matches[0].get('conclusion') != conclusion):
             raise RecoveryError('TV sibling source has an unexpected platform outcome: ' + name)
         selected[name] = matches[0]
+    ios = [job for job in jobs if job.get('name') == 'build-ios']
+    if (len(ios) != 1 or ios[0].get('status') != 'completed'
+            or ios[0].get('conclusion') not in ('failure', 'skipped')
+            or (ios[0].get('conclusion') == 'skipped' and ios[0].get('steps') != [])):
+        raise RecoveryError('TV sibling source has an unexpected iOS outcome')
+    selected['build-ios'] = ios[0]
     create = [job for job in jobs if job.get('name') == 'create-release']
     if len(create) != 1 or any(job.get('status') != 'completed' or job.get('conclusion') != 'skipped'
-                             or job.get('steps') != [] for job in jobs if job.get('name') not in selected):
+                             or job.get('steps') != [] for job in jobs if job.get('name') not in selected and job != create[0]):
         raise RecoveryError('TV sibling source executed unrelated work or attempted release creation')
+    assembly = create[0]
+    if ios[0]['conclusion'] == 'failure':
+        if assembly.get('status') != 'completed' or assembly.get('conclusion') != 'skipped' or assembly.get('steps') != []:
+            raise RecoveryError('TV sibling source attempted release creation after iOS failed')
+    else:
+        steps = assembly.get('steps', [])
+        if (assembly.get('status') != 'completed' or assembly.get('conclusion') != 'failure'
+                or len([step for step in steps if step.get('name') == 'Recover verified platform artifacts'
+                        and step.get('conclusion') == 'failure']) != 1
+                or any(step.get('name') == 'Create Release' and step.get('conclusion') != 'skipped'
+                       for step in steps)
+                or not any(step.get('name') == 'Create Release' and step.get('conclusion') == 'skipped'
+                           for step in steps)):
+            raise RecoveryError('TV sibling assembly did not stop before publication')
     for job, required in ((selected['Validate release request'], (
             'Verify approved frozen packaging checkout', 'Verify reusable platform source')),
             (selected[tv_name], ('Build tvOS app', 'Build signed tvOS App Store IPA',

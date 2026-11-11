@@ -364,6 +364,18 @@ class FrozenTvosReuseTests(unittest.TestCase):
         self.assertEqual(result['artifact_digest'], self.artifact['digest'])
         self.assertEqual(result['packaging_approval'], self.prior['packaging_approval'])
 
+    def test_tvos_only_sibling_can_fail_assembly_before_publication(self):
+        self.jobs[2]['conclusion'] = 'skipped'
+        self.jobs[3]['conclusion'] = 'failure'
+        self.jobs[3]['steps'] = [
+            {'name': 'Recover verified platform artifacts', 'status': 'completed', 'conclusion': 'failure'},
+            {'name': 'Create Release', 'status': 'completed', 'conclusion': 'skipped'},
+        ]
+        self.prove()
+        self.jobs[3]['steps'][1]['conclusion'] = 'success'
+        with self.assertRaisesRegex(recovery.RecoveryError, 'before publication'):
+            self.prove()
+
     def test_untrusted_wrong_product_unsigned_and_publication_attempt_sources_are_rejected(self):
         original = {key: copy.deepcopy(getattr(self, key)) for key in ('run', 'jobs', 'artifact', 'prior')}
         for change in ('foreign', 'wrong-product', 'failed-ci', 'missing-signed', 'missing-attestation',

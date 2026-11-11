@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Show bounded, account-scoped artwork in CarPlay music lists, including owned offline artwork. Discard stale browse/image replies and keep image requests, decoding and presentation caches bounded.
+
 - Edit playlist artwork from the detail screen: select a current server image, upload a bounded image or restore default artwork. Retire picker results and accepted writes when the owning account changes.
 
 - Add guarded Plex playlist artwork listing, selection, bounded image upload and default restoration, with fresh identity checks and propagated permission failures.

@@ -568,6 +568,7 @@ final class MusicCarBridge {
 @objc(MusicCarSceneDelegate)
 final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
   private var controller: CPInterfaceController?
+  private var artworkGeneration = 0
 
   func templateApplicationScene(
     _ templateApplicationScene: CPTemplateApplicationScene,
@@ -584,12 +585,14 @@ final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     _ templateApplicationScene: CPTemplateApplicationScene,
     didDisconnect interfaceController: CPInterfaceController
   ) {
+    artworkGeneration += 1
     MusicCarBridge.shared.connection(false)
     MusicCarBridge.shared.scene = nil
     controller = nil
   }
 
   func refresh() {
+    artworkGeneration += 1
     guard let controller else { return }
     if !MusicCarBridge.shared.ready {
       let item = CPListItem(
@@ -603,13 +606,52 @@ final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
     show(id: "root", title: "Pleazyng", root: true)
   }
 
+  private func loadArtwork(_ rows: [(String, CPListItem)], generation: Int, scale: CGFloat) {
+    // CPListItem.setImage accepts a display-ready image. Bound both the
+    // bridge payload and concurrent work; no media URL enters the native list.
+    let size = min(
+      256,
+      max(
+        32,
+        Int(
+          ceil(
+            max(
+              CPListItem.maximumImageSize.width, CPListItem.maximumImageSize.height) * scale))))
+    weak var scene = self
+    var cursor = 0
+    var active = 0
+    func pump() {
+      guard let scene, generation == scene.artworkGeneration, scene.controller != nil else { return }
+      while active < 3, cursor < rows.count {
+        let (id, item) = rows[cursor]
+        cursor += 1
+        active += 1
+        MusicCarBridge.shared.request("artwork", ["id": id, "size": size]) { [weak scene, weak item] value in
+          guard let scene, generation == scene.artworkGeneration, scene.controller != nil else { return }
+          if let data = value as? FlutterStandardTypedData, data.data.count <= 512 * 1024,
+            let image = UIImage(data: data.data, scale: scale)
+          {
+            item?.setImage(image)
+          }
+          active -= 1
+          pump()
+        }
+      }
+    }
+    pump()
+  }
+
   private func show(id: String, title: String, root: Bool = false) {
+    artworkGeneration += 1
+    let generation = artworkGeneration
     MusicCarBridge.shared.request("browse", ["id": id]) { [weak self] value in
-      guard let self, let controller = self.controller else { return }
+      guard let self, generation == self.artworkGeneration, let controller = self.controller else { return }
       let rows = value as? [[String: Any]] ?? []
+      var artworkRows: [(String, CPListItem)] = []
       let items: [CPListItem] = rows.prefix(100).compactMap { row in
         guard let id = row["id"] as? String, let title = row["title"] as? String else { return nil }
         let item = CPListItem(text: title, detailText: row["subtitle"] as? String)
+        if row["artwork"] as? Bool == true { artworkRows.append((id, item)) }
         item.handler = { [weak self] _, done in
           if row["playable"] as? Bool == true {
             MusicCarBridge.shared.request("playItem", ["id": id]) { success in
@@ -636,6 +678,7 @@ final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
       } else {
         controller.pushTemplate(template, animated: true, completion: nil)
       }
+      self.loadArtwork(artworkRows, generation: generation, scale: controller.carTraitCollection.displayScale)
     }
   }
 }

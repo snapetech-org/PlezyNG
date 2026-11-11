@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/media_item.dart';
+import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/providers/download_provider.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
@@ -52,6 +56,10 @@ class Music extends StubMusicPlaybackService {
 
 class CatalogDownloads extends ChangeNotifier implements DownloadProvider {
   List<MediaItem> tracks = [];
+  String? artworkPath;
+  @override
+  String? getArtworkLocalPath(ServerId serverId, String? artworkPath) => this.artworkPath;
+
   @override
   List<MediaItem> get downloadedTracks => tracks;
   void publish(List<MediaItem> value) {
@@ -111,6 +119,67 @@ void main() {
     );
     await tester.pump();
   }
+
+  for (final revokeDownload in [false, true]) {
+    testWidgets('opaque artwork retires on download removal=$revokeDownload and queue changes', (tester) async {
+      final directory = (await tester.runAsync(() => Directory.systemTemp.createTemp('pleazyng-car-artwork-')))!;
+      addTearDown(() => directory.delete(recursive: true));
+      final image = File('${directory.path}/art.png');
+      final bytes = await tester.runAsync(() async {
+        final recorder = ui.PictureRecorder();
+        ui.Canvas(
+          recorder,
+        ).drawRect(const ui.Rect.fromLTWH(0, 0, 2, 2), ui.Paint()..color = const ui.Color(0xff00ff00));
+        final picture = recorder.endRecording();
+        final decoded = await picture.toImage(2, 2);
+        final data = await decoded.toByteData(format: ui.ImageByteFormat.png);
+        decoded.dispose();
+        picture.dispose();
+        return data!.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      });
+      await tester.runAsync(() => image.writeAsBytes(bytes!));
+      final music = Music();
+      music.tracks[0] = testMediaItem(
+        id: 'a',
+        serverId: 'server',
+        kind: MediaKind.track,
+        thumbPath: '/private/artwork',
+      );
+      final downloads = CatalogDownloads()
+        ..tracks = [music.tracks.first]
+        ..artworkPath = image.path;
+      await mount(tester, music, Profiles(), downloads: downloads);
+      final rows = await native('browse', {'id': 'queue'}) as List;
+      final row = rows.first as Map;
+      expect(row['artwork'], isTrue);
+      expect(jsonEncode(rows), isNot(contains('/private/artwork')));
+      expect(jsonEncode(rows), isNot(contains(image.path)));
+      final result = await tester.runAsync(() async => await native('artwork', {'id': row['id'], 'size': 96}));
+      expect(result, isA<Uint8List>());
+      expect((result as Uint8List).length, lessThan(512 * 1024));
+      if (revokeDownload) {
+        downloads.publish([]);
+      } else {
+        music.edit();
+      }
+      await tester.pump();
+      expect(await native('artwork', {'id': row['id'], 'size': 96}), isNull);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('native artwork rejects arbitrary paths missing rows and unsupported sizes', (tester) async {
+    await mount(tester, Music(), Profiles());
+    for (final args in [
+      {'id': 'https://server.invalid/secret', 'size': 96},
+      {'id': '../private', 'size': 96},
+      {'id': 'queue:1:0', 'size': 10000},
+      {'id': 'queue:1:0', 'size': 96.0},
+    ]) {
+      expect(await native('artwork', args), isNull);
+    }
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('widget transport is bound to the exact profile scope and queue revision', (tester) async {
     final calls = <MethodCall>[];

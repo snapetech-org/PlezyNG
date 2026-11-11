@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +23,8 @@ import '../../providers/multi_server_provider.dart';
 import '../../screens/music/music_driving_screen.dart';
 import '../../services/settings_service.dart';
 import '../../utils/provider_extensions.dart';
+import '../../utils/media_server_http_client.dart';
+import 'music_car_artwork.dart';
 import 'music_discovery.dart';
 import 'music_playback_service.dart';
 import 'music_library_store.dart';
@@ -31,7 +35,7 @@ import 'music_offline_bundle.dart';
 import 'music_playlist_loader.dart';
 
 /// Profile-scoped native browse/command boundary. Native displays carry opaque
-/// references and text; never media URLs, server tokens or filesystem paths.
+/// references, text and bounded artwork bytes; never media URLs, server tokens or filesystem paths.
 class MusicCarHost extends StatefulWidget {
   const MusicCarHost({super.key, required this.navigatorKey, required this.child});
   final GlobalKey<NavigatorState> navigatorKey;
@@ -49,6 +53,10 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   late final MusicPlaybackService _music;
   late final String? _profileId;
   late final ActiveProfileProvider _profiles;
+  final _carArtwork = MusicCarArtwork();
+  final _artworkHttp = MediaServerHttpClient();
+  final _artworkItems =
+      <String, ({MediaItem item, MediaServerClient? client, Object? authentication, String? scope})>{};
   final Map<String, MediaItem> _items = {};
   final Map<String, Object?> _authorizations = {};
   String? _queueShape, _catalogShape;
@@ -105,7 +113,12 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       final shape = jsonEncode([
         [
           for (final client in clients ?? <MediaServerClient>[])
-            [client.serverId.value, client.serverName, identityHashCode(client.authenticationSessionId)],
+            [
+              client.serverId.value,
+              client.serverName,
+              identityHashCode(client.authenticationSessionId),
+              musicAccountScope(client),
+            ],
         ],
         context.read<LibrariesProvider?>()?.libraries.map((library) => library.globalKey).toList(),
         context.read<DownloadProvider?>()?.downloadedTracks.map((track) => track.globalKey).toList(),
@@ -113,6 +126,8 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       ]);
       if (_catalogShape == shape) return;
       _catalogShape = shape;
+      _artworkItems.clear();
+      _carArtwork.clear();
       unawaited(_send('catalogChanged'));
     });
   }
@@ -162,6 +177,9 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       _owner = null;
       MusicBackgroundFrames.carConnected = false;
     }
+    _carArtwork.clear();
+    _artworkItems.clear();
+    _artworkHttp.close();
     _items.clear();
     _authorizations.clear();
     super.dispose();
@@ -187,6 +205,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       _authorizations.remove(first);
     }
     _items[id] = item;
+    _rememberArtwork(id, item);
     _authorizations[id] = context.getMediaClientForItemOrNull(item)?.authenticationSessionId;
     return {
       'id': id,
@@ -194,7 +213,98 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       'subtitle': item.trackArtistTitle ?? item.albumTitle ?? '',
       'playable': item.kind == MediaKind.track,
       'kind': item.kind.name,
+      'artwork': true,
     };
+  }
+
+  void _rememberArtwork(String id, MediaItem item) {
+    final client = context.getMediaClientForItemOrNull(item);
+    if (_artworkItems.length >= 2000 && !_artworkItems.containsKey(id)) {
+      _artworkItems.remove(_artworkItems.keys.first);
+    }
+    _artworkItems[id] = (
+      item: item,
+      client: client,
+      authentication: client?.authenticationSessionId,
+      scope: client == null ? null : musicAccountScope(client),
+    );
+  }
+
+  Map<String, Object?> _queueItem(MediaItem item, int index) {
+    final id = 'queue:$_catalogRevision:$index';
+    _rememberArtwork(id, item);
+    return {
+      'id': id,
+      'title': item.displayTitle,
+      'subtitle': item.trackArtistTitle ?? '',
+      'playable': true,
+      'artwork': true,
+    };
+  }
+
+  Future<Uint8List?> _artwork(Map<String, dynamic> args) async {
+    final id = args['id'], size = args['size'];
+    if (id is! String || id.length > 256 || size is! int || size < 32 || size > 256) return null;
+    final owner = _artworkItems[id];
+    if (owner == null) return null;
+    final item = owner.item, client = owner.client;
+    final downloads = context.read<DownloadProvider?>();
+    final hidden = context.read<HiddenLibrariesProvider?>();
+    await hidden?.ensureInitialized();
+    bool current() {
+      if (!_current ||
+          _artworkItems[id] != owner ||
+          hidden?.isLibraryHidden('${item.serverId}:${item.libraryId}') == true) {
+        return false;
+      }
+      if (id.startsWith('queue:')) {
+        final parts = id.split(':');
+        final index = parts.length == 3 ? int.tryParse(parts[2]) : null;
+        if (parts.length != 3 ||
+            int.tryParse(parts[1]) != _catalogRevision ||
+            index == null ||
+            index < 0 ||
+            index >= _music.queue.length ||
+            _music.queue[index].globalKey != item.globalKey) {
+          return false;
+        }
+      }
+      if (client != null) {
+        return client.backend == item.backend &&
+            _clientCurrent(client, owner.authentication!) &&
+            owner.scope == musicAccountScope(client);
+      }
+      return context.getMediaClientForItemOrNull(item) == null &&
+          downloads?.downloadedTracks.any((row) => row.globalKey == item.globalKey && row.backend == item.backend) ==
+              true;
+    }
+
+    if (!current()) return null;
+    final path = item.thumbPath ?? item.parentThumbPath ?? item.grandparentThumbPath;
+    if (path == null || path.isEmpty || item.serverId == null) return null;
+    return _carArtwork.load(
+      id: jsonEncode([id, owner.scope, path]),
+      size: size,
+      isCurrent: current,
+      read: () async {
+        if (!current()) return null;
+        final local = downloads?.getArtworkLocalPath(ServerId(item.serverId!), path);
+        if (local != null && await File(local).exists()) {
+          if (!current()) return null;
+          final builder = BytesBuilder(copy: false);
+          await for (final chunk in File(local).openRead(0, MusicCarArtwork.maxInputBytes + 1)) {
+            if (!current()) return null;
+            builder.add(chunk);
+            if (builder.length > MusicCarArtwork.maxInputBytes) return null;
+          }
+          return builder.takeBytes();
+        }
+        if (!current() || client == null || client.isOfflineMode) return null;
+        final url = client.thumbnailUrl(path, width: size, height: size);
+        if (url.isEmpty) return null;
+        return _artworkHttp.getBytes(url, maxBytes: MusicCarArtwork.maxInputBytes, timeout: const Duration(seconds: 6));
+      },
+    );
   }
 
   bool _clientCurrent(MediaServerClient client, Object authentication) {
@@ -226,6 +336,8 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
             throw PlatformException(code: 'invalid_transport');
         }
         return null;
+      case 'artwork':
+        return _artwork(args);
       case 'browse':
         return _browse(args['id'] as String? ?? 'root');
       case 'search':
@@ -527,13 +639,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       final queue = _music.queue;
       final start = _music.currentIndex.clamp(0, queue.length);
       return [
-        for (var i = start + offset; i < queue.length && i < start + offset + _pageSize; i++)
-          {
-            'id': 'queue:$_catalogRevision:$i',
-            'title': queue[i].displayTitle,
-            'subtitle': queue[i].trackArtistTitle ?? '',
-            'playable': true,
-          },
+        for (var i = start + offset; i < queue.length && i < start + offset + _pageSize; i++) _queueItem(queue[i], i),
         if (start + offset + _pageSize < queue.length) _nextPage(id, offset + _pageSize),
       ];
     }
@@ -564,6 +670,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
                   'kind': 'playlist',
                   'title': p.title,
                   'serverId': client.serverId.value,
+                  'thumbPath': p.displayImagePath,
                 }),
               ),
             ),

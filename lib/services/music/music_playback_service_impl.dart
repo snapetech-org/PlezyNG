@@ -288,6 +288,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   Future<void> _sendNativeMusicGroup(List<CalderaNode> sinks, {required bool Function() current}) async {
+    if (!current()) throw StateError('Native music selection changed');
+    final existing = _calderaSource;
+    if (existing?.active == true) {
+      _calderaHost?.remember(sinks);
+      await existing!.replaceSinks(sinks, current: current);
+      if (!_disposed) notifyListeners();
+      return;
+    }
     await leaveNativeMusicGroup();
     if (_disposed ||
         !current() ||
@@ -298,7 +306,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _musicGroupFollower) {
       throw StateError('Local music output unavailable');
     }
-    final scope = _nativeMusicScope(current);
+    final host = _calderaHost;
+    var selecting = true;
+    final scope = _nativeMusicScope(
+      () => host == null ? current() : identical(_calderaHost, host) && host.active && (!selecting || current()),
+    );
     late final CalderaAudioSource source;
     bool authorized() =>
         scope() &&
@@ -306,7 +318,6 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _playbackOutput == null &&
         _musicDeviceOutput == null &&
         !_musicGroupFollower;
-    final host = _calderaHost;
     host?.remember(sinks);
     source = CalderaAudioSource(
       id: host?.id,
@@ -327,6 +338,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         if (!authorized()) throw StateError('Native music scope changed');
         await _nativeControl(action, value);
       },
+      onMembershipChanged: () {
+        if (identical(_calderaSource, source)) {
+          _syncNativeHost();
+          if (!_disposed) notifyListeners();
+        }
+      },
       onClosed: () {
         if (identical(_calderaSource, source)) {
           _calderaSource = null;
@@ -342,6 +359,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         await source.close();
         return;
       }
+      selecting = false;
       notifyListeners();
     } catch (_) {
       if (identical(_calderaSource, source)) _calderaSource = null;
@@ -407,9 +425,21 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   Future<void> _receiveNativeMusicGroup(CalderaNode leader, {required bool Function() current}) async {
+    if (!current()) throw StateError('Native music selection changed');
+    final existing = _calderaSink;
+    if (existing?.active == true &&
+        existing!.leader.id == leader.id &&
+        existing.leader.endpoint == leader.endpoint &&
+        existing.leader.meshPort == leader.meshPort) {
+      return;
+    }
     await leaveNativeMusicGroup();
     if (_disposed || !current()) throw StateError('Native music scope changed');
-    final authorized = _nativeMusicScope(current);
+    final host = _calderaHost;
+    var selecting = true;
+    final authorized = _nativeMusicScope(
+      () => host == null ? current() : identical(_calderaHost, host) && host.active && (!selecting || current()),
+    );
     _calderaHost?.remember([leader]);
     late final CalderaAudioSink sink;
     sink = CalderaAudioSink(
@@ -432,6 +462,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         await sink.close();
         return;
       }
+      selecting = false;
       notifyListeners();
     } catch (_) {
       if (identical(_calderaSink, sink)) _calderaSink = null;

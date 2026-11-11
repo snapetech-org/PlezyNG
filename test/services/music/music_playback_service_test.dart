@@ -1431,6 +1431,16 @@ void main() {
       );
       await until(() => h.service.sendingNativeMusicGroup);
       expect(accepted.single['source'], host.id);
+      final selection = host.membership;
+      host.synchronize(CalderaMembership(host.id, [host.id, peer, '22222222-2222-4222-8222-222222222222']));
+      await Future<void>.delayed(const Duration(milliseconds: 40));
+      expect(
+        h.service.sendingNativeMusicGroup,
+        isTrue,
+        reason: 'Accepted audio belongs to availability, not a retired setup request',
+      );
+      expect(player.captureEnabled, isTrue);
+      host.synchronize(selection);
       expect(player.captureEnabled, isTrue);
       expect(player.properties['mute'], 'yes');
       expect(h.service.queue.map((track) => track.id), [t1.id, t1.id, t2.id]);

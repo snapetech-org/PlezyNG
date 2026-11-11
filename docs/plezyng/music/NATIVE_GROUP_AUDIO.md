@@ -181,6 +181,30 @@ outliers cannot change receive frame unwrapping. Current native Companion
 commands can acknowledge with an empty HTTP 200 body; the controller also
 retains the older XML acknowledgement validation.
 
+## Membership changes without restarting audio
+
+An established source keeps its decoder capture, UDP port and advancing frame
+clock while adding or removing speakers. New peers receive no PCM until they
+acknowledge source ownership; a failed or superseded addition leaves existing
+output running. Committing a destination set repeats the descriptor on the
+existing timeline. A departing peer releases only its own link, while the final
+departure restores the previous local mute. Metadata streams recheck the current
+destination set. Setup-request scope is temporary; accepted audio belongs to the
+availability lease and remains bound to its original account/client set.
+
+Real socket regressions use two local private addresses (or an isolated Linux
+network namespace with two dummy addresses) because the native protocol fixes
+each receiver at UDP 5000. They verify stable source port, advancing counters,
+acknowledgement gating, cancelled/failed joins and sibling survival.
+
+The official Caldera 1.1.0 reference was run twice in separate network
+namespaces, attached to an isolated bridge. Its native group control added the
+second receiver and removed the first. The production source kept the same
+capture lease and UDP port throughout 120,960 generated frames. The native
+receivers reported 613 and 686 packets with zero drops; the removed player
+explicitly stopped receiving while its sibling continued. Unpaced null-device
+underruns remain outside acoustic qualification.
+
 ## Native source state and transport
 
 Selected peers receive bounded title, artist, album, playhead, duration and

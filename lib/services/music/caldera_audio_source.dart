@@ -47,16 +47,18 @@ class CalderaAudioSource {
     required this.feeds,
     required this.current,
     this.onClosed,
+    this.onMembershipChanged,
     this.metadata,
     this.control,
     this.serveCompanion = true,
     String? id,
-  }) : sinks = List.unmodifiable(sinks),
+  }) : _sinks = List.unmodifiable(sinks),
        id = id ?? const Uuid().v4();
-  final List<CalderaNode> sinks;
+  List<CalderaNode> _sinks;
+  List<CalderaNode> get sinks => _sinks;
   final List<CalderaPcmFeed> Function() feeds;
   final bool Function() current;
-  final void Function()? onClosed;
+  final void Function()? onClosed, onMembershipChanged;
   final CalderaSourceMetadata Function()? metadata;
   final Future<void> Function(String action, int? value)? control;
   CalderaSourceEndpoint? _endpoint;
@@ -68,7 +70,7 @@ class CalderaAudioSource {
   final _leases = <MusicPcmCaptureSource, _CaptureLease>{};
   RawDatagramSocket? _udp;
   Timer? _timer;
-  Future<void>? _closing, _polling;
+  Future<void>? _closing, _polling, _changing;
   bool _closed = false, _started = false;
   int _lastPoll = 0, _period = 0, _lastPing = 0;
   XitaTransmitClock? _sendClock;
@@ -107,7 +109,8 @@ class CalderaAudioSource {
         if (handleControl == null) throw StateError('Native source control unavailable');
         _endpoint = CalderaSourceEndpoint(
           id: id,
-          peers: {for (final node in sinks) node.address.address},
+          peers: const {},
+          allowsPeer: (address) => sinks.any((node) => node.address.address == address.address),
           metadata: readMetadata,
           control: handleControl,
           current: () => _valid,
@@ -115,78 +118,27 @@ class CalderaAudioSource {
         await _endpoint!.start();
         if (!_valid) throw StateError('Native music scope changed');
       }
-      _udp = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
-      if (!_valid) throw StateError('Native music scope changed');
+      final udp = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+      if (!_valid) {
+        udp.close();
+        throw StateError('Native music scope changed');
+      }
+      _udp = udp;
       _udp!.listen((_) {}, onError: (Object _) => unawaited(close()));
       _clock.start();
+      _validateSinks(sinks);
+      final initialPeers = <_SourcePeer>[];
       for (final node in sinks) {
-        if (!_valid) throw StateError('Native music scope changed');
-        final http = HttpClient()..connectionTimeout = const Duration(seconds: 5);
-        // Ownership transfers to _peers; _close retires every registered socket.
-        // ignore: close_sinks
-        late final WebSocket socket;
-        try {
-          socket = await WebSocket.connect(
-            'ws://${node.address.address}:${node.meshPort}/',
-            customClient: http,
-          ).timeout(const Duration(seconds: 5));
-        } finally {
-          http.close();
-        }
-        final peer = _SourcePeer(socket);
-        _peers.add(peer);
-        unawaited(peer.ready.future.then<void>((_) {}, onError: (Object _) {}));
-        unawaited(peer.accepted.future.then<void>((_) {}, onError: (Object _) {}));
-        if (!_valid) throw StateError('Native music scope changed');
-        socket.pingInterval = const Duration(seconds: 2);
-        socket.listen(
-          (frame) {
-            try {
-              if (!_valid || frame is! String) throw const FormatException('Invalid native mesh');
-              for (final value in CalderaGroupClient.meshMessages(frame)) {
-                if (value['data'] == 'ping') {
-                  peer.lastMessage = _clock.elapsedMilliseconds;
-                  continue;
-                }
-                if (value['source'] != node.id) throw const FormatException('Native identity changed');
-                peer.lastMessage = _clock.elapsedMilliseconds;
-                if (const ['Hello', 'SetState', 'SetNodeState'].contains(value['method'])) {
-                  final data = value['data'];
-                  if (data is! Map || data['version'] != '1.0.0') {
-                    throw const FormatException('Unsupported native peer');
-                  }
-                  if (!peer.ready.isCompleted) peer.ready.complete();
-                  if (peer.joined &&
-                      const ['SetState', 'SetNodeState'].contains(value['method']) &&
-                      data['source'] != id) {
-                    unawaited(close());
-                  } else if (peer.joined && data['source'] == id && !peer.accepted.isCompleted) {
-                    peer.accepted.complete();
-                  }
-                }
-              }
-            } catch (_) {
-              unawaited(close());
-            }
-          },
-          onDone: () => unawaited(close()),
-          onError: (Object _) => unawaited(close()),
-        );
-        _send(peer, 'Hello', {'capabilities': null, 'version': '1.0.0'});
-        await peer.ready.future.timeout(const Duration(seconds: 5));
-        if (!_valid) throw StateError('Native music scope changed');
+        initialPeers.add(await _connect(node));
       }
-      final membership = {
-        'source': id,
-        'sinks': [id, ...sinks.map((node) => node.id)],
-      };
-      for (final peer in _peers) {
-        _send(peer, 'SetSinksForSource', membership);
-        _send(peer, 'SetState', {'capabilities': null, 'version': '1.0.0', 'source': id, 'volume': 100});
-        peer.joined = true;
+      for (final peer in initialPeers) {
+        _join(peer, sinks);
       }
-      await Future.wait(_peers.map((peer) => peer.accepted.future)).timeout(const Duration(seconds: 5));
-      if (!_valid) throw StateError('Native music scope changed');
+      await Future.wait(initialPeers.map((peer) => peer.accepted.future)).timeout(const Duration(seconds: 5));
+      if (!_valid || initialPeers.any((peer) => peer.retired)) throw StateError('Native music scope changed');
+      for (final peer in initialPeers) {
+        peer.adopted = true;
+      }
       final initial = _poll();
       _polling = initial;
       try {
@@ -203,6 +155,178 @@ class CalderaAudioSource {
       _timer = Timer.periodic(const Duration(milliseconds: 5), (_) => _tick());
     } catch (_) {
       await close();
+      rethrow;
+    }
+  }
+
+  static bool _sameNode(CalderaNode a, CalderaNode b) =>
+      a.id == b.id &&
+      a.address.address == b.address.address &&
+      a.meshPort == b.meshPort &&
+      a.companionPort == b.companionPort;
+
+  static void _validateSinks(List<CalderaNode> nodes) {
+    if (nodes.isEmpty ||
+        nodes.length > 8 ||
+        nodes.any(
+          (node) =>
+              !CalderaNode.privateAddress(node.address) ||
+              !RegExp(r'^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$').hasMatch(node.id),
+        ) ||
+        nodes.map((node) => node.id).toSet().length != nodes.length ||
+        nodes.map((node) => node.address.address).toSet().length != nodes.length) {
+      throw ArgumentError('Invalid native audio sinks');
+    }
+  }
+
+  Map<String, Object> _membership(List<CalderaNode> nodes) => {
+    'source': id,
+    'sinks': [id, ...nodes.map((node) => node.id)],
+  };
+
+  void _join(_SourcePeer peer, List<CalderaNode> nodes) {
+    peer.joined = true;
+    _send(peer, 'SetSinksForSource', _membership(nodes));
+    _send(peer, 'SetState', {'capabilities': null, 'version': '1.0.0', 'source': id, 'volume': 100});
+  }
+
+  void _retirePeer(_SourcePeer peer) {
+    if (peer.retired) return;
+    peer.retired = true;
+    _peers.remove(peer);
+    if (!peer.ready.isCompleted) peer.ready.completeError(StateError('Native peer disconnected'));
+    if (!peer.accepted.isCompleted) peer.accepted.completeError(StateError('Native peer disconnected'));
+    unawaited(peer.socket.close());
+    if (!_valid || !peer.adopted) return;
+    _sinks = List.unmodifiable(sinks.where((node) => !_sameNode(node, peer.node)));
+    if (sinks.isEmpty) {
+      unawaited(close());
+    } else {
+      for (final remaining in _peers.where((peer) => peer.adopted).toList()) {
+        _send(remaining, 'SetSinksForSource', _membership(sinks));
+      }
+      onMembershipChanged?.call();
+    }
+  }
+
+  Future<_SourcePeer> _connect(CalderaNode node, {bool Function()? selecting}) async {
+    bool valid() => _valid && selecting?.call() != false;
+    if (!valid()) throw StateError('Native music selection changed');
+    final http = HttpClient()..connectionTimeout = const Duration(seconds: 5);
+    // Ownership transfers to _peers after the asynchronous connection is checked.
+    // ignore: close_sinks
+    late final WebSocket socket;
+    try {
+      socket = await WebSocket.connect(
+        'ws://${node.address.address}:${node.meshPort}/',
+        customClient: http,
+      ).timeout(const Duration(seconds: 5));
+    } finally {
+      http.close();
+    }
+    if (!valid()) {
+      unawaited(socket.close());
+      throw StateError('Native music selection changed');
+    }
+    final peer = _SourcePeer(socket, node);
+    _peers.add(peer);
+    unawaited(peer.ready.future.then<void>((_) {}, onError: (Object _) {}));
+    unawaited(peer.accepted.future.then<void>((_) {}, onError: (Object _) {}));
+    socket.pingInterval = const Duration(seconds: 2);
+    socket.listen(
+      (frame) {
+        try {
+          if (!_valid || peer.retired || frame is! String) throw const FormatException('Invalid native mesh');
+          for (final value in CalderaGroupClient.meshMessages(frame)) {
+            if (value['data'] == 'ping') {
+              peer.lastMessage = _clock.elapsedMilliseconds;
+              continue;
+            }
+            if (value['source'] != node.id) throw const FormatException('Native identity changed');
+            peer.lastMessage = _clock.elapsedMilliseconds;
+            if (const ['Hello', 'SetState', 'SetNodeState'].contains(value['method'])) {
+              final data = value['data'];
+              if (data is! Map || data['version'] != '1.0.0') {
+                throw const FormatException('Unsupported native peer');
+              }
+              if (!peer.ready.isCompleted) peer.ready.complete();
+              if (peer.joined && const ['SetState', 'SetNodeState'].contains(value['method']) && data['source'] != id) {
+                _retirePeer(peer);
+                return;
+              }
+              if (peer.joined && data['source'] == id && !peer.accepted.isCompleted) peer.accepted.complete();
+            }
+          }
+        } catch (_) {
+          _retirePeer(peer);
+        }
+      },
+      onDone: () => _retirePeer(peer),
+      onError: (Object _) => _retirePeer(peer),
+    );
+    try {
+      _send(peer, 'Hello', {'capabilities': null, 'version': '1.0.0'});
+      await peer.ready.future.timeout(const Duration(seconds: 5));
+      if (!valid() || peer.retired) throw StateError('Native music selection changed');
+      return peer;
+    } catch (_) {
+      _retirePeer(peer);
+      rethrow;
+    }
+  }
+
+  /// Keep decoder leases, source UDP port and frame clock while changing outputs.
+  /// New peers receive nothing until their ownership acknowledgement arrives.
+  Future<void> replaceSinks(List<CalderaNode> nodes, {required bool Function() current}) async {
+    _validateSinks(nodes);
+    if (!active || !current() || _changing != null) throw StateError('Native output update unavailable');
+    if (nodes.length == sinks.length && nodes.every((node) => sinks.any((old) => _sameNode(node, old)))) return;
+    final task = _replaceSinks(List.unmodifiable(nodes), current);
+    _changing = task;
+    try {
+      await task;
+    } finally {
+      if (identical(_changing, task)) _changing = null;
+    }
+  }
+
+  Future<void> _replaceSinks(List<CalderaNode> nodes, bool Function() current) async {
+    final added = <_SourcePeer>[];
+    final retained = _peers.where((peer) => peer.adopted && nodes.any((node) => _sameNode(node, peer.node))).toList();
+    bool owns() => active && current();
+    try {
+      for (final node in nodes) {
+        if (!owns()) throw StateError('Native output selection changed');
+        if (retained.any((peer) => _sameNode(peer.node, node))) continue;
+        final peer = await _connect(node, selecting: current);
+        added.add(peer);
+        _join(peer, nodes);
+        await peer.accepted.future.timeout(const Duration(seconds: 5));
+        if (!owns() || peer.retired) throw StateError('Native output selection changed');
+      }
+      if (!owns() || retained.any((peer) => peer.retired)) throw StateError('Native output selection changed');
+      final removed = _peers.where((peer) => peer.adopted && !retained.contains(peer)).toList();
+      // Commit the destination set atomically before notifying or closing peers.
+      _sinks = nodes;
+      for (final peer in added) {
+        peer.adopted = true;
+      }
+      for (final peer in [...retained, ...added]) {
+        _send(peer, 'SetSinksForSource', _membership(nodes));
+      }
+      for (final peer in removed) {
+        peer.adopted = false;
+        _send(peer, 'SetSinksForSource', _membership(nodes));
+        _retirePeer(peer);
+      }
+      _period = 0; // Advertise the existing timeline before any new destination gets PCM.
+      onMembershipChanged?.call();
+    } catch (_) {
+      for (final peer in added) {
+        if (owns() && !peer.retired) _send(peer, 'SetSinksForSource', _membership(sinks));
+        peer.adopted = false;
+        _retirePeer(peer);
+      }
       rethrow;
     }
   }
@@ -297,12 +421,14 @@ class CalderaAudioSource {
   }
 
   void _tick() {
-    if (!_valid ||
-        _clock.elapsedMilliseconds - _lastPoll > 3000 ||
-        _peers.any((peer) => _clock.elapsedMilliseconds - peer.lastMessage > 15000)) {
+    if (!_valid || _clock.elapsedMilliseconds - _lastPoll > 3000) {
       unawaited(close());
       return;
     }
+    for (final peer in _peers.where((peer) => peer.adopted).toList()) {
+      if (_clock.elapsedMilliseconds - peer.lastMessage > 15000) _retirePeer(peer);
+    }
+    if (!_valid) return;
     if (_polling == null) {
       final pending = _poll();
       _polling = pending;
@@ -320,10 +446,10 @@ class CalderaAudioSource {
     }
     if (_clock.elapsedMilliseconds - _lastPing > 2000) {
       _lastPing = _clock.elapsedMilliseconds;
-      for (final peer in _peers) {
+      for (final peer in _peers.toList()) {
         if (peer.socket.readyState != WebSocket.open) {
-          unawaited(close());
-          return;
+          _retirePeer(peer);
+          continue;
         }
         peer.socket.add('{"data":"ping"}');
       }
@@ -384,7 +510,8 @@ class CalderaAudioSource {
     _endpoint = null;
     _udp?.close();
     _udp = null;
-    for (final peer in _peers) {
+    for (final peer in _peers.toList()) {
+      peer.retired = true;
       if (!peer.ready.isCompleted) peer.ready.completeError(StateError('Native audio closed'));
       if (!peer.accepted.isCompleted) peer.accepted.completeError(StateError('Native audio closed'));
       unawaited(peer.socket.close());
@@ -411,12 +538,13 @@ class CalderaAudioSource {
 }
 
 class _SourcePeer {
-  _SourcePeer(this.socket);
+  _SourcePeer(this.socket, this.node);
+  final CalderaNode node;
   final WebSocket socket;
   final ready = Completer<void>();
   final accepted = Completer<void>();
   int lastMessage = 0;
-  bool joined = false;
+  bool joined = false, adopted = false, retired = false;
 }
 
 class _CaptureLease {

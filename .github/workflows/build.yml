@@ -48,13 +48,7 @@ on:
         required: false
         type: string
       tvos_runner_pool:
-        description: Use private ARM hardware only when hosted ARM capacity cannot meet the build requirement
-        required: false
-        type: choice
-        options: [hosted, private]
-        default: hosted
-      ios_runner_pool:
-        description: Use private Apple Silicon hardware when the hosted iOS job cannot finish within its limit
+        description: Use private Apple Silicon hardware for targeted iOS or tvOS recovery when hosted capacity or time cannot meet the build requirement
         required: false
         type: choice
         options: [hosted, private]
@@ -1237,7 +1231,7 @@ jobs:
   build-ios:
     if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_ios) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.ios_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
     permissions:
       id-token: write
       attestations: write

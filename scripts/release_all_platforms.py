@@ -383,7 +383,6 @@ def dispatch(repo: str, workflow: str, ref: str, fields: dict[str, str], purpose
                 return run
             private_apple = (fields.get("execution_profile") != "hybrid"
                              or fields.get("apple_runner_pool") == "private"
-                             or fields.get("ios_runner_pool") == "private"
                              or fields.get("tvos_runner_pool") == "private")
             return wait_for_run(repo, run, purpose, private_apple=private_apple)
         time.sleep(5)
@@ -1199,7 +1198,6 @@ def ensure_release(
     candidate_ref: str | None = None,
     start_only: bool = False,
     tvos_runner_pool: str = "hosted",
-    ios_runner_pool: str = "hosted",
     packaging_source_sha: str | None = None,
     workflow_source_sha: str | None = None,
 ) -> dict:
@@ -1277,7 +1275,7 @@ def ensure_release(
             if start_only:
                 return existing
             existing = wait_for_run(PLEZY_REPO, existing, f"Pleazyng {tag} all-platform release build",
-                                    private_apple=execution_profile != "hybrid" or tvos_runner_pool == "private" or ios_runner_pool == "private")
+                                    private_apple=execution_profile != "hybrid" or tvos_runner_pool == "private")
         complete = bool(reuse_platform_run_id) or execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
         )
@@ -1329,8 +1327,6 @@ def ensure_release(
         fields["recovery_product_sha"] = proof["product_source_sha"]
     if tvos_runner_pool == "private":
         fields["tvos_runner_pool"] = "private"
-    if ios_runner_pool == "private":
-        fields["ios_runner_pool"] = "private"
     if rebuild_linux:
         fields["rebuild_linux"] = "true"
     if rebuild_macos:
@@ -2307,7 +2303,6 @@ def main() -> int:
             prepare_homebrew_cask=args.prepare_homebrew_cask,
             **({"candidate_ref": candidate_ref} if frozen else {}),
             **({"tvos_runner_pool": apple_pool} if frozen or packaging_repair else {}),
-            **({"ios_runner_pool": apple_pool} if packaging_repair and args.rebuild_ios else {}),
             **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"rebuild_macos": True} if args.rebuild_macos else {}),
             **({"rebuild_tvos": True} if args.rebuild_tvos else {}),

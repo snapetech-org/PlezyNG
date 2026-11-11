@@ -1747,7 +1747,7 @@ require(
 ios_worker_stage = named_step(job("build-ios"), "Stage locked iOS worker frameworks for Release")
 require(
     "(inputs.reuse_platform_run_id == '' || inputs.rebuild_ios)" in job("build-ios")
-    and "inputs.ios_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format(" in job("build-ios")
+    and "inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format(" in job("build-ios")
     and "--rebuild-ios" in recovery_gate and "--rebuild-ios" in recovery_download
     and "inputs.rebuild_ios && needs.build-ios.result == 'success'" in release_condition
     and "!inputs.rebuild_ios && needs.build-ios.result == 'skipped'" in release_condition

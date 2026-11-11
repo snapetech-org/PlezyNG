@@ -4336,6 +4336,9 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+	@override String get pins => 'Rögzített zenék';
+	@override String get pinToHome => 'Rögzítés a zenei kezdőlapon';
+	@override String get unpin => 'Rögzítés feloldása';
 }
 
 // Path: musicDevices
@@ -9527,6 +9530,9 @@ extension on TranslationsHu {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicTools.pins' => 'Rögzített zenék',
+			'musicTools.pinToHome' => 'Rögzítés a zenei kezdőlapon',
+			'musicTools.unpin' => 'Rögzítés feloldása',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',

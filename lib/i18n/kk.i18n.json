@@ -5559,7 +5559,10 @@
     "eqApproximation": "Құлаққап профильдері он жолақты эквалайзерге жуықтап бейімделген.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Бекітілген музыка",
+    "pinToHome": "Музыка басты бетіне бекіту",
+    "unpin": "Бекітуді алу"
   },
   "musicDevices": {
     "playOn": "Ойнату құрылғысы",

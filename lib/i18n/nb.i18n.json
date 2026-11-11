@@ -5559,7 +5559,10 @@
     "eqApproximation": "Hodetelefonprofiler er tilnærmet for EQ med ti bånd.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Festet musikk",
+    "pinToHome": "Fest til musikkhjem",
+    "unpin": "Løsne"
   },
   "musicDevices": {
     "playOn": "Spill av på",

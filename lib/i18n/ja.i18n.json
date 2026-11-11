@@ -5554,7 +5554,10 @@
     "eqApproximation": "ヘッドホンのプロファイルは10バンドEQ向けに近似されています。",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "固定した音楽",
+    "pinToHome": "音楽ホームに固定",
+    "unpin": "固定を解除"
   },
   "musicDevices": {
     "playOn": "再生先",

@@ -5559,7 +5559,10 @@
     "eqApproximation": "Профилите за слушалки са приблизително адаптирани за десетлентовия еквалайзер.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Закачена музика",
+    "pinToHome": "Закачи в началната страница за музика",
+    "unpin": "Откачи"
   },
   "musicDevices": {
     "playOn": "Възпроизвеждане на",

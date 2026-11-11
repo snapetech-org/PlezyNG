@@ -5613,7 +5613,10 @@
     "eqApproximation": "Профили наушников приближённо адаптированы к десятиполосному эквалайзеру.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Закреплённая музыка",
+    "pinToHome": "Закрепить на главной странице музыки",
+    "unpin": "Открепить"
   },
   "musicDevices": {
     "playOn": "Воспроизвести на",

@@ -33,6 +33,7 @@ import '../../widgets/media_context_menu.dart';
 import '../../widgets/music/mini_player.dart';
 import '../../widgets/music/music_detail_header.dart';
 import '../../widgets/music/music_actions.dart';
+import '../../widgets/music/music_pin_action.dart';
 import '../../widgets/music/track_row.dart';
 import '../../widgets/optimized_media_image.dart';
 import '../base_media_list_detail_screen.dart';
@@ -257,6 +258,9 @@ class _AlbumDetailScreenState extends BaseMediaListDetailScreen<AlbumDetailScree
   List<FocusableAction> getAppBarActions() {
     final client = context.tryGetMediaClientWithFallback(serverIdOrNull(widget.album.serverId));
     return buildMusicActions(
+      onPin: canPinMusicHomeItem(context, widget.album)
+          ? () => unawaited(saveMusicHomePin(context, widget.album))
+          : null,
       onDiscovery: () => openMusicDiscovery(context, widget.album),
       onPlay: () => unawaited(_playAll()),
       onShuffle: () => unawaited(_playAll(shuffle: true)),

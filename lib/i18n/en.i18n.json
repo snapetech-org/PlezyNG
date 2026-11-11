@@ -5638,7 +5638,10 @@
     "eqApproximation": "Headphone profiles are approximated for the ten-band EQ.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Pinned music",
+    "pinToHome": "Pin to Music Home",
+    "unpin": "Unpin"
   },
   "musicDevices": {
     "playOn": "Play on",

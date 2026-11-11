@@ -5559,7 +5559,10 @@
     "eqApproximation": "A fejhallgatóprofilok a tízsávos EQ-hoz igazított közelítések.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Rögzített zenék",
+    "pinToHome": "Rögzítés a zenei kezdőlapon",
+    "unpin": "Rögzítés feloldása"
   },
   "musicDevices": {
     "playOn": "Lejátszás itt",

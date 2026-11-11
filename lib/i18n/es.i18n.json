@@ -5641,7 +5641,10 @@
     "eqApproximation": "Los perfiles de auriculares se aproximan al ecualizador de diez bandas.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Música fijada",
+    "pinToHome": "Fijar en el inicio de música",
+    "unpin": "Desfijar"
   },
   "musicDevices": {
     "playOn": "Reproducir en",

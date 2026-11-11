@@ -5554,7 +5554,10 @@
     "eqApproximation": "耳機設定檔已近似轉換為十段等化器設定。",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "釘選音樂",
+    "pinToHome": "釘選至音樂首頁",
+    "unpin": "取消釘選"
   },
   "musicDevices": {
     "playOn": "播放裝置",

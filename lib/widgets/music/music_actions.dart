@@ -16,6 +16,7 @@ List<FocusableAction> buildMusicActions({
   required VoidCallback onShuffle,
   VoidCallback? onInstantMix,
   VoidCallback? onDiscovery,
+  VoidCallback? onPin,
   FocusableAction? download,
   FocusableAction? trailing,
 }) {
@@ -44,6 +45,13 @@ List<FocusableAction> buildMusicActions({
         icon: Symbols.explore_rounded,
         tooltip: t.musicExperience.title,
         onPressed: onDiscovery,
+      ),
+    if (onPin != null)
+      FocusableAction(
+        debugLabel: 'music_pin',
+        icon: Symbols.keep_rounded,
+        tooltip: t.musicTools.pinToHome,
+        onPressed: onPin,
       ),
     ?download,
     ?trailing,

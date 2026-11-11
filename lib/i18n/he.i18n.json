@@ -5569,7 +5569,10 @@
     "eqApproximation": "פרופילי האוזניות מותאמים בקירוב לאקולייזר בעל עשרה תחומים.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "מוזיקה מוצמדת",
+    "pinToHome": "הצמדה לדף הבית של המוזיקה",
+    "unpin": "ביטול הצמדה"
   },
   "musicDevices": {
     "playOn": "ניגון באמצעות",

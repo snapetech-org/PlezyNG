@@ -5568,7 +5568,10 @@
     "eqApproximation": "Os perfis de auscultadores são aproximados para o equalizador de dez bandas.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Música fixada",
+    "pinToHome": "Fixar na página inicial de música",
+    "unpin": "Desafixar"
   },
   "musicDevices": {
     "playOn": "Reproduzir em",

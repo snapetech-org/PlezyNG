@@ -4336,6 +4336,9 @@ class _Translations$musicTools$sv extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+	@override String get pins => 'Fäst musik';
+	@override String get pinToHome => 'Fäst på musikstartsidan';
+	@override String get unpin => 'Lossa';
 }
 
 // Path: musicDevices
@@ -9527,6 +9530,9 @@ extension on TranslationsSv {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicTools.pins' => 'Fäst musik',
+			'musicTools.pinToHome' => 'Fäst på musikstartsidan',
+			'musicTools.unpin' => 'Lossa',
 			'musicDevices.playOn' => 'Spela på',
 			'musicDevices.thisDevice' => 'Den här enheten',
 			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',

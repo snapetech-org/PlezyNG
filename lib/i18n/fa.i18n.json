@@ -5559,7 +5559,10 @@
     "eqApproximation": "پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "موسیقی سنجاق‌شده",
+    "pinToHome": "سنجاق به صفحهٔ اصلی موسیقی",
+    "unpin": "برداشتن سنجاق"
   },
   "musicDevices": {
     "playOn": "پخش در",

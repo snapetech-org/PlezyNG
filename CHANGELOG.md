@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Show pinned music on Music Home with removal and drag ordering. Pin artists, albums and tracks from music actions, and reopen current authorized detail routes through the shared session.
+
 - Store bounded Music Home artist, album and track pins for the active profile and account. Refresh authorized metadata before saving or opening, and retire stale account, library and profile operations.
 
 - Keep local headphone/output correction out of native group source PCM. Apply the general music curve while transmitting and restore the latest local output preset on departure without replacing the shared queue.

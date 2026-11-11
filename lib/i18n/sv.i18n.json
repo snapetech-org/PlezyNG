@@ -5559,7 +5559,10 @@
     "eqApproximation": "Hörlursprofiler är approximationer för EQ med tio band.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Fäst musik",
+    "pinToHome": "Fäst på musikstartsidan",
+    "unpin": "Lossa"
   },
   "musicDevices": {
     "playOn": "Spela på",

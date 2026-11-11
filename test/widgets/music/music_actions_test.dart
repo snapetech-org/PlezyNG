@@ -37,6 +37,13 @@ void main() {
     expect(mixes, 1);
   });
 
+  testWidgets('pin action has its own accessible label and callback', (tester) async {
+    var pins = 0;
+    await tester.pumpWidget(_wrap(buildMusicActions(onPlay: () {}, onShuffle: () {}, onPin: () => pins++)));
+    await tester.tap(find.byTooltip(t.musicTools.pinToHome));
+    expect(pins, 1);
+  });
+
   testWidgets('Instant Mix is absent when the server lacks the capability', (tester) async {
     await tester.pumpWidget(_wrap(buildMusicActions(onPlay: () {}, onShuffle: () {})));
 

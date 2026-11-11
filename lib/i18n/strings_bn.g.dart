@@ -4336,6 +4336,9 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+	@override String get pins => 'পিন করা সঙ্গীত';
+	@override String get pinToHome => 'সঙ্গীতের হোমে পিন করুন';
+	@override String get unpin => 'পিন সরান';
 }
 
 // Path: musicDevices
@@ -9527,6 +9530,9 @@ extension on TranslationsBn {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicTools.pins' => 'পিন করা সঙ্গীত',
+			'musicTools.pinToHome' => 'সঙ্গীতের হোমে পিন করুন',
+			'musicTools.unpin' => 'পিন সরান',
 			'musicDevices.playOn' => 'এখানে চালান',
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',

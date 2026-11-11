@@ -5568,7 +5568,10 @@
     "eqApproximation": "Les profils de casque sont adaptés approximativement à l’égaliseur à dix bandes.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Musique épinglée",
+    "pinToHome": "Épingler à l’accueil musique",
+    "unpin": "Désépingler"
   },
   "musicDevices": {
     "playOn": "Lire sur",

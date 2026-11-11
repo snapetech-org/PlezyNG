@@ -5554,7 +5554,10 @@
     "eqApproximation": "헤드폰 프로필은 10밴드 EQ에 맞게 근사치로 변환됩니다.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "고정한 음악",
+    "pinToHome": "음악 홈에 고정",
+    "unpin": "고정 해제"
   },
   "musicDevices": {
     "playOn": "재생 기기",

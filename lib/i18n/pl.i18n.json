@@ -5613,7 +5613,10 @@
     "eqApproximation": "Profile słuchawek są przybliżone dla dziesięciopasmowego korektora.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Przypięta muzyka",
+    "pinToHome": "Przypnij na stronie głównej muzyki",
+    "unpin": "Odepnij"
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

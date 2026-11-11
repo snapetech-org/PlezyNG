@@ -5559,7 +5559,10 @@
     "eqApproximation": "Kopfhörerprofile werden für den Zehn-Band-EQ angenähert.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Angeheftete Musik",
+    "pinToHome": "An Musikstartseite anheften",
+    "unpin": "Lösen"
   },
   "musicDevices": {
     "playOn": "Wiedergeben auf",

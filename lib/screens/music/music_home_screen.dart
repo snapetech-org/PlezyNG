@@ -21,6 +21,7 @@ import '../../services/music/music_station.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/music/music_anniversary_shelf.dart';
 import '../../widgets/music/music_favorites_shelf.dart';
+import '../../widgets/music/music_pins_shelf.dart';
 import '../../utils/snackbar_helper.dart';
 import 'music_discovery_screen.dart';
 import 'music_driving_screen.dart';
@@ -46,6 +47,7 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
   late final MusicExperience _experience = context.read<MusicExperience>();
   late Future<void> _loadFuture;
   List<String> _order = [
+    'pins',
     'recent',
     'favorites',
     'anniversaries',
@@ -139,13 +141,16 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
   Future<void> _refresh() async {
     if (!mounted) return;
     final future = _load();
-    setState(() => _loadFuture = future);
+    setState(() {
+      _loadFuture = future;
+    });
     await future;
   }
 
   Future<void> _saveLayout() =>
       _experience.store.saveDocument('home', 'layout', {'order': _order, 'hidden': _hidden.toList()});
   String _label(String key) => switch (key) {
+    'pins' => t.musicTools.pins,
     'recent' => t.musicTools.recent,
     'favorites' => t.libraries.filterCategories.favorites,
     'anniversaries' => t.musicTools.anniversaries,
@@ -254,8 +259,10 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
                   )
                 : null,
           ),
+          if (_editing && key == 'pins' && !_hidden.contains(key)) const MusicPinsShelf(editing: true),
           if (!_editing && !_hidden.contains(key))
             switch (key) {
+              'pins' => MusicPinsShelf(key: ValueKey(_loadRevision)),
               'recent' => _tracks(_recent, title),
               'favorites' => MusicFavoritesShelf(key: ValueKey(_loadRevision)),
               'anniversaries' => MusicAnniversaryShelf(key: ValueKey(_loadRevision)),

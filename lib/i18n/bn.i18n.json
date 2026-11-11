@@ -5559,7 +5559,10 @@
     "eqApproximation": "হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "পিন করা সঙ্গীত",
+    "pinToHome": "সঙ্গীতের হোমে পিন করুন",
+    "unpin": "পিন সরান"
   },
   "musicDevices": {
     "playOn": "এখানে চালান",

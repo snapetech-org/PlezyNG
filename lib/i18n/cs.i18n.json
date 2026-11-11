@@ -5607,7 +5607,10 @@
     "eqApproximation": "Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Připnutá hudba",
+    "pinToHome": "Připnout na úvodní stránku hudby",
+    "unpin": "Odepnout"
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

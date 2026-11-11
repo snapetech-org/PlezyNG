@@ -5559,7 +5559,10 @@
     "eqApproximation": "Hovedtelefonprofiler er tilnærmet til en EQ med ti bånd.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Fastgjort musik",
+    "pinToHome": "Fastgør på musikforsiden",
+    "unpin": "Frigør"
   },
   "musicDevices": {
     "playOn": "Afspil på",

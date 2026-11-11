@@ -5559,7 +5559,10 @@
     "eqApproximation": "Quloqchin profillari oʻn diapazonli ekvalayzer uchun taxminan moslashtirilgan.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Qadalgan musiqa",
+    "pinToHome": "Musiqa bosh sahifasiga qadash",
+    "unpin": "Qadashni bekor qilish"
   },
   "musicDevices": {
     "playOn": "Shu qurilmada ijro etish",

@@ -5532,7 +5532,10 @@
     "eqApproximation": "Profil fon kepala dianggarkan untuk EQ sepuluh jalur.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Muzik disematkan",
+    "pinToHome": "Semat pada Laman Utama Muzik",
+    "unpin": "Nyahsemat"
   },
   "musicDevices": {
     "playOn": "Mainkan pada",

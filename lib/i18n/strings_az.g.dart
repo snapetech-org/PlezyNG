@@ -4336,6 +4336,9 @@ class _Translations$musicTools$az extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+	@override String get pins => 'Sabitlənmiş musiqi';
+	@override String get pinToHome => 'Musiqi ana səhifəsinə sabitlə';
+	@override String get unpin => 'Sabitləməni ləğv et';
 }
 
 // Path: musicDevices
@@ -9527,6 +9530,9 @@ extension on TranslationsAz {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicTools.pins' => 'Sabitlənmiş musiqi',
+			'musicTools.pinToHome' => 'Musiqi ana səhifəsinə sabitlə',
+			'musicTools.unpin' => 'Sabitləməni ləğv et',
 			'musicDevices.playOn' => 'Burada səsləndir',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',

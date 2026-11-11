@@ -5667,7 +5667,10 @@
     "eqApproximation": "ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "الموسيقى المثبتة",
+    "pinToHome": "تثبيت في صفحة الموسيقى الرئيسية",
+    "unpin": "إلغاء التثبيت"
   },
   "musicDevices": {
     "playOn": "التشغيل على",

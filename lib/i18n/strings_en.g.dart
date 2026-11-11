@@ -14801,6 +14801,15 @@ class Translations$musicTools$en {
 
 	/// en: 'AutoEq — Jaakko Pasanen'
 	String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+
+	/// en: 'Pinned music'
+	String get pins => 'Pinned music';
+
+	/// en: 'Pin to Music Home'
+	String get pinToHome => 'Pin to Music Home';
+
+	/// en: 'Unpin'
+	String get unpin => 'Unpin';
 }
 
 // Path: musicDevices
@@ -22750,6 +22759,9 @@ extension on Translations {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicTools.pins' => 'Pinned music',
+			'musicTools.pinToHome' => 'Pin to Music Home',
+			'musicTools.unpin' => 'Unpin',
 			'musicDevices.playOn' => 'Play on',
 			'musicDevices.thisDevice' => 'This device',
 			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',

@@ -4313,6 +4313,9 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+	@override String get pins => 'Nhạc đã ghim';
+	@override String get pinToHome => 'Ghim vào trang chủ âm nhạc';
+	@override String get unpin => 'Bỏ ghim';
 }
 
 // Path: musicDevices
@@ -9502,6 +9505,9 @@ extension on TranslationsVi {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicTools.pins' => 'Nhạc đã ghim',
+			'musicTools.pinToHome' => 'Ghim vào trang chủ âm nhạc',
+			'musicTools.unpin' => 'Bỏ ghim',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',

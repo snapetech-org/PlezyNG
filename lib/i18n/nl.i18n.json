@@ -5559,7 +5559,10 @@
     "eqApproximation": "Hoofdtelefoonprofielen worden benaderd voor de tienbands-EQ.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Vastgemaakte muziek",
+    "pinToHome": "Vastmaken aan muziekstartpagina",
+    "unpin": "Losmaken"
   },
   "musicDevices": {
     "playOn": "Afspelen op",

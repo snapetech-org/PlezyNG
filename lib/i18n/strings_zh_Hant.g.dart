@@ -4332,6 +4332,9 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+	@override String get pins => '釘選音樂';
+	@override String get pinToHome => '釘選至音樂首頁';
+	@override String get unpin => '取消釘選';
 }
 
 // Path: musicDevices
@@ -9523,6 +9526,9 @@ extension on TranslationsZhHant {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicTools.pins' => '釘選音樂',
+			'musicTools.pinToHome' => '釘選至音樂首頁',
+			'musicTools.unpin' => '取消釘選',
 			'musicDevices.playOn' => '播放裝置',
 			'musicDevices.thisDevice' => '此裝置',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

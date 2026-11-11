@@ -265,7 +265,7 @@ class MusicHomePins extends ChangeNotifier {
       await store.database.transaction(() async {
         for (final entry in copy.indexed) {
           if (!current()) throw StateError('Music pin account changed');
-          final pin = entry.$2;
+          final pin = existing.firstWhere((pin) => pin.id == entry.$2.id);
           await store.saveDocument(
             'homePin',
             pin.id,

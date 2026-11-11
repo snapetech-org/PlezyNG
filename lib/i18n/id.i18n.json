@@ -5532,7 +5532,10 @@
     "eqApproximation": "Profil headphone diperkirakan untuk EQ sepuluh pita.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Musik yang disematkan",
+    "pinToHome": "Sematkan ke Beranda Musik",
+    "unpin": "Lepas sematan"
   },
   "musicDevices": {
     "playOn": "Putar di",

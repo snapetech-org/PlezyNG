@@ -5532,7 +5532,10 @@
     "eqApproximation": "โปรไฟล์หูฟังถูกปรับโดยประมาณสำหรับ EQ สิบย่านความถี่",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "เพลงที่ปักหมุด",
+    "pinToHome": "ปักหมุดในหน้าหลักเพลง",
+    "unpin": "เลิกปักหมุด"
   },
   "musicDevices": {
     "playOn": "เล่นบน",

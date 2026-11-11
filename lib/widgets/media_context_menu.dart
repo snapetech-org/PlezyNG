@@ -68,6 +68,7 @@ import 'watchlist_source_chooser.dart';
 import '../widgets/rating_bottom_sheet.dart';
 import '../media/server_capabilities.dart';
 import '../services/music/music_experience.dart';
+import 'music/music_pin_action.dart';
 import '../i18n/strings.g.dart';
 import '../utils/error_message_utils.dart';
 
@@ -781,6 +782,8 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     final ancestorArtistId = context.findAncestorWidgetOfExactType<ArtistDetailScreen>()?.artist.id;
     return [
       _MenuAction(value: 'music_play', icon: Symbols.play_arrow_rounded, label: t.common.play),
+      if (menu.itemServerOnline && canPinMusicHomeItem(context, mediaItem))
+        _MenuAction(value: 'music_pin', icon: Symbols.keep_rounded, label: t.musicTools.pinToHome),
       if (menu.itemServerOnline)
         _MenuAction(value: 'music_details', icon: Symbols.info_rounded, label: t.mediaMenu.viewDetails),
       if (context.read<MusicPlaybackService?>() != null) ...[
@@ -1001,6 +1004,9 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       case 'details':
         outcome.didNavigate = true;
         if (context.mounted) await navigateToMediaItemDetails(context, mediaItem, onRefresh: _notifyRefresh);
+        break;
+      case 'music_pin':
+        if (context.mounted) await saveMusicHomePin(context, mediaItem);
         break;
       case 'music_details':
         if (context.mounted) {

@@ -5559,7 +5559,10 @@
     "eqApproximation": "Kulaklık profilleri on bantlı ekolayzer için yaklaşık olarak uyarlanmıştır.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Sabitlenen müzik",
+    "pinToHome": "Müzik ana sayfasına sabitle",
+    "unpin": "Sabitlemeyi kaldır"
   },
   "musicDevices": {
     "playOn": "Şurada çal",

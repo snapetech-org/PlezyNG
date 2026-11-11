@@ -5559,7 +5559,10 @@
     "eqApproximation": "हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "पिन किया गया संगीत",
+    "pinToHome": "संगीत होम पर पिन करें",
+    "unpin": "पिन हटाएँ"
   },
   "musicDevices": {
     "playOn": "इस पर चलाएँ",

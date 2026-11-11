@@ -25,6 +25,7 @@ import '../../widgets/desktop_app_bar.dart';
 import '../../widgets/music/mini_player.dart';
 import '../../widgets/music/music_detail_header.dart';
 import '../../widgets/music/music_actions.dart';
+import '../../widgets/music/music_pin_action.dart';
 import '../../widgets/optimized_media_image.dart';
 import '../base_media_list_detail_screen.dart';
 import '../focusable_detail_screen_mixin.dart';
@@ -106,6 +107,9 @@ class _ArtistDetailScreenState extends BaseMediaListDetailScreen<ArtistDetailScr
   List<FocusableAction> getAppBarActions() {
     final client = context.tryGetMediaClientWithFallback(serverIdOrNull(widget.artist.serverId));
     return buildMusicActions(
+      onPin: canPinMusicHomeItem(context, widget.artist)
+          ? () => unawaited(saveMusicHomePin(context, widget.artist))
+          : null,
       onDiscovery: () => openMusicDiscovery(context, widget.artist),
       onPlay: () => unawaited(_playAll()),
       onShuffle: () => unawaited(_playAll(shuffle: true)),

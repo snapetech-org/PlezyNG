@@ -4313,6 +4313,9 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+	@override String get pins => 'เพลงที่ปักหมุด';
+	@override String get pinToHome => 'ปักหมุดในหน้าหลักเพลง';
+	@override String get unpin => 'เลิกปักหมุด';
 }
 
 // Path: musicDevices
@@ -9502,6 +9505,9 @@ extension on TranslationsTh {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicTools.pins' => 'เพลงที่ปักหมุด',
+			'musicTools.pinToHome' => 'ปักหมุดในหน้าหลักเพลง',
+			'musicTools.unpin' => 'เลิกปักหมุด',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',

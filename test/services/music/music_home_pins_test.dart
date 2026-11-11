@@ -163,6 +163,20 @@ void main() {
     expect((await pins.load()).single.id, pin.id);
   });
 
+  test('reordering never replaces canonical metadata with caller supplied presentation', () async {
+    final pin = await pins.save(musicTrack('a'));
+    final changed = MusicHomePin(
+      id: pin.id,
+      account: pin.account,
+      item: pin.item.copyWith(title: 'Substituted', libraryId: 'other-library'),
+      order: pin.order,
+    );
+    await pins.reorder([changed]);
+    final saved = (await pins.load()).single;
+    expect(saved.item.title, 'a');
+    expect(saved.item.libraryId, 'library');
+  });
+
   test('malformed documents are skipped and still count against profile storage', () async {
     await database.transaction(() async {
       for (var i = 0; i < MusicHomePins.profileLimit; i++) {

@@ -5554,7 +5554,10 @@
     "eqApproximation": "耳机配置已近似转换为十段均衡器设置。",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "置顶音乐",
+    "pinToHome": "置顶到音乐主页",
+    "unpin": "取消置顶"
   },
   "musicDevices": {
     "playOn": "播放设备",

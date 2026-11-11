@@ -5568,7 +5568,10 @@
     "eqApproximation": "I profili delle cuffie sono approssimati per l’equalizzatore a dieci bande.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Musica fissata",
+    "pinToHome": "Fissa nella home della musica",
+    "unpin": "Rimuovi"
   },
   "musicDevices": {
     "playOn": "Riproduci su",

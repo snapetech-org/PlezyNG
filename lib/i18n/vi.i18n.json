@@ -5532,7 +5532,10 @@
     "eqApproximation": "Hồ sơ tai nghe được xấp xỉ cho EQ mười dải.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Nhạc đã ghim",
+    "pinToHome": "Ghim vào trang chủ âm nhạc",
+    "unpin": "Bỏ ghim"
   },
   "musicDevices": {
     "playOn": "Phát trên",

@@ -5559,7 +5559,10 @@
     "eqApproximation": "Qulaqlıq profilləri onzolaqlı ekvalayzer üçün təxmini uyğunlaşdırılıb.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Sabitlənmiş musiqi",
+    "pinToHome": "Musiqi ana səhifəsinə sabitlə",
+    "unpin": "Sabitləməni ləğv et"
   },
   "musicDevices": {
     "playOn": "Burada səsləndir",

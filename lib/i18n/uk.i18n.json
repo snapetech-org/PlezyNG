@@ -5607,7 +5607,10 @@
     "eqApproximation": "Профілі навушників наближено адаптовані до десятисмугового еквалайзера.",
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
-    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
+    "pins": "Закріплена музика",
+    "pinToHome": "Закріпити на головній сторінці музики",
+    "unpin": "Відкріпити"
   },
   "musicDevices": {
     "playOn": "Відтворити на",

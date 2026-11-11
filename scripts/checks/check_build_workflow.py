@@ -1049,6 +1049,16 @@ require(
     and "name: pleazyng-tizen-${{ inputs.architecture }}-experimental" in tizen_workflow,
     "Tizen reusable workflow must build signed packages from main and version tags",
 )
+tizen_prerequisites = named_step(tizen_workflow, "Install Tizen host build prerequisites")
+require(
+    "if ! command -v rustup >/dev/null; then packages+=(rustup); fi" in tizen_prerequisites
+    and 'sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 "${packages[@]}"' in tizen_prerequisites
+    and "          command -v rustup\n          rustup --version" in tizen_prerequisites
+    and "        if:" not in tizen_prerequisites
+    and tizen_workflow.find("      - name: Install Tizen host build prerequisites")
+        < tizen_workflow.find("      - name: Build native dependencies"),
+    "Tizen must provision and verify rustup before native compilation",
+)
 tizen_flutter_version = named_step(
     tizen_workflow, "Restore the pinned Flutter release tag for SDK version detection"
 )

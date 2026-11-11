@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -18,6 +19,10 @@ REPOSITORY_ID = 1433487464
 PREFIX = 'Release CI / '
 
 
+class QualificationNotFound(GateError):
+    """A narrowly retryable read-after-create GitHub response."""
+
+
 def api(path, token, *, payload=None, missing=False):
     request = urllib.request.Request(f'{API_BASE}/repos/{REPOSITORY}/{path}',
         data=None if payload is None else json.dumps(payload).encode(),
@@ -28,9 +33,12 @@ def api(path, token, *, payload=None, missing=False):
         with urllib.request.urlopen(request, timeout=30) as response:
             data = response.read(16 * 1024 * 1024 + 1)
     except urllib.error.HTTPError as error:
-        if missing and error.code == 404:
+        status = error.code
+        error.close()
+        if missing and status == 404:
             return None
-        raise GateError(f'Qualification API request failed (HTTP {error.code}).') from None
+        failure = QualificationNotFound if status == 404 else GateError
+        raise failure(f'Qualification API request {path} failed (HTTP {status}).') from None
     except (urllib.error.URLError, OSError, TimeoutError) as error:
         raise GateError(f'Qualification API request failed ({type(error).__name__}).') from None
     if len(data) > 16 * 1024 * 1024:
@@ -103,6 +111,23 @@ def verify_jobs(run, jobs, sha, run_id, attempt, required):
             'workflow': '.github/workflows/build.yml', 'ci_workflow': '.github/workflows/ci.yml', 'jobs': records}
 
 
+def verify_created_tag(token, tag, sha):
+    # GitHub may accept the ref before either its ref or annotated object is
+    # visible to a subsequent read. Retry only those 404s, never the POSTs.
+    for attempt in range(5):
+        try:
+            visible = resolve_ref(tag, token, missing=True)
+        except QualificationNotFound:
+            visible = None
+        if visible is not None:
+            if visible != sha:
+                raise GateError('Stable tag did not resolve to the qualified source.')
+            return
+        if attempt < 4:
+            time.sleep(2)
+    raise GateError('New stable tag was not visible after bounded verification; preserve it and retry qualification.')
+
+
 def create_stable_tag(token, tag, sha):
     existing = resolve_ref(tag, token, missing=True)
     if existing is not None:
@@ -113,11 +138,13 @@ def create_stable_tag(token, tag, sha):
                                                'object': sha, 'type': 'commit'})
     try:
         api('git/refs', token, payload={'ref': f'refs/tags/{tag}', 'sha': annotated['sha']})
-    except GateError:
-        if resolve_ref(tag, token, missing=True) != sha:
-            raise
-    if resolve_ref(tag, token) != sha:
-        raise GateError('Stable tag did not resolve to the qualified source.')
+    except GateError as creation_error:
+        try:
+            verify_created_tag(token, tag, sha)
+        except GateError as verification_error:
+            raise GateError(f'{creation_error} Subsequent tag verification failed: {verification_error}') from None
+        return
+    verify_created_tag(token, tag, sha)
 
 
 def main():

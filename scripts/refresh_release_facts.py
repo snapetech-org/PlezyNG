@@ -11,6 +11,7 @@ import re
 import subprocess
 
 from release_coverage import missing_assets
+import nix_release_metadata
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -94,6 +95,8 @@ def update(root: Path, metadata: dict, commit: str, observed: str) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", help="Require this published tag to be the current public latest")
+    parser.add_argument("--nix-only", action="store_true", help="Reconcile only maintained Nix release metadata")
+    parser.add_argument("--receipt", type=Path, help="Retain public Nix verification evidence outside maintained metadata")
     args = parser.parse_args()
     metadata = github("releases/latest")
     tag = metadata.get("tag_name", "")
@@ -101,7 +104,19 @@ def main() -> None:
         raise ValueError(f"Public latest is {tag}, expected {args.tag}")
     if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
         raise ValueError("Unexpected stable release tag")
-    changed = update(ROOT, metadata, tag_commit(tag), dt.datetime.now(dt.timezone.utc).date().isoformat())
+    commit = tag_commit(tag)
+    nix_text, receipt = nix_release_metadata.prepare(ROOT, metadata, commit, github)
+    if tag_commit(tag) != commit:
+        raise ValueError("Release tag changed during metadata verification")
+    changed = ([] if args.nix_only else
+               update(ROOT, metadata, commit, dt.datetime.now(dt.timezone.utc).date().isoformat()))
+    path = ROOT / nix_release_metadata.METADATA_PATH
+    if nix_text is not None and path.read_text() != nix_text:
+        path.write_text(nix_text)
+        changed.append(nix_release_metadata.METADATA_PATH)
+    if args.receipt:
+        args.receipt.parent.mkdir(parents=True, exist_ok=True)
+        args.receipt.write_text(json.dumps({**receipt, "changed": changed}, indent=2) + "\n")
     print(json.dumps({"tag": tag, "changed": changed}))
 
 

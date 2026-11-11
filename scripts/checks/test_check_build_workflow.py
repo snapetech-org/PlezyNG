@@ -811,6 +811,28 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('verify the built webOS package', result.stderr)
 
+    def test_tizen_cannot_assume_host_rustup_or_skip_early_validation(self):
+        path = ROOT / '.github/workflows/tizen.yml'
+        original = Path.read_text
+        workflow = original(path)
+        for before, after in [
+            ('if ! command -v rustup >/dev/null; then packages+=(rustup); fi', 'true'),
+            ('          rustup --version', '          true'),
+            ('      - name: Install Tizen host build prerequisites\n',
+             '      - name: Install Tizen host build prerequisites\n        if: false\n'),
+        ]:
+            with self.subTest(before=before):
+                invalid = workflow.replace(before, after, 1)
+                self.assertNotEqual(invalid, workflow)
+                def read(candidate, *args, **kwargs):
+                    return invalid if candidate == path else original(candidate, *args, **kwargs)
+                errors = io.StringIO()
+                with patch.object(Path, 'read_text', read), patch.object(sys, 'argv', [str(CHECKER)]), \
+                        redirect_stderr(errors), self.assertRaises(SystemExit) as result:
+                    runpy.run_path(str(CHECKER), run_name='__main__')
+                self.assertEqual(result.exception.code, 1)
+                self.assertIn('provision and verify rustup', errors.getvalue())
+
     def test_versioned_tizen_build_stays_arm_and_store_gated(self) -> None:
         workflow = self._workflow().replace(
             "      architecture: arm\n", "      architecture: x64\n", 1

@@ -46,7 +46,8 @@ Future<void> launchDeepLink(BuildContext context, DeepLink link, {required bool 
         ),
       );
     case OpenMediaLink():
-      await Navigator.of(context, rootNavigator: true).push(
+      // Keep the route under this profile's workspace and teardown providers.
+      await Navigator.of(context).push(
         PageRouteBuilder<void>(
           settings: const RouteSettings(name: 'universal-media-cli'),
           pageBuilder: (_, animation, secondaryAnimation) => OpenMediaScreen(initialAddress: link.address),

@@ -68,7 +68,9 @@ def build(args):
             if stale in ("RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "CC", "CXX", "AR", "CFLAGS", "CXXFLAGS") or stale.startswith(("CC_", "CXX_", "AR_", "CFLAGS_", "CXXFLAGS_", "CARGO_TARGET_")):
                 env.pop(stale, None)
         env.update(RUSTUP_HOME=str(work / "rustup"), CARGO_HOME=str(work / "cargo"), CARGO_TARGET_DIR=str(work / "target"))
-        run("rustup", "toolchain", "install", rust, "--profile", "minimal", "--target", target, env=env)
+        # This isolated home owns the compiler, not the host's rustup launcher.
+        run("rustup", "toolchain", "install", rust, "--profile", "minimal",
+            "--no-self-update", "--target", target, env=env)
         suffix = target.replace("-", "_")
         env[f"CC_{suffix}"] = tools["CMAKE_C_COMPILER"]
         env[f"CXX_{suffix}"] = tools["CMAKE_CXX_COMPILER"]

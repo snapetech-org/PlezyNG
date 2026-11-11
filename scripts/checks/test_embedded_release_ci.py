@@ -6,6 +6,7 @@ import os
 import sys
 import tempfile
 import unittest
+import urllib.error
 from unittest.mock import patch
 
 import verify_embedded_release_ci as embedded
@@ -149,6 +150,58 @@ class EmbeddedQualificationTests(unittest.TestCase):
             embedded.create_stable_tag('fixture', self.tag, self.sha)
         self.assertEqual(api.call_args_list[0].kwargs['payload']['object'], self.sha)
         self.assertEqual(api.call_args_list[1].kwargs['payload'], {'ref': f'refs/tags/{self.tag}', 'sha': 'c' * 40})
+
+    def test_new_ref_and_annotated_object_visibility_are_retried_without_duplicate_posts(self):
+        with patch.object(embedded, 'resolve_ref', side_effect=[None, None,
+                embedded.QualificationNotFound('object unavailable'), self.sha]), \
+                patch.object(embedded, 'api', side_effect=[{'sha': 'c' * 40}, {}]) as api, \
+                patch.object(embedded.time, 'sleep') as sleep:
+            embedded.create_stable_tag('fixture', self.tag, self.sha)
+        self.assertEqual(api.call_count, 2)
+        self.assertEqual(sleep.call_count, 2)
+
+    def test_unavailable_new_tag_stops_after_bounded_reads_and_preserves_created_ref(self):
+        with patch.object(embedded, 'resolve_ref', return_value=None) as resolve, \
+                patch.object(embedded, 'api', side_effect=[{'sha': 'c' * 40}, {}]) as api, \
+                patch.object(embedded.time, 'sleep') as sleep, \
+                self.assertRaisesRegex(GateError, 'preserve it'):
+            embedded.create_stable_tag('fixture', self.tag, self.sha)
+        self.assertEqual(resolve.call_count, 6)
+        self.assertEqual(api.call_count, 2)
+        self.assertEqual(sleep.call_count, 4)
+
+    def test_wrong_new_tag_or_non404_read_failure_is_never_retried_or_retargeted(self):
+        for visible in ('b' * 40, GateError('HTTP403')):
+            with self.subTest(visible=visible), \
+                    patch.object(embedded, 'resolve_ref', side_effect=[None, visible]), \
+                    patch.object(embedded, 'api', side_effect=[{'sha': 'c' * 40}, {}]) as api, \
+                    patch.object(embedded.time, 'sleep') as sleep, self.assertRaises(GateError):
+                embedded.create_stable_tag('fixture', self.tag, self.sha)
+            self.assertEqual(api.call_count, 2)
+            sleep.assert_not_called()
+
+    def test_ref_post_race_reuses_only_the_same_qualified_tag(self):
+        with patch.object(embedded, 'resolve_ref', side_effect=[None, None, self.sha]), \
+                patch.object(embedded, 'api', side_effect=[{'sha': 'c' * 40}, GateError('HTTP422')]) as api, \
+                patch.object(embedded.time, 'sleep'):
+            embedded.create_stable_tag('fixture', self.tag, self.sha)
+        self.assertEqual(api.call_count, 2)
+
+    def test_ref_creation_error_remains_visible_if_no_qualified_tag_appears(self):
+        with patch.object(embedded, 'resolve_ref', return_value=None), \
+                patch.object(embedded, 'api', side_effect=[{'sha': 'c' * 40}, GateError('HTTP403 creating ref')]), \
+                patch.object(embedded.time, 'sleep'), self.assertRaisesRegex(GateError, 'HTTP403 creating ref.*preserve it'):
+            embedded.create_stable_tag('fixture', self.tag, self.sha)
+
+    def test_only_http404_is_classified_as_new_tag_visibility(self):
+        for status in (404, 403, 500):
+            error = urllib.error.HTTPError('https://api.github.com', status, 'fixture', None, None)
+            with self.subTest(status=status), patch.object(embedded.urllib.request, 'urlopen', side_effect=error):
+                with self.assertRaises(GateError) as caught:
+                    embedded.api('git/tags/' + 'c' * 40, 'fixture-private-token')
+                self.assertEqual(isinstance(caught.exception, embedded.QualificationNotFound), status == 404)
+                self.assertIn('git/tags/', str(caught.exception))
+                self.assertNotIn('fixture-private-token', str(caught.exception))
 
     def test_freeze_command_never_creates_a_tag_when_one_required_job_failed(self):
         environment = {'GH_TOKEN': 'fixture', 'REPOSITORY': embedded.REPOSITORY, 'COMMIT_SHA': self.sha,

@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Provision and verify the Tizen Rust launcher before native compilation, keeping the pinned MilkRust compiler isolated without modifying the host launcher.
+
+- Keep Nix package versions and hashes synchronized with complete, authenticated releases, retrying concurrent metadata updates without rebuilding the application.
+
+- Allow bounded GitHub tag propagation after freezing a qualified source, without recreating tags or accepting mismatched references.
+
+- Keep OpenMedia app links inside the active profile navigator, and allow standalone playback without a multiview workspace. Preserve the existing profile-owned mini-player while preventing route-construction failures that left audio playing behind a black screen.
+
 - Validate Apple's case-insensitive bundle identities and iOS-capable universal worker registrations against strict iOS App Store profiles; provide a native signing preflight without rebuilding the application.
 
 - Isolate the relay store write queue between widget test clocks, retaining ordered account teardown, download preservation and same-account re-login coverage.

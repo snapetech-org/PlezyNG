@@ -1108,7 +1108,7 @@ def refresh_published_facts(worktree: Path, tag: str, release_sha: str) -> str:
     ensure_remote_main_sha(release_sha, "recording published release facts")
     command(["python3", "scripts/refresh_release_facts.py", "--tag", tag], cwd=worktree)
     paths = ["README.md", "docs/maintainers/capability-manifest.json",
-             f"docs/maintainers/releases/{tag}.json"]
+             f"docs/maintainers/releases/{tag}.json", "linux/packaging/nix/release.json"]
     changed = command(["git", "status", "--porcelain", "--", *paths], cwd=worktree,
                       capture=True).stdout.strip()
     if not changed:
@@ -1140,7 +1140,7 @@ def refresh_latest_published_facts(scratch: Path, tag: str, product_sha: str) ->
         evidence = scratch / "published-facts-evidence"
         evidence.mkdir()
         for relative in ("README.md", "docs/maintainers/capability-manifest.json",
-                         f"docs/maintainers/releases/{tag}.json"):
+                         f"docs/maintainers/releases/{tag}.json", "linux/packaging/nix/release.json"):
             source = checkout / relative
             if source.is_file():
                 destination = evidence / relative

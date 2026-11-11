@@ -161,6 +161,7 @@ jobs:
         run: |
           set -euo pipefail
           packages=(build-essential ca-certificates clang cmake curl git-lfs pkg-config python3 unzip zip)
+          if ! command -v rustup >/dev/null; then packages+=(rustup); fi
           for attempt in 1 2 3; do
             if sudo apt-get update -o Acquire::Retries=3 \
               && sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 "${packages[@]}"; then
@@ -174,6 +175,8 @@ jobs:
           clang --version
           cmake --version
           git lfs version
+          command -v rustup
+          rustup --version
           if [[ -z "${HTTPS_PROXY:-${https_proxy:-}}" && "$PLEZYNG_ALLOW_DIRECT_DOWNLOADS" != 1 ]]; then
             echo "The private JIT HTTPS proxy is required to fetch the pinned Samsung SDK packages." >&2
             exit 1

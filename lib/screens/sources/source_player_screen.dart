@@ -282,13 +282,13 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
     }
     playback.fullPlayerVisible = true;
 
-    final workspace = context.read<MultiviewWorkspaceController>();
+    final workspace = context.read<MultiviewWorkspaceController?>();
     if (_observedWorkspace != workspace) {
       _observedWorkspace?.removeListener(_scheduleWorkspaceAutoJoin);
       _observedWorkspace = workspace;
-      workspace.addListener(_scheduleWorkspaceAutoJoin);
+      workspace?.addListener(_scheduleWorkspaceAutoJoin);
     }
-    _attachToExistingWorkspaceSession(playback, workspace);
+    if (workspace != null) _attachToExistingWorkspaceSession(playback, workspace);
     _scheduleWorkspaceAutoJoin();
   }
 
@@ -365,7 +365,8 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
   void _toggleSourceWorkspace() {
     final playback = _session;
     if (playback == null || !playback.active || playback.isSamplePreview) return;
-    final controller = _workspace ?? context.read<MultiviewWorkspaceController>();
+    final controller = _workspace ?? _observedWorkspace;
+    if (controller == null) return;
     final existingId = _workspaceSessionId;
     if (existingId != null) {
       if (_workspaceDetached) {
@@ -1529,7 +1530,7 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
               onPressed: () => sourceAction(context, () => _toggleStreamRecording(s)),
               icon: AppIcon(s.isRecordingStream ? Symbols.stop_circle_rounded : Symbols.radio_button_checked_rounded),
             ),
-          if (s.video && _full && !s.isSamplePreview)
+          if (s.video && _full && !s.isSamplePreview && (_workspace != null || _observedWorkspace != null))
             FocusableButton(
               autoScroll: false,
               onPressed: _toggleSourceWorkspace,
@@ -1699,17 +1700,18 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                       onPressed: () => unawaited(_saveLocalPlaylist(s)),
                       icon: const AppIcon(Symbols.playlist_add_check_rounded),
                     ),
-                  FocusableButton(
-                    autoScroll: false,
-                    onPressed: _toggleSourceWorkspace,
-                    child: IconButton(
-                      tooltip: _workspaceDetached
-                          ? (s.video ? t.videoControls.returnToFullPlayer : t.common.returnToFullView)
-                          : t.videoControls.openMiniPlayer,
+                  if (_workspace != null || _observedWorkspace != null)
+                    FocusableButton(
+                      autoScroll: false,
                       onPressed: _toggleSourceWorkspace,
-                      icon: const AppIcon(Symbols.picture_in_picture_alt_rounded),
+                      child: IconButton(
+                        tooltip: _workspaceDetached
+                            ? (s.video ? t.videoControls.returnToFullPlayer : t.common.returnToFullView)
+                            : t.videoControls.openMiniPlayer,
+                        onPressed: _toggleSourceWorkspace,
+                        icon: const AppIcon(Symbols.picture_in_picture_alt_rounded),
+                      ),
                     ),
-                  ),
                 ],
                 IconButton(
                   tooltip: t.fileSources.stop,

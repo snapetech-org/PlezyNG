@@ -110,6 +110,13 @@ abstract final class MusicRelayStore {
     }
   });
 
+  static Future<void> clearAll() => _writes.run(() async {
+    final prefs = await BaseSharedPreferencesService.sharedCache();
+    for (final key in prefs.keys.where((key) => key.startsWith('music_pairing_relay_')).toList()) {
+      await prefs.remove(key);
+    }
+  });
+
   static Future<void> removeProfile(String profile) => _writes.run(() async {
     final prefs = await BaseSharedPreferencesService.sharedCache();
     for (final key in prefs.keys.where((key) => key.startsWith(prefix(profile))).toList()) {

@@ -616,7 +616,7 @@ class StorageService extends BaseSharedPreferencesService {
 
   /// Remove user-scoped prefs for every scope (full logout).
   Future<void> clearAllUserScopedPreferences() async {
-    await _clearKeysWithPrefix('music_pairing_relay_');
+    await MusicRelayStore.clearAll();
     await ExtrasStore.clearAll();
     await _clearKeysWithPrefix('user_');
   }

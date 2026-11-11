@@ -10,10 +10,11 @@ import 'music_transfer_snapshot.dart';
 /// controller reconnects. Repeating commit reads the receipt and cannot start
 /// a second occurrence. Local queue/transport edits invalidate reservations.
 class MusicDeviceEndpoint {
-  MusicDeviceEndpoint(this.session, {required this.allowed});
+  MusicDeviceEndpoint(this.session, {required this.allowed, this.relayInfo});
 
   final MusicDeviceSession session;
   final bool Function() allowed;
+  final Map<String, dynamic>? Function()? relayInfo;
   ({String ticket, PreparedMusicDeviceTransfer commit})? _prepared;
   Timer? _prepareExpiry;
   ({String ticket, String revision, bool playing})? _frozen;
@@ -28,12 +29,21 @@ class MusicDeviceEndpoint {
     final volume = session.playback.volume;
     if (offer == null) {
       if (session.playback.currentTrack != null) return const {'ok': false};
-      return {'ok': true, 'empty': true, 'revision': 'idle', 'position': 0, 'playing': false, 'volume': volume};
+      return {
+        'ok': true,
+        'empty': true,
+        'revision': 'idle',
+        'position': 0,
+        'playing': false,
+        'volume': volume,
+        'relay': relayInfo?.call(),
+      };
     }
     final revision = musicDeviceRevision(offer);
     return {
       'ok': true,
       'revision': revision,
+      'relay': relayInfo?.call(),
       'position': offer.snapshot.position.inMilliseconds,
       'playing': offer.snapshot.playing,
       'volume': volume,

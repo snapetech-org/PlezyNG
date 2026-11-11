@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
@@ -19,6 +20,9 @@ class MusicDeviceLink extends ChangeNotifier implements MusicDevicePlayback {
   final _commands = SerialFutureQueue();
   MusicDeviceState? _state;
   bool _closed = false;
+  bool _responsive = true;
+  String? _relayInfo;
+  void Function(Object?)? onRelayInfo;
   Timer? _poll;
   bool _refreshing = false;
   bool _pollQueued = false;
@@ -27,17 +31,29 @@ class MusicDeviceLink extends ChangeNotifier implements MusicDevicePlayback {
   @override
   MusicDeviceState? get state => _state;
   @override
-  bool get connected => !_closed && isConnected();
+  bool get connected => !_closed && _responsive && isConnected();
 
   Future<bool> refresh({bool full = false}) async {
-    if (!connected || _refreshing) return false;
+    if (_closed || !isConnected() || _refreshing) return false;
     _refreshing = true;
     try {
       final reply = await request({'op': 'state', if (!full) 'revision': _state?.revision});
-      if (!connected || reply?['ok'] != true) return false;
+      if (_closed || !isConnected() || reply?['ok'] != true) {
+        _responsive = false;
+        if (!_closed) notifyListeners();
+        return false;
+      }
+      _responsive = true;
       final state = MusicDeviceState.read(reply!, full ? null : _state);
       if (state == null) return false;
       _state = state;
+      if (reply.containsKey('relay')) {
+        final encoded = jsonEncode(reply['relay']);
+        if (encoded != _relayInfo) {
+          _relayInfo = encoded;
+          onRelayInfo?.call(reply['relay']);
+        }
+      }
       notifyListeners();
       return true;
     } finally {
@@ -47,7 +63,7 @@ class MusicDeviceLink extends ChangeNotifier implements MusicDevicePlayback {
 
   void start() {
     _poll ??= Timer.periodic(const Duration(seconds: 1), (_) {
-      if (_pollQueued || !connected) return;
+      if (_pollQueued || _closed || !isConnected()) return;
       _pollQueued = true;
       unawaited(
         _commands.run(() async {

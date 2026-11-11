@@ -41,6 +41,9 @@ import '../services/music/music_device_endpoint.dart';
 import '../services/music/music_device_peer.dart';
 import '../services/music/music_device_link.dart';
 import '../services/music/music_device_store.dart';
+import '../services/music/music_relay_configuration.dart';
+import '../services/music/music_relay_connection.dart';
+import '../services/music/music_relay_host.dart';
 import '../services/music/music_group_exchange.dart';
 import '../services/music/music_group_endpoint.dart';
 import '../services/music/music_group_playback.dart';
@@ -95,9 +98,91 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   MusicDeviceEndpoint? _musicDeviceEndpoint;
   MusicDeviceController? _musicDevices;
   MusicDevicePeer? _pairedMusicDevice;
-  final _musicPeers = <String, MusicDevicePeer>{};
+  final _musicPeers = <String, MusicDeviceConnection>{};
   LanDiscoveryService? _musicDiscovery;
   int _musicPeerGeneration = 0;
+  MusicRelayHost? _musicRelayHost;
+  int _musicRelayGeneration = 0;
+  String _musicRelayUrl = '';
+  bool _musicRelayEnabled = false;
+  String get musicRelayUrl => _musicRelayUrl;
+  bool get musicRelayEnabled => _musicRelayEnabled;
+  bool get musicRelayConnected => _musicRelayHost?.connected ?? false;
+
+  Future<void> loadMusicRelayConfiguration() async {
+    final profile = _cryptoProfileId;
+    if (profile == null) return;
+    final configuration = await MusicRelayStore.configuration(profile);
+    if (isDisposed || profile != _cryptoProfileId) return;
+    _musicRelayUrl = configuration.url;
+    _musicRelayEnabled = configuration.enabled;
+    safeNotifyListeners();
+  }
+
+  Future<void> configureMusicRelay(String url, bool enabled) async {
+    final profile = _cryptoProfileId;
+    if (profile == null) throw StateError('No music profile');
+    await MusicRelayStore.configure(profile, url, enabled);
+    if (isDisposed || profile != _cryptoProfileId) return;
+    await loadMusicRelayConfiguration();
+    if (enabled && !isHostServerRunning) {
+      final settings = await SettingsService.getInstance();
+      if (isDisposed || profile != _cryptoProfileId) return;
+      await settings.write(SettingsService.enableCompanionRemoteServer, true);
+      await startHostServer();
+    } else {
+      await _refreshMusicRelay();
+    }
+  }
+
+  void _retireMusicRelay() {
+    _musicRelayGeneration++;
+    _musicRelayHost?.close();
+    _musicRelayHost = null;
+  }
+
+  Future<void> _refreshMusicRelay() async {
+    _retireMusicRelay();
+    final profile = _cryptoProfileId;
+    final endpoint = _musicDeviceEndpoint;
+    final code = _hostPairingCode;
+    final generation = _musicRelayGeneration;
+    bool current() =>
+        !isDisposed && profile == _cryptoProfileId && generation == _musicRelayGeneration && isHostServerRunning;
+    if (profile == null || endpoint == null || code == null || !current()) return;
+    try {
+      final configuration = await MusicRelayStore.configuration(profile);
+      if (!current()) return;
+      _musicRelayUrl = configuration.url;
+      _musicRelayEnabled = configuration.enabled;
+      if (!configuration.enabled || configuration.url.isEmpty) return;
+      final credentials = await MusicRelayStore.host(profile, code);
+      final contexts = await _pairedContexts(code);
+      if (!current()) return;
+      _musicRelayHost = MusicRelayHost(
+        uri: musicRelayUri(configuration.url),
+        credentials: credentials,
+        contexts: contexts,
+        endpoint: endpoint,
+        current: current,
+        changed: safeNotifyListeners,
+      );
+    } catch (_) {
+      // LAN receiving remains available if optional relay configuration fails.
+    } finally {
+      safeNotifyListeners();
+    }
+  }
+
+  void _bindMusicRelayInfo(MusicDeviceLink output, String profile, String key) {
+    output.onRelayInfo = (value) {
+      if (isDisposed || profile != _cryptoProfileId) return;
+      final target = MusicRelayTarget.read(value);
+      if (target != null) {
+        unawaited(MusicRelayStore.remember(profile, key, target).catchError((Object _) {}));
+      }
+    };
+  }
 
   MusicDeviceController? get musicDevices => _musicDevices;
   MusicDeviceLink? get pairedMusicDevice => _pairedMusicDevice?.output;
@@ -122,36 +207,69 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     final key = '${context.id}:${host.clientId}';
     final previous = _musicPeers[key];
     if (previous?.output.connected == true) return previous!.output;
-    final code = await _remotePairingCode(profileId, key, pairingCode);
-    final contexts = await _pairedContexts(code);
     final generation = _musicPeerGeneration;
     bool current() => !isDisposed && generation == _musicPeerGeneration && profileId == _cryptoProfileId;
+    final code = await _remotePairingCode(profileId, key, pairingCode);
+    final contexts = await _pairedContexts(code);
+    final relay = await MusicRelayStore.target(profileId, key);
     if (!current()) throw StateError('Music profile changed');
-    final transport = _peerServiceFactory();
-    final candidate = MusicDevicePeer(
-      transport: transport,
+
+    Future<MusicDeviceConnection> lan() async {
+      final transport = _peerServiceFactory();
+      final candidate = MusicDevicePeer(
+        transport: transport,
+        endpoint: endpoint,
+        current: current,
+        ownsTransport: true,
+        name: host.name,
+        changed: safeNotifyListeners,
+      );
+      try {
+        await transport.joinSessionRacingWithContexts(
+          _deviceName,
+          _platform,
+          host.addresses,
+          contexts,
+          authContextId: host.authContextId,
+          expectedHostClientId: host.clientId,
+        );
+        if (!current() || !await candidate.ready()) throw StateError('Update Pleazyng on the receiving device');
+        return candidate;
+      } catch (_) {
+        await candidate.close();
+        rethrow;
+      }
+    }
+
+    Future<MusicDeviceConnection> away() => MusicRelayConnection.connect(
+      target: relay!,
+      contexts: contexts.where((identity) => identity.id == host.authContextId).toList(),
       endpoint: endpoint,
-      current: current,
-      ownsTransport: true,
+      hostClientId: host.clientId,
       name: host.name,
+      deviceName: _deviceName,
+      platform: _platform,
+      current: current,
       changed: safeNotifyListeners,
     );
+    final preferRelay = relay != null && DateTime.now().difference(host.lastSeen) > const Duration(seconds: 10);
+    MusicDeviceConnection candidate;
     try {
-      await transport.joinSessionRacingWithContexts(
-        _deviceName,
-        _platform,
-        host.addresses,
-        contexts,
-        authContextId: host.authContextId,
-        expectedHostClientId: host.clientId,
-      );
-      if (!current() || !await candidate.ready()) throw StateError('Update Pleazyng on the receiving device');
+      candidate = await (preferRelay ? away() : lan());
+    } catch (_) {
+      if (!current() || relay == null) rethrow;
+      candidate = await (preferRelay ? lan() : away());
+    }
+    try {
+      if (!current()) throw StateError('Music profile changed');
       if (pairingCode != null) await RemotePairingStore.rememberRemote(profileId, key, code);
       if (!current()) throw StateError('Music profile changed');
       await MusicDeviceStore.remember(profileId, host);
       if (!current()) throw StateError('Music profile changed');
+      _bindMusicRelayInfo(candidate.output, profileId, key);
+      if (!await candidate.output.refresh(full: true) || !current()) throw StateError('Music receiver unavailable');
       _musicPeers[key] = candidate;
-      if (identical(_musicDevices?.active, previous?.output) && await candidate.output.refresh(full: true)) {
+      if (identical(_musicDevices?.active, previous?.output)) {
         _musicDevices?.adopt(candidate.output);
       }
       await previous?.close();
@@ -183,6 +301,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     }
     await RemotePairingStore.forgetRemote(profile, key);
     await MusicDeviceStore.forget(profile, host);
+    await MusicRelayStore.remember(profile, key, null);
     safeNotifyListeners();
   }
 
@@ -238,8 +357,10 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
       await MusicDeviceStore.remember(profile, host);
       if (!current()) throw StateError('Music profile changed');
       final previous = _musicPeers[key];
+      _bindMusicRelayInfo(candidate.output, profile, key);
+      if (!await candidate.output.refresh(full: true) || !current()) throw StateError('Music receiver unavailable');
       _musicPeers[key] = candidate;
-      if (identical(_musicDevices?.active, previous?.output) && await candidate.output.refresh(full: true)) {
+      if (identical(_musicDevices?.active, previous?.output)) {
         _musicDevices?.adopt(candidate.output);
       }
       await previous?.close();
@@ -259,6 +380,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _resetMusicDevices() {
+    _retireMusicRelay();
     _musicPeerGeneration++;
     _musicDevices?.disconnect();
     _musicDeviceEndpoint?.reset();
@@ -598,9 +720,11 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
       final endpoint = MusicDeviceEndpoint(
         session,
         allowed: () => !isDisposed && identical(_musicSession, session) && isCryptoReady,
+        relayInfo: () => _musicRelayHost?.invitation,
       );
       _musicDeviceEndpoint = endpoint;
       _musicDevices = MusicDeviceController(endpoint, session)..addListener(safeNotifyListeners);
+      if (isHostServerRunning) unawaited(_refreshMusicRelay());
     }
     _musicGroupPlayback = session is MusicGroupSession && session is MusicPlaybackService
         ? MusicGroupPlayback(session as MusicPlaybackService, session)
@@ -1225,6 +1349,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
         rethrow;
       }
 
+      unawaited(_refreshMusicRelay());
       appLogger.d('CompanionRemote: Host server running, broadcasting on LAN');
     } catch (e) {
       checkCurrent?.call();
@@ -1247,6 +1372,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   });
 
   Future<void> _stopHostServerLocked() async {
+    _retireMusicRelay();
     _steamInternetHost?.close();
     _steamInternetHost = null;
     final stopGeneration = _remoteGeneration;
@@ -1764,6 +1890,12 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
         changed: safeNotifyListeners,
       );
       _pairedMusicDevice = paired;
+      final profile = _cryptoProfileId;
+      final identity = transport.selectedAuthContextId;
+      final client = transport.selectedHostClientId;
+      if (!transport.isHost && profile != null && identity != null && client != null) {
+        _bindMusicRelayInfo(paired.output, profile, '$identity:$client');
+      }
       if (previous != null) unawaited(previous.close());
     }
 

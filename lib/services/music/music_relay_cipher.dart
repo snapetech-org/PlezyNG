@@ -52,6 +52,7 @@ class MusicRelayCipher {
   int _received = 0;
   int _queuedBytes = 0;
   bool _closed = false;
+  bool _disposed = false;
   bool _ready = false;
   bool _challenged = false;
 
@@ -267,6 +268,8 @@ class MusicRelayCipher {
   }
 
   void dispose() {
+    if (_disposed) return;
+    _disposed = true;
     close();
     output.dispose();
   }

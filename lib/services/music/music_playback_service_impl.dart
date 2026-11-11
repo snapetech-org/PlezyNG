@@ -2903,7 +2903,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   bool _handleRemoteTransport(RemoteCommandType type) {
-    if (_disposed || _currentTrack == null) {
+    if (_disposed || currentTrack == null) {
       return false;
     }
     final Future<void> Function()? action = switch (type) {
@@ -2972,12 +2972,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   );
 
   void _onControlEvent(MediaControlEvent event) {
-    if (_disposed || _currentTrack == null) {
+    if (_disposed || currentTrack == null) {
       return;
     }
     if (_mediaControlRouter.route(event)) {
       return;
     }
+
+    if (_musicDeviceOutput != null) return;
 
     if (event is AudioInterruptionBeganEvent || event is AudioRouteOldDeviceUnavailableEvent) {
       // Remember whether we were playing so interruption-end/route-return
@@ -3004,6 +3006,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   /// In-track relative seek for OS skip commands, clamped to the track.
   Future<void> _seekRelative(Duration delta) async {
+    if (_musicDeviceOutput != null) {
+      var target = position + delta;
+      if (target < Duration.zero) target = Duration.zero;
+      final max = duration;
+      if (max != null && target > max) target = max;
+      return seek(target);
+    }
     _cancelOverlap();
     final player = _player;
     if (player == null) {

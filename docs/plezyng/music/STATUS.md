@@ -43,7 +43,7 @@ source track/artist/album and progress; shared controls forward to the separatel
 verified Companion playback identity. Paused/suspended membership remains open
 with silence and resumes on a fresh frame timeline. State subscriptions have
 per-event bounds and retire with the owning source/account. The combined native
-group, clock, bridge, controller and shared-player suite passes 272 tests.
+group, clock, bridge, controller and shared-player suite passes 275 tests.
 
 Confidence is **high** for protocol and automated code results. The official
 Caldera 1.1.0 reference accepted both directions in isolated generated-audio

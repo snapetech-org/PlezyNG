@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Retire stalled or disconnected native metadata streams through their socket deadline, avoiding synchronous close errors during pending HTTP flushes. Apply the same safe teardown to the live PCM bridge.
+
 - Keep native music capture and its source clock running while speakers join or leave. Gate new PCM on acknowledgement, preserve existing output on failed/cancelled additions and let one peer depart without stopping its siblings.
 
 - Add explicit native Caldera / Plexamp availability, multicast discovery, mesh hosting and incoming source/sink membership through the shared music session. Bound peer controls and replaceable group setup, accept native additional-sink relays, and retire availability with the active profile/account.

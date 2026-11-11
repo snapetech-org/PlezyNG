@@ -222,6 +222,15 @@ the source's EventSource. An allowed peer read the metadata and paused the
 source through the native control route; 589 audio packets arrived with zero
 packet drops. This remains generated audio through an unpaced null device.
 
+## Backpressure retirement
+
+Metadata writes have a 500 ms flush budget. Retirement uses the HTTP response
+deadline to destroy the connection instead of closing an HTTP sink while flush
+has it bound; that close can throw synchronously. Late flush errors are absorbed,
+retirement is idempotent and retired streams cannot write again. The receive WAV
+server similarly uses its owned server's forced teardown. A real native probe
+exposed the original failure; deterministic pending-flush regressions cover it.
+
 ## Protocol sources
 
 - mpv's [demuxer options](https://mpv.io/manual/stable/) document the known-format and stream-info probing controls used for this owned WAV.

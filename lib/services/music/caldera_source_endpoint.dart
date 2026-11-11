@@ -58,7 +58,7 @@ class CalderaSourceEndpoint {
   bool _allowed(InternetAddress address) => peers.contains(address.address) || allowsPeer?.call(address) == true;
   HttpServer? _server;
   Timer? _timer;
-  final _streams = <HttpResponse, _StateStream>{};
+  final _streams = <HttpResponse, CalderaStateStream>{};
   final _receipts = <String, _CommandReceipt>{};
   Future<void> _commands = Future.value();
   int _queued = 0;
@@ -124,7 +124,7 @@ class CalderaSourceEndpoint {
         }
         response.headers.contentType = ContentType('text', 'event-stream');
         response.bufferOutput = false;
-        final stream = _StateStream(response, remote);
+        final stream = CalderaStateStream(response, remote);
         _streams[response] = stream;
         unawaited(
           response.done.then<void>((_) => _streams.remove(response), onError: (Object _) => _streams.remove(response)),
@@ -286,36 +286,10 @@ class CalderaSourceEndpoint {
     final now = _clock.elapsedMilliseconds;
     for (final stream in _streams.values.toList()) {
       if (!_allowed(stream.address)) {
-        _streams.remove(stream.response);
-        unawaited(stream.response.close());
+        stream.retire();
         continue;
       }
-      if (stream.writing) {
-        if (now - stream.started > 500) {
-          _streams.remove(stream.response);
-          unawaited(stream.response.close());
-        }
-        continue;
-      }
-      stream.writing = true;
-      stream.started = now;
-      try {
-        stream.response.write(event);
-        unawaited(
-          stream.response.flush().then<void>(
-            (_) {
-              stream.writing = false;
-            },
-            onError: (Object _) {
-              _streams.remove(stream.response);
-              unawaited(stream.response.close());
-            },
-          ),
-        );
-      } on Object {
-        _streams.remove(stream.response);
-        unawaited(stream.response.close());
-      }
+      stream.publish(event, now);
     }
   }
 
@@ -325,8 +299,8 @@ class CalderaSourceEndpoint {
     _timer?.cancel();
     final server = _server;
     _server = null;
-    for (final response in _streams.keys.toList()) {
-      unawaited(response.close());
+    for (final stream in _streams.values.toList()) {
+      stream.retire();
     }
     _streams.clear();
     // Existing command replies must finish, including a stop that closes its
@@ -335,12 +309,47 @@ class CalderaSourceEndpoint {
   }
 }
 
-class _StateStream {
-  _StateStream(this.response, this.address);
-  final InternetAddress address;
+class CalderaStateStream {
+  CalderaStateStream(this.response, this.address);
   final HttpResponse response;
-  bool writing = false;
-  int started = 0;
+  final InternetAddress address;
+  bool _writing = false, _retired = false;
+  int _started = 0;
+
+  /// HTTP flush temporarily binds the sink. Calling close during that interval
+  /// throws synchronously; a response deadline aborts the TCP connection safely.
+  void retire() {
+    if (_retired) return;
+    _retired = true;
+    response.deadline = Duration.zero;
+  }
+
+  void publish(String event, int now) {
+    if (_retired) return;
+    if (_writing) {
+      if (now - _started > 500) retire();
+      return;
+    }
+    _writing = true;
+    _started = now;
+    try {
+      response.write(event);
+      unawaited(
+        response.flush().then<void>(
+          (_) {
+            _writing = false;
+          },
+          onError: (Object _) {
+            _writing = false;
+            retire();
+          },
+        ),
+      );
+    } on Object {
+      _writing = false;
+      retire();
+    }
+  }
 }
 
 class _CommandReceipt {

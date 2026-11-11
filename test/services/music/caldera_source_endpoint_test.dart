@@ -6,7 +6,76 @@ import 'package:plezy/services/music/caldera_source_endpoint.dart';
 import 'package:plezy/services/music/caldera_group.dart';
 
 const sourceId = '11111111-1111-4111-8111-111111111111';
+
+class _StalledResponse implements HttpResponse {
+  final pending = Completer<void>();
+  final writes = <String>[];
+  int closeCalls = 0, retirements = 0;
+  bool rejectWrites = false;
+  @override
+  void write(Object? value) {
+    if (rejectWrites) throw StateError('Disconnected');
+    writes.add(value.toString());
+  }
+
+  @override
+  Future<void> flush() => pending.future;
+  @override
+  set deadline(Duration? value) {
+    expect(value, Duration.zero);
+    retirements++;
+  }
+
+  @override
+  Future<void> close() async {
+    closeCalls++;
+    if (!pending.isCompleted) throw StateError('StreamSink is bound to a stream');
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 void main() {
+  test('stalled native metadata flush aborts safely without closing a bound sink', () async {
+    final response = _StalledResponse();
+    final stream = CalderaStateStream(response, InternetAddress('192.168.1.20'));
+    stream.publish('first', 0);
+    stream.publish('queued', 500);
+    expect(response.retirements, 0);
+    stream.publish('expired', 501);
+    expect(response.retirements, 1);
+    expect(response.closeCalls, 0);
+    expect(response.writes, ['first']);
+    response.pending.complete();
+    await Future<void>.delayed(Duration.zero);
+    stream.publish('late', 1000);
+    stream.retire();
+    expect(response.retirements, 1);
+    expect(response.writes, ['first']);
+    await response.close();
+  });
+  test('native metadata retirement absorbs a late flush failure', () async {
+    final response = _StalledResponse();
+    final stream = CalderaStateStream(response, InternetAddress('192.168.1.20'));
+    stream.publish('first', 0);
+    stream.retire();
+    response.pending.completeError(const SocketException('Disconnected'));
+    await Future<void>.delayed(Duration.zero);
+    expect(response.closeCalls, 0);
+    expect(response.retirements, 1);
+    await response.close();
+  });
+  test('native metadata synchronous write failure retires the response', () async {
+    final response = _StalledResponse()..rejectWrites = true;
+    final stream = CalderaStateStream(response, InternetAddress('192.168.1.20'));
+    stream.publish('first', 0);
+    expect(response.retirements, 1);
+    expect(response.closeCalls, 0);
+    response.pending.complete();
+    await response.close();
+  });
+
   late InternetAddress address;
   late CalderaSourceEndpoint endpoint;
   late HttpClient http;

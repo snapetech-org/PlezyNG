@@ -169,6 +169,8 @@ class CalderaAudioSink {
   RawDatagramSocket? _udp;
   WebSocket? _mesh;
   HttpServer? _http;
+  // The owned HTTP server force-closes this response, including pending flushes.
+  // ignore: close_sinks
   HttpResponse? _response;
   Timer? _pump, _heartbeat;
   CalderaStateFeed? _stateFeed;
@@ -542,7 +544,8 @@ class CalderaAudioSink {
     // A private peer has its own group state; remove only our membership.
     // Closing the point-to-point link also retires native sending to this node.
     unawaited(mesh?.close());
-    unawaited(_response?.close());
+    // Force-closing the owned HTTP server below also aborts pending flushes.
+    // HttpResponse.close itself would throw while its sink is bound.
     _response = null;
     await _http?.close(force: true);
     _http = null;

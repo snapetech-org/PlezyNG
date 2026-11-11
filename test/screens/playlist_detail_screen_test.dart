@@ -29,6 +29,7 @@ import 'package:plezy/services/download_storage_service.dart';
 import 'package:plezy/services/jellyfin_api_cache.dart';
 import 'package:plezy/services/multi_server_manager.dart';
 import 'package:plezy/services/playlist_items_loader.dart';
+import 'package:plezy/services/playlist_batch_removal.dart';
 import 'package:plezy/services/plex_api_cache.dart';
 import 'package:plezy/services/plex_client.dart';
 import 'package:plezy/services/settings_service.dart';
@@ -129,6 +130,113 @@ void main() {
     await tester.pumpAndSettle();
     expect(result, MediaNavigationResult.listRefreshNeeded);
     expect(tester.takeException(), isNull);
+  });
+
+  List<MediaItem> repeatedEntries() => [
+    for (final entry in [101, 102, 103])
+      PlexMediaItem(
+        id: 'same-song',
+        kind: MediaKind.track,
+        title: 'Repeated track',
+        serverId: 'server_1',
+        playlistItemId: entry,
+      ),
+  ];
+
+  Future<void> startSelection(WidgetTester tester) async {
+    await tester.tap(find.byTooltip(t.libraries.selection.selectItems));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> confirmSelectedRemoval(WidgetTester tester) async {
+    await tester.tap(find.byTooltip(t.playlists.removeItem));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, t.playlists.removeItem));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('multi-selection removes exact repeated occurrences after confirmation', (tester) async {
+    final client = _BatchPlaylistClient(repeatedEntries());
+    final harness = await _createHarness(client.items, client: client);
+    await tester.pumpWidget(harness.wrap(const PlaylistDetailScreen(playlist: _audioPlaylist)));
+    await tester.pumpAndSettle();
+    await startSelection(tester);
+    await tester.tap(find.byType(Checkbox).at(0));
+    await tester.tap(find.byType(Checkbox).at(2));
+    await tester.pumpAndSettle();
+    expect(find.text(t.libraries.selection.selectedCount(count: 2)), findsOneWidget);
+    expect(client.entryRemovals, isEmpty);
+    await tester.tap(find.byTooltip(t.playlists.removeItem));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, t.common.cancel));
+    await tester.pumpAndSettle();
+    expect(client.entryRemovals, isEmpty);
+    await confirmSelectedRemoval(tester);
+    expect(client.entryRemovals, ['p:101', 'p:103']);
+    expect(client.items.map(playlistOccurrenceId), ['p:102']);
+    expect(find.byType(Checkbox), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('partial batch failure reloads and keeps unremoved entries selected for explicit retry', (tester) async {
+    final client = _BatchPlaylistClient(repeatedEntries())..failSecondOnce = true;
+    final harness = await _createHarness(client.items, client: client);
+    await tester.pumpWidget(harness.wrap(const PlaylistDetailScreen(playlist: _audioPlaylist)));
+    await tester.pumpAndSettle();
+    await startSelection(tester);
+    for (var i = 0; i < 3; i++) {
+      await tester.tap(find.byType(Checkbox).at(i));
+    }
+    await tester.pumpAndSettle();
+    await confirmSelectedRemoval(tester);
+    expect(client.entryRemovals, ['p:101', 'p:102']);
+    expect(tester.widgetList<Checkbox>(find.byType(Checkbox)).map((box) => box.value), [true, true]);
+    expect(find.text(t.libraries.selection.selectedCount(count: 2)), findsOneWidget);
+    await confirmSelectedRemoval(tester);
+    expect(client.entryRemovals, ['p:101', 'p:102', 'p:102', 'p:103']);
+    expect(client.items, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('uncertain removal is reloaded and never automatically replayed', (tester) async {
+    final client = _BatchPlaylistClient(repeatedEntries())
+      ..failSecondOnce = true
+      ..applyFailedRemoval = true;
+    final harness = await _createHarness(client.items, client: client);
+    await tester.pumpWidget(harness.wrap(const PlaylistDetailScreen(playlist: _audioPlaylist)));
+    await tester.pumpAndSettle();
+    await startSelection(tester);
+    await tester.tap(find.byType(Checkbox).at(0));
+    await tester.tap(find.byType(Checkbox).at(1));
+    await tester.pumpAndSettle();
+    await confirmSelectedRemoval(tester);
+    expect(client.entryRemovals, ['p:101', 'p:102']);
+    expect(client.items.map(playlistOccurrenceId), ['p:103']);
+    expect(find.byType(Checkbox), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('D-pad SELECT toggles the focused occurrence and back cancels selection first', (tester) async {
+    final client = _BatchPlaylistClient(repeatedEntries());
+    final harness = await _createHarness(client.items, client: client);
+    await tester.pumpWidget(harness.wrap(const PlaylistDetailScreen(playlist: _audioPlaylist)));
+    await tester.pumpAndSettle();
+    await startSelection(tester);
+    final focus = tester
+        .widgetList<Focus>(find.byType(Focus))
+        .firstWhere((f) => f.focusNode?.debugLabel == 'playlist_list');
+    focus.focusNode!.requestFocus();
+    await tester.pump();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
+    await tester.pump(const Duration(milliseconds: 30));
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.text(t.libraries.selection.selectedCount(count: 1)), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(PlaylistDetailScreen), findsOneWidget);
+    expect(find.byType(Checkbox), findsNothing);
+    expect(client.entryRemovals, isEmpty);
   });
 
   testWidgets('loads playlist continuation pages from an unmodifiable first page', (tester) async {
@@ -999,6 +1107,23 @@ class _PlaylistHarness {
   }
 }
 
+class _BatchPlaylistClient extends _MetadataEditingClient {
+  _BatchPlaylistClient(super.items);
+  final entryRemovals = <String>[];
+  bool failSecondOnce = false;
+  bool applyFailedRemoval = false;
+
+  @override
+  Future<bool> removeFromPlaylist({required String playlistId, required MediaItem item}) async {
+    final id = playlistOccurrenceId(item)!;
+    entryRemovals.add(id);
+    final fail = failSecondOnce && entryRemovals.length == 2;
+    if (!fail || applyFailedRemoval) items.removeWhere((entry) => playlistOccurrenceId(entry) == id);
+    if (fail) throw StateError('Connection closed');
+    return true;
+  }
+}
+
 class _MetadataEditingClient extends _PagedPlaylistClient implements PlaylistMetadataClient {
   _MetadataEditingClient(List<MediaItem> items) : super._(items, null, false, MediaBackend.plex);
   Object authentication = Object();
@@ -1038,6 +1163,10 @@ class _PagedPlaylistClient implements MediaServerClient {
   final int? failOnceAt;
   final bool deleteResult;
   final MediaBackend _backend;
+  @override
+  Object authenticationSessionId = Object();
+  @override
+  bool get isOfflineMode => false;
   bool blockRequests = false;
   AbortController? activeAbort;
   final List<int?> requestedStarts = [];
@@ -1190,10 +1319,6 @@ class _PlexQueuePlaylistClient extends _PagedPlaylistClient implements PlexClien
     : profileScopeId = buildPlexProfileScopeId(serverId: ServerId('server_1'), profileId: 'profile_1'),
       super._(items, null, false, MediaBackend.plex);
 
-  @override
-  final Object authenticationSessionId = Object();
-  @override
-  bool get isOfflineMode => false;
   @override
   final config = testPlexConfig();
   @override

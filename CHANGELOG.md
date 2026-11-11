@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Select and remove multiple music playlist entries with pointer or D-pad controls. Preserve repeated occurrences, recheck the owning account and server entries, and reload partial or uncertain batches before an explicit retry.
+
 - Edit Plex playlist titles and summaries from playlist detail, keep unsaved drafts on failure, retire stale account forms and refresh browse lists after accepted changes.
 
 - Add guarded Plex playlist title and summary updates, preserving entries and smart rules, rejecting observed edit conflicts and reloading accepted server state.

@@ -29,6 +29,8 @@ class PlaylistItemCard extends StatefulWidget {
   final VoidCallback? onTap;
   final void Function(MediaItem source)? onRefresh;
   final bool canReorder;
+  final bool? selected;
+  final VoidCallback? onToggleSelection;
 
   final bool isFocused;
   final int? focusedColumn;
@@ -42,6 +44,8 @@ class PlaylistItemCard extends StatefulWidget {
     this.onTap,
     this.onRefresh,
     this.canReorder = true,
+    this.selected,
+    this.onToggleSelection,
     this.isFocused = false,
     this.focusedColumn,
     this.isMoving = false,
@@ -89,13 +93,20 @@ class PlaylistItemCardState extends State<PlaylistItemCard> with ContextMenuTapM
           mouseCursor: SystemMouseCursors.click,
           onTap: widget.onTap,
           onTapDown: storeTapPosition,
-          onLongPress: showContextMenuFromTap,
+          onLongPress: widget.selected == null ? showContextMenuFromTap : null,
           onSecondaryTapDown: storeTapPosition,
-          onSecondaryTap: showContextMenuFromTap,
+          onSecondaryTap: widget.selected == null ? showContextMenuFromTap : null,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                if (widget.selected != null)
+                  ExcludeFocus(
+                    child: Checkbox(
+                      value: widget.selected!,
+                      onChanged: widget.onToggleSelection == null ? null : (_) => widget.onToggleSelection!(),
+                    ),
+                  ),
                 if (widget.canReorder)
                   GestureDetector(
                     // ignore: no-empty-block - consumes long-press to prevent context menu on drag
@@ -160,20 +171,21 @@ class PlaylistItemCardState extends State<PlaylistItemCard> with ContextMenuTapM
 
                 const SizedBox(width: 8),
 
-                Container(
-                  decoration: isRemoveButtonFocused
-                      ? BoxDecoration(
-                          color: colorScheme.primaryContainer,
-                          borderRadius: const BorderRadius.all(Radius.circular(20)),
-                        )
-                      : null,
-                  child: IconButton(
-                    icon: const AppIcon(Symbols.close_rounded, fill: 1, size: 20),
-                    onPressed: widget.onRemove,
-                    tooltip: t.playlists.removeItem,
-                    color: isRemoveButtonFocused ? colorScheme.primary : textMuted,
+                if (widget.selected == null)
+                  Container(
+                    decoration: isRemoveButtonFocused
+                        ? BoxDecoration(
+                            color: colorScheme.primaryContainer,
+                            borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          )
+                        : null,
+                    child: IconButton(
+                      icon: const AppIcon(Symbols.close_rounded, fill: 1, size: 20),
+                      onPressed: widget.onRemove,
+                      tooltip: t.playlists.removeItem,
+                      color: isRemoveButtonFocused ? colorScheme.primary : textMuted,
+                    ),
                   ),
-                ),
               ],
             ),
           ),

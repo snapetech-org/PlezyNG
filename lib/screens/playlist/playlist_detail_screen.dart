@@ -7,6 +7,8 @@ import '../../focus/focusable_action_bar.dart';
 import '../../media/library_query.dart';
 import '../../media/media_item.dart';
 import '../../media/media_playlist.dart';
+import '../../media/media_kind.dart';
+import '../../services/playlist_batch_removal.dart';
 import '../../media/media_server_client.dart';
 import '../../media/ids.dart';
 import '../../services/music/music_account_scope.dart';
@@ -63,11 +65,124 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   late MediaPlaylist _playlist = widget.playlist;
   ({MediaServerClient client, Object authentication, String scope, String? profile})? _metadataOwner;
   bool _editingMetadata = false;
+  bool _selectingEntries = false;
+  final _selectedEntries = <String>{};
+
+  bool get _canSelectEntries =>
+      _isAudioPlaylist &&
+      !_isReadOnly &&
+      _isPlaylistFullyLoaded &&
+      !_isPlaylistMutationPending &&
+      !_editingMetadata &&
+      _movingIndex == null &&
+      _metadataSourceCurrent() &&
+      items.isNotEmpty &&
+      items.every(
+        (item) =>
+            item.kind == MediaKind.track &&
+            item.serverId == _playlist.serverId &&
+            item.backend == _playlist.backend &&
+            playlistOccurrenceId(item) != null,
+      ) &&
+      items.map(playlistOccurrenceId).toSet().length == items.length;
+
+  void _toggleEntrySelection(int index) {
+    if (!_selectingEntries || !_canSelectEntries || index < 0 || index >= items.length) return;
+    final id = playlistOccurrenceId(items[index])!;
+    setState(() {
+      if (!_selectedEntries.remove(id)) _selectedEntries.add(id);
+    });
+  }
+
+  void _cancelEntrySelection() => setState(() {
+    _selectingEntries = false;
+    _selectedEntries.clear();
+    _focusedColumn = 0;
+  });
+
+  Future<void> _removeSelectedEntries() async {
+    if (!_selectingEntries || !_canSelectEntries || _selectedEntries.isEmpty) return;
+    final snapshot = items;
+    final selected = items.where((item) => _selectedEntries.contains(playlistOccurrenceId(item))).toList();
+    bool current() => _metadataSourceCurrent() && identical(items, snapshot);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(t.playlists.removeItem),
+        content: Text(t.libraries.selection.confirmCount(count: selected.length)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.common.cancel)),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(t.playlists.removeItem)),
+        ],
+      ),
+    );
+    if (confirmed != true || !current()) return;
+    setState(() => _isPlaylistMutationPending = true);
+    try {
+      final result = await removePlaylistOccurrences(
+        client: _metadataOwner!.client,
+        playlist: _playlist,
+        selected: selected,
+        isCurrent: current,
+      );
+      if (!current()) return;
+      final remaining = Set<String>.of(_selectedEntries)..removeAll(result.removed);
+      // Even a failed HTTP write may have reached PMS. Reload before retrying.
+      await loadItems();
+      await _continuation.loadRemaining();
+      if (!mounted || !_metadataSourceCurrent()) return;
+      final available = items.map(playlistOccurrenceId).whereType<String>().toSet();
+      setState(() {
+        _selectedEntries
+          ..clear()
+          ..addAll(_isPlaylistFullyLoaded ? remaining.intersection(available) : remaining);
+        _selectingEntries = _selectedEntries.isNotEmpty;
+      });
+      final removedCount = _isPlaylistFullyLoaded ? selected.length - _selectedEntries.length : result.removed.length;
+      if (removedCount > 0) widget.onChanged?.call();
+      showAppSnackBar(
+        context,
+        result.succeeded || _isPlaylistFullyLoaded && _selectedEntries.isEmpty
+            ? t.libraries.selection.completed(count: removedCount)
+            : t.libraries.selection.partialFailure(succeeded: removedCount, failed: _selectedEntries.length),
+      );
+    } catch (error, stack) {
+      if (mounted && _metadataSourceCurrent()) {
+        showErrorSnackBar(context, localizedLoadErrorMessage(error, stack, context: _playlist.title));
+      }
+    } finally {
+      if (mounted) setState(() => _isPlaylistMutationPending = false);
+    }
+  }
+
+  Widget _entrySelectionBar() => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 12),
+    child: Row(
+      children: [
+        Expanded(
+          child: Semantics(
+            liveRegion: true,
+            child: Text(t.libraries.selection.selectedCount(count: _selectedEntries.length)),
+          ),
+        ),
+        IconButton(
+          tooltip: t.playlists.removeItem,
+          icon: const AppIcon(Symbols.playlist_remove_rounded),
+          onPressed: _isPlaylistMutationPending || _selectedEntries.isEmpty ? null : _removeSelectedEntries,
+        ),
+        IconButton(
+          tooltip: t.common.cancel,
+          icon: const AppIcon(Symbols.close_rounded),
+          onPressed: _isPlaylistMutationPending ? null : _cancelEntrySelection,
+        ),
+      ],
+    ),
+  );
 
   void _bindMetadataOwner() {
     if (_metadataOwner != null) return;
     final client = context.tryGetMediaClientForServer(serverIdOrNull(_playlist.serverId));
-    if (client == null || client is! PlaylistMetadataClient || client.backend != _playlist.backend) return;
+    if (client == null || client.backend != _playlist.backend) return;
     _metadataOwner = (
       client: client,
       authentication: client.authenticationSessionId,
@@ -263,12 +378,22 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
       (provider) => provider.isRepeatEnabledFor(_playlist.globalKey),
     );
     return [
-      if (_metadataOwner != null && _metadataSourceCurrent())
+      if (!_selectingEntries && _canSelectEntries)
+        FocusableAction(
+          debugLabel: 'playlist_select_entries',
+          icon: Symbols.checklist_rounded,
+          tooltip: t.libraries.selection.selectItems,
+          onPressed: () => setState(() {
+            _selectingEntries = true;
+            _focusedColumn = 0;
+          }),
+        ),
+      if (_metadataOwner?.client is PlaylistMetadataClient && _metadataSourceCurrent())
         FocusableAction(
           debugLabel: 'playlist_edit_metadata',
           icon: Symbols.edit_note_rounded,
           tooltip: t.metadataEdit.editMetadata,
-          onPressed: _editingMetadata || _isPlaylistMutationPending ? null : _editMetadata,
+          onPressed: _editingMetadata || _isPlaylistMutationPending || _selectingEntries ? null : _editMetadata,
         ),
       if (_isAudioPlaylist && _playlist.smart)
         FocusableAction(
@@ -319,7 +444,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
         FocusableAction(
           icon: Symbols.delete_rounded,
           tooltip: t.playlists.delete,
-          onPressed: _editingMetadata || _isPlaylistMutationPending ? null : _deletePlaylist,
+          onPressed: _editingMetadata || _isPlaylistMutationPending || _selectingEntries ? null : _deletePlaylist,
           iconColor: Colors.red,
         ),
     ];
@@ -365,7 +490,12 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   bool get _isPlaylistFullyLoaded => _continuation.totalCount != null && items.length >= _continuation.totalCount!;
 
   bool get _canEditPlaylist => !_isReadOnly && _isPlaylistFullyLoaded;
-  bool get _canMutatePlaylist => _canEditPlaylist && !_isPlaylistMutationPending && !_editingMetadata;
+  bool get _canMutatePlaylist =>
+      _canEditPlaylist &&
+      !_isPlaylistMutationPending &&
+      !_editingMetadata &&
+      !_selectingEntries &&
+      _metadataSourceCurrent();
 
   @override
   void dispose() {
@@ -386,6 +516,8 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
         isLoading = true;
         errorMessage = null;
         items = [];
+        _selectingEntries = false;
+        _selectedEntries.clear();
         _focusedIndex = 0;
         _focusedColumn = 0;
         _movingIndex = null;
@@ -634,6 +766,10 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   }
 
   Future<void> _playFromItem(int index) async {
+    if (_selectingEntries) {
+      _toggleEntrySelection(index);
+      return;
+    }
     if (items.isEmpty || index < 0 || index >= items.length) return;
 
     final selectedItem = items[index];
@@ -847,6 +983,10 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
 
   /// Handle route back from [OverlaySheetHost], extending the mixin with move mode support.
   bool _handleBackNavigation() {
+    if (_selectingEntries && !_isPlaylistMutationPending) {
+      _cancelEntrySelection();
+      return false;
+    }
     // If in move mode, cancel move instead of navigating
     if (_movingIndex != null) {
       _cancelMoveMode();
@@ -897,6 +1037,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
           actions: buildFocusableAppBarActions(),
           onBackPressed: popFromAppBar,
         ),
+        if (_selectingEntries) SliverToBoxAdapter(child: _entrySelectionBar()),
         ...buildStateSlivers(),
         if (items.isNotEmpty) ...[
           if (_isReadOnly)
@@ -988,6 +1129,8 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
                 key: _cardKeys.putIfAbsent(keyId, GlobalKey<PlaylistItemCardState>.new),
                 item: item,
                 index: index,
+                selected: _selectingEntries ? _selectedEntries.contains(playlistOccurrenceId(item)) : null,
+                onToggleSelection: _isPlaylistMutationPending ? null : () => _toggleEntrySelection(index),
                 onRemove: _canMutatePlaylist ? () => _removeItem(index) : null,
                 onTap: () => _playFromItem(index),
                 onRefresh: updateItem,

@@ -289,39 +289,60 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
             cwd=ROOT,
         )
 
-    watcher = subprocess.Popen(
-        ["gh", "run", "watch", run_id, "--repo", repo, "--interval", "30", "--exit-status"],
-        cwd=ROOT,
-    )
     next_drain_check = 0.0
     cancellation_requested = False
-    while watcher.poll() is None:
-        if apple_controller is not None:
-            controller_code = apple_controller.poll()
-            if controller_code not in (None, 0):
-                watcher.terminate()
-                watcher.wait(timeout=30)
-                raise ReleaseError(
-                    f"Apple JIT queue controller failed with exit code {controller_code}; "
-                    "the GitHub workflow was left running and was not canceled."
-                )
-            if controller_code == 0 and not cancellation_requested and time.monotonic() >= next_drain_check:
-                next_drain_check = time.monotonic() + 15
-                try:
-                    overview = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
-                    if overview.get("status") != "completed":
-                        inventory = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100")
-                        jobs = inventory.get("jobs", [])
-                        complete = (isinstance(jobs, list) and all(isinstance(job, dict) for job in jobs)
-                                    and inventory.get("total_count", len(jobs)) <= len(jobs))
-                        if complete and failed_build_has_drained(overview, jobs):
-                            print("Failed build drained; canceling only its remaining queued Apple jobs.", flush=True)
-                            command(["gh", "run", "cancel", run_id, "--repo", repo])
-                            cancellation_requested = True
-                except ReleaseError:
-                    print("Could not confirm failed-build drainage; preserving the workflow and retrying.", flush=True)
-        time.sleep(3)
-    watch_code = watcher.wait()
+    watch_failures = 0
+    while True:
+        watcher = subprocess.Popen(
+            ["gh", "run", "watch", run_id, "--repo", repo, "--interval", "30", "--exit-status"],
+            cwd=ROOT,
+        )
+        while watcher.poll() is None:
+            if apple_controller is not None:
+                controller_code = apple_controller.poll()
+                if controller_code not in (None, 0):
+                    watcher.terminate()
+                    watcher.wait(timeout=30)
+                    raise ReleaseError(
+                        f"Apple JIT queue controller failed with exit code {controller_code}; "
+                        "the GitHub workflow was left running and was not canceled."
+                    )
+                if controller_code == 0 and not cancellation_requested and time.monotonic() >= next_drain_check:
+                    next_drain_check = time.monotonic() + 15
+                    try:
+                        overview = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
+                        if overview.get("status") != "completed":
+                            inventory = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100")
+                            jobs = inventory.get("jobs", [])
+                            complete = (isinstance(jobs, list) and all(isinstance(job, dict) for job in jobs)
+                                        and inventory.get("total_count", len(jobs)) <= len(jobs))
+                            if complete and failed_build_has_drained(overview, jobs):
+                                print("Failed build drained; canceling only its remaining queued Apple jobs.", flush=True)
+                                command(["gh", "run", "cancel", run_id, "--repo", repo])
+                                cancellation_requested = True
+                    except ReleaseError:
+                        print("Could not confirm failed-build drainage; preserving the workflow and retrying.", flush=True)
+            time.sleep(3)
+        watch_code = watcher.wait()
+        if watch_code == 0:
+            break
+        try:
+            overview = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
+        except ReleaseError:
+            overview = {}
+        if overview.get("status") == "completed":
+            if overview.get("conclusion") == "success":
+                break
+            raise ReleaseError(f"{purpose} did not succeed: {overview.get('conclusion') or 'unknown'}")
+        # A confirmed active run is healthy even when the watch endpoint fails.
+        # Count only consecutive failures to confirm its state.
+        watch_failures = 0 if overview.get("status") in {
+            "queued", "in_progress", "waiting", "requested", "pending"
+        } else watch_failures + 1
+        if watch_failures >= 6:
+            raise ReleaseError(f"gh run watch repeatedly failed for active run {run_id}; preserve and resume it later.")
+        print(f"GitHub watch failed for active run {run_id}; retrying status watch.", flush=True)
+        time.sleep(10)
     if apple_controller is not None:
         controller_code = apple_controller.wait()
         if controller_code:
@@ -329,8 +350,6 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
                 f"Apple JIT queue controller failed with exit code {controller_code}; "
                 "inspect its per-run evidence before retrying."
             )
-    if watch_code:
-        raise ReleaseError(f"gh run watch exited with status {watch_code} for run {run_id}.")
     updated = gh_json("run", "view", run_id, "--repo", repo,
                       "--json", "databaseId,status,conclusion,headSha,headBranch,event,url,jobs")
     if updated.get("status") != "completed" or updated.get("conclusion") != "success":

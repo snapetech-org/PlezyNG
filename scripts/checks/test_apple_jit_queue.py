@@ -163,7 +163,8 @@ class AppleQueueTests(unittest.TestCase):
             tempfile.TemporaryDirectory() as scratch,
             patch.object(release, "APPLE_JIT_EVIDENCE_ROOT", Path(scratch)),
             patch.object(release.subprocess, "Popen", side_effect=[controller, watcher]),
-            patch.object(release, "gh_json", side_effect=[failed_release(), {"jobs": jobs, "total_count": 2}]),
+            patch.object(release, "gh_json", side_effect=[failed_release(), {"jobs": jobs, "total_count": 2},
+                                                           {"status": "completed", "conclusion": "failure"}]),
             patch.object(release, "command") as command,
             patch.object(release.time, "sleep"),
         ):
@@ -172,6 +173,21 @@ class AppleQueueTests(unittest.TestCase):
         command.assert_called_once_with(["gh", "run", "cancel", "42", "--repo", release.PLEZY_REPO])
         watcher.terminate.assert_not_called()
         controller.terminate.assert_not_called()
+
+    def test_transient_watch_api_failure_reuses_the_active_run(self):
+        failed_watch = Mock()
+        failed_watch.poll.return_value = 1
+        failed_watch.wait.return_value = 1
+        successful_watch = Mock()
+        successful_watch.poll.return_value = 0
+        successful_watch.wait.return_value = 0
+        completed = {"status": "completed", "conclusion": "success"}
+        with (patch.object(release.subprocess, "Popen", side_effect=[failed_watch, successful_watch]) as popen,
+              patch.object(release, "gh_json", side_effect=[{"status": "in_progress"}, completed]),
+              patch.object(release.time, "sleep")):
+            self.assertEqual(release.wait_for_run(release.PLEZY_REPO,
+                {"databaseId": 42}, "Release", private_apple=False), completed)
+        self.assertEqual(popen.call_count, 2)
 
     def test_cancellation_waits_for_public_jobs_and_queued_packages(self):
         failed = {"name": "WebOS", "status": "completed", "conclusion": "failure"}

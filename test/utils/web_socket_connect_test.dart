@@ -64,6 +64,7 @@ void main() {
         final socket = await WebSocketTransformer.upgrade(request, compression: CompressionOptions.compressionOff);
         peers.add(socket);
         socket.add('x' * 4096);
+        unawaited(socket.drain<void>().catchError((Object _) {}));
       });
       final attempt = WebSocketConnectAttempt(
         Uri.parse('ws://127.0.0.1:${server.port}/relay'),
@@ -82,7 +83,8 @@ void main() {
         // A protocol-size failure can be reported as an error or close event.
       }
       expect(messages, isEmpty);
-      expect(socket.closeCode, WebSocketStatus.messageTooBig);
+      // The pinned Dart SDK reports an oversized frame as a protocol error.
+      expect(socket.closeCode, WebSocketStatus.protocolError);
     });
 
     test('same-turn cancellation settles without admitting a later connection', () async {

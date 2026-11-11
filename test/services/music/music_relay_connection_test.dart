@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/companion_remote/remote_auth_context.dart';
+import 'package:plezy/utils/certificate_trust.dart';
 import 'package:plezy/services/music/music_device_endpoint.dart';
 import 'package:plezy/services/music/music_device_session.dart';
 import 'package:plezy/services/music/music_relay_configuration.dart';
@@ -115,6 +116,8 @@ Future<void> _until(bool Function() condition) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   test('real WSS relay authenticates, chunks requests and retains receiver after controller disconnect', () async {
+    CertificateTrust.debugSetUserAuthoritiesForTesting(localTlsAuthorityContext());
+    addTearDown(CertificateTrust.debugReset);
     final relay = _Relay();
     await relay.start();
     addTearDown(relay.close);

@@ -112,6 +112,17 @@ mixin _TrackLabelMixin {
   }
 }
 
+/// Absolute gain from server audio analysis, independent of relative fade data.
+/// Plex exposes gain/albumGain in dB and peak/albumPeak as linear amplitudes.
+class MediaReplayGain {
+  const MediaReplayGain({this.trackDb, this.albumDb, this.trackPeak, this.albumPeak});
+  final double? trackDb, albumDb, trackPeak, albumPeak;
+
+  static double? validDb(double? value) =>
+      value != null && value.isFinite && value >= -60 && value <= 24 ? value : null;
+  static double? validPeak(double? value) => value != null && value.isFinite && value > 0 && value <= 64 ? value : null;
+}
+
 class MediaAudioTrack with _TrackLabelMixin {
   @override
   final int id;
@@ -133,6 +144,7 @@ class MediaAudioTrack with _TrackLabelMixin {
   /// Container fallback, independent of the server/user-selected row.
   final bool isDefault;
   final bool external;
+  final MediaReplayGain? replayGain;
 
   MediaAudioTrack({
     required this.id,
@@ -149,6 +161,7 @@ class MediaAudioTrack with _TrackLabelMixin {
     required this.selected,
     this.isDefault = false,
     this.external = false,
+    this.replayGain,
   });
 
   bool get isExternal => external;
@@ -170,6 +183,7 @@ class MediaAudioTrack with _TrackLabelMixin {
       selected: selected,
       isDefault: isDefault,
       external: external,
+      replayGain: replayGain,
     );
   }
 

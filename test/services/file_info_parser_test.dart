@@ -8,6 +8,61 @@ import 'package:plezy/services/file_info_parser.dart';
 ///      tracked, raw video stream retained once).
 ///   2. Each reader's mapping from raw JSON to the neutral track classes.
 void main() {
+  test('Plex absolute gain survives selection and ignores relative envelope fields', () {
+    final stream = const PlexFileInfoStreamReader().toAudioTrack({
+      'id': 1,
+      'gain': '-7.68',
+      'albumGain': -9.25,
+      'peak': '0.98',
+      'albumPeak': 1.02,
+      'loudness': -21.18,
+      'gainOffset': 7,
+      'lra': 3.5,
+    }, 0);
+    final gain = stream.withSelected(true).replayGain!;
+    expect(gain.trackDb, -7.68);
+    expect(gain.albumDb, -9.25);
+    expect(gain.trackPeak, 0.98);
+    expect(gain.albumPeak, 1.02);
+    final relativeOnly = const PlexFileInfoStreamReader().toAudioTrack({
+      'id': 2,
+      'gainOffset': 5,
+      'loudness': -14,
+      'lra': 9,
+    }, 0);
+    expect(relativeOnly.replayGain?.trackDb, isNull);
+    expect(relativeOnly.replayGain?.albumDb, isNull);
+  });
+
+  test('malformed optional Plex analysis does not discard the audio stream', () {
+    for (final value in [true, {}, [], 'NaN', 'Infinity', 10000, -10000]) {
+      final streams = walkStreams([
+        {
+          'id': 1,
+          'streamType': 2,
+          'codec': 'flac',
+          'gain': value,
+          'albumGain': value,
+          'peak': value,
+          'albumPeak': value,
+        },
+      ], const PlexFileInfoStreamReader());
+      expect(streams.audioTracks.single.codec, 'flac');
+      final gain = streams.audioTracks.single.replayGain!;
+      expect(gain.trackDb, isNull);
+      expect(gain.albumDb, isNull);
+      expect(gain.trackPeak, isNull);
+      expect(gain.albumPeak, isNull);
+    }
+    final jellyfin = const JellyfinFileInfoStreamReader().toAudioTrack({
+      'Index': 1,
+      'gain': -5,
+      'albumGain': -6,
+      'peak': 0.8,
+    }, 0);
+    expect(jellyfin.replayGain, isNull);
+  });
+
   test('source readers preserve audio profiles and normalize bitrate units', () {
     final plex = const PlexFileInfoStreamReader().toAudioTrack({
       'id': 1,

@@ -271,7 +271,7 @@ and native-language review remain open.
 | B10 | Anniversaries and rediscovery | Listening-based rediscovery and full-library album anniversaries are integrated into Music home. Anniversary scans reject incomplete/invalid dates, preserve calendar dates across timezones, page with bounded work, and cache by day/account/library revision. | History, precise-date/leap-year, pagination, cache, authorization-revocation and corrupt-pagination tests pass. |
 | P01 | Gapless playback | Existing arming/transition engine retained. PCM continuity and encoder-delay fixture evidence remain. | Playback transition regressions pass; no acoustic proof. |
 | P02 | Sweet Fades behavior | Two independent native decoders overlap with equal-power envelopes and session-owned handoff. Saved revision-checked analysis supports offline overlap. Unshuffled queues that match ordered album metadata retain gapless playback, including when launched from a playlist. Queue edits re-evaluate the rule. Reference timing/equivalence is not established. | Session handoff/cancellation/offline, album-order and queue-edit tests and real Linux null-output dual-core regression pass; acoustic/platform comparisons remain. |
-| P03 | Loudness leveling | Music policy now selects ReplayGain track/album/automatic, disables video compression, prevents tag-based clipping and applies conservative EQ/preamp headroom. Missing tags use zero fallback. Analysis-derived absolute loudness and measured equivalence remain. | Policy/gain tests pass; acoustic measurement pending. |
+| P03 | Loudness leveling | Track/album/automatic ReplayGain now carries explicit Plex server gain and linear peaks into file-local options for offline, cached, gapless and overlapping playback. Native tags take precedence; bounded analysis fallback prevents peak clipping, unknown peaks cannot amplify, and missing analysis stays at zero. Mode/shuffle changes update current and armed entries. EQ/preamp headroom and disabled video compression remain. | Policy, parser, native bridge and shared-player suites pass. Six real pinned Linux decoder entries verify file-output gains and tag precedence; physical acoustic/reference equivalence remains unmeasured. |
 | P04 | Advanced pre-caching | Complete DirectPlay files can be prefetched into a separate profile cache, with a 0–2048 MiB quota, Wi-Fi policy, total request deadline, atomic promotion, hashed credential-qualified keys and LRU eviction. Current account visibility is rechecked before promotion/use; pinned downloads are separate. Transcodes and playlists retain streaming. | Quota/LRU, malformed/partial/oversized responses, network policy, authorization revocation and clear tests pass. |
 | P05 | Streaming and conversion quality | Music streaming has general, remote and cellular settings, with cellular override precedence. Music downloads retain original representation; settings and offline policy explain that distinction. Output equivalence remains. | Precedence/persistence tests pass; no new format/device matrix. |
 | P06 | Queue edits, shuffle and repeat | Existing edits retained; continuation respects manual inserts, removals and clear-upcoming. Full reference gesture/Back To inventory remains. | Queue and playback tests pass. |
@@ -400,3 +400,35 @@ regressions. This includes the additional prefetch/cache and AAOS media-policy
 tests. The headphone picker now has an independently scrolling result list and
 a large-text/keyboard selection regression. Additional native changes after the
 previous Android artifact are not represented as a successful native build.
+
+### Server-analysis ReplayGain integration
+
+Plex audio stream `gain` and `albumGain` are absolute dB values;
+`peak` and `albumPeak` are linear sample amplitudes. Preserve these
+through the source parser and downloaded metadata rather than estimating
+absolute loudness from the relative seek-print envelope. Only the unambiguous
+selected audio stream (or the sole stream when none is selected) supplies gain.
+Malformed optional analysis cannot discard an otherwise playable stream.
+
+Gain is bounded to -60 through +24 dB. Album mode falls back to track analysis
+when album gain is absent. The analysis fallback is capped by the available
+album/track peak; without a valid peak it can attenuate but cannot amplify.
+Each replacement and appended native playlist entry carries its own mode,
+clipping choice and fallback, including an explicit zero when disabled or
+unavailable. This avoids applying the next track's gain to the outgoing audio.
+Native ReplayGain tags retain precedence.
+
+MPV applies `replaygain-fallback` even when its ReplayGain logic is inactive,
+and skips the other ReplayGain controls for that fallback. Consequently Off
+must explicitly clear it, and analysis needs its own peak bound. Regression
+coverage includes source retirement during asynchronous application,
+mode changes without redundant source resolution, shuffle/unshuffle, repeat,
+offline and two-decoder handoff. A generated six-entry render using the pinned
+Linux libmpv verified peaks near 0.1, 0.05, 0.2, 0.1, 0.05 and 0.2 for server
+track, server album, missing analysis, native track precedence, native album
+precedence and disabled leveling respectively. This measures decoder file
+output; it does not qualify physical speakers.
+
+Sources: [Plex client loudness field contract](https://pub.dev/documentation/dart_plex/latest/topics/Streaming-topic.html#loudness),
+[MPV ReplayGain behavior](https://mpv.io/manual/stable/#options-replaygain-fallback),
+[MPV file-local load options](https://mpv.io/manual/stable/#command-interface-loadfile).

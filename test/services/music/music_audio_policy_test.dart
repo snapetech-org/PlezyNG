@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/media/media_source_info.dart';
 import 'package:plezy/mpv/models.dart';
 import 'package:plezy/mpv/player/player.dart';
 import 'package:plezy/services/music/music_audio_policy.dart';
@@ -15,6 +17,7 @@ class Output implements Player, AudioEqualizerCapable {
   }
 
   bool? passthrough, compression;
+  Completer<void>? normalizationGate;
   @override
   String get playerType => 'mpv';
   @override
@@ -30,6 +33,7 @@ class Output implements Player, AudioEqualizerCapable {
   @override
   Future<void> setAudioNormalization(bool enabled) async {
     compression = enabled;
+    await normalizationGate?.future;
   }
 
   @override
@@ -42,6 +46,140 @@ class Output implements Player, AudioEqualizerCapable {
 }
 
 void main() {
+  test('retired source analysis cannot write gain after an asynchronous output change', () async {
+    final output = Output()..normalizationGate = Completer<void>();
+    var active = true;
+    final apply = const MusicAudioPolicy(leveling: MusicLeveling.track).apply(
+      output,
+      albumContext: false,
+      isCurrent: () => active,
+      source: MediaSourceInfo(
+        videoUrl: '',
+        audioTracks: [MediaAudioTrack(id: 1, selected: true, replayGain: const MediaReplayGain(trackDb: -20))],
+        subtitleTracks: const [],
+        chapters: const [],
+      ),
+    );
+    await pumpEventQueue();
+    expect(output.compression, isFalse);
+    active = false;
+    output.normalizationGate!.complete();
+    await apply;
+    expect(output.properties, isNot(contains('replaygain-fallback')));
+    expect(output.properties, isNot(contains('replaygain')));
+  });
+
+  test('server analysis uses selected stream and album-to-track fallback', () {
+    MediaSourceInfo info(List<MediaAudioTrack> tracks) =>
+        MediaSourceInfo(videoUrl: '', audioTracks: tracks, subtitleTracks: const [], chapters: const []);
+    final analyzed = MediaAudioTrack(
+      id: 1,
+      selected: true,
+      replayGain: const MediaReplayGain(trackDb: -6, albumDb: -9, trackPeak: 0.9, albumPeak: 1),
+    );
+    final source = info([
+      analyzed,
+      MediaAudioTrack(id: 2, selected: false, replayGain: const MediaReplayGain(trackDb: 20, trackPeak: 0.1)),
+    ]);
+    const policy = MusicAudioPolicy(leveling: MusicLeveling.automatic);
+    expect(policy.replayGain(albumContext: true, source: source).fallbackDb, -9);
+    expect(policy.replayGain(albumContext: false, source: source).fallbackDb, -6);
+    expect(policy.replayGain(albumContext: false, source: source).mode, ReplayGainMode.track);
+    final trackOnly = info([MediaAudioTrack(id: 3, selected: false, replayGain: const MediaReplayGain(trackDb: -4))]);
+    expect(policy.replayGain(albumContext: true, source: trackOnly).fallbackDb, -4);
+    expect(policy.replayGain(albumContext: true, source: trackOnly).mode, ReplayGainMode.album);
+  });
+
+  test('untagged fallback prevents peak clipping and unknown-peak amplification', () {
+    ReplayGainSettings gain(MediaReplayGain analysis, {bool album = false}) =>
+        MusicAudioPolicy(leveling: album ? MusicLeveling.album : MusicLeveling.track).replayGain(
+          albumContext: false,
+          source: MediaSourceInfo(
+            videoUrl: '',
+            audioTracks: [MediaAudioTrack(id: 1, selected: true, replayGain: analysis)],
+            subtitleTracks: const [],
+            chapters: const [],
+          ),
+        );
+    expect(gain(const MediaReplayGain(trackDb: 12, trackPeak: 0.5)).fallbackDb, closeTo(6.0206, 0.0001));
+    expect(gain(const MediaReplayGain(trackDb: -2, trackPeak: 2)).fallbackDb, closeTo(-6.0206, 0.0001));
+    expect(gain(const MediaReplayGain(trackDb: 6)).fallbackDb, 0);
+    expect(gain(const MediaReplayGain(trackDb: -6)).fallbackDb, -6);
+    expect(
+      gain(const MediaReplayGain(trackDb: 4, albumDb: 8, trackPeak: 0.1, albumPeak: 0.8), album: true).fallbackDb,
+      closeTo(1.9382, 0.0001),
+    );
+    expect(
+      gain(const MediaReplayGain(trackDb: 4, albumDb: -3, trackPeak: 1.8), album: true).fallbackDb,
+      closeTo(-5.10545, 0.0001),
+    );
+  });
+
+  test('invalid, ambiguous, absent and disabled analysis stays at zero', () {
+    for (final analysis in [
+      const MediaReplayGain(trackDb: double.nan),
+      const MediaReplayGain(trackDb: double.infinity),
+      const MediaReplayGain(trackDb: 1000),
+      const MediaReplayGain(trackDb: -61),
+      const MediaReplayGain(trackDb: 5, trackPeak: double.nan),
+      const MediaReplayGain(trackDb: 5, trackPeak: 0),
+      const MediaReplayGain(trackDb: 5, trackPeak: -1),
+      const MediaReplayGain(trackDb: 5, trackPeak: double.infinity),
+    ]) {
+      final source = MediaSourceInfo(
+        videoUrl: '',
+        audioTracks: [MediaAudioTrack(id: 1, selected: true, replayGain: analysis)],
+        subtitleTracks: const [],
+        chapters: const [],
+      );
+      expect(
+        const MusicAudioPolicy(
+          leveling: MusicLeveling.track,
+        ).replayGain(albumContext: false, source: source).fallbackDb,
+        0,
+      );
+    }
+    final tracks = [
+      for (var id = 0; id < 2; id++)
+        MediaAudioTrack(id: id, selected: false, replayGain: const MediaReplayGain(trackDb: -8)),
+    ];
+    for (final ambiguous in [tracks, tracks.map((t) => t.withSelected(true)).toList()]) {
+      expect(
+        const MusicAudioPolicy(leveling: MusicLeveling.track)
+            .replayGain(
+              albumContext: false,
+              source: MediaSourceInfo(
+                videoUrl: '',
+                audioTracks: ambiguous,
+                subtitleTracks: const [],
+                chapters: const [],
+              ),
+            )
+            .fallbackDb,
+        0,
+      );
+    }
+    expect(const MusicAudioPolicy(leveling: MusicLeveling.album).replayGain(albumContext: true).fallbackDb, 0);
+    expect(const MusicAudioPolicy().replayGain(albumContext: true).mode, ReplayGainMode.off);
+  });
+
+  test('current output updates and resets server fallback when leveling is disabled', () async {
+    final source = MediaSourceInfo(
+      videoUrl: '',
+      audioTracks: [
+        MediaAudioTrack(id: 1, selected: true, replayGain: const MediaReplayGain(trackDb: -7, albumDb: -10)),
+      ],
+      subtitleTracks: const [],
+      chapters: const [],
+    );
+    final output = Output();
+    await const MusicAudioPolicy(leveling: MusicLeveling.album).apply(output, albumContext: true, source: source);
+    expect(output.properties['replaygain-fallback'], '-10.0');
+    await const MusicAudioPolicy().apply(output, albumContext: true, source: source);
+    expect(output.properties['replaygain'], 'no');
+    expect(double.parse(output.properties['replaygain-fallback']!), 0);
+  });
+
   test('automatic leveling follows album context with peak protection', () async {
     final output = Output();
     const policy = MusicAudioPolicy(leveling: MusicLeveling.automatic, exclusive: true, sampleRate: 96000);

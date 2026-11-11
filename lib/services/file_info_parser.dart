@@ -158,6 +158,12 @@ class PlexFileInfoStreamReader implements FileInfoStreamReader {
       channels: flexibleInt(stream['channels']),
       selected: flexibleBool(stream['selected']),
       isDefault: flexibleBool(stream['default']),
+      replayGain: MediaReplayGain(
+        trackDb: MediaReplayGain.validDb(flexibleDouble(stream['gain'])),
+        albumDb: MediaReplayGain.validDb(flexibleDouble(stream['albumGain'])),
+        trackPeak: MediaReplayGain.validPeak(flexibleDouble(stream['peak'])),
+        albumPeak: MediaReplayGain.validPeak(flexibleDouble(stream['albumPeak'])),
+      ),
     );
   }
 

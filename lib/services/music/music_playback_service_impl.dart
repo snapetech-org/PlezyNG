@@ -72,7 +72,9 @@ class _ArmedTrack {
   final MediaItem track;
   final MusicSource source;
 
-  const _ArmedTrack({required this.track, required this.source});
+  final ReplayGainSettings replayGain;
+
+  const _ArmedTrack({required this.track, required this.source, required this.replayGain});
 }
 
 class _MusicOverlap {
@@ -814,10 +816,17 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
             }
             // Preserve the logical track/reporting source when replacing only its
             // transport. A native transition racing this update remains adoptable.
-            final cached = _ArmedTrack(track: armed.track, source: source.prefetched(file.uri.toString()));
+            final cached = _ArmedTrack(
+              track: armed.track,
+              source: source.prefetched(file.uri.toString()),
+              replayGain: armed.replayGain,
+            );
             _rememberStaleArm();
             _armed = cached;
-            if (!await _trySetNext(player, Media(cached.source.url)) && identical(_armed, cached)) _armed = null;
+            if (!await _trySetNext(player, _musicMedia(cached.source, replayGain: cached.replayGain)) &&
+                identical(_armed, cached)) {
+              _armed = null;
+            }
           })
           .catchError((Object _) {
             /* Optional prefetch never interrupts playback. */
@@ -941,17 +950,34 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       if (_disposed) throw StateError('Music session ended');
       final previous = _audioPolicy;
       final player = _player;
+      final source = _currentSource;
       try {
         if (player != null && !player.disposed) {
-          await policy.apply(player, albumContext: !shuffled && _playContext?.kind == MusicPlayContextKind.album);
+          await policy.apply(
+            player,
+            albumContext: _albumLevelingContext,
+            source: source?.mediaInfo,
+            isCurrent: () => !_disposed && _player == player && identical(source, _currentSource),
+          );
         }
         if (_disposed) return;
         _audioPolicy = policy;
+        _cancelOverlap();
         _outputEqSignature = null;
-        if (player != null && !player.disposed) await _applyOutputEqualizerNow(player);
+        final currentPlayer = _player;
+        if (currentPlayer != null && !currentPlayer.disposed) {
+          if (player != currentPlayer || !identical(source, _currentSource)) {
+            await _applyMusicAudioSettingsNow(currentPlayer);
+          } else {
+            await _applyOutputEqualizerNow(currentPlayer);
+          }
+        }
         _setMusicGain(_musicGain, force: true);
         await _libraryStore?.saveDocument('audio', 'active', policy.toJson());
-        if (!_disposed) notifyListeners();
+        if (!_disposed) {
+          _requestArmNext();
+          notifyListeners();
+        }
       } catch (_) {
         if (!_disposed) {
           _audioPolicy = previous;
@@ -980,6 +1006,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _audioPolicy = MusicAudioPolicy.fromJson(json);
         final player = _player;
         if (player != null && !player.disposed) await _applyMusicAudioSettingsNow(player);
+        if (!_disposed) _requestArmNext();
         if (!_disposed) _setMusicGain(_musicGain, force: true);
       });
     } catch (error) {
@@ -1001,6 +1028,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       'current-ao',
       'audio-device',
       'replaygain',
+      'replaygain-fallback',
+      'replaygain-clip',
       'af',
     ]) {
       final value = await player.getProperty(property);
@@ -2301,10 +2330,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       final restored = _consumePendingResume(track);
       final resumeAt = initialPosition ?? restored;
       try {
-        await player.open(
-          Media(source.url, headers: source.headers, start: resumeAt),
-          play: shouldPlay,
-        );
+        await player.open(_musicMedia(source, start: resumeAt), play: shouldPlay);
       } catch (e, st) {
         appLogger.w('Music open failed for ${track.id}', error: e, stackTrace: st);
         failed(e);
@@ -2355,6 +2381,18 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     await _openCurrent(generation, play: play);
   }
 
+  bool get _albumLevelingContext => !shuffled && _playContext?.kind == MusicPlayContextKind.album;
+
+  ReplayGainSettings _replayGainFor(MusicSource source) =>
+      audioPolicy.replayGain(albumContext: _albumLevelingContext, source: source.mediaInfo);
+
+  Media _musicMedia(MusicSource source, {Duration? start, ReplayGainSettings? replayGain}) => Media(
+    source.url,
+    headers: source.headers,
+    start: start,
+    replayGain: _playbackOutput == null ? (replayGain ?? _replayGainFor(source)) : null,
+  );
+
   /// Arm (or clear) what the backend should auto-advance into. Skips the
   /// resolve round-trip when the desired target is already armed; repeat-one
   /// reuses the current track's resolved source.
@@ -2377,7 +2415,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       await _trySetNext(player, null);
       return;
     }
-    if (_armed?.track.globalKey == target.globalKey) {
+    final existing = _armed?.track.globalKey == target.globalKey ? _armed : null;
+    if (existing != null && existing.replayGain == _replayGainFor(existing.source)) {
       return;
     }
 
@@ -2388,7 +2427,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
 
     MusicSource source;
-    if (targetCursor == _queue.cursor && _currentSource != null) {
+    if (existing != null) {
+      // A leveling/context edit only changes file-local options, not transport.
+      source = existing.source;
+    } else if (targetCursor == _queue.cursor && _currentSource != null) {
       // Repeat-one: the same file plays again — reuse the resolved source.
       source = _currentSource!;
     } else {
@@ -2404,13 +2446,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (!_isCurrentArmRequest(player, generation, armRequest)) {
       return;
     }
-    final armed = _ArmedTrack(track: target, source: source);
+    final armed = _ArmedTrack(track: target, source: source, replayGain: _replayGainFor(source));
     _armed = armed;
     if (_sweetFadesEnabled) {
       unawaited(_loadLoudnessProfile(source, target));
     }
     appLogger.d('Music: arming cursor $targetCursor "${target.title}"');
-    final ok = await _trySetNext(player, Media(source.url, headers: source.headers));
+    final ok = await _trySetNext(player, _musicMedia(source, replayGain: armed.replayGain));
     if (ok && identical(_armed, armed)) _prefetchTrack(armed, player, generation, armRequest);
     if (!ok && identical(_armed, armed)) {
       // Nothing is armed natively; clear the record so the confirmed
@@ -2572,7 +2614,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (_disposed || player.disposed || identical(_playbackOutput?.player, player)) return;
     final policy = _audioPolicy;
     if (policy != null) {
-      await policy.apply(player, albumContext: !shuffled && _playContext?.kind == MusicPlayContextKind.album);
+      final source = _currentSource;
+      bool current() => !_disposed && _player == player && identical(source, _currentSource);
+      await policy.apply(player, albumContext: _albumLevelingContext, source: source?.mediaInfo, isCurrent: current);
+      if (!current()) return;
       _outputEqSignature = null;
       await _applyOutputEqualizerNow(player);
       await _restoreNativeEqualizerForPlayback(player);
@@ -3291,7 +3336,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       // update the primary core's output EQ signature while it is loading.
       final policy = _audioPolicy;
       if (policy != null) {
-        await policy.apply(player, albumContext: false);
+        await policy.apply(
+          player,
+          albumContext: _albumLevelingContext,
+          source: incoming.source.mediaInfo,
+          isCurrent: current,
+        );
       } else {
         final settings = SettingsService.instanceOrNull;
         if (settings != null) {
@@ -3319,7 +3369,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         await nativeSource.prepareFeed(_nativePcmFeed(player, nativeSource, primary: false));
         if (!current()) return;
       }
-      await player.open(Media(incoming.source.url, headers: incoming.source.headers));
+      await player.open(_musicMedia(incoming.source));
       if (!current()) return;
       // The outgoing playlist must stop at this file. Keep its arm until the
       // second source has opened, so a slow/failed decoder stays gapless.
@@ -4213,6 +4263,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
     _queue.toggleShuffle();
+    if (_audioPolicy?.leveling == MusicLeveling.automatic) _onAudioSettingsChanged();
     _afterQueueEdit();
   }
 

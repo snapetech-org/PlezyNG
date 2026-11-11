@@ -654,6 +654,7 @@ class PlayerNative extends PlayerBase
     if (_nativeCoreUnavailable) {
       return null;
     }
+    media.replayGain?.validate();
     final previousIsLivePlayback = _isLivePlayback;
     _isLivePlayback = isLive;
     // MPV retains A/B points when it advances to another file. They are
@@ -799,6 +800,7 @@ class PlayerNative extends PlayerBase
       // would open this file with an older track's headers, possibly another
       // server's.
       if (audioOnly) _httpHeaderFieldsLoadfileOption(media.headers ?? const {}),
+      if (media.replayGain != null) media.replayGain!.loadfileOptions,
       // Suppress mpv's own default subtitle selection so it cannot race the
       // server-backed TrackManager decision. File-local, never a property
       // write: writing `sid` while the outgoing file is still loaded
@@ -891,6 +893,7 @@ class PlayerNative extends PlayerBase
       return;
     }
 
+    media?.replayGain?.validate();
     await _clearArmedNext();
     if (media == null) {
       return;
@@ -923,7 +926,11 @@ class PlayerNative extends PlayerBase
     // (`loadfile <url> append -1 opt=val`), exactly like open() passes
     // sub-files. `gapless-audio=weak` splices the armed entry into the
     // running audio stream when formats match.
-    final args = ['loadfile', loadUri, 'append', '-1', _httpHeaderFieldsLoadfileOption(headers)];
+    final options = [
+      _httpHeaderFieldsLoadfileOption(headers),
+      if (media.replayGain != null) media.replayGain!.loadfileOptions,
+    ];
+    final args = ['loadfile', loadUri, 'append', '-1', options.join(',')];
     try {
       await command(args);
     } catch (e) {

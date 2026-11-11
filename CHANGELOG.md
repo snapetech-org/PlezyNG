@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Use bounded Plex track and album loudness analysis when file ReplayGain tags are absent. Carry independent, peak-limited gain through offline, cached, gapless and overlapping playback, and refresh current/armed modes when leveling or shuffle changes.
+
 - Select and remove multiple music playlist entries with pointer or D-pad controls. Preserve repeated occurrences, recheck the owning account and server entries, and reload partial or uncertain batches before an explicit retry.
 
 - Edit Plex playlist titles and summaries from playlist detail, keep unsaved drafts on failure, retire stale account forms and refresh browse lists after accepted changes.

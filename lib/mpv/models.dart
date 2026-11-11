@@ -221,7 +221,39 @@ sealed class PlayerLog with _$PlayerLog {
   String toString() => '[$prefix] ${level.name}: $text';
 }
 
+enum ReplayGainMode { off, track, album }
+
+/// File-local gain settings: prefetching and gapless transitions must not
+/// inherit the outgoing entry's fallback. Native file tags retain precedence.
+class ReplayGainSettings {
+  const ReplayGainSettings({required this.mode, this.fallbackDb = 0});
+  final ReplayGainMode mode;
+  final double fallbackDb;
+
+  String get mpvMode => mode == ReplayGainMode.off ? 'no' : mode.name;
+
+  void validate() {
+    if (!fallbackDb.isFinite ||
+        fallbackDb < -60 ||
+        fallbackDb > 24 ||
+        (mode == ReplayGainMode.off && fallbackDb != 0)) {
+      throw ArgumentError('Invalid ReplayGain fallback');
+    }
+  }
+
+  String get loadfileOptions {
+    validate();
+    return 'replaygain=$mpvMode,replaygain-clip=no,replaygain-fallback=$fallbackDb';
+  }
+
+  @override
+  bool operator ==(Object other) => other is ReplayGainSettings && other.mode == mode && other.fallbackDb == fallbackDb;
+  @override
+  int get hashCode => Object.hash(mode, fallbackDb);
+}
+
 @freezed
 sealed class Media with _$Media {
-  const factory Media(String uri, {Map<String, String>? headers, Duration? start}) = _Media;
+  const factory Media(String uri, {Map<String, String>? headers, Duration? start, ReplayGainSettings? replayGain}) =
+      _Media;
 }

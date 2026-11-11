@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'dart:io' show Platform;
 
+import '../../media/media_source_info.dart';
+import '../../mpv/models.dart';
 import '../../mpv/player/player.dart';
 import '../preferred_audio_device.dart';
 
@@ -83,20 +85,62 @@ class MusicAudioPolicy {
     return policy;
   }
 
-  Future<void> apply(Player player, {required bool albumContext}) async {
+  /// Use explicit server gain only when native tags are absent. MPV does not
+  /// apply clip prevention to replaygain-fallback, so bound it here. Unknown
+  /// peaks permit attenuation but never positive gain; relative seek-print
+  /// levels cannot supply an absolute loudness estimate.
+  ReplayGainSettings replayGain({required bool albumContext, MediaSourceInfo? source}) {
+    final mode = switch (leveling) {
+      MusicLeveling.off => ReplayGainMode.off,
+      MusicLeveling.track => ReplayGainMode.track,
+      MusicLeveling.album => ReplayGainMode.album,
+      MusicLeveling.automatic => albumContext ? ReplayGainMode.album : ReplayGainMode.track,
+    };
+    if (mode == ReplayGainMode.off) return ReplayGainSettings(mode: mode);
+    final tracks = source?.audioTracks ?? const <MediaAudioTrack>[];
+    final selected = tracks.where((track) => track.selected).toList();
+    final track = selected.length == 1
+        ? selected.single
+        : (selected.isEmpty && tracks.length == 1 ? tracks.single : null);
+    final analysis = track?.replayGain;
+    if (analysis == null) return ReplayGainSettings(mode: mode);
+    final albumDb = mode == ReplayGainMode.album ? MediaReplayGain.validDb(analysis.albumDb) : null;
+    final db = albumDb ?? MediaReplayGain.validDb(analysis.trackDb);
+    if (db == null) return ReplayGainSettings(mode: mode);
+    final albumPeak = albumDb == null ? null : MediaReplayGain.validPeak(analysis.albumPeak);
+    final trackPeak = MediaReplayGain.validPeak(analysis.trackPeak);
+    final peak = albumPeak == null ? trackPeak : math.max(albumPeak, trackPeak ?? 0);
+    final ceiling = peak == null ? 0.0 : -20 * math.log(peak) / math.ln10;
+    return ReplayGainSettings(mode: mode, fallbackDb: math.min(db, ceiling).clamp(-60.0, 24.0));
+  }
+
+  Future<void> apply(
+    Player player, {
+    required bool albumContext,
+    MediaSourceInfo? source,
+    bool Function()? isCurrent,
+  }) async {
     validate();
+    bool current() => isCurrent?.call() ?? true;
+    if (!current()) return;
     if (player.playerType != 'mpv') throw UnsupportedError('This output does not expose music DSP controls');
     if (leveling != MusicLeveling.off || bands.any((b) => b != 0) || preampDb != 0) {
       await player.setAudioPassthrough(false);
     }
-    // ReplayGain reads native file tags. No tag => 0 dB, never a guessed gain
-    // derived from the seek-print's relative envelope. Video compression is off.
+    // Native tags take precedence over the bounded server-analysis fallback.
+    // Video compression remains off.
+    if (!current()) return;
     await player.setAudioNormalization(false);
+    if (!current()) return;
     if (player is AudioEqualizerCapable) await (player as AudioEqualizerCapable).setAudioEqualizer(bands);
-    final mode = leveling == MusicLeveling.automatic ? (albumContext ? 'album' : 'track') : leveling.name;
-    await player.setProperty('replaygain', mode == 'off' ? 'no' : mode);
+    if (!current()) return;
+    final gain = replayGain(albumContext: albumContext, source: source);
+    await player.setProperty('replaygain', gain.mpvMode);
+    if (!current()) return;
     await player.setProperty('replaygain-clip', 'no');
-    await player.setProperty('replaygain-fallback', '0');
+    if (!current()) return;
+    await player.setProperty('replaygain-fallback', '${gain.fallbackDb}');
+    if (!current()) return;
     await player.setProperty('audio-samplerate', '$sampleRate');
     // Apple's fallback AudioUnit interprets this as AVAudioSession mixing,
     // not desktop DAC exclusivity. Music must retain lock-screen ownership.

@@ -70,6 +70,66 @@ Future<void> _sendPlatformEvent(Object? event) async {
 }
 
 void main() {
+  test('gapless loads carry independent ReplayGain settings and reject invalid arms intact', () async {
+    final loads = <List<dynamic>>[];
+    final commands = <List<dynamic>>[];
+    await withMockPlayerChannels(
+      methodChannelName: 'com.plezy/mpv_audio_player',
+      eventChannelName: 'com.plezy/mpv_audio_player/events',
+      methodHandler: (call) async {
+        if (call.method == 'initialize') return true;
+        if (call.method == 'command') {
+          final args = List<dynamic>.from((call.arguments as Map)['args'] as List);
+          commands.add(args);
+          if (args.first == 'loadfile') loads.add(args);
+        }
+        return null;
+      },
+      testBody: () async {
+        final player = PlayerNative.audio();
+        try {
+          await player.open(
+            const Media(
+              'file:///music/first.flac',
+              replayGain: ReplayGainSettings(mode: ReplayGainMode.track, fallbackDb: -7),
+            ),
+          );
+          await player.setNext(
+            const Media(
+              'https://example.test/second.flac',
+              headers: {'Authorization': 'second-source'},
+              replayGain: ReplayGainSettings(mode: ReplayGainMode.album, fallbackDb: -12),
+            ),
+          );
+          expect(loads[0].last, contains('replaygain=track,replaygain-clip=no,replaygain-fallback=-7.0'));
+          expect(loads[1][2], 'append');
+          expect(loads[1].last, contains('replaygain=album,replaygain-clip=no,replaygain-fallback=-12.0'));
+          expect(loads[1].last, contains('Authorization: second-source'));
+          final before = commands.length;
+          for (final settings in [
+            const ReplayGainSettings(mode: ReplayGainMode.track, fallbackDb: double.nan),
+            const ReplayGainSettings(mode: ReplayGainMode.track, fallbackDb: 25),
+            const ReplayGainSettings(mode: ReplayGainMode.off, fallbackDb: -5),
+          ]) {
+            await expectLater(
+              player.setNext(Media('file:///music/invalid.flac', replayGain: settings)),
+              throwsArgumentError,
+            );
+          }
+          expect(commands.length, before, reason: 'invalid settings must leave the accepted arm intact');
+          await player.open(
+            const Media('file:///music/unleveled.flac', replayGain: ReplayGainSettings(mode: ReplayGainMode.off)),
+          );
+          expect(loads.last.last, contains('replaygain=no,replaygain-clip=no,replaygain-fallback=0.0'));
+          await player.open(const Media('file:///music/ordinary.flac'));
+          expect(loads.last.last, isNot(contains('replaygain')));
+        } finally {
+          await player.dispose();
+        }
+      },
+    );
+  });
+
   test('automatic DV initializes on by default and preserves explicit Off', () async {
     for (final stored in <bool?>[null, false, true]) {
       resetSharedPreferencesForTest();

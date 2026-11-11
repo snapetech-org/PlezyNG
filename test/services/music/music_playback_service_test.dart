@@ -45,6 +45,7 @@ import 'package:plezy/services/discord_rpc_service.dart';
 import 'package:plezy/services/media_controls_manager.dart';
 import 'package:plezy/services/multi_server_manager.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
+import 'package:plezy/services/music/music_audio_policy.dart';
 import 'package:plezy/services/music/music_playback_service_impl.dart';
 import 'package:plezy/services/music/music_library_store.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
@@ -167,6 +168,8 @@ class FakePlayer implements Player, PlayerAudioFocusControl, ParametricEqualizer
   PlayerState _state = const PlayerState();
 
   final List<String> openedUris = [];
+  final List<Media> openedMedia = [];
+  final Map<String, String> audioPolicyProperties = {};
 
   /// `Media.start` of each open, index-aligned with [openedUris] — how a
   /// restored session's resume offset reaches the player (#2148).
@@ -309,6 +312,7 @@ class FakePlayer implements Player, PlayerAudioFocusControl, ParametricEqualizer
     // Clear before recording the committed replacement open.
     _armedMedia = null;
     openedUris.add(media.uri);
+    openedMedia.add(media);
     openStarts.add(media.start);
     _state = _state.copyWith(
       playing: play,
@@ -405,10 +409,13 @@ class FakePlayer implements Player, PlayerAudioFocusControl, ParametricEqualizer
   Future<void> setAudioDevice(AudioDevice device) async {}
 
   @override
-  Future<void> setProperty(String name, String value) async {}
+  Future<void> setProperty(String name, String value) async {
+    audioPolicyProperties[name] = value;
+  }
 
   @override
-  Future<String?> getProperty(String name) async => name == 'audio-pts' ? audibleClock?.future : null;
+  Future<String?> getProperty(String name) async =>
+      name == 'audio-pts' ? audibleClock?.future : audioPolicyProperties[name];
 
   @override
   Future<void> setLogLevel(String level) async {}
@@ -808,6 +815,7 @@ class _Harness {
     MusicSessionStore? sessionStore,
     MusicLibraryStore? libraryStore,
     bool overlapDecoder = false,
+    bool nativeAudio = false,
     bool pcmCapture = false,
     bool rejectParametric = false,
     CalderaNativeHostFactory? nativeHostFactory,
@@ -821,6 +829,7 @@ class _Harness {
     late final _Harness harness;
     FakePlayer newPlayer() {
       final player = pcmCapture ? _CapturingPlayer() : FakePlayer();
+      player.nativeClock = nativeAudio;
       player.failingSetNextUris.addAll(harness.failingSetNextUris);
       player.rejectParametric = rejectParametric;
       players.add(player);
@@ -1040,6 +1049,124 @@ void main() {
     await h.service.closeCalderaAudio(owner);
     expect(h.service.currentTrack?.id, t3.id);
     expect(h.service.isPlaying, isTrue);
+  });
+
+  group('server loudness gain in the shared player', () {
+    MusicSource analyzed(MediaItem track, double trackDb, double albumDb, {bool offline = false}) => MusicSource(
+      url: offline ? 'file:///downloads/${track.id}.flac' : _urlFor(track),
+      isOffline: offline,
+      reportingClient: offline ? null : h.client,
+      mediaInfo: MediaSourceInfo(
+        videoUrl: _urlFor(track),
+        audioTracks: [
+          MediaAudioTrack(
+            id: int.parse(track.id.substring(1)),
+            selected: true,
+            replayGain: MediaReplayGain(trackDb: trackDb, albumDb: albumDb, trackPeak: 1, albumPeak: 1),
+          ),
+        ],
+        subtitleTracks: const [],
+        chapters: const [],
+      ),
+    );
+
+    setUp(() {
+      h.dispose();
+      h = _Harness.create(nativeAudio: true);
+      h.resolver.sourceOverrides[t1.id] = analyzed(t1, -6, -9);
+      h.resolver.sourceOverrides[t2.id] = analyzed(t2, -12, -15, offline: true);
+    });
+
+    test('explicit, offline, gapless and repeat opens carry the correct entry gain', () async {
+      await h.service.setAudioPolicy(const MusicAudioPolicy(leveling: MusicLeveling.track));
+      await h.playTracks([t1, t2, t3], kind: MusicPlayContextKind.tracks);
+      expect(h.player.openedMedia.single.replayGain?.fallbackDb, -6);
+      expect(h.player.armed?.replayGain?.fallbackDb, -12);
+      expect(
+        h.player.audioPolicyProperties['replaygain-fallback'],
+        '-6.0',
+        reason: 'preparing a downloaded next entry cannot change the audible first track',
+      );
+      final second = h.player.armed!;
+      h.player.emitTransition(second.uri);
+      await pumpEventQueue();
+      expect(h.service.currentTrack?.id, t2.id);
+      expect(h.player.audioPolicyProperties['replaygain-fallback'], '-12.0');
+      expect(
+        h.player.armed?.replayGain?.fallbackDb,
+        0,
+        reason: 'a file with neither tags nor analysis cannot inherit gain',
+      );
+      h.service.setRepeatMode(MusicRepeatMode.one);
+      await pumpEventQueue();
+      expect(h.player.armed?.uri, second.uri);
+      expect(h.player.armed?.replayGain?.fallbackDb, -12);
+      await h.service.next();
+      await pumpEventQueue();
+      expect(h.player.openedMedia.last.replayGain?.fallbackDb, 0);
+    });
+
+    test('mode changes rearm the same source without another metadata resolve', () async {
+      await h.service.setAudioPolicy(const MusicAudioPolicy(leveling: MusicLeveling.track));
+      await h.playTracks([t1, t2], kind: MusicPlayContextKind.tracks);
+      final resolved = Map.of(h.resolver.resolveCounts);
+      await h.service.setAudioPolicy(const MusicAudioPolicy(leveling: MusicLeveling.album));
+      await pumpEventQueue();
+      expect(h.player.audioPolicyProperties['replaygain-fallback'], '-9.0');
+      expect(h.player.armed?.replayGain, const ReplayGainSettings(mode: ReplayGainMode.album, fallbackDb: -15));
+      expect(h.resolver.resolveCounts, resolved);
+      await h.service.setAudioPolicy(const MusicAudioPolicy());
+      await pumpEventQueue();
+      expect(h.player.armed?.replayGain, const ReplayGainSettings(mode: ReplayGainMode.off));
+      expect(h.player.audioPolicyProperties['replaygain'], 'no');
+      expect(h.player.audioPolicyProperties['replaygain-fallback'], '0.0');
+      expect(h.resolver.resolveCounts, resolved);
+    });
+
+    test('automatic leveling updates current and armed modes on shuffle and unshuffle', () async {
+      await h.service.setAudioPolicy(const MusicAudioPolicy(leveling: MusicLeveling.automatic));
+      await h.playTracks([t1, t2], kind: MusicPlayContextKind.album);
+      expect(h.player.openedMedia.single.replayGain?.mode, ReplayGainMode.album);
+      expect(h.player.armed?.replayGain?.fallbackDb, -15);
+      h.service.toggleShuffle();
+      await pumpEventQueue();
+      expect(h.player.audioPolicyProperties['replaygain'], 'track');
+      expect(h.player.audioPolicyProperties['replaygain-fallback'], '-6.0');
+      expect(h.player.armed?.replayGain?.mode, ReplayGainMode.track);
+      expect(h.player.armed?.replayGain?.fallbackDb, -12);
+      h.service.toggleShuffle();
+      await pumpEventQueue();
+      expect(h.player.audioPolicyProperties['replaygain'], 'album');
+      expect(h.player.armed?.replayGain?.fallbackDb, -15);
+    });
+
+    test('overlap decoder gets incoming gain before playback without changing outgoing gain', () async {
+      resetSharedPreferencesForTest();
+      final settings = await SettingsService.getInstance();
+      await settings.write(SettingsService.musicSweetFades, true);
+      h.dispose();
+      h = _Harness.create(nativeAudio: true, overlapDecoder: true);
+      final profile = AudioLoudnessProfile(levelsDb: [-24, -24, -24], totalSamples: 3000);
+      for (final (track, db) in [(t1, -6.0), (t2, -12.0), (t3, -3.0)]) {
+        final source = analyzed(track, db, db);
+        h.client.loudnessProfiles[int.parse(track.id.substring(1))] = profile;
+        h.resolver.sourceOverrides[track.id] = source;
+      }
+      await h.service.setAudioPolicy(const MusicAudioPolicy(leveling: MusicLeveling.track));
+      await h.playTracks([t1, t2, t3], kind: MusicPlayContextKind.tracks);
+      final outgoing = h.player;
+      outgoing.setPosition(const Duration(minutes: 2, seconds: 59, milliseconds: 100));
+      await pumpEventQueue();
+      expect(h.players, hasLength(2));
+      final incoming = h.player;
+      expect(incoming.openedMedia.single.replayGain?.fallbackDb, -12);
+      expect(incoming.audioPolicyProperties['replaygain-fallback'], '-12.0');
+      expect(outgoing.audioPolicyProperties['replaygain-fallback'], '-6.0');
+      outgoing.emitCompleted();
+      await pumpEventQueue();
+      expect(h.service.currentTrack?.id, t2.id);
+      expect(incoming.armed?.replayGain?.fallbackDb, -3);
+    });
   });
 
   test('native receiver routes shared transport to source without pausing or seeking its live decoder', () async {

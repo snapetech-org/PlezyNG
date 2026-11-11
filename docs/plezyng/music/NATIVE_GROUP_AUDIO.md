@@ -34,7 +34,7 @@ Dart WAV bridge. No actual account or speaker was used. The independent player
 and protocol logs are retained under build/native-groups-20261111/.
 
 Unsolicited native group discovery/membership and physical output latency
-calibration are not yet complete. This result establishes receive
+qualification are not yet complete. This result establishes receive
 transport interoperability; it does not establish acoustic synchronization.
 
 ## Receive metadata and controls
@@ -58,6 +58,29 @@ The official Caldera 1.1.0 reference accepted the revised handshake and supplied
 211,812 WAV bytes with its distinct Companion identifier. Automated regressions
 cover long state feeds, malformed/changed identities, paused membership, resumed
 counter reset, source metadata and the shared transport route.
+
+## Audible output clock
+
+Native MPV receive output now reads audio-PTS with ownership checks before and
+after the asynchronous bridge call. This property includes audio-driver delay.
+A separate monotonic WAV clock follows bounded hardware drift and phase, rejects
+reversed/outlying observations, and paces a bounded output lead. The initial
+live stream primes with silence while an audible anchor becomes available.
+Fractional source-frame lookup schedules each PCM sample for the estimated
+audible presentation time, including interpolation across UDP packet boundaries
+and 32-bit frame-counter wrap. Paused silence keeps this clock running.
+
+The receive core requests a small audio buffer and disables read-ahead; normal
+queues open a fresh core with their normal policy. A stalled/unsupported native
+clock retires after five seconds. Non-MPV output adapters retain the bounded
+packet-clock path and are not claimed to provide renderer synchronization.
+
+Ten-minute simulations cover opposite 1000 ppm hardware drift at 8/48/96 kHz.
+Generated impulse tests reconcile 20/50/80 ms renderer delay with independent
+source/device drift, and the real socket regression exercises the clocked
+output path through pause/resume. These are code results: device-reported audio
+timing accuracy, external Bluetooth/receiver latency and acoustic alignment
+against native speakers still require qualification.
 
 ## Native source output
 
@@ -119,6 +142,8 @@ packet drops. This remains generated audio through an unpaced null device.
 
 ## Protocol sources
 
+- mpv's [audio-PTS property](https://github.com/mpv-player/mpv/blob/master/DOCS/man/input.rst)
+  defines the audible position used for renderer feedback.
 - Fons Adriaensen's [Zita tools](https://kokkinizita.linuxaudio.org/linuxaudio/downloads/index.html)
   and the [netdata.h](https://github.com/digital-stage/zita-njbridge/blob/master/source/netdata.h)
   / [netdata.cc](https://github.com/digital-stage/zita-njbridge/blob/master/source/netdata.cc)

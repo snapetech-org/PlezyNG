@@ -227,6 +227,11 @@ class XitaClock {
     _lastObservationMicros ??= sent;
   }
 
+  double frameAtMicros(num presentationMicros) {
+    if (!ready) throw StateError('Xita clock has no timed anchor');
+    return _originFrame! + (presentationMicros - _originMicros! - latencyMicros) / _microsPerFrame;
+  }
+
   int presentationMicros(int frame) {
     if (!ready) throw StateError('Xita clock has no timed anchor');
     return (_originMicros! + (unwrap(frame) - _originFrame!) * _microsPerFrame + latencyMicros).round();

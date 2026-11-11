@@ -281,7 +281,9 @@ class FakePlayer implements Player, PlayerAudioFocusControl {
   Future<bool> isHdrOutputSupported() async => false;
 
   @override
-  String get playerType => 'fake';
+  String get playerType => nativeClock ? 'mpv' : 'fake';
+  bool nativeClock = false;
+  Completer<String?>? audibleClock;
 
   @override
   Future<void> open(
@@ -397,7 +399,7 @@ class FakePlayer implements Player, PlayerAudioFocusControl {
   Future<void> setProperty(String name, String value) async {}
 
   @override
-  Future<String?> getProperty(String name) async => null;
+  Future<String?> getProperty(String name) async => name == 'audio-pts' ? audibleClock?.future : null;
 
   @override
   Future<void> setLogLevel(String level) async {}
@@ -996,7 +998,14 @@ void main() {
     expect(h.client.reports.length, reports);
     expect(h.service.position, const Duration(seconds: 12), reason: 'Local WAV position is not a source playhead');
     expect(h.service.isPlaying, isFalse, reason: 'Local decoder playing cannot override source pause');
+    nativePlayer.nativeClock = true;
+    nativePlayer.audibleClock = Completer<String?>()..complete('12.345678');
+    expect(await h.service.readCalderaAudioClock(owner), const Duration(microseconds: 12345678));
+    nativePlayer.audibleClock = Completer<String?>();
+    final pendingClock = h.service.readCalderaAudioClock(owner);
     await h.playTracks([t3]);
+    nativePlayer.audibleClock!.complete('99.0');
+    expect(await pendingClock, isNull, reason: 'A late output-clock read cannot belong to the replacement source');
     expect(nativePlayer.disposed, isTrue);
     expect(h.service.ownsCalderaAudio(owner), isFalse);
     expect(h.service.isMusicGroupFollower, isFalse);

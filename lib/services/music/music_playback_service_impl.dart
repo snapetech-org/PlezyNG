@@ -131,7 +131,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         NativeMusicGroupControls,
         NativeMusicGroupSourceControls,
         CalderaAudioOutput,
-        CalderaAudioMetadataOutput {
+        CalderaAudioMetadataOutput,
+        CalderaAudioClockOutput {
   bool Function() _nativeMusicScope(bool Function() current) {
     Iterable<MediaServerClient> clients() => _serverManager.serverIds
         .map((id) => _serverManager.getClient(ServerId(id)))
@@ -329,6 +330,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       await player.setWorkspaceAudioFocusEnabled(_workspaceAudioEnabled);
       if (!owns()) return false;
       _ensureMediaControls();
+      await player.setProperty('audio-buffer', '0.02');
+      if (!owns()) return false;
       await player.setProperty('cache', 'no');
       await player.setProperty('demuxer-readahead-secs', '0');
       if (!owns()) return false;
@@ -341,6 +344,20 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       await closeCalderaAudio(owner);
       rethrow;
     }
+  }
+
+  @override
+  bool hasCalderaAudioClock(Object owner) => ownsCalderaAudio(owner) && _player?.playerType == 'mpv';
+
+  @override
+  Future<Duration?> readCalderaAudioClock(Object owner) async {
+    final player = _player;
+    if (!hasCalderaAudioClock(owner) || player == null) return null;
+    final value = double.tryParse(await player.getProperty('audio-pts') ?? '');
+    if (!ownsCalderaAudio(owner) || !identical(player, _player) || value == null || !value.isFinite || value < 0) {
+      return null;
+    }
+    return Duration(microseconds: (value * 1000000).round());
   }
 
   @override

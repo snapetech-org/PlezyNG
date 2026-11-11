@@ -8,12 +8,18 @@ import 'package:uuid/uuid.dart';
 import 'caldera_group.dart';
 import 'caldera_state_feed.dart';
 import 'xita_packet.dart';
+import 'xita_output_clock.dart';
 
 /// The shared music session retains audio focus, OS controls and teardown.
 abstract interface class CalderaAudioOutput {
   Future<bool> openCalderaAudio(Object owner, Uri source, String title, bool Function() current);
   bool ownsCalderaAudio(Object owner);
   Future<void> closeCalderaAudio(Object owner);
+}
+
+abstract interface class CalderaAudioClockOutput {
+  bool hasCalderaAudioClock(Object owner);
+  Future<Duration?> readCalderaAudioClock(Object owner);
 }
 
 abstract interface class CalderaAudioMetadataOutput {
@@ -69,6 +75,51 @@ class XitaJitterBuffer {
     _packets[frame] = packet;
     _queuedFrames += packet.frames;
     return true;
+  }
+
+  XitaAudio? _packetAt(int sample) {
+    final key = _packets.lastKeyBefore(sample + 1);
+    final packet = key == null ? null : _packets[key];
+    return packet != null && !packet.skipped && sample < key! + packet.frames ? packet : null;
+  }
+
+  /// Render for the actual audible WAV timeline, not the time at which bytes
+  /// enter HTTP. Fractional source positions reconcile independent audio clocks.
+  Uint8List renderScheduled(int frames, {required double presentationMicros, required double microsPerFrame}) {
+    if (frames < 0 ||
+        frames > 4096 ||
+        !presentationMicros.isFinite ||
+        !microsPerFrame.isFinite ||
+        microsPerFrame <= 0) {
+      throw ArgumentError('Invalid scheduled audio window');
+    }
+    final bytes = ByteData(frames * descriptor.channels * 4);
+    if (!clock.ready || frames == 0) return bytes.buffer.asUint8List();
+    var last = 0;
+    for (var index = 0; index < frames; index++) {
+      final source = clock.frameAtMicros(presentationMicros + index * microsPerFrame);
+      final frame = source.floor(), fraction = source - source.floor();
+      last = frame;
+
+      final first = _packetAt(frame), second = fraction < .000001 ? first : _packetAt(frame + 1);
+      if (first == null || second == null) {
+        missingFrames++;
+        continue;
+      }
+      final firstFrame = frame - clock.unwrap(first.frame);
+      final secondFrame = frame + (identical(first, second) && fraction < .000001 ? 0 : 1) - clock.unwrap(second.frame);
+      for (var channel = 0; channel < descriptor.channels; channel++) {
+        final a = first.samples[firstFrame * descriptor.channels + channel];
+        final b = second.samples[secondFrame * descriptor.channels + channel];
+        bytes.setFloat32((index * descriptor.channels + channel) * 4, a + (b - a) * fraction, Endian.little);
+      }
+    }
+    if (_cursor == null || last > _cursor!) _cursor = last;
+    final expired = _packets.keys.where((key) => key + _packets[key]!.frames < last).toList();
+    for (final key in expired) {
+      _queuedFrames -= _packets.remove(key)!.frames;
+    }
+    return bytes.buffer.asUint8List();
   }
 
   /// Float32 little-endian WAV payload, at most one output tick.
@@ -131,6 +182,10 @@ class CalderaAudioSink {
   int? _sourcePort;
   int _lastAudio = 0, _lastMesh = 0;
   bool _writing = false;
+  XitaOutputClock? _waveClock;
+  int _waveFrames = 0, _waveStartedMicros = 0, _lastTimingPoll = 0, _lastTiming = 0;
+  double _waveLeadFrames = 0;
+  bool _timingPending = false;
   int _lastFlush = 0;
   bool get active => !_closed && _opened && output.ownsCalderaAudio(_owner);
   bool get _valid => !_closed && current() && (!_opened || output.ownsCalderaAudio(_owner));
@@ -173,6 +228,32 @@ class CalderaAudioSink {
     });
     _controls = command.then<void>((_) {}, onError: (Object _) {});
     return command.whenComplete(() => _queuedControls--);
+  }
+
+  Future<void> _observeOutput(CalderaAudioClockOutput output, XitaOutputClock clock) async {
+    if (_timingPending) return;
+    _timingPending = true;
+    final started = _lastTimingPoll = _clock.elapsedMicroseconds;
+    try {
+      final position = await output.readCalderaAudioClock(_owner);
+      final now = _clock.elapsedMicroseconds;
+      if (!_valid || position == null || now - started > 50000) return;
+      final initial = !clock.ready;
+      if (clock.observe(position, (started + now) ~/ 2)) {
+        _lastTiming = now;
+        if (initial) {
+          _waveLeadFrames = (_waveFrames - position.inMicroseconds * clock.sampleRate / 1000000).clamp(
+            clock.sampleRate * .02,
+            clock.sampleRate * .1,
+          );
+        }
+      }
+    } on Object {
+      // Opening and device warm-up can temporarily leave audio-PTS unavailable.
+      // The bounded heartbeat below retires a renderer that never supplies it.
+    } finally {
+      _timingPending = false;
+    }
   }
 
   void _send(String method, Object data) => _mesh?.add(
@@ -301,6 +382,7 @@ class CalderaAudioSink {
       });
       final descriptor = await _descriptorReady.future.timeout(const Duration(seconds: 5));
       if (!_valid) throw StateError('Native audio scope changed');
+      _waveClock = XitaOutputClock(descriptor.sampleRate);
       _http = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       final path = '/${const Uuid().v4()}.wav';
       _http!.listen((request) {
@@ -314,6 +396,7 @@ class CalderaAudioSink {
           return;
         }
         _response = request.response;
+        _waveStartedMicros = _lastTiming = _clock.elapsedMicroseconds;
         request.response.headers.contentType = ContentType('audio', 'wav');
         request.response.headers.set('Cache-Control', 'no-store');
         request.response.bufferOutput = false;
@@ -335,9 +418,41 @@ class CalderaAudioSink {
           if (_clock.elapsedMilliseconds - _lastFlush > 500) unawaited(close());
           return;
         }
-        final frames = (elapsed * descriptor.sampleRate / 1000000).floor().clamp(0, 4096);
-        final bytes = _silent ? Uint8List(frames * descriptor.channels * 4) : _audio?.render(nowMicros);
+        final timing =
+            output is CalderaAudioClockOutput && (output as CalderaAudioClockOutput).hasCalderaAudioClock(_owner)
+            ? output as CalderaAudioClockOutput
+            : null;
+        final waveClock = _waveClock!;
+        Uint8List? bytes;
+        if (timing != null) {
+          if (nowMicros - _lastTimingPoll >= 20000) unawaited(_observeOutput(timing, waveClock));
+          if (nowMicros - _lastTiming > 5000000) {
+            unawaited(close());
+            return;
+          }
+          final desired = waveClock.ready
+              ? (waveClock.frameAtMicros(nowMicros) + _waveLeadFrames).round()
+              : ((nowMicros - _waveStartedMicros) * descriptor.sampleRate / 1000000).floor();
+          final frames = desired - _waveFrames;
+          if (frames > 4096) {
+            unawaited(close());
+            return;
+          }
+          if (frames > 0) {
+            bytes = _silent || !waveClock.ready
+                ? Uint8List(frames * descriptor.channels * 4)
+                : _audio?.renderScheduled(
+                    frames,
+                    presentationMicros: waveClock.presentationMicros(_waveFrames),
+                    microsPerFrame: waveClock.microsPerFrame,
+                  );
+          }
+        } else {
+          final frames = (elapsed * descriptor.sampleRate / 1000000).floor().clamp(0, 4096);
+          bytes = _silent ? Uint8List(frames * descriptor.channels * 4) : _audio?.render(nowMicros);
+        }
         if (bytes != null && bytes.isNotEmpty) {
+          _waveFrames += bytes.length ~/ (descriptor.channels * 4);
           _writing = true;
           _lastFlush = _clock.elapsedMilliseconds;
           response.add(bytes);

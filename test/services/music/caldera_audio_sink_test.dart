@@ -62,6 +62,25 @@ class _Output implements CalderaAudioOutput, CalderaAudioMetadataOutput {
   }
 }
 
+class _ClockOutput extends _Output implements CalderaAudioClockOutput {
+  final clock = Stopwatch();
+  @override
+  Future<bool> openCalderaAudio(Object key, Uri uri, String title, bool Function() current) {
+    clock.start();
+    return super.openCalderaAudio(key, uri, title, current);
+  }
+
+  @override
+  bool hasCalderaAudioClock(Object key) => ownsCalderaAudio(key);
+  @override
+  Future<Duration?> readCalderaAudioClock(Object key) async {
+    if (!ownsCalderaAudio(key) || clock.elapsedMicroseconds < 50000) return null;
+    final available = (bytes.length - 44).clamp(0, 1 << 40) ~/ 8;
+    final pts = ((clock.elapsedMicroseconds - 50000) * .999).round();
+    return Duration(microseconds: pts.clamp(0, available * 1000000 ~/ 8000));
+  }
+}
+
 void main() {
   test('jitter window reorders PCM, conceals exact gaps and drops replays/overlap', () {
     final buffer = XitaJitterBuffer(descriptor());
@@ -83,6 +102,28 @@ void main() {
     expect(buffer.missingFrames, 80);
     expect(buffer.add(audio(80), 30000), isFalse);
   });
+  test('scheduled output includes renderer delay and interpolates across packet boundaries', () {
+    XitaJitterBuffer make() {
+      final buffer = XitaJitterBuffer(descriptor());
+      buffer.add(audio(0, value: 0), 0);
+      buffer.add(audio(80, value: 1, flags: 0), 10000);
+      return buffer;
+    }
+
+    final early = ByteData.sublistView(make().renderScheduled(80, presentationMicros: 140000, microsPerFrame: 125));
+    expect(early.buffer.asUint8List(), everyElement(0));
+    // Bytes supplied at local 100 ms, audible 50 ms later, belong to frame 0.
+    final delayed = ByteData.sublistView(make().renderScheduled(2, presentationMicros: 150000, microsPerFrame: 125));
+    expect(delayed.getFloat32(0, Endian.little), 0);
+    // Half a source sample across adjacent UDP packets must blend both.
+    final boundary = ByteData.sublistView(
+      make().renderScheduled(2, presentationMicros: 150000 + 79.5 * 125, microsPerFrame: 125),
+    );
+    expect(boundary.getFloat32(0, Endian.little), closeTo(.5, 1e-6));
+    expect(boundary.getFloat32(8, Endian.little), 1);
+    expect(() => make().renderScheduled(4097, presentationMicros: 0, microsPerFrame: 125), throwsArgumentError);
+  });
+
   test('jitter allocations stay bounded under a peer flood', () {
     final buffer = XitaJitterBuffer(descriptor());
     for (var frame = 0; frame < 80000; frame += 80) {
@@ -102,196 +143,202 @@ void main() {
     expect(data.getUint16(34, Endian.little), 32);
   });
 
-  test('real mesh and UDP sockets negotiate, pin source and feed bounded PCM to the output', () async {
-    const native = '11111111-1111-4111-8111-111111111111';
-    final address = (await NetworkInterface.list(
-      type: InternetAddressType.IPv4,
-    )).expand((e) => e.addresses).firstWhere(CalderaNode.privateAddress);
-    final mesh = await HttpServer.bind(address, 0);
-    final udp = await RawDatagramSocket.bind(address, 0);
-    final output = _Output();
-    final states = <HttpResponse>{};
-    final controls = <String>[];
-    var remoteState = 'playing';
-    Map<String, Object> snapshot() => {
-      'meshVersion': '2.0.0',
-      'type': 'track',
-      'playerIdentifier': 'caldera-companion-identity',
-      'title': 'Remote track',
-      'grandparentTitle': 'Remote artist',
-      'parentTitle': 'Remote album',
-      'state': remoteState,
-      'volume': 50,
-      'time': 1000,
-      'duration': 180000,
-    };
-    void publish() {
-      for (final response in states.toList()) {
-        response.write('event: state\ndata: ${jsonEncode(snapshot())}\n\n');
-        unawaited(
-          response.flush().catchError((Object _) {
-            states.remove(response);
-          }),
-        );
-      }
-    }
-
-    var authorized = true;
-    final node = CalderaNode(
-      id: native,
-      name: 'Native fixture',
-      address: address,
-      companionPort: mesh.port,
-      meshPort: mesh.port,
-      expires: DateTime.now().add(const Duration(minutes: 1)),
-    );
-    final sink = CalderaAudioSink(leader: node, output: output, current: () => authorized);
-    Timer? producer;
-    WebSocket? socket;
-    final group = Completer<Map<String, dynamic>>();
-    addTearDown(() async {
-      producer?.cancel();
-      await sink.close();
-      await socket?.close();
-      udp.close();
-      await mesh.close(force: true);
-    });
-    mesh.listen((request) async {
-      if (request.uri.path == '/:/eventsource/notifications') {
-        request.response.headers.contentType = ContentType('text', 'event-stream');
-        request.response.bufferOutput = false;
-        states.add(request.response);
-        unawaited(
-          request.response.done.then<void>(
-            (_) {
-              states.remove(request.response);
-            },
-            onError: (Object _) {
-              states.remove(request.response);
-            },
-          ),
-        );
-        publish();
-        return;
-      }
-      if (request.uri.path.startsWith('/player/playback/')) {
-        expect(request.headers.value('X-Plex-Target-Client-Identifier'), 'caldera-companion-identity');
-        final action = request.uri.path.split('/').last;
-        controls.add(action);
-        if (action == 'pause') remoteState = 'paused';
-        if (action == 'play') remoteState = 'playing';
-        if (action == 'seekTo') expect(request.uri.queryParameters['offset'], '180000');
-        publish();
-        await request.response.close();
-        return;
-      }
-      socket = await WebSocketTransformer.upgrade(request);
-      socket!.listen((frame) {
-        for (final message in CalderaGroupClient.meshMessages(frame as String)) {
-          if (message['data'] == 'ping') {
-            socket!.add('{"data":"ping"}');
-            continue;
-          }
-          if (message['method'] == 'Hello') {
-            socket!.add(
-              jsonEncode({
-                'method': 'SetState',
-                'source': native,
-                'data': {'version': '1.0.0', 'source': native, 'volume': 50},
+  for (final clocked in [false, true]) {
+    test(
+      'real mesh and UDP sockets negotiate, pin source and feed bounded PCM to the output (renderer clock=$clocked)',
+      () async {
+        const native = '11111111-1111-4111-8111-111111111111';
+        final address = (await NetworkInterface.list(
+          type: InternetAddressType.IPv4,
+        )).expand((e) => e.addresses).firstWhere(CalderaNode.privateAddress);
+        final mesh = await HttpServer.bind(address, 0);
+        final udp = await RawDatagramSocket.bind(address, 0);
+        final output = clocked ? _ClockOutput() : _Output();
+        final states = <HttpResponse>{};
+        final controls = <String>[];
+        var remoteState = 'playing';
+        Map<String, Object> snapshot() => {
+          'meshVersion': '2.0.0',
+          'type': 'track',
+          'playerIdentifier': 'caldera-companion-identity',
+          'title': 'Remote track',
+          'grandparentTitle': 'Remote artist',
+          'parentTitle': 'Remote album',
+          'state': remoteState,
+          'volume': 50,
+          'time': 1000,
+          'duration': 180000,
+        };
+        void publish() {
+          for (final response in states.toList()) {
+            response.write('event: state\ndata: ${jsonEncode(snapshot())}\n\n');
+            unawaited(
+              response.flush().catchError((Object _) {
+                states.remove(response);
               }),
             );
-          } else if (message['method'] == 'SetSinksForSource') {
-            group.complete(message);
-            udp.send(
-              XitaDescriptor.encode(
-                sampleRate: 8000,
-                channels: 2,
-                periodFrames: 80,
-                frame: 0,
-                timestamp: DateTime.now(),
-              ),
-              InternetAddress.loopbackIPv4,
-              5000,
-            );
-            var frame = 0;
-            producer = Timer.periodic(const Duration(milliseconds: 10), (_) {
-              udp.send(
-                XitaAudio.encode(
-                  frame: frame,
-                  channels: 2,
-                  samples: Float32List.fromList(List.filled(160, .25)),
-                  flags: 1,
-                ),
-                InternetAddress.loopbackIPv4,
-                5000,
-              );
-              frame += 80;
-            });
           }
         }
-      });
-    });
-    await sink.start().timeout(const Duration(seconds: 5));
-    expect(sink.active, isTrue);
-    final request = await group.future;
-    expect(request['data'], {
-      'source': native,
-      'sinks': [native, sink.id],
-    });
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-    expect(output.bytes.length, greaterThan(44));
-    expect(ascii.decode(output.bytes.sublist(0, 4)), 'RIFF');
-    final pcm = ByteData.sublistView(Uint8List.fromList(output.bytes), 44);
-    expect(pcm.getFloat32(0, Endian.little), .25);
-    expect(output.metadata.last.snapshot.title, 'Remote track');
-    expect(output.metadata.last.artist, 'Remote artist');
-    await sink.control('pause');
-    producer?.cancel();
-    udp.send(
-      XitaDescriptor.encode(
-        sampleRate: 8000,
-        channels: 2,
-        periodFrames: 80,
-        frame: 0,
-        timestamp: DateTime.now(),
-        flags: 2,
-      ),
-      InternetAddress.loopbackIPv4,
-      5000,
+
+        var authorized = true;
+        final node = CalderaNode(
+          id: native,
+          name: 'Native fixture',
+          address: address,
+          companionPort: mesh.port,
+          meshPort: mesh.port,
+          expires: DateTime.now().add(const Duration(minutes: 1)),
+        );
+        final sink = CalderaAudioSink(leader: node, output: output, current: () => authorized);
+        Timer? producer;
+        WebSocket? socket;
+        final group = Completer<Map<String, dynamic>>();
+        addTearDown(() async {
+          producer?.cancel();
+          await sink.close();
+          await socket?.close();
+          udp.close();
+          await mesh.close(force: true);
+        });
+        mesh.listen((request) async {
+          if (request.uri.path == '/:/eventsource/notifications') {
+            request.response.headers.contentType = ContentType('text', 'event-stream');
+            request.response.bufferOutput = false;
+            states.add(request.response);
+            unawaited(
+              request.response.done.then<void>(
+                (_) {
+                  states.remove(request.response);
+                },
+                onError: (Object _) {
+                  states.remove(request.response);
+                },
+              ),
+            );
+            publish();
+            return;
+          }
+          if (request.uri.path.startsWith('/player/playback/')) {
+            expect(request.headers.value('X-Plex-Target-Client-Identifier'), 'caldera-companion-identity');
+            final action = request.uri.path.split('/').last;
+            controls.add(action);
+            if (action == 'pause') remoteState = 'paused';
+            if (action == 'play') remoteState = 'playing';
+            if (action == 'seekTo') expect(request.uri.queryParameters['offset'], '180000');
+            publish();
+            await request.response.close();
+            return;
+          }
+          socket = await WebSocketTransformer.upgrade(request);
+          socket!.listen((frame) {
+            for (final message in CalderaGroupClient.meshMessages(frame as String)) {
+              if (message['data'] == 'ping') {
+                socket!.add('{"data":"ping"}');
+                continue;
+              }
+              if (message['method'] == 'Hello') {
+                socket!.add(
+                  jsonEncode({
+                    'method': 'SetState',
+                    'source': native,
+                    'data': {'version': '1.0.0', 'source': native, 'volume': 50},
+                  }),
+                );
+              } else if (message['method'] == 'SetSinksForSource') {
+                group.complete(message);
+                udp.send(
+                  XitaDescriptor.encode(
+                    sampleRate: 8000,
+                    channels: 2,
+                    periodFrames: 80,
+                    frame: 0,
+                    timestamp: DateTime.now(),
+                  ),
+                  InternetAddress.loopbackIPv4,
+                  5000,
+                );
+                var frame = 0;
+                producer = Timer.periodic(const Duration(milliseconds: 10), (_) {
+                  udp.send(
+                    XitaAudio.encode(
+                      frame: frame,
+                      channels: 2,
+                      samples: Float32List.fromList(List.filled(160, .25)),
+                      flags: 1,
+                    ),
+                    InternetAddress.loopbackIPv4,
+                    5000,
+                  );
+                  frame += 80;
+                });
+              }
+            }
+          });
+        });
+        await sink.start().timeout(const Duration(seconds: 5));
+        expect(sink.active, isTrue);
+        final request = await group.future;
+        expect(request['data'], {
+          'source': native,
+          'sinks': [native, sink.id],
+        });
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        expect(output.bytes.length, greaterThan(44));
+        expect(ascii.decode(output.bytes.sublist(0, 4)), 'RIFF');
+        final pcm = ByteData.sublistView(Uint8List.fromList(output.bytes), 44);
+        expect([for (var i = 0; i + 4 <= pcm.lengthInBytes; i += 4) pcm.getFloat32(i, Endian.little)], contains(.25));
+        expect(output.metadata.last.snapshot.title, 'Remote track');
+        expect(output.metadata.last.artist, 'Remote artist');
+        await sink.control('pause');
+        producer?.cancel();
+        udp.send(
+          XitaDescriptor.encode(
+            sampleRate: 8000,
+            channels: 2,
+            periodFrames: 80,
+            frame: 0,
+            timestamp: DateTime.now(),
+            flags: 2,
+          ),
+          InternetAddress.loopbackIPv4,
+          5000,
+        );
+        final beforePause = output.bytes.length;
+        await Future<void>.delayed(const Duration(milliseconds: 5600));
+        expect(sink.active, isTrue, reason: 'Paused sources retain membership beyond audio-idle timeout');
+        expect(output.bytes.length, greaterThan(beforePause + 8000), reason: 'Keep live decoder supplied with silence');
+        expect(output.metadata.last.snapshot.state, 'paused');
+        await sink.control('seek', position: const Duration(days: 1));
+        await sink.control('skipNext');
+        await sink.control('skipPrevious');
+        await sink.control('play');
+        var resumedFrame = 0;
+        producer = Timer.periodic(const Duration(milliseconds: 10), (_) {
+          udp.send(
+            XitaAudio.encode(
+              frame: resumedFrame,
+              channels: 2,
+              samples: Float32List.fromList(List.filled(160, -.5)),
+              flags: 1,
+            ),
+            InternetAddress.loopbackIPv4,
+            5000,
+          );
+          resumedFrame += 80;
+        });
+        final beforeResume = output.bytes.length;
+        await Future<void>.delayed(const Duration(milliseconds: 350));
+        final resumed = ByteData.sublistView(Uint8List.fromList(output.bytes.sublist(beforeResume)));
+        expect([
+          for (var i = 0; i + 4 <= resumed.lengthInBytes; i += 4) resumed.getFloat32(i, Endian.little),
+        ], contains(-.5));
+        expect(controls, ['pause', 'seekTo', 'skipNext', 'skipPrevious', 'play']);
+        authorized = false;
+        await Future<void>.delayed(const Duration(milliseconds: 600));
+        expect(sink.active, isFalse);
+        expect(output.closes, 1);
+      },
+      timeout: const Timeout(Duration(seconds: 20)),
     );
-    final beforePause = output.bytes.length;
-    await Future<void>.delayed(const Duration(milliseconds: 5600));
-    expect(sink.active, isTrue, reason: 'Paused sources retain membership beyond audio-idle timeout');
-    expect(output.bytes.length, greaterThan(beforePause + 8000), reason: 'Keep live decoder supplied with silence');
-    expect(output.metadata.last.snapshot.state, 'paused');
-    await sink.control('seek', position: const Duration(days: 1));
-    await sink.control('skipNext');
-    await sink.control('skipPrevious');
-    await sink.control('play');
-    var resumedFrame = 0;
-    producer = Timer.periodic(const Duration(milliseconds: 10), (_) {
-      udp.send(
-        XitaAudio.encode(
-          frame: resumedFrame,
-          channels: 2,
-          samples: Float32List.fromList(List.filled(160, -.5)),
-          flags: 1,
-        ),
-        InternetAddress.loopbackIPv4,
-        5000,
-      );
-      resumedFrame += 80;
-    });
-    final beforeResume = output.bytes.length;
-    await Future<void>.delayed(const Duration(milliseconds: 350));
-    final resumed = ByteData.sublistView(Uint8List.fromList(output.bytes.sublist(beforeResume)));
-    expect([
-      for (var i = 0; i + 4 <= resumed.lengthInBytes; i += 4) resumed.getFloat32(i, Endian.little),
-    ], contains(-.5));
-    expect(controls, ['pause', 'seekTo', 'skipNext', 'skipPrevious', 'play']);
-    authorized = false;
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    expect(sink.active, isFalse);
-    expect(output.closes, 1);
-  }, timeout: const Timeout(Duration(seconds: 20)));
+  }
 }

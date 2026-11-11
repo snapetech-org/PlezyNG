@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Schedule native receive PCM on the renderer's audible audio clock, including driver delay, and resample continuously between independent source/output clocks. Bound drift, phase correction, priming and stale-clock lifetime while preserving shared-player ownership.
+
 - Follow native group source metadata in Now Playing and shared media controls, forwarding transport and seek to the verified Companion playback identity. Preserve paused group membership and feed silence until resumed audio establishes a fresh frame clock; retire subscriptions on source or account changes.
 
 - Fold known surround and height speaker layouts into native group stereo output while retaining original multichannel PCM for visualizations. Reject unknown, duplicate or non-finite capture data before transmission.

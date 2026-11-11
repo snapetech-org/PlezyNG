@@ -59,9 +59,11 @@ was accepted by the official Caldera 1.1.0 receiver. The receiver negotiated
 received with zero packet drops. Its unpaced null device reported underruns;
 this run cannot qualify acoustic synchronization or real output latency.
 
-The shipped dependency lock still lacks the native ordered PCM extension.
-A built and promoted dependency artifact is required to enable source capture
-in packaged applications; no unproduced artifact or hash is substituted.
+The current dependency lock (mpv-build d74e7a4a) already records the ordered
+PCM ABI for Android, Apple, Linux and Windows. Its pinned Linux x86_64 archive
+was checksum-verified and all four tap exports, including read_next, inspected.
+Older notes claiming that binary promotion is still pending were stale.
+Export inspection does not qualify native execution or physical output.
 
 Transmit deadlines now follow bounded PCM-buffer feedback (at most 2000 ppm)
 instead of accumulating differences between hardware and monotonic rates.
@@ -70,6 +72,23 @@ timestamps use a fixed wall anchor plus monotonic elapsed time. Rejected timing
 outliers cannot change receive frame unwrapping. Current native Companion
 commands can acknowledge with an empty HTTP 200 body; the controller also
 retains the older XML acknowledgement validation.
+
+## Native source state and transport
+
+Selected peers receive bounded title, artist, album, playhead, duration and
+volume metadata from the source's Companion endpoint on port 32500. Transport
+controls require the current source identity and a bounded controller/command
+identity; duplicates share their original result and stale commands cannot
+execute after scope retirement. Queue loading and media URLs are not exposed.
+A Stop can retire its own source while still completing its acknowledgement.
+The host and audio lease also retire if the registered client set changes,
+covering an initially empty account context gaining a new connection.
+
+The production endpoint and source were exercised across two isolated network
+namespaces with the official Caldera receiver. It automatically subscribed to
+the source's EventSource. An allowed peer read the metadata and paused the
+source through the native control route; 589 audio packets arrived with zero
+packet drops. This remains generated audio through an unpaced null device.
 
 ## Protocol sources
 

@@ -56,7 +56,9 @@ serialized per handle. Exactly one client may own a tap per core.
 The public extension header is mirrored in `shared/visualization/` for runtime
 symbol negotiation. ABI 1 remains compatible; `read_next` is an additive symbol.
 Stock libmpv remains usable for music and reports live subtitle capture
-unavailable. The shipped libmpv lock does not include this extension.
+unavailable. The current shipped lock records ordered PCM ABI 1 for Android,
+Apple, Linux and Windows (mpv-build d74e7a4a); actual runtime capability is still
+negotiated from the loaded binary.
 
 ## Source preparation and promotion
 
@@ -72,10 +74,10 @@ platform series, and verifies that the common series contains the exact
 byte-identical ordered PCM patch. It verifies the Android bridge source instead
 of applying the patch twice. Use a separate clean destination for each
 platform. No compiler or test is invoked by this preparation step. The
-mpv-build PR adds private-JIT publication gates that reject any platform
-artifact missing `mpv_plezy_audio_tap_read_next`; the source PR has not produced
-or published those artifacts. Do not replace `mpv-build.lock.json` with
-invented checksums or unproduced artifact URLs.
+mpv-build publication gates reject any platform artifact missing
+`mpv_plezy_audio_tap_read_next`. The app's current lock already records the
+produced artifacts and their inspected exports. Retain those verified manifest
+digests; export inspection does not qualify physical execution.
 
 Build projectM as a shared library with GLES 3 for the Linux offscreen host:
 
@@ -95,10 +97,10 @@ remain separate.
 
 The Linux CMake bundle accepts `PLEZY_VISUALIZER_PROJECTM_LIBRARY` pointing to
 the resulting shared library and installs it with the source lock and notices.
-The app also needs a libmpv artifact containing the PCM extension. Its existing
-binary lock is unchanged because no such artifact has been produced here.
-After the build-fork PR is merged and its private-JIT publication commits the
-new artifact manifest, promote that exact manifest commit through
+The app's current dependency lock already contains the PCM extension. The
+pinned Linux x86_64 archive was checksum-verified and all four tap exports
+inspected on 2026-11-11. For future native updates, promote the produced
+manifest commit through
 `scripts/set_native_revision.sh <full-sha> --repo https://github.com/snapetech-org/mpv-build`,
 then refresh Apple SwiftPM locks before app packaging. The script updates the
 Apple requirements, duplicate SwiftPM locks, Gradle checksum and
@@ -206,9 +208,9 @@ with C++ and iconv link flags, rather than `dlsym`/export flags. Source/notices
 travel with every artifact. Tizen's normal workflow cross-builds through the
 selected SDK toolchain and requires the provenance bundle at package creation.
 
-These paths do not replace the old mpv binary lock. Actual private-JIT mpv
-artifacts with the PCM/session extension still need production and digest
-promotion before those platforms can visualize playback. Full entrypoint and
+These paths consume the current mpv binary lock, whose artifacts already
+record the PCM/session extension. Physical visualizer and playback execution
+remain separate qualification work. Full entrypoint and
 acceptance details: `docs/plezyng/visualizations/BUILD_HANDOFF.md`.
 
 The webOS release-candidate path builds the MilkRust crate pinned in

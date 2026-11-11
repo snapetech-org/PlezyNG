@@ -728,6 +728,11 @@ class _ScriptedRandom implements Random {
   double nextDouble() => _real.nextDouble();
 }
 
+class _AdditionalNativeAccountClient extends FakeMediaServerClient {
+  @override
+  ServerId get serverId => ServerId('new-account-server');
+}
+
 class _CapturingPlayer extends FakePlayer implements MusicPcmCaptureSource {
   bool captureEnabled = false;
   final properties = <String, String>{};
@@ -1018,7 +1023,6 @@ void main() {
       await socket?.close();
       await mesh.close(force: true);
     });
-    var current = true;
     final before = Map<String, int>.of(h.resolver.resolveCounts);
     await HttpOverrides.runWithHttpOverrides(
       () => h.service.sendNativeMusicGroup([
@@ -1030,7 +1034,7 @@ void main() {
           meshPort: mesh.port,
           expires: DateTime.now().add(const Duration(minutes: 1)),
         ),
-      ], current: () => current),
+      ], current: () => true),
       _MusicNetworkHttp(),
     );
     expect(h.service.sendingNativeMusicGroup, isTrue);
@@ -1044,7 +1048,7 @@ void main() {
     expect(h.service.isPlaying, isFalse);
     await h.service.play();
     expect(h.service.isPlaying, isTrue);
-    current = false;
+    h.serverManager.debugRegisterClientForTesting(_AdditionalNativeAccountClient());
     await Future<void>.delayed(const Duration(milliseconds: 30));
     expect(h.service.sendingNativeMusicGroup, isFalse);
     expect(player.captureEnabled, isFalse);

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
 import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
+import 'caldera_source_endpoint.dart';
 import 'xita_packet.dart';
 import 'xita_transmit_clock.dart';
 import 'xita_pcm_mixer.dart';
@@ -37,12 +38,21 @@ abstract interface class NativeMusicGroupSourceControls {
 /// receive PCM. Every native sink gets identical frames from one monotonic
 /// clock. Local decoder AO is muted while the group is the selected output.
 class CalderaAudioSource {
-  CalderaAudioSource({required List<CalderaNode> sinks, required this.feeds, required this.current, this.onClosed})
-    : sinks = List.unmodifiable(sinks);
+  CalderaAudioSource({
+    required List<CalderaNode> sinks,
+    required this.feeds,
+    required this.current,
+    this.onClosed,
+    this.metadata,
+    this.control,
+  }) : sinks = List.unmodifiable(sinks);
   final List<CalderaNode> sinks;
   final List<CalderaPcmFeed> Function() feeds;
   final bool Function() current;
   final void Function()? onClosed;
+  final CalderaSourceMetadata Function()? metadata;
+  final Future<void> Function(String action, int? value)? control;
+  CalderaSourceEndpoint? _endpoint;
   final id = const Uuid().v4();
   final _mixer = XitaPcmMixer();
   final _clock = Stopwatch();
@@ -82,6 +92,19 @@ class CalderaAudioSource {
         if (!await feed.capture.musicPcmCaptureAvailable() || !_valid) {
           throw StateError('Music PCM capture unavailable');
         }
+      }
+      if (metadata case final readMetadata?) {
+        final handleControl = control;
+        if (handleControl == null) throw StateError('Native source control unavailable');
+        _endpoint = CalderaSourceEndpoint(
+          id: id,
+          peers: {for (final node in sinks) node.address.address},
+          metadata: readMetadata,
+          control: handleControl,
+          current: () => _valid,
+        );
+        await _endpoint!.start();
+        if (!_valid) throw StateError('Native music scope changed');
       }
       _udp = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
       if (!_valid) throw StateError('Native music scope changed');
@@ -330,6 +353,8 @@ class CalderaAudioSource {
     _closed = true;
     _started = false;
     _timer?.cancel();
+    await _endpoint?.close();
+    _endpoint = null;
     _udp?.close();
     _udp = null;
     for (final peer in _peers) {

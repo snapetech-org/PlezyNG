@@ -56,6 +56,7 @@ import 'music_device_session.dart';
 import 'music_group_playback.dart';
 import 'caldera_audio_sink.dart';
 import 'caldera_audio_source.dart';
+import 'caldera_source_endpoint.dart';
 import '../../mpv/player/music_pcm_capture_source.dart';
 import 'caldera_group.dart';
 import 'music_playback_output.dart';
@@ -130,6 +131,24 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         NativeMusicGroupControls,
         NativeMusicGroupSourceControls,
         CalderaAudioOutput {
+  bool Function() _nativeMusicScope(bool Function() current) {
+    Iterable<MediaServerClient> clients() => _serverManager.serverIds
+        .map((id) => _serverManager.getClient(ServerId(id)))
+        .nonNulls
+        .where((client) => _serverManager.isServerVisible(client.serverId));
+    final accounts = {for (final client in clients()) client: client.authenticationSessionId};
+    return () =>
+        !_disposed &&
+        current() &&
+        clients().length == accounts.length &&
+        accounts.entries.every(
+          (entry) =>
+              identical(entry.key.authenticationSessionId, entry.value) &&
+              identical(_serverManager.getClient(entry.key.serverId), entry.key) &&
+              _serverManager.isServerVisible(entry.key.serverId),
+        );
+  }
+
   CalderaAudioSource? _calderaSource;
 
   @override
@@ -147,24 +166,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _musicGroupFollower) {
       throw StateError('Local music output unavailable');
     }
-    final accounts = {
-      for (final client in _serverManager.serverIds.map((id) => _serverManager.getClient(ServerId(id))).nonNulls)
-        if (_serverManager.isServerVisible(client.serverId)) client: client.authenticationSessionId,
-    };
+    final scope = _nativeMusicScope(current);
     late final CalderaAudioSource source;
     bool authorized() =>
-        !_disposed &&
-        current() &&
+        scope() &&
         identical(_calderaSource, source) &&
         _playbackOutput == null &&
         _musicDeviceOutput == null &&
-        !_musicGroupFollower &&
-        accounts.entries.every(
-          (entry) =>
-              identical(entry.key.authenticationSessionId, entry.value) &&
-              identical(_serverManager.getClient(entry.key.serverId), entry.key) &&
-              _serverManager.isServerVisible(entry.key.serverId),
-        );
+        !_musicGroupFollower;
     source = CalderaAudioSource(
       sinks: List.unmodifiable(sinks),
       current: authorized,
@@ -176,6 +185,41 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
           for (final player in [primary, overlap])
             if (player != null && !player.disposed) _nativePcmFeed(player, source, primary: identical(player, primary)),
         ];
+      },
+      metadata: () => CalderaSourceMetadata(
+        title: _currentTrack?.title ?? 'Pleazyng',
+        artist: _currentTrack?.grandparentTitle ?? '',
+        album: _currentTrack?.parentTitle ?? '',
+        state: switch (_status) {
+          MusicPlaybackStatus.playing => 'playing',
+          MusicPlaybackStatus.paused => 'paused',
+          MusicPlaybackStatus.loading => 'buffering',
+          _ => 'stopped',
+        },
+        position: position,
+        duration: duration ?? Duration.zero,
+        volume: _volume,
+      ),
+      control: (action, value) async {
+        if (!authorized()) throw StateError('Native music scope changed');
+        switch (action) {
+          case 'play':
+            await play();
+          case 'pause':
+            await pause();
+          case 'stop':
+            await stop();
+          case 'skipNext':
+            await next();
+          case 'skipPrevious':
+            await previous();
+          case 'seekTo':
+            await seek(Duration(milliseconds: value!));
+          case 'setParameters':
+            await setVolume(value!.toDouble());
+          default:
+            throw ArgumentError('Unsupported native music command');
+        }
       },
       onClosed: () {
         if (identical(_calderaSource, source)) {
@@ -228,18 +272,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<void> receiveNativeMusicGroup(CalderaNode leader, {required bool Function() current}) async {
     await leaveNativeMusicGroup();
     if (_disposed || !current()) throw StateError('Native music scope changed');
-    final accounts = {
-      for (final client in _serverManager.visibleOnlineClients.values) client: client.authenticationSessionId,
-    };
-    bool authorized() =>
-        current() &&
-        !_disposed &&
-        accounts.entries.every(
-          (entry) =>
-              identical(entry.key.authenticationSessionId, entry.value) &&
-              identical(_serverManager.getClient(entry.key.serverId), entry.key) &&
-              _serverManager.isServerVisible(entry.key.serverId),
-        );
+    final authorized = _nativeMusicScope(current);
     final sink = CalderaAudioSink(leader: leader, output: this, current: authorized);
     _calderaSink = sink;
     try {

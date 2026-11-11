@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Serve bounded native-source metadata and target-qualified, replay-protected transport controls to selected group peers through the shared music session. Correct stale documentation: the current dependency lock already includes the ordered PCM ABI.
+
 - Follow native music-source hardware drift with bounded transmit-clock feedback and monotonic descriptor timestamps; prevent rejected receive timing outliers from changing frame unwrapping. Accept the empty HTTP 200 command acknowledgements emitted by current native Companion players.
 
 - Send the shared music queue to explicitly selected native Caldera / Plexamp speakers after acknowledged membership, with bounded PCM mixing, resampling, clocked UDP output and account-scoped cleanup. Keep queue occurrences and local transport authoritative, and restore prior local muting on departure.

@@ -5,6 +5,7 @@ import 'package:plezy/connection/connection.dart';
 import 'package:plezy/connection/connection_registry.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/media/ids.dart';
+import 'package:plezy/media/media_item.dart';
 import 'package:plezy/profiles/profile_connection.dart';
 import 'package:plezy/profiles/profile_connection_registry.dart';
 import 'package:plezy/services/music/music_account_scope.dart';
@@ -106,5 +107,33 @@ void main() {
     current = true;
     await bind(id: 'plex.other');
     expect(await accounts.forItem(musicTrack('a')), isNull);
+  });
+
+  test('MediaBrowser cold ratings use the exact saved client namespace', () async {
+    await connections.upsert(
+      JellyfinConnection(
+        id: 'saved-jellyfin-identity',
+        baseUrl: 'https://jellyfin.example',
+        serverName: 'Music',
+        serverMachineId: 's',
+        userId: 'user',
+        userName: 'Listener',
+        accessToken: 'secret',
+        deviceId: 'device',
+        createdAt: DateTime(2026),
+      ),
+    );
+    await profiles.upsert(
+      const ProfileConnection(
+        profileId: 'p',
+        connectionId: 'saved-jellyfin-identity',
+        userIdentifier: 'user',
+        userToken: 'secret',
+      ),
+    );
+    final track = MediaItem.fromJson({...musicTrack('a').toJson(), 'backend': 'jellyfin'});
+    final account = (await accounts.forItem(track))!;
+    expect(account.scope, 'saved-jellyfin-identity');
+    expect(account.capabilities.userFavorites, isTrue);
   });
 }

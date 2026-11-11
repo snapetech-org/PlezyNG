@@ -68,10 +68,7 @@ class MusicOfflineRatingAccounts {
           connection.serverMachineId == item.serverId &&
           connection.userId == binding.userIdentifier &&
           connection.accessToken.isNotEmpty) {
-        candidates.add((
-          scope: '${connection.serverMachineId}/${connection.userId}',
-          capabilities: ServerCapabilities.jellyfin,
-        ));
+        candidates.add((scope: connection.id, capabilities: ServerCapabilities.jellyfin));
       }
     }
     // Several accounts can share a server. Until discovery selects a binding,

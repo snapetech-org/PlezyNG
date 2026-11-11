@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep cold offline Jellyfin/Emby rating intents in the exact saved client namespace so they can reconcile after discovery.
+
 - Control existing Caldera/Plexamp groups from music synchronization: discover native speakers or connect manually, select a source and additional speakers, and send native group, transport and volume commands. Native audio-node interoperability and physical synchronization remain unqualified. Independently implemented using [anatosun’s protocol research](https://github.com/anatosun/caldera-snapjack).
 
 - Restore detached Chromecast music controls after restart only for the acknowledged receiver queue and the same profile accounts, without saving stream URLs or reloading the receiver.

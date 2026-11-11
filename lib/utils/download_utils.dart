@@ -9,6 +9,9 @@ import '../media/media_item.dart';
 import '../media/media_kind.dart';
 import '../media/media_playlist.dart';
 import '../media/media_server_client.dart';
+import '../profiles/active_profile_provider.dart';
+import '../services/music/music_account_scope.dart';
+import 'provider_extensions.dart';
 import '../models/transcode_quality_preset.dart';
 import '../database/app_database.dart';
 import '../providers/download_provider.dart';
@@ -688,13 +691,29 @@ Future<void> deletePlaylistWithConfirm(
   required MediaPlaylist playlist,
   required String confirmTitle,
   required VoidCallback onDeleted,
+  bool Function()? isCurrent,
 }) async {
+  if (!context.mounted) return;
+  final authentication = client.authenticationSessionId;
+  final scope = musicAccountScope(client);
+  final profile = context.read<ActiveProfileProvider>().activeId;
+  bool current() =>
+      context.mounted &&
+      playlist.serverId == client.serverId &&
+      playlist.backend == client.backend &&
+      !client.isOfflineMode &&
+      identical(authentication, client.authenticationSessionId) &&
+      scope == musicAccountScope(client) &&
+      profile == context.read<ActiveProfileProvider>().activeId &&
+      identical(client, context.tryGetMediaClientForServer(serverIdOrNull(playlist.serverId))) &&
+      (isCurrent?.call() ?? true);
+  if (!current()) return;
   final confirmed = await showDeleteConfirmation(
     context,
     title: confirmTitle,
     message: t.playlists.deleteMessage(name: playlist.title),
   );
-  if (!confirmed || !context.mounted) return;
+  if (!confirmed || !context.mounted || !current()) return;
 
   bool success = false;
   try {
@@ -703,7 +722,7 @@ Future<void> deletePlaylistWithConfirm(
     appLogger.e('Failed to delete playlist', error: e);
   }
 
-  if (!context.mounted) return;
+  if (!context.mounted || !current()) return;
   if (success) {
     showSuccessSnackBar(context, t.playlists.deleted);
     onDeleted();

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Retire playlist deletion confirmations and single-entry write acknowledgements after an account or route change. Refresh browse callers after accepted moves/removals and keep uncertain stale writes from reloading a different account.
+
 - Use bounded Plex track and album loudness analysis when file ReplayGain tags are absent. Carry independent, peak-limited gain through offline, cached, gapless and overlapping playback, and refresh current/armed modes when leveling or shuffle changes.
 
 - Select and remove multiple music playlist entries with pointer or D-pad controls. Preserve repeated occurrences, recheck the owning account and server entries, and reload partial or uncertain batches before an explicit retry.

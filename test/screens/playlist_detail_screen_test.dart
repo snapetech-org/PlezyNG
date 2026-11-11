@@ -55,6 +55,76 @@ import '../test_helpers/prefs.dart';
 import '../test_helpers/profile_stack.dart';
 
 void main() {
+  testWidgets('playlist deletion confirmation retires on account change', (tester) async {
+    final harness = await _createHarness(_mediaItems(1), deleteResult: true);
+    await tester.pumpWidget(harness.wrap(const PlaylistDetailScreen(playlist: _playlist)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.playlists.delete));
+    await tester.pumpAndSettle();
+    harness.client.authenticationSessionId = Object();
+    await tester.tap(find.text(t.common.delete));
+    await tester.pumpAndSettle();
+    expect(harness.client.deleteCalls, 0);
+    expect(find.byType(PlaylistDetailScreen), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('an acknowledged delete cannot pop a retired account route', (tester) async {
+    final harness = await _createHarness(_mediaItems(1), deleteResult: true);
+    harness.client.deleteGate = Completer<bool>();
+    var changes = 0;
+    await tester.pumpWidget(harness.wrap(PlaylistDetailScreen(playlist: _playlist, onChanged: () => changes++)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.playlists.delete));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(t.common.delete));
+    await tester.pumpAndSettle();
+    expect(harness.client.deleteCalls, 1);
+    harness.client.authenticationSessionId = Object();
+    harness.client.deleteGate!.complete(true);
+    await tester.pumpAndSettle();
+    expect(changes, 0);
+    expect(find.byType(PlaylistDetailScreen), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final remove in [false, true]) {
+    testWidgets('retired ${remove ? "remove" : "move"} acknowledgement cannot restore or reload stale entries', (
+      tester,
+    ) async {
+      final harness = await _createHarness(_mediaItems(3));
+      var changes = 0;
+      await tester.pumpWidget(harness.wrap(PlaylistDetailScreen(playlist: _playlist, onChanged: () => changes++)));
+      await tester.pumpAndSettle();
+      final state = tester.state(find.byType(PlaylistDetailScreen));
+      if (remove) {
+        tester.widget<PlaylistItemCard>(find.byType(PlaylistItemCard).first).onRemove!();
+      } else {
+        // Exercise the same drag callback used by the production row.
+        final list = tester.widget<SliverReorderableList>(find.byType(SliverReorderableList));
+        list.onReorderItem!(0, 2);
+      }
+      await tester.pumpAndSettle();
+      final reads = harness.client.requestedStarts.length;
+      harness.client.authenticationSessionId = Object();
+      if (remove) {
+        harness.client.failRemove(0);
+      } else {
+        harness.client.failMove(0);
+      }
+      await tester.pumpAndSettle();
+      expect(
+        harness.client.requestedStarts.length,
+        reads,
+        reason: 'uncertain writes under a retired owner cannot reload through the new client',
+      );
+      expect(changes, 0);
+      expect(find.byType(PlaylistDetailScreen), findsOneWidget);
+      expect(state.mounted, isTrue);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {
@@ -1176,6 +1246,7 @@ class _PagedPlaylistClient implements MediaServerClient {
   int activeMutationCount = 0;
   int peakMutationCount = 0;
   int deleteCalls = 0;
+  Completer<bool>? deleteGate;
   bool _hasFailed = false;
 
   factory _PagedPlaylistClient(
@@ -1293,7 +1364,7 @@ class _PagedPlaylistClient implements MediaServerClient {
   @override
   Future<bool> deletePlaylist(MediaPlaylist playlist) async {
     deleteCalls++;
-    return deleteResult;
+    return deleteGate?.future ?? deleteResult;
   }
 
   /// Item metadata, like the real endpoints: it carries no playlist entry id.

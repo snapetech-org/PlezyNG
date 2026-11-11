@@ -625,6 +625,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     client: mediaClient,
     playlist: _playlist,
     confirmTitle: t.playlists.deleteConfirm,
+    isCurrent: _metadataSourceCurrent,
     // Signal the parent list to refresh.
     onDeleted: () => Navigator.pop(context, true),
   );
@@ -673,12 +674,16 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     required List<MediaItem> originalOrder,
   }) async {
     appLogger.d('Persisting move from $originalIndex to $newIndex');
+    if (!_metadataSourceCurrent()) return;
+    final client = _metadataOwner!.client;
+    final mutationItems = items;
+    bool current() => _metadataSourceCurrent() && identical(items, mutationItems);
     Object? failure;
     var success = false;
 
     try {
       try {
-        success = await mediaClient.movePlaylistItem(
+        success = await client.movePlaylistItem(
           playlistId: _playlist.id,
           item: movedItem,
           newIndex: newIndex,
@@ -689,14 +694,18 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
         appLogger.e('Failed to persist move', error: e, stackTrace: stackTrace);
       }
 
-      if (!mounted || success) return;
+      if (!mounted || !current()) return;
+      if (success) {
+        widget.onChanged?.call();
+        return;
+      }
       appLogger.e('Failed to persist move, recovering UI');
       if (failure == null) {
         _restorePlaylistOrder(originalOrder, focusedIndex: originalIndex);
       } else {
         await loadItems();
       }
-      if (mounted) showErrorSnackBar(context, t.playlists.errorReordering);
+      if (mounted && _metadataSourceCurrent()) showErrorSnackBar(context, t.playlists.errorReordering);
     } finally {
       if (mounted) {
         setState(() => _isPlaylistMutationPending = false);
@@ -709,6 +718,9 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     if (items.isEmpty || index < 0 || index >= items.length) return;
     final originalOrder = List<MediaItem>.of(items);
     final item = items[index];
+    final client = _metadataOwner!.client;
+    final mutationItems = items;
+    bool current() => _metadataSourceCurrent() && identical(items, mutationItems);
     appLogger.d('Removing item ${item.title} from playlist');
 
     setState(() {
@@ -724,14 +736,15 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     var success = false;
     try {
       try {
-        success = await mediaClient.removeFromPlaylist(playlistId: _playlist.id, item: item);
+        success = await client.removeFromPlaylist(playlistId: _playlist.id, item: item);
       } catch (e, stackTrace) {
         failure = e;
         appLogger.e('Failed to remove playlist item', error: e, stackTrace: stackTrace);
       }
 
-      if (!mounted) return;
+      if (!mounted || !current()) return;
       if (success) {
+        widget.onChanged?.call();
         // The server's total shrank with the list; without this the loaded
         // rows fall one short of the old total and editing locks.
         _continuation.noteLoadedItemsRemoved();
@@ -745,7 +758,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
       } else {
         await loadItems();
       }
-      if (mounted) showErrorSnackBar(context, t.playlists.errorRemoving);
+      if (mounted && _metadataSourceCurrent()) showErrorSnackBar(context, t.playlists.errorRemoving);
     } finally {
       if (mounted) {
         setState(() => _isPlaylistMutationPending = false);

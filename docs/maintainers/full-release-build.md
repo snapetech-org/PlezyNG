@@ -756,6 +756,14 @@ webOS and other successful jobs from the original release run. Do not dispatch a
 second all-platform build. Native-fork HEAD movement does not invalidate unchanged
 pins in an explicitly approved frozen repair.
 
+For the `v3.0.33` Apple recovery, validate the RommWorker App Store profile
+against every checked-in Enhanced Security entitlement before archiving. A
+stale active profile is not sufficient merely because its bundle, team and
+certificate match. If hosted macOS ARM capacity cancels tvOS before it starts,
+select the private Apple ARM lane only after checking its live Xcode, NFS and
+local scratch capacity. Rebuild only the Apple jobs that failed; preserve the
+successful source run's platform artifacts and immutable product tag.
+
 The assembly publishes a schema-2 `platform-reuse-provenance.json` bound by the
 attested SHA256SUMS manifest. It identifies product, packaging and workflow SHAs,
 original and assembly run IDs, exact reused artifact IDs/digests and Linux archive

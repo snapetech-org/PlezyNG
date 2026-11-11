@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:plezy/services/music/xita_packet.dart';
 
 import 'package:dart_discord_presence/dart_discord_presence.dart';
 import 'package:drift/native.dart';
@@ -968,18 +970,198 @@ void main() {
     expect(h.player.openedUris.last, 'http://127.0.0.1:12345/pcm.wav');
     final nativePlayer = h.player;
     final reports = h.client.reports.length;
+    h.service.updateCalderaMetadata(
+      owner,
+      const CalderaNowPlaying(
+        snapshot: (
+          player: 'caldera-native-source',
+          title: 'Remote title',
+          state: 'paused',
+          volume: 50,
+          position: 12000,
+          duration: 180000,
+        ),
+        artist: 'Remote artist',
+        album: 'Remote album',
+      ),
+    );
+    expect(h.service.currentTrack?.title, 'Remote title');
+    expect(h.service.currentTrack?.grandparentTitle, 'Remote artist');
+    expect(h.service.duration, const Duration(minutes: 3));
+    expect(h.service.position, const Duration(seconds: 12));
+    expect(h.service.isPlaying, isFalse);
     nativePlayer.setPosition(const Duration(seconds: 30));
     nativePlayer.playingCtrl.add(true);
     await pumpEventQueue();
     expect(h.client.reports.length, reports);
+    expect(h.service.position, const Duration(seconds: 12), reason: 'Local WAV position is not a source playhead');
+    expect(h.service.isPlaying, isFalse, reason: 'Local decoder playing cannot override source pause');
     await h.playTracks([t3]);
     expect(nativePlayer.disposed, isTrue);
     expect(h.service.ownsCalderaAudio(owner), isFalse);
     expect(h.service.isMusicGroupFollower, isFalse);
     expect(h.service.currentTrack?.id, t3.id);
+    h.service.updateCalderaMetadata(
+      owner,
+      const CalderaNowPlaying(
+        snapshot: (player: 'stale-source', title: 'Stale title', state: 'paused', volume: 50, position: 0, duration: 0),
+      ),
+    );
     await h.service.closeCalderaAudio(owner);
     expect(h.service.currentTrack?.id, t3.id);
     expect(h.service.isPlaying, isTrue);
+  });
+
+  test('native receiver routes shared transport to source without pausing or seeking its live decoder', () async {
+    final address = (await NetworkInterface.list(
+      type: InternetAddressType.IPv4,
+    )).expand((e) => e.addresses).firstWhere(CalderaNode.privateAddress);
+    final server = await HttpServer.bind(address, 0);
+    final udp = await RawDatagramSocket.bind(address, 0);
+    const peer = '11111111-1111-4111-8111-111111111111';
+    final streams = <HttpResponse>{};
+    final commands = <String>[];
+    WebSocket? mesh;
+    Timer? producer;
+    var playing = true;
+    void publish() {
+      final state = {
+        'meshVersion': '2.0.0',
+        'type': 'track',
+        'playerIdentifier': 'caldera-source-player',
+        'title': 'Native song',
+        'grandparentTitle': 'Native artist',
+        'parentTitle': 'Native album',
+        'state': playing ? 'playing' : 'paused',
+        'volume': 50,
+        'time': 12000,
+        'duration': 180000,
+      };
+      for (final response in streams.toList()) {
+        response.write('event: state\ndata: ${jsonEncode(state)}\n\n');
+        unawaited(
+          response.flush().catchError((Object _) {
+            streams.remove(response);
+          }),
+        );
+      }
+    }
+
+    addTearDown(() async {
+      await h.service.leaveNativeMusicGroup();
+      producer?.cancel();
+      udp.close();
+      await mesh?.close();
+      await server.close(force: true);
+    });
+    server.listen((request) async {
+      if (request.uri.path == '/:/eventsource/notifications') {
+        final response = request.response;
+        response.headers.contentType = ContentType('text', 'event-stream');
+        response.bufferOutput = false;
+        streams.add(response);
+        unawaited(
+          response.done.then<void>(
+            (_) {
+              streams.remove(response);
+            },
+            onError: (Object _) {
+              streams.remove(response);
+            },
+          ),
+        );
+        publish();
+        return;
+      }
+      if (request.uri.path.startsWith('/player/playback/')) {
+        expect(request.headers.value('X-Plex-Target-Client-Identifier'), 'caldera-source-player');
+        final action = request.uri.path.split('/').last;
+        commands.add(action);
+        if (action == 'pause') playing = false;
+        if (action == 'play') playing = true;
+        if (action == 'seekTo') expect(request.uri.queryParameters['offset'], '30000');
+        publish();
+        await request.response.close();
+        return;
+      }
+      mesh = await WebSocketTransformer.upgrade(request);
+      mesh!.listen((value) {
+        for (final message in CalderaGroupClient.meshMessages(value as String)) {
+          if (message['data'] == 'ping') {
+            mesh!.add('{"data":"ping"}');
+            continue;
+          }
+          if (message['method'] == 'Hello') {
+            mesh!.add(
+              jsonEncode({
+                'method': 'SetState',
+                'source': peer,
+                'data': {'version': '1.0.0', 'source': peer},
+              }),
+            );
+          }
+          if (message['method'] == 'SetSinksForSource') {
+            udp.send(
+              XitaDescriptor.encode(
+                sampleRate: 8000,
+                channels: 2,
+                periodFrames: 80,
+                frame: 0,
+                timestamp: DateTime.now(),
+              ),
+              InternetAddress.loopbackIPv4,
+              5000,
+            );
+            var frame = 0;
+            producer = Timer.periodic(const Duration(milliseconds: 10), (_) {
+              udp.send(
+                XitaAudio.encode(frame: frame, channels: 2, samples: Float32List(160), flags: 1),
+                InternetAddress.loopbackIPv4,
+                5000,
+              );
+              frame += 80;
+            });
+          }
+        }
+      });
+    });
+    await HttpOverrides.runWithHttpOverrides(() async {
+      await h.service.receiveNativeMusicGroup(
+        CalderaNode(
+          id: peer,
+          name: 'Native speaker',
+          address: address,
+          companionPort: server.port,
+          meshPort: server.port,
+          expires: DateTime.now().add(const Duration(minutes: 1)),
+        ),
+        current: () => true,
+      );
+      expect(h.service.receivingNativeMusicGroup, isTrue);
+      final player = h.player;
+      final reports = h.client.reports.length;
+      expect(h.service.currentTrack?.title, 'Native song');
+      expect(h.service.currentTrack?.serverId, isNull);
+      await h.service.pause();
+      await pumpEventQueue();
+      expect(h.service.isPlaying, isFalse);
+      expect(
+        player.state.playing,
+        isTrue,
+        reason: 'The live decoder must continue draining PCM while source is paused',
+      );
+      await h.service.play();
+      await h.service.seek(const Duration(seconds: 30));
+      await h.service.next();
+      await h.service.previous();
+      expect(commands, ['pause', 'play', 'seekTo', 'skipNext', 'skipPrevious']);
+      expect(player.seeks, isEmpty);
+      expect(h.client.reports.length, reports);
+      h.serverManager.debugRegisterClientForTesting(_AdditionalNativeAccountClient());
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+      expect(h.service.receivingNativeMusicGroup, isFalse);
+      expect(player.disposed, isTrue);
+    }, _MusicNetworkHttp());
   });
 
   test('native source retains queue occurrences, reports and local transport through account retirement', () async {

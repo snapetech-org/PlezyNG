@@ -24,6 +24,8 @@ class CalderaSourceMetadata {
     'title': title.substring(0, title.length.clamp(0, 512)),
     'artist': artist.substring(0, artist.length.clamp(0, 512)),
     'album': album.substring(0, album.length.clamp(0, 512)),
+    'grandparentTitle': artist.substring(0, artist.length.clamp(0, 512)),
+    'parentTitle': album.substring(0, album.length.clamp(0, 512)),
     'state': const ['playing', 'paused', 'buffering', 'stopped'].contains(state) ? state : 'stopped',
     'time': position.inMilliseconds.clamp(0, 86400000),
     'duration': duration.inMilliseconds.clamp(0, 86400000),

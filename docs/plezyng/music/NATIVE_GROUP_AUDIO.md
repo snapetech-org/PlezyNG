@@ -37,6 +37,28 @@ Unsolicited native group discovery/membership and physical output latency
 calibration are not yet complete. This result establishes receive
 transport interoperability; it does not establish acoustic synchronization.
 
+## Receive metadata and controls
+
+An independently bounded EventSource connection follows the selected source's
+track, artist, album, playhead and transport state. Per-event byte limits reset
+for long sessions. Mesh UUIDs and Companion playback identifiers are distinct:
+the first state binds the latter and every forwarded command rechecks it. Native
+artist/album fields (grandparentTitle/parentTitle) and explicit artist/album
+fields are accepted. The shared media session shows source progress rather than
+the local live decoder's elapsed time; no server listen authority is created.
+
+Pause, resume, previous, next and seek are serialized and forwarded to the source.
+Pausing keeps the local decoder draining silence and retains membership beyond
+the ordinary audio-idle timeout. Suspend/resume resets the receive timeline so
+queued pre-pause audio cannot replay. Mesh or state disconnection, changed
+identity and account retirement still release the stream. Local Stop leaves the
+group without stopping the other speakers.
+
+The official Caldera 1.1.0 reference accepted the revised handshake and supplied
+211,812 WAV bytes with its distinct Companion identifier. Automated regressions
+cover long state feeds, malformed/changed identities, paused membership, resumed
+counter reset, source metadata and the shared transport route.
+
 ## Native source output
 
 The native group screen can send the current shared music session to selected

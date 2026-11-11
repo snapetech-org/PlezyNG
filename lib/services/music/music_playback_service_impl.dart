@@ -130,7 +130,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicDeviceSession,
         NativeMusicGroupControls,
         NativeMusicGroupSourceControls,
-        CalderaAudioOutput {
+        CalderaAudioOutput,
+        CalderaAudioMetadataOutput {
   bool Function() _nativeMusicScope(bool Function() current) {
     Iterable<MediaServerClient> clients() => _serverManager.serverIds
         .map((id) => _serverManager.getClient(ServerId(id)))
@@ -264,6 +265,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   CalderaAudioSink? _calderaSink;
   Object? _calderaAudioOwner;
   int? _calderaAudioGeneration;
+  CalderaNowPlaying? _nativeNowPlaying;
+  final _nativeMetadataClock = Stopwatch();
 
   @override
   bool get receivingNativeMusicGroup => _calderaSink?.active == true;
@@ -338,6 +341,57 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       await closeCalderaAudio(owner);
       rethrow;
     }
+  }
+
+  @override
+  void updateCalderaMetadata(Object owner, CalderaNowPlaying metadata) {
+    if (!ownsCalderaAudio(owner)) return;
+    _nativeNowPlaying = metadata;
+    _nativeMetadataClock
+      ..reset()
+      ..start();
+    final state = metadata.snapshot;
+    final track = _currentTrack;
+    final changed =
+        track?.title != state.title ||
+        track?.parentTitle != metadata.album ||
+        track?.grandparentTitle != metadata.artist ||
+        track?.durationMs != state.duration;
+    if (changed) {
+      final display = MediaItem.plex(
+        id: 'native-group',
+        kind: MediaKind.track,
+        title: state.title,
+        parentTitle: metadata.album,
+        grandparentTitle: metadata.artist,
+        durationMs: state.duration,
+      );
+      _queue.load([display]);
+      _currentTrack = display;
+      unawaited(_mediaControls?.updateMetadata(metadata: display));
+    }
+    final status = switch (state.state) {
+      'playing' => MusicPlaybackStatus.playing,
+      'buffering' => MusicPlaybackStatus.loading,
+      _ => MusicPlaybackStatus.paused,
+    };
+    _setStatus(status, forceNotify: changed);
+    final playhead = position;
+    _positionController.add(playhead);
+    _mediaControls?.updatePlaybackState(
+      isPlaying: status == MusicPlaybackStatus.playing,
+      position: playhead,
+      speed: 1.0,
+      force: true,
+    );
+  }
+
+  Duration? get _nativePosition {
+    final state = _nativeNowPlaying?.snapshot;
+    if (_calderaAudioOwner == null || state == null) return null;
+    final elapsed = state.state == 'playing' ? _nativeMetadataClock.elapsedMilliseconds : 0;
+    final value = state.position + elapsed;
+    return Duration(milliseconds: state.duration > 0 ? value.clamp(0, state.duration) : value);
   }
 
   @override
@@ -1519,6 +1573,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Duration? get duration {
+    final native = _nativeNowPlaying;
+    if (_calderaAudioOwner != null && native != null) return Duration(milliseconds: native.snapshot.duration);
     final output = _musicDeviceOutput;
     if (output != null) {
       final millis = output.state?.track?.durationMs;
@@ -1537,7 +1593,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Duration get position => _musicDeviceOutput == null
-      ? _player?.currentPosition ?? _pendingRestoreResume?.position ?? Duration.zero
+      ? _nativePosition ?? _player?.currentPosition ?? _pendingRestoreResume?.position ?? Duration.zero
       : _musicDeviceOutput?.state?.snapshot?.position ?? Duration.zero;
 
   @override
@@ -2276,7 +2332,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   void _onPosition(Duration position) {
     if (_calderaAudioOwner != null) {
-      _positionController.add(position);
+      _positionController.add(_nativePosition ?? position);
       return;
     }
     if (_musicDeviceOutput != null) return;
@@ -2308,6 +2364,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   void _onPlayingChanged(bool isPlaying) {
     if (_musicDeviceOutput != null) return;
+    if (_calderaAudioOwner != null && _nativeNowPlaying != null) {
+      if (isPlaying && !automotiveMusicPlaybackAllowedNow()) unawaited(_player?.pause());
+      return;
+    }
     final playbackAllowed = automotiveMusicPlaybackAllowedNow();
     final shouldBePlaying = isPlaying && playbackAllowed;
     if (isPlaying && !playbackAllowed) {
@@ -3283,6 +3343,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<void> play() async {
     if (_musicDeviceOutput != null) return _controlMusicDevice('play');
+    final native = _calderaSink;
+    if (native?.active == true) {
+      if (automotiveMusicPlaybackAllowedNow()) await native!.control('play');
+      return;
+    }
     _cancelOverlap();
     _continuationResumeRevision++;
     if (!automotiveMusicPlaybackAllowedNow()) {
@@ -3341,7 +3406,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   @override
-  Future<void> pause() => _musicDeviceOutput == null ? _pause(byCar: false) : _controlMusicDevice('pause');
+  Future<void> pause() async {
+    if (_musicDeviceOutput != null) return _controlMusicDevice('pause');
+    _pausedByCarRestriction = false;
+    final native = _calderaSink;
+    if (native?.active == true) return native!.control('pause');
+    await _pause(byCar: false);
+  }
 
   /// [byCar] marks the pause the vehicle's restrictions own, which is the only
   /// one resumed when they lift. Any other pause — the user, a media-session
@@ -3372,6 +3443,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<void> togglePlayPause() {
     if (_musicDeviceOutput != null) return _controlMusicDevice('toggle');
+    if (_calderaSink?.active == true) return isPlaying ? pause() : play();
     final player = _player;
     if (player == null) {
       return _currentTrack != null ? play() : Future.value();
@@ -3582,6 +3654,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<void> next() async {
     if (_musicDeviceOutput != null) return _controlMusicDevice('next');
+    final native = _calderaSink;
+    if (native?.active == true) return native!.control('skipNext');
     _continuationResumeRevision++;
     final nextCursor = _queue.nextIndex(manual: true);
     if (nextCursor == null) {
@@ -3593,6 +3667,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<void> previous() async {
     if (_musicDeviceOutput != null) return _controlMusicDevice('previous');
+    final native = _calderaSink;
+    if (native?.active == true) return native!.control('skipPrevious');
     _continuationResumeRevision++;
     _cancelOverlap();
     final player = _player;
@@ -3620,6 +3696,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<void> seek(Duration position) async {
     if (_musicDeviceOutput != null) return _controlMusicDevice('seek', {'position': position.inMilliseconds});
+    final native = _calderaSink;
+    if (native?.active == true) return native!.control('seek', position: position);
     _cancelOverlap();
     _continuationResumeRevision++;
     final pending = _pendingRestoreResume;
@@ -3973,8 +4051,17 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final nativeSource = _calderaSource;
     _calderaSource = null;
     unawaited(nativeSource?.close());
+    final nativeSink = _calderaAudioOwner == null ? null : _calderaSink;
+    if (nativeSink != null) {
+      _calderaSink = null;
+      unawaited(nativeSink.close());
+    }
     _calderaAudioOwner = null;
     _calderaAudioGeneration = null;
+    _nativeNowPlaying = null;
+    _nativeMetadataClock
+      ..stop()
+      ..reset();
     _musicGroupFollower = false;
     _cancelOverlap();
     _continuationEpoch++;

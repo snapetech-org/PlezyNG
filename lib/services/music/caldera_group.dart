@@ -141,6 +141,55 @@ class CalderaDiscovery {
 
 typedef CalderaState = ({String player, String title, String state, int volume, int position, int duration});
 
+/// A source-owned presentation snapshot. It carries no stream or library access.
+class CalderaNowPlaying {
+  const CalderaNowPlaying({required this.snapshot, this.artist = '', this.album = ''});
+  final CalderaState snapshot;
+  final String artist, album;
+
+  factory CalderaNowPlaying.parse(Object? value) {
+    if (value is! Map || value['meshVersion'] != '2.0.0' || value['type'] != 'track') {
+      throw const FormatException('Unsupported native group version');
+    }
+    final player = value['playerIdentifier'], title = value['title'], state = value['state'];
+    final volume = value['volume'], position = value['time'], duration = value['duration'];
+    final artist = value['artist'] ?? value['grandparentTitle'] ?? '',
+        album = value['album'] ?? value['parentTitle'] ?? '';
+    if (player is! String ||
+        !RegExp(r'^[a-zA-Z0-9_-]{1,128}$').hasMatch(player) ||
+        title is! String ||
+        title.length > 512 ||
+        artist is! String ||
+        artist.length > 512 ||
+        album is! String ||
+        album.length > 512 ||
+        !const ['stopped', 'buffering', 'playing', 'paused'].contains(state) ||
+        volume is! int ||
+        volume < 0 ||
+        volume > 100 ||
+        position is! int ||
+        position < 0 ||
+        position > 86400000 ||
+        duration is! int ||
+        duration < 0 ||
+        duration > 86400000) {
+      throw const FormatException('Invalid native group state');
+    }
+    return CalderaNowPlaying(
+      snapshot: (
+        player: player,
+        title: title,
+        state: state as String,
+        volume: volume,
+        position: position,
+        duration: duration,
+      ),
+      artist: artist,
+      album: album,
+    );
+  }
+}
+
 class CalderaGroupClient {
   CalderaGroupClient({String? clientIdentifier}) : _identifier = clientIdentifier ?? const Uuid().v4();
   final String _identifier;
@@ -309,36 +358,7 @@ class CalderaGroupClient {
           if (line.startsWith('data:')) data.add(line.substring(5).trimLeft());
           if (line.isNotEmpty) continue;
           if (event == 'state') {
-            final value = jsonDecode(data.join('\n'));
-            if (value is! Map || value['meshVersion'] != '2.0.0' || value['type'] != 'track') {
-              throw const FormatException('Unsupported native group version');
-            }
-            final player = value['playerIdentifier'], title = value['title'], state = value['state'];
-            final volume = value['volume'], position = value['time'], duration = value['duration'];
-            if (player is! String ||
-                !RegExp(r'^[a-zA-Z0-9_-]{1,128}$').hasMatch(player) ||
-                title is! String ||
-                title.length > 512 ||
-                !const ['stopped', 'buffering', 'playing', 'paused'].contains(state) ||
-                volume is! int ||
-                volume < 0 ||
-                volume > 100 ||
-                position is! int ||
-                position < 0 ||
-                position > 86400000 ||
-                duration is! int ||
-                duration < 0 ||
-                duration > 86400000) {
-              throw const FormatException('Invalid native group state');
-            }
-            return (
-              player: player,
-              title: title,
-              state: state as String,
-              volume: volume,
-              position: position,
-              duration: duration,
-            );
+            return CalderaNowPlaying.parse(jsonDecode(data.join('\n'))).snapshot;
           }
           event = '';
           data.clear();
@@ -406,6 +426,16 @@ class CalderaGroupClient {
       throw ArgumentError('Unsupported native transport');
     }
     await _control(node, expected, action, {}, current: current);
+  }
+
+  Future<void> seek(
+    CalderaNode node,
+    CalderaState expected,
+    Duration position, {
+    required bool Function() current,
+  }) async {
+    if (position.isNegative || position.inMilliseconds > 86400000) throw ArgumentError('Invalid native seek');
+    await _control(node, expected, 'seekTo', {'offset': '${position.inMilliseconds}'}, current: current);
   }
 
   Future<void> volume(CalderaNode node, CalderaState expected, int value, {required bool Function() current}) async {

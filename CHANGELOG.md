@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Follow native group source metadata in Now Playing and shared media controls, forwarding transport and seek to the verified Companion playback identity. Preserve paused group membership and feed silence until resumed audio establishes a fresh frame clock; retire subscriptions on source or account changes.
+
 - Fold known surround and height speaker layouts into native group stereo output while retaining original multichannel PCM for visualizations. Reject unknown, duplicate or non-finite capture data before transmission.
 
 - Serve bounded native-source metadata and target-qualified, replay-protected transport controls to selected group peers through the shared music session. Correct stale documentation: the current dependency lock already includes the ordered PCM ABI.

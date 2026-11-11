@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 import 'caldera_group.dart';
+import 'caldera_state_feed.dart';
 import 'xita_packet.dart';
 
 /// The shared music session retains audio focus, OS controls and teardown.
@@ -13,6 +14,10 @@ abstract interface class CalderaAudioOutput {
   Future<bool> openCalderaAudio(Object owner, Uri source, String title, bool Function() current);
   bool ownsCalderaAudio(Object owner);
   Future<void> closeCalderaAudio(Object owner);
+}
+
+abstract interface class CalderaAudioMetadataOutput {
+  void updateCalderaMetadata(Object owner, CalderaNowPlaying metadata);
 }
 
 abstract interface class NativeMusicGroupControls {
@@ -113,6 +118,12 @@ class CalderaAudioSink {
   HttpServer? _http;
   HttpResponse? _response;
   Timer? _pump, _heartbeat;
+  CalderaStateFeed? _stateFeed;
+  final _controller = CalderaGroupClient();
+  CalderaNowPlaying? _state;
+  bool _suspended = false;
+  int _lastPumpMicros = 0, _queuedControls = 0;
+  Future<void> _controls = Future.value();
   XitaJitterBuffer? _audio;
   final _descriptorReady = Completer<XitaDescriptor>();
   final _meshReady = Completer<void>();
@@ -123,6 +134,46 @@ class CalderaAudioSink {
   int _lastFlush = 0;
   bool get active => !_closed && _opened && output.ownsCalderaAudio(_owner);
   bool get _valid => !_closed && current() && (!_opened || output.ownsCalderaAudio(_owner));
+
+  bool get _silent => _suspended || _state?.snapshot.state != 'playing';
+
+  void _resetTimeline() {
+    final audio = _audio;
+    if (audio != null) _audio = XitaJitterBuffer(audio.descriptor);
+    _lastAudio = _clock.elapsedMilliseconds;
+  }
+
+  void _publishMetadata() {
+    if (!_valid || !_opened) return;
+    if (output case final CalderaAudioMetadataOutput metadata) {
+      final state = _state;
+      if (state != null) metadata.updateCalderaMetadata(_owner, state);
+    }
+  }
+
+  /// The native source keeps queue authority. Revalidate its Companion identity
+  /// for every serialized command; a local pause must not stall the WAV socket.
+  Future<void> control(String action, {Duration? position}) {
+    final state = _state;
+    if (!active || state == null || _queuedControls >= 32) {
+      return Future.error(StateError('Native source control unavailable'));
+    }
+    _queuedControls++;
+    final command = _controls.then((_) async {
+      bool owns() => active && _valid && _state?.snapshot.player == state.snapshot.player;
+      if (!owns()) throw StateError('Native source changed');
+      if (action == 'seek') {
+        if (position == null) throw ArgumentError('Native seek is missing');
+        final maximum = state.snapshot.duration;
+        final millis = position.inMilliseconds.clamp(0, maximum > 0 ? maximum : 86400000);
+        await _controller.seek(leader, state.snapshot, Duration(milliseconds: millis), current: owns);
+      } else {
+        await _controller.transport(leader, state.snapshot, action, current: owns);
+      }
+    });
+    _controls = command.then<void>((_) {}, onError: (Object _) {});
+    return command.whenComplete(() => _queuedControls--);
+  }
 
   void _send(String method, Object data) => _mesh?.add(
     jsonEncode({'method': method, 'data': data, 'source': id, 'sentAt': DateTime.now().millisecondsSinceEpoch}),
@@ -137,6 +188,20 @@ class CalderaAudioSink {
     unawaited(_descriptorReady.future.then<void>((_) {}, onError: (Object _) {}));
     unawaited(_meshReady.future.then<void>((_) {}, onError: (Object _) {}));
     try {
+      final feed = CalderaStateFeed(
+        node: leader,
+        current: () => _valid,
+        changed: (state) {
+          final wasSilent = _silent;
+          _state = state;
+          if (wasSilent != _silent) _resetTimeline();
+          _publishMetadata();
+        },
+        failed: () => unawaited(close()),
+      );
+      _stateFeed = feed;
+      await feed.start();
+      if (!_valid) throw StateError('Native audio scope changed');
       _udp = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 5000);
       if (!_valid) throw StateError('Native audio scope changed');
       _udp!.listen((event) {
@@ -152,7 +217,7 @@ class CalderaAudioSink {
           }
           final decoded = XitaPacket.decode(packet.data);
           if (decoded is XitaDescriptor) {
-            if (decoded.terminated || decoded.suspended) {
+            if (decoded.terminated) {
               unawaited(close());
               return;
             }
@@ -163,15 +228,25 @@ class CalderaAudioSink {
               unawaited(close());
               return;
             }
+            if (_suspended != decoded.suspended) _resetTimeline();
+            _suspended = decoded.suspended;
+            _lastAudio = _clock.elapsedMilliseconds;
             _sourcePort ??= packet.port;
             _audio ??= XitaJitterBuffer(decoded);
             if (!_descriptorReady.isCompleted) _descriptorReady.complete(decoded);
           } else if (decoded is XitaAudio && _audio != null) {
-            if (decoded.terminated || decoded.suspended) {
+            if (decoded.format != _audio!.descriptor.format || decoded.channels != _audio!.descriptor.channels) {
               unawaited(close());
               return;
             }
-            if (_audio!.add(decoded, _clock.elapsedMicroseconds)) _lastAudio = _clock.elapsedMilliseconds;
+            if (decoded.terminated) {
+              unawaited(close());
+              return;
+            }
+            if (_suspended != decoded.suspended) _resetTimeline();
+            _suspended = decoded.suspended;
+            _lastAudio = _clock.elapsedMilliseconds;
+            if (!_silent) _audio!.add(decoded, _clock.elapsedMicroseconds);
           }
         }
       }, onError: (Object _) => unawaited(close()));
@@ -245,18 +320,23 @@ class CalderaAudioSink {
         request.response.add(wavHeader(descriptor.sampleRate, descriptor.channels));
         unawaited(request.response.done.then<void>((_) => close(), onError: (Object _) => close()));
       });
+      _lastPumpMicros = _clock.elapsedMicroseconds;
       _pump = Timer.periodic(const Duration(milliseconds: 10), (_) {
         if (!_valid) {
           unawaited(close());
           return;
         }
+        final nowMicros = _clock.elapsedMicroseconds;
+        final elapsed = (nowMicros - _lastPumpMicros).clamp(0, 50000);
+        _lastPumpMicros = nowMicros;
         final response = _response;
         if (response == null) return;
         if (_writing) {
           if (_clock.elapsedMilliseconds - _lastFlush > 500) unawaited(close());
           return;
         }
-        final bytes = _audio?.render(_clock.elapsedMicroseconds);
+        final frames = (elapsed * descriptor.sampleRate / 1000000).floor().clamp(0, 4096);
+        final bytes = _silent ? Uint8List(frames * descriptor.channels * 4) : _audio?.render(nowMicros);
         if (bytes != null && bytes.isNotEmpty) {
           _writing = true;
           _lastFlush = _clock.elapsedMilliseconds;
@@ -276,7 +356,7 @@ class CalderaAudioSink {
       });
       _heartbeat = Timer.periodic(const Duration(milliseconds: 500), (_) {
         final now = _clock.elapsedMilliseconds;
-        if (!_valid || now - _lastAudio > 5000 || now - _lastMesh > 15000) {
+        if (!_valid || !_silent && now - _lastAudio > 5000 || now - _lastMesh > 15000) {
           unawaited(close());
           return;
         }
@@ -293,6 +373,7 @@ class CalderaAudioSink {
       }
       _opened = true;
       _opening = false;
+      _publishMetadata();
     } catch (_) {
       await close();
       rethrow;
@@ -326,6 +407,8 @@ class CalderaAudioSink {
   Future<void> close() async {
     if (_closed) return;
     _closed = true;
+    _stateFeed?.close();
+    _stateFeed = null;
     _pump?.cancel();
     _heartbeat?.cancel();
     _udp?.close();

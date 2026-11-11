@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Share bounded native group PCM rendering across output roles and retire late accepted decoder opens after their owner has closed.
+
 - Let an approved tvOS-only release repair build on the private Mac while the original iOS release job continues; keep other core release runs serialized.
 
 - Promote verified native music DSP artifacts across Apple, Android, Linux and Windows together, including the rebuilt EQ filters, ordered PCM hooks and matching package verification receipts.

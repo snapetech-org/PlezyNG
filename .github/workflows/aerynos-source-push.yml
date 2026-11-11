@@ -15,11 +15,11 @@ jobs:
     steps:
       - name: Wake metadata-only source receiver
         env:
-          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          GH_TOKEN: ${{ secrets.AERYNOS_SOURCE_DISPATCH_TOKEN }}
         run: |
           set -euo pipefail
           if [[ -z "$GH_TOKEN" ]]; then
-            echo 'Existing cross-repository dispatch credentials are unavailable.' >&2
+            echo 'Configure the dedicated aerynOS source dispatch credential.' >&2
             exit 1
           fi
           gh api --method POST repos/snapetech-org/pleazyng-aerynos/dispatches \

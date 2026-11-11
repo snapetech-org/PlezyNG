@@ -221,3 +221,9 @@ consumer reconciliation remains a catch-up path subject to GitHub availability.
 A source record does not qualify or publish a package; native acceptance and
 last-good public-feed promotion retain their separate gates. Dispatch credential
 failures are source-delivery follow-up work and never request a core rebuild.
+
+Configure `AERYNOS_SOURCE_DISPATCH_TOKEN` in the canonical repository's Actions
+secrets with a fine-grained token restricted to `snapetech-org/pleazyng-aerynos`,
+Contents write and mandatory Metadata read. Keep the Homebrew tap credential
+restricted to its own repository. Rotate the dispatch token before its expiry;
+an expired or pending-approval token leaves scheduled catch-up available.

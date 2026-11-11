@@ -71,7 +71,7 @@ pkgs.buildFHSEnv {
       runtime = with p; [
         bash coreutils gtk3 libsecret libepoxy alsa-lib libevdev
         glib wayland libglvnd libva libvdpau vulkan-loader libdrm mesa
-        libx11 libxcb libxext libgbm fontconfig dejavu_fonts shared-mime-info xdg-utils cacert xdg-dbus-proxy
+        libx11 libxcb libxext libgbm xkeyboard-config fontconfig dejavu_fonts shared-mime-info xdg-utils cacert xdg-dbus-proxy
         webkitHelpers
       ];
       closure = p.closureInfo { rootPaths = runtime ++ [ bundle p.bubblewrap ]; };

@@ -58,7 +58,12 @@ explicit unqualified/unpublished state. Keep it with the qualification logs.
 
 The Nix candidate retains the whole binary bundle inside `buildFHSEnv` so the
 custom native engines, neural providers and models remain present. This is a
-compatibility environment, not a security sandbox. On each native Nix host:
+compatibility environment, not a security sandbox. Its runtime must include
+`xkeyboard-config`: the bundled GTK stack reads `/usr/share/X11/xkb` inside the
+FHS environment. Without that data, native application startup can fail before
+the sign-in screen, even when the package builds successfully. Verify real app
+startup and keyboard input separately from the WebKit sandbox probe; neither
+alone establishes visible video playback. On each native Nix host:
 
 ```sh
 nix-build "$channel_scratch/recipes-v3.0.7/nix/pleazyng.nix" -o "$channel_scratch/nix-result"

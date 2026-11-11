@@ -12,6 +12,8 @@ import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/companion_remote/discovery_view.dart';
 import '../../widgets/companion_remote/remote_pairing_dialog.dart';
+import '../../profiles/active_profile_provider.dart';
+import 'caldera_group_screen.dart';
 
 class MusicGroupScreen extends StatefulWidget {
   const MusicGroupScreen({super.key});
@@ -96,6 +98,22 @@ class _MusicGroupScreenState extends State<MusicGroupScreen> {
       ),
       body: ListView(
         children: [
+          ListTile(
+            leading: const AppIcon(Symbols.speaker_group_rounded),
+            title: const Text('Caldera / Plexamp'),
+            subtitle: Text(t.homeLayout.sync),
+            onTap: () {
+              final active = context.read<ActiveProfileProvider>();
+              final profile = active.activeId;
+              unawaited(
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => CalderaGroupScreen(current: () => profile != null && active.activeId == profile),
+                  ),
+                ),
+              );
+            },
+          ),
           if (remote.supportsMusicGroup)
             ListTile(
               leading: const AppIcon(Symbols.speaker_group_rounded),

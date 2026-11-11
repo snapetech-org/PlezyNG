@@ -221,3 +221,22 @@ its independent session. It is available from Music home, Now Playing and the
 mini-player, including receiver setup, remembered devices, return-to-device
 and optional away-from-home relay settings. Follow [the Play on guide](PLAY_ON.md)
 for pairing, server access, recovery and current queue limits.
+
+
+## Caldera / Plexamp groups
+
+Open music synchronization and choose **Caldera / Plexamp**. Select the native
+source and additional speakers, then Save. Clear the speaker selections and Save
+to remove those sinks. Transport and volume control that source's existing
+queue; start music through Plexamp first.
+
+Discovery uses the native LAN beacons. Manual Connection accepts a private IPv4
+address and Companion port (usually 32500), and learns the node identity from
+its mesh service on port 1998. No Plex credentials are transmitted. Unsupported
+state versions and changed player identities refuse commands. Leaving the screen
+does not stop the native players.
+
+The independent controller follows [anatosun's firsthand protocol research](https://github.com/anatosun/caldera-snapjack)
+for Caldera 1.0.44 / mesh 2.0.0. A command acknowledgement is not acoustic
+qualification. Pleazyng joining as a native audio sink/source remains open:
+the captured protocol does not establish audio-port negotiation or clock mapping.

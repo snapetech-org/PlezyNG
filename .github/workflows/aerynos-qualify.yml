@@ -70,10 +70,14 @@ jobs:
               raise SystemExit('Producer artifact source mismatch')
           PY
       - name: Install native VM and fixture tools
+        timeout-minutes: 10
         run: |
           sudo python3 source/scripts/configure_hosted_apt.py '${{ runner.environment }}'
-          sudo apt-get update -o Acquire::Retries=3
-          sudo apt-get install -y -o Acquire::Retries=3 qemu-system-x86 ovmf systemd-boot-efi \
+          sudo apt-get update --error-on=any \
+            -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
+          sudo apt-get install -y \
+            -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 \
+            qemu-system-x86 ovmf systemd-boot-efi \
             squashfs-tools libarchive-tools dosfstools mtools e2fsprogs openssh-client \
             ffmpeg python3-pil python3-numpy tesseract-ocr
           test -e /dev/kvm || { echo 'A KVM-compatible hosted runner is required'; exit 1; }

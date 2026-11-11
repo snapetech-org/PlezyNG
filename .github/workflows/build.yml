@@ -2,7 +2,7 @@
 # The trusted-main hybrid profile uses standard hosted runners for compatible Linux, Android, Windows, Apple, and pinned Tizen builds; storage-heavy WebOS remains private JIT.
 # packer-windows-jit-v1
 name: Pleazyng Release
-run-name: ${{ inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
+run-name: ${{ inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
 on:
   workflow_dispatch:
@@ -89,11 +89,19 @@ on:
         required: false
         type: string
       reuse_repaired_run_id:
-        description: Reuse verified Linux and fully qualified Mac jobs from a prior repair run
+        description: Reuse signed tvOS from an approved Apple repair, or legacy repaired Linux and Mac outputs
         required: false
         type: string
       reuse_platform_run_id:
         description: Recover verified passing platform artifacts from the same product source; rebuild Android and WebOS
+        required: false
+        type: string
+      recovery_source_sha:
+        description: Exact reviewed packaging repair on main's ancestry; never compile moving main
+        required: false
+        type: string
+      recovery_product_sha:
+        description: Immutable qualified product source bound to the original release run and tag
         required: false
         type: string
       include_webos_build:
@@ -139,7 +147,8 @@ env:
   # Each setup step loads the immutable SDK manifest after checkout.
   TVOS_FLUTTER_VERSION: "3.47.1" # Pinned custom tvOS engine has this ABI.
   # Shared by every release build command.
-  RELEASE_DART_DEFINES: --dart-define=ENABLE_UPDATE_CHECK=true --dart-define=GIT_COMMIT=${{ github.sha }}
+  COMPILE_SOURCE_SHA: ${{ inputs.recovery_source_sha || github.sha }}
+  RELEASE_DART_DEFINES: --dart-define=ENABLE_UPDATE_CHECK=true --dart-define=GIT_COMMIT=${{ inputs.recovery_product_sha || github.sha }}
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
   LINUX_APT_PACKAGES: >
     clang cmake meson ninja-build pkg-config nasm libgtk-3-dev libwebkit2gtk-4.1-dev libsecret-1-dev libevdev-dev liblzma-dev
@@ -258,7 +267,43 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Verify approved frozen packaging checkout
+        id: frozen-repair
+        if: inputs.recovery_source_sha != '' || inputs.recovery_product_sha != ''
+        env:
+          PACKAGING_SHA: ${{ inputs.recovery_source_sha }}
+          PRODUCT_SHA: ${{ inputs.recovery_product_sha }}
+          SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
+          ACTION: ${{ inputs.action }}
+          MODE: ${{ inputs.mode }}
+          CANDIDATE_REF: ${{ inputs.candidate_ref }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+          sys.path.insert(0, 'scripts')
+          from verify_frozen_packaging_repair import verify_frozen_packaging_repair
+          if (os.environ['GITHUB_REF'] != 'refs/heads/main' or os.environ['ACTION'] != 'release'
+              or os.environ['MODE'] != 'release' or not os.environ['SOURCE_RUN'].isdigit()
+              or os.environ['CANDIDATE_REF']):
+              raise SystemExit('Frozen packaging repair requires an explicit trusted-main release recovery')
+          def api(path):
+              return json.loads(subprocess.check_output(['gh', 'api', path]))
+          verify_frozen_packaging_repair(os.environ['PRODUCT_SHA'], os.environ['PACKAGING_SHA'],
+                                        os.environ['GITHUB_SHA'], api)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('approved=true\n')
+          PY
+
+      - name: Check out the approved packaging source
+        if: steps.frozen-repair.outputs.approved == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.recovery_source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
       - name: Require current verified fork native dependency
+        if: steps.frozen-repair.outputs.approved != 'true'
         run: python3 scripts/sync_native_revision.py --check
 
       - name: Resolve release request
@@ -468,6 +513,9 @@ jobs:
         shell: bash
         env:
           RELEASE_TAG: ${{ steps.request.outputs.release_tag }}
+          PACKAGING_SHA: ${{ inputs.recovery_source_sha }}
+          PRODUCT_SHA: ${{ inputs.recovery_product_sha }}
+          REPAIR_APPROVED: ${{ steps.frozen-repair.outputs.approved }}
         run: |
           set -euo pipefail
           if [[ "$GITHUB_REF" != "refs/heads/main" && "$GITHUB_REF" != "refs/tags/$RELEASE_TAG" ]]; then
@@ -489,6 +537,12 @@ jobs:
             echo "Release tags must point to a commit on main." >&2
             exit 1
           fi
+          if [[ -n "$PACKAGING_SHA" ]]; then
+            if [[ "$REPAIR_APPROVED" != true || "$release_commit" != "$PRODUCT_SHA" || "$(git rev-parse HEAD)" != "$PACKAGING_SHA" ]]; then
+              echo "Approved packaging source is not bound to the immutable product tag." >&2
+              exit 1
+            fi
+          else
           while IFS= read -r changed_file; do
             [[ -z "$changed_file" ]] && continue
             case "$changed_file" in
@@ -503,6 +557,7 @@ jobs:
                 ;;
             esac
           done < <(git diff --name-only "$release_commit" "$GITHUB_SHA")
+          fi
           printf 'commit=%s\n' "$release_commit" >> "$GITHUB_OUTPUT"
 
       - name: Validate action and runner pool
@@ -584,7 +639,9 @@ jobs:
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
           ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
           MACOS_RUN: ${{ inputs.reuse_macos_package_run_id }}
-          HEAD_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ inputs.recovery_source_sha || github.sha }}
+          PACKAGING_SHA: ${{ inputs.recovery_source_sha }}
+          WORKFLOW_SHA: ${{ github.sha }}
           VERSION: ${{ steps.request.outputs.version }}
           ACTION: ${{ steps.request.outputs.action }}
           PROFILE: ${{ steps.request.outputs.execution_profile }}
@@ -597,16 +654,20 @@ jobs:
           TIZEN_BUILD: ${{ steps.request.outputs.include_tizen_build }}
         run: |
           set -euo pipefail
-          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || "$WEBOS_RELEASE" != true || "$WEBOS_BUILD" != true || "$TIZEN_BUILD" != true ]]; then
+          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || ( "$APPLE_STORE" != false && -z "$PACKAGING_SHA" ) || "$WEBOS_RELEASE" != true || "$WEBOS_BUILD" != true || "$TIZEN_BUILD" != true ]]; then
             echo "Artifact recovery requires the complete hybrid CPU GitHub-only release profile." >&2
             exit 1
           fi
           options=()
+          if [[ -n "$PACKAGING_SHA" ]]; then options+=(--packaging-source-sha "$PACKAGING_SHA" --workflow-source-sha "$WORKFLOW_SHA"); fi
+          if [[ "$APPLE_STORE" == true ]]; then options+=(--include-apple-store-build); fi
           if [[ "$REBUILD_LINUX" == true ]]; then options+=(--rebuild-linux); fi
           if [[ "$REBUILD_MACOS" == true ]]; then options+=(--rebuild-macos); fi
           if [[ "$REBUILD_TVOS" == true ]]; then options+=(--rebuild-tvos); fi
           if [[ "$REBUILD_IOS" == true ]]; then options+=(--rebuild-ios); fi
-          if [[ -n "$REPAIRED_RUN" ]]; then options+=(--repaired-run "$REPAIRED_RUN"); fi
+          if [[ -n "$REPAIRED_RUN" ]]; then
+            if [[ -n "$PACKAGING_SHA" ]]; then options+=(--tvos-run "$REPAIRED_RUN"); else options+=(--repaired-run "$REPAIRED_RUN"); fi
+          fi
           if [[ -n "$WEBOS_RUN" ]]; then options+=(--webos-run "$WEBOS_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
@@ -652,7 +713,7 @@ jobs:
           echo "No draft release is created."
 
   build-android:
-    if: ${{ inputs.reuse_android_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_android_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
     needs: validate-trusted-ref
     timeout-minutes: 360
     env:
@@ -665,6 +726,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.recovery_source_sha || github.sha }}
           persist-credentials: false
 
       - name: Setup Java
@@ -927,7 +989,7 @@ jobs:
           if-no-files-found: warn
 
   build-webos:
-    if: ${{ inputs.reuse_webos_run_id == '' && inputs.reuse_macos_package_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'webos-validation' || (needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_build == 'true')) }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_webos_run_id == '' && inputs.reuse_macos_package_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'webos-validation' || (needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_build == 'true')) }}
     needs: validate-trusted-ref
     name: Build WebOS TV package (ARMv7)
     timeout-minutes: 360
@@ -947,6 +1009,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.recovery_source_sha || github.sha }}
           persist-credentials: false
 
       - name: Verify private WebOS output storage
@@ -1053,7 +1116,7 @@ jobs:
             exit 1
           fi
           python3 tools/webos/check_release_package.py \
-            --version "$RELEASE_TAG" --source-commit "$GITHUB_SHA" \
+            --version "$RELEASE_TAG" --source-commit "$COMPILE_SOURCE_SHA" \
             --artifact "${ipks[0]}"
 
       - name: Prepare LG Seller Lounge handoff bundle
@@ -1061,7 +1124,7 @@ jobs:
         env:
           OUTPUT_DIR: ${{ steps.webos-build.outputs.output_dir }}
           RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.version }}
-          SOURCE_COMMIT: ${{ github.sha }}
+          SOURCE_COMMIT: ${{ inputs.recovery_product_sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1120,7 +1183,7 @@ jobs:
           retention-days: 14
 
   build-tizen:
-    if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_tizen_build == 'true' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_tizen_build == 'true' }}
     needs: validate-trusted-ref
     name: Build Samsung Tizen TV package (ARM)
     permissions:
@@ -1135,7 +1198,7 @@ jobs:
       include_seller_office_handoff: false
 
   build-ios:
-    if: ${{ (inputs.reuse_platform_run_id == '' || inputs.rebuild_ios) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_ios) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
     permissions:
@@ -1148,6 +1211,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.recovery_source_sha || github.sha }}
           persist-credentials: false
 
       - name: Load pinned Flutter SDK
@@ -1211,7 +1275,7 @@ jobs:
           short_root="$(bash scripts/prepare_apple_jit_scratch.sh ios 40 local-xcode)"
           runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
           APPLE_LOCAL_BUILD_DIR="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-ios-xcode/build"
-          python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$GITHUB_SHA"
+          python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$COMPILE_SOURCE_SHA"
           bash "$short_root/scripts/clean_appledouble_sidecars.sh" "$short_root"
           if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
             echo "Refusing to replace existing build output in the new Apple workspace: $short_root/build" >&2
@@ -1220,7 +1284,7 @@ jobs:
           mkdir -p "$APPLE_LOCAL_BUILD_DIR"
           ln -s "$APPLE_LOCAL_BUILD_DIR" "$short_root/build"
           chmod 700 "$short_root"
-          [[ "$(git -C "$short_root" rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          [[ "$(git -C "$short_root" rev-parse HEAD)" == "$COMPILE_SOURCE_SHA" ]]
           [[ ! -L "$short_root" && "$(cd "$short_root" && pwd -P)" == "$short_root" ]]
           [[ "$(cd "$short_root/build" && pwd -P)" == "$APPLE_LOCAL_BUILD_DIR" ]]
           echo "Prepared NFS-backed iOS sources with local APFS build output: $short_root -> $APPLE_LOCAL_BUILD_DIR"
@@ -1264,6 +1328,13 @@ jobs:
             fi
           done
           echo "configured=true" >> "$GITHUB_OUTPUT"
+
+      - name: Pin iOS device builds to the packaged native ABI
+        run: |
+          set -euo pipefail
+          override="$RUNNER_TEMP/pleazyng-ios-device-architecture.xcconfig"
+          printf 'ARCHS = arm64\nONLY_ACTIVE_ARCH = NO\n' > "$override"
+          echo "XCODE_XCCONFIG_FILE=$override" >> "$GITHUB_ENV"
 
       - name: Stage locked iOS worker frameworks for Release
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
@@ -1403,7 +1474,7 @@ jobs:
           fi
 
   build-tvos:
-    if: ${{ (inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build tvOS developer package (arm64)
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
@@ -1417,6 +1488,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.recovery_source_sha || github.sha }}
           persist-credentials: false
 
       - name: Load pinned Flutter SDK
@@ -1614,7 +1686,7 @@ jobs:
         run: bash scripts/cleanup_apple_jit_scratch.sh tvos
 
   build-macos:
-    if: ${{ (inputs.reuse_platform_run_id == '' || inputs.rebuild_macos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'macos-validation') }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_macos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'macos-validation') }}
     needs: validate-trusted-ref
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-macos"]}}', github.run_id)) }}
     permissions:
@@ -1628,6 +1700,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.recovery_source_sha || github.sha }}
           persist-credentials: false
 
       - name: Check macOS signing configuration
@@ -1828,7 +1901,7 @@ jobs:
           short_root="$(bash scripts/prepare_apple_jit_scratch.sh macos 40 local-xcode)"
           runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
           APPLE_LOCAL_BUILD_DIR="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-macos-xcode/build"
-          python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$GITHUB_SHA"
+          python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$COMPILE_SOURCE_SHA"
           bash "$short_root/scripts/clean_appledouble_sidecars.sh" "$short_root"
           if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
             echo "Refusing to replace existing build output in the new Apple workspace: $short_root/build" >&2
@@ -1837,7 +1910,7 @@ jobs:
           mkdir -p "$APPLE_LOCAL_BUILD_DIR"
           ln -s "$APPLE_LOCAL_BUILD_DIR" "$short_root/build"
           chmod 700 "$short_root"
-          [[ "$(git -C "$short_root" rev-parse HEAD)" == "$GITHUB_SHA" ]]
+          [[ "$(git -C "$short_root" rev-parse HEAD)" == "$COMPILE_SOURCE_SHA" ]]
           [[ ! -L "$short_root" && "$(cd "$short_root" && pwd -P)" == "$short_root" ]]
           [[ "$(cd "$short_root/build" && pwd -P)" == "$APPLE_LOCAL_BUILD_DIR" ]]
           echo "Prepared NFS-backed macOS sources with local APFS build output: $short_root -> $APPLE_LOCAL_BUILD_DIR"
@@ -2123,7 +2196,7 @@ jobs:
           fi
 
   build-windows:
-    if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build Windows (${{ matrix.arch }})
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","Pleazyng","gha-{0}-{1}-build-windows"]}}', github.run_id, strategy.job-index)) }}
@@ -2138,6 +2211,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.recovery_source_sha || github.sha }}
           # The pinned Opus CMake version probe calls git describe.
           fetch-depth: 0
           persist-credentials: false
@@ -2431,6 +2505,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.recovery_source_sha || github.sha }}
           persist-credentials: false
 
       - name: Provision and verify pinned Windows build tools
@@ -2655,7 +2730,7 @@ jobs:
           path: release-packages/pleazyng.*.nupkg
 
   build-linux:
-    if: ${{ (inputs.reuse_platform_run_id == '' || inputs.rebuild_linux) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_linux) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build Linux (${{ matrix.arch }})
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') || (matrix.arch == 'x64' && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index))) || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","arm64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index)) }}
@@ -2680,6 +2755,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.recovery_source_sha || github.sha }}
           persist-credentials: false
 
       - name: Load pinned Flutter SDK
@@ -3044,8 +3120,10 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.recovery_source_sha || github.sha }}
           sparse-checkout: |
             CHANGELOG.md
+            UPSTREAM_ATTRIBUTION.md
             pubspec.yaml
             scripts/**
             docs/maintainers/capability-manifest.json
@@ -3069,7 +3147,27 @@ jobs:
       - name: Generate release notes from CHANGELOG.md
         env:
           RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.version }}
-        run: python3 scripts/generate_release_notes.py "$RELEASE_TAG" > release-notes.md
+        run: |
+          python3 scripts/generate_release_notes.py "$RELEASE_TAG" > release-notes.md
+          # Keep the complete credit ledger within GitHub's release-body limit.
+          python3 - <<'PYNOTES'
+          import os
+          from pathlib import Path
+          notes = Path('release-notes.md')
+          body = notes.read_text()
+          budget = 120000 - len(Path('UPSTREAM_ATTRIBUTION.md').read_text()) - 1000
+          if len(body) > budget:
+              if budget < 1000:
+                  raise SystemExit('Attribution ledger exceeds the release-body budget')
+              body = body[:budget].rsplit('\n\n', 1)[0]
+              tag = 'v' + os.environ['RELEASE_TAG']
+              body += f'\n\nRelease notes continue in the [full changelog](https://github.com/snapetech-org/pleazyng/blob/{tag}/CHANGELOG.md).\n'
+              notes.write_text(body)
+          PYNOTES
+          printf '\n\n## Upstream people and sources\n\n' >> release-notes.md
+          printf '[Tag-pinned attribution ledger](https://github.com/snapetech-org/pleazyng/blob/v%s/UPSTREAM_ATTRIBUTION.md)\n\n' "$RELEASE_TAG" >> release-notes.md
+          cat UPSTREAM_ATTRIBUTION.md >> release-notes.md
+          grep -q '^# Upstream source attribution' release-notes.md
 
       - name: Recover verified platform artifacts
         if: ${{ inputs.reuse_platform_run_id != '' }}
@@ -3084,17 +3182,24 @@ jobs:
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
           ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
           MACOS_RUN: ${{ inputs.reuse_macos_package_run_id }}
-          HEAD_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ inputs.recovery_source_sha || github.sha }}
+          PACKAGING_SHA: ${{ inputs.recovery_source_sha }}
+          WORKFLOW_SHA: ${{ github.sha }}
           VERSION: ${{ needs.validate-trusted-ref.outputs.version }}
+          APPLE_STORE: ${{ needs.validate-trusted-ref.outputs.include_apple_store_build }}
           HOMEBREW: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask }}
           WEBOS_BUILD: ${{ needs.validate-trusted-ref.outputs.include_webos_build }}
         run: |
           options=()
+          if [[ -n "$PACKAGING_SHA" ]]; then options+=(--packaging-source-sha "$PACKAGING_SHA" --workflow-source-sha "$WORKFLOW_SHA"); fi
+          if [[ "$APPLE_STORE" == true ]]; then options+=(--include-apple-store-build); fi
           if [[ "$REBUILD_LINUX" == true ]]; then options+=(--rebuild-linux); fi
           if [[ "$REBUILD_MACOS" == true ]]; then options+=(--rebuild-macos); fi
           if [[ "$REBUILD_TVOS" == true ]]; then options+=(--rebuild-tvos); fi
           if [[ "$REBUILD_IOS" == true ]]; then options+=(--rebuild-ios); fi
-          if [[ -n "$REPAIRED_RUN" ]]; then options+=(--repaired-run "$REPAIRED_RUN"); fi
+          if [[ -n "$REPAIRED_RUN" ]]; then
+            if [[ -n "$PACKAGING_SHA" ]]; then options+=(--tvos-run "$REPAIRED_RUN"); else options+=(--repaired-run "$REPAIRED_RUN"); fi
+          fi
           if [[ -n "$WEBOS_RUN" ]]; then options+=(--webos-run "$WEBOS_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi

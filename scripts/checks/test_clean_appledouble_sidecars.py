@@ -42,6 +42,19 @@ class HostedCleanupTests(unittest.TestCase):
         self.assertFalse(self.sidecar.exists())
         self.assertTrue(self.protected.exists())
 
+    def test_repair_checkout_is_distinct_from_workflow_ownership(self):
+        result = self.invoke(GITHUB_SHA='b' * 40, COMPILE_SOURCE_SHA=self.environment['GITHUB_SHA'])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(self.sidecar.exists())
+        self.assertTrue(self.protected.exists())
+
+    def test_wrong_or_malformed_packaging_source_cannot_delete_sidecars(self):
+        for source in ('b' * 40, 'not-a-commit'):
+            with self.subTest(source=source):
+                self.assertNotEqual(self.invoke(COMPILE_SOURCE_SHA=source).returncode, 0)
+                self.assertTrue(self.sidecar.exists())
+                self.assertTrue(self.protected.exists())
+
     def test_wrong_run_path_source_or_redirect_cannot_delete_files(self):
         for environment in ({'GITHUB_RUN_ID': '124'}, {'GITHUB_SHA': 'b' * 40}, {'GITHUB_JOB': 'unknown'}):
             with self.subTest(environment=environment):

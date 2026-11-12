@@ -1660,7 +1660,27 @@ jobs:
         run: tvos/scripts/fetch_engine.sh
 
       - name: Install tvOS CocoaPods dependencies
-        run: tvos/scripts/pod_install.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # CMake fetches immutable public RomM source commits during pod install.
+          # A fresh Apple worker can receive an authentication challenge for a
+          # public GitHub clone; answer it without writing the token to the log.
+          umask 077
+          askpass="$RUNNER_TEMP/pleazyng-tvos-git-askpass"
+          trap 'rm -f "$askpass"' EXIT
+          cat > "$askpass" <<'ASKPASS'
+          #!/bin/sh
+          case "$1" in
+            *Username*github.com*) printf '%s\n' x-access-token ;;
+            *Password*github.com*) printf '%s\n' "$GH_TOKEN" ;;
+            *) exit 1 ;;
+          esac
+          ASKPASS
+          chmod 700 "$askpass"
+          export GIT_ASKPASS="$askpass"
+          export GIT_TERMINAL_PROMPT=0
+          tvos/scripts/pod_install.sh
 
       - name: Resolve pinned tvOS Swift packages
         run: |

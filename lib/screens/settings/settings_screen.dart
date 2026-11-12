@@ -316,6 +316,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
                           focusNode: _focusTracker.get(_kMediaSessions),
                           icon: Symbols.dashboard_customize_rounded,
                           title: t.common.manageMediaSessions,
+                          subtitle: t.common.mediaSessionsHint,
                           onTap: () => sheetContext.read<MultiviewWorkspaceController>().setSessionTrayVisible(true),
                         ),
                       if (hasLibraries) _buildManageLibrariesTile(sheetContext),
@@ -736,6 +737,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
           focusNode: _focusTracker.get(_kPlaybackReceiver),
           icon: Symbols.speaker_group_rounded,
           title: t.musicDevices.receive,
+          subtitle: t.companionRemote.session.serverStoppedDescription,
           onTap: () => unawaited(showPlaybackReceiverSettings(context)),
         ),
     ];

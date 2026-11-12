@@ -1,3 +1,4 @@
+import 'music_station.dart';
 import 'music_audio_output_inspection.dart';
 import 'package:uuid/uuid.dart';
 import 'music_discovery.dart';
@@ -130,6 +131,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicKaraokeControls,
         MusicDiscoveryControls,
         MusicAlbumRadioControls,
+        MusicStationRadioControls,
         MusicAudioControls,
         MusicCacheControls,
         MusicSignalPathService,
@@ -1215,6 +1217,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   MediaItem? _continuationSeed;
   String? _continuationAccount;
+  MusicStation? _continuationStation;
   bool _continuationAlbumRadio = false;
   double _continuationDistance = .25;
   int _continuationEpoch = 0;
@@ -1231,6 +1234,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   void setContinuationEnabled(bool enabled) {
     _continuationEpoch++;
+    _continuationStation = null;
     _continuationAlbumRadio = false;
     _continuationDistance = .25;
     _continuationLoading = false;
@@ -1310,36 +1314,55 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     bool current() => !_disposed && epoch == _continuationEpoch && revision == _queueSessionRevision;
     try {
       final albumRadio = _continuationAlbumRadio;
+      final station = _continuationStation;
+      final wholeAlbums = albumRadio || station?.albums == true;
       final excludedTracks = {..._queue.queue.map((t) => t.globalKey), ..._continuationExcluded};
       final excludedAlbums = <String>{
-        if (albumRadio)
+        if (wholeAlbums)
           for (final track in _queue.queue)
             if (track.serverId == seed.serverId && track.libraryId == seed.libraryId && track.parentId != null)
               track.parentId!,
       };
-      final batch = await _generateInstantMix(
-        seed,
-        current: () => current() && authorized(),
-        albumRadio: albumRadio,
-        maxDistance: _continuationDistance,
-        excludedAlbumIds: excludedAlbums,
-        excludedTrackKeys: excludedTracks,
-      );
+      final List<MediaItem> candidates;
+      final bool Function() batchCurrent;
+      if (station != null) {
+        final client = _clientFor(seed);
+        if (client == null) throw StateError('Station source is unavailable');
+        final batch = await station.preview(
+          client,
+          current: () => current() && authorized(),
+          excludedTrackKeys: excludedTracks,
+          excludedAlbumIds: excludedAlbums,
+        );
+        candidates = batch.tracks;
+        batchCurrent = batch.isCurrent;
+      } else {
+        final batch = await _generateInstantMix(
+          seed,
+          current: () => current() && authorized(),
+          albumRadio: albumRadio,
+          maxDistance: _continuationDistance,
+          excludedAlbumIds: excludedAlbums,
+          excludedTrackKeys: excludedTracks,
+        );
+        candidates = batch.tracks;
+        batchCurrent = batch.isCurrent;
+      }
       if (!current() || _musicGroupFollower) return;
-      if (!batch.isCurrent()) throw StateError('Music continuation source changed');
+      if (!batchCurrent()) throw StateError('Music continuation source changed');
       final latestExcludedTracks = {..._queue.queue.map((track) => track.globalKey), ..._continuationExcluded};
       final blockedAlbums = <String>{
-        if (albumRadio) ...{
+        if (wholeAlbums) ...{
           for (final track in _queue.queue)
             if (track.serverId == seed.serverId && track.libraryId == seed.libraryId && track.parentId != null)
               track.parentId!,
-          for (final track in batch.tracks)
+          for (final track in candidates)
             if (latestExcludedTracks.contains(track.globalKey)) track.parentId!,
         },
       };
-      final tracks = albumRadio
-          ? batch.tracks.where((track) => !blockedAlbums.contains(track.parentId)).toList()
-          : MusicDiscovery.interleave([batch.tracks], limit: 100, exclude: latestExcludedTracks);
+      final tracks = wholeAlbums
+          ? candidates.where((track) => !blockedAlbums.contains(track.parentId)).toList()
+          : MusicDiscovery.interleave([candidates], limit: station?.trackLimit ?? 100, exclude: latestExcludedTracks);
       if (albumRadio && tracks.isNotEmpty) _continuationSeed = _radioAlbum(tracks.last);
       if (tracks.isNotEmpty) {
         _queue.addToEnd(tracks);
@@ -1360,6 +1383,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       if (!_disposed && epoch == _continuationEpoch) {
         _continuationLoading = false;
         if (_continuationSeed == null) {
+          _continuationStation = null;
           _continuationAlbumRadio = false;
           _continuationDistance = .25;
           _persistSessionSnapshot();
@@ -2260,6 +2284,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final expectedRevision = _queueSessionRevision + (_calderaAudioOwner != null ? 2 : 1);
     await _startQueue(
       tracks: batch.tracks,
+      sourceCurrent: batch.isCurrent,
       startTrack: startTrack,
       playContext: MusicPlayContext(title: preview?.recipe.title ?? seed.displayTitle, kind: MusicPlayContextKind.mix),
     );
@@ -2269,6 +2294,52 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _continuationAccount = account;
       _continuationAlbumRadio = albumRadio;
       _continuationDistance = maxDistance;
+      _persistSessionSnapshot();
+      unawaited(_extendStation());
+    }
+    return InstantMixOutcome.started;
+  }
+
+  @override
+  Future<InstantMixOutcome> playStationRadio(
+    MusicStationBatch preview, {
+    MediaItem? startTrack,
+    bool shuffle = false,
+  }) async {
+    final station = preview.station;
+    if (!station.continuous || shuffle && station.albums) {
+      throw ArgumentError('Station radio must preserve its selected rule and album order');
+    }
+    final intent = beginPlayIntent();
+    if (!preview.isCurrent()) return InstantMixOutcome.superseded;
+    if (preview.tracks.isEmpty) return InstantMixOutcome.empty;
+    final seed = preview.tracks.first;
+    final client = _clientFor(seed);
+    if (client == null || client.isOfflineMode) return InstantMixOutcome.superseded;
+    final authentication = client.authenticationSessionId;
+    final account = musicAccountScope(client);
+    bool current() =>
+        preview.isCurrent() &&
+        identical(_clientFor(seed), client) &&
+        identical(client.authenticationSessionId, authentication) &&
+        musicAccountScope(client) == account;
+    if (!current() || !isPlayIntentCurrent(intent)) return InstantMixOutcome.superseded;
+    if (startTrack != null && !preview.tracks.any((track) => track.globalKey == startTrack.globalKey)) {
+      throw ArgumentError('Selected station track is outside the preview');
+    }
+    final expectedRevision = _queueSessionRevision + (_calderaAudioOwner != null ? 2 : 1);
+    await _startQueue(
+      tracks: preview.tracks,
+      sourceCurrent: current,
+      startTrack: startTrack,
+      playContext: MusicPlayContext(title: station.title, kind: MusicPlayContextKind.mix),
+      shuffle: shuffle,
+    );
+    if (_disposed || _queueSessionRevision != expectedRevision) return InstantMixOutcome.superseded;
+    if (current()) {
+      _continuationSeed = seed;
+      _continuationAccount = account;
+      _continuationStation = station;
       _persistSessionSnapshot();
       unawaited(_extendStation());
     }
@@ -2286,8 +2357,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     PlaybackLaunchObserver? launchObserver,
     MusicQueueState? restoredQueue,
     MusicSource? preparedSource,
+    bool Function()? sourceCurrent,
   }) async {
-    if (tracks.isEmpty || _disposed) {
+    if (tracks.isEmpty || _disposed || sourceCurrent?.call() == false) {
       return;
     }
     if (launchObserver != null && !launchObserver.isCurrent) {
@@ -2321,12 +2393,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       final stoppingIntent = _playIntentGeneration;
       unawaited(leaveNativeMusicGroup());
       await ending;
-      if (!isPlayIntentCurrent(stoppingIntent)) return;
+      if (!isPlayIntentCurrent(stoppingIntent) || sourceCurrent?.call() == false) return;
     }
     _queueSessionRevision++;
     _continuationEpoch++;
     _continuationSeed = null;
     _continuationAccount = null;
+    _continuationStation = null;
     _continuationAlbumRadio = false;
     _continuationDistance = .25;
     _continuationLoading = false;
@@ -4660,6 +4733,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _continuationEpoch++;
     _continuationSeed = null;
     _continuationAccount = null;
+    _continuationStation = null;
     _continuationAlbumRadio = false;
     _continuationDistance = .25;
     _continuationLoading = false;
@@ -4890,6 +4964,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _queueSessionRevision++;
     _playContext = snapshot.playContext;
     _continuationAccount = snapshot.continuationAccount;
+    _continuationStation = snapshot.continuationStation;
     _continuationAlbumRadio = snapshot.continuationAlbumRadio;
     _continuationDistance = snapshot.continuationDistance;
     _continuationSeed = _continuationAccount == null ? null : snapshot.continuationSeed;
@@ -4932,6 +5007,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       position: positionOverride ?? position,
       continuationSeed: _continuationSeed,
       continuationAccount: _continuationAccount,
+      continuationStation: _continuationStation,
       continuationAlbumRadio: _continuationAlbumRadio,
       continuationDistance: _continuationDistance,
       continuationExcluded: Set.unmodifiable(_continuationExcluded),

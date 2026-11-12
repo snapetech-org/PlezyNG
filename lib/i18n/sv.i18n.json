@@ -5607,7 +5607,8 @@
     "sharingDeclineConfirm": "Avböj hela inbjudan från ${owner}?",
     "pathTracks": "Spår per väg",
     "sonicDistance": "Maximalt ljudavstånd",
-    "albumRadio": "Albumradio"
+    "albumRadio": "Albumradio",
+    "continueStation": "Fortsätt spela den här stationen"
   },
   "musicDevices": {
     "playOn": "Spela på",

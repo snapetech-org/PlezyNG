@@ -5607,7 +5607,8 @@
     "sharingDeclineConfirm": "${owner} का पूरा आमंत्रण अस्वीकार करें?",
     "pathTracks": "हर पथ में ट्रैक",
     "sonicDistance": "अधिकतम ध्वनि दूरी",
-    "albumRadio": "एल्बम रेडियो"
+    "albumRadio": "एल्बम रेडियो",
+    "continueStation": "इस स्टेशन को चलाते रहें"
   },
   "musicDevices": {
     "playOn": "इस पर चलाएँ",

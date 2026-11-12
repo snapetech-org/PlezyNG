@@ -10,6 +10,8 @@ import 'package:plezy/services/music/music_playback_service.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_queue_items.dart';
 import 'package:plezy/services/music/music_session_store.dart';
+import 'package:plezy/services/music/music_station.dart';
+import 'package:plezy/media/library_query.dart';
 import '../../test_helpers/media_items.dart';
 
 void main() {
@@ -322,6 +324,32 @@ void main() {
     expect(restored.continuationAccount, 'srv:account');
     expect(restored.continuationExcluded, {'srv:removed'});
     expect(await store(profileId: 'other').load(), isNull);
+  });
+
+  test('filtered continuation persists the complete rule and rejects a mismatched seed', () async {
+    final rule = MusicStation(
+      id: 'r',
+      title: 'Jazz',
+      serverId: 'srv',
+      libraryId: 'lib',
+      continuous: true,
+      filters: [
+        const LibraryFilter(field: 'genre', values: ['Jazz']),
+      ],
+    );
+    final seed = track('a').copyWith(libraryId: 'lib');
+    MusicSessionSnapshot snapshot(MediaItem seed) => MusicSessionSnapshot(
+      queue: state(items: [seed]),
+      playContext: null,
+      position: Duration.zero,
+      continuationSeed: seed,
+      continuationAccount: 'srv:account',
+      continuationStation: rule,
+    );
+    await store().save(snapshot(seed));
+    expect((await store().load())!.continuationStation!.toJson(), rule.toJson());
+    await expectLater(store().save(snapshot(seed.copyWith(libraryId: 'other'))), throwsArgumentError);
+    expect((await store().load())!.continuationSeed!.libraryId, 'lib');
   });
 
   test('album radio mode and distance survive a parked session', () async {

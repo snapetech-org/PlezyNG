@@ -48,6 +48,12 @@ class Hidden extends ChangeNotifier implements HiddenLibrariesProvider {
 
 class Profile extends ChangeNotifier implements ActiveProfileProvider {
   @override
+  int identityMutationGeneration = 1;
+  @override
+  bool isBinding = false;
+  @override
+  bool lastBindingSucceeded = true;
+  @override
   String get activeId => 'p';
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -68,7 +74,19 @@ class Downloads extends ChangeNotifier implements DownloadProvider {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class Music extends ExperienceMusic {
+class Music extends ExperienceMusic implements MusicStationRadioControls {
+  MusicStationBatch? radio;
+  @override
+  Future<InstantMixOutcome> playStationRadio(
+    MusicStationBatch preview, {
+    MediaItem? startTrack,
+    bool shuffle = false,
+  }) async {
+    if (!preview.isCurrent()) return InstantMixOutcome.superseded;
+    radio = preview;
+    return InstantMixOutcome.started;
+  }
+
   int starts = 0;
   bool? startedOffline;
   @override
@@ -87,14 +105,33 @@ class Music extends ExperienceMusic {
 }
 
 void main() {
-  for (final scenario in ['online', 'authentication', 'account', 'hidden', 'offline', 'ownership', 'foreign']) {
+  for (final scenario in [
+    'online',
+    'authentication',
+    'account',
+    'hidden',
+    'offline',
+    'ownership',
+    'foreign',
+    'continuous',
+    'continuous-offline',
+    'profile',
+    'binding',
+  ]) {
     testWidgets('station preview validates its playback source: $scenario', (tester) async {
       resetSharedPreferencesForTest();
+      if (scenario == 'continuous') {
+        tester.view.physicalSize = const Size(320, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+      }
       final database = AppDatabase.forTesting(NativeDatabase.memory());
       final store = MusicLibraryStore(database, 'p');
       final music = Music();
       final client = ExperienceClient()..rows = [musicTrack('online')];
-      final servers = Servers()..client = ['offline', 'ownership', 'foreign'].contains(scenario) ? null : client;
+      final servers = Servers()
+        ..client = ['offline', 'ownership', 'foreign', 'continuous-offline'].contains(scenario) ? null : client;
       final libraries = Libraries();
       final hidden = Hidden();
       final profile = Profile();
@@ -118,8 +155,18 @@ void main() {
             ChangeNotifierProvider<DownloadProvider>.value(value: downloads),
           ],
           child: MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scenario == 'continuous' ? 2 : 1)),
+              child: child!,
+            ),
             home: MusicStationScreen(
-              station: MusicStation(id: 'station', title: 'Station', serverId: 's', libraryId: 'library'),
+              station: MusicStation(
+                id: 'station',
+                title: 'Station',
+                serverId: 's',
+                libraryId: 'library',
+                continuous: scenario.startsWith('continuous'),
+              ),
             ),
           ),
         ),
@@ -132,6 +179,8 @@ void main() {
       expect(music.starts, 0);
       if (scenario == 'authentication') client.authenticationSessionId = Object();
       if (scenario == 'account') client.scopedServerId = 's/other-account';
+      if (scenario == 'profile') profile.identityMutationGeneration++;
+      if (scenario == 'binding') profile.isBinding = true;
       if (scenario == 'hidden') hidden.hiddenLibraryKeys = {'s:library'};
       if (scenario == 'ownership') downloads.downloadedTracks = [];
       if (scenario == 'foreign') downloads.downloadedTracks = [musicTrack('owned').copyWith(libraryId: 'other')];
@@ -140,10 +189,14 @@ void main() {
       expect(find.text(t.common.play).hitTestable(), findsOneWidget);
       await tester.tap(find.text(t.common.play));
       await tester.pumpAndSettle();
-      final playable = ['online', 'offline'].contains(scenario);
-      expect(music.starts, playable ? 1 : 0);
+      final playable = ['online', 'offline', 'continuous', 'continuous-offline'].contains(scenario);
+      expect(music.starts, playable && scenario != 'continuous' ? 1 : 0);
+      expect(music.radio != null, scenario == 'continuous');
+      if (scenario == 'continuous') expect(music.radio!.station.continuous, isTrue);
       if (!playable) expect(find.text(t.musicExperience.error), findsOneWidget);
-      if (playable) expect(music.startedOffline, scenario == 'offline');
+      if (playable && scenario != 'continuous') {
+        expect(music.startedOffline, ['offline', 'continuous-offline'].contains(scenario));
+      }
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       experience.dispose();

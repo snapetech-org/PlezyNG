@@ -4445,6 +4445,7 @@ class Translations$musicTools$fr extends Translations$musicTools$en {
 	@override String get pathTracks => 'Titres par parcours';
 	@override String get sonicDistance => 'Distance sonore maximale';
 	@override String get albumRadio => 'Radio de l’album';
+	@override String get continueStation => 'Continuer à écouter cette station';
 }
 
 // Path: musicDevices
@@ -9716,6 +9717,7 @@ extension on TranslationsFr {
 			'musicTools.pathTracks' => 'Titres par parcours',
 			'musicTools.sonicDistance' => 'Distance sonore maximale',
 			'musicTools.albumRadio' => 'Radio de l’album',
+			'musicTools.continueStation' => 'Continuer à écouter cette station',
 			'musicDevices.playOn' => 'Lire sur',
 			'musicDevices.thisDevice' => 'Cet appareil',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lecture sur ${device}',

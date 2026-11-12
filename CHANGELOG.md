@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add optional rolling playback for saved filtered music stations, with exact-preview adoption, persisted rules, whole-album exclusions and native car controls. Keep downloads and offline playback finite and reject snapshots from another station source.
+
 - Add saved Album Radio recipes that play complete ordered albums, refill from authorized sonic neighbors, preserve queue edits and account ownership, and support finite download previews and native car playback.
 
 - Save Sonic Adventure track counts and maximum sonic distance, forward them to each Plex path request, and reject paths that omit a waypoint or exceed their budget. Retire discovery editors and related results with their original profile/account.

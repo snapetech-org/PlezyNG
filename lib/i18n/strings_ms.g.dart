@@ -4381,6 +4381,7 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	@override String get pathTracks => 'Lagu bagi setiap laluan';
 	@override String get sonicDistance => 'Jarak sonik maksimum';
 	@override String get albumRadio => 'Radio album';
+	@override String get continueStation => 'Teruskan memainkan stesen ini';
 }
 
 // Path: musicDevices
@@ -9618,6 +9619,7 @@ extension on TranslationsMs {
 			'musicTools.pathTracks' => 'Lagu bagi setiap laluan',
 			'musicTools.sonicDistance' => 'Jarak sonik maksimum',
 			'musicTools.albumRadio' => 'Radio album',
+			'musicTools.continueStation' => 'Teruskan memainkan stesen ini',
 			'musicDevices.playOn' => 'Mainkan pada',
 			'musicDevices.thisDevice' => 'Peranti ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',
@@ -9628,9 +9630,9 @@ extension on TranslationsMs {
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.',
 			'musicDevices.moveFailed' => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.',
 			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
-			'musicDevices.away' => 'Di luar rumah',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Di luar rumah',
 			'musicDevices.relay' => 'URL geganti muzik',
 			'musicDevices.relayHint' => 'Aktifkan pada peranti penerima, kemudian pasangkan sekali pada rangkaian yang sama. Biarkan Pleazyng terbuka. Geganti menghantar kawalan muzik yang disulitkan dan melihat alamat rangkaian. Setiap pemain menstrim daripada pelayan medianya sendiri.',
 			'musicDevices.relayInvalid' => 'Masukkan alamat geganti HTTPS.',

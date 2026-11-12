@@ -5655,7 +5655,8 @@
     "sharingDeclineConfirm": "Відхилити все запрошення від ${owner}?",
     "pathTracks": "Треків на маршрут",
     "sonicDistance": "Максимальна звукова відстань",
-    "albumRadio": "Радіо альбому"
+    "albumRadio": "Радіо альбому",
+    "continueStation": "Продовжувати відтворення цієї станції"
   },
   "musicDevices": {
     "playOn": "Відтворити на",

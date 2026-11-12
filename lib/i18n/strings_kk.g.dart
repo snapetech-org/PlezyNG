@@ -4404,6 +4404,7 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get pathTracks => 'Әр жолдағы тректер';
 	@override String get sonicDistance => 'Ең үлкен дыбыстық қашықтық';
 	@override String get albumRadio => 'Альбом радиосы';
+	@override String get continueStation => 'Осы станцияны ойнатуды жалғастыру';
 }
 
 // Path: musicDevices
@@ -9643,6 +9644,7 @@ extension on TranslationsKk {
 			'musicTools.pathTracks' => 'Әр жолдағы тректер',
 			'musicTools.sonicDistance' => 'Ең үлкен дыбыстық қашықтық',
 			'musicTools.albumRadio' => 'Альбом радиосы',
+			'musicTools.continueStation' => 'Осы станцияны ойнатуды жалғастыру',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',
@@ -9653,9 +9655,9 @@ extension on TranslationsKk {
 			'musicDevices.receiverHint' => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.',
 			'musicDevices.moveFailed' => 'Ойнатуды көшіру мүмкін болмады. Құрылғының қосулы, жұптастырылған және музыка серверіне қолжетімді екенін тексеріңіз.',
 			'musicDevices.uncertain' => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.',
-			'musicDevices.away' => 'Үйден тыс жерде',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Үйден тыс жерде',
 			'musicDevices.relay' => 'Музыка релесінің URL мекенжайы',
 			'musicDevices.relayHint' => 'Қабылдаушы құрылғыда қосып, бір желіде бір рет жұптастырыңыз. Pleazyng ашық тұрсын. Реле шифрланған музыка пәрмендерін тасымалдайды және желі мекенжайларын көреді. Әр ойнатқыш өз медиа серверінен ағын алады.',
 			'musicDevices.relayInvalid' => 'Реленің HTTPS мекенжайын енгізіңіз.',

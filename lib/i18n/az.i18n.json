@@ -5607,7 +5607,8 @@
     "sharingDeclineConfirm": "${owner} tərəfindən göndərilmiş dəvət tam rədd edilsin?",
     "pathTracks": "Hər yol üçün trek sayı",
     "sonicDistance": "Maksimum səs məsafəsi",
-    "albumRadio": "Albom radiosu"
+    "albumRadio": "Albom radiosu",
+    "continueStation": "Bu stansiyanı səsləndirməyə davam et"
   },
   "musicDevices": {
     "playOn": "Burada səsləndir",

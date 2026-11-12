@@ -4494,6 +4494,7 @@ class Translations$musicTools$es extends Translations$musicTools$en {
 	@override String get pathTracks => 'Pistas por recorrido';
 	@override String get sonicDistance => 'Distancia sonora máxima';
 	@override String get albumRadio => 'Radio del álbum';
+	@override String get continueStation => 'Seguir reproduciendo esta emisora';
 }
 
 // Path: musicDevices
@@ -9869,6 +9870,7 @@ extension on TranslationsEs {
 			'musicTools.pathTracks' => 'Pistas por recorrido',
 			'musicTools.sonicDistance' => 'Distancia sonora máxima',
 			'musicTools.albumRadio' => 'Radio del álbum',
+			'musicTools.continueStation' => 'Seguir reproduciendo esta emisora',
 			'musicDevices.playOn' => 'Reproducir en',
 			'musicDevices.thisDevice' => 'Este dispositivo',
 			'musicDevices.playingOn' => ({required Object device}) => 'Reproduciendo en ${device}',

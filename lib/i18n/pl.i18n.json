@@ -5661,7 +5661,8 @@
     "sharingDeclineConfirm": "Odrzucić całe zaproszenie od ${owner}?",
     "pathTracks": "Utwory na ścieżkę",
     "sonicDistance": "Maksymalna odległość brzmienia",
-    "albumRadio": "Radio albumu"
+    "albumRadio": "Radio albumu",
+    "continueStation": "Kontynuuj odtwarzanie tej stacji"
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

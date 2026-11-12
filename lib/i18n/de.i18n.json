@@ -5607,7 +5607,8 @@
     "sharingDeclineConfirm": "Gesamte Einladung von ${owner} ablehnen?",
     "pathTracks": "Titel pro Pfad",
     "sonicDistance": "Maximaler klanglicher Abstand",
-    "albumRadio": "Albumradio"
+    "albumRadio": "Albumradio",
+    "continueStation": "Diesen Sender weiter abspielen"
   },
   "musicDevices": {
     "playOn": "Wiedergeben auf",

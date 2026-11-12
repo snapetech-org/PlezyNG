@@ -41,14 +41,22 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
   String? _libraryKey;
   List<LibraryFilter> _filters = [];
   String _sort = 'random';
-  bool _albums = false, _busy = false, _wifiOnly = true, _descending = true;
+  bool _albums = false, _busy = false, _wifiOnly = true, _descending = true, _continuous = false;
+  late final ActiveProfileProvider _profile;
+  late final int _profileGeneration;
   int _refreshHours = 0;
   bool get _current =>
       mounted &&
       _experience.store.active &&
-      context.read<ActiveProfileProvider>().activeId == _experience.store.profileId;
+      identical(context.read<MusicExperience>(), _experience) &&
+      identical(context.read<ActiveProfileProvider>(), _profile) &&
+      _profile.activeId == _experience.store.profileId &&
+      _profile.identityMutationGeneration == _profileGeneration &&
+      !_profile.isBinding &&
+      _profile.lastBindingSucceeded;
   String? _error;
   List<MediaItem> _preview = [];
+  MusicStationBatch? _previewBatch;
   MediaServerClient? _previewClient;
   Object? _previewAuthentication;
   String? _previewAccountScope;
@@ -59,6 +67,8 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
   @override
   void initState() {
     super.initState();
+    _profile = context.read<ActiveProfileProvider>();
+    _profileGeneration = _profile.identityMutationGeneration;
     final rule = widget.station;
     _title.text = rule?.title ?? '';
     _limit.text = '${rule?.trackLimit ?? 100}';
@@ -70,6 +80,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     _filters = rule?.filters ?? [];
     _sort = rule?.sort ?? 'random';
     _descending = rule?.descending ?? true;
+    _continuous = rule?.continuous ?? false;
     _albums = rule?.albums ?? false;
   }
 
@@ -106,6 +117,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     return MusicStation(
       id: _id,
       title: _title.text.trim(),
+      continuous: _continuous,
       serverId: library.serverId!,
       libraryId: library.id,
       filters: _filters,
@@ -127,6 +139,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
       _error = null;
     });
     try {
+      if (!_current) throw StateError('Station editor profile changed');
       await action(revision);
     } catch (_) {
       if (mounted && revision == _revision) setState(() => _error = t.musicExperience.error);
@@ -205,6 +218,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
   Future<void> _generate() => _run((revision) async {
     setState(() {
       _preview = [];
+      _previewBatch = null;
       _previewClient = null;
       _previewAuthentication = null;
       _previewAccountScope = null;
@@ -231,7 +245,27 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     final accountScope = musicAccountScope(client);
     _abort?.abort();
     final abort = _abort = AbortController();
-    final items = await station.materialize(client, abort: abort);
+    final batch = await station.preview(
+      client,
+      abort: abort,
+      current: () =>
+          _current &&
+          _library?.serverId == station.serverId &&
+          _library?.id == station.libraryId &&
+          identical(
+            client,
+            _experience.clientFor(
+              MediaItem(
+                id: station.id,
+                backend: client.backend,
+                kind: MediaKind.track,
+                serverId: station.serverId,
+                libraryId: station.libraryId,
+              ),
+            ),
+          ),
+    );
+    final items = batch.tracks;
     if (!mounted ||
         revision != _revision ||
         !_current ||
@@ -242,6 +276,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     }
     setState(() {
       _preview = items;
+      _previewBatch = batch;
       _previewClient = client;
       _previewAuthentication = authentication;
       _previewAccountScope = accountScope;
@@ -284,6 +319,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
         _library != null &&
         !_previewOffline &&
         _preview.isNotEmpty &&
+        _previewBatch?.isCurrent() == true &&
         client != null &&
         !client.isOfflineMode &&
         identical(client, _experience.clientFor(_preview.first)) &&
@@ -307,6 +343,16 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
         .toList();
     if (tracks.isEmpty || startTrack != null && !tracks.any((track) => track.globalKey == startTrack.globalKey)) {
       throw StateError('Station preview is no longer playable');
+    }
+    if (!_previewOffline && _continuous) {
+      final batch = _previewBatch;
+      final music = _experience.music;
+      if (batch == null || !batch.matches(_station()) || music is! MusicStationRadioControls) {
+        throw StateError('Station radio preview changed');
+      }
+      final outcome = await (music as MusicStationRadioControls).playStationRadio(batch, startTrack: startTrack);
+      if (outcome == InstantMixOutcome.empty) throw StateError('Station radio is empty');
+      return;
     }
     await _experience.music.playFromList(
       tracks: tracks,
@@ -355,6 +401,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
             ),
           TextField(
             controller: _title,
+            onChanged: (_) => setState(() => _preview = []),
             enabled: !_busy,
             decoration: InputDecoration(labelText: t.musicExperience.saveRecipe),
           ),
@@ -447,6 +494,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
             decoration: InputDecoration(labelText: t.musicTools.storageBudget),
           ),
           DropdownButtonFormField<int>(
+            isExpanded: true,
             initialValue: _refreshHours,
             decoration: InputDecoration(labelText: '${t.common.refresh} · ${t.navigation.downloads}'),
             items: [
@@ -460,13 +508,19 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
                 ? null
                 : (value) => setState(() {
                     if (value != null) _refreshHours = value;
+                    _preview = [];
                   }),
           ),
           if (_refreshHours > 0)
             SwitchListTile(
               title: Text(t.settings.downloadOnWifiOnly),
               value: _wifiOnly,
-              onChanged: _busy ? null : (value) => setState(() => _wifiOnly = value),
+              onChanged: _busy
+                  ? null
+                  : (value) => setState(() {
+                      _wifiOnly = value;
+                      _preview = [];
+                    }),
             ),
           if (_error != null) Text(_error!),
           if (_busy) const LinearProgressIndicator(),
@@ -498,6 +552,16 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
                   child: Text(t.common.delete),
                 ),
             ],
+          ),
+          SwitchListTile(
+            title: Text(t.musicTools.continueStation),
+            value: _continuous,
+            onChanged: _busy
+                ? null
+                : (value) => setState(() {
+                    _continuous = value;
+                    _preview = [];
+                  }),
           ),
           if (_preview.isNotEmpty)
             Wrap(

@@ -4381,6 +4381,7 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get pathTracks => 'จำนวนเพลงต่อเส้นทาง';
 	@override String get sonicDistance => 'ระยะห่างทางเสียงสูงสุด';
 	@override String get albumRadio => 'วิทยุอัลบั้ม';
+	@override String get continueStation => 'เล่นสถานีนี้ต่อไป';
 }
 
 // Path: musicDevices
@@ -9618,6 +9619,7 @@ extension on TranslationsTh {
 			'musicTools.pathTracks' => 'จำนวนเพลงต่อเส้นทาง',
 			'musicTools.sonicDistance' => 'ระยะห่างทางเสียงสูงสุด',
 			'musicTools.albumRadio' => 'วิทยุอัลบั้ม',
+			'musicTools.continueStation' => 'เล่นสถานีนี้ต่อไป',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',
@@ -9628,9 +9630,9 @@ extension on TranslationsTh {
 			'musicDevices.receiverHint' => 'เปิด Pleazyng ไว้เพื่อรับเพลง จับคู่ครั้งเดียวด้วยรหัสนี้',
 			'musicDevices.moveFailed' => 'ย้ายการเล่นไม่ได้ ตรวจสอบว่าอุปกรณ์เปิดอยู่ จับคู่แล้ว และเข้าถึงเซิร์ฟเวอร์เพลงได้',
 			'musicDevices.uncertain' => 'การเชื่อมต่อขัดข้อง เชื่อมต่ออุปกรณ์ที่เลือกอีกครั้งเพื่อตรวจสอบการเล่น',
-			'musicDevices.away' => 'นอกบ้าน',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'นอกบ้าน',
 			'musicDevices.relay' => 'URL รีเลย์เพลง',
 			'musicDevices.relayHint' => 'เปิดใช้งานบนอุปกรณ์รับ แล้วจับคู่ครั้งเดียวบนเครือข่ายเดียวกัน เปิด Pleazyng ค้างไว้ รีเลย์ส่งคำสั่งเพลงที่เข้ารหัสและเห็นที่อยู่เครือข่ายได้ เครื่องเล่นแต่ละเครื่องสตรีมจากเซิร์ฟเวอร์สื่อของตนเอง',
 			'musicDevices.relayInvalid' => 'ป้อนที่อยู่รีเลย์ HTTPS',

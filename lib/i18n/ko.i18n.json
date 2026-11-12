@@ -5602,7 +5602,8 @@
     "sharingDeclineConfirm": "${owner}의 초대 전체를 거절할까요?",
     "pathTracks": "경로당 곡 수",
     "sonicDistance": "최대 음향 거리",
-    "albumRadio": "앨범 라디오"
+    "albumRadio": "앨범 라디오",
+    "continueStation": "이 스테이션 계속 재생"
   },
   "musicDevices": {
     "playOn": "재생 기기",

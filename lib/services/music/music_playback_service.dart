@@ -1,3 +1,4 @@
+import 'music_station.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../media/lyrics.dart';
@@ -67,6 +68,10 @@ abstract interface class MusicAlbumRadioControls {
     MusicDiscoveryBatch? preview,
     MediaItem? startTrack,
   });
+}
+
+abstract interface class MusicStationRadioControls {
+  Future<InstantMixOutcome> playStationRadio(MusicStationBatch preview, {MediaItem? startTrack, bool shuffle = false});
 }
 
 /// Session-owned discovery and album transport, shared by every surface.

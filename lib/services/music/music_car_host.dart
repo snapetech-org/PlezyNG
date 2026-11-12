@@ -481,12 +481,12 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           if (index == null || index < 0 || index >= _music.queue.length) throw PlatformException(code: 'stale_queue');
           await _music.jumpTo(index);
         } else if (id.startsWith('station:')) {
+          final generation = _profiles.identityMutationGeneration;
+          bool stationCurrent() => _current && generation == _profiles.identityMutationGeneration;
           final intent = _music.beginPlayIntent();
-          final row = await MusicLibraryStore(
-            context.read<AppDatabase>(),
-            _profileId,
-          ).document('station', id.substring(8));
-          if (!mounted || !_current || row == null) return false;
+          final store = MusicLibraryStore(context.read<AppDatabase>(), _profileId);
+          final row = await store.document('station', id.substring(8));
+          if (!mounted || !stationCurrent() || row == null) return false;
           final station = MusicStation.fromJson(row);
           final hidden = context.read<HiddenLibrariesProvider>();
           await hidden.ensureInitialized();
@@ -497,19 +497,30 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           final offline = client == null || client.isOfflineMode;
           final authentication = client?.authenticationSessionId;
           final accountScope = client == null ? null : musicAccountScope(client);
-          final downloads = context.read<DownloadProvider>().downloadedTracks;
+          final downloads = offline ? context.read<DownloadProvider>() : null;
+          var generating = true;
+          final batch = offline
+              ? null
+              : await station.preview(
+                  client,
+                  current: () =>
+                      stationCurrent() &&
+                      (!generating || _music.isPlayIntentCurrent(intent)) &&
+                      _clientCurrent(client, authentication!) &&
+                      !hidden.hiddenLibraryKeys.contains('${station.serverId}:${station.libraryId}'),
+                );
+          generating = false;
           final tracks = offline
               ? musicSnapshotTracks(
-                  await MusicLibraryStore(
-                    context.read<AppDatabase>(),
-                    _profileId,
-                  ).document('stationSnapshot', station.id),
-                  downloads,
+                  await store.document('stationSnapshot', station.id),
+                  downloads!.downloadedTracks,
                   accountScope: accountScope,
-                )
-              : await station.materialize(client);
+                ).where((track) => track.serverId == station.serverId && track.libraryId == station.libraryId).toList()
+              : batch!.tracks;
 
-          if (!_current ||
+          if (!stationCurrent() ||
+              hidden.hiddenLibraryKeys.contains('${station.serverId}:${station.libraryId}') ||
+              batch != null && !batch.isCurrent() ||
               !_music.isPlayIntentCurrent(intent) ||
               client != null && !_clientCurrent(client, authentication!) ||
               client != null && accountScope != musicAccountScope(client) ||
@@ -517,12 +528,23 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
             return false;
           }
           if (_enqueueRequested(tracks, args)) return true;
-          await _music.playFromList(
-            tracks: tracks,
-            playContext: MusicPlayContext(title: station.title, kind: MusicPlayContextKind.mix),
-            shuffle: args['shuffle'] == true,
-            offline: offline,
-          );
+          if (!offline && station.continuous) {
+            if (_music is! MusicStationRadioControls || station.albums && args['shuffle'] == true) {
+              throw PlatformException(code: 'unsupported_station_radio');
+            }
+            final outcome = await (_music as MusicStationRadioControls).playStationRadio(
+              batch!,
+              shuffle: args['shuffle'] == true,
+            );
+            if (outcome != InstantMixOutcome.started) return false;
+          } else {
+            await _music.playFromList(
+              tracks: tracks,
+              playContext: MusicPlayContext(title: station.title, kind: MusicPlayContextKind.mix),
+              shuffle: args['shuffle'] == true,
+              offline: offline,
+            );
+          }
         } else if (id.startsWith('recipe:')) {
           final generation = _profiles.identityMutationGeneration;
           bool recipeCurrent() => _current && _profiles.identityMutationGeneration == generation;

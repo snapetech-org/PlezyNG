@@ -5580,7 +5580,8 @@
     "sharingDeclineConfirm": "ปฏิเสธคำเชิญทั้งหมดจาก ${owner} หรือไม่?",
     "pathTracks": "จำนวนเพลงต่อเส้นทาง",
     "sonicDistance": "ระยะห่างทางเสียงสูงสุด",
-    "albumRadio": "วิทยุอัลบั้ม"
+    "albumRadio": "วิทยุอัลบั้ม",
+    "continueStation": "เล่นสถานีนี้ต่อไป"
   },
   "musicDevices": {
     "playOn": "เล่นบน",

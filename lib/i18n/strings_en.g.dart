@@ -14945,6 +14945,9 @@ class Translations$musicTools$en {
 
 	/// en: 'Album Radio'
 	String get albumRadio => 'Album Radio';
+
+	/// en: 'Keep playing this station'
+	String get continueStation => 'Keep playing this station';
 }
 
 // Path: musicDevices
@@ -22942,6 +22945,7 @@ extension on Translations {
 			'musicTools.pathTracks' => 'Tracks per path',
 			'musicTools.sonicDistance' => 'Maximum sonic distance',
 			'musicTools.albumRadio' => 'Album Radio',
+			'musicTools.continueStation' => 'Keep playing this station',
 			'musicDevices.playOn' => 'Play on',
 			'musicDevices.thisDevice' => 'This device',
 			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',

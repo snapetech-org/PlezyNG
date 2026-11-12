@@ -4411,6 +4411,7 @@ class _Translations$musicTools$it extends Translations$musicTools$en {
 	@override String get pathTracks => 'Brani per percorso';
 	@override String get sonicDistance => 'Distanza sonora massima';
 	@override String get albumRadio => 'Radio dell’album';
+	@override String get continueStation => 'Continua a riprodurre questa stazione';
 }
 
 // Path: musicDevices
@@ -9650,6 +9651,7 @@ extension on TranslationsIt {
 			'musicTools.pathTracks' => 'Brani per percorso',
 			'musicTools.sonicDistance' => 'Distanza sonora massima',
 			'musicTools.albumRadio' => 'Radio dell’album',
+			'musicTools.continueStation' => 'Continua a riprodurre questa stazione',
 			'musicDevices.playOn' => 'Riproduci su',
 			'musicDevices.thisDevice' => 'Questo dispositivo',
 			'musicDevices.playingOn' => ({required Object device}) => 'In riproduzione su ${device}',
@@ -9660,9 +9662,9 @@ extension on TranslationsIt {
 			'musicDevices.receiverHint' => 'Tieni Pleazyng aperto per ricevere musica. Associa una volta con questo codice.',
 			'musicDevices.moveFailed' => 'Impossibile spostare la riproduzione. Controlla che il dispositivo sia attivo, associato e possa accedere al server musicale.',
 			'musicDevices.uncertain' => 'Connessione interrotta. Riconnettiti al dispositivo selezionato per verificare la riproduzione.',
-			'musicDevices.away' => 'Fuori casa',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Fuori casa',
 			'musicDevices.relay' => 'URL del relay musicale',
 			'musicDevices.relayHint' => 'Attiva sul dispositivo ricevente, poi associa una volta sulla stessa rete. Tieni Pleazyng aperto. Il relay trasmette comandi musicali cifrati e vede gli indirizzi di rete. Ogni lettore riproduce dal proprio server multimediale.',
 			'musicDevices.relayInvalid' => 'Inserisci un indirizzo HTTPS del relay.',

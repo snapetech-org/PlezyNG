@@ -4446,6 +4446,7 @@ class _Translations$musicTools$uk extends Translations$musicTools$en {
 	@override String get pathTracks => 'Треків на маршрут';
 	@override String get sonicDistance => 'Максимальна звукова відстань';
 	@override String get albumRadio => 'Радіо альбому';
+	@override String get continueStation => 'Продовжувати відтворення цієї станції';
 }
 
 // Path: musicDevices
@@ -9687,6 +9688,7 @@ extension on TranslationsUk {
 			'musicTools.pathTracks' => 'Треків на маршрут',
 			'musicTools.sonicDistance' => 'Максимальна звукова відстань',
 			'musicTools.albumRadio' => 'Радіо альбому',
+			'musicTools.continueStation' => 'Продовжувати відтворення цієї станції',
 			'musicDevices.playOn' => 'Відтворити на',
 			'musicDevices.thisDevice' => 'Цей пристрій',
 			'musicDevices.playingOn' => ({required Object device}) => 'Відтворюється на ${device}',
@@ -9697,9 +9699,9 @@ extension on TranslationsUk {
 			'musicDevices.receiverHint' => 'Залиште Pleazyng відкритим для приймання музики. Один раз створіть пару за допомогою цього коду.',
 			'musicDevices.moveFailed' => 'Не вдалося перенести відтворення. Перевірте, чи пристрій активний, спарений і має доступ до музичного сервера.',
 			'musicDevices.uncertain' => 'З’єднання перервано. Знову підключіться до вибраного пристрою, щоб перевірити відтворення.',
-			'musicDevices.away' => 'Поза домом',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Поза домом',
 			'musicDevices.relay' => 'URL музичного ретранслятора',
 			'musicDevices.relayHint' => 'Увімкніть на приймальному пристрої та один раз створіть пару в одній мережі. Залиште Pleazyng відкритим. Ретранслятор передає зашифровані команди й бачить мережеві адреси. Кожен програвач використовує свій медіасервер.',
 			'musicDevices.relayInvalid' => 'Введіть HTTPS-адресу ретранслятора.',

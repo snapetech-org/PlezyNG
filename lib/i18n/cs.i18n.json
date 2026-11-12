@@ -5655,7 +5655,8 @@
     "sharingDeclineConfirm": "Odmítnout celou pozvánku od ${owner}?",
     "pathTracks": "Skladby na cestu",
     "sonicDistance": "Maximální zvuková vzdálenost",
-    "albumRadio": "Rádio alba"
+    "albumRadio": "Rádio alba",
+    "continueStation": "Pokračovat v přehrávání této stanice"
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

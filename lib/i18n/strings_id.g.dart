@@ -4381,6 +4381,7 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	@override String get pathTracks => 'Lagu per jalur';
 	@override String get sonicDistance => 'Jarak sonik maksimum';
 	@override String get albumRadio => 'Radio album';
+	@override String get continueStation => 'Terus putar stasiun ini';
 }
 
 // Path: musicDevices
@@ -9618,6 +9619,7 @@ extension on TranslationsId {
 			'musicTools.pathTracks' => 'Lagu per jalur',
 			'musicTools.sonicDistance' => 'Jarak sonik maksimum',
 			'musicTools.albumRadio' => 'Radio album',
+			'musicTools.continueStation' => 'Terus putar stasiun ini',
 			'musicDevices.playOn' => 'Putar di',
 			'musicDevices.thisDevice' => 'Perangkat ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',
@@ -9628,9 +9630,9 @@ extension on TranslationsId {
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.',
 			'musicDevices.moveFailed' => 'Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.',
 			'musicDevices.uncertain' => 'Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.',
-			'musicDevices.away' => 'Di luar rumah',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Di luar rumah',
 			'musicDevices.relay' => 'URL relai musik',
 			'musicDevices.relayHint' => 'Aktifkan di perangkat penerima, lalu pasangkan sekali di jaringan yang sama. Biarkan Pleazyng terbuka. Relai meneruskan kontrol musik terenkripsi dan melihat alamat jaringan. Setiap pemutar melakukan streaming dari server medianya sendiri.',
 			'musicDevices.relayInvalid' => 'Masukkan alamat relai HTTPS.',

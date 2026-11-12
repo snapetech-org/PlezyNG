@@ -4404,6 +4404,7 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	@override String get pathTracks => 'Песни на път';
 	@override String get sonicDistance => 'Максимално звуково разстояние';
 	@override String get albumRadio => 'Радио на албума';
+	@override String get continueStation => 'Продължаване на възпроизвеждането на тази станция';
 }
 
 // Path: musicDevices
@@ -9643,6 +9644,7 @@ extension on TranslationsBg {
 			'musicTools.pathTracks' => 'Песни на път',
 			'musicTools.sonicDistance' => 'Максимално звуково разстояние',
 			'musicTools.albumRadio' => 'Радио на албума',
+			'musicTools.continueStation' => 'Продължаване на възпроизвеждането на тази станция',
 			'musicDevices.playOn' => 'Възпроизвеждане на',
 			'musicDevices.thisDevice' => 'Това устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',
@@ -9653,9 +9655,9 @@ extension on TranslationsBg {
 			'musicDevices.receiverHint' => 'Оставете Pleazyng отворен, за да получава музика. Сдвоете веднъж с този код.',
 			'musicDevices.moveFailed' => 'Възпроизвеждането не бе преместено. Проверете дали устройството е будно, сдвоено и има достъп до музикалния сървър.',
 			'musicDevices.uncertain' => 'Връзката прекъсна. Свържете се отново с избраното устройство, за да проверите възпроизвеждането.',
-			'musicDevices.away' => 'Извън дома',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Извън дома',
 			'musicDevices.relay' => 'Адрес на музикалния ретранслатор',
 			'musicDevices.relayHint' => 'Включете на приемащото устройство и сдвоете веднъж в една и съща мрежа. Оставете Pleazyng отворен. Ретранслаторът пренася шифровани музикални команди и вижда мрежовите адреси. Всеки плейър използва своя медиен сървър.',
 			'musicDevices.relayInvalid' => 'Въведете HTTPS адрес на ретранслатор.',

@@ -5580,7 +5580,8 @@
     "sharingDeclineConfirm": "Từ chối toàn bộ lời mời từ ${owner}?",
     "pathTracks": "Bài hát mỗi đường dẫn",
     "sonicDistance": "Khoảng cách âm thanh tối đa",
-    "albumRadio": "Radio album"
+    "albumRadio": "Radio album",
+    "continueStation": "Tiếp tục phát đài này"
   },
   "musicDevices": {
     "playOn": "Phát trên",

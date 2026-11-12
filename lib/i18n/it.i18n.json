@@ -5616,7 +5616,8 @@
     "sharingDeclineConfirm": "Rifiutare l’intero invito di ${owner}?",
     "pathTracks": "Brani per percorso",
     "sonicDistance": "Distanza sonora massima",
-    "albumRadio": "Radio dell’album"
+    "albumRadio": "Radio dell’album",
+    "continueStation": "Continua a riprodurre questa stazione"
   },
   "musicDevices": {
     "playOn": "Riproduci su",

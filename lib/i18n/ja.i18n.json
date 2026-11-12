@@ -5602,7 +5602,8 @@
     "sharingDeclineConfirm": "${owner}からの招待全体を辞退しますか？",
     "pathTracks": "経路ごとの曲数",
     "sonicDistance": "音響的距離の上限",
-    "albumRadio": "アルバムラジオ"
+    "albumRadio": "アルバムラジオ",
+    "continueStation": "このステーションを再生し続ける"
   },
   "musicDevices": {
     "playOn": "再生先",

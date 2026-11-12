@@ -5607,7 +5607,8 @@
     "sharingDeclineConfirm": "Afvis hele invitationen fra ${owner}?",
     "pathTracks": "Numre pr. sti",
     "sonicDistance": "Maksimal lydafstand",
-    "albumRadio": "Albumradio"
+    "albumRadio": "Albumradio",
+    "continueStation": "Fortsæt med at afspille denne station"
   },
   "musicDevices": {
     "playOn": "Afspil på",

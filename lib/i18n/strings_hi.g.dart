@@ -4404,6 +4404,7 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get pathTracks => 'हर पथ में ट्रैक';
 	@override String get sonicDistance => 'अधिकतम ध्वनि दूरी';
 	@override String get albumRadio => 'एल्बम रेडियो';
+	@override String get continueStation => 'इस स्टेशन को चलाते रहें';
 }
 
 // Path: musicDevices
@@ -9643,6 +9644,7 @@ extension on TranslationsHi {
 			'musicTools.pathTracks' => 'हर पथ में ट्रैक',
 			'musicTools.sonicDistance' => 'अधिकतम ध्वनि दूरी',
 			'musicTools.albumRadio' => 'एल्बम रेडियो',
+			'musicTools.continueStation' => 'इस स्टेशन को चलाते रहें',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',
@@ -9653,9 +9655,9 @@ extension on TranslationsHi {
 			'musicDevices.receiverHint' => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।',
 			'musicDevices.moveFailed' => 'प्लेबैक स्थानांतरित नहीं हुआ। जाँचें कि डिवाइस सक्रिय और पेयर है तथा संगीत सर्वर तक पहुँच सकता है।',
 			'musicDevices.uncertain' => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।',
-			'musicDevices.away' => 'घर से दूर',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'घर से दूर',
 			'musicDevices.relay' => 'संगीत रिले URL',
 			'musicDevices.relayHint' => 'प्राप्त करने वाले डिवाइस पर चालू करें, फिर एक ही नेटवर्क पर एक बार पेयर करें। Pleazyng खुला रखें। रिले एन्क्रिप्टेड संगीत नियंत्रण भेजता है और नेटवर्क पते देखता है। हर प्लेयर अपने मीडिया सर्वर से स्ट्रीम करता है।',
 			'musicDevices.relayInvalid' => 'HTTPS रिले पता दर्ज करें।',

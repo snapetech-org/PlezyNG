@@ -16,6 +16,7 @@ import 'package:plezy/database/app_database.dart';
 import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/library_query.dart';
 import 'package:plezy/services/music/music_discovery.dart';
+import 'package:plezy/services/music/music_station.dart';
 import 'package:plezy/utils/media_server_http_client.dart';
 import 'package:plezy/media/media_backend.dart';
 import 'package:plezy/media/media_item.dart';
@@ -370,8 +371,11 @@ class FakePlayer implements Player, PlayerAudioFocusControl, ParametricEqualizer
   @override
   bool get disposed => _disposed;
 
+  Completer<void>? disposalWait;
   @override
   Future<void> dispose({bool preserveDisplayMode = false}) async {
+    final wait = disposalWait;
+    if (wait != null) await wait.future;
     _disposed = true;
   }
 
@@ -570,6 +574,25 @@ class FakeMediaServerClient extends Fake
       items: tracks.skip(offset).take(size ?? 200).toList(),
       totalCount: tracks.length,
       offset: offset,
+    );
+  }
+
+  List<MediaItem> stationRows = [];
+  final stationQueries = <LibraryQuery>[];
+  Future<LibraryPage<MediaItem>> Function(LibraryQuery)? stationPage;
+  @override
+  Future<LibraryPage<MediaItem>> fetchLibraryPagedContent(
+    String libraryId, {
+    required LibraryQuery query,
+    MediaKind? libraryKind,
+    AbortController? abort,
+  }) async {
+    stationQueries.add(query);
+    if (stationPage != null) return stationPage!(query);
+    return LibraryPage(
+      items: stationRows.skip(query.offset).take(query.limit).toList(),
+      totalCount: stationRows.length,
+      offset: query.offset,
     );
   }
 
@@ -2012,6 +2035,109 @@ void main() {
     client.radioAlbums['c'] = [radioTrack('c1', 'c'), radioTrack('c2', 'c', number: 2)];
     client.sonicNeighbors['a'] = [radioAlbum('b')];
     client.sonicNeighbors['b'] = [radioAlbum('c')];
+  }
+
+  MusicStation radioRule({bool albums = false, int limit = 2}) => MusicStation(
+    id: 'radio-rule',
+    title: 'Filtered radio',
+    serverId: 'srv',
+    libraryId: 'lib',
+    filters: [
+      const LibraryFilter(field: 'genre', values: ['Jazz']),
+    ],
+    continuous: true,
+    trackLimit: limit,
+    albums: albums,
+  );
+
+  for (final albumRadio in [false, true]) {
+    test('radio adoption rechecks account after retiring a native sink (albums=$albumRadio)', () async {
+      prepareRadio();
+      h.client.stationRows = [radioTrack('r1', 'a')];
+      final preview = await radioRule().preview(h.client, current: () => true);
+      final owner = Object();
+      expect(
+        await h.service.openCalderaAudio(
+          owner,
+          Uri.parse('http://127.0.0.1:12345/pcm.wav'),
+          'Native fixture',
+          () => true,
+        ),
+        isTrue,
+      );
+      final gate = h.player.disposalWait = Completer<void>();
+      final pending = albumRadio ? h.service.playAlbumRadio(radioAlbum('a')) : h.service.playStationRadio(preview);
+      await pumpEventQueue();
+      h.client._authenticationSession = Object();
+      gate.complete();
+      expect(await pending, InstantMixOutcome.superseded);
+      expect(h.service.queue, isEmpty);
+      expect(h.service.continuationEnabled, isFalse);
+    });
+  }
+
+  test('filtered station radio reuses its preview and refills under the exact rule', () async {
+    final rule = radioRule();
+    h.client.stationRows = [for (var i = 1; i <= 5; i++) radioTrack('r$i', 'a', number: i)];
+    final batch = await rule.preview(h.client, current: () => true);
+    expect(batch.tracks.map((track) => track.id), ['r1', 'r2']);
+    expect(await h.service.playStationRadio(batch), InstantMixOutcome.started);
+    await pumpEventQueue();
+    expect(h.service.queue.map((track) => track.id), ['r1', 'r2', 'r3', 'r4']);
+    expect(h.service.currentTrack?.id, 'r1');
+    expect(h.client.stationQueries, hasLength(2), reason: 'the accepted preview is not regenerated');
+    expect(h.client.stationQueries.map((query) => query.filters), everyElement(rule.filters));
+    await h.service.next();
+    await pumpEventQueue();
+    expect(h.service.queue.map((track) => track.id), ['r1', 'r2', 'r3', 'r4', 'r5']);
+    await h.service.next();
+    await pumpEventQueue();
+    expect(h.service.continuationEnabled, isFalse);
+  });
+  test('manual edits during a station refill cannot reinsert a removed track', () async {
+    final rule = radioRule();
+    h.client.stationRows = [radioTrack('r1', 'a'), radioTrack('r2', 'a')];
+    final batch = await rule.preview(h.client, current: () => true);
+    final gate = Completer<LibraryPage<MediaItem>>();
+    h.client.stationPage = (_) => gate.future;
+    expect(await h.service.playStationRadio(batch), InstantMixOutcome.started);
+    await pumpEventQueue();
+    h.service.addNext([radioTrack('r3', 'a')]);
+    h.service.removeAt(1);
+    gate.complete(LibraryPage(items: [radioTrack('r3', 'a'), radioTrack('r4', 'a')], totalCount: 2));
+    await pumpEventQueue();
+    expect(h.service.queue.map((track) => track.id), ['r1', 'r2', 'r4']);
+  });
+  test('whole-album station radio preserves complete blocks and rejects shuffle', () async {
+    prepareRadio();
+    h.client.stationRows = [radioAlbum('a'), radioAlbum('b'), radioAlbum('c')];
+    final rule = radioRule(albums: true);
+    final batch = await rule.preview(h.client, current: () => true);
+    await expectLater(h.service.playStationRadio(batch, shuffle: true), throwsArgumentError);
+    expect(h.service.queue, isEmpty);
+    expect(await h.service.playStationRadio(batch), InstantMixOutcome.started);
+    await pumpEventQueue();
+    expect(h.service.queue.map((track) => track.id), ['a1', 'a2', 'b1', 'b2']);
+    await h.service.next();
+    await pumpEventQueue();
+    expect(h.service.queue.map((track) => track.id), ['a1', 'a2', 'b1', 'b2', 'c1', 'c2']);
+  });
+  for (final retirement in ['account', 'replacement']) {
+    test('pending rule radio refill retires on $retirement', () async {
+      final rule = radioRule();
+      h.client.stationRows = [radioTrack('r1', 'a')];
+      final batch = await rule.preview(h.client, current: () => true);
+      final gate = Completer<LibraryPage<MediaItem>>();
+      h.client.stationPage = (_) => gate.future;
+      expect(await h.service.playStationRadio(batch), InstantMixOutcome.started);
+      await pumpEventQueue();
+      if (retirement == 'account') h.client._authenticationSession = Object();
+      if (retirement == 'replacement') await h.playTracks([t3]);
+      gate.complete(LibraryPage(items: [radioTrack('r2', 'a')], totalCount: 1));
+      await pumpEventQueue();
+      expect(h.service.queue.map((track) => track.id), retirement == 'replacement' ? ['t3'] : ['r1']);
+      expect(h.service.continuationEnabled, isFalse);
+    });
   }
 
   test('album radio shares playback and refills only complete ordered albums', () async {
@@ -3590,6 +3716,35 @@ void main() {
         ),
       );
     }
+
+    test('rule radio restores its original filters and exhausts without reverting to instant mix', () async {
+      final session = store();
+      final first = _Harness.create(sessionStore: session);
+      addTearDown(first.dispose);
+      await pumpEventQueue();
+      final rule = radioRule(limit: 1);
+      first.client.stationRows = [radioTrack('r1', 'a'), radioTrack('r2', 'a')];
+      final batch = await rule.preview(first.client, current: () => true);
+      expect(await first.service.playStationRadio(batch), InstantMixOutcome.started);
+      await pumpEventQueue();
+      final saved = (await session.load())!;
+      expect(saved.continuationStation!.toJson(), rule.toJson());
+      expect(saved.queue.items.map((track) => track.id), ['r1', 'r2']);
+      first.service.dispose();
+      final second = harnessWithStore();
+      await pumpEventQueue();
+      expect(second.service.status, MusicPlaybackStatus.paused);
+      expect(second.service.continuationEnabled, isTrue);
+      second.client.stationRows = [radioTrack('r1', 'a'), radioTrack('r2', 'a'), radioTrack('r3', 'a')];
+      await second.service.play();
+      await pumpEventQueue();
+      expect(second.service.queue.map((track) => track.id), ['r1', 'r2', 'r3']);
+      expect(second.client.stationQueries.single.filters, rule.filters);
+      await second.service.next();
+      await pumpEventQueue();
+      expect(second.service.continuationEnabled, isFalse);
+      expect((await session.load())!.continuationStation, isNull);
+    });
 
     test('exhausted album radio persists a finished continuation and later queue edits', () async {
       final session = store();

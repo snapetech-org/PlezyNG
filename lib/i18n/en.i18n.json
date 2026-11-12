@@ -5686,7 +5686,8 @@
     "sharingDeclineConfirm": "Decline the entire invitation from ${owner}?",
     "pathTracks": "Tracks per path",
     "sonicDistance": "Maximum sonic distance",
-    "albumRadio": "Album Radio"
+    "albumRadio": "Album Radio",
+    "continueStation": "Keep playing this station"
   },
   "musicDevices": {
     "playOn": "Play on",

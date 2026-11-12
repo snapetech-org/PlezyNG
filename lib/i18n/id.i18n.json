@@ -5580,7 +5580,8 @@
     "sharingDeclineConfirm": "Tolak seluruh undangan dari ${owner}?",
     "pathTracks": "Lagu per jalur",
     "sonicDistance": "Jarak sonik maksimum",
-    "albumRadio": "Radio album"
+    "albumRadio": "Radio album",
+    "continueStation": "Terus putar stasiun ini"
   },
   "musicDevices": {
     "playOn": "Putar di",

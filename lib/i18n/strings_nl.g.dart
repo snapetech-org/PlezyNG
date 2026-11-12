@@ -4404,6 +4404,7 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	@override String get pathTracks => 'Nummers per pad';
 	@override String get sonicDistance => 'Maximale klankafstand';
 	@override String get albumRadio => 'Albumradio';
+	@override String get continueStation => 'Dit station blijven afspelen';
 }
 
 // Path: musicDevices
@@ -9643,6 +9644,7 @@ extension on TranslationsNl {
 			'musicTools.pathTracks' => 'Nummers per pad',
 			'musicTools.sonicDistance' => 'Maximale klankafstand',
 			'musicTools.albumRadio' => 'Albumradio',
+			'musicTools.continueStation' => 'Dit station blijven afspelen',
 			'musicDevices.playOn' => 'Afspelen op',
 			'musicDevices.thisDevice' => 'Dit apparaat',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',
@@ -9653,9 +9655,9 @@ extension on TranslationsNl {
 			'musicDevices.receiverHint' => 'Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.',
 			'musicDevices.moveFailed' => 'Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.',
 			'musicDevices.uncertain' => 'Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.',
-			'musicDevices.away' => 'Buitenshuis',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Buitenshuis',
 			'musicDevices.relay' => 'URL van muziekrelais',
 			'musicDevices.relayHint' => 'Schakel in op het ontvangende apparaat en koppel eenmaal op hetzelfde netwerk. Houd Pleazyng open. Het relais verstuurt versleutelde muziekbediening en ziet netwerkadressen. Elke speler streamt vanaf zijn eigen mediaserver.',
 			'musicDevices.relayInvalid' => 'Voer een HTTPS-adres voor het relais in.',

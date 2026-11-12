@@ -5607,7 +5607,8 @@
     "sharingDeclineConfirm": "${owner} yuborgan taklif to‘liq rad etilsinmi?",
     "pathTracks": "Har bir yo‘ldagi treklar",
     "sonicDistance": "Eng katta tovush masofasi",
-    "albumRadio": "Albom radiosi"
+    "albumRadio": "Albom radiosi",
+    "continueStation": "Bu stansiyani ijro etishda davom etish"
   },
   "musicDevices": {
     "playOn": "Shu qurilmada ijro etish",

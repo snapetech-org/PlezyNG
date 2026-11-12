@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../../media/library_query.dart';
 import '../../media/media_item.dart';
 import '../../media/media_kind.dart';
@@ -26,7 +28,7 @@ class MusicStation {
     required this.title,
     required this.serverId,
     required this.libraryId,
-    this.filters = const [],
+    List<LibraryFilter> filters = const [],
     this.sort = 'random',
     this.descending = true,
     this.albums = false,
@@ -35,7 +37,8 @@ class MusicStation {
     this.storageLimitMiB = 0,
     this.refreshHours = 0,
     this.wifiOnly = true,
-  }) {
+    this.continuous = false,
+  }) : filters = List.unmodifiable(filters.map((filter) => filter.copyWith(values: List.of(filter.values)))) {
     if ([id, title.trim(), serverId, libraryId].any((s) => s.isEmpty) ||
         trackLimit < 1 ||
         trackLimit > 5000 ||
@@ -60,7 +63,7 @@ class MusicStation {
   }
   final String id, title, serverId, libraryId, sort;
   final List<LibraryFilter> filters;
-  final bool descending, albums, wifiOnly;
+  final bool descending, albums, wifiOnly, continuous;
   final int trackLimit, durationMinutes, refreshHours, storageLimitMiB;
   int? get storageLimitBytes => storageLimitMiB == 0 ? null : storageLimitMiB * 1024 * 1024;
   Map<String, dynamic> toJson() => {
@@ -78,6 +81,7 @@ class MusicStation {
     'storageLimitMiB': storageLimitMiB,
     'refreshHours': refreshHours,
     'wifiOnly': wifiOnly,
+    'continuous': continuous,
   };
   factory MusicStation.fromJson(Map<String, dynamic> json) {
     if (json['version'] != 1) throw const FormatException('Unsupported station');
@@ -99,6 +103,7 @@ class MusicStation {
       storageLimitMiB: (json['storageLimitMiB'] ?? 0) as int,
       refreshHours: json['refreshHours'] as int,
       wifiOnly: json['wifiOnly'] as bool,
+      continuous: json['continuous'] as bool? ?? false,
     );
   }
 
@@ -134,23 +139,54 @@ class MusicStation {
     return true;
   }
 
+  Future<MusicStationBatch> preview(
+    MediaServerClient client, {
+    required bool Function() current,
+    AbortController? abort,
+    Set<String> excludedTrackKeys = const {},
+    Set<String> excludedAlbumIds = const {},
+  }) async {
+    final authentication = client.authenticationSessionId;
+    final account = musicAccountScope(client);
+    bool sourceCurrent() =>
+        current() &&
+        !client.isOfflineMode &&
+        identical(client.authenticationSessionId, authentication) &&
+        musicAccountScope(client) == account;
+    final tracks = await materialize(
+      client,
+      current: sourceCurrent,
+      abort: abort,
+      excludedTrackKeys: excludedTrackKeys,
+      excludedAlbumIds: excludedAlbumIds,
+    );
+    if (!sourceCurrent()) throw StateError('Station preview source changed');
+    return MusicStationBatch._(this, tracks, sourceCurrent);
+  }
+
   Future<List<MediaItem>> materialize(
     MediaServerClient client, {
     AbortController? abort,
     int? storageBudgetBytes,
     Set<String> alreadyOwned = const {},
+    Set<String> excludedTrackKeys = const {},
+    Set<String> excludedAlbumIds = const {},
+    bool Function()? current,
   }) async {
     if (client.serverId.value != serverId) throw StateError('Station server changed');
     final authentication = client.authenticationSessionId;
     final accountScope = musicAccountScope(client);
     void checkCurrent() {
       abort?.throwIfAborted();
-      if (!identical(authentication, client.authenticationSessionId) || accountScope != musicAccountScope(client)) {
+      if (current?.call() == false ||
+          client.isOfflineMode ||
+          !identical(authentication, client.authenticationSessionId) ||
+          accountScope != musicAccountScope(client)) {
         throw StateError('Station authorization changed');
       }
     }
 
-    final result = <MediaItem>[], seen = <String>{}, seenContainers = <String>{};
+    final result = <MediaItem>[], seen = {...excludedTrackKeys}, seenContainers = <String>{};
     var offset = 0, duration = 0, bytes = 0;
     final storageBudget = storageBudgetBytes ?? storageLimitBytes;
     final durationLimit = durationMinutes * 60000;
@@ -175,13 +211,15 @@ class MusicStation {
       checkCurrent();
       var fresh = false;
       for (final item in page.items) {
-        if (item.serverId != serverId ||
+        if (item.backend != client.backend ||
+            item.serverId != serverId ||
             item.libraryId != libraryId ||
             (albums ? item.kind != MediaKind.album : item.kind != MediaKind.track)) {
           continue;
         }
         if (!seenContainers.add(item.globalKey)) continue;
         fresh = true;
+        if (albums && excludedAlbumIds.contains(item.id)) continue;
         final block = albums
             ? await _fetchStationAlbumTracks(
                 client,
@@ -197,6 +235,7 @@ class MusicStation {
             .where(
               (t) =>
                   t.kind == MediaKind.track &&
+                  t.backend == client.backend &&
                   t.serverId == serverId &&
                   t.libraryId == libraryId &&
                   !seen.contains(t.globalKey),
@@ -205,7 +244,7 @@ class MusicStation {
         if (albums) {
           if (tracks.isEmpty ||
               tracks.length != block.length ||
-              tracks.any((track) => track.parentId != null && track.parentId != item.id) ||
+              tracks.any((track) => track.parentId != item.id) ||
               tracks.map((track) => track.globalKey).toSet().length != tracks.length) {
             continue;
           }
@@ -247,6 +286,18 @@ class MusicStation {
     }
     return result;
   }
+}
+
+/// Exact finite preview, retaining the original actor until playback adopts it.
+class MusicStationBatch {
+  MusicStationBatch._(this.station, List<MediaItem> tracks, this.isCurrent)
+    : tracks = List.unmodifiable(tracks),
+      _rule = jsonEncode(station.toJson());
+  final MusicStation station;
+  final List<MediaItem> tracks;
+  final bool Function() isCurrent;
+  final String _rule;
+  bool matches(MusicStation other) => _rule == jsonEncode(other.toJson());
 }
 
 /// Read a complete album in bounded pages. Albums larger than the station's

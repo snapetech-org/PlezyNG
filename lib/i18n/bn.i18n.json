@@ -5607,7 +5607,8 @@
     "sharingDeclineConfirm": "${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?",
     "pathTracks": "প্রতি পথে ট্র্যাক",
     "sonicDistance": "সর্বোচ্চ সনিক দূরত্ব",
-    "albumRadio": "অ্যালবাম রেডিও"
+    "albumRadio": "অ্যালবাম রেডিও",
+    "continueStation": "এই স্টেশন চালানো চালিয়ে যান"
   },
   "musicDevices": {
     "playOn": "এখানে চালান",

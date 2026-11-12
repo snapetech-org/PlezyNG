@@ -4404,6 +4404,7 @@ class _Translations$musicTools$nb extends Translations$musicTools$en {
 	@override String get pathTracks => 'Spor per sti';
 	@override String get sonicDistance => 'Maksimal lydavstand';
 	@override String get albumRadio => 'Albumradio';
+	@override String get continueStation => 'Fortsett å spille denne stasjonen';
 }
 
 // Path: musicDevices
@@ -9643,6 +9644,7 @@ extension on TranslationsNb {
 			'musicTools.pathTracks' => 'Spor per sti',
 			'musicTools.sonicDistance' => 'Maksimal lydavstand',
 			'musicTools.albumRadio' => 'Albumradio',
+			'musicTools.continueStation' => 'Fortsett å spille denne stasjonen',
 			'musicDevices.playOn' => 'Spill av på',
 			'musicDevices.thisDevice' => 'Denne enheten',
 			'musicDevices.playingOn' => ({required Object device}) => 'Spiller av på ${device}',
@@ -9653,9 +9655,9 @@ extension on TranslationsNb {
 			'musicDevices.receiverHint' => 'Hold Pleazyng åpen for å motta musikk. Koble sammen én gang med denne koden.',
 			'musicDevices.moveFailed' => 'Kunne ikke flytte avspillingen. Kontroller at enheten er våken, paret og har tilgang til musikkserveren.',
 			'musicDevices.uncertain' => 'Tilkoblingen ble brutt. Koble til den valgte enheten igjen for å kontrollere avspillingen.',
-			'musicDevices.away' => 'Borte fra hjemmet',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Borte fra hjemmet',
 			'musicDevices.relay' => 'URL til musikkrelé',
 			'musicDevices.relayHint' => 'Aktiver på mottakeren, og par én gang på samme nettverk. Hold Pleazyng åpen. Reléet overfører krypterte musikkkommandoer og ser nettverksadresser. Hver spiller strømmer fra sin egen medieserver.',
 			'musicDevices.relayInvalid' => 'Skriv inn en HTTPS-adresse til reléet.',

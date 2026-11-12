@@ -20,6 +20,7 @@ import 'package:plezy/providers/download_provider.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/services/music/music_car_host.dart';
 import 'package:plezy/services/music/music_discovery.dart';
+import 'package:plezy/services/music/music_station.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_queue_items.dart';
 import 'package:plezy/services/playback_launch_observer.dart';
@@ -71,6 +72,7 @@ class Music extends StubMusicPlaybackService {
   int? jumped;
   int pauses = 0;
   List<MediaItem>? started;
+  bool? startedOffline;
   @override
   Future<void> playFromList({
     required List<MediaItem> tracks,
@@ -82,6 +84,7 @@ class Music extends StubMusicPlaybackService {
     PlaybackLaunchObserver? launchObserver,
   }) async {
     started = tracks;
+    startedOffline = offline;
     await super.playFromList(tracks: tracks, playContext: playContext, offline: offline);
   }
 
@@ -105,7 +108,21 @@ class Music extends StubMusicPlaybackService {
   }
 }
 
-class RadioMusic extends Music implements MusicAlbumRadioControls {
+class RadioMusic extends Music implements MusicAlbumRadioControls, MusicStationRadioControls {
+  MusicStationBatch? stationRadio;
+  @override
+  Future<InstantMixOutcome> playStationRadio(
+    MusicStationBatch preview, {
+    MediaItem? startTrack,
+    bool shuffle = false,
+  }) async {
+    beginPlayIntent();
+    if (!preview.isCurrent()) return InstantMixOutcome.superseded;
+    stationRadio = preview;
+    playing = true;
+    return InstantMixOutcome.started;
+  }
+
   MusicDiscoveryBatch? radio;
   bool playing = false;
   @override
@@ -265,6 +282,116 @@ void main() {
       ),
     );
     await tester.pump();
+  }
+
+  for (final source in ['matching', 'server', 'library']) {
+    testWidgets('offline native continuous station remains finite and source-qualified ($source)', (tester) async {
+      final music = Music(), profiles = Profiles(), hidden = CatalogHidden(), downloads = CatalogDownloads();
+      final servers = testMultiServer();
+      final owned = musicTrack(
+        'owned',
+        server: source == 'server' ? 'other' : 's',
+      ).copyWith(libraryId: source == 'library' ? 'other' : 'library');
+      downloads.tracks = [owned];
+      late AppDatabase database;
+      await tester.runAsync(() async {
+        database = AppDatabase.forTesting(NativeDatabase.memory());
+        final store = MusicLibraryStore(database, 'one');
+        final rule = MusicStation(
+          id: 'radio',
+          title: 'Offline station',
+          serverId: 's',
+          libraryId: 'library',
+          continuous: true,
+        );
+        await store.saveDocument('station', rule.id, rule.toJson());
+        await store.completeStationSnapshot(rule.id, {
+          'version': 1,
+          'id': rule.id,
+          'tracks': [owned.toJson()],
+        });
+      });
+      await mount(
+        tester,
+        music,
+        profiles,
+        database: database,
+        servers: servers.provider,
+        hidden: hidden,
+        downloads: downloads,
+      );
+      await tester.runAsync(() => native('playItem', {'id': 'station:radio'}));
+      if (source == 'matching') {
+        expect(music.started?.map((track) => track.id), ['owned']);
+        expect(music.startedOffline, isTrue);
+      } else {
+        expect(music.started, isNull);
+      }
+      await tester.pumpWidget(const SizedBox());
+      music.dispose();
+      profiles.dispose();
+      hidden.dispose();
+      downloads.dispose();
+      await tester.runAsync(database.close);
+    });
+  }
+
+  for (final retirement in ['none', 'profile', 'account', 'hidden', 'intent', 'shuffle']) {
+    testWidgets('native saved rule radio keeps its original scope ($retirement)', (tester) async {
+      final music = RadioMusic(), profiles = Profiles(), hidden = CatalogHidden();
+      final client = ExperienceClient();
+      final servers = testMultiServer(clients: [client]);
+      final album = musicTrack('a').copyWith(kind: MediaKind.album);
+      client.albums['a'] = [musicTrack('a1', album: 'a'), musicTrack('a2', album: 'a', index: 2)];
+      client.page = (_) async {
+        switch (retirement) {
+          case 'account':
+            client.scopedServerId = 's/other';
+          case 'profile':
+            profiles.identityMutationGeneration++;
+          case 'hidden':
+            hidden.hiddenLibraryKeys = {'s:library'};
+          case 'intent':
+            music.beginPlayIntent();
+        }
+        return LibraryPage(items: [album], totalCount: 1);
+      };
+      late AppDatabase database;
+      await tester.runAsync(() async {
+        database = AppDatabase.forTesting(NativeDatabase.memory());
+        final rule = MusicStation(
+          id: 'radio',
+          title: 'Filtered albums',
+          serverId: 's',
+          libraryId: 'library',
+          continuous: true,
+          albums: true,
+          trackLimit: 2,
+        );
+        await MusicLibraryStore(database, 'one').saveDocument('station', rule.id, rule.toJson());
+      });
+      await mount(tester, music, profiles, database: database, servers: servers.provider, hidden: hidden);
+      await tester.runAsync(() async {
+        final play = native('playItem', {'id': 'station:radio', if (retirement == 'shuffle') 'shuffle': true});
+        if (retirement == 'none') {
+          expect(await play, isTrue);
+        } else {
+          await expectLater(play, throwsA(isA<PlatformException>()));
+        }
+      });
+      if (retirement == 'none') {
+        expect(music.stationRadio?.station.continuous, isTrue);
+        expect(music.stationRadio?.tracks.map((track) => track.id), ['a1', 'a2']);
+      } else {
+        expect(music.stationRadio, isNull);
+      }
+      expect(music.started, isNull);
+      await tester.pumpWidget(const SizedBox());
+      music.dispose();
+      profiles.dispose();
+      hidden.dispose();
+      await tester.runAsync(database.close);
+    });
   }
 
   for (final retirement in ['none', 'account', 'profile', 'hidden', 'intent', 'shuffle']) {

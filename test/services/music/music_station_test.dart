@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/library_query.dart';
 import 'package:plezy/media/media_kind.dart';
+import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_part.dart';
 import 'package:plezy/media/media_version.dart';
 import 'package:plezy/services/music/music_station.dart';
@@ -19,6 +22,74 @@ void main() {
     durationMinutes: minutes,
     storageLimitMiB: storageMiB,
   );
+  test('continuous mode defaults off for legacy rules and survives save', () {
+    final legacy = station().toJson()..remove('continuous');
+    expect(MusicStation.fromJson(legacy).continuous, isFalse);
+    legacy['continuous'] = true;
+    expect(MusicStation.fromJson(legacy).continuous, isTrue);
+    legacy['continuous'] = 'yes';
+    expect(() => MusicStation.fromJson(legacy), throwsA(isA<TypeError>()));
+  });
+  test('station rules retain an immutable filter snapshot', () {
+    final values = ['Jazz'],
+        filters = [
+          LibraryFilter(field: 'genre', values: ['Rock']),
+        ];
+    filters.add(LibraryFilter(field: 'style', values: values));
+    final rule = MusicStation(id: 'r', title: 'Filtered', serverId: 's', libraryId: 'library', filters: filters);
+    filters.clear();
+    values.clear();
+    expect(rule.filters.map((filter) => filter.values.single), ['Rock', 'Jazz']);
+    expect(() => rule.filters.clear(), throwsUnsupportedError);
+  });
+  test('refill reads past already queued pages without weakening the filters', () async {
+    final client = ExperienceClient();
+    client.page = (query) async => LibraryPage(
+      items: List.generate((102 - query.offset).clamp(0, 100), (i) => musicTrack('t${query.offset + i}')),
+      totalCount: 102,
+      offset: query.offset,
+    );
+    final tracks = await station(
+      tracks: 2,
+    ).materialize(client, excludedTrackKeys: {for (var i = 0; i < 100; i++) musicTrack('t$i').globalKey});
+    expect(tracks.map((track) => track.id), ['t100', 't101']);
+    expect(client.queries.map((query) => query.offset), [0, 100]);
+    expect(client.queries.every((query) => query.limit == 100), isTrue);
+  });
+  test('manual exclusion blocks a complete station album', () async {
+    final client = ExperienceClient()
+      ..rows = [musicTrack('a').copyWith(kind: MediaKind.album), musicTrack('b').copyWith(kind: MediaKind.album)]
+      ..albums = {
+        'a': [musicTrack('a1', album: 'a'), musicTrack('a2', album: 'a')],
+        'b': [musicTrack('b1', album: 'b'), musicTrack('b2', album: 'b')],
+      };
+    final tracks = await station(
+      albums: true,
+    ).materialize(client, excludedTrackKeys: {musicTrack('a1', album: 'a').globalKey});
+    expect(tracks.map((track) => track.id), ['b1', 'b2']);
+  });
+  test('station previews retain their exact rule and original account', () async {
+    final client = ExperienceClient()..rows = [musicTrack('a')];
+    var active = true;
+    final rule = station();
+    final batch = await rule.preview(client, current: () => active);
+    expect(batch.matches(rule), isTrue);
+    expect(batch.matches(station(tracks: 2)), isFalse);
+    expect(batch.isCurrent(), isTrue);
+    active = false;
+    expect(batch.isCurrent(), isFalse);
+  });
+  test('a profile retirement during a station page rejects the batch', () async {
+    final client = ExperienceClient();
+    var active = true;
+    final pending = Completer<LibraryPage<MediaItem>>();
+    client.page = (_) => pending.future;
+    final result = station().preview(client, current: () => active);
+    final rejected = expectLater(result, throwsStateError);
+    active = false;
+    pending.complete(LibraryPage(items: [musicTrack('a')], totalCount: 1));
+    await rejected;
+  });
   test('time and count budgets stop generation without splitting album blocks', () async {
     final client = ExperienceClient()
       ..rows = [

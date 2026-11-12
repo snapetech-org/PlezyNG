@@ -5607,7 +5607,8 @@
     "sharingDeclineConfirm": "De volledige uitnodiging van ${owner} afwijzen?",
     "pathTracks": "Nummers per pad",
     "sonicDistance": "Maximale klankafstand",
-    "albumRadio": "Albumradio"
+    "albumRadio": "Albumradio",
+    "continueStation": "Dit station blijven afspelen"
   },
   "musicDevices": {
     "playOn": "Afspelen op",

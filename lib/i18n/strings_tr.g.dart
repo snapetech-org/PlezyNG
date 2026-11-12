@@ -4404,6 +4404,7 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get pathTracks => 'Yol başına parça';
 	@override String get sonicDistance => 'En yüksek ses uzaklığı';
 	@override String get albumRadio => 'Albüm radyosu';
+	@override String get continueStation => 'Bu istasyonu çalmaya devam et';
 }
 
 // Path: musicDevices
@@ -9643,6 +9644,7 @@ extension on TranslationsTr {
 			'musicTools.pathTracks' => 'Yol başına parça',
 			'musicTools.sonicDistance' => 'En yüksek ses uzaklığı',
 			'musicTools.albumRadio' => 'Albüm radyosu',
+			'musicTools.continueStation' => 'Bu istasyonu çalmaya devam et',
 			'musicDevices.playOn' => 'Şurada çal',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} üzerinde çalınıyor',
@@ -9653,9 +9655,9 @@ extension on TranslationsTr {
 			'musicDevices.receiverHint' => 'Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.',
 			'musicDevices.moveFailed' => 'Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.',
 			'musicDevices.uncertain' => 'Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.',
-			'musicDevices.away' => 'Ev dışındayken',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Ev dışındayken',
 			'musicDevices.relay' => 'Müzik rölesi URL’si',
 			'musicDevices.relayHint' => 'Alıcı cihazda etkinleştirin, ardından aynı ağda bir kez eşleştirin. Pleazyng açık kalsın. Röle şifreli müzik denetimlerini iletir ve ağ adreslerini görür. Her oynatıcı kendi medya sunucusundan yayın yapar.',
 			'musicDevices.relayInvalid' => 'Bir HTTPS röle adresi girin.',

@@ -5715,7 +5715,8 @@
     "sharingDeclineConfirm": "هل تريد رفض دعوة ${owner} بأكملها؟",
     "pathTracks": "المقاطع لكل مسار",
     "sonicDistance": "أقصى مسافة صوتية",
-    "albumRadio": "راديو الألبوم"
+    "albumRadio": "راديو الألبوم",
+    "continueStation": "متابعة تشغيل هذه المحطة"
   },
   "musicDevices": {
     "playOn": "التشغيل على",

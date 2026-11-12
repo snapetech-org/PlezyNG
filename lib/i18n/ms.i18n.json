@@ -5580,7 +5580,8 @@
     "sharingDeclineConfirm": "Tolak seluruh jemputan daripada ${owner}?",
     "pathTracks": "Lagu bagi setiap laluan",
     "sonicDistance": "Jarak sonik maksimum",
-    "albumRadio": "Radio album"
+    "albumRadio": "Radio album",
+    "continueStation": "Teruskan memainkan stesen ini"
   },
   "musicDevices": {
     "playOn": "Mainkan pada",

@@ -4381,6 +4381,7 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get pathTracks => 'Bài hát mỗi đường dẫn';
 	@override String get sonicDistance => 'Khoảng cách âm thanh tối đa';
 	@override String get albumRadio => 'Radio album';
+	@override String get continueStation => 'Tiếp tục phát đài này';
 }
 
 // Path: musicDevices
@@ -9618,6 +9619,7 @@ extension on TranslationsVi {
 			'musicTools.pathTracks' => 'Bài hát mỗi đường dẫn',
 			'musicTools.sonicDistance' => 'Khoảng cách âm thanh tối đa',
 			'musicTools.albumRadio' => 'Radio album',
+			'musicTools.continueStation' => 'Tiếp tục phát đài này',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',
@@ -9628,9 +9630,9 @@ extension on TranslationsVi {
 			'musicDevices.receiverHint' => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.',
 			'musicDevices.moveFailed' => 'Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.',
 			'musicDevices.uncertain' => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.',
-			'musicDevices.away' => 'Khi xa nhà',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Khi xa nhà',
 			'musicDevices.relay' => 'URL chuyển tiếp nhạc',
 			'musicDevices.relayHint' => 'Bật trên thiết bị nhận rồi ghép đôi một lần trên cùng mạng. Giữ Pleazyng mở. Máy chuyển tiếp truyền lệnh nhạc được mã hóa và thấy địa chỉ mạng. Mỗi trình phát truyền từ máy chủ phương tiện riêng.',
 			'musicDevices.relayInvalid' => 'Nhập địa chỉ chuyển tiếp HTTPS.',

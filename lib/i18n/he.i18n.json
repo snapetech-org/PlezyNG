@@ -5617,7 +5617,8 @@
     "sharingDeclineConfirm": "לדחות את כל ההזמנה מאת ${owner}?",
     "pathTracks": "רצועות בכל מסלול",
     "sonicDistance": "מרחק צלילי מרבי",
-    "albumRadio": "רדיו אלבום"
+    "albumRadio": "רדיו אלבום",
+    "continueStation": "המשך לנגן תחנה זו"
   },
   "musicDevices": {
     "playOn": "ניגון באמצעות",

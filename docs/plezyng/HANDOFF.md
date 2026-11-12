@@ -64,9 +64,16 @@ The results below belong to an earlier feature checkout and do not qualify the c
 
 The current [Find your next runtime slice](swipe/README.md) includes a bounded mixed-media deck, searchable profile-local Saved picks/history, time/medium/source/genre/mood/familiarity filters, explicit taste preferences, per-pick hide/restore/reset, capped disposable OPDS samples, exact-public-ID adaptation matching, two/three-pick comparison, private co-present voting, opt-in encrypted Saved-pick sync, optional bounded AI reranking, Open Library catalog-only candidates, and local borrower-catalog candidates when the existing OverDrive gate is enabled. Open Library does not prove local ownership or availability; borrower picks keep exact library/book identities on-device and revalidate before opening. OverDrive remains disabled by default. Feature acceptance and physical-device qualification have not run for this slice. Use the [delivery status](swipe/DELIVERY.md) as the source of truth; do not claim full device or provider qualification until real evidence is recorded.
 
-## Planned cross-media Multiview and app-owned PiP
+## Integrated cross-media Multiview and app-owned PiP
 
-The [Multiview implementation handoff](multiview/README.md) makes Plezy-owned floating PiP and split views the primary cross-platform experience, with native OS PiP as an optional outside-app extension. It specifies persistent video/music/reader/game sessions, quick swaps, audio and input ownership, native/GPU/software rendering paths, portable TV readers, desktop pop-outs, accessibility and recovery. The handoff includes 22 ordered implementation packages, 64 verification scenarios, a pinned source audit and theme-based layout wireframes. This is a documentation-only plan for Luna; application implementation and device qualification remain outstanding.
+Multiview is integrated on main. The [implementation guide](multiview/README.md)
+describes the app-owned floating and split workspace, retained sessions,
+profile recovery, audio/input ownership, platform surfaces and desktop windows.
+The [delivery ledger](multiview/DELIVERY.md) is the current source of truth:
+focused Flutter/native checks pass, while multi-video composition and the listed
+native/device acceptance work remain open. The 22-package table and 64-case
+matrix in the original handoff are design and acceptance references, not a
+claim that the feature is still documentation-only or fully qualified.
 
 ## Planned service integrations and commerce
 

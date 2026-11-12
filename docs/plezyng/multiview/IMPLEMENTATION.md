@@ -1,6 +1,6 @@
 # Luna work packages and completion ledger
 
-All packages start **not implemented** in this handoff. Read the audited main revision and the user's app-owned-PiP direction in README.md. A complete package requires real wiring and its checks; fake adapters, platform constants and documentation alone do not complete it.
+This is the historical work-package plan, not the current implementation status. Main now contains integrated Multiview source; read [DELIVERY.md](DELIVERY.md) for the live implementation and qualification ledger, then use this plan for package-level acceptance detail. A complete package requires real wiring and its checks; fake adapters, platform constants and documentation alone do not complete it.
 
 ## Working procedure
 

@@ -7,6 +7,16 @@ Tracking an unreleased source commit never compiles the app or advances the feed
 Published core releases from 3.0.29 onward enter the package delivery queue.
 Consult downstream Actions and `sync-state/last-good.json` for actual status.
 
+The published `v3.0.33` core Linux bytes produced independent aerynOS package
+`3.0.33-5` at [main-240994590dd3-r5](https://github.com/snapetech-org/pleazyng-aerynos/releases/tag/main-240994590dd3-r5).
+Native qualification passed in [run 43142509446](https://github.com/snapetech-org/pleazyng-aerynos/actions/runs/43142509446);
+the draft-release API lookup then blocked delivery. A delivery-only retry
+[published the qualified artifact](https://github.com/snapetech-org/pleazyng-aerynos/actions/runs/43144657448)
+without rebuilding. [Run 43146075189](https://github.com/snapetech-org/pleazyng-aerynos/actions/runs/43146075189)
+subsequently passed anonymous live and pinned feed installation plus ordinary
+app launch and runtime version verification. The qualified VM checks do not
+establish physical HDR, GPU/NPU, or FEL picture accuracy.
+
 Canonical pushes invoke `aerynos-source-push.yml`, which wakes the downstream
 `source-sync.yml` receiver. The receiver verifies both repository identities,
 fetches current canonical `main` itself, and updates only the source pointer

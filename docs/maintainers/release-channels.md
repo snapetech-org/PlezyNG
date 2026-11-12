@@ -16,9 +16,11 @@ has not completed and `GOOGLE_PLAY_BOOTSTRAP_COMPLETE` remains false. Apple
 App Store upload remains gated by the owner's pending tax information.
 Homebrew Cask has no signed/notarized candidate in this release. LG webOS and
 Samsung Tizen artifacts are published for tester handoff, with vendor signing
-and store qualification still pending. aerynOS native qualification and
-publication are tracked separately; GitHub artifact coverage alone is not an
-aerynOS package publication.
+and store qualification still pending. The independent [aerynOS 3.0.33-5
+release](https://github.com/snapetech-org/pleazyng-aerynos/releases/tag/main-240994590dd3-r5)
+passed native build, Moss upgrade, playback QA, and anonymous installation from
+both the live and pinned public feeds in [verification run
+43146075189](https://github.com/snapetech-org/pleazyng-aerynos/actions/runs/43146075189).
 
 See [the current publishing readiness matrix](publishing-readiness.md) for business, technical and review gates and staged automation settings.
 

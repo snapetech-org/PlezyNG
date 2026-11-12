@@ -46,6 +46,20 @@ native hooks, and runs the real browser checks. Playwright is not shipped with t
 app. `shared_preferences_foundation` is now an explicit, version-constrained
 Flutter dependency because main imports its API directly.
 
+Local CBZ, CBR and CB7 files use the same bounded extraction and comic document
+contract. ZIP entry data streams to disk with 10,000-entry, 256 MiB-per-entry
+and 1 GiB-total limits. CBR total output is limited to 256 MiB because the RAR
+decoder retains decoded members from a solid run; 7z solid-folder decoding is
+limited to 256 MiB. The archive reader rejects duplicate paths, root escapes,
+links, special files, encrypted entries and size mismatches. The published
+`koni_archive` 0.9.0 source archive was SHA-256 checked against pub.dev and its
+files matched the `v0.9.0` source tag (`e827474de5e7c4e5d309e2c9daa08c96f145d86c`).
+Its additional BSD and public-domain RAR notices are included in the app's
+Licenses screen; the package's MIT license is provided through Flutter's
+dependency license registry.
+The RAR and 7z codec support matrix still excludes some uncommon compression
+methods; encrypted local archives have no password-entry flow in the app.
+
 The integrated main snapshot also needed small Dart compatibility and merge
 repairs in the source adapters, metadata lookup, directional padding, semantics,
 license notices and remote dialog. The changes preserve the shared navigation and
@@ -67,11 +81,13 @@ messages on the integrated main snapshot were filled at the same time so the
 localization checks remain complete. These additions are AI-authored translations;
 structural validation and Arabic UI tests do not constitute native-speaker review.
 
-Native Android/iOS WebView, WebKit/Windows, TV reading, live Komga installations
-and live OPDS catalogs still require platform/service qualification. These tests
-do not certify service compatibility or translation fluency. Native CBR/CB7
-extraction, guided-panel recognition/OCR, server thumbnail APIs and arbitrary
-OPDS progress writes remain separate work.
+Native Android/iOS WebView, WebKit/Windows, TV reading, CBR/CB7 decoding on each
+release platform, live Komga installations and live OPDS catalogs still require
+platform/service qualification. The current real-browser fixture suite covers
+EPUB/CBZ; it does not by itself qualify RAR/7z compatibility or native WebViews.
+These tests do not certify service compatibility or translation fluency.
+Guided-panel recognition/OCR, server thumbnail APIs and arbitrary OPDS progress
+writes remain separate work.
 The research plan is a roadmap, not a claim of completed industry-wide parity.
 
 Model: GPT-6 (Codex).

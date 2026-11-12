@@ -750,16 +750,24 @@ class BookAnnotation {
 
 SourceItemKind classifySourceFile(String name, [String mime = '']) {
   final ext = p.extension(name.split('?').first).toLowerCase();
-  if (ext == '.cbz' || mime == 'application/vnd.comicbook+zip') {
+  final contentType = mime.split(';').first.trim().toLowerCase();
+  if (const {'.cbz', '.cbr', '.cb7'}.contains(ext) ||
+      const {
+        'application/vnd.comicbook+zip',
+        'application/vnd.comicbook-rar',
+        'application/x-cbr',
+        'application/x-cb7',
+      }.contains(contentType)) {
     return SourceItemKind.comic;
   }
-  if (const {'.epub', '.pdf'}.contains(ext) || const {'application/epub+zip', 'application/pdf'}.contains(mime)) {
+  if (const {'.epub', '.pdf'}.contains(ext) ||
+      const {'application/epub+zip', 'application/pdf'}.contains(contentType)) {
     return SourceItemKind.ebook;
   }
   if (ext == '.m4b') {
     return SourceItemKind.audiobook;
   }
-  if (mime.startsWith('audio/') ||
+  if (contentType.startsWith('audio/') ||
       const {
         '.mp3',
         '.m4a',
@@ -787,7 +795,7 @@ SourceItemKind classifySourceFile(String name, [String mime = '']) {
       }.contains(ext)) {
     return SourceItemKind.music;
   }
-  if (mime.startsWith('video/') ||
+  if (contentType.startsWith('video/') ||
       const {
         '.mp4',
         '.mkv',

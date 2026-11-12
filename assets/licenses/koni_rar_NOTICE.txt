@@ -1,0 +1,106 @@
+This package's RAR5 reader was implemented with reference to, and in parts
+adapted from, libarchive's RAR5 reader:
+
+  archive_read_support_format_rar5.c
+  Copyright (c) 2018 Grzegorz Antoniak (http://antoniak.org)
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+This package's RAR4 (v1.5) reader — the method-29 unpack, the RarVM standard
+filters, and the PPMd variant H glue (block-header parse, RAR range decoder,
+escape-char dispatch) — was implemented with reference to, and in parts
+adapted from, libarchive's RAR4 reader:
+
+  archive_read_support_format_rar.c
+  Copyright (c) 2003-2007 Tim Kientzle
+  Copyright (c) 2011 Andres Mejia
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS OR
+  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The RAR4 PPMd variant H *model* (unit sub-allocator, suffix-linked context
+tree, SEE, decode) was ported from the PPMd var.H codec vendored by
+libarchive, which is public-domain:
+
+  archive_ppmd7.c / archive_ppmd7_private.h / archive_ppmd_private.h
+  Ppmd7 -- PPMdH codec
+  2010-03-12 : Igor Pavlov : Public domain
+  Based on PPMd var.H (2001) : Dmitry Shkarin : Public domain
+
+  This code is in the public domain; no copyright notice is required. The
+  attribution above is retained as a courtesy and to record provenance.
+
+The solid RAR4 PPMd control flow (each solid file a PPMd block ending with an
+escape-code-2 marker; the shared model and escape symbol carried across files;
+the RAR range decoder re-initialised per block), the RAR 2.0/2.6 (unpack
+v20/v26) LZ decoder (block header, code-length table, and LZ symbol dispatch),
+the RAR3/4 encrypted-header (`-hp`) block framing (plaintext main header,
+then per-block `salt[8] · AES-128-CBC(header)` with the cipher re-initialised
+per block from the salt-derived IV; the header-CRC wrong-password signal), and
+the generic RarVM filter interpreter (the machine, opcode/flag semantics, and
+program bit-decoding in `vm.go`; the filter global-block wiring in
+`filters.go`), were adapted from the BSD Go `rardecode` reader (`archive15.go`,
+`decrypt_reader.go`, `vm.go`, `filters.go`, `bit_reader.go`, `decode29.go`,
+`decode29_ppm.go`, `ppm_model.go`, `decode20.go`, `decode20_lz.go`,
+`huffman.go`):
+
+  github.com/nwaples/rardecode
+  Copyright (c) 2015, Nicholas Waples
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+
+  * Redistributions of source code must retain the above copyright notice, this
+    list of conditions and the following disclaimer.
+  * Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

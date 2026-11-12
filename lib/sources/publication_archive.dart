@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/services.dart';
+import 'package:koni_archive/io.dart' as karchive;
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
@@ -15,50 +16,13 @@ import 'source_models.dart';
 import 'source_transport.dart';
 import 'comic_document.dart';
 
-/// Bounded output guards dishonest ZIP size fields as well as zip bombs.
-class _BoundedOutput extends OutputStream {
-  _BoundedOutput(this.output, this.limit) : super(byteOrder: ByteOrder.littleEndian);
-  final OutputFileStream output;
-  final int limit;
-  @override
-  int get length => output.length;
-  void check(int count) {
-    if (count < 0 || length + count > limit) throw const SourceException(SourceFailure.invalidData);
-  }
-
-  @override
-  void writeByte(int value) {
-    check(1);
-    output.writeByte(value);
-  }
-
-  @override
-  void writeBytes(List<int> bytes, {int? length}) {
-    check(length ?? bytes.length);
-    output.writeBytes(bytes, length: length);
-  }
-
-  @override
-  void writeStream(InputStream stream) {
-    while (!stream.isEOS) {
-      writeBytes(stream.readBytes(min(65536, stream.length)).toUint8List());
-    }
-  }
-
-  @override
-  Uint8List subset(int start, [int? end]) => output.subset(start, end);
-  @override
-  void clear() => output.clear();
-  @override
-  void flush() => output.flush();
-  @override
-  Future<void> close() => output.close();
-  @override
-  void closeSync() => output.closeSync();
-}
-
 /// Only files from a validated archive are exposed; no arbitrary path access.
 class PublicationArchive {
+  static const _maxEntryCount = 10000;
+  static const _maxEntrySize = 256 * 1024 * 1024;
+  static const _maxTotalSize = 1024 * 1024 * 1024;
+  static const _maxSolidRarSize = 256 * 1024 * 1024;
+
   PublicationArchive._(this.directory, this.files, this.comic);
   final Directory directory;
   final Map<String, int> files;
@@ -84,10 +48,48 @@ class PublicationArchive {
         value.contains('\\') ||
         value.contains(':') ||
         value.contains('\x00') ||
-        value.split('/').any((s) => s == '..' || s == '.')) {
+        value
+            .split('/')
+            .any(
+              (segment) =>
+                  segment == '..' ||
+                  segment == '.' ||
+                  segment.endsWith('.') ||
+                  segment.endsWith(' ') ||
+                  RegExp(r'^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\..*)?$', caseSensitive: false).hasMatch(segment),
+            )) {
       throw const SourceException(SourceFailure.invalidData);
     }
     return value;
+  }
+
+  /// The generic archive reader safely normalizes ZIP names on read. Check
+  /// their raw spelling here as well to retain the EPUB/CBZ rejection policy.
+  static void _validateZipDirectory(String path) {
+    final input = InputFileStream(path);
+    try {
+      final directory = ZipDirectory()..read(input);
+      if (directory.fileHeaders.isEmpty || directory.fileHeaders.length > _maxEntryCount) {
+        throw const SourceException(SourceFailure.invalidData);
+      }
+      var total = 0;
+      final names = <String>{};
+      for (final header in directory.fileHeaders) {
+        final file = header.file!;
+        final name = safePath(file.filename);
+        if (safePath(header.filename) != name ||
+            !names.add(name.toLowerCase()) ||
+            file.uncompressedSize < 0 ||
+            file.uncompressedSize > _maxEntrySize ||
+            ((header.externalFileAttributes >> 16) & 0xf000) == 0xa000) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
+        total += file.uncompressedSize;
+        if (total > _maxTotalSize) throw const SourceException(SourceFailure.invalidData);
+      }
+    } finally {
+      input.closeSync();
+    }
   }
 
   static Future<PublicationArchive> open(File file, Directory temporary, {bool comic = false}) async {
@@ -104,49 +106,87 @@ class PublicationArchive {
     }
   }
 
-  static Map<String, int> extract(String path, String destination, {bool comic = false}) {
-    final input = InputFileStream(path);
+  static Future<Map<String, int>> extract(String path, String destination, {bool comic = false}) async {
+    final source = await karchive.FileByteSource.open(path);
+    karchive.Archive? archive;
     try {
-      // Read the central directory before the decoder materializes symlinks.
-      final directory = ZipDirectory()..read(input);
-      if (directory.fileHeaders.isEmpty || directory.fileHeaders.length > 10000) {
+      archive = await karchive.Archive.open(
+        source,
+        options: const karchive.ArchiveReadOptions(
+          verifyChecksums: true,
+          maxEntryCount: _maxEntryCount,
+          maxEntrySize: _maxEntrySize,
+          // 7z decodes a solid folder as a unit. Keep that work bounded even
+          // when the requested page is much smaller than its folder.
+          maxContainerDecodeSize: _maxEntrySize,
+        ),
+      );
+      final format = archive.format.name;
+      if (comic ? !const {'zip', 'rar', '7z'}.contains(format) : format != 'zip') {
         throw const SourceException(SourceFailure.invalidData);
       }
-      var total = 0;
+      if (format == 'zip') _validateZipDirectory(path);
+      final entries = archive.entries;
+      if (entries.isEmpty || entries.length > _maxEntryCount) {
+        throw const SourceException(SourceFailure.invalidData);
+      }
+      // The RAR reader caches every decoded member in a solid run. Keep CBR
+      // below 256 MiB total so that this cache remains bounded as well.
+      final totalLimit = comic && format == 'rar' ? _maxSolidRarSize : _maxTotalSize;
+      var declaredTotal = 0;
       final names = <String>{};
-      for (final header in directory.fileHeaders) {
-        final file = header.file!;
-        final name = safePath(file.filename);
-        if (safePath(header.filename) != name ||
-            !names.add(name) ||
-            file.uncompressedSize > 256 * 1024 * 1024 ||
-            file.uncompressedSize < 0 ||
-            ((header.externalFileAttributes >> 16) & 0xf000) == 0xa000) {
+      final files = <String, int>{};
+      for (final entry in entries) {
+        final name = safePath(entry.path);
+        if (entry.pathEscapedRoot ||
+            !names.add(name.toLowerCase()) ||
+            entry.uncompressedSize < 0 ||
+            entry.isEncrypted ||
+            entry.type == karchive.ArchiveEntryType.symlink ||
+            entry.type == karchive.ArchiveEntryType.hardlink) {
           throw const SourceException(SourceFailure.invalidData);
         }
-        total += file.uncompressedSize;
-        if (total > 1024 * 1024 * 1024) throw const SourceException(SourceFailure.invalidData);
-      }
-      final archive = ZipDecoder().decodeStream(input);
-      final files = <String, int>{};
-      for (final entry in archive) {
-        if (!entry.isFile) continue;
-        final name = safePath(entry.name);
-        if (entry.isSymbolicLink) throw const SourceException(SourceFailure.invalidData);
-        final file = File(p.joinAll([destination, ...name.split('/')]));
-        file.parent.createSync(recursive: true);
-        final output = _BoundedOutput(OutputFileStream(file.path), entry.size);
-        try {
-          entry.writeContent(output);
-          if (output.length != entry.size) throw const SourceException(SourceFailure.invalidData);
-        } finally {
-          output.closeSync();
+        if (entry.isDirectory) {
+          if (entry.uncompressedSize != 0) throw const SourceException(SourceFailure.invalidData);
+          continue;
         }
-        files[name] = entry.size;
+        if (!entry.isFile || entry.uncompressedSize > _maxEntrySize) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
+        declaredTotal += entry.uncompressedSize;
+        if (declaredTotal > totalLimit) throw const SourceException(SourceFailure.invalidData);
+        files[name] = entry.uncompressedSize;
       }
       if (!comic && !files.containsKey('META-INF/container.xml')) {
         throw const SourceException(SourceFailure.invalidData);
       }
+
+      var extractedTotal = 0;
+      final extractedFiles = <String, int>{};
+      for (final entry in entries.where((entry) => entry.isFile)) {
+        final name = safePath(entry.path);
+        final file = File(p.joinAll([destination, ...name.split('/')]));
+        file.parent.createSync(recursive: true);
+        final output = await file.open(mode: FileMode.write);
+        var extractedSize = 0;
+        try {
+          await for (final chunk in archive.openRead(entry)) {
+            final nextEntrySize = extractedSize + chunk.length;
+            final nextTotalSize = extractedTotal + chunk.length;
+            if (nextEntrySize > entry.uncompressedSize || nextEntrySize > _maxEntrySize || nextTotalSize > totalLimit) {
+              throw const SourceException(SourceFailure.invalidData);
+            }
+            await output.writeFrom(chunk);
+            extractedSize = nextEntrySize;
+            extractedTotal = nextTotalSize;
+          }
+          if (extractedSize != entry.uncompressedSize) throw const SourceException(SourceFailure.invalidData);
+        } finally {
+          await output.close();
+        }
+        extractedFiles[name] = extractedSize;
+      }
+
       final encryption = File(p.join(destination, 'META-INF', 'encryption.xml'));
       if (encryption.existsSync()) {
         if (encryption.lengthSync() > 1024 * 1024) throw const SourceException(SourceFailure.invalidData);
@@ -160,9 +200,13 @@ class PublicationArchive {
           }
         }
       }
-      return files;
+      return extractedFiles;
     } finally {
-      input.closeSync();
+      if (archive == null) {
+        await source.close();
+      } else {
+        await archive.close();
+      }
     }
   }
 

@@ -456,6 +456,8 @@ class OpdsSourceAdapter extends SourceAdapter {
       'application/epub+zip' => '.epub',
       'application/pdf' => '.pdf',
       'application/vnd.comicbook+zip' => '.cbz',
+      'application/vnd.comicbook-rar' || 'application/x-cbr' => '.cbr',
+      'application/x-cb7' => '.cb7',
       'audio/mpeg' => '.mp3',
       'audio/mp4' => '.m4b',
       _ => null,

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Read local CBR and CB7 comics through bounded RAR and 7z extraction, including source classification, BookOrbit/OPDS file metadata and codec notices in the app's Licenses screen.
+
 - Support secure Kavita OPDS onboarding from a copied Auth Key URL or a separate key field, migrate existing copied URLs into encrypted credentials, and keep the key out of saved source endpoints and entry identifiers.
 
 - Correct current aerynOS release guidance to reflect the qualified 3.0.33-5 downstream package; retain the v3.0.7 playback failure as historical evidence.

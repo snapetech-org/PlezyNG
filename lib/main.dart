@@ -1417,6 +1417,9 @@ void _registerAppLicenses() {
     yield LicenseEntryWithLineBreaks(const [
       'libtorrent-rasterbar 2.0.11',
     ], await rootBundle.loadString('assets/licenses/Libtorrent.txt'));
+    yield LicenseEntryWithLineBreaks(const [
+      'koni_rar third-party BSD and public-domain notices',
+    ], await rootBundle.loadString('assets/licenses/koni_rar_NOTICE.txt'));
     yield LicenseEntryWithLineBreaks(const ['Boost 1.86.0'], await rootBundle.loadString('assets/licenses/Boost.txt'));
     yield LicenseEntryWithLineBreaks(const [
       'Provider artwork',

@@ -82,7 +82,7 @@ class BookOrbitSourceAdapter extends SourceAdapter {
   static const _audio = {'m4b', 'mp3', 'm4a', 'opus', 'ogg', 'flac'};
   // These are the formats the Pleazyng reader can open. BookOrbit can retain
   // additional formats in its library without showing an unusable Play/Read action.
-  static const _comic = {'cbz'};
+  static const _comic = {'cbz', 'cbr', 'cb7'};
   static const _ebook = {'epub', 'kepub', 'pdf'};
 
   PublicationFile? _file(Map<String, dynamic> row, int bookId, {String? assetId, int? durationMs}) {
@@ -101,6 +101,8 @@ class BookOrbitSourceAdapter extends SourceAdapter {
       'epub' || 'kepub' => 'application/epub+zip',
       'pdf' => 'application/pdf',
       'cbz' => 'application/vnd.comicbook+zip',
+      'cbr' => 'application/vnd.comicbook-rar',
+      'cb7' => 'application/x-cb7',
       'm4b' || 'm4a' => 'audio/mp4',
       'mp3' => 'audio/mpeg',
       'opus' || 'ogg' => 'audio/ogg',

@@ -3003,8 +3003,6 @@ class _Translations$cast$ms extends Translations$cast$en {
 	@override String get subtitle => 'Sari kata';
 	@override String get serverNotAvailable => 'Media server tidak tersedia.';
 	@override String get stopCasting => 'Hentikan penghantaran';
-	@override String get castToDevice => 'Hantar ke peranti';
-	@override String get noEpisodeAvailable => 'Tiada episod yang boleh ditayangkan.';
 	@override String get startFailed => 'Tidak boleh memulakan casting. semak pelayan dan cuba lagi.';
 }
 
@@ -4399,7 +4397,6 @@ class _Translations$musicDevices$ms extends Translations$musicDevices$en {
 	@override String get remembered => 'Peranti disimpan';
 	@override String get forget => 'Lupakan peranti';
 	@override String get receive => 'Benarkan main balik pada peranti ini';
-	@override String get nearbyHint => 'Buka pemilih peranti pada peranti lain dan benarkan main balik di sana.';
 	@override String get receiverHint => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.';
 	@override String get moveFailed => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.';
 	@override String get uncertain => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.';
@@ -8454,8 +8451,6 @@ extension on TranslationsMs {
 			'cast.subtitle' => 'Sari kata',
 			'cast.serverNotAvailable' => 'Media server tidak tersedia.',
 			'cast.stopCasting' => 'Hentikan penghantaran',
-			'cast.castToDevice' => 'Hantar ke peranti',
-			'cast.noEpisodeAvailable' => 'Tiada episod yang boleh ditayangkan.',
 			'cast.startFailed' => 'Tidak boleh memulakan casting. semak pelayan dan cuba lagi.',
 			'automation.noActivePlayback' => 'Tiada sesi video aktif untuk dikendalikan.',
 			'notifications.newEpisodeTitle' => 'Episod baru',
@@ -8604,10 +8599,10 @@ extension on TranslationsMs {
 			'universalMedia.stream' => 'Alamat aliran',
 			'universalMedia.playlist' => 'Senarai Playlist',
 			'universalMedia.files' => 'Peranti fail',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diiktiraf hanya digunakan untuk sesi ini dan tidak boleh disimpan sebagai kegemaran.',
 			'universalMedia.displayName' => 'Nama Pameran ( opsional )',
 			'universalMedia.displayNameHelp' => 'Pilih nama pendek untuk pemutar dan kawalan media sistem.',
@@ -9118,10 +9113,10 @@ extension on TranslationsMs {
 			'sourceSetup.addTrustCertificate' => 'Tambah sijil kepercayaan tersuai',
 			'sourceSetup.replaceTrustCertificate' => 'Gantikan sijil tersuai yang disimpan',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan perkhidmatan lekap yang biasa serta memerlukan sokongan RFC 9289 pada NAS. TLS 1.3 diwajibkan. Nama hos atau IP mesti sepadan dengan sijil. AUTH_SYS UID/GID masih terpakai dalam saluran yang disulitkan.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Sijil klien (pilihan)',
 			'sourceSetup.clientCertificateHelp' => 'Membolehkan NAS mengesahkan klien ini; ID AUTH_SYS masih bergantung pada dasar perkongsian NFS pada NAS.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Identiti klien yang disimpan akan digunakan.',
 			'sourceSetup.replaceIdentity' => 'Gantikan identiti klien yang disimpan',
 			'sourceSetup.chooseIdentity' => 'Pilih identiti klien PKCS#12',
@@ -9630,13 +9625,12 @@ extension on TranslationsMs {
 			'musicDevices.remembered' => 'Peranti disimpan',
 			'musicDevices.forget' => 'Lupakan peranti',
 			'musicDevices.receive' => 'Benarkan main balik pada peranti ini',
-			'musicDevices.nearbyHint' => 'Buka pemilih peranti pada peranti lain dan benarkan main balik di sana.',
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.',
 			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
 			'musicDevices.away' => 'Di luar rumah',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'URL geganti muzik',
 			'musicDevices.relayHint' => 'Aktifkan pada peranti penerima, kemudian pasangkan sekali pada rangkaian yang sama. Biarkan Pleazyng terbuka. Geganti menghantar kawalan muzik yang disulitkan dan melihat alamat rangkaian. Setiap pemain menstrim daripada pelayan medianya sendiri.',
 			'musicDevices.relayInvalid' => 'Masukkan alamat geganti HTTPS.',

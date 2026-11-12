@@ -3003,8 +3003,6 @@ class _Translations$cast$vi extends Translations$cast$en {
 	@override String get subtitle => 'Phụ đề';
 	@override String get serverNotAvailable => 'Server phương tiện truyền thông không sẵn dùng.';
 	@override String get stopCasting => 'Dừng truyền';
-	@override String get castToDevice => 'Truyền đến thiết bị';
-	@override String get noEpisodeAvailable => 'Không có tập nào có sẵn để phát.';
 	@override String get startFailed => 'Không thể bắt đầu casting. kiểm tra máy chủ và thử lại.';
 }
 
@@ -4399,7 +4397,6 @@ class _Translations$musicDevices$vi extends Translations$musicDevices$en {
 	@override String get remembered => 'Thiết bị đã lưu';
 	@override String get forget => 'Quên thiết bị';
 	@override String get receive => 'Cho phép phát trên thiết bị này';
-	@override String get nearbyHint => 'Mở trình chọn thiết bị trên thiết bị kia và cho phép phát ở đó.';
 	@override String get receiverHint => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.';
 	@override String get moveFailed => 'Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.';
 	@override String get uncertain => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.';
@@ -8454,8 +8451,6 @@ extension on TranslationsVi {
 			'cast.subtitle' => 'Phụ đề',
 			'cast.serverNotAvailable' => 'Server phương tiện truyền thông không sẵn dùng.',
 			'cast.stopCasting' => 'Dừng truyền',
-			'cast.castToDevice' => 'Truyền đến thiết bị',
-			'cast.noEpisodeAvailable' => 'Không có tập nào có sẵn để phát.',
 			'cast.startFailed' => 'Không thể bắt đầu casting. kiểm tra máy chủ và thử lại.',
 			'automation.noActivePlayback' => 'Không có phiên video hoạt động để kiểm soát.',
 			'notifications.newEpisodeTitle' => 'episode mới',
@@ -8604,10 +8599,10 @@ extension on TranslationsVi {
 			'universalMedia.stream' => 'Địa chỉ Stream',
 			'universalMedia.playlist' => 'Danh sách Playlist',
 			'universalMedia.files' => 'Thiết bị file',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Save Stream yêu thích',
 			'universalMedia.address' => 'Địa chỉ Media',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL với các thông số xác nhận hoặc ký tự được công nhận chỉ được sử dụng cho phiên này và không thể được lưu như là yêu thích.',
 			'universalMedia.displayName' => 'Tên hiển thị (tùy chọn)',
 			'universalMedia.displayNameHelp' => 'Chọn tên ngắn cho người chơi và hệ thống điều khiển phương tiện truyền thông.',
@@ -9118,10 +9113,10 @@ extension on TranslationsVi {
 			'sourceSetup.addTrustCertificate' => 'Thêm chứng chỉ tin cậy tùy chỉnh',
 			'sourceSetup.replaceTrustCertificate' => 'Thay chứng chỉ tùy chỉnh đã lưu',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS dùng các cổng thông thường của NFS và dịch vụ gắn kết, đồng thời yêu cầu NAS hỗ trợ RFC 9289. Bắt buộc dùng TLS 1.3. Tên máy chủ hoặc địa chỉ IP phải khớp với chứng chỉ. AUTH_SYS UID/GID vẫn áp dụng trong kênh được mã hóa.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
 			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Sẽ dùng danh tính máy khách đã lưu.',
 			'sourceSetup.replaceIdentity' => 'Thay danh tính máy khách đã lưu',
 			'sourceSetup.chooseIdentity' => 'Chọn danh tính máy khách PKCS#12',
@@ -9630,13 +9625,12 @@ extension on TranslationsVi {
 			'musicDevices.remembered' => 'Thiết bị đã lưu',
 			'musicDevices.forget' => 'Quên thiết bị',
 			'musicDevices.receive' => 'Cho phép phát trên thiết bị này',
-			'musicDevices.nearbyHint' => 'Mở trình chọn thiết bị trên thiết bị kia và cho phép phát ở đó.',
 			'musicDevices.receiverHint' => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.',
 			'musicDevices.uncertain' => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.',
 			'musicDevices.away' => 'Khi xa nhà',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'URL chuyển tiếp nhạc',
 			'musicDevices.relayHint' => 'Bật trên thiết bị nhận rồi ghép đôi một lần trên cùng mạng. Giữ Pleazyng mở. Máy chuyển tiếp truyền lệnh nhạc được mã hóa và thấy địa chỉ mạng. Mỗi trình phát truyền từ máy chủ phương tiện riêng.',
 			'musicDevices.relayInvalid' => 'Nhập địa chỉ chuyển tiếp HTTPS.',

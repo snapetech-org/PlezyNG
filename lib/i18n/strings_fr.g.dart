@@ -3039,8 +3039,6 @@ class Translations$cast$fr extends Translations$cast$en {
 	@override String get subtitle => 'Sous-titres';
 	@override String get serverNotAvailable => 'Le serveur de médias n’est pas disponible.';
 	@override String get stopCasting => 'Arrêter de casting';
-	@override String get castToDevice => 'Changer à l\'appareil';
-	@override String get noEpisodeAvailable => 'Il n\'y a pas d\'épisode disponible pour le lancer.';
 	@override String get startFailed => 'Je ne peux pas commencer à lancer. vérifier le serveur et essayer à nouveau.';
 }
 
@@ -4463,7 +4461,6 @@ class Translations$musicDevices$fr extends Translations$musicDevices$en {
 	@override String get remembered => 'Appareils mémorisés';
 	@override String get forget => 'Oublier cet appareil';
 	@override String get receive => 'Autoriser la lecture sur cet appareil';
-	@override String get nearbyHint => 'Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.';
 	@override String get receiverHint => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.';
 	@override String get moveFailed => 'Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.';
 	@override String get uncertain => 'Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.';
@@ -8530,8 +8527,6 @@ extension on TranslationsFr {
 			'cast.subtitle' => 'Sous-titres',
 			'cast.serverNotAvailable' => 'Le serveur de médias n’est pas disponible.',
 			'cast.stopCasting' => 'Arrêter de casting',
-			'cast.castToDevice' => 'Changer à l\'appareil',
-			'cast.noEpisodeAvailable' => 'Il n\'y a pas d\'épisode disponible pour le lancer.',
 			'cast.startFailed' => 'Je ne peux pas commencer à lancer. vérifier le serveur et essayer à nouveau.',
 			'automation.noActivePlayback' => 'Il n\'y a pas de session vidéo active à contrôler.',
 			'notifications.newEpisodeTitle' => 'Nouveau épisode',
@@ -8673,10 +8668,10 @@ extension on TranslationsFr {
 			'platform.locationPermission' => 'Pleazyng utilise l\'accès à la localisation lorsque iOS l\'exige pour détecter votre réseau local et se connecter à vos serveurs de médias.',
 			'platform.photoLibraryPermission' => 'Choisissez des images de votre photothèque pour illustrer vos médias.',
 			'platform.cameraPermission' => 'Scannez des codes QR pour associer une Companion Remote.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.title' => 'Médias ouverts',
 			'universalMedia.shortcutHelp' => 'Jouez à un lien, une playlist ou un fichier pour cette session.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.intro' => 'Ouvrez un lien, une liste de lecture ou un fichier. Playback utilise le lecteur standard de Pleazyng et n’ajoute pas d’historique à votre bibliothèque.',
 			'universalMedia.openWhat' => 'Que voudriez-vous ouvrir ?',
 			'universalMedia.stream' => 'Adresse de courant',
@@ -9187,10 +9182,10 @@ extension on TranslationsFr {
 			'sourceSetup.nfsUserId' => 'Identifiant utilisateur NFS (AUTH_SYS)',
 			'sourceSetup.nfsUserIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsGroupId' => 'Identifiant de groupe NFS (AUTH_SYS)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.nfsGroupIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant de groupe autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsEncryption' => 'Exiger NFS chiffré (RPC-with-TLS)',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionHelp' => 'Exiger TLS 1.3 pour NFS et le service de montage. Si le NAS ne le prend pas en charge, la connexion est refusée.',
 			'sourceSetup.nfsTrustCertificate' => 'CA NFS personnalisée ou certificat du serveur (PEM, facultatif)',
 			'sourceSetup.nfsTrustHelp' => 'Laissez vide pour utiliser les certificats reconnus par cet appareil. Si nécessaire, ajoutez un certificat d’une CA privée ou un certificat de serveur autosigné ; ses noms doivent correspondre à l’hôte de l’URL NFS.',
@@ -9701,10 +9696,10 @@ extension on TranslationsFr {
 			'musicTools.playlistRecipient' => 'Nom d’utilisateur Plex ou e-mail',
 			'musicTools.playlistSharingHint' => 'Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.',
 			'musicTools.playlistSharingFailed' => 'Impossible de demander l’accès à la liste.',
-			_ => null,
-		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
 			'musicTools.playlistAccessList' => 'Accès actuel',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistAccessNone' => 'Aucun accès accordé à cette liste',
 			'musicTools.filterType' => 'Type de filtre',
 			'musicTools.peak' => 'Pic',
@@ -9728,7 +9723,6 @@ extension on TranslationsFr {
 			'musicDevices.remembered' => 'Appareils mémorisés',
 			'musicDevices.forget' => 'Oublier cet appareil',
 			'musicDevices.receive' => 'Autoriser la lecture sur cet appareil',
-			'musicDevices.nearbyHint' => 'Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.',
 			'musicDevices.receiverHint' => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.',
 			'musicDevices.moveFailed' => 'Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.',
 			'musicDevices.uncertain' => 'Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.',

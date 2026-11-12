@@ -3594,8 +3594,6 @@
     "subtitle": "Legendas",
     "serverNotAvailable": "O servidor de mídia não está disponível.",
     "stopCasting": "Parar de casting",
-    "castToDevice": "Capa para o dispositivo",
-    "noEpisodeAvailable": "Não há episódio disponível para ser lançado.",
     "startFailed": "Não pode começar a casting. verificar o servidor e tentar novamente."
   },
   "automation": {
@@ -5628,7 +5626,6 @@
     "remembered": "Dispositivos guardados",
     "forget": "Esquecer dispositivo",
     "receive": "Permitir reprodução neste dispositivo",
-    "nearbyHint": "Abra o seletor de dispositivos no outro dispositivo e permita a reprodução.",
     "receiverHint": "Mantenha o Pleazyng aberto para receber música. Emparelhe uma vez com este código.",
     "moveFailed": "Não foi possível mover a reprodução. Verifique se o dispositivo está ativo, emparelhado e tem acesso ao servidor de música.",
     "uncertain": "Ligação interrompida. Volte a ligar ao dispositivo selecionado para verificar a reprodução.",

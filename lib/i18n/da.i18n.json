@@ -3591,8 +3591,6 @@
     "subtitle": "Undertekster",
     "serverNotAvailable": "Media server er ikke tilgængelig.",
     "stopCasting": "Stop med casting",
-    "castToDevice": "Sæt på enheden",
-    "noEpisodeAvailable": "Der er ingen episode til rådighed til at udskrive.",
     "startFailed": "Kan ikke begynde at kaste. tjek serveren og prøv igen."
   },
   "automation": {
@@ -5619,7 +5617,6 @@
     "remembered": "Huskede enheder",
     "forget": "Glem enhed",
     "receive": "Tillad afspilning på denne enhed",
-    "nearbyHint": "Åbn enhedsmenuen på den anden enhed, og tillad afspilning der.",
     "receiverHint": "Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.",
     "moveFailed": "Kunne ikke flytte afspilningen. Kontrollér, at enheden er vågen, parret og har adgang til din musikserver.",
     "uncertain": "Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.",

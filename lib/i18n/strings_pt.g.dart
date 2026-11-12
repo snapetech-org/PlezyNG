@@ -3025,8 +3025,6 @@ class Translations$cast$pt extends Translations$cast$en {
 	@override String get subtitle => 'Legendas';
 	@override String get serverNotAvailable => 'O servidor de mídia não está disponível.';
 	@override String get stopCasting => 'Parar de casting';
-	@override String get castToDevice => 'Capa para o dispositivo';
-	@override String get noEpisodeAvailable => 'Não há episódio disponível para ser lançado.';
 	@override String get startFailed => 'Não pode começar a casting. verificar o servidor e tentar novamente.';
 }
 
@@ -4429,7 +4427,6 @@ class Translations$musicDevices$pt extends Translations$musicDevices$en {
 	@override String get remembered => 'Dispositivos guardados';
 	@override String get forget => 'Esquecer dispositivo';
 	@override String get receive => 'Permitir reprodução neste dispositivo';
-	@override String get nearbyHint => 'Abra o seletor de dispositivos no outro dispositivo e permita a reprodução.';
 	@override String get receiverHint => 'Mantenha o Pleazyng aberto para receber música. Emparelhe uma vez com este código.';
 	@override String get moveFailed => 'Não foi possível mover a reprodução. Verifique se o dispositivo está ativo, emparelhado e tem acesso ao servidor de música.';
 	@override String get uncertain => 'Ligação interrompida. Volte a ligar ao dispositivo selecionado para verificar a reprodução.';
@@ -8486,8 +8483,6 @@ extension on TranslationsPt {
 			'cast.subtitle' => 'Legendas',
 			'cast.serverNotAvailable' => 'O servidor de mídia não está disponível.',
 			'cast.stopCasting' => 'Parar de casting',
-			'cast.castToDevice' => 'Capa para o dispositivo',
-			'cast.noEpisodeAvailable' => 'Não há episódio disponível para ser lançado.',
 			'cast.startFailed' => 'Não pode começar a casting. verificar o servidor e tentar novamente.',
 			'automation.noActivePlayback' => 'Não há sessão de vídeo ativa para controlar.',
 			'notifications.newEpisodeTitle' => 'Novo episódio',
@@ -8636,10 +8631,10 @@ extension on TranslationsPt {
 			'universalMedia.stream' => 'Endereço de Stream',
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Arquivos de dispositivos',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Redução dos favoritos',
 			'universalMedia.address' => 'Endereço de mídia',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URLs com parâmetros de autenticação ou assinatura reconhecidos são usados apenas para esta sessão e não podem ser salvos como favoritos.',
 			'universalMedia.displayName' => 'Nome de exibição (opcional)',
 			'universalMedia.displayNameHelp' => 'Escolha um nome curto para o jogador e controles de mídia do sistema.',
@@ -9150,10 +9145,10 @@ extension on TranslationsPt {
 			'sourceSetup.addTrustCertificate' => 'Adicionar certificado de confiança personalizado',
 			'sourceSetup.replaceTrustCertificate' => 'Substituir o certificado personalizado salvo',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS usa as portas habituais de NFS e do serviço de montagem e exige que o NAS ofereça suporte a RFC 9289. TLS 1.3 é obrigatório. O nome do host ou o IP deve corresponder ao certificado. Os UID/GID de AUTH_SYS continuam valendo no canal criptografado.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Certificado do cliente (opcional)',
 			'sourceSetup.clientCertificateHelp' => 'Permite que o NAS autentique este cliente; os IDs de AUTH_SYS continuam sujeitos à política do compartilhamento NFS do NAS.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Será usada uma identidade de cliente salva.',
 			'sourceSetup.replaceIdentity' => 'Substituir a identidade de cliente salva',
 			'sourceSetup.chooseIdentity' => 'Escolher identidade de cliente PKCS#12',
@@ -9662,13 +9657,12 @@ extension on TranslationsPt {
 			'musicDevices.remembered' => 'Dispositivos guardados',
 			'musicDevices.forget' => 'Esquecer dispositivo',
 			'musicDevices.receive' => 'Permitir reprodução neste dispositivo',
-			'musicDevices.nearbyHint' => 'Abra o seletor de dispositivos no outro dispositivo e permita a reprodução.',
 			'musicDevices.receiverHint' => 'Mantenha o Pleazyng aberto para receber música. Emparelhe uma vez com este código.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Não foi possível mover a reprodução. Verifique se o dispositivo está ativo, emparelhado e tem acesso ao servidor de música.',
 			'musicDevices.uncertain' => 'Ligação interrompida. Volte a ligar ao dispositivo selecionado para verificar a reprodução.',
 			'musicDevices.away' => 'Fora de casa',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'URL do relay de música',
 			'musicDevices.relayHint' => 'Ative no dispositivo recetor e emparelhe uma vez na mesma rede. Mantenha o Pleazyng aberto. O relay transmite comandos de música encriptados e vê os endereços de rede. Cada leitor transmite do seu próprio servidor multimédia.',
 			'musicDevices.relayInvalid' => 'Introduza um endereço HTTPS do relay.',

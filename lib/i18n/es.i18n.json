@@ -3595,8 +3595,6 @@
     "subtitle": "Subtítulos",
     "serverNotAvailable": "El servidor de medios no está disponible.",
     "stopCasting": "Dejar de casting",
-    "castToDevice": "Casta en el dispositivo",
-    "noEpisodeAvailable": "No hay episodio disponible para ser lanzado.",
     "startFailed": "No puedo empezar a casting. comprobar el servidor y intentarlo de nuevo."
   },
   "automation": {
@@ -5701,7 +5699,6 @@
     "remembered": "Dispositivos guardados",
     "forget": "Olvidar dispositivo",
     "receive": "Permitir reproducción en este dispositivo",
-    "nearbyHint": "Abre el selector de dispositivos en el otro dispositivo y permite la reproducción allí.",
     "receiverHint": "Mantén Pleazyng abierto para recibir música. Vincula una vez con este código.",
     "moveFailed": "No se pudo mover la reproducción. Comprueba que el dispositivo esté activo, vinculado y tenga acceso a tu servidor de música.",
     "uncertain": "Conexión interrumpida. Vuelve a conectarte al dispositivo seleccionado para comprobar la reproducción.",

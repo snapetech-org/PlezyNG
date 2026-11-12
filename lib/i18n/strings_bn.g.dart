@@ -3022,8 +3022,6 @@ class _Translations$cast$bn extends Translations$cast$en {
 	@override String get subtitle => 'সাবটাইটেল';
 	@override String get serverNotAvailable => 'মিডিয়া সার্ভার পাওয়া যায় না।';
 	@override String get stopCasting => 'কাস্ট করা বন্ধ করুন';
-	@override String get castToDevice => 'ডিভাইসে কাস্ট করুন';
-	@override String get noEpisodeAvailable => 'খেলাটি খেলতে পাওয়া যায় না।';
 	@override String get startFailed => 'সার্ভার দেখুন এবং আবার চেষ্টা করুন।';
 }
 
@@ -4422,7 +4420,6 @@ class _Translations$musicDevices$bn extends Translations$musicDevices$en {
 	@override String get remembered => 'মনে রাখা ডিভাইস';
 	@override String get forget => 'ডিভাইস ভুলে যান';
 	@override String get receive => 'এই ডিভাইসে প্লেব্যাকের অনুমতি দিন';
-	@override String get nearbyHint => 'অন্য ডিভাইসে প্লেব্যাক ডিভাইসের মেনু খুলে সেখানে প্লেব্যাকের অনুমতি দিন।';
 	@override String get receiverHint => 'গান গ্রহণ করতে Pleazyng খোলা রাখুন। এই কোড দিয়ে একবার জোড়া লাগান।';
 	@override String get moveFailed => 'প্লেব্যাক সরানো যায়নি। ডিভাইসটি চালু ও জোড়া লাগানো আছে এবং গান সার্ভারে প্রবেশ করতে পারে কিনা দেখুন।';
 	@override String get uncertain => 'সংযোগ বিচ্ছিন্ন হয়েছে। প্লেব্যাক দেখতে নির্বাচিত ডিভাইসে আবার সংযুক্ত হন।';
@@ -8479,8 +8476,6 @@ extension on TranslationsBn {
 			'cast.subtitle' => 'সাবটাইটেল',
 			'cast.serverNotAvailable' => 'মিডিয়া সার্ভার পাওয়া যায় না।',
 			'cast.stopCasting' => 'কাস্ট করা বন্ধ করুন',
-			'cast.castToDevice' => 'ডিভাইসে কাস্ট করুন',
-			'cast.noEpisodeAvailable' => 'খেলাটি খেলতে পাওয়া যায় না।',
 			'cast.startFailed' => 'সার্ভার দেখুন এবং আবার চেষ্টা করুন।',
 			'automation.noActivePlayback' => 'নিয়ন্ত্রণ করার জন্য কোন সক্রিয় ভিডিও সেশন নেই।',
 			'notifications.newEpisodeTitle' => 'নতুন epizode',
@@ -8629,10 +8624,10 @@ extension on TranslationsBn {
 			'universalMedia.stream' => 'স্ট্রিম ঠিকানা',
 			'universalMedia.playlist' => 'Playlist খেলা',
 			'universalMedia.files' => 'ডিভাইস ফাইল',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'সুরক্ষিত প্রদর্শন পছন্দ',
 			'universalMedia.address' => 'মিডিয়া ঠিকানা',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS preferred. recognized credential বা signature parameters সঙ্গে URLs শুধুমাত্র এই session জন্য ব্যবহার করা হয় এবং পছন্দ হিসাবে সংরক্ষণ করা যাবে না।',
 			'universalMedia.displayName' => 'ডাউনলোড নাম (অ্যাপ্লিকেশন)',
 			'universalMedia.displayNameHelp' => 'খেলোয়াড় এবং সিস্টেম মিডিয়া কন্ট্রোলগুলির জন্য একটি ছোট নাম নির্বাচন করুন।',
@@ -9143,10 +9138,10 @@ extension on TranslationsBn {
 			'sourceSetup.addTrustCertificate' => 'কাস্টম বিশ্বস্ত সার্টিফিকেট যোগ করুন',
 			'sourceSetup.replaceTrustCertificate' => 'সংরক্ষিত কাস্টম সার্টিফিকেট প্রতিস্থাপন করুন',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS সাধারণ NFS ও মাউন্ট সেবার পোর্ট ব্যবহার করে এবং NAS-এ RFC 9289 সমর্থন থাকা প্রয়োজন। TLS 1.3 বাধ্যতামূলক। হোস্টের নাম বা IP সার্টিফিকেটের সঙ্গে মিলতে হবে। এনক্রিপ্ট করা চ্যানেলের ভেতরেও AUTH_SYS UID/GID প্রযোজ্য থাকে।',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'ক্লায়েন্ট সার্টিফিকেট (ঐচ্ছিক)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-কে এই ক্লায়েন্টের পরিচয় যাচাই করতে দেয়; AUTH_SYS ID এখনো NAS এক্সপোর্টের নীতির ওপর নির্ভর করে।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র ব্যবহার করা হবে।',
 			'sourceSetup.replaceIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র প্রতিস্থাপন করুন',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 ক্লায়েন্ট পরিচয়পত্র বেছে নিন',
@@ -9655,13 +9650,12 @@ extension on TranslationsBn {
 			'musicDevices.remembered' => 'মনে রাখা ডিভাইস',
 			'musicDevices.forget' => 'ডিভাইস ভুলে যান',
 			'musicDevices.receive' => 'এই ডিভাইসে প্লেব্যাকের অনুমতি দিন',
-			'musicDevices.nearbyHint' => 'অন্য ডিভাইসে প্লেব্যাক ডিভাইসের মেনু খুলে সেখানে প্লেব্যাকের অনুমতি দিন।',
 			'musicDevices.receiverHint' => 'গান গ্রহণ করতে Pleazyng খোলা রাখুন। এই কোড দিয়ে একবার জোড়া লাগান।',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'প্লেব্যাক সরানো যায়নি। ডিভাইসটি চালু ও জোড়া লাগানো আছে এবং গান সার্ভারে প্রবেশ করতে পারে কিনা দেখুন।',
 			'musicDevices.uncertain' => 'সংযোগ বিচ্ছিন্ন হয়েছে। প্লেব্যাক দেখতে নির্বাচিত ডিভাইসে আবার সংযুক্ত হন।',
 			'musicDevices.away' => 'বাড়ির বাইরে',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'মিউজিক রিলে URL',
 			'musicDevices.relayHint' => 'গ্রহণকারী ডিভাইসে চালু করুন, তারপর একই নেটওয়ার্কে একবার পেয়ার করুন। Pleazyng খোলা রাখুন। রিলে এনক্রিপ্ট করা সঙ্গীত নিয়ন্ত্রণ পাঠায় এবং নেটওয়ার্ক ঠিকানা দেখতে পায়। প্রতিটি প্লেয়ার নিজস্ব মিডিয়া সার্ভার থেকে স্ট্রিম করে।',
 			'musicDevices.relayInvalid' => 'একটি HTTPS রিলে ঠিকানা লিখুন।',

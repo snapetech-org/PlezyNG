@@ -101,7 +101,6 @@ class Translations$cast$pt_PT extends Translations$cast$pt {
 
 	// Translations
 	@override String get subtitle => 'Legendas';
-	@override String get castToDevice => 'Transmitir para dispositivo';
 }
 
 // Path: appIcon
@@ -1392,7 +1391,6 @@ extension on TranslationsPtPt {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
 			'cast.subtitle' => 'Legendas',
-			'cast.castToDevice' => 'Transmitir para dispositivo',
 			'appIcon.defaultIcon' => 'Predefinição',
 			'auth.quickConnect' => 'Ligação rápida',
 			'auth.useQuickConnect' => 'Utilizar Ligação rápida',
@@ -1903,9 +1901,9 @@ extension on TranslationsPtPt {
 			'romm.saveExported' => 'Save exported',
 			'romm.engine' => 'Emulator identity',
 			'romm.slot' => 'Save slot',
+			'romm.core' => 'Core identity',
 			_ => null,
 		} ?? switch (path) {
-			'romm.core' => 'Core identity',
 			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
 			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
 			'romm.keepBoth' => 'Keep both',

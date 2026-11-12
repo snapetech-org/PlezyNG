@@ -3570,8 +3570,6 @@
     "subtitle": "Sari kata",
     "serverNotAvailable": "Media server tidak tersedia.",
     "stopCasting": "Hentikan penghantaran",
-    "castToDevice": "Hantar ke peranti",
-    "noEpisodeAvailable": "Tiada episod yang boleh ditayangkan.",
     "startFailed": "Tidak boleh memulakan casting. semak pelayan dan cuba lagi."
   },
   "automation": {
@@ -5592,7 +5590,6 @@
     "remembered": "Peranti disimpan",
     "forget": "Lupakan peranti",
     "receive": "Benarkan main balik pada peranti ini",
-    "nearbyHint": "Buka pemilih peranti pada peranti lain dan benarkan main balik di sana.",
     "receiverHint": "Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.",
     "moveFailed": "Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.",
     "uncertain": "Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.",

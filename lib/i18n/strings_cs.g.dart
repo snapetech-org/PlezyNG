@@ -3056,8 +3056,6 @@ class _Translations$cast$cs extends Translations$cast$en {
 	@override String get subtitle => 'Titulky';
 	@override String get serverNotAvailable => 'Media server není k dispozici.';
 	@override String get stopCasting => 'Ukončit odesílání';
-	@override String get castToDevice => 'Odeslat do zařízení';
-	@override String get noEpisodeAvailable => 'Neexistuje žádná epizoda k dispozici.';
 	@override String get startFailed => 'Nemůžete začít casting. zkontrolujte server a zkuste znovu.';
 }
 
@@ -4464,7 +4462,6 @@ class _Translations$musicDevices$cs extends Translations$musicDevices$en {
 	@override String get remembered => 'Zapamatovaná zařízení';
 	@override String get forget => 'Zapomenout zařízení';
 	@override String get receive => 'Povolit přehrávání na tomto zařízení';
-	@override String get nearbyHint => 'Na druhém zařízení otevřete nabídku zařízení a povolte tam přehrávání.';
 	@override String get receiverHint => 'Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.';
 	@override String get moveFailed => 'Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.';
 	@override String get uncertain => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.';
@@ -8523,8 +8520,6 @@ extension on TranslationsCs {
 			'cast.subtitle' => 'Titulky',
 			'cast.serverNotAvailable' => 'Media server není k dispozici.',
 			'cast.stopCasting' => 'Ukončit odesílání',
-			'cast.castToDevice' => 'Odeslat do zařízení',
-			'cast.noEpisodeAvailable' => 'Neexistuje žádná epizoda k dispozici.',
 			'cast.startFailed' => 'Nemůžete začít casting. zkontrolujte server a zkuste znovu.',
 			'automation.noActivePlayback' => 'Neexistuje žádná aktivní videozáznamy k ovládání.',
 			'notifications.newEpisodeTitle' => 'Nová epizoda',
@@ -8673,10 +8668,10 @@ extension on TranslationsCs {
 			'universalMedia.stream' => 'Streamová adresa',
 			'universalMedia.playlist' => 'Playlisty',
 			'universalMedia.files' => 'Přístrojové soubory',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Úsporný stream oblíbené',
 			'universalMedia.address' => 'Mediální adresa',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL s uznanými parametry ověřování nebo podpisů se používají pouze pro tuto schůzku a nelze je uložit jako oblíbené.',
 			'universalMedia.displayName' => 'Název zobrazení (volitelné)',
 			'universalMedia.displayNameHelp' => 'Vyberte krátký název pro hráče a systémové médií ovládacích prvků.',
@@ -9187,10 +9182,10 @@ extension on TranslationsCs {
 			'sourceSetup.addTrustCertificate' => 'Přidat vlastní důvěryhodný certifikát',
 			'sourceSetup.replaceTrustCertificate' => 'Nahradit uložený vlastní certifikát',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS používá běžné porty NFS a služby připojení a vyžaduje podporu RFC 9289 na NAS. Je nutné TLS 1.3. Název hostitele nebo IP adresa musí odpovídat certifikátu. UID/GID AUTH_SYS nadále platí i v šifrovaném kanálu.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Klientský certifikát (nepovinné)',
 			'sourceSetup.clientCertificateHelp' => 'Umožňuje NAS ověřit tohoto klienta; ID AUTH_SYS stále podléhají pravidlům exportu NFS na NAS.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Bude použita uložená identita klienta.',
 			'sourceSetup.replaceIdentity' => 'Nahradit uloženou identitu klienta',
 			'sourceSetup.chooseIdentity' => 'Vybrat identitu klienta PKCS#12',
@@ -9699,13 +9694,12 @@ extension on TranslationsCs {
 			'musicDevices.remembered' => 'Zapamatovaná zařízení',
 			'musicDevices.forget' => 'Zapomenout zařízení',
 			'musicDevices.receive' => 'Povolit přehrávání na tomto zařízení',
-			'musicDevices.nearbyHint' => 'Na druhém zařízení otevřete nabídku zařízení a povolte tam přehrávání.',
 			'musicDevices.receiverHint' => 'Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.',
 			'musicDevices.uncertain' => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.',
 			'musicDevices.away' => 'Mimo domov',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'URL hudebního relé',
 			'musicDevices.relayHint' => 'Zapněte na přijímajícím zařízení a jednou spárujte ve stejné síti. Nechte Pleazyng otevřený. Relé přenáší šifrované ovládání hudby a vidí síťové adresy. Každý přehrávač streamuje z vlastního mediálního serveru.',
 			'musicDevices.relayInvalid' => 'Zadejte HTTPS adresu relé.',

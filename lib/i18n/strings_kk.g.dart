@@ -3022,8 +3022,6 @@ class _Translations$cast$kk extends Translations$cast$en {
 	@override String get subtitle => 'Субтитрлер';
 	@override String get serverNotAvailable => 'Медыя сервері не қосқан.';
 	@override String get stopCasting => 'Оданды';
-	@override String get castToDevice => 'Ауыздылықтық';
-	@override String get noEpisodeAvailable => 'Бұл үшін не ескеп келді.';
 	@override String get startFailed => 'Бұл үшін бір-бірімен бір-бірін бір-бірин бір-бірек келді, бір-біру үшін бір-бирімен бір';
 }
 
@@ -4422,7 +4420,6 @@ class _Translations$musicDevices$kk extends Translations$musicDevices$en {
 	@override String get remembered => 'Сақталған құрылғылар';
 	@override String get forget => 'Құрылғыны ұмыту';
 	@override String get receive => 'Осы құрылғыда ойнатуға рұқсат беру';
-	@override String get nearbyHint => 'Басқа құрылғыда ойнату құрылғылары мәзірін ашып, ойнатуға рұқсат беріңіз.';
 	@override String get receiverHint => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.';
 	@override String get moveFailed => 'Ойнатуды көшіру мүмкін болмады. Құрылғының қосулы, жұптастырылған және музыка серверіне қолжетімді екенін тексеріңіз.';
 	@override String get uncertain => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.';
@@ -8479,8 +8476,6 @@ extension on TranslationsKk {
 			'cast.subtitle' => 'Субтитрлер',
 			'cast.serverNotAvailable' => 'Медыя сервері не қосқан.',
 			'cast.stopCasting' => 'Оданды',
-			'cast.castToDevice' => 'Ауыздылықтық',
-			'cast.noEpisodeAvailable' => 'Бұл үшін не ескеп келді.',
 			'cast.startFailed' => 'Бұл үшін бір-бірімен бір-бірін бір-бірин бір-бірек келді, бір-біру үшін бір-бирімен бір',
 			'automation.noActivePlayback' => 'Ауызды видео сессиясы бар.',
 			'notifications.newEpisodeTitle' => 'Епізод',
@@ -8629,10 +8624,10 @@ extension on TranslationsKk {
 			'universalMedia.stream' => 'Тегін адресы',
 			'universalMedia.playlist' => 'Жүзілік',
 			'universalMedia.files' => 'Файлы',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Алдыңғы ең айқын көргенде',
 			'universalMedia.address' => 'Медыялық адресы',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'Өзі сүйікті жабдықтардан тұрып қара сөздерін, аудармаларын жазды.',
 			'universalMedia.displayName' => 'Алдыңғы қағидалар (опциональ)',
 			'universalMedia.displayNameHelp' => 'Қаланың ең айқын көрмесі ержеткен балалардың бір-бірімен танымал.',
@@ -9143,10 +9138,10 @@ extension on TranslationsKk {
 			'sourceSetup.addTrustCertificate' => 'Теңшелетін сенім сертификатын қосу',
 			'sourceSetup.replaceTrustCertificate' => 'Сақталған теңшелетін сертификатты ауыстыру',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS әдеттегі NFS және mount қызметінің порттарын пайдаланады және NAS-та RFC 9289 қолдауын талап етеді. TLS 1.3 қажет. Хост атауы немесе IP мекенжайы сертификатқа сәйкес болуы керек. Шифрланған арнада да AUTH_SYS UID/GID қолданылады.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Клиент сертификаты (міндетті емес)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-қа осы клиентті аутентификациялауға мүмкіндік береді; AUTH_SYS ID мәндері әлі де NAS-тағы NFS ортақ ресурсының ережелеріне тәуелді.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Сақталған клиенттің сәйкестендіру деректері пайдаланылады.',
 			'sourceSetup.replaceIdentity' => 'Сақталған клиенттің сәйкестендіру деректерін ауыстыру',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 клиент сәйкестендіру деректерін таңдау',
@@ -9655,13 +9650,12 @@ extension on TranslationsKk {
 			'musicDevices.remembered' => 'Сақталған құрылғылар',
 			'musicDevices.forget' => 'Құрылғыны ұмыту',
 			'musicDevices.receive' => 'Осы құрылғыда ойнатуға рұқсат беру',
-			'musicDevices.nearbyHint' => 'Басқа құрылғыда ойнату құрылғылары мәзірін ашып, ойнатуға рұқсат беріңіз.',
 			'musicDevices.receiverHint' => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Ойнатуды көшіру мүмкін болмады. Құрылғының қосулы, жұптастырылған және музыка серверіне қолжетімді екенін тексеріңіз.',
 			'musicDevices.uncertain' => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.',
 			'musicDevices.away' => 'Үйден тыс жерде',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'Музыка релесінің URL мекенжайы',
 			'musicDevices.relayHint' => 'Қабылдаушы құрылғыда қосып, бір желіде бір рет жұптастырыңыз. Pleazyng ашық тұрсын. Реле шифрланған музыка пәрмендерін тасымалдайды және желі мекенжайларын көреді. Әр ойнатқыш өз медиа серверінен ағын алады.',
 			'musicDevices.relayInvalid' => 'Реленің HTTPS мекенжайын енгізіңіз.',

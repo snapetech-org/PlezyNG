@@ -3587,8 +3587,6 @@
     "subtitle": "字幕",
     "serverNotAvailable": "媒體伺服器不適用。",
     "stopCasting": "停止加密",
-    "castToDevice": "點選裝置",
-    "noEpisodeAvailable": "沒有任何節目可播放。",
     "startFailed": "無法開始投射,檢查伺服器並嘗試一次。"
   },
   "automation": {
@@ -5614,7 +5612,6 @@
     "remembered": "已儲存的裝置",
     "forget": "忘記裝置",
     "receive": "允許在此裝置上播放",
-    "nearbyHint": "在另一台裝置上開啟播放裝置選單，並允許播放。",
     "receiverHint": "保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。",
     "moveFailed": "無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。",
     "uncertain": "連線中斷。請重新連線所選裝置以檢查播放狀態。",

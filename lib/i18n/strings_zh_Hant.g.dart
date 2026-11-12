@@ -3019,8 +3019,6 @@ class _Translations$cast$zh_Hant extends Translations$cast$zh {
 	@override String get subtitle => '字幕';
 	@override String get serverNotAvailable => '媒體伺服器不適用。';
 	@override String get stopCasting => '停止加密';
-	@override String get castToDevice => '點選裝置';
-	@override String get noEpisodeAvailable => '沒有任何節目可播放。';
 	@override String get startFailed => '無法開始投射,檢查伺服器並嘗試一次。';
 }
 
@@ -4418,7 +4416,6 @@ class _Translations$musicDevices$zh_Hant extends Translations$musicDevices$zh {
 	@override String get remembered => '已儲存的裝置';
 	@override String get forget => '忘記裝置';
 	@override String get receive => '允許在此裝置上播放';
-	@override String get nearbyHint => '在另一台裝置上開啟播放裝置選單，並允許播放。';
 	@override String get receiverHint => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。';
 	@override String get moveFailed => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。';
 	@override String get uncertain => '連線中斷。請重新連線所選裝置以檢查播放狀態。';
@@ -8475,8 +8472,6 @@ extension on TranslationsZhHant {
 			'cast.subtitle' => '字幕',
 			'cast.serverNotAvailable' => '媒體伺服器不適用。',
 			'cast.stopCasting' => '停止加密',
-			'cast.castToDevice' => '點選裝置',
-			'cast.noEpisodeAvailable' => '沒有任何節目可播放。',
 			'cast.startFailed' => '無法開始投射,檢查伺服器並嘗試一次。',
 			'automation.noActivePlayback' => '沒有活躍的影片會話可以控制。',
 			'notifications.newEpisodeTitle' => '新集',
@@ -8625,10 +8620,10 @@ extension on TranslationsZhHant {
 			'universalMedia.stream' => '流地址',
 			'universalMedia.playlist' => '播放列表',
 			'universalMedia.files' => '裝置檔案',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => '儲存流喜愛',
 			'universalMedia.address' => '媒體地址',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS 是優先的. 有認可或簽名引數的 URL 僅用於此會議,並且不能儲存為喜愛。',
 			'universalMedia.displayName' => '顯示名稱(可選)',
 			'universalMedia.displayNameHelp' => '選擇玩家和系統媒體控制器的簡稱。',
@@ -9139,10 +9134,10 @@ extension on TranslationsZhHant {
 			'sourceSetup.addTrustCertificate' => '新增自訂信任憑證',
 			'sourceSetup.replaceTrustCertificate' => '取代已儲存的自訂憑證',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用一般的 NFS 和掛載服務連接埠，並要求 NAS 支援 RFC 9289。必須使用 TLS 1.3。主機名稱或 IP 位址必須與憑證相符。加密通道內仍須使用 AUTH_SYS UID/GID。',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => '用戶端憑證（選填）',
 			'sourceSetup.clientCertificateHelp' => '讓 NAS 驗證此用戶端的身分；AUTH_SYS ID 仍受 NAS 匯出原則約束。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => '將使用已儲存的用戶端身分憑證。',
 			'sourceSetup.replaceIdentity' => '取代已儲存的用戶端身分憑證',
 			'sourceSetup.chooseIdentity' => '選擇 PKCS#12 用戶端身分憑證',
@@ -9651,13 +9646,12 @@ extension on TranslationsZhHant {
 			'musicDevices.remembered' => '已儲存的裝置',
 			'musicDevices.forget' => '忘記裝置',
 			'musicDevices.receive' => '允許在此裝置上播放',
-			'musicDevices.nearbyHint' => '在另一台裝置上開啟播放裝置選單，並允許播放。',
 			'musicDevices.receiverHint' => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。',
 			'musicDevices.uncertain' => '連線中斷。請重新連線所選裝置以檢查播放狀態。',
 			'musicDevices.away' => '外出時',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => '音樂中繼 URL',
 			'musicDevices.relayHint' => '在接收裝置上啟用，然後在同一網路中配對一次。保持 Pleazyng 開啟。中繼傳遞加密的音樂控制，並能看到網路位址。每個播放器從自己的媒體伺服器串流。',
 			'musicDevices.relayInvalid' => '請輸入 HTTPS 中繼位址。',

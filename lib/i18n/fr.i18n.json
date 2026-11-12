@@ -3594,8 +3594,6 @@
     "subtitle": "Sous-titres",
     "serverNotAvailable": "Le serveur de médias n’est pas disponible.",
     "stopCasting": "Arrêter de casting",
-    "castToDevice": "Changer à l'appareil",
-    "noEpisodeAvailable": "Il n'y a pas d'épisode disponible pour le lancer.",
     "startFailed": "Je ne peux pas commencer à lancer. vérifier le serveur et essayer à nouveau."
   },
   "automation": {
@@ -5628,7 +5626,6 @@
     "remembered": "Appareils mémorisés",
     "forget": "Oublier cet appareil",
     "receive": "Autoriser la lecture sur cet appareil",
-    "nearbyHint": "Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.",
     "receiverHint": "Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.",
     "moveFailed": "Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.",
     "uncertain": "Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.",

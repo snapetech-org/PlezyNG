@@ -3098,8 +3098,6 @@ class _Translations$cast$ar extends Translations$cast$en {
 	@override String get subtitle => 'الترجمة';
 	@override String get serverNotAvailable => 'خادم الوسائط غير متاح.';
 	@override String get stopCasting => 'إيقاف البث';
-	@override String get castToDevice => 'البث إلى جهاز';
-	@override String get noEpisodeAvailable => 'لا توجد حلقة متاحة للبث.';
 	@override String get startFailed => 'تعذر بدء البث. تحقق من الخادم وحاول مرة أخرى.';
 }
 
@@ -4514,7 +4512,6 @@ class _Translations$musicDevices$ar extends Translations$musicDevices$en {
 	@override String get remembered => 'الأجهزة المحفوظة';
 	@override String get forget => 'نسيان الجهاز';
 	@override String get receive => 'السماح بالتشغيل على هذا الجهاز';
-	@override String get nearbyHint => 'افتح «التشغيل على» على الجهاز الآخر واسمح بالتشغيل عليه.';
 	@override String get receiverHint => 'أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.';
 	@override String get moveFailed => 'تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.';
 	@override String get uncertain => 'انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل.';
@@ -8579,8 +8576,6 @@ extension on TranslationsAr {
 			'cast.subtitle' => 'الترجمة',
 			'cast.serverNotAvailable' => 'خادم الوسائط غير متاح.',
 			'cast.stopCasting' => 'إيقاف البث',
-			'cast.castToDevice' => 'البث إلى جهاز',
-			'cast.noEpisodeAvailable' => 'لا توجد حلقة متاحة للبث.',
 			'cast.startFailed' => 'تعذر بدء البث. تحقق من الخادم وحاول مرة أخرى.',
 			'automation.noActivePlayback' => 'لا يوجد جلسة فيديو نشطة للتحكم فيها.',
 			'notifications.newEpisodeTitle' => 'الحلقة الجديدة',
@@ -8729,10 +8724,10 @@ extension on TranslationsAr {
 			'universalMedia.stream' => 'البريد الإلكتروني Stream',
 			'universalMedia.playlist' => 'لعبة',
 			'universalMedia.files' => 'أجهزة الملفات',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'المفضلة التي تم إنقاذها',
 			'universalMedia.address' => 'عناوين وسائل الإعلام',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'يتم استخدام عناوين URL مع المعلمات الاعتمادية أو التوقيع المعترف بها فقط لهذا الجلسة ولا يمكن حفظها على أنها المفضلة.',
 			'universalMedia.displayName' => 'اسم العرض (اختياري )',
 			'universalMedia.displayNameHelp' => 'اختر اسمًا قصيرًا لللاعب ومراقب وسائل الإعلام في النظام.',
@@ -9243,10 +9238,10 @@ extension on TranslationsAr {
 			'sourceSetup.addTrustCertificate' => 'إضافة شهادة ثقة مخصّصة',
 			'sourceSetup.replaceTrustCertificate' => 'استبدال الشهادة المخصّصة المحفوظة',
 			'sourceSetup.nfsTlsHelp' => 'يستخدم RPC-with-TLS منافذ NFS وخدمة التركيب المعتادة، ويتطلب دعم NAS للمعيار RFC 9289. يلزم TLS 1.3. يجب أن يطابق اسم المضيف أو عنوان IP الشهادة. تظل معرّفات AUTH_SYS UID/GID سارية داخل القناة المشفّرة.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'شهادة العميل (اختيارية)',
 			'sourceSetup.clientCertificateHelp' => 'تتيح لـ NAS التحقّق من هوية هذا العميل؛ تظل معرّفات AUTH_SYS خاضعة لسياسة تصدير NAS.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'ستُستخدم هوية العميل المحفوظة.',
 			'sourceSetup.replaceIdentity' => 'استبدال هوية العميل المحفوظة',
 			'sourceSetup.chooseIdentity' => 'اختيار هوية عميل PKCS#12',
@@ -9755,13 +9750,12 @@ extension on TranslationsAr {
 			'musicDevices.remembered' => 'الأجهزة المحفوظة',
 			'musicDevices.forget' => 'نسيان الجهاز',
 			'musicDevices.receive' => 'السماح بالتشغيل على هذا الجهاز',
-			'musicDevices.nearbyHint' => 'افتح «التشغيل على» على الجهاز الآخر واسمح بالتشغيل عليه.',
 			'musicDevices.receiverHint' => 'أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.',
 			'musicDevices.uncertain' => 'انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل.',
 			'musicDevices.away' => 'خارج المنزل',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'عنوان مرحّل الموسيقى',
 			'musicDevices.relayHint' => 'فعّل هذا على جهاز الاستقبال، ثم أقرن الجهازين مرة واحدة على الشبكة نفسها. أبقِ Pleazyng مفتوحًا. ينقل المرحّل أوامر الموسيقى المشفّرة ويرى عناوين الشبكة. يبث كل مشغّل من خادم الوسائط الخاص به.',
 			'musicDevices.relayInvalid' => 'أدخل عنوان مرحّل يستخدم HTTPS.',

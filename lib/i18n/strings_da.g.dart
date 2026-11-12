@@ -3022,8 +3022,6 @@ class _Translations$cast$da extends Translations$cast$en {
 	@override String get subtitle => 'Undertekster';
 	@override String get serverNotAvailable => 'Media server er ikke tilgængelig.';
 	@override String get stopCasting => 'Stop med casting';
-	@override String get castToDevice => 'Sæt på enheden';
-	@override String get noEpisodeAvailable => 'Der er ingen episode til rådighed til at udskrive.';
 	@override String get startFailed => 'Kan ikke begynde at kaste. tjek serveren og prøv igen.';
 }
 
@@ -4422,7 +4420,6 @@ class _Translations$musicDevices$da extends Translations$musicDevices$en {
 	@override String get remembered => 'Huskede enheder';
 	@override String get forget => 'Glem enhed';
 	@override String get receive => 'Tillad afspilning på denne enhed';
-	@override String get nearbyHint => 'Åbn enhedsmenuen på den anden enhed, og tillad afspilning der.';
 	@override String get receiverHint => 'Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.';
 	@override String get moveFailed => 'Kunne ikke flytte afspilningen. Kontrollér, at enheden er vågen, parret og har adgang til din musikserver.';
 	@override String get uncertain => 'Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.';
@@ -8479,8 +8476,6 @@ extension on TranslationsDa {
 			'cast.subtitle' => 'Undertekster',
 			'cast.serverNotAvailable' => 'Media server er ikke tilgængelig.',
 			'cast.stopCasting' => 'Stop med casting',
-			'cast.castToDevice' => 'Sæt på enheden',
-			'cast.noEpisodeAvailable' => 'Der er ingen episode til rådighed til at udskrive.',
 			'cast.startFailed' => 'Kan ikke begynde at kaste. tjek serveren og prøv igen.',
 			'automation.noActivePlayback' => 'Der er ingen aktive video sessioner til at styre.',
 			'notifications.newEpisodeTitle' => 'Ny episode',
@@ -8629,10 +8624,10 @@ extension on TranslationsDa {
 			'universalMedia.stream' => 'Stream adresse',
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Enheder filer',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Saved stream favoritter',
 			'universalMedia.address' => 'Medieadresse',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL\'er med anerkendte akkrediterings- eller underskriftsparametre bruges kun til denne session og kan ikke gemmes som favoritter.',
 			'universalMedia.displayName' => 'Navn på billedet (optional)',
 			'universalMedia.displayNameHelp' => 'Vælg et kort navn for spilleren og systemmediakontroller.',
@@ -9143,10 +9138,10 @@ extension on TranslationsDa {
 			'sourceSetup.addTrustCertificate' => 'Tilføj brugerdefineret tillidscertifikat',
 			'sourceSetup.replaceTrustCertificate' => 'Erstat gemt brugerdefineret certifikat',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS bruger de sædvanlige NFS- og monteringsporte og kræver, at NAS-enheden understøtter RFC 9289. TLS 1.3 er påkrævet. Værtsnavnet eller IP-adressen skal svare til certifikatet. AUTH_SYS UID/GID gælder stadig i den krypterede kanal.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Klientcertifikat (valgfrit)',
 			'sourceSetup.clientCertificateHelp' => 'Lader NAS-enheden godkende denne klient; AUTH_SYS-ID’er afhænger stadig af reglerne for NAS-enhedens NFS-deling.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'En gemt klientidentitet vil blive brugt.',
 			'sourceSetup.replaceIdentity' => 'Erstat gemt klientidentitet',
 			'sourceSetup.chooseIdentity' => 'Vælg PKCS#12-klientidentitet',
@@ -9655,13 +9650,12 @@ extension on TranslationsDa {
 			'musicDevices.remembered' => 'Huskede enheder',
 			'musicDevices.forget' => 'Glem enhed',
 			'musicDevices.receive' => 'Tillad afspilning på denne enhed',
-			'musicDevices.nearbyHint' => 'Åbn enhedsmenuen på den anden enhed, og tillad afspilning der.',
 			'musicDevices.receiverHint' => 'Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Kunne ikke flytte afspilningen. Kontrollér, at enheden er vågen, parret og har adgang til din musikserver.',
 			'musicDevices.uncertain' => 'Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.',
 			'musicDevices.away' => 'Uden for hjemmet',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'URL til musikrelæ',
 			'musicDevices.relayHint' => 'Aktivér på modtageren, og par én gang på samme netværk. Hold Pleazyng åben. Relæet sender krypteret musikstyring og ser netværksadresser. Hver afspiller streamer fra sin egen medieserver.',
 			'musicDevices.relayInvalid' => 'Indtast en HTTPS-adresse til relæet.',

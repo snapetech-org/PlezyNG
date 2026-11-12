@@ -3627,8 +3627,6 @@
     "subtitle": "Titulky",
     "serverNotAvailable": "Media server není k dispozici.",
     "stopCasting": "Ukončit odesílání",
-    "castToDevice": "Odeslat do zařízení",
-    "noEpisodeAvailable": "Neexistuje žádná epizoda k dispozici.",
     "startFailed": "Nemůžete začít casting. zkontrolujte server a zkuste znovu."
   },
   "automation": {
@@ -5667,7 +5665,6 @@
     "remembered": "Zapamatovaná zařízení",
     "forget": "Zapomenout zařízení",
     "receive": "Povolit přehrávání na tomto zařízení",
-    "nearbyHint": "Na druhém zařízení otevřete nabídku zařízení a povolte tam přehrávání.",
     "receiverHint": "Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.",
     "moveFailed": "Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.",
     "uncertain": "Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.",

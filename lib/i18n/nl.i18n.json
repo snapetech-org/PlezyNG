@@ -3591,8 +3591,6 @@
     "subtitle": "Ondertitels",
     "serverNotAvailable": "De media server is niet beschikbaar.",
     "stopCasting": "Stop met casting",
-    "castToDevice": "Cast naar apparaat",
-    "noEpisodeAvailable": "Er is geen episode beschikbaar om te casten.",
     "startFailed": "Kan niet beginnen met casting. check the server and try again."
   },
   "automation": {
@@ -5619,7 +5617,6 @@
     "remembered": "Onthouden apparaten",
     "forget": "Apparaat vergeten",
     "receive": "Afspelen op dit apparaat toestaan",
-    "nearbyHint": "Open de apparaatkiezer op het andere apparaat en sta afspelen daar toe.",
     "receiverHint": "Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.",
     "moveFailed": "Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.",
     "uncertain": "Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.",

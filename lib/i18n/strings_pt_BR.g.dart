@@ -100,7 +100,6 @@ class Translations$cast$pt_BR extends Translations$cast$pt {
 
 	// Translations
 	@override String get subtitle => 'Legendas';
-	@override String get castToDevice => 'Transmitir para o dispositivo';
 }
 
 // Path: appIcon
@@ -1375,7 +1374,6 @@ extension on TranslationsPtBr {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
 			'cast.subtitle' => 'Legendas',
-			'cast.castToDevice' => 'Transmitir para o dispositivo',
 			'appIcon.defaultIcon' => 'Padrão',
 			'auth.quickConnect' => 'Conexão rápida',
 			'auth.useQuickConnect' => 'Usar Conexão Rápida',
@@ -1886,9 +1884,9 @@ extension on TranslationsPtBr {
 			'romm.useServer' => 'Use server copy',
 			'romm.replaceServer' => 'Replace server copy',
 			'romm.pendingSaves' => 'Saves waiting to sync',
+			'romm.sync' => 'Sync saves',
 			_ => null,
 		} ?? switch (path) {
-			'romm.sync' => 'Sync saves',
 			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
 			'romm.pause' => 'Pause',
 			'romm.kContinue' => 'Continue',

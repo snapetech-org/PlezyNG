@@ -3003,8 +3003,6 @@ class _Translations$cast$th extends Translations$cast$en {
 	@override String get subtitle => 'คำบรรยาย';
 	@override String get serverNotAvailable => 'เซิร์ฟเวอร์สื่อไม่สามารถใช้ได้';
 	@override String get stopCasting => 'หยุดแคสต์';
-	@override String get castToDevice => 'แคสต์ไปยังอุปกรณ์';
-	@override String get noEpisodeAvailable => 'ไม่มีส่วนที่สามารถปล่อยตัวได้';
 	@override String get startFailed => 'ไม่สามารถเริ่ม casting ตรวจสอบเซิร์ฟเวอร์และลองอีกครั้ง';
 }
 
@@ -4399,7 +4397,6 @@ class _Translations$musicDevices$th extends Translations$musicDevices$en {
 	@override String get remembered => 'อุปกรณ์ที่บันทึกไว้';
 	@override String get forget => 'ลืมอุปกรณ์';
 	@override String get receive => 'อนุญาตให้เล่นบนอุปกรณ์นี้';
-	@override String get nearbyHint => 'เปิดตัวเลือกอุปกรณ์บนอีกอุปกรณ์ แล้วอนุญาตให้เล่นที่นั่น';
 	@override String get receiverHint => 'เปิด Pleazyng ไว้เพื่อรับเพลง จับคู่ครั้งเดียวด้วยรหัสนี้';
 	@override String get moveFailed => 'ย้ายการเล่นไม่ได้ ตรวจสอบว่าอุปกรณ์เปิดอยู่ จับคู่แล้ว และเข้าถึงเซิร์ฟเวอร์เพลงได้';
 	@override String get uncertain => 'การเชื่อมต่อขัดข้อง เชื่อมต่ออุปกรณ์ที่เลือกอีกครั้งเพื่อตรวจสอบการเล่น';
@@ -8454,8 +8451,6 @@ extension on TranslationsTh {
 			'cast.subtitle' => 'คำบรรยาย',
 			'cast.serverNotAvailable' => 'เซิร์ฟเวอร์สื่อไม่สามารถใช้ได้',
 			'cast.stopCasting' => 'หยุดแคสต์',
-			'cast.castToDevice' => 'แคสต์ไปยังอุปกรณ์',
-			'cast.noEpisodeAvailable' => 'ไม่มีส่วนที่สามารถปล่อยตัวได้',
 			'cast.startFailed' => 'ไม่สามารถเริ่ม casting ตรวจสอบเซิร์ฟเวอร์และลองอีกครั้ง',
 			'automation.noActivePlayback' => 'ไม่มีเซสชั่นวิดีโอที่มีการใช้งานในการควบคุม',
 			'notifications.newEpisodeTitle' => 'ฉบับใหม่',
@@ -8604,10 +8599,10 @@ extension on TranslationsTh {
 			'universalMedia.stream' => 'หมายเลข Stream',
 			'universalMedia.playlist' => 'เล่น',
 			'universalMedia.files' => 'ไฟล์อุปกรณ์',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'เก็บ Stream มือสมัครเล่น',
 			'universalMedia.address' => 'อ้างอิงสื่อ',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS เป็นความต้องการ URL ที่มีพารามิเตอร์การรับรองหรือสัญญาที่ได้รับการยอมรับจะใช้เฉพาะสําหรับเซสชั่นนี้และไม่สามารถบันทึกเป็นโปรด',
 			'universalMedia.displayName' => 'ชื่อแสดงผล (ตัวเลือก)',
 			'universalMedia.displayNameHelp' => 'เลือกชื่อสั้นสําหรับผู้เล่นและระบบการควบคุมสื่อ',
@@ -9118,10 +9113,10 @@ extension on TranslationsTh {
 			'sourceSetup.addTrustCertificate' => 'เพิ่มใบรับรองความเชื่อถือที่กำหนดเอง',
 			'sourceSetup.replaceTrustCertificate' => 'แทนที่ใบรับรองที่กำหนดเองซึ่งบันทึกไว้',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS ใช้พอร์ต NFS และบริการเมานต์ตามปกติ และ NAS ต้องรองรับ RFC 9289 ต้องใช้ TLS 1.3 ชื่อโฮสต์หรือ IP ต้องตรงกับใบรับรอง AUTH_SYS UID/GID ยังคงมีผลภายในช่องทางที่เข้ารหัส',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'ใบรับรองไคลเอนต์ (ไม่บังคับ)',
 			'sourceSetup.clientCertificateHelp' => 'ช่วยให้ NAS ยืนยันตัวตนของไคลเอนต์นี้ได้ โดย ID ของ AUTH_SYS ยังขึ้นอยู่กับนโยบายส่วนแบ่งปัน NFS ของ NAS',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'จะใช้ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
 			'sourceSetup.replaceIdentity' => 'แทนที่ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
 			'sourceSetup.chooseIdentity' => 'เลือกข้อมูลประจำตัวไคลเอนต์ PKCS#12',
@@ -9630,13 +9625,12 @@ extension on TranslationsTh {
 			'musicDevices.remembered' => 'อุปกรณ์ที่บันทึกไว้',
 			'musicDevices.forget' => 'ลืมอุปกรณ์',
 			'musicDevices.receive' => 'อนุญาตให้เล่นบนอุปกรณ์นี้',
-			'musicDevices.nearbyHint' => 'เปิดตัวเลือกอุปกรณ์บนอีกอุปกรณ์ แล้วอนุญาตให้เล่นที่นั่น',
 			'musicDevices.receiverHint' => 'เปิด Pleazyng ไว้เพื่อรับเพลง จับคู่ครั้งเดียวด้วยรหัสนี้',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'ย้ายการเล่นไม่ได้ ตรวจสอบว่าอุปกรณ์เปิดอยู่ จับคู่แล้ว และเข้าถึงเซิร์ฟเวอร์เพลงได้',
 			'musicDevices.uncertain' => 'การเชื่อมต่อขัดข้อง เชื่อมต่ออุปกรณ์ที่เลือกอีกครั้งเพื่อตรวจสอบการเล่น',
 			'musicDevices.away' => 'นอกบ้าน',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'URL รีเลย์เพลง',
 			'musicDevices.relayHint' => 'เปิดใช้งานบนอุปกรณ์รับ แล้วจับคู่ครั้งเดียวบนเครือข่ายเดียวกัน เปิด Pleazyng ค้างไว้ รีเลย์ส่งคำสั่งเพลงที่เข้ารหัสและเห็นที่อยู่เครือข่ายได้ เครื่องเล่นแต่ละเครื่องสตรีมจากเซิร์ฟเวอร์สื่อของตนเอง',
 			'musicDevices.relayInvalid' => 'ป้อนที่อยู่รีเลย์ HTTPS',

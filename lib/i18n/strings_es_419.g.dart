@@ -100,7 +100,6 @@ class _Translations$cast$es_419 extends Translations$cast$es {
 
 	// Translations
 	@override String get subtitle => 'Subtítulos';
-	@override String get castToDevice => 'Emitir en dispositivo';
 }
 
 // Path: appIcon
@@ -1366,7 +1365,6 @@ extension on TranslationsEs419 {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
 			'cast.subtitle' => 'Subtítulos',
-			'cast.castToDevice' => 'Emitir en dispositivo',
 			'appIcon.defaultIcon' => 'Por defecto',
 			'auth.quickConnect' => 'Conexión rápida',
 			'auth.useQuickConnect' => 'Usar «Conexión rápida»',
@@ -1877,9 +1875,9 @@ extension on TranslationsEs419 {
 			'romm.saveAndExit' => 'Save and exit',
 			'romm.exitWithoutSaving' => 'Exit without saving',
 			'romm.exitConfirm' => 'Finish this game session?',
+			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
 			_ => null,
 		} ?? switch (path) {
-			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
 			'romm.starting' => 'Starting game…',
 			'romm.connecting' => 'Connecting…',
 			'romm.busy' => 'The streaming computer is occupied.',

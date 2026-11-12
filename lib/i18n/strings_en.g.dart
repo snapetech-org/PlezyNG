@@ -8641,12 +8641,6 @@ class Translations$cast$en {
 	/// en: 'Stop casting'
 	String get stopCasting => 'Stop casting';
 
-	/// en: 'Cast to device'
-	String get castToDevice => 'Cast to device';
-
-	/// en: 'There is no episode available to cast.'
-	String get noEpisodeAvailable => 'There is no episode available to cast.';
-
 	/// en: 'Could not start casting. Check the server and try again.'
 	String get startFailed => 'Could not start casting. Check the server and try again.';
 }
@@ -14982,9 +14976,6 @@ class Translations$musicDevices$en {
 	/// en: 'Allow playback on this device'
 	String get receive => 'Allow playback on this device';
 
-	/// en: 'Open Play on on the other device and allow playback there.'
-	String get nearbyHint => 'Open Play on on the other device and allow playback there.';
-
 	/// en: 'Keep Pleazyng open to receive music. Pair once using this code.'
 	String get receiverHint => 'Keep Pleazyng open to receive music. Pair once using this code.';
 
@@ -20928,8 +20919,6 @@ extension on Translations {
 			'cast.subtitle' => 'Subtitles',
 			'cast.serverNotAvailable' => 'The media server is not available.',
 			'cast.stopCasting' => 'Stop casting',
-			'cast.castToDevice' => 'Cast to device',
-			'cast.noEpisodeAvailable' => 'There is no episode available to cast.',
 			'cast.startFailed' => 'Could not start casting. Check the server and try again.',
 			'automation.noActivePlayback' => 'There is no active video session to control.',
 			'notifications.newEpisodeTitle' => 'New episode',
@@ -21200,10 +21189,10 @@ extension on Translations {
 			'universalMedia.mediaToolsShortcut' => 'Capture or share media, add search extensions, or use the command line.',
 			'universalMedia.mediaToolsIntro' => 'Choose a focused tool. Capture and stream-out use FFmpeg installed on this desktop. Extensions and CLI commands use bounded HTTPS requests and the existing Open media flow.',
 			'universalMedia.mediaToolsAccessibility' => 'Tool choices and controls work with touch, pointer, keyboard, and D-pad focus. Recording, sharing, and search status changes are announced.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.mediaTool' => 'Media tool',
 			'universalMedia.captureIntro' => 'Record your screen or a camera to an MP4 file, or preview a live input in the player. FFmpeg must be installed and include the H.264 encoder for recording.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
 			'universalMedia.captureSource' => 'Screen or camera',
 			'universalMedia.captureScreen' => 'Screen',
@@ -21714,10 +21703,10 @@ extension on Translations {
 			'games.qrHelp' => 'Scan to open the PIN page. The QR code contains only the computer address, never a password or pairing credential.',
 			'games.refreshGames' => 'Refresh games',
 			'games.play' => 'Play',
-			_ => null,
-		} ?? switch (path) {
 			'games.recent' => 'Recently played',
 			'games.favorites' => 'Favorites',
+			_ => null,
+		} ?? switch (path) {
 			'games.allGames' => 'All games',
 			'games.search' => 'Find a game',
 			'games.noMatches' => 'No games match this search.',
@@ -22228,10 +22217,10 @@ extension on Translations {
 			'subtitleAiUi.subtitleOperationFailed' => ({required Object error}) => 'Subtitle operation failed: ${error}',
 			'subtitleAiUi.speechLanguage' => 'Speech language',
 			'subtitleAiUi.autoDetect' => 'Auto-detect',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
 			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.inferenceBackend' => 'Inference backend',
 			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
@@ -22742,10 +22731,10 @@ extension on Translations {
 			'karaokeUi.openRequestKiosk' => 'Open request kiosk',
 			'karaokeUi.theKioskLimitsThisScreenToSongRequestsUse' => 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.',
 			'karaokeUi.savedSets' => 'Saved sets',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.createASetlist' => 'Create a setlist',
 			'karaokeUi.songs' => ({required Object value1}) => '${value1} songs',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.queueThisSetlist' => 'Queue this setlist',
 			'karaokeUi.auditCompleteOfflineAssets' => 'Audit complete offline assets',
 			'karaokeUi.removeSetlist' => 'Remove setlist',
@@ -22960,7 +22949,6 @@ extension on Translations {
 			'musicDevices.remembered' => 'Remembered devices',
 			'musicDevices.forget' => 'Forget device',
 			'musicDevices.receive' => 'Allow playback on this device',
-			'musicDevices.nearbyHint' => 'Open Play on on the other device and allow playback there.',
 			'musicDevices.receiverHint' => 'Keep Pleazyng open to receive music. Pair once using this code.',
 			'musicDevices.moveFailed' => 'Could not move playback. Check that the device is awake, paired, and can access your music server.',
 			'musicDevices.uncertain' => 'Connection interrupted. Reconnect to the selected device to check playback.',

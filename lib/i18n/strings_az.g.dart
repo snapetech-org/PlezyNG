@@ -3022,8 +3022,6 @@ class _Translations$cast$az extends Translations$cast$en {
 	@override String get subtitle => 'Altyazılar';
 	@override String get serverNotAvailable => 'Medya serveri yoxdur.';
 	@override String get stopCasting => 'Qısağı durdurma';
-	@override String get castToDevice => 'Təlimə qalıb';
-	@override String get noEpisodeAvailable => 'Bu bölümdə oynamaq mümkün deyil.';
 	@override String get startFailed => 'Yayımı başlatmaq mümkün olmadı. Serveri yoxlayın və yenidən cəhd edin.';
 }
 
@@ -4422,7 +4420,6 @@ class _Translations$musicDevices$az extends Translations$musicDevices$en {
 	@override String get remembered => 'Yadda saxlanmış cihazlar';
 	@override String get forget => 'Cihazı unut';
 	@override String get receive => 'Bu cihazda səsləndirməyə icazə ver';
-	@override String get nearbyHint => 'Digər cihazda səsləndirmə menyusunu açın və səsləndirməyə icazə verin.';
 	@override String get receiverHint => 'Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.';
 	@override String get moveFailed => 'Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.';
 	@override String get uncertain => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.';
@@ -8479,8 +8476,6 @@ extension on TranslationsAz {
 			'cast.subtitle' => 'Altyazılar',
 			'cast.serverNotAvailable' => 'Medya serveri yoxdur.',
 			'cast.stopCasting' => 'Qısağı durdurma',
-			'cast.castToDevice' => 'Təlimə qalıb',
-			'cast.noEpisodeAvailable' => 'Bu bölümdə oynamaq mümkün deyil.',
 			'cast.startFailed' => 'Yayımı başlatmaq mümkün olmadı. Serveri yoxlayın və yenidən cəhd edin.',
 			'automation.noActivePlayback' => 'Video-kontroleyi kontrol etmək mümkün deyil.',
 			'notifications.newEpisodeTitle' => 'Yeni epizod',
@@ -8629,10 +8624,10 @@ extension on TranslationsAz {
 			'universalMedia.stream' => 'Trafik adresi',
 			'universalMedia.playlist' => 'Oyunçı',
 			'universalMedia.files' => 'Fillər',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Sürücüsüz favoritlər',
 			'universalMedia.address' => 'Medyanın adresi',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS-i tercih edilir. tanınmış kimlik və ya imza parametrləri olan URL-lər yalnız bu oturum üçün istifadə edilir və favori olarak saklanamaz.',
 			'universalMedia.displayName' => 'Görüntülər adı (optional)',
 			'universalMedia.displayNameHelp' => 'Bir oyuncu və sistem medya kontrolləri üçün kısa adı seçin.',
@@ -9143,10 +9138,10 @@ extension on TranslationsAz {
 			'sourceSetup.addTrustCertificate' => 'Xüsusi etibar sertifikatı əlavə et',
 			'sourceSetup.replaceTrustCertificate' => 'Yadda saxlanmış xüsusi sertifikatı əvəz et',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS adi NFS və mount xidməti portlarını istifadə edir və NAS-da RFC 9289 dəstəyi tələb edir. TLS 1.3 tələb olunur. Host adı və ya IP ünvanı sertifikata uyğun gəlməlidir. Şifrələnmiş kanalda da AUTH_SYS UID/GID qüvvədə qalır.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Klient sertifikatı (istəyə bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-a bu klientin kimliyini təsdiqləməyə imkan verir; AUTH_SYS ID-ləri yenə NAS-ın NFS paylaşım qaydalarından asılıdır.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Yadda saxlanmış klient kimlik məlumatları istifadə olunacaq.',
 			'sourceSetup.replaceIdentity' => 'Yadda saxlanmış klient kimlik məlumatlarını əvəz et',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 klient kimlik məlumatlarını seç',
@@ -9655,13 +9650,12 @@ extension on TranslationsAz {
 			'musicDevices.remembered' => 'Yadda saxlanmış cihazlar',
 			'musicDevices.forget' => 'Cihazı unut',
 			'musicDevices.receive' => 'Bu cihazda səsləndirməyə icazə ver',
-			'musicDevices.nearbyHint' => 'Digər cihazda səsləndirmə menyusunu açın və səsləndirməyə icazə verin.',
 			'musicDevices.receiverHint' => 'Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.',
 			'musicDevices.uncertain' => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.',
 			'musicDevices.away' => 'Evdən kənarda',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'Musiqi rele ünvanı',
 			'musicDevices.relayHint' => 'Qəbul edən cihazda aktivləşdirin, sonra eyni şəbəkədə bir dəfə qoşalaşdırın. Pleazyng açıq qalsın. Rele şifrələnmiş musiqi əmrlərini ötürür və şəbəkə ünvanlarını görür. Hər pleyer öz media serverindən yayımlayır.',
 			'musicDevices.relayInvalid' => 'HTTPS rele ünvanı daxil edin.',

@@ -1,7 +1,6 @@
 {
   "cast": {
-    "subtitle": "Sous-titres",
-    "castToDevice": "Diffuser sur l'appareil"
+    "subtitle": "Sous-titres"
   },
   "appIcon": {
     "defaultIcon": "Par défaut"

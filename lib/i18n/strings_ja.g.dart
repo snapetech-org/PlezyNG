@@ -3018,8 +3018,6 @@ class _Translations$cast$ja extends Translations$cast$en {
 	@override String get subtitle => '字幕';
 	@override String get serverNotAvailable => 'メディアサーバーは利用できません。';
 	@override String get stopCasting => 'キャストをやめる';
-	@override String get castToDevice => 'デバイスにキャスト';
-	@override String get noEpisodeAvailable => '出演可能なエピソードはありません。';
 	@override String get startFailed => 'サーバーをチェックして再度試してみる';
 }
 
@@ -4417,7 +4415,6 @@ class _Translations$musicDevices$ja extends Translations$musicDevices$en {
 	@override String get remembered => '保存済みデバイス';
 	@override String get forget => 'デバイスを削除';
 	@override String get receive => 'このデバイスでの再生を許可';
-	@override String get nearbyHint => 'もう一方のデバイスで再生先を開き、再生を許可してください。';
 	@override String get receiverHint => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。';
 	@override String get moveFailed => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。';
 	@override String get uncertain => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。';
@@ -8474,8 +8471,6 @@ extension on TranslationsJa {
 			'cast.subtitle' => '字幕',
 			'cast.serverNotAvailable' => 'メディアサーバーは利用できません。',
 			'cast.stopCasting' => 'キャストをやめる',
-			'cast.castToDevice' => 'デバイスにキャスト',
-			'cast.noEpisodeAvailable' => '出演可能なエピソードはありません。',
 			'cast.startFailed' => 'サーバーをチェックして再度試してみる',
 			'automation.noActivePlayback' => 'コントロールする動画セッションはありません。',
 			'notifications.newEpisodeTitle' => '新エピソード',
@@ -8624,10 +8619,10 @@ extension on TranslationsJa {
 			'universalMedia.stream' => 'ストリームアドレス',
 			'universalMedia.playlist' => 'プレイリスト',
 			'universalMedia.files' => 'デバイスファイル',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'お気に入りのSave Stream',
 			'universalMedia.address' => 'メディアアドレス',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => '認定認証またはサインパラメーターを持つURLは、このセッションのみに使用され、お気に入りとして保存することはできません。',
 			'universalMedia.displayName' => 'ディスプレイ名(オプション)',
 			'universalMedia.displayNameHelp' => 'プレイヤーとシステムメディアコントロールのための短い名前を選択します。',
@@ -9138,10 +9133,10 @@ extension on TranslationsJa {
 			'sourceSetup.addTrustCertificate' => 'カスタムの信頼証明書を追加',
 			'sourceSetup.replaceTrustCertificate' => '保存済みのカスタム証明書を置き換え',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS は通常の NFS およびマウントサービスのポートを使用し、NAS の RFC 9289 対応が必要です。TLS 1.3 が必須です。ホスト名または IP アドレスは証明書と一致する必要があります。暗号化された通信でも AUTH_SYS UID/GID は引き続き適用されます。',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'クライアント証明書（任意）',
 			'sourceSetup.clientCertificateHelp' => 'NAS がこのクライアントを認証できるようにします。AUTH_SYS ID は引き続き NAS のエクスポートポリシーに従います。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => '保存済みのクライアント認証情報を使用します。',
 			'sourceSetup.replaceIdentity' => '保存済みのクライアント認証情報を置き換え',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 クライアント認証情報を選択',
@@ -9650,13 +9645,12 @@ extension on TranslationsJa {
 			'musicDevices.remembered' => '保存済みデバイス',
 			'musicDevices.forget' => 'デバイスを削除',
 			'musicDevices.receive' => 'このデバイスでの再生を許可',
-			'musicDevices.nearbyHint' => 'もう一方のデバイスで再生先を開き、再生を許可してください。',
 			'musicDevices.receiverHint' => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。',
 			'musicDevices.uncertain' => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。',
 			'musicDevices.away' => '外出先から',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => '音楽リレーのURL',
 			'musicDevices.relayHint' => '受信デバイスで有効にし、同じネットワークで一度ペアリングしてください。Pleazyngを開いたままにします。リレーは暗号化された音楽操作を転送し、ネットワークアドレスを参照します。各プレーヤーは自身のメディアサーバーから再生します。',
 			'musicDevices.relayInvalid' => 'リレーのHTTPSアドレスを入力してください。',

@@ -3030,8 +3030,6 @@ class Translations$cast$es extends Translations$cast$en {
 	@override String get subtitle => 'Subtítulos';
 	@override String get serverNotAvailable => 'El servidor de medios no está disponible.';
 	@override String get stopCasting => 'Dejar de casting';
-	@override String get castToDevice => 'Casta en el dispositivo';
-	@override String get noEpisodeAvailable => 'No hay episodio disponible para ser lanzado.';
 	@override String get startFailed => 'No puedo empezar a casting. comprobar el servidor y intentarlo de nuevo.';
 }
 
@@ -4512,7 +4510,6 @@ class Translations$musicDevices$es extends Translations$musicDevices$en {
 	@override String get remembered => 'Dispositivos guardados';
 	@override String get forget => 'Olvidar dispositivo';
 	@override String get receive => 'Permitir reproducción en este dispositivo';
-	@override String get nearbyHint => 'Abre el selector de dispositivos en el otro dispositivo y permite la reproducción allí.';
 	@override String get receiverHint => 'Mantén Pleazyng abierto para recibir música. Vincula una vez con este código.';
 	@override String get moveFailed => 'No se pudo mover la reproducción. Comprueba que el dispositivo esté activo, vinculado y tenga acceso a tu servidor de música.';
 	@override String get uncertain => 'Conexión interrumpida. Vuelve a conectarte al dispositivo seleccionado para comprobar la reproducción.';
@@ -8622,8 +8619,6 @@ extension on TranslationsEs {
 			'cast.subtitle' => 'Subtítulos',
 			'cast.serverNotAvailable' => 'El servidor de medios no está disponible.',
 			'cast.stopCasting' => 'Dejar de casting',
-			'cast.castToDevice' => 'Casta en el dispositivo',
-			'cast.noEpisodeAvailable' => 'No hay episodio disponible para ser lanzado.',
 			'cast.startFailed' => 'No puedo empezar a casting. comprobar el servidor y intentarlo de nuevo.',
 			'automation.noActivePlayback' => 'No hay sesión de vídeo activa para controlar.',
 			'notifications.newEpisodeTitle' => 'Nuevo episodio',
@@ -8753,10 +8748,10 @@ extension on TranslationsEs {
 			'homeLayout.resetHeroButton' => 'Reset el layout de héroe a stock Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Reorganización desbloqueada',
 			'homeLayout.reorderingLocked' => 'Reorganización localizada',
-			_ => null,
-		} ?? switch (path) {
 			'homeLayout.rowsCanBeDragged' => 'Las rayas pueden ser atraídas — tapar el cierre para evitar que',
 			'homeLayout.tapLockToDrag' => 'Toma el cierre para sacar líneas',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.customRowLabel' => ({required Object title}) => 'Cálculo: ${title}',
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Ocultar',
@@ -9267,10 +9262,10 @@ extension on TranslationsEs {
 			'sourceSetup.dlnaNone' => 'No se encontraron servidores DLNA. Introduce manualmente la URL de descripción del dispositivo.',
 			'sourceSetup.dlnaServers' => 'Servidores multimedia DLNA',
 			'sourceSetup.dlnaUnavailable' => 'La detección DLNA no está disponible en esta red. Introduce manualmente la URL de descripción del dispositivo.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.dlnaSearching' => 'Buscando servidores DLNA en la red local',
 			'sourceSetup.networkSearching' => 'Buscando en la red local…',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.dlnaDiscover' => 'Detectar servidores DLNA',
 			'sourceSetup.dlnaHelp' => 'La detección depende de la multidifusión de la red local. Si no aparece ningún servidor, introduce arriba su URL de descripción del dispositivo.',
 			'sourceSetup.dlnaRoot' => 'ID de objeto DLNA; déjalo en blanco para usar la raíz del dispositivo.',
@@ -9781,10 +9776,10 @@ extension on TranslationsEs {
 			'musicExperience.exitDriving' => 'Salir de la vista de conducción',
 			'musicExperience.signalPath' => 'Ruta de la señal de audio',
 			'musicExperience.source' => 'Fuente',
-			_ => null,
-		} ?? switch (path) {
 			'musicExperience.local' => 'Audio descargado',
 			'musicExperience.network' => 'Audio del servidor',
+			_ => null,
+		} ?? switch (path) {
 			'musicExperience.engine' => 'Motor de reproducción',
 			'musicExperience.codec' => 'Códec de origen',
 			'musicExperience.channels' => 'Canales de origen',
@@ -9881,7 +9876,6 @@ extension on TranslationsEs {
 			'musicDevices.remembered' => 'Dispositivos guardados',
 			'musicDevices.forget' => 'Olvidar dispositivo',
 			'musicDevices.receive' => 'Permitir reproducción en este dispositivo',
-			'musicDevices.nearbyHint' => 'Abre el selector de dispositivos en el otro dispositivo y permite la reproducción allí.',
 			'musicDevices.receiverHint' => 'Mantén Pleazyng abierto para recibir música. Vincula una vez con este código.',
 			'musicDevices.moveFailed' => 'No se pudo mover la reproducción. Comprueba que el dispositivo esté activo, vinculado y tenga acceso a tu servidor de música.',
 			'musicDevices.uncertain' => 'Conexión interrumpida. Vuelve a conectarte al dispositivo seleccionado para comprobar la reproducción.',

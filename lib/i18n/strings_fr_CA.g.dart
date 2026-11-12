@@ -100,7 +100,6 @@ class _Translations$cast$fr_CA extends Translations$cast$fr {
 
 	// Translations
 	@override String get subtitle => 'Sous-titres';
-	@override String get castToDevice => 'Diffuser sur l\'appareil';
 }
 
 // Path: appIcon
@@ -1337,7 +1336,6 @@ extension on TranslationsFrCa {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
 			'cast.subtitle' => 'Sous-titres',
-			'cast.castToDevice' => 'Diffuser sur l\'appareil',
 			'appIcon.defaultIcon' => 'Par défaut',
 			'auth.quickConnect' => 'Connexion rapide',
 			'auth.useQuickConnect' => 'Utiliser la connexion rapide',
@@ -1848,9 +1846,9 @@ extension on TranslationsFrCa {
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',
 			'romm.touchControls' => 'Touch controls',
 			'romm.controls' => 'Controls',
+			'romm.resetControls' => 'Reset controls',
 			_ => null,
 		} ?? switch (path) {
-			'romm.resetControls' => 'Reset controls',
 			'romm.playerOne' => 'Player 1',
 			'romm.select' => 'Select',
 			'romm.start' => 'Start',

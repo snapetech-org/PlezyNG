@@ -3591,8 +3591,6 @@
     "subtitle": "Altyazılar",
     "serverNotAvailable": "Medya serveri yoxdur.",
     "stopCasting": "Qısağı durdurma",
-    "castToDevice": "Təlimə qalıb",
-    "noEpisodeAvailable": "Bu bölümdə oynamaq mümkün deyil.",
     "startFailed": "Yayımı başlatmaq mümkün olmadı. Serveri yoxlayın və yenidən cəhd edin."
   },
   "automation": {
@@ -5619,7 +5617,6 @@
     "remembered": "Yadda saxlanmış cihazlar",
     "forget": "Cihazı unut",
     "receive": "Bu cihazda səsləndirməyə icazə ver",
-    "nearbyHint": "Digər cihazda səsləndirmə menyusunu açın və səsləndirməyə icazə verin.",
     "receiverHint": "Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.",
     "moveFailed": "Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.",
     "uncertain": "Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.",

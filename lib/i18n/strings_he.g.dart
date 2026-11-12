@@ -3026,8 +3026,6 @@ class _Translations$cast$he extends Translations$cast$en {
 	@override String get subtitle => 'כתוביות';
 	@override String get serverNotAvailable => 'שרת התקשורת אינו זמין.';
 	@override String get stopCasting => 'הפסקת השידור';
-	@override String get castToDevice => 'שידור למכשיר';
-	@override String get noEpisodeAvailable => 'אין פרקים זמינים להורדה.';
 	@override String get startFailed => 'לא יכול להתחיל לגרד.בדוק את השרת ולנסות שוב.';
 }
 
@@ -4430,7 +4428,6 @@ class _Translations$musicDevices$he extends Translations$musicDevices$en {
 	@override String get remembered => 'מכשירים שמורים';
 	@override String get forget => 'שכח מכשיר';
 	@override String get receive => 'אפשר ניגון במכשיר זה';
-	@override String get nearbyHint => 'פתח את בורר מכשירי הניגון במכשיר האחר ואפשר בו ניגון.';
 	@override String get receiverHint => 'השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.';
 	@override String get moveFailed => 'לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.';
 	@override String get uncertain => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.';
@@ -8487,8 +8484,6 @@ extension on TranslationsHe {
 			'cast.subtitle' => 'כתוביות',
 			'cast.serverNotAvailable' => 'שרת התקשורת אינו זמין.',
 			'cast.stopCasting' => 'הפסקת השידור',
-			'cast.castToDevice' => 'שידור למכשיר',
-			'cast.noEpisodeAvailable' => 'אין פרקים זמינים להורדה.',
 			'cast.startFailed' => 'לא יכול להתחיל לגרד.בדוק את השרת ולנסות שוב.',
 			'automation.noActivePlayback' => 'אין וידאו פעיל כדי לשלוט.',
 			'notifications.newEpisodeTitle' => 'פרק חדש',
@@ -8637,10 +8632,10 @@ extension on TranslationsHe {
 			'universalMedia.stream' => 'כתובת זרם',
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'מכשיר קבצים',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'זרם אחסון האהובים',
 			'universalMedia.address' => 'כתובת התקשורת',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'כתובות URL עם פרמטרים של זיהוי או חתימה מוכרים משמשים רק עבור הפגישה הזו ולא ניתן לשמור אותם כפופולריים.',
 			'universalMedia.displayName' => 'שם התצוגה (אופציונלי)',
 			'universalMedia.displayNameHelp' => 'בחר שם קצר עבור השחקן ואת בקרת מדיה המערכת.',
@@ -9151,10 +9146,10 @@ extension on TranslationsHe {
 			'sourceSetup.addTrustCertificate' => 'הוספת אישור אמון מותאם אישית',
 			'sourceSetup.replaceTrustCertificate' => 'החלפת האישור המותאם אישית השמור',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS משתמש ביציאות הרגילות של NFS ושירות ה־mount, ודורש תמיכה ב־RFC 9289 מצד ה־NAS. נדרש TLS 1.3. שם המארח או כתובת ה־IP חייבים להתאים לאישור. מזהי AUTH_SYS UID/GID עדיין חלים בתוך הערוץ המוצפן.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'אישור לקוח (רשות)',
 			'sourceSetup.clientCertificateHelp' => 'מאפשר ל־NAS לאמת את הלקוח הזה; מזהי AUTH_SYS עדיין כפופים למדיניות הייצוא של ה־NAS.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'ייעשה שימוש בפרטי הזיהוי השמורים של הלקוח.',
 			'sourceSetup.replaceIdentity' => 'החלפת פרטי הזיהוי השמורים של הלקוח',
 			'sourceSetup.chooseIdentity' => 'בחירת פרטי זיהוי לקוח בפורמט PKCS#12',
@@ -9663,13 +9658,12 @@ extension on TranslationsHe {
 			'musicDevices.remembered' => 'מכשירים שמורים',
 			'musicDevices.forget' => 'שכח מכשיר',
 			'musicDevices.receive' => 'אפשר ניגון במכשיר זה',
-			'musicDevices.nearbyHint' => 'פתח את בורר מכשירי הניגון במכשיר האחר ואפשר בו ניגון.',
 			'musicDevices.receiverHint' => 'השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.',
 			'musicDevices.uncertain' => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.',
 			'musicDevices.away' => 'מחוץ לבית',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'כתובת ממסר המוזיקה',
 			'musicDevices.relayHint' => 'יש להפעיל במכשיר המקבל ולצמד פעם אחת באותה רשת. יש להשאיר את Pleazyng פתוח. הממסר מעביר פקודות מוזיקה מוצפנות ורואה כתובות רשת. כל נגן מזרים משרת המדיה שלו.',
 			'musicDevices.relayInvalid' => 'יש להזין כתובת HTTPS של הממסר.',

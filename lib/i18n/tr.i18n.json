@@ -3591,8 +3591,6 @@
     "subtitle": "Altyazılar",
     "serverNotAvailable": "Medya sunucusu mevcut değildir.",
     "stopCasting": "Casting durdurma",
-    "castToDevice": "cihazı atmak",
-    "noEpisodeAvailable": "Çekilecek bir bölüm yok.",
     "startFailed": "Sunucu kontrol edemezsiniz.Sunucu kontrol edin ve tekrar deneyin."
   },
   "automation": {
@@ -5619,7 +5617,6 @@
     "remembered": "Kaydedilen cihazlar",
     "forget": "Cihazı unut",
     "receive": "Bu cihazda oynatmaya izin ver",
-    "nearbyHint": "Diğer cihazda cihaz seçiciyi açın ve orada oynatmaya izin verin.",
     "receiverHint": "Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.",
     "moveFailed": "Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.",
     "uncertain": "Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.",

@@ -3022,8 +3022,6 @@ class _Translations$cast$nl extends Translations$cast$en {
 	@override String get subtitle => 'Ondertitels';
 	@override String get serverNotAvailable => 'De media server is niet beschikbaar.';
 	@override String get stopCasting => 'Stop met casting';
-	@override String get castToDevice => 'Cast naar apparaat';
-	@override String get noEpisodeAvailable => 'Er is geen episode beschikbaar om te casten.';
 	@override String get startFailed => 'Kan niet beginnen met casting. check the server and try again.';
 }
 
@@ -4422,7 +4420,6 @@ class _Translations$musicDevices$nl extends Translations$musicDevices$en {
 	@override String get remembered => 'Onthouden apparaten';
 	@override String get forget => 'Apparaat vergeten';
 	@override String get receive => 'Afspelen op dit apparaat toestaan';
-	@override String get nearbyHint => 'Open de apparaatkiezer op het andere apparaat en sta afspelen daar toe.';
 	@override String get receiverHint => 'Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.';
 	@override String get moveFailed => 'Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.';
 	@override String get uncertain => 'Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.';
@@ -8479,8 +8476,6 @@ extension on TranslationsNl {
 			'cast.subtitle' => 'Ondertitels',
 			'cast.serverNotAvailable' => 'De media server is niet beschikbaar.',
 			'cast.stopCasting' => 'Stop met casting',
-			'cast.castToDevice' => 'Cast naar apparaat',
-			'cast.noEpisodeAvailable' => 'Er is geen episode beschikbaar om te casten.',
 			'cast.startFailed' => 'Kan niet beginnen met casting. check the server and try again.',
 			'automation.noActivePlayback' => 'Er is geen actieve video-sessie om te controleren.',
 			'notifications.newEpisodeTitle' => 'Nieuwe episode',
@@ -8629,10 +8624,10 @@ extension on TranslationsNl {
 			'universalMedia.stream' => 'Streamadres',
 			'universalMedia.playlist' => 'Playlijst',
 			'universalMedia.files' => 'Gerelateerde bestanden',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Save Stream favorieten',
 			'universalMedia.address' => 'Media adres',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL\'s met geïdentificeerde credentiale of signature parameters worden alleen gebruikt voor deze sessie en kunnen niet als favorieten worden opgeslagen.',
 			'universalMedia.displayName' => 'Display naam (optional)',
 			'universalMedia.displayNameHelp' => 'Kies een korte naam voor de speler en system media controles.',
@@ -9143,10 +9138,10 @@ extension on TranslationsNl {
 			'sourceSetup.addTrustCertificate' => 'Aangepast vertrouwenscertificaat toevoegen',
 			'sourceSetup.replaceTrustCertificate' => 'Opgeslagen aangepast certificaat vervangen',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS gebruikt de gebruikelijke poorten van NFS en de mountservice en vereist RFC 9289-ondersteuning op de NAS. TLS 1.3 is verplicht. De hostnaam of het IP-adres moet overeenkomen met het certificaat. AUTH_SYS-UID/GID blijven ook binnen het versleutelde kanaal gelden.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Clientcertificaat (optioneel)',
 			'sourceSetup.clientCertificateHelp' => 'Hiermee kan de NAS deze client authenticeren; AUTH_SYS-ID’s blijven afhankelijk van het beleid van de NFS-share op de NAS.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Er wordt een opgeslagen clientidentiteit gebruikt.',
 			'sourceSetup.replaceIdentity' => 'Opgeslagen clientidentiteit vervangen',
 			'sourceSetup.chooseIdentity' => 'PKCS#12-clientidentiteit kiezen',
@@ -9655,13 +9650,12 @@ extension on TranslationsNl {
 			'musicDevices.remembered' => 'Onthouden apparaten',
 			'musicDevices.forget' => 'Apparaat vergeten',
 			'musicDevices.receive' => 'Afspelen op dit apparaat toestaan',
-			'musicDevices.nearbyHint' => 'Open de apparaatkiezer op het andere apparaat en sta afspelen daar toe.',
 			'musicDevices.receiverHint' => 'Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.',
 			'musicDevices.uncertain' => 'Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.',
 			'musicDevices.away' => 'Buitenshuis',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'URL van muziekrelais',
 			'musicDevices.relayHint' => 'Schakel in op het ontvangende apparaat en koppel eenmaal op hetzelfde netwerk. Houd Pleazyng open. Het relais verstuurt versleutelde muziekbediening en ziet netwerkadressen. Elke speler streamt vanaf zijn eigen mediaserver.',
 			'musicDevices.relayInvalid' => 'Voer een HTTPS-adres voor het relais in.',

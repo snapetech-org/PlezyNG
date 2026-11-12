@@ -3022,8 +3022,6 @@ class _Translations$cast$hu extends Translations$cast$en {
 	@override String get subtitle => 'Feliratok';
 	@override String get serverNotAvailable => 'A média szerver nem elérhető.';
 	@override String get stopCasting => 'Csatlakozás megáll';
-	@override String get castToDevice => 'A készülékre vágás';
-	@override String get noEpisodeAvailable => 'Nincs epizód, amit el lehet dobni.';
 	@override String get startFailed => 'Nem tudok elkezdeni a szétválasztást. ellenőrizze a szervert, és próbáljon újra.';
 }
 
@@ -4422,7 +4420,6 @@ class _Translations$musicDevices$hu extends Translations$musicDevices$en {
 	@override String get remembered => 'Megjegyzett eszközök';
 	@override String get forget => 'Eszköz elfelejtése';
 	@override String get receive => 'Lejátszás engedélyezése ezen az eszközön';
-	@override String get nearbyHint => 'Nyisd meg az eszközválasztót a másik eszközön, és engedélyezd ott a lejátszást.';
 	@override String get receiverHint => 'Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.';
 	@override String get moveFailed => 'Nem sikerült áthelyezni a lejátszást. Ellenőrizd, hogy az eszköz ébren van, párosítva van, és eléri a zenekiszolgálót.';
 	@override String get uncertain => 'A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.';
@@ -8479,8 +8476,6 @@ extension on TranslationsHu {
 			'cast.subtitle' => 'Feliratok',
 			'cast.serverNotAvailable' => 'A média szerver nem elérhető.',
 			'cast.stopCasting' => 'Csatlakozás megáll',
-			'cast.castToDevice' => 'A készülékre vágás',
-			'cast.noEpisodeAvailable' => 'Nincs epizód, amit el lehet dobni.',
 			'cast.startFailed' => 'Nem tudok elkezdeni a szétválasztást. ellenőrizze a szervert, és próbáljon újra.',
 			'automation.noActivePlayback' => 'Nincs aktív videó ülés ellenőrzésére.',
 			'notifications.newEpisodeTitle' => 'Új epizód',
@@ -8629,10 +8624,10 @@ extension on TranslationsHu {
 			'universalMedia.stream' => 'Stream cím',
 			'universalMedia.playlist' => 'játéklisták',
 			'universalMedia.files' => 'készülék fájl',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Megtakarított stream kedvencek',
 			'universalMedia.address' => 'média cím',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'Az elismert hitelesítési vagy aláírási paraméterekkel rendelkező URL-k csak ebben az ülésen használhatók, és nem menthetők kedvencként.',
 			'universalMedia.displayName' => 'A kijelző neve (opcionális)',
 			'universalMedia.displayNameHelp' => 'Válasszon egy rövid nevét a játékos és a rendszer média vezérlők.',
@@ -9143,10 +9138,10 @@ extension on TranslationsHu {
 			'sourceSetup.addTrustCertificate' => 'Egyéni megbízható tanúsítvány hozzáadása',
 			'sourceSetup.replaceTrustCertificate' => 'Mentett egyéni tanúsítvány cseréje',
 			'sourceSetup.nfsTlsHelp' => 'Az RPC-with-TLS a szokásos NFS- és csatolásiszolgáltatás-portokat használja, és RFC 9289-támogatást igényel a NAS-on. TLS 1.3 szükséges. A gépnévnek vagy IP-címnek egyeznie kell a tanúsítvánnyal. Az AUTH_SYS UID/GID a titkosított csatornán belül is érvényes.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Kliens tanúsítványa (nem kötelező)',
 			'sourceSetup.clientCertificateHelp' => 'Lehetővé teszi, hogy a NAS hitelesítse ezt a klienst; az AUTH_SYS-azonosítók továbbra is a NAS NFS-megosztásának szabályaitól függenek.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'A mentett kliensazonosság lesz használva.',
 			'sourceSetup.replaceIdentity' => 'Mentett kliensazonosság cseréje',
 			'sourceSetup.chooseIdentity' => 'PKCS#12-kliensazonosság kiválasztása',
@@ -9655,13 +9650,12 @@ extension on TranslationsHu {
 			'musicDevices.remembered' => 'Megjegyzett eszközök',
 			'musicDevices.forget' => 'Eszköz elfelejtése',
 			'musicDevices.receive' => 'Lejátszás engedélyezése ezen az eszközön',
-			'musicDevices.nearbyHint' => 'Nyisd meg az eszközválasztót a másik eszközön, és engedélyezd ott a lejátszást.',
 			'musicDevices.receiverHint' => 'Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Nem sikerült áthelyezni a lejátszást. Ellenőrizd, hogy az eszköz ébren van, párosítva van, és eléri a zenekiszolgálót.',
 			'musicDevices.uncertain' => 'A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.',
 			'musicDevices.away' => 'Otthontól távol',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'Zenei közvetítő URL-címe',
 			'musicDevices.relayHint' => 'Engedélyezze a fogadó eszközön, majd párosítsa egyszer ugyanazon a hálózaton. Tartsa nyitva a Pleazyng alkalmazást. A közvetítő titkosított zenevezérlést továbbít és látja a hálózati címeket. Minden lejátszó a saját médiaszerveréről streamel.',
 			'musicDevices.relayInvalid' => 'Adja meg a közvetítő HTTPS-címét.',

@@ -3022,8 +3022,6 @@ class _Translations$cast$uz extends Translations$cast$en {
 	@override String get subtitle => 'Subtitrlar';
 	@override String get serverNotAvailable => 'Media server qiziziz.';
 	@override String get stopCasting => 'Castingdan qurtum';
-	@override String get castToDevice => 'U\'zadiya\'da qurtlar';
-	@override String get noEpisodeAvailable => 'U\'zadi\'ni qaytadi yok.';
 	@override String get startFailed => 'U\'zizga qurtlar. serveri kontroldan qurtlar, qaytarga qurtlam.';
 }
 
@@ -4422,7 +4420,6 @@ class _Translations$musicDevices$uz extends Translations$musicDevices$en {
 	@override String get remembered => 'Saqlangan qurilmalar';
 	@override String get forget => 'Qurilmani unutish';
 	@override String get receive => 'Bu qurilmada ijroga ruxsat berish';
-	@override String get nearbyHint => 'Boshqa qurilmada qurilma tanlovini oching va ijroga ruxsat bering.';
 	@override String get receiverHint => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.';
 	@override String get moveFailed => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.';
 	@override String get uncertain => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.';
@@ -8479,8 +8476,6 @@ extension on TranslationsUz {
 			'cast.subtitle' => 'Subtitrlar',
 			'cast.serverNotAvailable' => 'Media server qiziziz.',
 			'cast.stopCasting' => 'Castingdan qurtum',
-			'cast.castToDevice' => 'U\'zadiya\'da qurtlar',
-			'cast.noEpisodeAvailable' => 'U\'zadi\'ni qaytadi yok.',
 			'cast.startFailed' => 'U\'zizga qurtlar. serveri kontroldan qurtlar, qaytarga qurtlam.',
 			'automation.noActivePlayback' => 'Video aktivni sessiya ko‘zadi.',
 			'notifications.newEpisodeTitle' => 'Yeni epizod',
@@ -8629,10 +8624,10 @@ extension on TranslationsUz {
 			'universalMedia.stream' => 'Adresi',
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Filmi',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'Rashida rashida favoritlar',
 			'universalMedia.address' => 'Medya adresi',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS is preferred. identifyated credential o signature parametrisli URL\'lar yalnız bu sesyon için kullanılır və favoritlar olarak kaydılamaz.',
 			'universalMedia.displayName' => 'U‘zizni nom (opcional)',
 			'universalMedia.displayNameHelp' => 'O\'qiz o’qiz, sistem media kontrollar üçün bir shortname seçin.',
@@ -9143,10 +9138,10 @@ extension on TranslationsUz {
 			'sourceSetup.addTrustCertificate' => 'Maxsus ishonch sertifikatini qo‘shish',
 			'sourceSetup.replaceTrustCertificate' => 'Saqlangan maxsus sertifikatni almashtirish',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS odatiy NFS va ulash xizmati portlaridan foydalanadi va NAS da RFC 9289 qo‘llab-quvvatlanishini talab qiladi. TLS 1.3 zarur. Host nomi yoki IP manzili sertifikatga mos kelishi kerak. Shifrlangan kanal ichida ham AUTH_SYS UID/GID amal qiladi.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'Klient sertifikati (ixtiyoriy)',
 			'sourceSetup.clientCertificateHelp' => 'NAS ga ushbu klientni autentifikatsiya qilish imkonini beradi; AUTH_SYS ID-lari baribir NAS dagi NFS umumiy katalogining qoidalariga bog‘liq.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Saqlangan klient identifikatsiya ma’lumotlari ishlatiladi.',
 			'sourceSetup.replaceIdentity' => 'Saqlangan klient identifikatsiya ma’lumotlarini almashtirish',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 klient identifikatsiya ma’lumotlarini tanlash',
@@ -9655,13 +9650,12 @@ extension on TranslationsUz {
 			'musicDevices.remembered' => 'Saqlangan qurilmalar',
 			'musicDevices.forget' => 'Qurilmani unutish',
 			'musicDevices.receive' => 'Bu qurilmada ijroga ruxsat berish',
-			'musicDevices.nearbyHint' => 'Boshqa qurilmada qurilma tanlovini oching va ijroga ruxsat bering.',
 			'musicDevices.receiverHint' => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.',
 			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
 			'musicDevices.away' => 'Uydan tashqarida',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'Musiqa relesi URL manzili',
 			'musicDevices.relayHint' => 'Qabul qiluvchi qurilmada yoqing, so‘ng bir tarmoqda bir marta juftlang. Pleazyng ochiq tursin. Rele shifrlangan musiqa buyruqlarini uzatadi va tarmoq manzillarini ko‘radi. Har bir pleyer o‘z media serveridan uzatadi.',
 			'musicDevices.relayInvalid' => 'HTTPS rele manzilini kiriting.',

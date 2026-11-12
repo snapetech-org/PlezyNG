@@ -3022,8 +3022,6 @@ class _Translations$cast$hi extends Translations$cast$en {
 	@override String get subtitle => 'उपशीर्षक';
 	@override String get serverNotAvailable => 'मीडिया सर्वर उपलब्ध नहीं है।';
 	@override String get stopCasting => 'कास्ट करना बंद करें';
-	@override String get castToDevice => 'डिवाइस पर कास्ट करें';
-	@override String get noEpisodeAvailable => 'खेलने के लिए कोई एपिसोड उपलब्ध नहीं है।';
 	@override String get startFailed => 'सर्वर की जांच करें और फिर से कोशिश करें।';
 }
 
@@ -4422,7 +4420,6 @@ class _Translations$musicDevices$hi extends Translations$musicDevices$en {
 	@override String get remembered => 'सहेजे गए डिवाइस';
 	@override String get forget => 'डिवाइस भूलें';
 	@override String get receive => 'इस डिवाइस पर प्लेबैक की अनुमति दें';
-	@override String get nearbyHint => 'दूसरे डिवाइस पर प्लेबैक डिवाइस का मेनू खोलें और वहाँ प्लेबैक की अनुमति दें।';
 	@override String get receiverHint => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।';
 	@override String get moveFailed => 'प्लेबैक स्थानांतरित नहीं हुआ। जाँचें कि डिवाइस सक्रिय और पेयर है तथा संगीत सर्वर तक पहुँच सकता है।';
 	@override String get uncertain => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।';
@@ -8479,8 +8476,6 @@ extension on TranslationsHi {
 			'cast.subtitle' => 'उपशीर्षक',
 			'cast.serverNotAvailable' => 'मीडिया सर्वर उपलब्ध नहीं है।',
 			'cast.stopCasting' => 'कास्ट करना बंद करें',
-			'cast.castToDevice' => 'डिवाइस पर कास्ट करें',
-			'cast.noEpisodeAvailable' => 'खेलने के लिए कोई एपिसोड उपलब्ध नहीं है।',
 			'cast.startFailed' => 'सर्वर की जांच करें और फिर से कोशिश करें।',
 			'automation.noActivePlayback' => 'नियंत्रित करने के लिए कोई सक्रिय वीडियो सत्र नहीं है।',
 			'notifications.newEpisodeTitle' => 'नए एपिसोड',
@@ -8629,10 +8624,10 @@ extension on TranslationsHi {
 			'universalMedia.stream' => 'स्ट्रीम एड्रेस',
 			'universalMedia.playlist' => 'प्लेलिस्ट',
 			'universalMedia.files' => 'डिवाइस फ़ाइल',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'बचाए गए स्ट्रीम पसंदीदा',
 			'universalMedia.address' => 'मीडिया संदेश',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'मान्यता प्राप्त क्रेडिट या हस्ताक्षर पैरामीटर वाले URL का उपयोग केवल इस सत्र के लिए किया जाता है और पसंदीदा के रूप में संग्रहीत नहीं किया जा सकता है।',
 			'universalMedia.displayName' => 'डिस्प्ले नाम (वैकल्पिक)',
 			'universalMedia.displayNameHelp' => 'प्लेयर और सिस्टम मीडिया नियंत्रण के लिए एक संक्षिप्त नाम चुनें।',
@@ -9143,10 +9138,10 @@ extension on TranslationsHi {
 			'sourceSetup.addTrustCertificate' => 'कस्टम भरोसेमंद प्रमाणपत्र जोड़ें',
 			'sourceSetup.replaceTrustCertificate' => 'सहेजा गया कस्टम प्रमाणपत्र बदलें',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS सामान्य NFS और माउंट सेवा पोर्ट इस्तेमाल करता है और NAS में RFC 9289 का समर्थन होना ज़रूरी है। TLS 1.3 अनिवार्य है। होस्ट का नाम या IP प्रमाणपत्र से मेल खाना चाहिए। एन्क्रिप्टेड चैनल में भी AUTH_SYS UID/GID लागू रहते हैं।',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'क्लाइंट प्रमाणपत्र (वैकल्पिक)',
 			'sourceSetup.clientCertificateHelp' => 'NAS को इस क्लाइंट की पहचान सत्यापित करने देता है; AUTH_SYS ID अब भी NAS की एक्सपोर्ट नीति पर निर्भर रहते हैं।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'सहेजी गई क्लाइंट पहचान इस्तेमाल की जाएगी।',
 			'sourceSetup.replaceIdentity' => 'सहेजी गई क्लाइंट पहचान बदलें',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 क्लाइंट पहचान चुनें',
@@ -9655,13 +9650,12 @@ extension on TranslationsHi {
 			'musicDevices.remembered' => 'सहेजे गए डिवाइस',
 			'musicDevices.forget' => 'डिवाइस भूलें',
 			'musicDevices.receive' => 'इस डिवाइस पर प्लेबैक की अनुमति दें',
-			'musicDevices.nearbyHint' => 'दूसरे डिवाइस पर प्लेबैक डिवाइस का मेनू खोलें और वहाँ प्लेबैक की अनुमति दें।',
 			'musicDevices.receiverHint' => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'प्लेबैक स्थानांतरित नहीं हुआ। जाँचें कि डिवाइस सक्रिय और पेयर है तथा संगीत सर्वर तक पहुँच सकता है।',
 			'musicDevices.uncertain' => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।',
 			'musicDevices.away' => 'घर से दूर',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'संगीत रिले URL',
 			'musicDevices.relayHint' => 'प्राप्त करने वाले डिवाइस पर चालू करें, फिर एक ही नेटवर्क पर एक बार पेयर करें। Pleazyng खुला रखें। रिले एन्क्रिप्टेड संगीत नियंत्रण भेजता है और नेटवर्क पते देखता है। हर प्लेयर अपने मीडिया सर्वर से स्ट्रीम करता है।',
 			'musicDevices.relayInvalid' => 'HTTPS रिले पता दर्ज करें।',

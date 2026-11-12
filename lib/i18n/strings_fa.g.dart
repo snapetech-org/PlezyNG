@@ -3022,8 +3022,6 @@ class _Translations$cast$fa extends Translations$cast$en {
 	@override String get subtitle => 'زیرنویس‌ها';
 	@override String get serverNotAvailable => 'سرور رسانه ای در دسترس نیست.';
 	@override String get stopCasting => 'توقف پخش روی دستگاه';
-	@override String get castToDevice => 'پخش روی دستگاه';
-	@override String get noEpisodeAvailable => 'هیچ قسمت ای برای پخش در دسترس نیست.';
 	@override String get startFailed => 'نمی توانم شروع به کاستینگ کنم، سرور را چک کنید و دوباره امتحان کنید.';
 }
 
@@ -4422,7 +4420,6 @@ class _Translations$musicDevices$fa extends Translations$musicDevices$en {
 	@override String get remembered => 'دستگاه‌های ذخیره‌شده';
 	@override String get forget => 'فراموش کردن دستگاه';
 	@override String get receive => 'اجازه پخش در این دستگاه';
-	@override String get nearbyHint => 'در دستگاه دیگر منوی دستگاه‌های پخش را باز کنید و پخش را مجاز کنید.';
 	@override String get receiverHint => 'برای دریافت موسیقی Pleazyng را باز نگه دارید. با این کد یک بار جفت‌سازی کنید.';
 	@override String get moveFailed => 'پخش منتقل نشد. بررسی کنید دستگاه روشن و جفت‌شده باشد و به سرور موسیقی دسترسی داشته باشد.';
 	@override String get uncertain => 'ارتباط قطع شد. برای بررسی پخش دوباره به دستگاه انتخاب‌شده وصل شوید.';
@@ -8479,8 +8476,6 @@ extension on TranslationsFa {
 			'cast.subtitle' => 'زیرنویس‌ها',
 			'cast.serverNotAvailable' => 'سرور رسانه ای در دسترس نیست.',
 			'cast.stopCasting' => 'توقف پخش روی دستگاه',
-			'cast.castToDevice' => 'پخش روی دستگاه',
-			'cast.noEpisodeAvailable' => 'هیچ قسمت ای برای پخش در دسترس نیست.',
 			'cast.startFailed' => 'نمی توانم شروع به کاستینگ کنم، سرور را چک کنید و دوباره امتحان کنید.',
 			'automation.noActivePlayback' => 'هیچ جلسه ویدئویی فعال برای کنترل وجود ندارد.',
 			'notifications.newEpisodeTitle' => 'قسمت جدید',
@@ -8629,10 +8624,10 @@ extension on TranslationsFa {
 			'universalMedia.stream' => 'آدرس جریان',
 			'universalMedia.playlist' => 'بازی لیست',
 			'universalMedia.files' => 'فایل های دستگاه',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.favorites' => 'ذخیره جریان مورد علاقه',
 			'universalMedia.address' => 'آدرس رسانه ها',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL ها با پارامترهای اعتباربخشی یا امضای شناخته شده تنها برای این جلسه مورد استفاده قرار می گیرند و نمی توانند به عنوان محبوب ذخیره شوند.',
 			'universalMedia.displayName' => 'نام نمایش (اختیاری)',
 			'universalMedia.displayNameHelp' => 'یک نام کوتاه برای بازیکن و کنترل های رسانه سیستم را انتخاب کنید.',
@@ -9143,10 +9138,10 @@ extension on TranslationsFa {
 			'sourceSetup.addTrustCertificate' => 'افزودن گواهی اعتماد سفارشی',
 			'sourceSetup.replaceTrustCertificate' => 'جایگزینی گواهی سفارشی ذخیره‌شده',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS از درگاه‌های معمول NFS و سرویس mount استفاده می‌کند و به پشتیبانی NAS از RFC 9289 نیاز دارد. TLS 1.3 الزامی است. نام میزبان یا IP باید با گواهی مطابقت داشته باشد. AUTH_SYS UID/GID در کانال رمزگذاری‌شده نیز اعمال می‌شوند.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.clientCertificate' => 'گواهی کارخواه (اختیاری)',
 			'sourceSetup.clientCertificateHelp' => 'به NAS اجازه می‌دهد هویت این کارخواه را تأیید کند؛ شناسه‌های AUTH_SYS همچنان تابع سیاست اشتراک‌گذاری NAS هستند.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'از هویت ذخیره‌شدهٔ کارخواه استفاده می‌شود.',
 			'sourceSetup.replaceIdentity' => 'جایگزینی هویت ذخیره‌شدهٔ کارخواه',
 			'sourceSetup.chooseIdentity' => 'انتخاب هویت کارخواه PKCS#12',
@@ -9655,13 +9650,12 @@ extension on TranslationsFa {
 			'musicDevices.remembered' => 'دستگاه‌های ذخیره‌شده',
 			'musicDevices.forget' => 'فراموش کردن دستگاه',
 			'musicDevices.receive' => 'اجازه پخش در این دستگاه',
-			'musicDevices.nearbyHint' => 'در دستگاه دیگر منوی دستگاه‌های پخش را باز کنید و پخش را مجاز کنید.',
 			'musicDevices.receiverHint' => 'برای دریافت موسیقی Pleazyng را باز نگه دارید. با این کد یک بار جفت‌سازی کنید.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'پخش منتقل نشد. بررسی کنید دستگاه روشن و جفت‌شده باشد و به سرور موسیقی دسترسی داشته باشد.',
 			'musicDevices.uncertain' => 'ارتباط قطع شد. برای بررسی پخش دوباره به دستگاه انتخاب‌شده وصل شوید.',
 			'musicDevices.away' => 'بیرون از خانه',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relay' => 'نشانی رلهٔ موسیقی',
 			'musicDevices.relayHint' => 'در دستگاه گیرنده فعال کنید و یک بار در همان شبکه جفت کنید. Pleazyng را باز نگه دارید. رله فرمان‌های رمزگذاری‌شدهٔ موسیقی را منتقل می‌کند و نشانی‌های شبکه را می‌بیند. هر پخش‌کننده از سرور رسانهٔ خودش پخش می‌کند.',
 			'musicDevices.relayInvalid' => 'نشانی HTTPS رله را وارد کنید.',

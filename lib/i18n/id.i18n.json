@@ -3570,8 +3570,6 @@
     "subtitle": "Subtitel",
     "serverNotAvailable": "Media server tidak tersedia.",
     "stopCasting": "Hentikan transmisi",
-    "castToDevice": "Transmisikan ke perangkat",
-    "noEpisodeAvailable": "Tidak ada episode yang tersedia untuk ditayangkan.",
     "startFailed": "Tidak bisa memulai casting. periksa server dan coba lagi."
   },
   "automation": {
@@ -5592,7 +5590,6 @@
     "remembered": "Perangkat tersimpan",
     "forget": "Lupakan perangkat",
     "receive": "Izinkan pemutaran di perangkat ini",
-    "nearbyHint": "Buka pemilih perangkat di perangkat lain dan izinkan pemutaran di sana.",
     "receiverHint": "Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.",
     "moveFailed": "Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.",
     "uncertain": "Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.",

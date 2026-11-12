@@ -82,10 +82,13 @@ equivalence checks; do not dispatch another complete build for a delivery error.
 
 Apple native reliability CI and full iOS/tvOS packages use compatible hosted
 macOS by default, with explicit Xcode 26.5 and native ARM64 checks. GitHub does
-not expose global hosted macOS capacity. If GitHub cancels a hosted tvOS job
-before assigning a runner, the release controller verifies the job's exact
-attempt, `macos-26` label, missing runner identity, empty step list, and the
-success of every other source job. It then retries tvOS on private Apple JIT.
+not expose global hosted macOS capacity. If hosted tvOS remains queued for ten
+minutes with no runner identity or steps, the release controller preserves all
+active platform work. After every other platform job succeeds or is skipped and
+release assembly has not started, it cancels the drained workflow. The
+controller verifies the job's exact attempt, `macos-26` label, missing runner
+identity, empty step list, and the success of every other source job before it
+retries tvOS on private Apple JIT.
 Unsigned developer releases reuse successful platform artifacts only after
 exact source and digest checks; signed Apple recovery uses the approved full
 build path. Other tvOS failures remain failures.

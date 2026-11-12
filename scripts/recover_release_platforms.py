@@ -537,7 +537,10 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
                 raise RecoveryError(f'Reusable Apple platform lacks its actual signed Store archive: {name}')
     failures = [job.get("name") for job in jobs
                 if job.get("conclusion") in {"failure", "cancelled", "timed_out"}
-                and job.get("name") not in rebuilt_jobs | set(repaired["reused_jobs"] if repaired else [])]
+                and job.get("name") not in rebuilt_jobs | set(repaired["reused_jobs"] if repaired else [])
+                and not (job.get("name") == "create-release" and job.get("conclusion") == "cancelled"
+                         and job.get("runner_id") in (None, 0) and job.get("runner_name") in (None, "")
+                         and isinstance(job.get("steps"), list) and not job["steps"])]
     if failures:
         raise RecoveryError("Other source jobs failed: " + ", ".join(failures))
     android = [job for job in jobs if job.get("name") == "build-android"]
@@ -547,6 +550,9 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
     elif len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") not in {"failure", "success", "cancelled", "timed_out"}:
         raise RecoveryError("Recovery requires exactly one completed Android build.")
     if any(job.get("name") == "create-release" and job.get("conclusion") != "skipped"
+           and not (job.get("status") == "completed" and job.get("conclusion") == "cancelled"
+                    and job.get("runner_id") in (None, 0) and job.get("runner_name") in (None, "")
+                    and isinstance(job.get("steps"), list) and not job["steps"])
            and not (pending and job.get("status") in {"queued", "waiting", "pending"} and not job.get("conclusion"))
            for job in jobs):
         raise RecoveryError("The source run already attempted release creation; inspect its side effects.")

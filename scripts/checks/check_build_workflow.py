@@ -101,6 +101,13 @@ require(
     "tvOS runner retries must reuse an existing dispatch input within GitHub's input limit",
 )
 require(
+    "HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS = 10 * 60" in release_driver_text
+    and "trusted_release_workflow_run(overview, repo)" in release_driver_text
+    and 'command(["gh", "run", "cancel", run_id, "--repo", repo])' in release_driver_text
+    and '"repos/{repo}/actions/jobs/{tvos_job_id}/cancel"' not in release_driver_text,
+    "the release controller must cancel only a drained workflow after a bounded unassigned hosted tvOS wait",
+)
+require(
     "apple_runner_pool: ${{ inputs.tvos_runner_pool }}" in job("release-ci"),
     "Release CI Apple reliability checks must share the release's selected Apple route",
 )

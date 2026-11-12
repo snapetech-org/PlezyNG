@@ -4,13 +4,14 @@
 from __future__ import annotations
 
 import json
+import datetime as dt
 import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -19,19 +20,127 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from verify_release_ci import _manifest_gate  # noqa: E402
 from verify_tvos_runner_acquisition import RunnerAcquisitionError  # noqa: E402
 from release_all_platforms import (  # noqa: E402
+    HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS,
     ReleaseError,
     ensure_candidate_build,
     ensure_ci,
     ensure_tag,
+    hosted_tvos_workflow_drained,
     select_apple_runner_pool,
+    timed_out_unassigned_hosted_tvos_job,
+    trusted_release_workflow_run,
     release_ci_source,
     run_has_successful_step,
+    wait_for_run,
 )
 
 
 class AppleRunnerRoutingTests(unittest.TestCase):
     def test_automatic_route_uses_compatible_hosted_apple_first(self) -> None:
         self.assertEqual(select_apple_runner_pool("auto"), "hosted")
+
+    def test_hosted_tvos_queue_timeout_requires_ten_minutes_without_a_runner(self) -> None:
+        now = dt.datetime(2026, 11, 12, 18, 0, tzinfo=dt.timezone.utc)
+        job = {
+            "id": 42,
+            "name": "Build tvOS developer package (arm64)",
+            "status": "queued",
+            "labels": ["macos-26"],
+            "runner_id": None,
+            "runner_name": None,
+            "steps": [],
+            "created_at": (now - dt.timedelta(seconds=HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS)).isoformat(),
+        }
+        self.assertEqual(timed_out_unassigned_hosted_tvos_job([job], now_utc=now), 42)
+
+        too_young = {**job, "created_at": (now - dt.timedelta(seconds=599)).isoformat()}
+        assigned = {**job, "runner_id": 7, "runner_name": "GitHub Actions 7"}
+        started = {**job, "status": "in_progress"}
+        stepped = {**job, "steps": [{"name": "Set up job"}]}
+        for invalid in (too_young, assigned, started, stepped):
+            with self.subTest(job=invalid):
+                self.assertIsNone(timed_out_unassigned_hosted_tvos_job([invalid], now_utc=now))
+
+    def test_hosted_tvos_fallback_waits_for_platforms_and_release_assembly(self) -> None:
+        tvos = {
+            "name": "Build tvOS developer package (arm64)", "status": "queued",
+            "labels": ["macos-26"], "runner_id": None, "runner_name": None, "steps": [],
+        }
+        platform = {"name": "build-android", "status": "completed", "conclusion": "success"}
+        assembly = {
+            "name": "create-release", "status": "queued", "runner_id": None,
+            "runner_name": None, "steps": [],
+        }
+        self.assertTrue(hosted_tvos_workflow_drained([tvos, platform, assembly]))
+        self.assertFalse(hosted_tvos_workflow_drained([
+            tvos, {**platform, "status": "in_progress", "conclusion": None}, assembly,
+        ]))
+        self.assertFalse(hosted_tvos_workflow_drained([
+            tvos, platform, {**assembly, "status": "in_progress", "runner_id": 9,
+                            "runner_name": "ubuntu-1", "steps": [{"name": "Create release"}]},
+        ]))
+
+    def test_hosted_tvos_fallback_is_limited_to_trusted_release_builds(self) -> None:
+        run = {
+            "event": "workflow_dispatch", "head_branch": "main",
+            "head_repository": {"full_name": "snapetech-org/pleazyng"},
+            "path": ".github/workflows/build.yml@refs/heads/main",
+            "display_title": "action:build:pool:private:mode:release:version:3.0.0",
+        }
+        self.assertTrue(trusted_release_workflow_run(run, "snapetech-org/pleazyng"))
+        self.assertFalse(trusted_release_workflow_run(
+            {**run, "head_branch": "feature/untrusted"}, "snapetech-org/pleazyng"
+        ))
+        self.assertFalse(trusted_release_workflow_run(
+            {**run, "display_title": "action:build:mode:android-validation"},
+            "snapetech-org/pleazyng",
+        ))
+
+    @patch("release_all_platforms.time.sleep")
+    @patch("release_all_platforms.time.monotonic", side_effect=[0.0, 0.0])
+    @patch("release_all_platforms.command")
+    @patch("release_all_platforms.gh_json")
+    @patch("release_all_platforms.subprocess.Popen")
+    def test_watch_cancels_drained_run_only_after_hosted_tvos_timeout(
+        self, popen, gh_json, command, _monotonic, _sleep,
+    ) -> None:
+        watcher = Mock()
+        watcher.poll.side_effect = [None, 0]
+        watcher.wait.return_value = 1
+        popen.return_value = watcher
+        now = dt.datetime.now(dt.timezone.utc)
+        jobs = [
+            {"id": 42, "name": "Build tvOS developer package (arm64)", "status": "queued",
+             "labels": ["macos-26"], "runner_id": None, "runner_name": None, "steps": [],
+             "created_at": (now - dt.timedelta(seconds=HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS)).isoformat()},
+            {"name": "build-android", "status": "completed", "conclusion": "success"},
+            {"name": "create-release", "status": "queued", "runner_id": None,
+             "runner_name": None, "steps": []},
+        ]
+        gh_json.side_effect = [
+            {"id": 7, "status": "in_progress", "event": "workflow_dispatch", "head_branch": "main",
+             "head_repository": {"full_name": "snapetech-org/pleazyng"},
+             "path": ".github/workflows/build.yml@refs/heads/main",
+             "display_title": "action:release:pool:private:tag:v3.0.0"},
+            {"jobs": jobs, "total_count": len(jobs)},
+            {"id": 7, "status": "in_progress", "event": "workflow_dispatch", "head_branch": "main",
+             "head_repository": {"full_name": "snapetech-org/pleazyng"},
+             "path": ".github/workflows/build.yml@refs/heads/main",
+             "display_title": "action:release:pool:private:tag:v3.0.0"},
+            {"jobs": jobs, "total_count": len(jobs)},
+            {"status": "completed", "conclusion": "cancelled"},
+            {"databaseId": 7, "status": "completed", "conclusion": "cancelled", "jobs": []},
+        ]
+
+        result = wait_for_run(
+            "snapetech-org/pleazyng",
+            {"databaseId": 7, "url": "https://github.com/snapetech-org/pleazyng/actions/runs/7"},
+            "test hosted tvOS fallback", private_apple=False, allow_failure=True,
+            watch_hosted_tvos=True,
+        )
+
+        self.assertEqual(result["conclusion"], "cancelled")
+        command.assert_called_once_with(["gh", "run", "cancel", "7", "--repo", "snapetech-org/pleazyng"])
 
     @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner")
     def test_explicit_route_override_skips_private_capacity_probe(self, private_busy) -> None:
@@ -189,6 +298,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
             expected_title="action:build:pool:private:mode:release:version:3.0.0",
             expected_sha=commit_sha,
             allow_failure=True,
+            watch_hosted_tvos=True,
         )
 
     @patch("release_all_platforms.ensure_remote_main_sha")
@@ -267,6 +377,39 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
             dispatch.call_args.kwargs["expected_title"],
             "action:build:pool:private:mode:release:version:3.0.0:runner-retry-of:124",
         )
+
+    @patch("release_all_platforms.run_has_successful_job", return_value=True)
+    @patch("release_all_platforms.verify_unacquired_hosted_tvos_run", return_value={"run_id": 124})
+    @patch("release_all_platforms.ensure_remote_main_sha")
+    @patch("release_all_platforms.dispatch", return_value={
+        "databaseId": 125, "status": "completed", "conclusion": "success",
+        "jobs": [{"name": "Build Windows (arm64)", "status": "completed", "conclusion": "success"}],
+    })
+    @patch("release_all_platforms.active_run", return_value=None)
+    @patch("release_all_platforms.matching_run")
+    @patch("release_all_platforms.wait_for_run", return_value={
+        "databaseId": 124, "status": "completed", "conclusion": "failure",
+    })
+    def test_active_candidate_that_finishes_with_runnerless_tvos_retries_privately(
+        self, wait, matching_run, _active, dispatch, _ensure_main, verify, _arm64_job,
+    ) -> None:
+        matching_run.side_effect = [
+            {"databaseId": 124, "status": "in_progress", "conclusion": None},
+            None,
+        ]
+
+        result = ensure_candidate_build("3.0.0", "b" * 40)
+
+        self.assertEqual(result["databaseId"], 125)
+        wait.assert_called_once_with(
+            "snapetech-org/pleazyng", {"databaseId": 124, "status": "in_progress", "conclusion": None},
+            "Pleazyng 3.0.0 all-platform release-mode candidate", private_apple=False,
+            allow_failure=True, watch_hosted_tvos=True,
+        )
+        verify.assert_called_once_with(124, "b" * 40, "3.0.0", action="build")
+        self.assertEqual(dispatch.call_args.args[3]["tvos_runner_pool"], "private")
+        self.assertEqual(dispatch.call_args.args[3]["reuse_repaired_run_id"], "124")
+        self.assertFalse(dispatch.call_args.kwargs["watch_hosted_tvos"])
 
 
 class ImmutableReleaseTagTests(unittest.TestCase):

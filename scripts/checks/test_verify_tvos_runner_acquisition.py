@@ -82,6 +82,23 @@ class HostedTvosRunnerAcquisitionTests(unittest.TestCase):
             )
         self.assertEqual(proof["action"], "build")
 
+    def test_accepts_drained_workflow_cancellation_before_release_assembly(self):
+        self.run["conclusion"] = "cancelled"
+        assembly = self.jobs["jobs"][2]
+        assembly.update({"status": "completed", "conclusion": "cancelled",
+                         "runner_id": 0, "runner_name": "", "steps": []})
+        proof = self.verify()
+        self.assertEqual(proof["run_id"], 42)
+
+    def test_rejects_release_assembly_that_started_before_cancellation(self):
+        self.run["conclusion"] = "cancelled"
+        assembly = self.jobs["jobs"][2]
+        assembly.update({"status": "completed", "conclusion": "cancelled",
+                         "runner_id": 12, "runner_name": "ubuntu-1",
+                         "steps": [{"name": "Create draft release"}]})
+        with self.assertRaisesRegex(RunnerAcquisitionError, "other incomplete or failed jobs"):
+            self.verify()
+
 
 if __name__ == "__main__":
     unittest.main()

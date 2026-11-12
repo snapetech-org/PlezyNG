@@ -59,6 +59,14 @@ class SourceProofTests(unittest.TestCase):
         self.jobs.append({"name": "Build WebOS TV package (ARMv7)", "status": "completed", "conclusion": "failure"})
         self.assertEqual(self.prove()["source_sha"], "a" * 40)
 
+    def test_unstarted_cancelled_release_assembly_is_safe_for_platform_recovery(self):
+        self.jobs[-1] = {"name": "create-release", "status": "completed", "conclusion": "cancelled",
+                         "runner_id": 0, "runner_name": "", "steps": []}
+        self.assertEqual(self.prove()["source_sha"], "a" * 40)
+        self.jobs[-1]["steps"] = [{"name": "Create release"}]
+        with self.assertRaisesRegex(recovery.RecoveryError, "Other source jobs failed"):
+            self.prove()
+
     def test_ci_tag_reuse_requires_complete_product_equivalence(self):
         tag = "c" * 40
         comparison = {"status": "ahead", "merge_base_commit": {"sha": tag}, "files": [{"filename": "scripts/prepare_native_downloads.py"}]}

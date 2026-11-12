@@ -43,6 +43,7 @@ NATIVE_GROUPS = ("apple", "android", "linux", "windows")
 FFMPEG_SIGNING_FINGERPRINT = "FCF986EA15E6E293A5644F10B4322F04D67658D8"
 DOWNLOAD_ATTEMPTS = 4
 DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
+HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS = 10 * 60
 APPLE_JIT_EVIDENCE_ROOT: Path | None = None
 RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "tools/webos/NATIVE-PREFLIGHT.md",
@@ -278,8 +279,79 @@ def failed_build_has_drained(run: dict, jobs: list[dict]) -> bool:
     )
 
 
+def timed_out_unassigned_hosted_tvos_job(jobs: list[dict], *, now_utc=None) -> int | None:
+    """Return a tvOS job ID only after ten minutes queued without a runner or steps."""
+    matches = [job for job in jobs if job.get("name") == "Build tvOS developer package (arm64)"]
+    if len(matches) != 1:
+        return None
+    job = matches[0]
+    if (job.get("status") not in {"queued", "waiting", "requested", "pending"}
+            or not isinstance(job.get("labels"), list) or "macos-26" not in job["labels"]
+            or job.get("runner_id") not in (None, 0)
+            or job.get("runner_name") not in (None, "")
+            or not isinstance(job.get("steps"), list) or job["steps"]
+            or type(job.get("id")) is not int or job["id"] < 1):
+        return None
+    stamp = job.get("created_at")
+    if not isinstance(stamp, str):
+        return None
+    try:
+        queued_at = dt.datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if queued_at.tzinfo is None:
+        return None
+    now = now_utc or dt.datetime.now(dt.timezone.utc)
+    age = (now.astimezone(dt.timezone.utc) - queued_at.astimezone(dt.timezone.utc)).total_seconds()
+    if age < HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS:
+        return None
+    return job["id"]
+
+
+def hosted_tvos_workflow_drained(jobs: list[dict]) -> bool:
+    """Allow whole-run cancellation only after all platform work and assembly side effects are drained."""
+    assemblies = [job for job in jobs if job.get("name") == "create-release"]
+    if len(assemblies) > 1:
+        return False
+    for job in jobs:
+        if job.get("name") == "Build tvOS developer package (arm64)":
+            continue
+        if job.get("name") == "create-release":
+            if job.get("status") == "completed" and job.get("conclusion") == "skipped":
+                continue
+            if (job.get("status") in {"queued", "waiting", "requested", "pending"}
+                    and job.get("runner_id") in (None, 0)
+                    and job.get("runner_name") in (None, "")
+                    and isinstance(job.get("steps"), list) and not job["steps"]):
+                continue
+            return False
+        if job.get("status") != "completed" or job.get("conclusion") not in {"success", "skipped"}:
+            return False
+    return True
+
+
+def trusted_release_workflow_run(run: dict, repository: str) -> bool:
+    """Limit hosted-queue fallback to an exact release build on trusted main."""
+    head_repository = run.get("head_repository")
+    path = run.get("path")
+    title = run.get("display_title")
+    return (
+        run.get("event") == "workflow_dispatch"
+        and run.get("head_branch") == "main"
+        and isinstance(head_repository, dict)
+        and head_repository.get("full_name") == repository
+        and isinstance(path, str)
+        and path.split("@", 1)[0] == ".github/workflows/build.yml"
+        and isinstance(title, str)
+        and (
+            title.startswith("action:build:pool:private:mode:release:version:")
+            or title.startswith("action:release:pool:private:tag:v")
+        )
+    )
+
+
 def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = True,
-                 allow_failure: bool = False) -> dict:
+                 allow_failure: bool = False, watch_hosted_tvos: bool = False) -> dict:
     run_id = str(run["databaseId"])
     print(f"\n{purpose}: {run.get('url', f'https://github.com/{repo}/actions/runs/{run_id}')}", flush=True)
     apple_controller: subprocess.Popen[bytes] | None = None
@@ -297,6 +369,8 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
 
     next_drain_check = 0.0
     cancellation_requested = False
+    hosted_tvos_cancel_requested = False
+    next_hosted_queue_check = 0.0
     watch_failures = 0
     while True:
         watcher = subprocess.Popen(
@@ -304,6 +378,53 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
             cwd=ROOT,
         )
         while watcher.poll() is None:
+            if watch_hosted_tvos and not hosted_tvos_cancel_requested and time.monotonic() >= next_hosted_queue_check:
+                next_hosted_queue_check = time.monotonic() + 30
+                try:
+                    overview = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
+                    if (overview.get("id") == int(run_id)
+                            and overview.get("status") != "completed"
+                            and trusted_release_workflow_run(overview, repo)):
+                        inventory = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100")
+                        jobs = inventory.get("jobs", [])
+                        complete = (isinstance(jobs, list) and all(isinstance(job, dict) for job in jobs)
+                                    and inventory.get("total_count", len(jobs)) <= len(jobs))
+                        tvos_job_id = timed_out_unassigned_hosted_tvos_job(jobs) if complete else None
+                        if tvos_job_id is not None and hosted_tvos_workflow_drained(jobs):
+                            # Re-read just before whole-run cancellation so a runner
+                            # assigned between the first snapshot and this decision
+                            # is not interrupted as an acquisition failure.
+                            confirmation = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
+                            if (confirmation.get("id") == int(run_id)
+                                    and confirmation.get("status") != "completed"
+                                    and trusted_release_workflow_run(confirmation, repo)):
+                                confirmed = gh_json(
+                                    "api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100"
+                                )
+                                confirmed_jobs = confirmed.get("jobs", [])
+                                confirmed_complete = (
+                                    isinstance(confirmed_jobs, list)
+                                    and all(isinstance(job, dict) for job in confirmed_jobs)
+                                    and confirmed.get("total_count", len(confirmed_jobs)) <= len(confirmed_jobs)
+                                )
+                                confirmed_tvos_job_id = (
+                                    timed_out_unassigned_hosted_tvos_job(confirmed_jobs)
+                                    if confirmed_complete else None
+                                )
+                                if (confirmed_tvos_job_id == tvos_job_id
+                                        and hosted_tvos_workflow_drained(confirmed_jobs)):
+                                    print(
+                                        f"Hosted tvOS job {tvos_job_id} has waited at least "
+                                        f"{HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS // 60} minutes without a runner; "
+                                        "all other platform jobs passed, and release assembly has not started. "
+                                        "Canceling the drained run so the release controller can retry privately.",
+                                        flush=True,
+                                    )
+                                    command(["gh", "run", "cancel", run_id, "--repo", repo])
+                                    hosted_tvos_cancel_requested = True
+                except ReleaseError as error:
+                    print(f"Could not check hosted tvOS runner acquisition: {error}; preserving the job and retrying.",
+                          flush=True)
             if apple_controller is not None:
                 controller_code = apple_controller.poll()
                 if controller_code not in (None, 0):
@@ -367,7 +488,8 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
 
 def dispatch(repo: str, workflow: str, ref: str, fields: dict[str, str], purpose: str,
              *, expected_title: str | None = None, expected_sha: str | None = None,
-             wait: bool = True, allow_failure: bool = False) -> dict:
+             wait: bool = True, allow_failure: bool = False,
+             watch_hosted_tvos: bool = False) -> dict:
     before = dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=10)
     args = ["gh", "workflow", "run", workflow, "--repo", repo, "--ref", ref]
     for key, value in fields.items():
@@ -394,7 +516,8 @@ def dispatch(repo: str, workflow: str, ref: str, fields: dict[str, str], purpose
                              or fields.get("apple_runner_pool") == "private"
                              or fields.get("tvos_runner_pool") == "private")
             return wait_for_run(repo, run, purpose, private_apple=private_apple,
-                                allow_failure=allow_failure)
+                                allow_failure=allow_failure,
+                                watch_hosted_tvos=watch_hosted_tvos and not private_apple)
         time.sleep(5)
     raise ReleaseError(f"Workflow dispatch succeeded, but its run was not visible: {repo}/{workflow} on {ref}")
 
@@ -991,6 +1114,7 @@ def ensure_candidate_build(
     tvos_runner_pool: str = "auto",
 ) -> dict:
     """Require a complete nonpublishing release-mode build before creating the immutable tag."""
+    watch_hosted_tvos = tvos_runner_pool == "auto"
     tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
     purpose = f"Pleazyng {version} all-platform release-mode candidate"
 
@@ -1058,6 +1182,8 @@ def ensure_candidate_build(
             "retrying the exact source with the private Apple JIT route.", flush=True
         )
 
+    if retry_of is not None:
+        tvos_runner_pool = "private"
     run_title = (candidate_build_runner_retry_title(version, retry_of)
                  if retry_of is not None else candidate_build_title(version))
     existing = (source if retry_of is None else matching_run(
@@ -1065,20 +1191,54 @@ def ensure_candidate_build(
     ))
     if existing:
         if existing.get("status") != "completed":
-            existing = wait_for_run(PLEZY_REPO, existing, purpose, private_apple=True,
-                                    allow_failure=True)
-        if existing.get("conclusion") != "success":
-            raise ReleaseError(
-                f"Release-mode candidate retry run {existing['databaseId']} concluded "
-                f"{existing.get('conclusion')}; refusing to tag an unvalidated commit."
+            existing = wait_for_run(
+                PLEZY_REPO, existing, purpose, private_apple=tvos_runner_pool == "private",
+                allow_failure=True,
+                watch_hosted_tvos=watch_hosted_tvos and tvos_runner_pool == "hosted",
             )
-        if candidate_complete(existing):
-            print(f"Reusing successful release-mode candidate run {existing['databaseId']} for {version}.")
-            return existing
-        print(
-            f"Candidate run {existing['databaseId']} passed without all requested platform jobs; "
-            "dispatching the required profile."
-        )
+        if existing.get("conclusion") != "success":
+            if retry_of is not None or source is None or existing.get("databaseId") != source.get("databaseId"):
+                raise ReleaseError(
+                    f"Release-mode candidate retry run {existing['databaseId']} concluded "
+                    f"{existing.get('conclusion')}; refusing to tag an unvalidated commit."
+                )
+            try:
+                verify_unacquired_hosted_tvos_run(
+                    source["databaseId"], commit_sha, version, action="build"
+                )
+            except RunnerAcquisitionError as error:
+                raise ReleaseError(
+                    f"Release-mode candidate run {source['databaseId']} concluded "
+                    f"{existing.get('conclusion')}; the failure was not a verified hosted tvOS "
+                    f"runner-acquisition cancellation ({error}). Refusing to tag it."
+                ) from error
+            retry_of = source["databaseId"]
+            print(
+                f"GitHub canceled tvOS before assigning a runner in candidate run {retry_of}; "
+                "retrying the exact source with the private Apple JIT route.", flush=True
+            )
+            tvos_runner_pool = "private"
+            run_title = candidate_build_runner_retry_title(version, retry_of)
+            existing = matching_run(
+                PLEZY_REPO, RELEASE_WORKFLOW, commit_sha, ref="main", expected_title=run_title,
+            )
+            if existing and existing.get("status") != "completed":
+                existing = wait_for_run(
+                    PLEZY_REPO, existing, purpose, private_apple=True, allow_failure=True,
+                )
+            if existing and existing.get("conclusion") != "success":
+                raise ReleaseError(
+                    f"Release-mode candidate retry run {existing['databaseId']} concluded "
+                    f"{existing.get('conclusion')}; refusing to tag an unvalidated commit."
+                )
+        if existing:
+            if candidate_complete(existing):
+                print(f"Reusing successful release-mode candidate run {existing['databaseId']} for {version}.")
+                return existing
+            print(
+                f"Candidate run {existing['databaseId']} passed without all requested platform jobs; "
+                "dispatching the required profile."
+            )
 
     active = active_run(PLEZY_REPO, RELEASE_WORKFLOW, ref="main")
     if active:
@@ -1092,6 +1252,7 @@ def ensure_candidate_build(
     result = dispatch(
         PLEZY_REPO, RELEASE_WORKFLOW, "main", candidate_fields(tvos_runner_pool, retry_of),
         purpose, expected_title=run_title, expected_sha=commit_sha, allow_failure=True,
+        watch_hosted_tvos=watch_hosted_tvos and tvos_runner_pool == "hosted",
     )
     if result.get("conclusion") == "success":
         if candidate_complete(result):
@@ -1286,6 +1447,7 @@ def ensure_release(
     workflow_source_sha: str | None = None,
     runner_acquisition_retry_of: int | None = None,
 ) -> dict:
+    watch_hosted_tvos = tvos_runner_pool == "auto"
     tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
@@ -1432,7 +1594,11 @@ def ensure_release(
             if start_only:
                 return existing
             existing = wait_for_run(PLEZY_REPO, existing, f"Pleazyng {tag} all-platform release build",
-                                    private_apple=True, allow_failure=True)
+                                    private_apple=tvos_runner_pool == "private", allow_failure=True,
+                                    watch_hosted_tvos=(watch_hosted_tvos
+                                                       and tvos_runner_pool == "hosted"
+                                                       and not repair and not reuse_platform_run_id
+                                                       and runner_acquisition_retry_of is None))
             if (existing.get("conclusion") != "success" and not repair
                     and not reuse_platform_run_id and runner_acquisition_retry_of is None):
                 return retry_after_unassigned_tvos(existing)
@@ -1529,6 +1695,7 @@ def ensure_release(
         expected_sha=dispatch_sha,
         **({"wait": False} if start_only else {}),
         **({"allow_failure": True} if allow_failure else {}),
+        watch_hosted_tvos=watch_hosted_tvos and tvos_runner_pool == "hosted" and allow_failure,
     )
     if allow_failure and result.get("conclusion") != "success":
         return retry_after_unassigned_tvos(result)

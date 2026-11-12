@@ -14,6 +14,11 @@ source and artifact-digest checks pass. A nonpublishing candidate uses a
 separately titled private retry and rebuilds its complete matrix. A real tvOS
 build failure is never converted into an allocation retry.
 
+If hosted tvOS remains queued for ten minutes without a runner identity or any
+steps, the controller preserves all active platform jobs. Once every other
+platform job has succeeded or been skipped and release assembly has not started,
+it cancels the drained workflow and retries through the private Apple JIT lane.
+
 The private queue controller waits for the single Mac slot, confirms current
 APFS capacity, and launches the recovery job when it is available. The runner
 is never started while the capacity gate is closed. Explicit `hosted` and
@@ -26,11 +31,12 @@ A verified private Apple recovery completed iOS in 1h43 and tvOS in 26 minutes
 [iOS recovery](https://github.com/snapetech-org/pleazyng/actions/runs/43120491761),
 [tvOS recovery](https://github.com/snapetech-org/pleazyng/actions/runs/43115287017)).
 The release controller starts the runner on demand and serializes Apple jobs
-because the lane has one Mac slot. Direct workflow dispatches default to the
-private lane; the release controller can select either lane from live capacity
-and queue state, and `--apple-arm-runner-pool hosted|private` remains available
-as an explicit override. GitHub does not expose global hosted macOS capacity,
-so an already queued hosted Apple job in this repository is the busy signal.
+because the private lane has one Mac slot. Direct workflow dispatches default
+to hosted Apple. The release controller monitors tvOS acquisition and switches
+to private JIT after the bounded unassigned queue wait; `--apple-arm-runner-pool
+hosted|private` remains available as an explicit route override. GitHub does not
+expose global hosted macOS capacity, so queued jobs in this repository cannot
+prove whether the global hosted pool is free or busy.
 
 Release CI's Apple native reliability checks use the same selected route as
 the iOS/tvOS package jobs. This prevents a private-capacity decision for the

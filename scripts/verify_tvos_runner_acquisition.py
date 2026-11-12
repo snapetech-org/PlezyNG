@@ -43,7 +43,7 @@ def verify_unacquired_hosted_tvos_run(run_id, expected_sha, version, *, action="
             or run.get("head_branch") != "main"
             or run.get("head_repository", {}).get("full_name") != repository
             or run.get("path", "").split("@")[0] != ".github/workflows/build.yml"
-            or run.get("status") != "completed" or run.get("conclusion") != "failure"
+            or run.get("status") != "completed" or run.get("conclusion") not in {"failure", "cancelled"}
             or run.get("head_sha") != expected_sha or run.get("display_title") != expected_title
             or type(run.get("run_attempt")) is not int or run["run_attempt"] < 1):
         raise RunnerAcquisitionError("Source run is not a failed trusted-main release build for this exact commit")
@@ -68,9 +68,18 @@ def verify_unacquired_hosted_tvos_run(run_id, expected_sha, version, *, action="
             or not isinstance(tvos.get("steps"), list) or tvos["steps"]):
         raise RunnerAcquisitionError("tvOS was not proven canceled before hosted runner acquisition")
 
-    unrelated = [job.get("name", "unnamed job") for job in jobs if job is not tvos
-                 and (job.get("status") != "completed"
-                      or job.get("conclusion") not in {"success", "skipped"})]
+    unrelated = []
+    for job in jobs:
+        if job is tvos or (job.get("status") == "completed"
+                           and job.get("conclusion") in {"success", "skipped"}):
+            continue
+        if (job.get("name") == "create-release"
+                and job.get("status") == "completed" and job.get("conclusion") == "cancelled"
+                and job.get("runner_id") in (None, 0)
+                and job.get("runner_name") in (None, "")
+                and isinstance(job.get("steps"), list) and not job["steps"]):
+            continue
+        unrelated.append(job.get("name", "unnamed job"))
     if unrelated:
         raise RunnerAcquisitionError(
             "Source run has other incomplete or failed jobs: " + ", ".join(unrelated)

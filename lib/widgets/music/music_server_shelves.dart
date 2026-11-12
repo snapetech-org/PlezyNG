@@ -12,6 +12,8 @@ import '../../providers/multi_server_provider.dart';
 import '../../services/music/music_account_scope.dart';
 import '../../services/music/music_experience.dart';
 import '../../services/music/music_playback_service.dart';
+import '../../services/music/music_tracks_loader.dart';
+import '../../utils/media_server_http_client.dart' show AbortController;
 import '../../utils/music_navigation.dart';
 import '../../utils/platform_detector.dart';
 import '../../utils/snackbar_helper.dart';
@@ -143,13 +145,25 @@ class _MusicServerShelvesState extends State<MusicServerShelves> {
     try {
       final id = item.parentId;
       if (id != null && id.isNotEmpty) {
-        final rows = await shelf.source.client.fetchAlbumTracks(id).timeout(const Duration(seconds: 10));
+        final abort = AbortController();
+        final rows =
+            await fetchMusicTracks(
+              shelf.source.client,
+              id,
+              kind: MediaKind.album,
+              current: current,
+              acceptsItem: (row) => row.kind == MediaKind.track && shelf.source.owns(row) && row.parentId == id,
+              abort: abort,
+            ).timeout(
+              const Duration(seconds: 10),
+              onTimeout: () {
+                abort.abort();
+                throw StateError('Music recommendation timed out');
+              },
+            );
         if (!current()) return;
-        final owned = rows
-            .where((row) => row.kind == MediaKind.track && shelf.source.owns(row) && row.parentId == id)
-            .toList(growable: false);
-        if (owned.any((row) => row.globalKey == item.globalKey)) {
-          tracks = owned;
+        if (rows.any((row) => row.globalKey == item.globalKey && row.backend == item.backend)) {
+          tracks = rows;
           album = true;
         }
       }

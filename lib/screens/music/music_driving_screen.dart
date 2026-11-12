@@ -89,14 +89,31 @@ class MusicDrivingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final music = context.watch<MusicPlaybackService>();
     final track = music.currentTrack;
-    Widget control(IconData icon, String label, Future<void> Function() action, {bool primary = false}) =>
-        IconButton.filledTonal(
-          tooltip: label,
-          iconSize: primary ? 72 : 56,
-          padding: const EdgeInsets.all(20),
-          onPressed: track == null ? null : action,
-          icon: AppIcon(icon),
-        );
+    Widget control(
+      IconData icon,
+      String label,
+      Future<void> Function() action, {
+      bool primary = false,
+      Future<void> Function()? hold,
+    }) {
+      final button = IconButton.filledTonal(
+        tooltip: hold == null ? label : null,
+        iconSize: primary ? 72 : 56,
+        padding: const EdgeInsets.all(20),
+        onPressed: track == null ? null : action,
+        icon: AppIcon(icon),
+      );
+      if (hold == null) return button;
+      return Tooltip(
+        message: label,
+        triggerMode: TooltipTriggerMode.manual,
+        child: Semantics(
+          onLongPressHint: t.music.stopPlayback,
+          child: GestureDetector(onLongPress: track == null ? null : hold, child: button),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(t.musicExperience.driving),
@@ -139,6 +156,7 @@ class MusicDrivingScreen extends StatelessWidget {
                       music.isPlaying ? t.common.pause : t.common.play,
                       music.togglePlayPause,
                       primary: true,
+                      hold: music.stop,
                     ),
                     control(Symbols.skip_next_rounded, t.music.nextTrack, music.next),
                   ],

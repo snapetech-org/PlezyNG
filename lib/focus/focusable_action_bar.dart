@@ -30,6 +30,10 @@ class FocusableAction {
 
   final String? tooltip;
   final VoidCallback? onPressed;
+
+  /// Optional touch/pointer hold action. Keyboard SELECT keeps [onPressed].
+  final VoidCallback? onLongPress;
+  final String? longPressTooltip;
   final bool? isSelected;
   final Widget? child;
   final FocusableActionBuilder? builder;
@@ -50,6 +54,8 @@ class FocusableAction {
     this.autofocus = false,
     this.tooltip,
     this.onPressed,
+    this.onLongPress,
+    this.longPressTooltip,
     this.isSelected,
     this.child,
     this.builder,
@@ -315,7 +321,7 @@ class FocusableActionBarState extends State<FocusableActionBar> {
     final buildState = FocusableActionBuildState(showFocus: showFocus, animationDuration: duration);
     final customChild = action.builder?.call(context, buildState);
 
-    return Focus(
+    final button = Focus(
       // Keyed on the binding so an insertion moves the element with its node
       // instead of detaching (and thereby unfocusing) it slot by slot.
       key: ObjectKey(_focusBindings[index]),
@@ -360,7 +366,7 @@ class FocusableActionBarState extends State<FocusableActionBar> {
                         weight: action.isSelected == true ? 600 : 500,
                         color: action.iconColor,
                       ),
-                      tooltip: action.tooltip,
+                      tooltip: action.onLongPress == null ? action.tooltip : null,
                       isSelected: action.isSelected,
                       onPressed: action.onPressed,
                     ),
@@ -368,5 +374,14 @@ class FocusableActionBarState extends State<FocusableActionBar> {
         ),
       ),
     );
+    if (!enabled || action.onLongPress == null) return button;
+    final held = Semantics(
+      onLongPressHint: action.longPressTooltip,
+      child: GestureDetector(onLongPress: action.onLongPress, child: button),
+    );
+    final label = action.tooltip;
+    return label == null || label.isEmpty
+        ? held
+        : Tooltip(message: label, triggerMode: TooltipTriggerMode.manual, child: held);
   }
 }

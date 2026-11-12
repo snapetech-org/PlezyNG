@@ -391,6 +391,23 @@ void main() {
     expect(navigatorObserver.pushedRoutes.where((route) => route.settings.name == kNowPlayingRouteName), isEmpty);
   });
 
+  for (final platform in [TargetPlatform.android, TargetPlatform.macOS]) {
+    testWidgets('holding mini-player transport stops without opening the card on $platform', (tester) async {
+      final service = _FakeMusicService(track: _track);
+      final observer = MusicUiRouteObserver();
+      final navigation = _RecordingNavigatorObserver();
+      await tester.pumpWidget(
+        wrap(service: service, observer: observer, platform: platform, navigatorObserver: navigation),
+      );
+      await tester.pumpAndSettle();
+      await tester.longPress(find.byTooltip(t.common.pause));
+      await tester.pumpAndSettle();
+      expect(service.stopCalls, 1);
+      expect(service.toggleCalls, 0);
+      expect(navigation.pushedRoutes.where((route) => route.settings.name == kNowPlayingRouteName), isEmpty);
+    });
+  }
+
   testWidgets('desktop close icon alone is 20px while transport icons remain 24px', (tester) async {
     final service = _FakeMusicService(track: _track);
     final observer = MusicUiRouteObserver();

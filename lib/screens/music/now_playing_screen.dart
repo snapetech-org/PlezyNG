@@ -1176,6 +1176,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
         ),
         FocusableAction(
           debugLabel: 'np_play_pause',
+          tooltip: service.isPlaying ? t.common.pause : t.common.play,
+          onLongPress: () => unawaited(service.stop()),
+          longPressTooltip: t.music.stopPlayback,
           focusNode: _playPauseFocusNode,
           autofocus: PlatformDetector.isTV(),
           onPressed: () => unawaited(service.togglePlayPause()),

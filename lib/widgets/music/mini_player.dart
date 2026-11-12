@@ -398,6 +398,8 @@ class _MiniPlayerCardState extends State<_MiniPlayerCard> with ContextMenuTapMix
                           iconColor: tk.text,
                           tooltip: isPlaying ? t.common.pause : t.common.play,
                           onPressed: () => unawaited(service.togglePlayPause()),
+                          onLongPress: widget.onDismissed,
+                          longPressTooltip: t.music.stopPlayback,
                         ),
                         FocusableAction(
                           icon: Symbols.skip_next_rounded,

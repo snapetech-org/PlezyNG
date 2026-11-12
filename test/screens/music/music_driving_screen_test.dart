@@ -13,6 +13,12 @@ import '../../test_helpers/stub_music_playback_service.dart';
 
 class Music extends StubMusicPlaybackService {
   int toggles = 0;
+  int stops = 0;
+  @override
+  Future<void> stop() async {
+    stops++;
+  }
+
   int starts = 0;
   bool? startedOffline;
   List<MediaItem> startedTracks = [];
@@ -106,5 +112,19 @@ void main() {
     await tester.ensureVisible(find.byIcon(Symbols.play_arrow_rounded));
     await tester.tap(find.byIcon(Symbols.play_arrow_rounded));
     expect(music.toggles, 1);
+  });
+  testWidgets('holding the driving transport stops the shared session', (tester) async {
+    final music = Music();
+    addTearDown(music.dispose);
+    await tester.pumpWidget(
+      ChangeNotifierProvider<MusicPlaybackService>.value(
+        value: music,
+        child: const MaterialApp(home: MusicDrivingScreen()),
+      ),
+    );
+    await tester.longPress(find.byIcon(Symbols.play_arrow_rounded));
+    await tester.pump();
+    expect(music.stops, 1);
+    expect(music.toggles, 0);
   });
 }

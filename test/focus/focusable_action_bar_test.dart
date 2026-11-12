@@ -166,4 +166,41 @@ void main() {
     expect(focusedNode!.hasFocus, isTrue);
     expect(rowFocusChanges, [true], reason: 'a positionally surviving action must not report a row-focus loss');
   });
+  for (final custom in [false, true]) {
+    testWidgets('holding an action runs its secondary command without tapping (custom=$custom)', (tester) async {
+      var taps = 0, holds = 0;
+      await pumpBar(tester, [
+        FocusableAction(
+          debugLabel: 'hold',
+          tooltip: 'Pause',
+          onPressed: () => taps++,
+          onLongPress: () => holds++,
+          longPressTooltip: 'Stop playback',
+          builder: custom ? (_, _) => InkWell(onTap: () => taps++, child: const SizedBox(width: 72, height: 72)) : null,
+        ),
+      ]);
+      await tester.longPress(find.byTooltip('Pause'));
+      await tester.pump();
+      expect(holds, 1);
+      expect(taps, 0);
+      await tester.tap(find.byTooltip('Pause'));
+      await tester.pump();
+      expect(taps, 1);
+      expect(holds, 1);
+      barState(tester).getFocusNode(0)!.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.select);
+      await tester.pump();
+      expect(taps, 2);
+      expect(holds, 1, reason: 'keyboard activation preserves the primary action');
+    });
+  }
+
+  testWidgets('a disabled action cannot run its hold command', (tester) async {
+    var holds = 0;
+    await pumpBar(tester, [FocusableAction(tooltip: 'Disabled', onLongPress: () => holds++)]);
+    await tester.longPress(find.byType(IconButton));
+    await tester.pump();
+    expect(holds, 0);
+  });
 }

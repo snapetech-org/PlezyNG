@@ -48,6 +48,18 @@ class _FakeMusicService extends StubMusicPlaybackService implements MusicLoudnes
   final List<Duration> seeks = [];
   final AudioLoudnessProfile? loudnessProfile;
   int loudnessProfileLoads = 0;
+  int stopCalls = 0, toggleCalls = 0;
+
+  @override
+  Future<void> stop() async {
+    stopCalls++;
+  }
+
+  @override
+  Future<void> togglePlayPause() async {
+    toggleCalls++;
+  }
+
   Duration _position = Duration.zero;
 
   _FakeMusicService({required this.track, required this.context, this.loudnessProfile});
@@ -256,6 +268,18 @@ void main() {
     navigatorKey.currentState!.pop();
     await tester.pump(const Duration(seconds: 1));
     expect(find.text('Home'), findsOneWidget);
+  });
+
+  testWidgets('holding Now Playing transport stops the shared session without toggling', (tester) async {
+    final service = _FakeMusicService(
+      track: _track(id: 'one', title: 'First Track', album: 'Album', year: 1973),
+      context: const MusicPlayContext(title: 'Album', kind: MusicPlayContextKind.album),
+    );
+    await pumpNowPlaying(tester, service, isTv: false);
+    await tester.longPress(find.byTooltip(t.common.pause));
+    await tester.pump();
+    expect(service.stopCalls, 1);
+    expect(service.toggleCalls, 0);
   });
 
   testWidgets('playlist playback retains its queue provenance label', (tester) async {

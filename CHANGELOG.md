@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Admit album and artist playback in bounded metadata pages, preserving Plex child/grandchild routes and MediaBrowser music credits. Recheck the original account and play intent between pages and reject malformed or unauthorized pages before replacing the queue.
+- Start the bundled offline MilkRust sample automatically for a new music visualizer profile when native audio is available; keep saved engine and original-scene choices.
 
 - Correct the optional live audio spectrum filter so FFmpeg accepts its centroid and flatness measurements during music visualization.
 - Keep large music queues lazy through car status updates and karaoke snapshots; reject stale native queue references after identical duplicate tracks are reordered.

@@ -323,14 +323,20 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     final store = _store!;
     try {
       final prefs = await store.preferences();
-      final files = await store.allPresets();
-      if (!mounted || generation != _preferenceGeneration) {
-        return;
-      }
+      final firstUse = !prefs.containsKey('selected');
       final savedEngine = prefs['engine'];
       final engine = savedEngine == 'milkrust' || savedEngine == 'projectm'
           ? savedEngine as String
           : await VisualizerSession.defaultEngine();
+      if (!mounted || generation != _preferenceGeneration) return;
+      if (firstUse && engine == 'milkrust' && _nativeSourceReady) {
+        try {
+          await store.ensureStarterPack();
+        } on Object catch (error) {
+          developer.log('Bundled visualization presets could not be installed: $error', name: 'MusicVisualizer');
+        }
+      }
+      final files = await store.allPresets();
       if (!mounted || generation != _preferenceGeneration) return;
       await _native.setEngine(engine);
       if (!mounted || generation != _preferenceGeneration) {
@@ -352,12 +358,21 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
           widget.onPresetChanged(preset);
         }
       }
-      final selected = byPath[prefs['selected']];
-      if (selected != null && _native.accepts(selected) && _nativeSourceReady) {
-        if (!_playlist.any((file) => file.id == selected.id)) {
-          _playlist.add(selected);
+      VisualizerPresetFile? selected = byPath[prefs['selected']];
+      if (selected == null && firstUse && engine == 'milkrust') {
+        for (final file in files) {
+          if (file.id.startsWith('pack:${VisualizerPackCatalogEntry.sampleFixtureId}@') && file.supportsMilkRust) {
+            selected = file;
+            break;
+          }
         }
-        await _native.load(selected, automatic: true);
+      }
+      final selectedPreset = selected;
+      if (selectedPreset != null && _native.accepts(selectedPreset) && _nativeSourceReady) {
+        if (!_playlist.any((file) => file.id == selectedPreset.id)) {
+          _playlist.add(selectedPreset);
+        }
+        await _native.load(selectedPreset, automatic: true);
       }
       if (!mounted || generation != _preferenceGeneration) {
         return;

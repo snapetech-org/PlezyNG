@@ -963,6 +963,8 @@ The immutable `pleazyng-linux-x64.deb` artifact from CI run `43148781127` (SHA-2
 
 That VM run also exposed an unrelated optional mpv `aspectralstats` filter error: FFmpeg interpreted `centroid flatness` as an invalid single measurement. The corrected flag expression `centroid+flatness` played through mpv's lavfi wrapper on the Linux host without the audio-filter failure. The native MilkRust frames above rendered despite this error; the filter correction needs a rebuilt package for installed-app confirmation.
 
+A local release rebuild of the filter correction rendered MilkRust without the audio-filter initialization error in the VM log. In a separate fresh XDG profile, a further local release rebuild installed the bundled starter pack and displayed Blue Shape immediately on the first visualizer click. Choosing Original scenes showed Bloom, and Bloom remained selected after restarting that isolated profile. The rebuilt immutable CI package is still needed to confirm both changes in a release artifact.
+
 ## 2026-11-11 Windows release bundle gate
 
 The Windows x64 and arm64 build workflow now requires the MilkRust DLL, visualizer helper, offline starter pack, notices, source archive and source receipt in each final bundle. It compares the bundled libmpv DLL with the checksum-pinned DLL extracted for the build and checks the MilkRust receipt against the application source lock. This is a packaging gate; installed Windows playback and renderer qualification remain pending.

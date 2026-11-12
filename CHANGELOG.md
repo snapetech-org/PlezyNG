@@ -10,6 +10,8 @@
 
 - Store large music queue occurrence IDs and metadata offsets in a bounded, block-cached disk index; immutable snapshots lease the index instead of copying per-track handles.
 
+- Use the same bounded queue storage for temporary remote-device transfers and release their mutable owners after capturing the immutable transfer state.
+
 - Play Plex server radio through the shared music session, retain manual exclusions during rolling refills, and persist credential-free recipes that require fresh library authorization after restart.
 
 - Read Plex server-authored radio catalogs and open only account-authorized station keys through the audio PlayQueue API; reject foreign or malformed catalog and queue windows.

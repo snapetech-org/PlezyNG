@@ -101,6 +101,26 @@ class _PendingResume {
   _PendingResume({required this.globalKey, required this.position});
 }
 
+MusicQueueState _captureTransferQueueState(List<MediaItem> tracks, {MediaItem? startTrack, bool shuffle = false}) {
+  final queue = MusicQueueController(spillLargeQueues: true);
+  try {
+    int? startIndex;
+    if (startTrack != null) {
+      final exact = tracks.indexWhere((item) => identical(item, startTrack));
+      if (exact >= 0) {
+        startIndex = exact;
+      } else {
+        final fallback = tracks.indexWhere((item) => item.globalKey == startTrack.globalKey);
+        if (fallback >= 0) startIndex = fallback;
+      }
+    }
+    queue.load(tracks, startIndex: startIndex, shuffle: shuffle);
+    return queue.captureState();
+  } finally {
+    queue.clear();
+  }
+}
+
 /// Real music playback engine: owns the audio [Player], the queue
 /// (via [MusicQueueController]), gapless arming, per-track server progress
 /// reporting, and the OS media session.
@@ -2221,16 +2241,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _errorsController.add(StateError('This playback source requires this device'));
         return Future.value();
       }
-      final queue = MusicQueueController()..load(tracks, shuffle: shuffle);
-      if (startTrack != null) {
-        final index = tracks.indexWhere((item) => identical(item, startTrack));
-        final fallback = tracks.indexWhere((item) => item.globalKey == startTrack.globalKey);
-        queue.load(tracks, startIndex: index < 0 ? (fallback < 0 ? null : fallback) : index, shuffle: shuffle);
-      }
+      final queueState = _captureTransferQueueState(tracks, startTrack: startTrack, shuffle: shuffle);
       return output
           .playSnapshot(
             MusicTransferSnapshot(
-              queue: queue.captureState(),
+              queue: queueState,
               position: initialPosition ?? Duration.zero,
               playing: true,
               playContext: playContext,
@@ -4680,8 +4695,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   void _enqueue(List<MediaItem> tracks, {required bool next}) {
     if (_musicDeviceOutput != null) {
       if (tracks.isEmpty) return;
-      final queue = MusicQueueController()..load(tracks);
-      final snapshot = MusicTransferSnapshot(queue: queue.captureState(), position: Duration.zero, playing: false);
+      final queueState = _captureTransferQueueState(tracks);
+      final snapshot = MusicTransferSnapshot(queue: queueState, position: Duration.zero, playing: false);
       try {
         unawaited(
           _controlMusicDevice(next ? 'addNext' : 'addToEnd', {

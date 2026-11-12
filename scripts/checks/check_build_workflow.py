@@ -90,6 +90,11 @@ require(
     "Release CI native reliability checks must remain on hosted Apple runners",
 )
 require(
+    "inputs.action == 'release' && 'pleazyng-versioned-release-v2'" in text
+    and "inputs.action == 'build' && 'pleazyng-candidate-build-v2'" in text,
+    "nonpublishing build requests must not hold the versioned release concurrency group",
+)
+require(
     "timeout-minutes: 240" in job("build-ios")
     and "timeout-minutes: 180" in job("build-tvos"),
     "iOS and tvOS package jobs must have explicit bounded timeouts",
@@ -106,6 +111,8 @@ apple_pool_argument = next((
 ), None)
 apple_pool_default = next((keyword.value for keyword in apple_pool_argument.keywords
                            if keyword.arg == "default"), None) if apple_pool_argument else None
+concurrency_group = next((line for line in text.splitlines()
+                          if line.startswith("  group: ${{")), "")
 require(
     isinstance(apple_pool_default, ast.Constant)
     and apple_pool_default.value == "auto"
@@ -1129,8 +1136,12 @@ require(
     and '        run: python3 scripts/build_apple_store_archive.py --prepare-ios-worker-profile --public-report "$RUNNER_TEMP/ios-profile-public-report.json"' in profile_preflight.splitlines()
     and len(re.findall(r'(?m)^(?:        run:|      - run:)', profile_preflight)) == 1
     and 'persist-credentials: false' in profile_preflight
-    and "  group: ${{ inputs.action == 'apple-signing-preflight' && 'pleazyng-apple-signing-preflight' || (inputs.recovery_source_sha != '' && inputs.rebuild_tvos && !inputs.rebuild_ios && format('pleazyng-tvos-repair-{0}', inputs.build_version)) || 'pleazyng-core-release' }}" in text.splitlines(),
-    "iOS profile preflight must be bounded on trusted native macOS and serialize core builds while allowing approved tvOS-only repair",
+    and "pleazyng-apple-signing-preflight" in concurrency_group
+    and "pleazyng-tvos-repair-{0}" in concurrency_group
+    and "pleazyng-versioned-release-v2" in concurrency_group
+    and "pleazyng-candidate-build-v2" in concurrency_group
+    and "pleazyng-core-release-v2" in concurrency_group,
+    "iOS profile preflight must stay separate, approved tvOS repair retained, and package builds separated from versioned releases",
 )
 require(
     re.search(

@@ -154,8 +154,11 @@ still requires all 13 CI jobs to pass on its exact source revision.
 the independent platform jobs in one `build.yml` release run are eligible to run
 in parallel; they do not wait for one another. `package-windows` waits for the
 Windows build that produces its input, and `create-release` waits for all
-required platform outputs before assembling the draft. The steps inside each
-job still run in order.
+required platform outputs before assembling the draft. Versioned releases and
+nonpublishing build requests use separate concurrency groups, so an unrelated
+queued package build cannot hold a release behind its runner wait. Old runs keep
+the group assigned by the workflow revision that started them. The steps inside
+each job still run in order.
 
 Capacity determines which eligible jobs start. The hybrid Linux, Android,
 Tizen, and Windows jobs can occupy separate hosted runners concurrently.

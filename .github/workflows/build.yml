@@ -162,7 +162,9 @@ env:
     ruby ruby-dev rubygems build-essential rpm libarchive-tools imagemagick libcurl4-openssl-dev
 
 concurrency:
-  group: ${{ inputs.action == 'apple-signing-preflight' && 'pleazyng-apple-signing-preflight' || (inputs.recovery_source_sha != '' && inputs.rebuild_tvos && !inputs.rebuild_ios && format('pleazyng-tvos-repair-{0}', inputs.build_version)) || 'pleazyng-core-release' }}
+  # Do not let nonpublishing build requests hold a versioned release behind a
+  # queued platform job. Old active runs retain their original group assignment.
+  group: ${{ inputs.action == 'apple-signing-preflight' && 'pleazyng-apple-signing-preflight' || (inputs.recovery_source_sha != '' && inputs.rebuild_tvos && !inputs.rebuild_ios && format('pleazyng-tvos-repair-{0}', inputs.build_version)) || inputs.action == 'release' && 'pleazyng-versioned-release-v2' || inputs.action == 'build' && 'pleazyng-candidate-build-v2' || 'pleazyng-core-release-v2' }}
   cancel-in-progress: false
 
 jobs:

@@ -127,6 +127,23 @@ jobs:
           if ($null -eq $nuspec -or (Get-Content $nuspec.FullName -Raw) -notmatch "<version>$([regex]::Escape($env:RELEASE_VERSION))</version>") {
             throw 'Chocolatey package metadata does not match the release version.'
           }
+          [xml]$nuspecDocument = Get-Content $nuspec.FullName -Raw
+          $metadataNode = $nuspecDocument.SelectSingleNode("/*[local-name()='package']/*[local-name()='metadata']")
+          if ($null -eq $metadataNode) { throw 'Chocolatey package has no nuspec metadata block.' }
+          $expectedMetadata = [ordered]@{
+            id = 'pleazyng'
+            authors = 'SnapeTech'
+            owners = 'slskdn'
+            projectUrl = 'https://pleazyng.app/'
+            projectSourceUrl = 'https://github.com/snapetech-org/pleazyng'
+            packageSourceUrl = 'https://github.com/snapetech-org/pleazyng/tree/main/packaging/chocolatey'
+          }
+          foreach ($name in $expectedMetadata.Keys) {
+            $node = $metadataNode.SelectSingleNode("*[local-name()='$name']")
+            if ($null -eq $node -or $node.InnerText.Trim() -ne $expectedMetadata[$name]) {
+              throw "Chocolatey package metadata '$name' must be '$($expectedMetadata[$name])'."
+            }
+          }
 
       - name: Push to Chocolatey
         shell: pwsh

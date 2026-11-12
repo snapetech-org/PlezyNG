@@ -88,7 +88,8 @@ For future Chocolatey releases, keep the nuspec `projectUrl` on the Pleazyng
 website and `projectSourceUrl` on the application source repository. Set `owners`
 to the Chocolatey maintainer account (`slskdn`) and `authors` to the software
 author (`SnapeTech`). `packageSourceUrl` points to the Chocolatey recipe. Check
-these fields in the generated `.nupkg` before publishing. The 3.0.33 submission
+these fields in the generated `.nupkg` before publishing; `publish-chocolatey.yml`
+now enforces the expected values before its push step. The 3.0.33 submission
 passed automated validation and was pending further review when these metadata
 guidelines were received; a successful push alone does not establish approval.
 

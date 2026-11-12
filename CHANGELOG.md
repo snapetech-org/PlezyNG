@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Save Sonic Adventure track counts and maximum sonic distance, forward them to each Plex path request, and reject paths that omit a waypoint or exceed their budget. Retire discovery editors and related results with their original profile/account.
+- Validate Chocolatey package ownership and project URLs from the generated package before publishing.
 
 - Require the complete acknowledged Cast occurrence order before returning playback locally, and recheck it during preparation and receiver pause so receiver edits cannot be overwritten by a stale queue.
 

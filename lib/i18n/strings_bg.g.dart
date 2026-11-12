@@ -4366,6 +4366,10 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex прие заявката за достъп.';
 	@override String get playlistAccessList => 'Текущ достъп';
 	@override String get playlistAccessNone => 'Няма предоставен достъп до плейлиста';
+	@override String get filterType => 'Тип филтър';
+	@override String get peak => 'Пик';
+	@override String get bass => 'Баси';
+	@override String get treble => 'Високи честоти';
 }
 
 // Path: musicDevices
@@ -9577,6 +9581,10 @@ extension on TranslationsBg {
 			'musicTools.playlistSharingAccepted' => 'Plex прие заявката за достъп.',
 			'musicTools.playlistAccessList' => 'Текущ достъп',
 			'musicTools.playlistAccessNone' => 'Няма предоставен достъп до плейлиста',
+			'musicTools.filterType' => 'Тип филтър',
+			'musicTools.peak' => 'Пик',
+			'musicTools.bass' => 'Баси',
+			'musicTools.treble' => 'Високи честоти',
 			'musicDevices.playOn' => 'Възпроизвеждане на',
 			'musicDevices.thisDevice' => 'Това устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',

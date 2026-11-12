@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Pleylistə giriş istənilə bilmədi.",
     "playlistSharingAccepted": "Plex giriş sorğusunu qəbul etdi.",
     "playlistAccessList": "Cari giriş",
-    "playlistAccessNone": "Pleylistə giriş icazəsi yoxdur"
+    "playlistAccessNone": "Pleylistə giriş icazəsi yoxdur",
+    "filterType": "Filtr növü",
+    "peak": "Zirvə",
+    "bass": "Bas",
+    "treble": "Tiz səslər"
   },
   "musicDevices": {
     "playOn": "Burada səsləndir",

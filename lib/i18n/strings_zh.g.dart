@@ -4361,6 +4361,10 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex 已接受访问请求。';
 	@override String get playlistAccessList => '当前访问权限';
 	@override String get playlistAccessNone => '尚未授予播放列表访问权限';
+	@override String get filterType => '滤波器类型';
+	@override String get peak => '峰值';
+	@override String get bass => '低音';
+	@override String get treble => '高音';
 }
 
 // Path: musicDevices
@@ -9572,6 +9576,10 @@ extension on TranslationsZh {
 			'musicTools.playlistSharingAccepted' => 'Plex 已接受访问请求。',
 			'musicTools.playlistAccessList' => '当前访问权限',
 			'musicTools.playlistAccessNone' => '尚未授予播放列表访问权限',
+			'musicTools.filterType' => '滤波器类型',
+			'musicTools.peak' => '峰值',
+			'musicTools.bass' => '低音',
+			'musicTools.treble' => '高音',
 			'musicDevices.playOn' => '播放设备',
 			'musicDevices.thisDevice' => '此设备',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

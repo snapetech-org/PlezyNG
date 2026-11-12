@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Playlist-Zugriff konnte nicht angefordert werden.",
     "playlistSharingAccepted": "Plex hat die Zugriffsanfrage angenommen.",
     "playlistAccessList": "Aktueller Zugriff",
-    "playlistAccessNone": "Keine Playlist-Zugriffsrechte vergeben"
+    "playlistAccessNone": "Keine Playlist-Zugriffsrechte vergeben",
+    "filterType": "Filtertyp",
+    "peak": "Spitze",
+    "bass": "Bass",
+    "treble": "Höhen"
   },
   "musicDevices": {
     "playOn": "Wiedergeben auf",

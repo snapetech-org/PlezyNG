@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Kunne ikke be om tilgang til spillelisten.",
     "playlistSharingAccepted": "Plex godtok tilgangsforespørselen.",
     "playlistAccessList": "Nåværende tilgang",
-    "playlistAccessNone": "Ingen har fått tilgang til spillelisten"
+    "playlistAccessNone": "Ingen har fått tilgang til spillelisten",
+    "filterType": "Filtertype",
+    "peak": "Topp",
+    "bass": "Bass",
+    "treble": "Diskant"
   },
   "musicDevices": {
     "playOn": "Spill av på",

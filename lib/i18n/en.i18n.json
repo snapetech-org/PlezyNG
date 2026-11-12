@@ -5658,7 +5658,11 @@
     "playlistSharingFailed": "Could not request playlist access.",
     "playlistSharingAccepted": "Plex accepted the access request.",
     "playlistAccessList": "Current access",
-    "playlistAccessNone": "No playlist access grants"
+    "playlistAccessNone": "No playlist access grants",
+    "filterType": "Filter type",
+    "peak": "Peak",
+    "bass": "Bass",
+    "treble": "Treble"
   },
   "musicDevices": {
     "playOn": "Play on",

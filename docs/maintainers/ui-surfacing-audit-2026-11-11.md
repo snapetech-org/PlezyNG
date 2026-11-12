@@ -38,6 +38,6 @@ and service qualification remain separate.
 The static pass cannot establish whether a reachable action is understandable,
 fits a narrow/TV layout, has correct permissions, or works with a live server.
 Continue with the actual screens and account/device fixtures for each README
-feature group. In particular, review podcast automation labels and native EQ
-band-type presentation with the next localization pass; both currently rely on
-generic labels. Preserve the existing provider and platform gates when doing so.
+feature group. Podcast automation labels were made specific in `7ed91dece`;
+native EQ band-type selection was subsequently added. Preserve the existing
+provider and platform gates during further review.

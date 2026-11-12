@@ -4361,6 +4361,10 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex가 접근 요청을 접수했습니다.';
 	@override String get playlistAccessList => '현재 접근 권한';
 	@override String get playlistAccessNone => '부여된 재생목록 접근 권한이 없습니다';
+	@override String get filterType => '필터 유형';
+	@override String get peak => '피크';
+	@override String get bass => '저음';
+	@override String get treble => '고음';
 }
 
 // Path: musicDevices
@@ -9572,6 +9576,10 @@ extension on TranslationsKo {
 			'musicTools.playlistSharingAccepted' => 'Plex가 접근 요청을 접수했습니다.',
 			'musicTools.playlistAccessList' => '현재 접근 권한',
 			'musicTools.playlistAccessNone' => '부여된 재생목록 접근 권한이 없습니다',
+			'musicTools.filterType' => '필터 유형',
+			'musicTools.peak' => '피크',
+			'musicTools.bass' => '저음',
+			'musicTools.treble' => '고음',
 			'musicDevices.playOn' => '재생 기기',
 			'musicDevices.thisDevice' => '이 기기',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',

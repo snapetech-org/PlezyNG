@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Тізімге қатынау сұрауын жіберу мүмкін болмады.",
     "playlistSharingAccepted": "Plex қатынау сұрауын қабылдады.",
     "playlistAccessList": "Ағымдағы қатынау",
-    "playlistAccessNone": "Ойнату тізіміне қатынау берілмеген"
+    "playlistAccessNone": "Ойнату тізіміне қатынау берілмеген",
+    "filterType": "Сүзгі түрі",
+    "peak": "Шың",
+    "bass": "Бас",
+    "treble": "Жоғары жиіліктер"
   },
   "musicDevices": {
     "playOn": "Ойнату құрылғысы",

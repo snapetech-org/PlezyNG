@@ -5633,7 +5633,11 @@
     "playlistSharingFailed": "Nie udało się wysłać prośby o dostęp do playlisty.",
     "playlistSharingAccepted": "Plex przyjął prośbę o dostęp.",
     "playlistAccessList": "Bieżący dostęp",
-    "playlistAccessNone": "Nie przyznano dostępu do playlisty"
+    "playlistAccessNone": "Nie przyznano dostępu do playlisty",
+    "filterType": "Typ filtra",
+    "peak": "Szczyt",
+    "bass": "Basy",
+    "treble": "Wysokie tony"
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

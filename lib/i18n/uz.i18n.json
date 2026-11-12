@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Pleylistga kirish so‘rovini yuborib bo‘lmadi.",
     "playlistSharingAccepted": "Plex kirish so‘rovini qabul qildi.",
     "playlistAccessList": "Joriy kirish",
-    "playlistAccessNone": "Pleylistga kirish ruxsati berilmagan"
+    "playlistAccessNone": "Pleylistga kirish ruxsati berilmagan",
+    "filterType": "Filtr turi",
+    "peak": "Choʻqqi",
+    "bass": "Bas",
+    "treble": "Yuqori tovushlar"
   },
   "musicDevices": {
     "playOn": "Shu qurilmada ijro etish",

@@ -5661,7 +5661,11 @@
     "playlistSharingFailed": "No se pudo solicitar acceso a la lista.",
     "playlistSharingAccepted": "Plex aceptó la solicitud de acceso.",
     "playlistAccessList": "Acceso actual",
-    "playlistAccessNone": "No hay permisos de acceso a la lista"
+    "playlistAccessNone": "No hay permisos de acceso a la lista",
+    "filterType": "Tipo de filtro",
+    "peak": "Pico",
+    "bass": "Graves",
+    "treble": "Agudos"
   },
   "musicDevices": {
     "playOn": "Reproducir en",

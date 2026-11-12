@@ -5687,7 +5687,11 @@
     "playlistSharingFailed": "تعذر طلب الوصول إلى قائمة التشغيل.",
     "playlistSharingAccepted": "قبل Plex طلب الوصول.",
     "playlistAccessList": "الوصول الحالي",
-    "playlistAccessNone": "لا توجد أذونات للوصول إلى قائمة التشغيل"
+    "playlistAccessNone": "لا توجد أذونات للوصول إلى قائمة التشغيل",
+    "filterType": "نوع المرشح",
+    "peak": "ذروة",
+    "bass": "جهير",
+    "treble": "صوت حاد"
   },
   "musicDevices": {
     "playOn": "التشغيل على",

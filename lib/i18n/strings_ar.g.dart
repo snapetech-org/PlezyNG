@@ -4458,6 +4458,10 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'قبل Plex طلب الوصول.';
 	@override String get playlistAccessList => 'الوصول الحالي';
 	@override String get playlistAccessNone => 'لا توجد أذونات للوصول إلى قائمة التشغيل';
+	@override String get filterType => 'نوع المرشح';
+	@override String get peak => 'ذروة';
+	@override String get bass => 'جهير';
+	@override String get treble => 'صوت حاد';
 }
 
 // Path: musicDevices
@@ -9677,6 +9681,10 @@ extension on TranslationsAr {
 			'musicTools.playlistSharingAccepted' => 'قبل Plex طلب الوصول.',
 			'musicTools.playlistAccessList' => 'الوصول الحالي',
 			'musicTools.playlistAccessNone' => 'لا توجد أذونات للوصول إلى قائمة التشغيل',
+			'musicTools.filterType' => 'نوع المرشح',
+			'musicTools.peak' => 'ذروة',
+			'musicTools.bass' => 'جهير',
+			'musicTools.treble' => 'صوت حاد',
 			'musicDevices.playOn' => 'التشغيل على',
 			'musicDevices.thisDevice' => 'هذا الجهاز',
 			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',

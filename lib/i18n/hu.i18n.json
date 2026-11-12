@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Nem sikerült hozzáférést kérni a listához.",
     "playlistSharingAccepted": "A Plex elfogadta a hozzáférési kérést.",
     "playlistAccessList": "Jelenlegi hozzáférés",
-    "playlistAccessNone": "Nincs megadott hozzáférés a listához"
+    "playlistAccessNone": "Nincs megadott hozzáférés a listához",
+    "filterType": "Szűrő típusa",
+    "peak": "Csúcs",
+    "bass": "Mély",
+    "treble": "Magas"
   },
   "musicDevices": {
     "playOn": "Lejátszás itt",

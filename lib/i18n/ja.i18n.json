@@ -5574,7 +5574,11 @@
     "playlistSharingFailed": "プレイリストへのアクセスをリクエストできませんでした。",
     "playlistSharingAccepted": "Plexがアクセスのリクエストを受け付けました。",
     "playlistAccessList": "現在のアクセス権",
-    "playlistAccessNone": "プレイリストのアクセス権は付与されていません"
+    "playlistAccessNone": "プレイリストのアクセス権は付与されていません",
+    "filterType": "フィルターの種類",
+    "peak": "ピーク",
+    "bass": "低音",
+    "treble": "高音"
   },
   "musicDevices": {
     "playOn": "再生先",

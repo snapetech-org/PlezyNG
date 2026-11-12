@@ -4343,6 +4343,10 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex menerima permintaan akses.';
 	@override String get playlistAccessList => 'Akses semasa';
 	@override String get playlistAccessNone => 'Tiada akses senarai main diberikan';
+	@override String get filterType => 'Jenis penapis';
+	@override String get peak => 'Puncak';
+	@override String get bass => 'Bes';
+	@override String get treble => 'Trebel';
 }
 
 // Path: musicDevices
@@ -9552,6 +9556,10 @@ extension on TranslationsMs {
 			'musicTools.playlistSharingAccepted' => 'Plex menerima permintaan akses.',
 			'musicTools.playlistAccessList' => 'Akses semasa',
 			'musicTools.playlistAccessNone' => 'Tiada akses senarai main diberikan',
+			'musicTools.filterType' => 'Jenis penapis',
+			'musicTools.peak' => 'Puncak',
+			'musicTools.bass' => 'Bes',
+			'musicTools.treble' => 'Trebel',
 			'musicDevices.playOn' => 'Mainkan pada',
 			'musicDevices.thisDevice' => 'Peranti ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',

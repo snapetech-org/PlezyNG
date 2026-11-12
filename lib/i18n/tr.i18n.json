@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Çalma listesi erişimi istenemedi.",
     "playlistSharingAccepted": "Plex erişim isteğini kabul etti.",
     "playlistAccessList": "Geçerli erişim",
-    "playlistAccessNone": "Çalma listesi erişimi verilmedi"
+    "playlistAccessNone": "Çalma listesi erişimi verilmedi",
+    "filterType": "Filtre türü",
+    "peak": "Tepe",
+    "bass": "Bas",
+    "treble": "Tiz"
   },
   "musicDevices": {
     "playOn": "Şurada çal",

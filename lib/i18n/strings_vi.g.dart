@@ -4343,6 +4343,10 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex đã tiếp nhận yêu cầu truy cập.';
 	@override String get playlistAccessList => 'Quyền truy cập hiện tại';
 	@override String get playlistAccessNone => 'Chưa cấp quyền truy cập danh sách phát';
+	@override String get filterType => 'Loại bộ lọc';
+	@override String get peak => 'Đỉnh';
+	@override String get bass => 'Âm trầm';
+	@override String get treble => 'Âm cao';
 }
 
 // Path: musicDevices
@@ -9552,6 +9556,10 @@ extension on TranslationsVi {
 			'musicTools.playlistSharingAccepted' => 'Plex đã tiếp nhận yêu cầu truy cập.',
 			'musicTools.playlistAccessList' => 'Quyền truy cập hiện tại',
 			'musicTools.playlistAccessNone' => 'Chưa cấp quyền truy cập danh sách phát',
+			'musicTools.filterType' => 'Loại bộ lọc',
+			'musicTools.peak' => 'Đỉnh',
+			'musicTools.bass' => 'Âm trầm',
+			'musicTools.treble' => 'Âm cao',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',

@@ -5633,7 +5633,11 @@
     "playlistSharingFailed": "Не удалось запросить доступ к плейлисту.",
     "playlistSharingAccepted": "Plex принял запрос на доступ.",
     "playlistAccessList": "Текущий доступ",
-    "playlistAccessNone": "Доступ к плейлисту никому не предоставлен"
+    "playlistAccessNone": "Доступ к плейлисту никому не предоставлен",
+    "filterType": "Тип фильтра",
+    "peak": "Пик",
+    "bass": "Низкие частоты",
+    "treble": "Высокие частоты"
   },
   "musicDevices": {
     "playOn": "Воспроизвести на",

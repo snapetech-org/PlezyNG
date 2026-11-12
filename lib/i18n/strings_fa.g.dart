@@ -4366,6 +4366,10 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex درخواست دسترسی را پذیرفت.';
 	@override String get playlistAccessList => 'دسترسی فعلی';
 	@override String get playlistAccessNone => 'هیچ دسترسی به فهرست پخش داده نشده است';
+	@override String get filterType => 'نوع فیلتر';
+	@override String get peak => 'اوج';
+	@override String get bass => 'بیس';
+	@override String get treble => 'زیر';
 }
 
 // Path: musicDevices
@@ -9577,6 +9581,10 @@ extension on TranslationsFa {
 			'musicTools.playlistSharingAccepted' => 'Plex درخواست دسترسی را پذیرفت.',
 			'musicTools.playlistAccessList' => 'دسترسی فعلی',
 			'musicTools.playlistAccessNone' => 'هیچ دسترسی به فهرست پخش داده نشده است',
+			'musicTools.filterType' => 'نوع فیلتر',
+			'musicTools.peak' => 'اوج',
+			'musicTools.bass' => 'بیس',
+			'musicTools.treble' => 'زیر',
 			'musicDevices.playOn' => 'پخش در',
 			'musicDevices.thisDevice' => 'این دستگاه',
 			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',

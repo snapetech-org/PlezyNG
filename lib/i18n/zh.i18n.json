@@ -5574,7 +5574,11 @@
     "playlistSharingFailed": "无法请求播放列表访问权限。",
     "playlistSharingAccepted": "Plex 已接受访问请求。",
     "playlistAccessList": "当前访问权限",
-    "playlistAccessNone": "尚未授予播放列表访问权限"
+    "playlistAccessNone": "尚未授予播放列表访问权限",
+    "filterType": "滤波器类型",
+    "peak": "峰值",
+    "bass": "低音",
+    "treble": "高音"
   },
   "musicDevices": {
     "playOn": "播放设备",

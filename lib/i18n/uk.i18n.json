@@ -5627,7 +5627,11 @@
     "playlistSharingFailed": "Не вдалося запросити доступ до списку.",
     "playlistSharingAccepted": "Plex прийняв запит на доступ.",
     "playlistAccessList": "Поточний доступ",
-    "playlistAccessNone": "Доступ до списку нікому не надано"
+    "playlistAccessNone": "Доступ до списку нікому не надано",
+    "filterType": "Тип фільтра",
+    "peak": "Пік",
+    "bass": "Низькі частоти",
+    "treble": "Високі частоти"
   },
   "musicDevices": {
     "playOn": "Відтворити на",

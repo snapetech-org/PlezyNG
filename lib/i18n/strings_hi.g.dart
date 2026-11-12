@@ -4366,6 +4366,10 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।';
 	@override String get playlistAccessList => 'मौजूदा ऐक्सेस';
 	@override String get playlistAccessNone => 'प्लेलिस्ट का ऐक्सेस किसी को नहीं दिया गया';
+	@override String get filterType => 'फ़िल्टर का प्रकार';
+	@override String get peak => 'शिखर';
+	@override String get bass => 'बास';
+	@override String get treble => 'ट्रेबल';
 }
 
 // Path: musicDevices
@@ -9577,6 +9581,10 @@ extension on TranslationsHi {
 			'musicTools.playlistSharingAccepted' => 'Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।',
 			'musicTools.playlistAccessList' => 'मौजूदा ऐक्सेस',
 			'musicTools.playlistAccessNone' => 'प्लेलिस्ट का ऐक्सेस किसी को नहीं दिया गया',
+			'musicTools.filterType' => 'फ़िल्टर का प्रकार',
+			'musicTools.peak' => 'शिखर',
+			'musicTools.bass' => 'बास',
+			'musicTools.treble' => 'ट्रेबल',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',

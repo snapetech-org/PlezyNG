@@ -104,7 +104,11 @@ class _CalderaEqualizerScreenState extends State<CalderaEqualizerScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: Text('${band.frequency.text} Hz', style: Theme.of(context).textTheme.titleMedium),
+                        child: Text(switch (band.filterType) {
+                          1 => t.musicTools.bass,
+                          2 => t.musicTools.treble,
+                          _ => t.musicTools.peak,
+                        }, style: Theme.of(context).textTheme.titleMedium),
                       ),
                       IconButton(
                         tooltip: t.common.delete,
@@ -112,6 +116,20 @@ class _CalderaEqualizerScreenState extends State<CalderaEqualizerScreen> {
                         icon: const AppIcon(Symbols.delete_rounded),
                       ),
                     ],
+                  ),
+                  DropdownButtonFormField<int>(
+                    initialValue: band.filterType,
+                    decoration: InputDecoration(labelText: t.musicTools.filterType),
+                    items: [
+                      DropdownMenuItem(value: 0, child: Text(t.musicTools.peak)),
+                      DropdownMenuItem(value: 1, child: Text(t.musicTools.bass)),
+                      DropdownMenuItem(value: 2, child: Text(t.musicTools.treble)),
+                    ],
+                    onChanged: _busy || !widget.current()
+                        ? null
+                        : (value) {
+                            if (value != null) setState(() => band.filterType = value);
+                          },
                   ),
                   TextField(
                     controller: band.frequency,
@@ -157,7 +175,7 @@ class _BandDraft {
       gain = TextEditingController(text: band.gain.toString()),
       q = TextEditingController(text: band.q.toString());
 
-  final int filterType;
+  int filterType;
   final TextEditingController frequency;
   final TextEditingController gain;
   final TextEditingController q;

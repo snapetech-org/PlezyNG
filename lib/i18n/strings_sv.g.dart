@@ -4366,6 +4366,10 @@ class _Translations$musicTools$sv extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex tog emot åtkomstbegäran.';
 	@override String get playlistAccessList => 'Nuvarande åtkomst';
 	@override String get playlistAccessNone => 'Ingen åtkomst till spellistan har beviljats';
+	@override String get filterType => 'Filtertyp';
+	@override String get peak => 'Topp';
+	@override String get bass => 'Bas';
+	@override String get treble => 'Diskant';
 }
 
 // Path: musicDevices
@@ -9577,6 +9581,10 @@ extension on TranslationsSv {
 			'musicTools.playlistSharingAccepted' => 'Plex tog emot åtkomstbegäran.',
 			'musicTools.playlistAccessList' => 'Nuvarande åtkomst',
 			'musicTools.playlistAccessNone' => 'Ingen åtkomst till spellistan har beviljats',
+			'musicTools.filterType' => 'Filtertyp',
+			'musicTools.peak' => 'Topp',
+			'musicTools.bass' => 'Bas',
+			'musicTools.treble' => 'Diskant',
 			'musicDevices.playOn' => 'Spela på',
 			'musicDevices.thisDevice' => 'Den här enheten',
 			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',

@@ -5574,7 +5574,11 @@
     "playlistSharingFailed": "無法請求播放清單存取權。",
     "playlistSharingAccepted": "Plex 已接受存取請求。",
     "playlistAccessList": "目前的存取權",
-    "playlistAccessNone": "尚未授予播放清單存取權"
+    "playlistAccessNone": "尚未授予播放清單存取權",
+    "filterType": "濾波器類型",
+    "peak": "峰值",
+    "bass": "低音",
+    "treble": "高音"
   },
   "musicDevices": {
     "playOn": "播放裝置",

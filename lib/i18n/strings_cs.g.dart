@@ -4408,6 +4408,10 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex přijal žádost o přístup.';
 	@override String get playlistAccessList => 'Aktuální přístup';
 	@override String get playlistAccessNone => 'K playlistu nebyl udělen žádný přístup';
+	@override String get filterType => 'Typ filtru';
+	@override String get peak => 'Špička';
+	@override String get bass => 'Basy';
+	@override String get treble => 'Výšky';
 }
 
 // Path: musicDevices
@@ -9621,6 +9625,10 @@ extension on TranslationsCs {
 			'musicTools.playlistSharingAccepted' => 'Plex přijal žádost o přístup.',
 			'musicTools.playlistAccessList' => 'Aktuální přístup',
 			'musicTools.playlistAccessNone' => 'K playlistu nebyl udělen žádný přístup',
+			'musicTools.filterType' => 'Typ filtru',
+			'musicTools.peak' => 'Špička',
+			'musicTools.bass' => 'Basy',
+			'musicTools.treble' => 'Výšky',
 			'musicDevices.playOn' => 'Přehrávat na',
 			'musicDevices.thisDevice' => 'Toto zařízení',
 			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',

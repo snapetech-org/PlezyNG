@@ -5588,7 +5588,11 @@
     "playlistSharingFailed": "Não foi possível solicitar acesso à lista.",
     "playlistSharingAccepted": "O Plex aceitou o pedido de acesso.",
     "playlistAccessList": "Acesso atual",
-    "playlistAccessNone": "Não há acessos concedidos à lista"
+    "playlistAccessNone": "Não há acessos concedidos à lista",
+    "filterType": "Tipo de filtro",
+    "peak": "Pico",
+    "bass": "Graves",
+    "treble": "Agudos"
   },
   "musicDevices": {
     "playOn": "Reproduzir em",

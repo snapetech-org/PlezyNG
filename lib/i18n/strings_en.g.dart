@@ -14861,6 +14861,18 @@ class Translations$musicTools$en {
 
 	/// en: 'No playlist access grants'
 	String get playlistAccessNone => 'No playlist access grants';
+
+	/// en: 'Filter type'
+	String get filterType => 'Filter type';
+
+	/// en: 'Peak'
+	String get peak => 'Peak';
+
+	/// en: 'Bass'
+	String get bass => 'Bass';
+
+	/// en: 'Treble'
+	String get treble => 'Treble';
 }
 
 // Path: musicDevices
@@ -22830,6 +22842,10 @@ extension on Translations {
 			'musicTools.playlistSharingAccepted' => 'Plex accepted the access request.',
 			'musicTools.playlistAccessList' => 'Current access',
 			'musicTools.playlistAccessNone' => 'No playlist access grants',
+			'musicTools.filterType' => 'Filter type',
+			'musicTools.peak' => 'Peak',
+			'musicTools.bass' => 'Bass',
+			'musicTools.treble' => 'Treble',
 			'musicDevices.playOn' => 'Play on',
 			'musicDevices.thisDevice' => 'This device',
 			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',

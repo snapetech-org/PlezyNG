@@ -4417,6 +4417,10 @@ class Translations$musicTools$fr extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex a accepté la demande d’accès.';
 	@override String get playlistAccessList => 'Accès actuel';
 	@override String get playlistAccessNone => 'Aucun accès accordé à cette liste';
+	@override String get filterType => 'Type de filtre';
+	@override String get peak => 'Pic';
+	@override String get bass => 'Graves';
+	@override String get treble => 'Aigus';
 }
 
 // Path: musicDevices
@@ -9658,6 +9662,10 @@ extension on TranslationsFr {
 			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
 			'musicTools.playlistAccessList' => 'Accès actuel',
 			'musicTools.playlistAccessNone' => 'Aucun accès accordé à cette liste',
+			'musicTools.filterType' => 'Type de filtre',
+			'musicTools.peak' => 'Pic',
+			'musicTools.bass' => 'Graves',
+			'musicTools.treble' => 'Aigus',
 			'musicDevices.playOn' => 'Lire sur',
 			'musicDevices.thisDevice' => 'Cet appareil',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lecture sur ${device}',
@@ -9666,12 +9674,12 @@ extension on TranslationsFr {
 			'musicDevices.receive' => 'Autoriser la lecture sur cet appareil',
 			'musicDevices.nearbyHint' => 'Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.',
 			'musicDevices.receiverHint' => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.',
 			'musicDevices.uncertain' => 'Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.',
 			'musicDevices.away' => 'Hors de chez soi',
 			'musicDevices.relay' => 'URL du relais musical',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Activez sur l’appareil récepteur, puis associez une fois sur le même réseau. Gardez Pleazyng ouvert. Le relais transmet les commandes musicales chiffrées et voit les adresses réseau. Chaque lecteur utilise son propre serveur multimédia.',
 			'musicDevices.relayInvalid' => 'Saisissez une adresse HTTPS pour le relais.',
 			_ => null,

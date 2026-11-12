@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "प्लेलिस्ट के ऐक्सेस का अनुरोध नहीं किया जा सका।",
     "playlistSharingAccepted": "Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।",
     "playlistAccessList": "मौजूदा ऐक्सेस",
-    "playlistAccessNone": "प्लेलिस्ट का ऐक्सेस किसी को नहीं दिया गया"
+    "playlistAccessNone": "प्लेलिस्ट का ऐक्सेस किसी को नहीं दिया गया",
+    "filterType": "फ़िल्टर का प्रकार",
+    "peak": "शिखर",
+    "bass": "बास",
+    "treble": "ट्रेबल"
   },
   "musicDevices": {
     "playOn": "इस पर चलाएँ",

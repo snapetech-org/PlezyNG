@@ -4343,6 +4343,10 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว';
 	@override String get playlistAccessList => 'สิทธิ์เข้าถึงปัจจุบัน';
 	@override String get playlistAccessNone => 'ยังไม่มีการให้สิทธิ์เข้าถึงเพลย์ลิสต์';
+	@override String get filterType => 'ประเภทตัวกรอง';
+	@override String get peak => 'พีค';
+	@override String get bass => 'เสียงเบส';
+	@override String get treble => 'เสียงแหลม';
 }
 
 // Path: musicDevices
@@ -9552,6 +9556,10 @@ extension on TranslationsTh {
 			'musicTools.playlistSharingAccepted' => 'Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว',
 			'musicTools.playlistAccessList' => 'สิทธิ์เข้าถึงปัจจุบัน',
 			'musicTools.playlistAccessNone' => 'ยังไม่มีการให้สิทธิ์เข้าถึงเพลย์ลิสต์',
+			'musicTools.filterType' => 'ประเภทตัวกรอง',
+			'musicTools.peak' => 'พีค',
+			'musicTools.bass' => 'เสียงเบส',
+			'musicTools.treble' => 'เสียงแหลม',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',

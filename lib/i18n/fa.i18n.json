@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "درخواست دسترسی به فهرست پخش ممکن نشد.",
     "playlistSharingAccepted": "Plex درخواست دسترسی را پذیرفت.",
     "playlistAccessList": "دسترسی فعلی",
-    "playlistAccessNone": "هیچ دسترسی به فهرست پخش داده نشده است"
+    "playlistAccessNone": "هیچ دسترسی به فهرست پخش داده نشده است",
+    "filterType": "نوع فیلتر",
+    "peak": "اوج",
+    "bass": "بیس",
+    "treble": "زیر"
   },
   "musicDevices": {
     "playOn": "پخش در",

@@ -4362,6 +4362,10 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String get playlistSharingAccepted => 'Plex 已接受存取請求。';
 	@override String get playlistAccessList => '目前的存取權';
 	@override String get playlistAccessNone => '尚未授予播放清單存取權';
+	@override String get filterType => '濾波器類型';
+	@override String get peak => '峰值';
+	@override String get bass => '低音';
+	@override String get treble => '高音';
 }
 
 // Path: musicDevices
@@ -9573,6 +9577,10 @@ extension on TranslationsZhHant {
 			'musicTools.playlistSharingAccepted' => 'Plex 已接受存取請求。',
 			'musicTools.playlistAccessList' => '目前的存取權',
 			'musicTools.playlistAccessNone' => '尚未授予播放清單存取權',
+			'musicTools.filterType' => '濾波器類型',
+			'musicTools.peak' => '峰值',
+			'musicTools.bass' => '低音',
+			'musicTools.treble' => '高音',
 			'musicDevices.playOn' => '播放裝置',
 			'musicDevices.thisDevice' => '此裝置',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

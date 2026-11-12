@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Неуспешна заявка за достъп до плейлиста.",
     "playlistSharingAccepted": "Plex прие заявката за достъп.",
     "playlistAccessList": "Текущ достъп",
-    "playlistAccessNone": "Няма предоставен достъп до плейлиста"
+    "playlistAccessNone": "Няма предоставен достъп до плейлиста",
+    "filterType": "Тип филтър",
+    "peak": "Пик",
+    "bass": "Баси",
+    "treble": "Високи честоти"
   },
   "musicDevices": {
     "playOn": "Възпроизвеждане на",

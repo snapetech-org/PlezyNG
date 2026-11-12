@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Kunne ikke anmode om adgang til afspilningslisten.",
     "playlistSharingAccepted": "Plex accepterede adgangsanmodningen.",
     "playlistAccessList": "Nuværende adgang",
-    "playlistAccessNone": "Ingen har fået adgang til afspilningslisten"
+    "playlistAccessNone": "Ingen har fået adgang til afspilningslisten",
+    "filterType": "Filtertype",
+    "peak": "Spids",
+    "bass": "Bas",
+    "treble": "Diskant"
   },
   "musicDevices": {
     "playOn": "Afspil på",

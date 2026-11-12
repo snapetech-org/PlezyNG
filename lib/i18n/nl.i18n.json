@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "Kon geen toegang tot de afspeellijst aanvragen.",
     "playlistSharingAccepted": "Plex heeft het toegangsverzoek geaccepteerd.",
     "playlistAccessList": "Huidige toegang",
-    "playlistAccessNone": "Er is geen toegang tot deze afspeellijst verleend"
+    "playlistAccessNone": "Er is geen toegang tot deze afspeellijst verleend",
+    "filterType": "Filtertype",
+    "peak": "Piek",
+    "bass": "Bas",
+    "treble": "Hoge tonen"
   },
   "musicDevices": {
     "playOn": "Afspelen op",

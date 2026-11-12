@@ -5552,7 +5552,11 @@
     "playlistSharingFailed": "Tidak dapat meminta akses senarai main.",
     "playlistSharingAccepted": "Plex menerima permintaan akses.",
     "playlistAccessList": "Akses semasa",
-    "playlistAccessNone": "Tiada akses senarai main diberikan"
+    "playlistAccessNone": "Tiada akses senarai main diberikan",
+    "filterType": "Jenis penapis",
+    "peak": "Puncak",
+    "bass": "Bes",
+    "treble": "Trebel"
   },
   "musicDevices": {
     "playOn": "Mainkan pada",

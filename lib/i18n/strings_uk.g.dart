@@ -4408,6 +4408,10 @@ class _Translations$musicTools$uk extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex прийняв запит на доступ.';
 	@override String get playlistAccessList => 'Поточний доступ';
 	@override String get playlistAccessNone => 'Доступ до списку нікому не надано';
+	@override String get filterType => 'Тип фільтра';
+	@override String get peak => 'Пік';
+	@override String get bass => 'Низькі частоти';
+	@override String get treble => 'Високі частоти';
 }
 
 // Path: musicDevices
@@ -9621,6 +9625,10 @@ extension on TranslationsUk {
 			'musicTools.playlistSharingAccepted' => 'Plex прийняв запит на доступ.',
 			'musicTools.playlistAccessList' => 'Поточний доступ',
 			'musicTools.playlistAccessNone' => 'Доступ до списку нікому не надано',
+			'musicTools.filterType' => 'Тип фільтра',
+			'musicTools.peak' => 'Пік',
+			'musicTools.bass' => 'Низькі частоти',
+			'musicTools.treble' => 'Високі частоти',
 			'musicDevices.playOn' => 'Відтворити на',
 			'musicDevices.thisDevice' => 'Цей пристрій',
 			'musicDevices.playingOn' => ({required Object device}) => 'Відтворюється на ${device}',

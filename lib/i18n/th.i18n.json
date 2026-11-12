@@ -5552,7 +5552,11 @@
     "playlistSharingFailed": "ไม่สามารถขอสิทธิ์เข้าถึงเพลย์ลิสต์ได้",
     "playlistSharingAccepted": "Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว",
     "playlistAccessList": "สิทธิ์เข้าถึงปัจจุบัน",
-    "playlistAccessNone": "ยังไม่มีการให้สิทธิ์เข้าถึงเพลย์ลิสต์"
+    "playlistAccessNone": "ยังไม่มีการให้สิทธิ์เข้าถึงเพลย์ลิสต์",
+    "filterType": "ประเภทตัวกรอง",
+    "peak": "พีค",
+    "bass": "เสียงเบส",
+    "treble": "เสียงแหลม"
   },
   "musicDevices": {
     "playOn": "เล่นบน",

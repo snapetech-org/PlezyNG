@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Choose peak, bass or treble filter types for each native music group equalizer band.
+
 - Reject Linux visualizer packages whose bundled libmpv lacks the required music PCM tap or whose MilkRust runtime, helper, notices, source, or offline sample pack is missing.
 - Label per-show podcast automatic downloads and finished-episode retention by their actual behavior, including an explicit Off choice.
 

@@ -4366,6 +4366,10 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex қатынау сұрауын қабылдады.';
 	@override String get playlistAccessList => 'Ағымдағы қатынау';
 	@override String get playlistAccessNone => 'Ойнату тізіміне қатынау берілмеген';
+	@override String get filterType => 'Сүзгі түрі';
+	@override String get peak => 'Шың';
+	@override String get bass => 'Бас';
+	@override String get treble => 'Жоғары жиіліктер';
 }
 
 // Path: musicDevices
@@ -9577,6 +9581,10 @@ extension on TranslationsKk {
 			'musicTools.playlistSharingAccepted' => 'Plex қатынау сұрауын қабылдады.',
 			'musicTools.playlistAccessList' => 'Ағымдағы қатынау',
 			'musicTools.playlistAccessNone' => 'Ойнату тізіміне қатынау берілмеген',
+			'musicTools.filterType' => 'Сүзгі түрі',
+			'musicTools.peak' => 'Шың',
+			'musicTools.bass' => 'Бас',
+			'musicTools.treble' => 'Жоғары жиіліктер',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',

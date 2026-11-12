@@ -152,12 +152,17 @@ void main() {
     await tester.tap(find.byType(SwitchListTile));
     await tester.tap(find.text(t.common.createNew));
     await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownButtonFormField<int>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(t.musicTools.bass).last);
+    await tester.pumpAndSettle();
     final save = find.widgetWithText(FilledButton, t.common.save);
     await tester.ensureVisible(save);
     await tester.tap(save);
     await tester.pumpAndSettle();
     expect(audio.saved.single.enabled, isTrue);
     expect(audio.saved.single.bands.single.frequency, 1000);
+    expect(audio.saved.single.bands.single.filterType, 1);
     expect(find.byType(CalderaGroupScreen), findsOneWidget);
 
     await tester.ensureVisible(tile);

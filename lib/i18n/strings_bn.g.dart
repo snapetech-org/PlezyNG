@@ -4366,6 +4366,10 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex প্রবেশাধিকারের অনুরোধ গ্রহণ করেছে।';
 	@override String get playlistAccessList => 'বর্তমান প্রবেশাধিকার';
 	@override String get playlistAccessNone => 'প্লেলিস্টে কাউকে প্রবেশাধিকার দেওয়া হয়নি';
+	@override String get filterType => 'ফিল্টারের ধরন';
+	@override String get peak => 'পিক';
+	@override String get bass => 'বেস';
+	@override String get treble => 'ট্রেবল';
 }
 
 // Path: musicDevices
@@ -9577,6 +9581,10 @@ extension on TranslationsBn {
 			'musicTools.playlistSharingAccepted' => 'Plex প্রবেশাধিকারের অনুরোধ গ্রহণ করেছে।',
 			'musicTools.playlistAccessList' => 'বর্তমান প্রবেশাধিকার',
 			'musicTools.playlistAccessNone' => 'প্লেলিস্টে কাউকে প্রবেশাধিকার দেওয়া হয়নি',
+			'musicTools.filterType' => 'ফিল্টারের ধরন',
+			'musicTools.peak' => 'পিক',
+			'musicTools.bass' => 'বেস',
+			'musicTools.treble' => 'ট্রেবল',
 			'musicDevices.playOn' => 'এখানে চালান',
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',

@@ -5574,7 +5574,11 @@
     "playlistSharingFailed": "재생목록 접근을 요청할 수 없습니다.",
     "playlistSharingAccepted": "Plex가 접근 요청을 접수했습니다.",
     "playlistAccessList": "현재 접근 권한",
-    "playlistAccessNone": "부여된 재생목록 접근 권한이 없습니다"
+    "playlistAccessNone": "부여된 재생목록 접근 권한이 없습니다",
+    "filterType": "필터 유형",
+    "peak": "피크",
+    "bass": "저음",
+    "treble": "고음"
   },
   "musicDevices": {
     "playOn": "재생 기기",

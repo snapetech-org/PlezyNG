@@ -4366,6 +4366,10 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'A Plex elfogadta a hozzáférési kérést.';
 	@override String get playlistAccessList => 'Jelenlegi hozzáférés';
 	@override String get playlistAccessNone => 'Nincs megadott hozzáférés a listához';
+	@override String get filterType => 'Szűrő típusa';
+	@override String get peak => 'Csúcs';
+	@override String get bass => 'Mély';
+	@override String get treble => 'Magas';
 }
 
 // Path: musicDevices
@@ -9577,6 +9581,10 @@ extension on TranslationsHu {
 			'musicTools.playlistSharingAccepted' => 'A Plex elfogadta a hozzáférési kérést.',
 			'musicTools.playlistAccessList' => 'Jelenlegi hozzáférés',
 			'musicTools.playlistAccessNone' => 'Nincs megadott hozzáférés a listához',
+			'musicTools.filterType' => 'Szűrő típusa',
+			'musicTools.peak' => 'Csúcs',
+			'musicTools.bass' => 'Mély',
+			'musicTools.treble' => 'Magas',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',

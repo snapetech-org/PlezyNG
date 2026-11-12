@@ -4373,6 +4373,10 @@ class _Translations$musicTools$it extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex ha accettato la richiesta di accesso.';
 	@override String get playlistAccessList => 'Accesso attuale';
 	@override String get playlistAccessNone => 'Nessun accesso concesso alla playlist';
+	@override String get filterType => 'Tipo di filtro';
+	@override String get peak => 'Picco';
+	@override String get bass => 'Bassi';
+	@override String get treble => 'Alti';
 }
 
 // Path: musicDevices
@@ -9584,6 +9588,10 @@ extension on TranslationsIt {
 			'musicTools.playlistSharingAccepted' => 'Plex ha accettato la richiesta di accesso.',
 			'musicTools.playlistAccessList' => 'Accesso attuale',
 			'musicTools.playlistAccessNone' => 'Nessun accesso concesso alla playlist',
+			'musicTools.filterType' => 'Tipo di filtro',
+			'musicTools.peak' => 'Picco',
+			'musicTools.bass' => 'Bassi',
+			'musicTools.treble' => 'Alti',
 			'musicDevices.playOn' => 'Riproduci su',
 			'musicDevices.thisDevice' => 'Questo dispositivo',
 			'musicDevices.playingOn' => ({required Object device}) => 'In riproduzione su ${device}',

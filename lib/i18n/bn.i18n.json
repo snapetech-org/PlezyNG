@@ -5579,7 +5579,11 @@
     "playlistSharingFailed": "প্লেলিস্টে প্রবেশাধিকারের অনুরোধ করা যায়নি।",
     "playlistSharingAccepted": "Plex প্রবেশাধিকারের অনুরোধ গ্রহণ করেছে।",
     "playlistAccessList": "বর্তমান প্রবেশাধিকার",
-    "playlistAccessNone": "প্লেলিস্টে কাউকে প্রবেশাধিকার দেওয়া হয়নি"
+    "playlistAccessNone": "প্লেলিস্টে কাউকে প্রবেশাধিকার দেওয়া হয়নি",
+    "filterType": "ফিল্টারের ধরন",
+    "peak": "পিক",
+    "bass": "বেস",
+    "treble": "ট্রেবল"
   },
   "musicDevices": {
     "playOn": "এখানে চালান",

@@ -4366,6 +4366,10 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex erişim isteğini kabul etti.';
 	@override String get playlistAccessList => 'Geçerli erişim';
 	@override String get playlistAccessNone => 'Çalma listesi erişimi verilmedi';
+	@override String get filterType => 'Filtre türü';
+	@override String get peak => 'Tepe';
+	@override String get bass => 'Bas';
+	@override String get treble => 'Tiz';
 }
 
 // Path: musicDevices
@@ -9577,6 +9581,10 @@ extension on TranslationsTr {
 			'musicTools.playlistSharingAccepted' => 'Plex erişim isteğini kabul etti.',
 			'musicTools.playlistAccessList' => 'Geçerli erişim',
 			'musicTools.playlistAccessNone' => 'Çalma listesi erişimi verilmedi',
+			'musicTools.filterType' => 'Filtre türü',
+			'musicTools.peak' => 'Tepe',
+			'musicTools.bass' => 'Bas',
+			'musicTools.treble' => 'Tiz',
 			'musicDevices.playOn' => 'Şurada çal',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} üzerinde çalınıyor',

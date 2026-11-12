@@ -5552,7 +5552,11 @@
     "playlistSharingFailed": "Tidak dapat meminta akses daftar putar.",
     "playlistSharingAccepted": "Plex menerima permintaan akses.",
     "playlistAccessList": "Akses saat ini",
-    "playlistAccessNone": "Belum ada akses daftar putar yang diberikan"
+    "playlistAccessNone": "Belum ada akses daftar putar yang diberikan",
+    "filterType": "Jenis filter",
+    "peak": "Puncak",
+    "bass": "Bas",
+    "treble": "Trebel"
   },
   "musicDevices": {
     "playOn": "Putar di",

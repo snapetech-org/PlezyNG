@@ -5627,7 +5627,11 @@
     "playlistSharingFailed": "Nepodařilo se požádat o přístup k playlistu.",
     "playlistSharingAccepted": "Plex přijal žádost o přístup.",
     "playlistAccessList": "Aktuální přístup",
-    "playlistAccessNone": "K playlistu nebyl udělen žádný přístup"
+    "playlistAccessNone": "K playlistu nebyl udělen žádný přístup",
+    "filterType": "Typ filtru",
+    "peak": "Špička",
+    "bass": "Basy",
+    "treble": "Výšky"
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

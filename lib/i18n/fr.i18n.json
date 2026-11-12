@@ -5588,7 +5588,11 @@
     "playlistSharingFailed": "Impossible de demander l’accès à la liste.",
     "playlistSharingAccepted": "Plex a accepté la demande d’accès.",
     "playlistAccessList": "Accès actuel",
-    "playlistAccessNone": "Aucun accès accordé à cette liste"
+    "playlistAccessNone": "Aucun accès accordé à cette liste",
+    "filterType": "Type de filtre",
+    "peak": "Pic",
+    "bass": "Graves",
+    "treble": "Aigus"
   },
   "musicDevices": {
     "playOn": "Lire sur",

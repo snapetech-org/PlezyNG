@@ -4366,6 +4366,10 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	@override String get playlistSharingAccepted => 'Plex kirish so‘rovini qabul qildi.';
 	@override String get playlistAccessList => 'Joriy kirish';
 	@override String get playlistAccessNone => 'Pleylistga kirish ruxsati berilmagan';
+	@override String get filterType => 'Filtr turi';
+	@override String get peak => 'Choʻqqi';
+	@override String get bass => 'Bas';
+	@override String get treble => 'Yuqori tovushlar';
 }
 
 // Path: musicDevices
@@ -9577,6 +9581,10 @@ extension on TranslationsUz {
 			'musicTools.playlistSharingAccepted' => 'Plex kirish so‘rovini qabul qildi.',
 			'musicTools.playlistAccessList' => 'Joriy kirish',
 			'musicTools.playlistAccessNone' => 'Pleylistga kirish ruxsati berilmagan',
+			'musicTools.filterType' => 'Filtr turi',
+			'musicTools.peak' => 'Choʻqqi',
+			'musicTools.bass' => 'Bas',
+			'musicTools.treble' => 'Yuqori tovushlar',
 			'musicDevices.playOn' => 'Shu qurilmada ijro etish',
 			'musicDevices.thisDevice' => 'Bu qurilma',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} qurilmasida ijro etilmoqda',

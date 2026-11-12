@@ -1,7 +1,7 @@
 # ng-runner-policy: hosted-first-v1
 # packer-windows-jit-v1
 name: Publish Chocolatey Package
-run-name: ${{ format('action:{0}:pool:{1}:tag:{2}:publish:{3}', inputs.action, inputs.runner_pool, inputs.release_tag, inputs.publish) }}
+run-name: ${{ format('action:{0}:pool:{1}:tag:{2}:publish:{3}:rebuild:{4}', inputs.action, inputs.runner_pool, inputs.release_tag, inputs.publish, inputs.rebuild_package) }}
 
 on:
   workflow_dispatch:
@@ -22,6 +22,11 @@ on:
         type: string
       publish:
         description: Push the validated package to Chocolatey
+        default: false
+        required: true
+        type: boolean
+      rebuild_package:
+        description: Rebuild from the current Chocolatey recipe for a moderation correction
         default: false
         required: true
         type: boolean
@@ -78,25 +83,82 @@ jobs:
           "tag=$tag" >> $env:GITHUB_OUTPUT
           "version=$version" >> $env:GITHUB_OUTPUT
 
-      - name: Download the release package and installer evidence
+      - name: Download the release installer evidence
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
-          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          REBUILD_PACKAGE: ${{ inputs.rebuild_package }}
         run: |
           $ErrorActionPreference = 'Stop'
           gh release download $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY `
-            --pattern 'pleazyng.*.nupkg' `
             --pattern 'pleazyng-windows-installer.exe' `
             --pattern 'SHA256SUMS.txt' --dir release-assets
           if ($LASTEXITCODE -ne 0) { throw 'Unable to download Chocolatey release assets.' }
+          if ($env:REBUILD_PACKAGE -ne 'true') {
+            gh release download $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY `
+              --pattern 'pleazyng.*.nupkg' --dir release-assets
+            if ($LASTEXITCODE -ne 0) { throw 'Unable to download the Chocolatey package from the release.' }
+          }
+
+      - name: Check out the release recipe
+        if: inputs.rebuild_package == true
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          path: chocolatey-source
+          persist-credentials: false
+
+      - name: Rebuild the package from the corrected recipe
+        if: inputs.rebuild_package == true
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installer = Get-Item 'release-assets\pleazyng-windows-installer.exe'
+          $checksums = 'release-assets\SHA256SUMS.txt'
+          $line = @(Select-String -Path $checksums -Pattern ("^([0-9a-f]{64})\s+" + [regex]::Escape($installer.Name) + '$'))
+          if ($line.Count -ne 1) { throw 'SHA256SUMS.txt has no unique entry for the release installer.' }
+          $expectedInstallerHash = $line[0].Matches[0].Groups[1].Value.ToLowerInvariant()
+          $installerHash = (Get-FileHash $installer.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($installerHash -ne $expectedInstallerHash) { throw 'Release installer checksum does not match SHA256SUMS.txt.' }
+
+          $packageRoot = Join-Path $env:RUNNER_TEMP 'pleazyng-chocolatey-rebuild'
+          New-Item -ItemType Directory -Force $packageRoot | Out-Null
+          Copy-Item -Path 'chocolatey-source\packaging\chocolatey\*' -Destination $packageRoot -Recurse -Force
+          $installPath = Join-Path $packageRoot 'tools\chocolateyinstall.ps1'
+          $installScript = Get-Content $installPath -Raw
+          $url = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$env:RELEASE_TAG/$($installer.Name)"
+          $installScript = $installScript.Replace('__PLEZYNG_RELEASE_URL__', $url)
+          $installScript = $installScript.Replace('__PLEZYNG_SHA256__', $installerHash)
+          if ($installScript.Contains('__PLEZYNG_')) { throw 'Chocolatey installer template still contains a placeholder.' }
+          Set-Content -Path $installPath -Value $installScript -Encoding utf8
+
+          $nuspecPath = Join-Path $packageRoot 'pleazyng.nuspec'
+          $nuspec = Get-Content $nuspecPath -Raw
+          $nuspec = $nuspec -replace '<version>[^<]+</version>', "<version>$env:RELEASE_VERSION</version>"
+          Set-Content -Path $nuspecPath -Value $nuspec -Encoding utf8
+          Push-Location $packageRoot
+          try {
+            choco pack 'pleazyng.nuspec' --outputdirectory (Join-Path $env:GITHUB_WORKSPACE 'release-assets')
+            if ($LASTEXITCODE -ne 0) { throw "Chocolatey pack failed with exit code $LASTEXITCODE" }
+          } finally {
+            Pop-Location
+          }
+          $package = Get-Item "release-assets\pleazyng.$env:RELEASE_VERSION.nupkg"
+          if ($null -eq $package) { throw 'Corrected Chocolatey package was not created.' }
+          $packageHash = (Get-FileHash $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "Rebuilt Chocolatey package SHA-256: $packageHash" >> $env:GITHUB_STEP_SUMMARY
+          "Recipe source commit: $env:GITHUB_SHA" >> $env:GITHUB_STEP_SUMMARY
 
       - name: Verify release checksums and package contents
         shell: pwsh
         env:
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          REBUILD_PACKAGE: ${{ inputs.rebuild_package }}
         run: |
           $ErrorActionPreference = 'Stop'
           $package = @(Get-ChildItem release-assets\*.nupkg)
@@ -107,6 +169,7 @@ jobs:
             if ($asset.Length -gt 190000000) {
               throw "Chocolatey payload exceeds the 190000000-byte budget: $($asset.Name) ($($asset.Length) bytes)."
             }
+            if ($env:REBUILD_PACKAGE -eq 'true' -and $asset.Name -eq $package[0].Name) { continue }
             $line = @(Select-String -Path $checksums -Pattern ("^([0-9a-f]{64})\s+" + [regex]::Escape($asset.Name) + '$'))
             if ($line.Count -ne 1) { throw "SHA256SUMS.txt has no unique entry for $($asset.Name)" }
             $expected = $line[0].Matches[0].Groups[1].Value.ToLowerInvariant()
@@ -132,7 +195,7 @@ jobs:
           if ($null -eq $metadataNode) { throw 'Chocolatey package has no nuspec metadata block.' }
           $expectedMetadata = [ordered]@{
             id = 'pleazyng'
-            authors = 'slskdn'
+            authors = 'SnapeTech, edde746, slskdn'
             owners = 'slskdn'
             projectUrl = 'https://pleazyng.app/'
             projectSourceUrl = 'https://github.com/snapetech-org/pleazyng'
@@ -144,6 +207,22 @@ jobs:
               throw "Chocolatey package metadata '$name' must be '$($expectedMetadata[$name])'."
             }
           }
+          $descriptionNode = $metadataNode.SelectSingleNode("*[local-name()='description']")
+          if ($null -eq $descriptionNode -or $descriptionNode.InnerText -notmatch '(?i)fork of Plezy') {
+            throw 'Chocolatey package description must identify Pleazyng as a fork of Plezy.'
+          }
+          if ($descriptionNode.InnerText -notmatch [regex]::Escape('https://github.com/edde746/plezy')) {
+            throw 'Chocolatey package description must link to the upstream Plezy project.'
+          }
+
+      - name: Retain the corrected Chocolatey package
+        if: inputs.rebuild_package == true
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: chocolatey-${{ steps.release.outputs.version }}-corrected
+          path: release-assets/pleazyng.${{ steps.release.outputs.version }}.nupkg
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Push to Chocolatey
         shell: pwsh

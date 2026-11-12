@@ -94,7 +94,7 @@
 
 - Save Sonic Adventure track counts and maximum sonic distance, forward them to each Plex path request, and reject paths that omit a waypoint or exceed their budget. Retire discovery editors and related results with their original profile/account.
 - Keep canonical music order implicit, spill large shuffled and album-shuffle orders to bounded scratch storage, avoid decoding album labels again during merge output, persist order in pages, and clear shuffled tails without per-item arrays or retaining discarded metadata in the active spool.
-- Require Chocolatey package authors and owners to match the maintainer account, and validate project/source URLs from the generated package before publishing.
+- Credit SnapeTech and upstream author edde746 in Chocolatey package authors, retain `slskdn` as owner/author, identify Pleazyng as a fork of Plezy, and validate the fork and source metadata in the generated package.
 
 - Connect TorBox through its device authorization flow, verify the returned token against the account endpoint, and retain API-key setup as a fallback.
 

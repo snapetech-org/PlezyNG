@@ -2812,7 +2812,7 @@ jobs:
           if ($null -eq $metadataNode) { throw 'Chocolatey nuspec has no metadata block.' }
           $expectedMetadata = [ordered]@{
             id = 'pleazyng'
-            authors = 'slskdn'
+            authors = 'SnapeTech, edde746, slskdn'
             owners = 'slskdn'
             projectUrl = 'https://pleazyng.app/'
             projectSourceUrl = 'https://github.com/snapetech-org/pleazyng'
@@ -2823,6 +2823,13 @@ jobs:
             if ($null -eq $node -or $node.InnerText.Trim() -ne $expectedMetadata[$name]) {
               throw "Chocolatey nuspec metadata '$name' must be '$($expectedMetadata[$name])'."
             }
+          }
+          $descriptionNode = $metadataNode.SelectSingleNode("*[local-name()='description']")
+          if ($null -eq $descriptionNode -or $descriptionNode.InnerText -notmatch '(?i)fork of Plezy') {
+            throw 'Chocolatey nuspec description must identify Pleazyng as a fork of Plezy.'
+          }
+          if ($descriptionNode.InnerText -notmatch [regex]::Escape('https://github.com/edde746/plezy')) {
+            throw 'Chocolatey nuspec description must link to the upstream Plezy project.'
           }
           New-Item -ItemType Directory -Force 'release-packages' | Out-Null
           choco pack $nuspecPath --outputdirectory release-packages

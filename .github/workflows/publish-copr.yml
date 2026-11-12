@@ -92,8 +92,8 @@ jobs:
           if [[ -n "$COPR_LOGIN" && -n "$COPR_USERNAME" && -n "$COPR_TOKEN" && -n "$COPR_PROJECT" ]]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
           else
-            echo "COPR credentials or COPR_PROJECT are not configured; skipping publication."
-            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=Missing COPR publisher settings::Configure COPR_LOGIN, COPR_USERNAME, COPR_TOKEN, and COPR_PROJECT before publishing."
+            exit 1
           fi
 
       - name: Download Linux release assets

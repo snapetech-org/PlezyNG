@@ -119,8 +119,8 @@ jobs:
           if [[ -n "$SNAPCRAFT_STORE_CREDENTIALS" ]]; then
             echo "available=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Snap Store credentials are not configured; skipping publication."
-            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=Missing Snap Store credentials::Configure SNAPCRAFT_STORE_CREDENTIALS before publishing."
+            exit 1
           fi
 
       - name: Download release Snap

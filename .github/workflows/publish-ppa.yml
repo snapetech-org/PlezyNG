@@ -102,8 +102,8 @@ jobs:
           if [[ -n "$LAUNCHPAD_PPA" && -n "$GPG_PRIVATE_KEY" ]]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
           else
-            echo "LAUNCHPAD_PPA or GPG_PRIVATE_KEY is not configured; skipping publication."
-            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=Missing Launchpad publisher settings::Configure LAUNCHPAD_PPA and GPG_PRIVATE_KEY before publishing."
+            exit 1
           fi
 
       - name: Download Linux release assets

@@ -6,6 +6,8 @@
 
 - Export multi-page PDF karaoke songbooks with embedded Unicode fonts, alongside CSV/XML catalogs and print-ready HTML.
 
+- Fail manual Snap, Launchpad PPA, COPR and AUR publication jobs when channel credentials or settings are missing, instead of reporting a successful skipped publish.
+
 - Add per-rendition intro/outro trim markers, playhead editing, trimmed-range preview and a persisted host override for automatic trim and marked long-instrumental skips. Instrumental sections under eight seconds are preserved.
 
 - Pause and restart queued karaoke companion work around active music playback, and prioritize preparation for the track most recently selected by the host.

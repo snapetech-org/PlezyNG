@@ -88,8 +88,8 @@ jobs:
           if [[ -n "$AUR_PACKAGE_NAME" && -n "$AUR_SSH_KEY" ]]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
           else
-            echo "AUR_PACKAGE_NAME or AUR_SSH_KEY is not configured; skipping AUR update."
-            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=Missing AUR publisher settings::Configure AUR_PACKAGE_NAME and AUR_SSH_KEY before updating the package."
+            exit 1
           fi
 
       - name: Download release checksums

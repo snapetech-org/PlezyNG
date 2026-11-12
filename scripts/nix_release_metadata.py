@@ -14,6 +14,7 @@ from prepare_linux_channel_recipes import ASSETS, release_hashes
 from pubspec_version import parse_pubspec_version
 from release_coverage import missing_assets
 from verify_release_attestation import require_repository_identity
+from verify_frozen_packaging_repair import verify_receipt
 
 REPOSITORY = "snapetech-org/pleazyng"
 METADATA_PATH = "linux/packaging/nix/release.json"
@@ -96,6 +97,34 @@ def manifest_run(proofs: list, digest: str, commit: str) -> tuple[int, int]:
     return matches.pop()
 
 
+def recovery_source(directory: str, assets: dict, manifest: str, product_commit: str,
+                    tag: str) -> tuple[str, dict | None]:
+    """Read an attestation-bound frozen-repair receipt, if this release has one."""
+    asset = assets.get("platform-reuse-provenance.json")
+    if asset is None:
+        return product_commit, None
+    if asset.get("size", 0) > 1024 * 1024:
+        raise ValueError("Unexpected recovery receipt size")
+    subprocess.run(["gh", "release", "download", tag, "--repo", REPOSITORY,
+                    "--pattern", "platform-reuse-provenance.json", "--dir", directory], check=True)
+    path = Path(directory) / "platform-reuse-provenance.json"
+    raw = path.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    if len(raw) != asset["size"] or asset.get("digest") != f"sha256:{digest}":
+        raise ValueError("Recovery receipt differs from public release asset")
+    matches = [line.split()[0] for line in manifest.splitlines()
+               if len(line.split()) == 2 and line.split()[1].lstrip("*") == path.name]
+    if matches != [digest]:
+        raise ValueError("Final checksums do not uniquely bind the recovery receipt")
+    receipt = json.loads(raw)
+    workflow_commit = receipt.get("workflow_source_sha")
+    if (receipt.get("product_source_sha") != product_commit
+            or not isinstance(workflow_commit, str)
+            or re.fullmatch(r"[0-9a-f]{40}", workflow_commit) is None):
+        raise ValueError("Recovery receipt has a different immutable product or workflow source")
+    return workflow_commit, receipt
+
+
 def prepare(root: Path, metadata: dict, commit: str, github) -> tuple[str | None, dict]:
     """Verify all external inputs before returning bytes for a maintained file."""
     assets = validate_release(metadata)
@@ -128,17 +157,37 @@ def prepare(root: Path, metadata: dict, commit: str, github) -> tuple[str | None
         digest = hashlib.sha256(raw).hexdigest()
         if len(raw) != assets[manifest.name]["size"] or assets[manifest.name].get("digest") != f"sha256:{digest}":
             raise ValueError("Final manifest differs from public release asset")
+        workflow_commit, recovery = recovery_source(directory, assets, raw.decode("utf-8"), commit, tag)
         result = subprocess.run(["gh", "attestation", "verify", str(manifest), "--repo", REPOSITORY,
-                                 "--source-digest", commit, "--signer-workflow",
+                                 "--source-digest", workflow_commit, "--signer-workflow",
                                  f"{REPOSITORY}/.github/workflows/build.yml", "--format", "json"],
                                 check=True, capture_output=True, text=True)
-        run_id, attempt = manifest_run(json.loads(result.stdout), digest, commit)
+        run_id, attempt = manifest_run(json.loads(result.stdout), digest, workflow_commit)
         assembly = github(f"actions/runs/{run_id}/attempts/{attempt}")
         if (assembly.get("status") != "completed" or assembly.get("conclusion") != "success"
-                or assembly.get("head_sha") != commit or assembly.get("path") != ".github/workflows/build.yml"
+                or assembly.get("head_sha") != workflow_commit or assembly.get("path") != ".github/workflows/build.yml"
                 or assembly.get("run_attempt") != attempt
                 or assembly.get("repository", {}).get("full_name") != REPOSITORY):
             raise ValueError("Manifest assembly did not successfully build the immutable release source")
+        if recovery is not None:
+            prefix = f"repos/{REPOSITORY}/"
+            def api(path: str) -> dict:
+                if path == f"repos/{REPOSITORY}":
+                    return json.loads(subprocess.check_output(["gh", "api", path], text=True))
+                if not path.startswith(prefix):
+                    raise ValueError("Recovery verifier requested a foreign repository")
+                return github(path[len(prefix):])
+            approval = verify_receipt(
+                recovery, product_source_sha=commit,
+                packaging_source_sha=recovery.get("packaging_source_sha"),
+                workflow_source_sha=workflow_commit,
+                source_run_id=recovery.get("source_run_id"), assembly_run_id=run_id,
+                api=api,
+            )
+            if (recovery.get("packaging_approval") != approval
+                    or recovery.get("source_sha") != commit
+                    or recovery.get("actual_checkout_sha") != recovery.get("packaging_source_sha")):
+                raise ValueError("Recovery receipt differs from its independently approved repair")
         hashes = release_hashes(raw.decode("utf-8"))
         for name, expected in hashes.items():
             if assets[name].get("digest") != f"sha256:{expected}":
@@ -153,6 +202,7 @@ def prepare(root: Path, metadata: dict, commit: str, github) -> tuple[str | None
         "tag": tag, "source_commit": commit, "manifest_sha256": digest,
         "application_build": build,
         "assembly_run": run_id, "assembly_attempt": attempt,
+        "assembly_workflow_source": workflow_commit,
         "sha256": proposed["sha256"], "state": "authenticated-metadata",
         "native_qualification": "separate", "upstream_acceptance": "separate",
     }

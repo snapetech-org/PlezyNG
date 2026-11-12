@@ -13,7 +13,7 @@
     "gated": "The capability intentionally stays disabled or experimental until its stated external or platform evidence exists."
   },
   "release": {
-    "version": "3.0.7",
+    "version": "3.0.33",
     "publicationStatus": "published",
     "publicLatestAvailable": true,
     "releasesPage": "https://github.com/snapetech-org/pleazyng/releases",
@@ -57,10 +57,10 @@
         "Server checks"
       ]
     },
-    "tag": "v3.0.7",
-    "publishedAt": "2026-11-09T14:16:14Z",
-    "sourceCommit": "0a9514100ca6d351105417dd2446e6a22cc52f60",
-    "evidence": "docs/maintainers/releases/v3.0.7.json",
+    "tag": "v3.0.33",
+    "publishedAt": "2026-11-12T01:42:16Z",
+    "sourceCommit": "240994590dd3e5411ee3b02c2bcfc0a1fd51a431",
+    "evidence": "docs/maintainers/releases/v3.0.33.json",
     "requiredPlatforms": [
       "android",
       "linux-x64",

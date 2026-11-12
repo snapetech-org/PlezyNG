@@ -83,6 +83,43 @@ class NixMetadataTests(unittest.TestCase):
         self.assertEqual(receipt["application_build"], "192")
         self.assertEqual(json.loads(self.path.read_text()), self.current)
 
+    def test_approved_frozen_repair_uses_workflow_attestation_and_product_source(self):
+        workflow = "f" * 40
+        packaging = "d" * 40
+        receipt = {"product_source_sha": self.commit, "source_sha": self.commit,
+                   "workflow_source_sha": workflow, "packaging_source_sha": packaging,
+                   "actual_checkout_sha": packaging, "source_run_id": 99,
+                   "assembly_run_id": 123, "packaging_approval": {"approved": True}}
+        receipt_raw = json.dumps(receipt).encode()
+        receipt_digest = hashlib.sha256(receipt_raw).hexdigest()
+        self.raw += (receipt_digest + "  platform-reuse-provenance.json\n").encode()
+        self.digest = hashlib.sha256(self.raw).hexdigest()
+        next(a for a in self.metadata["assets"] if a["name"] == "SHA256SUMS.txt").update(
+            size=len(self.raw), digest="sha256:" + self.digest)
+        self.metadata["assets"].append({"id": 900, "name": "platform-reuse-provenance.json",
+                                        "size": len(receipt_raw), "digest": "sha256:" + receipt_digest})
+        self.proof[0]["verificationResult"]["statement"]["subject"][0]["digest"]["sha256"] = self.digest
+        self.proof[0]["verificationResult"]["statement"]["predicate"]["buildDefinition"][
+            "resolvedDependencies"][0]["digest"]["gitCommit"] = workflow
+        self.assembly["head_sha"] = workflow
+
+        def run(args, **kwargs):
+            if args[1:3] == ["release", "download"]:
+                pattern = args[args.index("--pattern") + 1]
+                (Path(args[args.index("--dir") + 1]) / pattern).write_bytes(
+                    receipt_raw if pattern == "platform-reuse-provenance.json" else self.raw)
+                return SimpleNamespace(returncode=0)
+            self.assertEqual(args[args.index("--source-digest") + 1], workflow)
+            return SimpleNamespace(returncode=0, stdout=json.dumps(self.proof))
+
+        with patch.object(nix, "require_repository_identity"), \
+             patch.object(nix, "verify_receipt", return_value=receipt["packaging_approval"]) as verify, \
+             patch.object(nix.subprocess, "run", side_effect=run):
+            _, prepared = nix.prepare(self.root, self.metadata, self.commit, self.github)
+        self.assertEqual(prepared["assembly_workflow_source"], workflow)
+        verify.assert_called_once()
+
+
     def test_publication_and_coverage_fail_closed_before_network(self):
         for kind in ("draft", "prerelease", "incomplete"):
             with self.subTest(kind=kind):

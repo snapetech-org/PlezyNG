@@ -4394,6 +4394,13 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get bass => 'बास';
 	@override String get treble => 'ट्रेबल';
 	@override String get sharedPlaylists => 'शेयर की गई प्लेलिस्ट';
+	@override String get sharingInvitationsTitle => 'Plex साझाकरण आमंत्रण';
+	@override String get noSharingInvitations => 'कोई लंबित आमंत्रण नहीं';
+	@override String get sharingInvitationAccept => 'आमंत्रण स्वीकार करें';
+	@override String get sharingInvitationReject => 'आमंत्रण अस्वीकार करें';
+	@override String get sharingInvitationHint => 'आपका निर्णय इस आमंत्रण की सभी वस्तुओं पर लागू होगा, इस संगीत लाइब्रेरी के बाहर के मीडिया पर भी।';
+	@override String sharingAcceptConfirm({required Object owner}) => '${owner} का पूरा आमंत्रण स्वीकार करें?';
+	@override String sharingDeclineConfirm({required Object owner}) => '${owner} का पूरा आमंत्रण अस्वीकार करें?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsHi {
 			'musicTools.bass' => 'बास',
 			'musicTools.treble' => 'ट्रेबल',
 			'musicTools.sharedPlaylists' => 'शेयर की गई प्लेलिस्ट',
+			'musicTools.sharingInvitationsTitle' => 'Plex साझाकरण आमंत्रण',
+			'musicTools.noSharingInvitations' => 'कोई लंबित आमंत्रण नहीं',
+			'musicTools.sharingInvitationAccept' => 'आमंत्रण स्वीकार करें',
+			'musicTools.sharingInvitationReject' => 'आमंत्रण अस्वीकार करें',
+			'musicTools.sharingInvitationHint' => 'आपका निर्णय इस आमंत्रण की सभी वस्तुओं पर लागू होगा, इस संगीत लाइब्रेरी के बाहर के मीडिया पर भी।',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner} का पूरा आमंत्रण स्वीकार करें?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner} का पूरा आमंत्रण अस्वीकार करें?',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',

@@ -4394,6 +4394,13 @@ class _Translations$musicTools$sv extends Translations$musicTools$en {
 	@override String get bass => 'Bas';
 	@override String get treble => 'Diskant';
 	@override String get sharedPlaylists => 'Delade spellistor';
+	@override String get sharingInvitationsTitle => 'Plex-delningsinbjudningar';
+	@override String get noSharingInvitations => 'Inga väntande inbjudningar';
+	@override String get sharingInvitationAccept => 'Acceptera inbjudan';
+	@override String get sharingInvitationReject => 'Avböj inbjudan';
+	@override String get sharingInvitationHint => 'Ditt beslut gäller alla objekt i inbjudan, även medier utanför detta musikbibliotek.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Acceptera hela inbjudan från ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Avböj hela inbjudan från ${owner}?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsSv {
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Diskant',
 			'musicTools.sharedPlaylists' => 'Delade spellistor',
+			'musicTools.sharingInvitationsTitle' => 'Plex-delningsinbjudningar',
+			'musicTools.noSharingInvitations' => 'Inga väntande inbjudningar',
+			'musicTools.sharingInvitationAccept' => 'Acceptera inbjudan',
+			'musicTools.sharingInvitationReject' => 'Avböj inbjudan',
+			'musicTools.sharingInvitationHint' => 'Ditt beslut gäller alla objekt i inbjudan, även medier utanför detta musikbibliotek.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Acceptera hela inbjudan från ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Avböj hela inbjudan från ${owner}?',
 			'musicDevices.playOn' => 'Spela på',
 			'musicDevices.thisDevice' => 'Den här enheten',
 			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',

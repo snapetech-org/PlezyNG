@@ -5597,7 +5597,14 @@
     "peak": "Spids",
     "bass": "Bas",
     "treble": "Diskant",
-    "sharedPlaylists": "Delte afspilningslister"
+    "sharedPlaylists": "Delte afspilningslister",
+    "sharingInvitationsTitle": "Plex-delingsinvitationer",
+    "noSharingInvitations": "Ingen afventende invitationer",
+    "sharingInvitationAccept": "Acceptér invitation",
+    "sharingInvitationReject": "Afvis invitation",
+    "sharingInvitationHint": "Din beslutning gælder alle elementer i invitationen, også medier uden for dette musikbibliotek.",
+    "sharingAcceptConfirm": "Acceptér hele invitationen fra ${owner}?",
+    "sharingDeclineConfirm": "Afvis hele invitationen fra ${owner}?"
   },
   "musicDevices": {
     "playOn": "Afspil på",

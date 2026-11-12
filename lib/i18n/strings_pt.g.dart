@@ -4401,6 +4401,13 @@ class Translations$musicTools$pt extends Translations$musicTools$en {
 	@override String get bass => 'Graves';
 	@override String get treble => 'Agudos';
 	@override String get sharedPlaylists => 'Listas partilhadas';
+	@override String get sharingInvitationsTitle => 'Convites de partilha Plex';
+	@override String get noSharingInvitations => 'Nenhum convite pendente';
+	@override String get sharingInvitationAccept => 'Aceitar convite';
+	@override String get sharingInvitationReject => 'Recusar convite';
+	@override String get sharingInvitationHint => 'A decisão aplica-se a todos os itens deste convite, incluindo conteúdos fora desta biblioteca de música.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Aceitar todo o convite de ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Recusar todo o convite de ${owner}?';
 }
 
 // Path: musicDevices
@@ -9630,6 +9637,13 @@ extension on TranslationsPt {
 			'musicTools.bass' => 'Graves',
 			'musicTools.treble' => 'Agudos',
 			'musicTools.sharedPlaylists' => 'Listas partilhadas',
+			'musicTools.sharingInvitationsTitle' => 'Convites de partilha Plex',
+			'musicTools.noSharingInvitations' => 'Nenhum convite pendente',
+			'musicTools.sharingInvitationAccept' => 'Aceitar convite',
+			'musicTools.sharingInvitationReject' => 'Recusar convite',
+			'musicTools.sharingInvitationHint' => 'A decisão aplica-se a todos os itens deste convite, incluindo conteúdos fora desta biblioteca de música.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Aceitar todo o convite de ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Recusar todo o convite de ${owner}?',
 			'musicDevices.playOn' => 'Reproduzir em',
 			'musicDevices.thisDevice' => 'Este dispositivo',
 			'musicDevices.playingOn' => ({required Object device}) => 'A reproduzir em ${device}',

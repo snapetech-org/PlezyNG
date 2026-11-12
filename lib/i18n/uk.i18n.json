@@ -5645,7 +5645,14 @@
     "peak": "Пік",
     "bass": "Низькі частоти",
     "treble": "Високі частоти",
-    "sharedPlaylists": "Спільні списки відтворення"
+    "sharedPlaylists": "Спільні списки відтворення",
+    "sharingInvitationsTitle": "Запрошення до спільних матеріалів Plex",
+    "noSharingInvitations": "Немає запрошень, що очікують",
+    "sharingInvitationAccept": "Прийняти запрошення",
+    "sharingInvitationReject": "Відхилити запрошення",
+    "sharingInvitationHint": "Рішення стосується всіх елементів запрошення, зокрема медіа поза цією музичною бібліотекою.",
+    "sharingAcceptConfirm": "Прийняти все запрошення від ${owner}?",
+    "sharingDeclineConfirm": "Відхилити все запрошення від ${owner}?"
   },
   "musicDevices": {
     "playOn": "Відтворити на",

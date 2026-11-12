@@ -4371,6 +4371,13 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	@override String get bass => 'Bas';
 	@override String get treble => 'Trebel';
 	@override String get sharedPlaylists => 'Daftar putar bersama';
+	@override String get sharingInvitationsTitle => 'Undangan berbagi Plex';
+	@override String get noSharingInvitations => 'Tidak ada undangan tertunda';
+	@override String get sharingInvitationAccept => 'Terima undangan';
+	@override String get sharingInvitationReject => 'Tolak undangan';
+	@override String get sharingInvitationHint => 'Keputusan Anda berlaku untuk semua item dalam undangan ini, termasuk media di luar pustaka musik ini.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Terima seluruh undangan dari ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Tolak seluruh undangan dari ${owner}?';
 }
 
 // Path: musicDevices
@@ -9598,6 +9605,13 @@ extension on TranslationsId {
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Trebel',
 			'musicTools.sharedPlaylists' => 'Daftar putar bersama',
+			'musicTools.sharingInvitationsTitle' => 'Undangan berbagi Plex',
+			'musicTools.noSharingInvitations' => 'Tidak ada undangan tertunda',
+			'musicTools.sharingInvitationAccept' => 'Terima undangan',
+			'musicTools.sharingInvitationReject' => 'Tolak undangan',
+			'musicTools.sharingInvitationHint' => 'Keputusan Anda berlaku untuk semua item dalam undangan ini, termasuk media di luar pustaka musik ini.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Terima seluruh undangan dari ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Tolak seluruh undangan dari ${owner}?',
 			'musicDevices.playOn' => 'Putar di',
 			'musicDevices.thisDevice' => 'Perangkat ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',

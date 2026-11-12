@@ -5597,7 +5597,14 @@
     "peak": "পিক",
     "bass": "বেস",
     "treble": "ট্রেবল",
-    "sharedPlaylists": "শেয়ার করা প্লেলিস্ট"
+    "sharedPlaylists": "শেয়ার করা প্লেলিস্ট",
+    "sharingInvitationsTitle": "Plex ভাগাভাগির আমন্ত্রণ",
+    "noSharingInvitations": "কোনো মুলতুবি আমন্ত্রণ নেই",
+    "sharingInvitationAccept": "আমন্ত্রণ গ্রহণ করুন",
+    "sharingInvitationReject": "আমন্ত্রণ প্রত্যাখ্যান করুন",
+    "sharingInvitationHint": "আপনার সিদ্ধান্ত এই আমন্ত্রণের সব আইটেমে প্রযোজ্য, এই সংগীত লাইব্রেরির বাইরের মিডিয়াতেও।",
+    "sharingAcceptConfirm": "${owner}-এর সম্পূর্ণ আমন্ত্রণ গ্রহণ করবেন?",
+    "sharingDeclineConfirm": "${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?"
   },
   "musicDevices": {
     "playOn": "এখানে চালান",

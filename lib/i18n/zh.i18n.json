@@ -5592,7 +5592,14 @@
     "peak": "峰值",
     "bass": "低音",
     "treble": "高音",
-    "sharedPlaylists": "共享播放列表"
+    "sharedPlaylists": "共享播放列表",
+    "sharingInvitationsTitle": "Plex 共享邀请",
+    "noSharingInvitations": "没有待处理的邀请",
+    "sharingInvitationAccept": "接受邀请",
+    "sharingInvitationReject": "拒绝邀请",
+    "sharingInvitationHint": "此决定适用于邀请中的所有项目，包括此音乐库以外的媒体。",
+    "sharingAcceptConfirm": "接受来自 ${owner} 的整份邀请？",
+    "sharingDeclineConfirm": "拒绝来自 ${owner} 的整份邀请？"
   },
   "musicDevices": {
     "playOn": "播放设备",

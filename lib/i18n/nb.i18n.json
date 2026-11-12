@@ -5597,7 +5597,14 @@
     "peak": "Topp",
     "bass": "Bass",
     "treble": "Diskant",
-    "sharedPlaylists": "Delte spillelister"
+    "sharedPlaylists": "Delte spillelister",
+    "sharingInvitationsTitle": "Plex-delingsinvitasjoner",
+    "noSharingInvitations": "Ingen ventende invitasjoner",
+    "sharingInvitationAccept": "Godta invitasjon",
+    "sharingInvitationReject": "Avslå invitasjon",
+    "sharingInvitationHint": "Valget gjelder alle elementene i invitasjonen, også medier utenfor dette musikkbiblioteket.",
+    "sharingAcceptConfirm": "Godta hele invitasjonen fra ${owner}?",
+    "sharingDeclineConfirm": "Avslå hele invitasjonen fra ${owner}?"
   },
   "musicDevices": {
     "playOn": "Spill av på",

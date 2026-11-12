@@ -4440,6 +4440,13 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	@override String get bass => 'Низкие частоты';
 	@override String get treble => 'Высокие частоты';
 	@override String get sharedPlaylists => 'Общие плейлисты';
+	@override String get sharingInvitationsTitle => 'Приглашения к общим материалам Plex';
+	@override String get noSharingInvitations => 'Нет ожидающих приглашений';
+	@override String get sharingInvitationAccept => 'Принять приглашение';
+	@override String get sharingInvitationReject => 'Отклонить приглашение';
+	@override String get sharingInvitationHint => 'Решение относится ко всем элементам приглашения, включая материалы за пределами этой музыкальной библиотеки.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Принять всё приглашение от ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Отклонить всё приглашение от ${owner}?';
 }
 
 // Path: musicDevices
@@ -9673,6 +9680,13 @@ extension on TranslationsRu {
 			'musicTools.bass' => 'Низкие частоты',
 			'musicTools.treble' => 'Высокие частоты',
 			'musicTools.sharedPlaylists' => 'Общие плейлисты',
+			'musicTools.sharingInvitationsTitle' => 'Приглашения к общим материалам Plex',
+			'musicTools.noSharingInvitations' => 'Нет ожидающих приглашений',
+			'musicTools.sharingInvitationAccept' => 'Принять приглашение',
+			'musicTools.sharingInvitationReject' => 'Отклонить приглашение',
+			'musicTools.sharingInvitationHint' => 'Решение относится ко всем элементам приглашения, включая материалы за пределами этой музыкальной библиотеки.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Принять всё приглашение от ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Отклонить всё приглашение от ${owner}?',
 			'musicDevices.playOn' => 'Воспроизвести на',
 			'musicDevices.thisDevice' => 'Это устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Воспроизводится на ${device}',

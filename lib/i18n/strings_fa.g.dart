@@ -4394,6 +4394,13 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get bass => 'بیس';
 	@override String get treble => 'زیر';
 	@override String get sharedPlaylists => 'فهرست‌های پخش اشتراکی';
+	@override String get sharingInvitationsTitle => 'دعوت‌های اشتراک‌گذاری Plex';
+	@override String get noSharingInvitations => 'دعوت در انتظاری وجود ندارد';
+	@override String get sharingInvitationAccept => 'پذیرفتن دعوت';
+	@override String get sharingInvitationReject => 'رد کردن دعوت';
+	@override String get sharingInvitationHint => 'تصمیم شما دربارهٔ همهٔ موارد این دعوت است، از جمله رسانه‌های خارج از این کتابخانهٔ موسیقی.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'همهٔ دعوت ${owner} پذیرفته شود؟';
+	@override String sharingDeclineConfirm({required Object owner}) => 'همهٔ دعوت ${owner} رد شود؟';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsFa {
 			'musicTools.bass' => 'بیس',
 			'musicTools.treble' => 'زیر',
 			'musicTools.sharedPlaylists' => 'فهرست‌های پخش اشتراکی',
+			'musicTools.sharingInvitationsTitle' => 'دعوت‌های اشتراک‌گذاری Plex',
+			'musicTools.noSharingInvitations' => 'دعوت در انتظاری وجود ندارد',
+			'musicTools.sharingInvitationAccept' => 'پذیرفتن دعوت',
+			'musicTools.sharingInvitationReject' => 'رد کردن دعوت',
+			'musicTools.sharingInvitationHint' => 'تصمیم شما دربارهٔ همهٔ موارد این دعوت است، از جمله رسانه‌های خارج از این کتابخانهٔ موسیقی.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'همهٔ دعوت ${owner} پذیرفته شود؟',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'همهٔ دعوت ${owner} رد شود؟',
 			'musicDevices.playOn' => 'پخش در',
 			'musicDevices.thisDevice' => 'این دستگاه',
 			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',

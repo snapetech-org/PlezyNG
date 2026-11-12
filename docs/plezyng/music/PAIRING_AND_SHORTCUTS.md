@@ -29,6 +29,25 @@ query rules.
 Save-as creates a separate smart playlist. Backend permission failures remain
 failures. Local finite download stations are a different feature.
 
+## Shared playlists and invitations
+
+Open **Shared playlists** from Music home and select a connected Plex server.
+Accepted audio playlists open read-only after a fresh access check.
+The invitations button opens pending item-sharing invitations for that server's
+Plex cloud account. These invitations can include media outside the selected
+music library: **Accept invitation** and **Decline invitation** apply to the
+entire invitation, as stated in the confirmation. They do not grant access to
+individual tracks or selectively remove other shared items.
+
+The app refreshes the exact pending inviter/recipient before issuing one
+decision. A changed account, profile, token or invitation retires the action.
+After a lost acknowledgement it refreshes the pending list without automatically
+retrying the decision. Accepted music appears only through a connected,
+authorized server; accepting an invitation does not bypass server connection or
+library visibility. Managed Home users cannot use a parent's cloud account for
+these actions. Live invitation/account qualification and native-language review
+remain separate from the automated checks.
+
 ## History and conflicting offline edits
 
 Music history is profile-owned listening history, paged by occurrence rather than

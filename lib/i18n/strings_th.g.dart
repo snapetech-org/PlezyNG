@@ -4371,6 +4371,13 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get bass => 'เสียงเบส';
 	@override String get treble => 'เสียงแหลม';
 	@override String get sharedPlaylists => 'เพลย์ลิสต์ที่แชร์';
+	@override String get sharingInvitationsTitle => 'คำเชิญแชร์ของ Plex';
+	@override String get noSharingInvitations => 'ไม่มีคำเชิญที่รอดำเนินการ';
+	@override String get sharingInvitationAccept => 'ยอมรับคำเชิญ';
+	@override String get sharingInvitationReject => 'ปฏิเสธคำเชิญ';
+	@override String get sharingInvitationHint => 'การตัดสินใจของคุณมีผลกับทุกรายการในคำเชิญนี้ รวมถึงสื่อนอกคลังเพลงนี้';
+	@override String sharingAcceptConfirm({required Object owner}) => 'ยอมรับคำเชิญทั้งหมดจาก ${owner} หรือไม่?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'ปฏิเสธคำเชิญทั้งหมดจาก ${owner} หรือไม่?';
 }
 
 // Path: musicDevices
@@ -9598,6 +9605,13 @@ extension on TranslationsTh {
 			'musicTools.bass' => 'เสียงเบส',
 			'musicTools.treble' => 'เสียงแหลม',
 			'musicTools.sharedPlaylists' => 'เพลย์ลิสต์ที่แชร์',
+			'musicTools.sharingInvitationsTitle' => 'คำเชิญแชร์ของ Plex',
+			'musicTools.noSharingInvitations' => 'ไม่มีคำเชิญที่รอดำเนินการ',
+			'musicTools.sharingInvitationAccept' => 'ยอมรับคำเชิญ',
+			'musicTools.sharingInvitationReject' => 'ปฏิเสธคำเชิญ',
+			'musicTools.sharingInvitationHint' => 'การตัดสินใจของคุณมีผลกับทุกรายการในคำเชิญนี้ รวมถึงสื่อนอกคลังเพลงนี้',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'ยอมรับคำเชิญทั้งหมดจาก ${owner} หรือไม่?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'ปฏิเสธคำเชิญทั้งหมดจาก ${owner} หรือไม่?',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',

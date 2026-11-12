@@ -4486,6 +4486,13 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String get bass => 'جهير';
 	@override String get treble => 'صوت حاد';
 	@override String get sharedPlaylists => 'قوائم التشغيل المشتركة';
+	@override String get sharingInvitationsTitle => 'دعوات المشاركة في Plex';
+	@override String get noSharingInvitations => 'لا توجد دعوات معلقة';
+	@override String get sharingInvitationAccept => 'قبول الدعوة';
+	@override String get sharingInvitationReject => 'رفض الدعوة';
+	@override String get sharingInvitationHint => 'ينطبق قرارك على كل عناصر هذه الدعوة، بما في ذلك الوسائط خارج مكتبة الموسيقى هذه.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'هل تريد قبول دعوة ${owner} بأكملها؟';
+	@override String sharingDeclineConfirm({required Object owner}) => 'هل تريد رفض دعوة ${owner} بأكملها؟';
 }
 
 // Path: musicDevices
@@ -9723,6 +9730,13 @@ extension on TranslationsAr {
 			'musicTools.bass' => 'جهير',
 			'musicTools.treble' => 'صوت حاد',
 			'musicTools.sharedPlaylists' => 'قوائم التشغيل المشتركة',
+			'musicTools.sharingInvitationsTitle' => 'دعوات المشاركة في Plex',
+			'musicTools.noSharingInvitations' => 'لا توجد دعوات معلقة',
+			'musicTools.sharingInvitationAccept' => 'قبول الدعوة',
+			'musicTools.sharingInvitationReject' => 'رفض الدعوة',
+			'musicTools.sharingInvitationHint' => 'ينطبق قرارك على كل عناصر هذه الدعوة، بما في ذلك الوسائط خارج مكتبة الموسيقى هذه.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'هل تريد قبول دعوة ${owner} بأكملها؟',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'هل تريد رفض دعوة ${owner} بأكملها؟',
 			'musicDevices.playOn' => 'التشغيل على',
 			'musicDevices.thisDevice' => 'هذا الجهاز',
 			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',

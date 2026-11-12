@@ -4390,6 +4390,13 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String get bass => '低音';
 	@override String get treble => '高音';
 	@override String get sharedPlaylists => '共享播放清單';
+	@override String get sharingInvitationsTitle => 'Plex 共享邀請';
+	@override String get noSharingInvitations => '沒有待處理的邀請';
+	@override String get sharingInvitationAccept => '接受邀請';
+	@override String get sharingInvitationReject => '拒絕邀請';
+	@override String get sharingInvitationHint => '此決定適用於邀請中的所有項目，包括此音樂庫以外的媒體。';
+	@override String sharingAcceptConfirm({required Object owner}) => '接受來自 ${owner} 的整份邀請？';
+	@override String sharingDeclineConfirm({required Object owner}) => '拒絕來自 ${owner} 的整份邀請？';
 }
 
 // Path: musicDevices
@@ -9619,6 +9626,13 @@ extension on TranslationsZhHant {
 			'musicTools.bass' => '低音',
 			'musicTools.treble' => '高音',
 			'musicTools.sharedPlaylists' => '共享播放清單',
+			'musicTools.sharingInvitationsTitle' => 'Plex 共享邀請',
+			'musicTools.noSharingInvitations' => '沒有待處理的邀請',
+			'musicTools.sharingInvitationAccept' => '接受邀請',
+			'musicTools.sharingInvitationReject' => '拒絕邀請',
+			'musicTools.sharingInvitationHint' => '此決定適用於邀請中的所有項目，包括此音樂庫以外的媒體。',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '接受來自 ${owner} 的整份邀請？',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '拒絕來自 ${owner} 的整份邀請？',
 			'musicDevices.playOn' => '播放裝置',
 			'musicDevices.thisDevice' => '此裝置',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

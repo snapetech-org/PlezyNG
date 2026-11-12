@@ -4436,6 +4436,13 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get bass => 'Basy';
 	@override String get treble => 'Výšky';
 	@override String get sharedPlaylists => 'Sdílené playlisty';
+	@override String get sharingInvitationsTitle => 'Pozvánky ke sdílení Plex';
+	@override String get noSharingInvitations => 'Žádné čekající pozvánky';
+	@override String get sharingInvitationAccept => 'Přijmout pozvánku';
+	@override String get sharingInvitationReject => 'Odmítnout pozvánku';
+	@override String get sharingInvitationHint => 'Rozhodnutí platí pro všechny položky pozvánky včetně médií mimo tuto hudební knihovnu.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Přijmout celou pozvánku od ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Odmítnout celou pozvánku od ${owner}?';
 }
 
 // Path: musicDevices
@@ -9667,6 +9674,13 @@ extension on TranslationsCs {
 			'musicTools.bass' => 'Basy',
 			'musicTools.treble' => 'Výšky',
 			'musicTools.sharedPlaylists' => 'Sdílené playlisty',
+			'musicTools.sharingInvitationsTitle' => 'Pozvánky ke sdílení Plex',
+			'musicTools.noSharingInvitations' => 'Žádné čekající pozvánky',
+			'musicTools.sharingInvitationAccept' => 'Přijmout pozvánku',
+			'musicTools.sharingInvitationReject' => 'Odmítnout pozvánku',
+			'musicTools.sharingInvitationHint' => 'Rozhodnutí platí pro všechny položky pozvánky včetně médií mimo tuto hudební knihovnu.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Přijmout celou pozvánku od ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Odmítnout celou pozvánku od ${owner}?',
 			'musicDevices.playOn' => 'Přehrávat na',
 			'musicDevices.thisDevice' => 'Toto zařízení',
 			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',

@@ -5597,7 +5597,14 @@
     "peak": "Zirvə",
     "bass": "Bas",
     "treble": "Tiz səslər",
-    "sharedPlaylists": "Paylaşılan pleylistlər"
+    "sharedPlaylists": "Paylaşılan pleylistlər",
+    "sharingInvitationsTitle": "Plex paylaşım dəvətləri",
+    "noSharingInvitations": "Gözləyən dəvət yoxdur",
+    "sharingInvitationAccept": "Dəvəti qəbul et",
+    "sharingInvitationReject": "Dəvəti rədd et",
+    "sharingInvitationHint": "Qərarınız bu musiqi kitabxanasından kənar media daxil olmaqla dəvətdəki bütün elementlərə aiddir.",
+    "sharingAcceptConfirm": "${owner} tərəfindən göndərilmiş dəvət tam qəbul edilsin?",
+    "sharingDeclineConfirm": "${owner} tərəfindən göndərilmiş dəvət tam rədd edilsin?"
   },
   "musicDevices": {
     "playOn": "Burada səsləndir",

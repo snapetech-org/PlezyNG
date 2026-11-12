@@ -4,6 +4,8 @@
 
 - Support repeat-one and repeat-all for bounded standalone Cast queue transfers, with acknowledged native item rearming, restart recovery and receiver repeat settings preserved on return. Keep local playback intact if preparation or ownership checks fail.
 
+- Manage pending Plex item-sharing invitations from Shared playlists, with explicit whole-invitation confirmation, original-account preflight and single-attempt acceptance or decline. Refresh accepted browsing after decisions and retire stale confirmations with their profile.
+
 - Keep native car/voice and music-link queue admission paged and account-bound. Preserve duplicate playlist entries, reject foreign/incomplete batches, and prevent metadata fetched before an account change from becoming a catalog entry owned by the replacement account.
 - Route iOS and tvOS packages private-first with capacity fallbacks; keep nonpublishing builds from blocking versioned releases.
 

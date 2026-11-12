@@ -5607,7 +5607,14 @@
     "peak": "שיא",
     "bass": "בס",
     "treble": "גבוהים",
-    "sharedPlaylists": "רשימות השמעה משותפות"
+    "sharedPlaylists": "רשימות השמעה משותפות",
+    "sharingInvitationsTitle": "הזמנות שיתוף ב־Plex",
+    "noSharingInvitations": "אין הזמנות ממתינות",
+    "sharingInvitationAccept": "קבלת ההזמנה",
+    "sharingInvitationReject": "דחיית ההזמנה",
+    "sharingInvitationHint": "ההחלטה חלה על כל הפריטים בהזמנה, כולל מדיה מחוץ לספריית המוזיקה הזו.",
+    "sharingAcceptConfirm": "לקבל את כל ההזמנה מאת ${owner}?",
+    "sharingDeclineConfirm": "לדחות את כל ההזמנה מאת ${owner}?"
   },
   "musicDevices": {
     "playOn": "ניגון באמצעות",

@@ -4394,6 +4394,13 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get bass => 'Бас';
 	@override String get treble => 'Жоғары жиіліктер';
 	@override String get sharedPlaylists => 'Ортақ ойнату тізімдері';
+	@override String get sharingInvitationsTitle => 'Plex ортақ пайдалану шақырулары';
+	@override String get noSharingInvitations => 'Күтілген шақырулар жоқ';
+	@override String get sharingInvitationAccept => 'Шақыруды қабылдау';
+	@override String get sharingInvitationReject => 'Шақыруды қабылдамау';
+	@override String get sharingInvitationHint => 'Шешіміңіз шақырудағы барлық элементке, осы музыка кітапханасынан тыс медиаға да қолданылады.';
+	@override String sharingAcceptConfirm({required Object owner}) => '${owner} жіберген шақыру толық қабылдансын ба?';
+	@override String sharingDeclineConfirm({required Object owner}) => '${owner} жіберген шақыру толық қабылданбасын ба?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsKk {
 			'musicTools.bass' => 'Бас',
 			'musicTools.treble' => 'Жоғары жиіліктер',
 			'musicTools.sharedPlaylists' => 'Ортақ ойнату тізімдері',
+			'musicTools.sharingInvitationsTitle' => 'Plex ортақ пайдалану шақырулары',
+			'musicTools.noSharingInvitations' => 'Күтілген шақырулар жоқ',
+			'musicTools.sharingInvitationAccept' => 'Шақыруды қабылдау',
+			'musicTools.sharingInvitationReject' => 'Шақыруды қабылдамау',
+			'musicTools.sharingInvitationHint' => 'Шешіміңіз шақырудағы барлық элементке, осы музыка кітапханасынан тыс медиаға да қолданылады.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner} жіберген шақыру толық қабылдансын ба?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner} жіберген шақыру толық қабылданбасын ба?',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',

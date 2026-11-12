@@ -14915,6 +14915,27 @@ class Translations$musicTools$en {
 
 	/// en: 'Shared playlists'
 	String get sharedPlaylists => 'Shared playlists';
+
+	/// en: 'Plex sharing invitations'
+	String get sharingInvitationsTitle => 'Plex sharing invitations';
+
+	/// en: 'No pending invitations'
+	String get noSharingInvitations => 'No pending invitations';
+
+	/// en: 'Accept invitation'
+	String get sharingInvitationAccept => 'Accept invitation';
+
+	/// en: 'Decline invitation'
+	String get sharingInvitationReject => 'Decline invitation';
+
+	/// en: 'Your decision applies to every item in this invitation, including media outside this music library.'
+	String get sharingInvitationHint => 'Your decision applies to every item in this invitation, including media outside this music library.';
+
+	/// en: 'Accept the entire invitation from ${owner}?'
+	String sharingAcceptConfirm({required Object owner}) => 'Accept the entire invitation from ${owner}?';
+
+	/// en: 'Decline the entire invitation from ${owner}?'
+	String sharingDeclineConfirm({required Object owner}) => 'Decline the entire invitation from ${owner}?';
 }
 
 // Path: musicDevices
@@ -22902,6 +22923,13 @@ extension on Translations {
 			'musicTools.bass' => 'Bass',
 			'musicTools.treble' => 'Treble',
 			'musicTools.sharedPlaylists' => 'Shared playlists',
+			'musicTools.sharingInvitationsTitle' => 'Plex sharing invitations',
+			'musicTools.noSharingInvitations' => 'No pending invitations',
+			'musicTools.sharingInvitationAccept' => 'Accept invitation',
+			'musicTools.sharingInvitationReject' => 'Decline invitation',
+			'musicTools.sharingInvitationHint' => 'Your decision applies to every item in this invitation, including media outside this music library.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Accept the entire invitation from ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Decline the entire invitation from ${owner}?',
 			'musicDevices.playOn' => 'Play on',
 			'musicDevices.thisDevice' => 'This device',
 			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',

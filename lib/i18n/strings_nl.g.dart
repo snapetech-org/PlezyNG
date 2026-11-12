@@ -4394,6 +4394,13 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	@override String get bass => 'Bas';
 	@override String get treble => 'Hoge tonen';
 	@override String get sharedPlaylists => 'Gedeelde afspeellijsten';
+	@override String get sharingInvitationsTitle => 'Plex-deeluitnodigingen';
+	@override String get noSharingInvitations => 'Geen openstaande uitnodigingen';
+	@override String get sharingInvitationAccept => 'Uitnodiging accepteren';
+	@override String get sharingInvitationReject => 'Uitnodiging afwijzen';
+	@override String get sharingInvitationHint => 'Je beslissing geldt voor alle items in deze uitnodiging, ook media buiten deze muziekbibliotheek.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'De volledige uitnodiging van ${owner} accepteren?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'De volledige uitnodiging van ${owner} afwijzen?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsNl {
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Hoge tonen',
 			'musicTools.sharedPlaylists' => 'Gedeelde afspeellijsten',
+			'musicTools.sharingInvitationsTitle' => 'Plex-deeluitnodigingen',
+			'musicTools.noSharingInvitations' => 'Geen openstaande uitnodigingen',
+			'musicTools.sharingInvitationAccept' => 'Uitnodiging accepteren',
+			'musicTools.sharingInvitationReject' => 'Uitnodiging afwijzen',
+			'musicTools.sharingInvitationHint' => 'Je beslissing geldt voor alle items in deze uitnodiging, ook media buiten deze muziekbibliotheek.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'De volledige uitnodiging van ${owner} accepteren?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'De volledige uitnodiging van ${owner} afwijzen?',
 			'musicDevices.playOn' => 'Afspelen op',
 			'musicDevices.thisDevice' => 'Dit apparaat',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',

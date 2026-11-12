@@ -11,6 +11,7 @@ import '../media/account_preferences.dart';
 import '../models/plex/plex_account_preferences.dart';
 import '../models/plex/plex_home.dart';
 import '../models/plex/plex_playlist_access.dart';
+import '../models/plex/plex_source_invitation.dart';
 import '../models/plex/plex_home_user.dart';
 import '../models/plex/plex_switch_response.dart';
 import '../utils/app_logger.dart';
@@ -135,6 +136,42 @@ class PlexAuthService {
       headers: _getCommonHeaders(authToken: authToken),
     );
     if (!isCurrent()) throw StateError('Playlist sharing source changed');
+    _checkStatus(response);
+  }
+
+  /// Plex Web 4.163.0 pending source invitations. Do not add includeItems or
+  /// treat the result as accepted playlist permissions.
+  Future<List<PlexSourceInvitation>> getPendingSourceInvitations({
+    required String authToken,
+    required bool Function() isCurrent,
+  }) async {
+    if (!isCurrent()) throw StateError('Invitation account changed');
+    if (authToken.isEmpty) throw ArgumentError('An account token is required');
+    final response = await _http.get(
+      '$_plexApiBase/shared_sources/invites/received/pending',
+      headers: _getCommonHeaders(authToken: authToken),
+    );
+    if (!isCurrent()) throw StateError('Invitation account changed');
+    _checkStatus(response);
+    return PlexSourceInvitation.parsePending(response.data);
+  }
+
+  /// Re-read the inviter/recipient after whole-invitation confirmation.
+  /// A lost acknowledgement never causes an automatic mutation retry.
+  Future<void> respondToSourceInvitation({
+    required String authToken,
+    required PlexSourceInvitation invitation,
+    required bool accept,
+    required bool Function() isCurrent,
+  }) async {
+    final fresh = await getPendingSourceInvitations(authToken: authToken, isCurrent: isCurrent);
+    if (!isCurrent() || !fresh.any(invitation.sameDecision)) throw StateError('Invitation changed');
+    final url = '$_plexApiBase/shared_sources/${invitation.id}';
+    final headers = _getCommonHeaders(authToken: authToken);
+    final response = accept
+        ? await _http.post('$url/accept', headers: headers)
+        : await _http.delete(url, headers: headers);
+    if (!isCurrent()) throw StateError('Invitation account changed');
     _checkStatus(response);
   }
 

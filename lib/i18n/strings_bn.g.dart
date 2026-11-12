@@ -4394,6 +4394,13 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String get bass => 'বেস';
 	@override String get treble => 'ট্রেবল';
 	@override String get sharedPlaylists => 'শেয়ার করা প্লেলিস্ট';
+	@override String get sharingInvitationsTitle => 'Plex ভাগাভাগির আমন্ত্রণ';
+	@override String get noSharingInvitations => 'কোনো মুলতুবি আমন্ত্রণ নেই';
+	@override String get sharingInvitationAccept => 'আমন্ত্রণ গ্রহণ করুন';
+	@override String get sharingInvitationReject => 'আমন্ত্রণ প্রত্যাখ্যান করুন';
+	@override String get sharingInvitationHint => 'আপনার সিদ্ধান্ত এই আমন্ত্রণের সব আইটেমে প্রযোজ্য, এই সংগীত লাইব্রেরির বাইরের মিডিয়াতেও।';
+	@override String sharingAcceptConfirm({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ গ্রহণ করবেন?';
+	@override String sharingDeclineConfirm({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsBn {
 			'musicTools.bass' => 'বেস',
 			'musicTools.treble' => 'ট্রেবল',
 			'musicTools.sharedPlaylists' => 'শেয়ার করা প্লেলিস্ট',
+			'musicTools.sharingInvitationsTitle' => 'Plex ভাগাভাগির আমন্ত্রণ',
+			'musicTools.noSharingInvitations' => 'কোনো মুলতুবি আমন্ত্রণ নেই',
+			'musicTools.sharingInvitationAccept' => 'আমন্ত্রণ গ্রহণ করুন',
+			'musicTools.sharingInvitationReject' => 'আমন্ত্রণ প্রত্যাখ্যান করুন',
+			'musicTools.sharingInvitationHint' => 'আপনার সিদ্ধান্ত এই আমন্ত্রণের সব আইটেমে প্রযোজ্য, এই সংগীত লাইব্রেরির বাইরের মিডিয়াতেও।',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ গ্রহণ করবেন?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?',
 			'musicDevices.playOn' => 'এখানে চালান',
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',

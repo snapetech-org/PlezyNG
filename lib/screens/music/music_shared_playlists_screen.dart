@@ -7,6 +7,8 @@ import '../../profiles/active_profile_provider.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../services/music/music_account_scope.dart';
 import '../../services/music/plex_received_playlists.dart';
+import '../../services/music/plex_sharing_invitations.dart';
+import 'music_sharing_invitations_screen.dart';
 import '../../services/plex_auth_service.dart';
 import '../../services/plex_client.dart';
 import '../../widgets/app_icon.dart';
@@ -159,6 +161,30 @@ class _MusicSharedPlaylistsScreenState extends State<MusicSharedPlaylistsScreen>
     }
   }
 
+  Future<void> _openInvitations() async {
+    final catalog = _catalog, generation = _generation;
+    if (_opening || _loading || catalog == null || !catalog.current) return;
+    setState(() => _opening = true);
+    try {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute(
+          builder: (_) => MusicSharingInvitationsScreen(
+            catalog: PlexSharingInvitations(
+              client: catalog.client,
+              auth: catalog.auth,
+              isCurrent: () => catalog.current,
+            ),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted && identical(generation, _generation)) {
+        setState(() => _opening = false);
+        if (catalog.current) await _start();
+      }
+    }
+  }
+
   Future<void> _open(PlexReceivedPlaylist entry) async {
     final catalog = _catalog;
     final generation = _generation;
@@ -195,6 +221,11 @@ class _MusicSharedPlaylistsScreenState extends State<MusicSharedPlaylistsScreen>
     appBar: AppBar(
       title: Text(t.musicTools.sharedPlaylists, maxLines: 1, overflow: TextOverflow.ellipsis),
       actions: [
+        IconButton(
+          tooltip: t.musicTools.sharingInvitationsTitle,
+          icon: const AppIcon(Symbols.mail_rounded),
+          onPressed: _loading || _opening || _catalog == null ? null : _openInvitations,
+        ),
         IconButton(
           tooltip: t.common.refresh,
           icon: const AppIcon(Symbols.refresh_rounded),

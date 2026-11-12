@@ -4371,6 +4371,13 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	@override String get bass => 'Bes';
 	@override String get treble => 'Trebel';
 	@override String get sharedPlaylists => 'Senarai main dikongsi';
+	@override String get sharingInvitationsTitle => 'Jemputan perkongsian Plex';
+	@override String get noSharingInvitations => 'Tiada jemputan tertunda';
+	@override String get sharingInvitationAccept => 'Terima jemputan';
+	@override String get sharingInvitationReject => 'Tolak jemputan';
+	@override String get sharingInvitationHint => 'Keputusan anda terpakai pada semua item dalam jemputan ini, termasuk media di luar pustaka muzik ini.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Terima seluruh jemputan daripada ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Tolak seluruh jemputan daripada ${owner}?';
 }
 
 // Path: musicDevices
@@ -9598,6 +9605,13 @@ extension on TranslationsMs {
 			'musicTools.bass' => 'Bes',
 			'musicTools.treble' => 'Trebel',
 			'musicTools.sharedPlaylists' => 'Senarai main dikongsi',
+			'musicTools.sharingInvitationsTitle' => 'Jemputan perkongsian Plex',
+			'musicTools.noSharingInvitations' => 'Tiada jemputan tertunda',
+			'musicTools.sharingInvitationAccept' => 'Terima jemputan',
+			'musicTools.sharingInvitationReject' => 'Tolak jemputan',
+			'musicTools.sharingInvitationHint' => 'Keputusan anda terpakai pada semua item dalam jemputan ini, termasuk media di luar pustaka muzik ini.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Terima seluruh jemputan daripada ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Tolak seluruh jemputan daripada ${owner}?',
 			'musicDevices.playOn' => 'Mainkan pada',
 			'musicDevices.thisDevice' => 'Peranti ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',

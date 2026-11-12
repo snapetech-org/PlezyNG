@@ -5645,7 +5645,14 @@
     "peak": "Špička",
     "bass": "Basy",
     "treble": "Výšky",
-    "sharedPlaylists": "Sdílené playlisty"
+    "sharedPlaylists": "Sdílené playlisty",
+    "sharingInvitationsTitle": "Pozvánky ke sdílení Plex",
+    "noSharingInvitations": "Žádné čekající pozvánky",
+    "sharingInvitationAccept": "Přijmout pozvánku",
+    "sharingInvitationReject": "Odmítnout pozvánku",
+    "sharingInvitationHint": "Rozhodnutí platí pro všechny položky pozvánky včetně médií mimo tuto hudební knihovnu.",
+    "sharingAcceptConfirm": "Přijmout celou pozvánku od ${owner}?",
+    "sharingDeclineConfirm": "Odmítnout celou pozvánku od ${owner}?"
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

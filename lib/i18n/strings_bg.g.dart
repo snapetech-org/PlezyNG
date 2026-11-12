@@ -4394,6 +4394,13 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	@override String get bass => 'Баси';
 	@override String get treble => 'Високи честоти';
 	@override String get sharedPlaylists => 'Споделени плейлисти';
+	@override String get sharingInvitationsTitle => 'Покани за споделяне в Plex';
+	@override String get noSharingInvitations => 'Няма чакащи покани';
+	@override String get sharingInvitationAccept => 'Приемане на поканата';
+	@override String get sharingInvitationReject => 'Отказ на поканата';
+	@override String get sharingInvitationHint => 'Решението важи за всички елементи в поканата, включително медия извън тази музикална библиотека.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Приемате ли цялата покана от ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Отказвате ли цялата покана от ${owner}?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsBg {
 			'musicTools.bass' => 'Баси',
 			'musicTools.treble' => 'Високи честоти',
 			'musicTools.sharedPlaylists' => 'Споделени плейлисти',
+			'musicTools.sharingInvitationsTitle' => 'Покани за споделяне в Plex',
+			'musicTools.noSharingInvitations' => 'Няма чакащи покани',
+			'musicTools.sharingInvitationAccept' => 'Приемане на поканата',
+			'musicTools.sharingInvitationReject' => 'Отказ на поканата',
+			'musicTools.sharingInvitationHint' => 'Решението важи за всички елементи в поканата, включително медия извън тази музикална библиотека.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Приемате ли цялата покана от ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Отказвате ли цялата покана от ${owner}?',
 			'musicDevices.playOn' => 'Възпроизвеждане на',
 			'musicDevices.thisDevice' => 'Това устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',

@@ -5597,7 +5597,14 @@
     "peak": "Tepe",
     "bass": "Bas",
     "treble": "Tiz",
-    "sharedPlaylists": "Paylaşılan çalma listeleri"
+    "sharedPlaylists": "Paylaşılan çalma listeleri",
+    "sharingInvitationsTitle": "Plex paylaşım davetleri",
+    "noSharingInvitations": "Bekleyen davet yok",
+    "sharingInvitationAccept": "Daveti kabul et",
+    "sharingInvitationReject": "Daveti reddet",
+    "sharingInvitationHint": "Kararınız, bu müzik kitaplığının dışındaki medya dahil davetteki tüm öğeler için geçerlidir.",
+    "sharingAcceptConfirm": "${owner} tarafından gönderilen davetin tamamı kabul edilsin mi?",
+    "sharingDeclineConfirm": "${owner} tarafından gönderilen davetin tamamı reddedilsin mi?"
   },
   "musicDevices": {
     "playOn": "Şurada çal",

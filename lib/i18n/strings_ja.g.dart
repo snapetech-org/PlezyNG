@@ -4389,6 +4389,13 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	@override String get bass => '低音';
 	@override String get treble => '高音';
 	@override String get sharedPlaylists => '共有プレイリスト';
+	@override String get sharingInvitationsTitle => 'Plex共有の招待';
+	@override String get noSharingInvitations => '保留中の招待はありません';
+	@override String get sharingInvitationAccept => '招待を承認';
+	@override String get sharingInvitationReject => '招待を辞退';
+	@override String get sharingInvitationHint => 'この操作は、この音楽ライブラリ以外のメディアも含め、招待内のすべての項目に適用されます。';
+	@override String sharingAcceptConfirm({required Object owner}) => '${owner}からの招待全体を承認しますか？';
+	@override String sharingDeclineConfirm({required Object owner}) => '${owner}からの招待全体を辞退しますか？';
 }
 
 // Path: musicDevices
@@ -9618,6 +9625,13 @@ extension on TranslationsJa {
 			'musicTools.bass' => '低音',
 			'musicTools.treble' => '高音',
 			'musicTools.sharedPlaylists' => '共有プレイリスト',
+			'musicTools.sharingInvitationsTitle' => 'Plex共有の招待',
+			'musicTools.noSharingInvitations' => '保留中の招待はありません',
+			'musicTools.sharingInvitationAccept' => '招待を承認',
+			'musicTools.sharingInvitationReject' => '招待を辞退',
+			'musicTools.sharingInvitationHint' => 'この操作は、この音楽ライブラリ以外のメディアも含め、招待内のすべての項目に適用されます。',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner}からの招待全体を承認しますか？',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner}からの招待全体を辞退しますか？',
 			'musicDevices.playOn' => '再生先',
 			'musicDevices.thisDevice' => 'このデバイス',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} で再生中',

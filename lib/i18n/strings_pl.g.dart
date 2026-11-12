@@ -4440,6 +4440,13 @@ class _Translations$musicTools$pl extends Translations$musicTools$en {
 	@override String get bass => 'Basy';
 	@override String get treble => 'Wysokie tony';
 	@override String get sharedPlaylists => 'Udostępnione playlisty';
+	@override String get sharingInvitationsTitle => 'Zaproszenia do udostępniania Plex';
+	@override String get noSharingInvitations => 'Brak oczekujących zaproszeń';
+	@override String get sharingInvitationAccept => 'Przyjmij zaproszenie';
+	@override String get sharingInvitationReject => 'Odrzuć zaproszenie';
+	@override String get sharingInvitationHint => 'Decyzja dotyczy wszystkich elementów zaproszenia, także multimediów spoza tej biblioteki muzycznej.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Przyjąć całe zaproszenie od ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Odrzucić całe zaproszenie od ${owner}?';
 }
 
 // Path: musicDevices
@@ -9673,6 +9680,13 @@ extension on TranslationsPl {
 			'musicTools.bass' => 'Basy',
 			'musicTools.treble' => 'Wysokie tony',
 			'musicTools.sharedPlaylists' => 'Udostępnione playlisty',
+			'musicTools.sharingInvitationsTitle' => 'Zaproszenia do udostępniania Plex',
+			'musicTools.noSharingInvitations' => 'Brak oczekujących zaproszeń',
+			'musicTools.sharingInvitationAccept' => 'Przyjmij zaproszenie',
+			'musicTools.sharingInvitationReject' => 'Odrzuć zaproszenie',
+			'musicTools.sharingInvitationHint' => 'Decyzja dotyczy wszystkich elementów zaproszenia, także multimediów spoza tej biblioteki muzycznej.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Przyjąć całe zaproszenie od ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Odrzucić całe zaproszenie od ${owner}?',
 			'musicDevices.playOn' => 'Odtwarzaj na',
 			'musicDevices.thisDevice' => 'To urządzenie',
 			'musicDevices.playingOn' => ({required Object device}) => 'Odtwarzanie na ${device}',

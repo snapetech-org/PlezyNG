@@ -5676,7 +5676,14 @@
     "peak": "Peak",
     "bass": "Bass",
     "treble": "Treble",
-    "sharedPlaylists": "Shared playlists"
+    "sharedPlaylists": "Shared playlists",
+    "sharingInvitationsTitle": "Plex sharing invitations",
+    "noSharingInvitations": "No pending invitations",
+    "sharingInvitationAccept": "Accept invitation",
+    "sharingInvitationReject": "Decline invitation",
+    "sharingInvitationHint": "Your decision applies to every item in this invitation, including media outside this music library.",
+    "sharingAcceptConfirm": "Accept the entire invitation from ${owner}?",
+    "sharingDeclineConfirm": "Decline the entire invitation from ${owner}?"
   },
   "musicDevices": {
     "playOn": "Play on",

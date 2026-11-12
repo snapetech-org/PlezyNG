@@ -4394,6 +4394,13 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	@override String get bass => 'Bas';
 	@override String get treble => 'Yuqori tovushlar';
 	@override String get sharedPlaylists => 'Ulashilgan pleylistlar';
+	@override String get sharingInvitationsTitle => 'Plex ulashish takliflari';
+	@override String get noSharingInvitations => 'Kutilayotgan takliflar yo‘q';
+	@override String get sharingInvitationAccept => 'Taklifni qabul qilish';
+	@override String get sharingInvitationReject => 'Taklifni rad etish';
+	@override String get sharingInvitationHint => 'Qaroringiz taklifdagi barcha elementlarga, shu musiqa kutubxonasidan tashqaridagi mediaga ham tegishli.';
+	@override String sharingAcceptConfirm({required Object owner}) => '${owner} yuborgan taklif to‘liq qabul qilinsinmi?';
+	@override String sharingDeclineConfirm({required Object owner}) => '${owner} yuborgan taklif to‘liq rad etilsinmi?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsUz {
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Yuqori tovushlar',
 			'musicTools.sharedPlaylists' => 'Ulashilgan pleylistlar',
+			'musicTools.sharingInvitationsTitle' => 'Plex ulashish takliflari',
+			'musicTools.noSharingInvitations' => 'Kutilayotgan takliflar yo‘q',
+			'musicTools.sharingInvitationAccept' => 'Taklifni qabul qilish',
+			'musicTools.sharingInvitationReject' => 'Taklifni rad etish',
+			'musicTools.sharingInvitationHint' => 'Qaroringiz taklifdagi barcha elementlarga, shu musiqa kutubxonasidan tashqaridagi mediaga ham tegishli.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner} yuborgan taklif to‘liq qabul qilinsinmi?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner} yuborgan taklif to‘liq rad etilsinmi?',
 			'musicDevices.playOn' => 'Shu qurilmada ijro etish',
 			'musicDevices.thisDevice' => 'Bu qurilma',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} qurilmasida ijro etilmoqda',

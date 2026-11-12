@@ -5570,7 +5570,14 @@
     "peak": "Puncak",
     "bass": "Bes",
     "treble": "Trebel",
-    "sharedPlaylists": "Senarai main dikongsi"
+    "sharedPlaylists": "Senarai main dikongsi",
+    "sharingInvitationsTitle": "Jemputan perkongsian Plex",
+    "noSharingInvitations": "Tiada jemputan tertunda",
+    "sharingInvitationAccept": "Terima jemputan",
+    "sharingInvitationReject": "Tolak jemputan",
+    "sharingInvitationHint": "Keputusan anda terpakai pada semua item dalam jemputan ini, termasuk media di luar pustaka muzik ini.",
+    "sharingAcceptConfirm": "Terima seluruh jemputan daripada ${owner}?",
+    "sharingDeclineConfirm": "Tolak seluruh jemputan daripada ${owner}?"
   },
   "musicDevices": {
     "playOn": "Mainkan pada",

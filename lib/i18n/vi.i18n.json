@@ -5570,7 +5570,14 @@
     "peak": "Đỉnh",
     "bass": "Âm trầm",
     "treble": "Âm cao",
-    "sharedPlaylists": "Danh sách phát được chia sẻ"
+    "sharedPlaylists": "Danh sách phát được chia sẻ",
+    "sharingInvitationsTitle": "Lời mời chia sẻ Plex",
+    "noSharingInvitations": "Không có lời mời đang chờ",
+    "sharingInvitationAccept": "Chấp nhận lời mời",
+    "sharingInvitationReject": "Từ chối lời mời",
+    "sharingInvitationHint": "Quyết định áp dụng cho mọi mục trong lời mời, kể cả nội dung ngoài thư viện nhạc này.",
+    "sharingAcceptConfirm": "Chấp nhận toàn bộ lời mời từ ${owner}?",
+    "sharingDeclineConfirm": "Từ chối toàn bộ lời mời từ ${owner}?"
   },
   "musicDevices": {
     "playOn": "Phát trên",

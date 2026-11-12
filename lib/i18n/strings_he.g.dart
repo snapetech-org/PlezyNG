@@ -4402,6 +4402,13 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String get bass => 'בס';
 	@override String get treble => 'גבוהים';
 	@override String get sharedPlaylists => 'רשימות השמעה משותפות';
+	@override String get sharingInvitationsTitle => 'הזמנות שיתוף ב־Plex';
+	@override String get noSharingInvitations => 'אין הזמנות ממתינות';
+	@override String get sharingInvitationAccept => 'קבלת ההזמנה';
+	@override String get sharingInvitationReject => 'דחיית ההזמנה';
+	@override String get sharingInvitationHint => 'ההחלטה חלה על כל הפריטים בהזמנה, כולל מדיה מחוץ לספריית המוזיקה הזו.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'לקבל את כל ההזמנה מאת ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'לדחות את כל ההזמנה מאת ${owner}?';
 }
 
 // Path: musicDevices
@@ -9631,6 +9638,13 @@ extension on TranslationsHe {
 			'musicTools.bass' => 'בס',
 			'musicTools.treble' => 'גבוהים',
 			'musicTools.sharedPlaylists' => 'רשימות השמעה משותפות',
+			'musicTools.sharingInvitationsTitle' => 'הזמנות שיתוף ב־Plex',
+			'musicTools.noSharingInvitations' => 'אין הזמנות ממתינות',
+			'musicTools.sharingInvitationAccept' => 'קבלת ההזמנה',
+			'musicTools.sharingInvitationReject' => 'דחיית ההזמנה',
+			'musicTools.sharingInvitationHint' => 'ההחלטה חלה על כל הפריטים בהזמנה, כולל מדיה מחוץ לספריית המוזיקה הזו.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'לקבל את כל ההזמנה מאת ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'לדחות את כל ההזמנה מאת ${owner}?',
 			'musicDevices.playOn' => 'ניגון באמצעות',
 			'musicDevices.thisDevice' => 'מכשיר זה',
 			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',

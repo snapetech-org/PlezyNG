@@ -4394,6 +4394,13 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get bass => 'Mély';
 	@override String get treble => 'Magas';
 	@override String get sharedPlaylists => 'Megosztott lejátszási listák';
+	@override String get sharingInvitationsTitle => 'Plex-megosztási meghívók';
+	@override String get noSharingInvitations => 'Nincsenek függő meghívók';
+	@override String get sharingInvitationAccept => 'Meghívó elfogadása';
+	@override String get sharingInvitationReject => 'Meghívó elutasítása';
+	@override String get sharingInvitationHint => 'Döntésed a meghívó minden elemére vonatkozik, az ezen zenei könyvtáron kívüli médiára is.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Elfogadod ${owner} teljes meghívóját?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Elutasítod ${owner} teljes meghívóját?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsHu {
 			'musicTools.bass' => 'Mély',
 			'musicTools.treble' => 'Magas',
 			'musicTools.sharedPlaylists' => 'Megosztott lejátszási listák',
+			'musicTools.sharingInvitationsTitle' => 'Plex-megosztási meghívók',
+			'musicTools.noSharingInvitations' => 'Nincsenek függő meghívók',
+			'musicTools.sharingInvitationAccept' => 'Meghívó elfogadása',
+			'musicTools.sharingInvitationReject' => 'Meghívó elutasítása',
+			'musicTools.sharingInvitationHint' => 'Döntésed a meghívó minden elemére vonatkozik, az ezen zenei könyvtáron kívüli médiára is.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Elfogadod ${owner} teljes meghívóját?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Elutasítod ${owner} teljes meghívóját?',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',

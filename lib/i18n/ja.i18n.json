@@ -5592,7 +5592,14 @@
     "peak": "ピーク",
     "bass": "低音",
     "treble": "高音",
-    "sharedPlaylists": "共有プレイリスト"
+    "sharedPlaylists": "共有プレイリスト",
+    "sharingInvitationsTitle": "Plex共有の招待",
+    "noSharingInvitations": "保留中の招待はありません",
+    "sharingInvitationAccept": "招待を承認",
+    "sharingInvitationReject": "招待を辞退",
+    "sharingInvitationHint": "この操作は、この音楽ライブラリ以外のメディアも含め、招待内のすべての項目に適用されます。",
+    "sharingAcceptConfirm": "${owner}からの招待全体を承認しますか？",
+    "sharingDeclineConfirm": "${owner}からの招待全体を辞退しますか？"
   },
   "musicDevices": {
     "playOn": "再生先",

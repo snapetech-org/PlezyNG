@@ -4394,6 +4394,13 @@ class _Translations$musicTools$de extends Translations$musicTools$en {
 	@override String get bass => 'Bass';
 	@override String get treble => 'Höhen';
 	@override String get sharedPlaylists => 'Geteilte Playlists';
+	@override String get sharingInvitationsTitle => 'Plex-Freigabeeinladungen';
+	@override String get noSharingInvitations => 'Keine ausstehenden Einladungen';
+	@override String get sharingInvitationAccept => 'Einladung annehmen';
+	@override String get sharingInvitationReject => 'Einladung ablehnen';
+	@override String get sharingInvitationHint => 'Deine Entscheidung gilt für alle Elemente dieser Einladung, auch für Medien außerhalb dieser Musikbibliothek.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Gesamte Einladung von ${owner} annehmen?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Gesamte Einladung von ${owner} ablehnen?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsDe {
 			'musicTools.bass' => 'Bass',
 			'musicTools.treble' => 'Höhen',
 			'musicTools.sharedPlaylists' => 'Geteilte Playlists',
+			'musicTools.sharingInvitationsTitle' => 'Plex-Freigabeeinladungen',
+			'musicTools.noSharingInvitations' => 'Keine ausstehenden Einladungen',
+			'musicTools.sharingInvitationAccept' => 'Einladung annehmen',
+			'musicTools.sharingInvitationReject' => 'Einladung ablehnen',
+			'musicTools.sharingInvitationHint' => 'Deine Entscheidung gilt für alle Elemente dieser Einladung, auch für Medien außerhalb dieser Musikbibliothek.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Gesamte Einladung von ${owner} annehmen?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Gesamte Einladung von ${owner} ablehnen?',
 			'musicDevices.playOn' => 'Wiedergeben auf',
 			'musicDevices.thisDevice' => 'Dieses Gerät',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wiedergabe auf ${device}',

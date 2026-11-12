@@ -5651,7 +5651,14 @@
     "peak": "Пик",
     "bass": "Низкие частоты",
     "treble": "Высокие частоты",
-    "sharedPlaylists": "Общие плейлисты"
+    "sharedPlaylists": "Общие плейлисты",
+    "sharingInvitationsTitle": "Приглашения к общим материалам Plex",
+    "noSharingInvitations": "Нет ожидающих приглашений",
+    "sharingInvitationAccept": "Принять приглашение",
+    "sharingInvitationReject": "Отклонить приглашение",
+    "sharingInvitationHint": "Решение относится ко всем элементам приглашения, включая материалы за пределами этой музыкальной библиотеки.",
+    "sharingAcceptConfirm": "Принять всё приглашение от ${owner}?",
+    "sharingDeclineConfirm": "Отклонить всё приглашение от ${owner}?"
   },
   "musicDevices": {
     "playOn": "Воспроизвести на",

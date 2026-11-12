@@ -5597,7 +5597,14 @@
     "peak": "Шың",
     "bass": "Бас",
     "treble": "Жоғары жиіліктер",
-    "sharedPlaylists": "Ортақ ойнату тізімдері"
+    "sharedPlaylists": "Ортақ ойнату тізімдері",
+    "sharingInvitationsTitle": "Plex ортақ пайдалану шақырулары",
+    "noSharingInvitations": "Күтілген шақырулар жоқ",
+    "sharingInvitationAccept": "Шақыруды қабылдау",
+    "sharingInvitationReject": "Шақыруды қабылдамау",
+    "sharingInvitationHint": "Шешіміңіз шақырудағы барлық элементке, осы музыка кітапханасынан тыс медиаға да қолданылады.",
+    "sharingAcceptConfirm": "${owner} жіберген шақыру толық қабылдансын ба?",
+    "sharingDeclineConfirm": "${owner} жіберген шақыру толық қабылданбасын ба?"
   },
   "musicDevices": {
     "playOn": "Ойнату құрылғысы",

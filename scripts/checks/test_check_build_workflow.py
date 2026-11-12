@@ -48,9 +48,13 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             with self.subTest(invalid=invalid):
                 result = self._run(original[:begin] + invalid + original[end:])
                 self.assertNotEqual(result.returncode, 0)
-                self.assertIn('profile preflight must be bounded', result.stderr)
-        changed = original.replace("|| 'pleazyng-core-release'", "|| github.run_id")
-        self.assertNotEqual(self._run(changed).returncode, 0)
+                self.assertIn('iOS profile preflight must stay separate', result.stderr)
+        for group in ('pleazyng-core-release-v2', 'pleazyng-versioned-release-v2',
+                      'pleazyng-candidate-build-v2'):
+            with self.subTest(group=group):
+                changed = original.replace(f"'{group}'", "github.run_id")
+                self.assertNotEqual(changed, original)
+                self.assertNotEqual(self._run(changed).returncode, 0)
 
     def test_ios_steam_preparation_retries_network_failure_and_stops_at_bound(self):
         step = next(step for step in yaml.safe_load(self._workflow())['jobs']['build-ios']['steps']

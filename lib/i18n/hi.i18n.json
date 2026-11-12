@@ -5597,7 +5597,14 @@
     "peak": "शिखर",
     "bass": "बास",
     "treble": "ट्रेबल",
-    "sharedPlaylists": "शेयर की गई प्लेलिस्ट"
+    "sharedPlaylists": "शेयर की गई प्लेलिस्ट",
+    "sharingInvitationsTitle": "Plex साझाकरण आमंत्रण",
+    "noSharingInvitations": "कोई लंबित आमंत्रण नहीं",
+    "sharingInvitationAccept": "आमंत्रण स्वीकार करें",
+    "sharingInvitationReject": "आमंत्रण अस्वीकार करें",
+    "sharingInvitationHint": "आपका निर्णय इस आमंत्रण की सभी वस्तुओं पर लागू होगा, इस संगीत लाइब्रेरी के बाहर के मीडिया पर भी।",
+    "sharingAcceptConfirm": "${owner} का पूरा आमंत्रण स्वीकार करें?",
+    "sharingDeclineConfirm": "${owner} का पूरा आमंत्रण अस्वीकार करें?"
   },
   "musicDevices": {
     "playOn": "इस पर चलाएँ",

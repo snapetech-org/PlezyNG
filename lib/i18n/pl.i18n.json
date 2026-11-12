@@ -5651,7 +5651,14 @@
     "peak": "Szczyt",
     "bass": "Basy",
     "treble": "Wysokie tony",
-    "sharedPlaylists": "Udostępnione playlisty"
+    "sharedPlaylists": "Udostępnione playlisty",
+    "sharingInvitationsTitle": "Zaproszenia do udostępniania Plex",
+    "noSharingInvitations": "Brak oczekujących zaproszeń",
+    "sharingInvitationAccept": "Przyjmij zaproszenie",
+    "sharingInvitationReject": "Odrzuć zaproszenie",
+    "sharingInvitationHint": "Decyzja dotyczy wszystkich elementów zaproszenia, także multimediów spoza tej biblioteki muzycznej.",
+    "sharingAcceptConfirm": "Przyjąć całe zaproszenie od ${owner}?",
+    "sharingDeclineConfirm": "Odrzucić całe zaproszenie od ${owner}?"
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

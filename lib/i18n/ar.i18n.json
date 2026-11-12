@@ -5705,7 +5705,14 @@
     "peak": "ذروة",
     "bass": "جهير",
     "treble": "صوت حاد",
-    "sharedPlaylists": "قوائم التشغيل المشتركة"
+    "sharedPlaylists": "قوائم التشغيل المشتركة",
+    "sharingInvitationsTitle": "دعوات المشاركة في Plex",
+    "noSharingInvitations": "لا توجد دعوات معلقة",
+    "sharingInvitationAccept": "قبول الدعوة",
+    "sharingInvitationReject": "رفض الدعوة",
+    "sharingInvitationHint": "ينطبق قرارك على كل عناصر هذه الدعوة، بما في ذلك الوسائط خارج مكتبة الموسيقى هذه.",
+    "sharingAcceptConfirm": "هل تريد قبول دعوة ${owner} بأكملها؟",
+    "sharingDeclineConfirm": "هل تريد رفض دعوة ${owner} بأكملها؟"
   },
   "musicDevices": {
     "playOn": "التشغيل على",

@@ -5597,7 +5597,14 @@
     "peak": "Spitze",
     "bass": "Bass",
     "treble": "Höhen",
-    "sharedPlaylists": "Geteilte Playlists"
+    "sharedPlaylists": "Geteilte Playlists",
+    "sharingInvitationsTitle": "Plex-Freigabeeinladungen",
+    "noSharingInvitations": "Keine ausstehenden Einladungen",
+    "sharingInvitationAccept": "Einladung annehmen",
+    "sharingInvitationReject": "Einladung ablehnen",
+    "sharingInvitationHint": "Deine Entscheidung gilt für alle Elemente dieser Einladung, auch für Medien außerhalb dieser Musikbibliothek.",
+    "sharingAcceptConfirm": "Gesamte Einladung von ${owner} annehmen?",
+    "sharingDeclineConfirm": "Gesamte Einladung von ${owner} ablehnen?"
   },
   "musicDevices": {
     "playOn": "Wiedergeben auf",

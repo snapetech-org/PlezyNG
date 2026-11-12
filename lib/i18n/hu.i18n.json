@@ -5597,7 +5597,14 @@
     "peak": "Csúcs",
     "bass": "Mély",
     "treble": "Magas",
-    "sharedPlaylists": "Megosztott lejátszási listák"
+    "sharedPlaylists": "Megosztott lejátszási listák",
+    "sharingInvitationsTitle": "Plex-megosztási meghívók",
+    "noSharingInvitations": "Nincsenek függő meghívók",
+    "sharingInvitationAccept": "Meghívó elfogadása",
+    "sharingInvitationReject": "Meghívó elutasítása",
+    "sharingInvitationHint": "Döntésed a meghívó minden elemére vonatkozik, az ezen zenei könyvtáron kívüli médiára is.",
+    "sharingAcceptConfirm": "Elfogadod ${owner} teljes meghívóját?",
+    "sharingDeclineConfirm": "Elutasítod ${owner} teljes meghívóját?"
   },
   "musicDevices": {
     "playOn": "Lejátszás itt",

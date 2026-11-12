@@ -5597,7 +5597,14 @@
     "peak": "Choʻqqi",
     "bass": "Bas",
     "treble": "Yuqori tovushlar",
-    "sharedPlaylists": "Ulashilgan pleylistlar"
+    "sharedPlaylists": "Ulashilgan pleylistlar",
+    "sharingInvitationsTitle": "Plex ulashish takliflari",
+    "noSharingInvitations": "Kutilayotgan takliflar yo‘q",
+    "sharingInvitationAccept": "Taklifni qabul qilish",
+    "sharingInvitationReject": "Taklifni rad etish",
+    "sharingInvitationHint": "Qaroringiz taklifdagi barcha elementlarga, shu musiqa kutubxonasidan tashqaridagi mediaga ham tegishli.",
+    "sharingAcceptConfirm": "${owner} yuborgan taklif to‘liq qabul qilinsinmi?",
+    "sharingDeclineConfirm": "${owner} yuborgan taklif to‘liq rad etilsinmi?"
   },
   "musicDevices": {
     "playOn": "Shu qurilmada ijro etish",

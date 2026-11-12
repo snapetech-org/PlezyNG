@@ -4394,6 +4394,13 @@ class _Translations$musicTools$nb extends Translations$musicTools$en {
 	@override String get bass => 'Bass';
 	@override String get treble => 'Diskant';
 	@override String get sharedPlaylists => 'Delte spillelister';
+	@override String get sharingInvitationsTitle => 'Plex-delingsinvitasjoner';
+	@override String get noSharingInvitations => 'Ingen ventende invitasjoner';
+	@override String get sharingInvitationAccept => 'Godta invitasjon';
+	@override String get sharingInvitationReject => 'Avslå invitasjon';
+	@override String get sharingInvitationHint => 'Valget gjelder alle elementene i invitasjonen, også medier utenfor dette musikkbiblioteket.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Godta hele invitasjonen fra ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Avslå hele invitasjonen fra ${owner}?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsNb {
 			'musicTools.bass' => 'Bass',
 			'musicTools.treble' => 'Diskant',
 			'musicTools.sharedPlaylists' => 'Delte spillelister',
+			'musicTools.sharingInvitationsTitle' => 'Plex-delingsinvitasjoner',
+			'musicTools.noSharingInvitations' => 'Ingen ventende invitasjoner',
+			'musicTools.sharingInvitationAccept' => 'Godta invitasjon',
+			'musicTools.sharingInvitationReject' => 'Avslå invitasjon',
+			'musicTools.sharingInvitationHint' => 'Valget gjelder alle elementene i invitasjonen, også medier utenfor dette musikkbiblioteket.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Godta hele invitasjonen fra ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Avslå hele invitasjonen fra ${owner}?',
 			'musicDevices.playOn' => 'Spill av på',
 			'musicDevices.thisDevice' => 'Denne enheten',
 			'musicDevices.playingOn' => ({required Object device}) => 'Spiller av på ${device}',

@@ -5597,7 +5597,14 @@
     "peak": "Piek",
     "bass": "Bas",
     "treble": "Hoge tonen",
-    "sharedPlaylists": "Gedeelde afspeellijsten"
+    "sharedPlaylists": "Gedeelde afspeellijsten",
+    "sharingInvitationsTitle": "Plex-deeluitnodigingen",
+    "noSharingInvitations": "Geen openstaande uitnodigingen",
+    "sharingInvitationAccept": "Uitnodiging accepteren",
+    "sharingInvitationReject": "Uitnodiging afwijzen",
+    "sharingInvitationHint": "Je beslissing geldt voor alle items in deze uitnodiging, ook media buiten deze muziekbibliotheek.",
+    "sharingAcceptConfirm": "De volledige uitnodiging van ${owner} accepteren?",
+    "sharingDeclineConfirm": "De volledige uitnodiging van ${owner} afwijzen?"
   },
   "musicDevices": {
     "playOn": "Afspelen op",

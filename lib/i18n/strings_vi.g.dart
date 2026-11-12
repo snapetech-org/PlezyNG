@@ -4371,6 +4371,13 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get bass => 'Âm trầm';
 	@override String get treble => 'Âm cao';
 	@override String get sharedPlaylists => 'Danh sách phát được chia sẻ';
+	@override String get sharingInvitationsTitle => 'Lời mời chia sẻ Plex';
+	@override String get noSharingInvitations => 'Không có lời mời đang chờ';
+	@override String get sharingInvitationAccept => 'Chấp nhận lời mời';
+	@override String get sharingInvitationReject => 'Từ chối lời mời';
+	@override String get sharingInvitationHint => 'Quyết định áp dụng cho mọi mục trong lời mời, kể cả nội dung ngoài thư viện nhạc này.';
+	@override String sharingAcceptConfirm({required Object owner}) => 'Chấp nhận toàn bộ lời mời từ ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => 'Từ chối toàn bộ lời mời từ ${owner}?';
 }
 
 // Path: musicDevices
@@ -9598,6 +9605,13 @@ extension on TranslationsVi {
 			'musicTools.bass' => 'Âm trầm',
 			'musicTools.treble' => 'Âm cao',
 			'musicTools.sharedPlaylists' => 'Danh sách phát được chia sẻ',
+			'musicTools.sharingInvitationsTitle' => 'Lời mời chia sẻ Plex',
+			'musicTools.noSharingInvitations' => 'Không có lời mời đang chờ',
+			'musicTools.sharingInvitationAccept' => 'Chấp nhận lời mời',
+			'musicTools.sharingInvitationReject' => 'Từ chối lời mời',
+			'musicTools.sharingInvitationHint' => 'Quyết định áp dụng cho mọi mục trong lời mời, kể cả nội dung ngoài thư viện nhạc này.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Chấp nhận toàn bộ lời mời từ ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Từ chối toàn bộ lời mời từ ${owner}?',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',

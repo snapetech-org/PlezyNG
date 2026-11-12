@@ -5570,7 +5570,14 @@
     "peak": "Puncak",
     "bass": "Bas",
     "treble": "Trebel",
-    "sharedPlaylists": "Daftar putar bersama"
+    "sharedPlaylists": "Daftar putar bersama",
+    "sharingInvitationsTitle": "Undangan berbagi Plex",
+    "noSharingInvitations": "Tidak ada undangan tertunda",
+    "sharingInvitationAccept": "Terima undangan",
+    "sharingInvitationReject": "Tolak undangan",
+    "sharingInvitationHint": "Keputusan Anda berlaku untuk semua item dalam undangan ini, termasuk media di luar pustaka musik ini.",
+    "sharingAcceptConfirm": "Terima seluruh undangan dari ${owner}?",
+    "sharingDeclineConfirm": "Tolak seluruh undangan dari ${owner}?"
   },
   "musicDevices": {
     "playOn": "Putar di",

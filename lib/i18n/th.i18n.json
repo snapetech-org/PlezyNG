@@ -5570,7 +5570,14 @@
     "peak": "พีค",
     "bass": "เสียงเบส",
     "treble": "เสียงแหลม",
-    "sharedPlaylists": "เพลย์ลิสต์ที่แชร์"
+    "sharedPlaylists": "เพลย์ลิสต์ที่แชร์",
+    "sharingInvitationsTitle": "คำเชิญแชร์ของ Plex",
+    "noSharingInvitations": "ไม่มีคำเชิญที่รอดำเนินการ",
+    "sharingInvitationAccept": "ยอมรับคำเชิญ",
+    "sharingInvitationReject": "ปฏิเสธคำเชิญ",
+    "sharingInvitationHint": "การตัดสินใจของคุณมีผลกับทุกรายการในคำเชิญนี้ รวมถึงสื่อนอกคลังเพลงนี้",
+    "sharingAcceptConfirm": "ยอมรับคำเชิญทั้งหมดจาก ${owner} หรือไม่?",
+    "sharingDeclineConfirm": "ปฏิเสธคำเชิญทั้งหมดจาก ${owner} หรือไม่?"
   },
   "musicDevices": {
     "playOn": "เล่นบน",

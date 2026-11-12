@@ -5597,7 +5597,14 @@
     "peak": "Пик",
     "bass": "Баси",
     "treble": "Високи честоти",
-    "sharedPlaylists": "Споделени плейлисти"
+    "sharedPlaylists": "Споделени плейлисти",
+    "sharingInvitationsTitle": "Покани за споделяне в Plex",
+    "noSharingInvitations": "Няма чакащи покани",
+    "sharingInvitationAccept": "Приемане на поканата",
+    "sharingInvitationReject": "Отказ на поканата",
+    "sharingInvitationHint": "Решението важи за всички елементи в поканата, включително медия извън тази музикална библиотека.",
+    "sharingAcceptConfirm": "Приемате ли цялата покана от ${owner}?",
+    "sharingDeclineConfirm": "Отказвате ли цялата покана от ${owner}?"
   },
   "musicDevices": {
     "playOn": "Възпроизвеждане на",

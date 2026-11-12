@@ -4394,6 +4394,13 @@ class _Translations$musicTools$az extends Translations$musicTools$en {
 	@override String get bass => 'Bas';
 	@override String get treble => 'Tiz səslər';
 	@override String get sharedPlaylists => 'Paylaşılan pleylistlər';
+	@override String get sharingInvitationsTitle => 'Plex paylaşım dəvətləri';
+	@override String get noSharingInvitations => 'Gözləyən dəvət yoxdur';
+	@override String get sharingInvitationAccept => 'Dəvəti qəbul et';
+	@override String get sharingInvitationReject => 'Dəvəti rədd et';
+	@override String get sharingInvitationHint => 'Qərarınız bu musiqi kitabxanasından kənar media daxil olmaqla dəvətdəki bütün elementlərə aiddir.';
+	@override String sharingAcceptConfirm({required Object owner}) => '${owner} tərəfindən göndərilmiş dəvət tam qəbul edilsin?';
+	@override String sharingDeclineConfirm({required Object owner}) => '${owner} tərəfindən göndərilmiş dəvət tam rədd edilsin?';
 }
 
 // Path: musicDevices
@@ -9623,6 +9630,13 @@ extension on TranslationsAz {
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Tiz səslər',
 			'musicTools.sharedPlaylists' => 'Paylaşılan pleylistlər',
+			'musicTools.sharingInvitationsTitle' => 'Plex paylaşım dəvətləri',
+			'musicTools.noSharingInvitations' => 'Gözləyən dəvət yoxdur',
+			'musicTools.sharingInvitationAccept' => 'Dəvəti qəbul et',
+			'musicTools.sharingInvitationReject' => 'Dəvəti rədd et',
+			'musicTools.sharingInvitationHint' => 'Qərarınız bu musiqi kitabxanasından kənar media daxil olmaqla dəvətdəki bütün elementlərə aiddir.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner} tərəfindən göndərilmiş dəvət tam qəbul edilsin?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner} tərəfindən göndərilmiş dəvət tam rədd edilsin?',
 			'musicDevices.playOn' => 'Burada səsləndir',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',

@@ -5606,7 +5606,14 @@
     "peak": "Pic",
     "bass": "Graves",
     "treble": "Aigus",
-    "sharedPlaylists": "Listes partagées"
+    "sharedPlaylists": "Listes partagées",
+    "sharingInvitationsTitle": "Invitations de partage Plex",
+    "noSharingInvitations": "Aucune invitation en attente",
+    "sharingInvitationAccept": "Accepter l’invitation",
+    "sharingInvitationReject": "Refuser l’invitation",
+    "sharingInvitationHint": "Votre décision concerne tous les éléments de cette invitation, y compris les médias hors de cette bibliothèque musicale.",
+    "sharingAcceptConfirm": "Accepter toute l’invitation de ${owner} ?",
+    "sharingDeclineConfirm": "Refuser toute l’invitation de ${owner} ?"
   },
   "musicDevices": {
     "playOn": "Lire sur",

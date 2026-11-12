@@ -4484,6 +4484,13 @@ class Translations$musicTools$es extends Translations$musicTools$en {
 	@override String get bass => 'Graves';
 	@override String get treble => 'Agudos';
 	@override String get sharedPlaylists => 'Listas compartidas';
+	@override String get sharingInvitationsTitle => 'Invitaciones de contenido compartido de Plex';
+	@override String get noSharingInvitations => 'No hay invitaciones pendientes';
+	@override String get sharingInvitationAccept => 'Aceptar invitación';
+	@override String get sharingInvitationReject => 'Rechazar invitación';
+	@override String get sharingInvitationHint => 'Tu decisión afecta a todos los elementos de esta invitación, incluidos los medios ajenos a esta biblioteca de música.';
+	@override String sharingAcceptConfirm({required Object owner}) => '¿Aceptar toda la invitación de ${owner}?';
+	@override String sharingDeclineConfirm({required Object owner}) => '¿Rechazar toda la invitación de ${owner}?';
 }
 
 // Path: musicDevices
@@ -9849,6 +9856,13 @@ extension on TranslationsEs {
 			'musicTools.bass' => 'Graves',
 			'musicTools.treble' => 'Agudos',
 			'musicTools.sharedPlaylists' => 'Listas compartidas',
+			'musicTools.sharingInvitationsTitle' => 'Invitaciones de contenido compartido de Plex',
+			'musicTools.noSharingInvitations' => 'No hay invitaciones pendientes',
+			'musicTools.sharingInvitationAccept' => 'Aceptar invitación',
+			'musicTools.sharingInvitationReject' => 'Rechazar invitación',
+			'musicTools.sharingInvitationHint' => 'Tu decisión afecta a todos los elementos de esta invitación, incluidos los medios ajenos a esta biblioteca de música.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '¿Aceptar toda la invitación de ${owner}?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '¿Rechazar toda la invitación de ${owner}?',
 			'musicDevices.playOn' => 'Reproducir en',
 			'musicDevices.thisDevice' => 'Este dispositivo',
 			'musicDevices.playingOn' => ({required Object device}) => 'Reproduciendo en ${device}',

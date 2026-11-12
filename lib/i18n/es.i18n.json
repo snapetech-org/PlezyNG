@@ -5679,7 +5679,14 @@
     "peak": "Pico",
     "bass": "Graves",
     "treble": "Agudos",
-    "sharedPlaylists": "Listas compartidas"
+    "sharedPlaylists": "Listas compartidas",
+    "sharingInvitationsTitle": "Invitaciones de contenido compartido de Plex",
+    "noSharingInvitations": "No hay invitaciones pendientes",
+    "sharingInvitationAccept": "Aceptar invitación",
+    "sharingInvitationReject": "Rechazar invitación",
+    "sharingInvitationHint": "Tu decisión afecta a todos los elementos de esta invitación, incluidos los medios ajenos a esta biblioteca de música.",
+    "sharingAcceptConfirm": "¿Aceptar toda la invitación de ${owner}?",
+    "sharingDeclineConfirm": "¿Rechazar toda la invitación de ${owner}?"
   },
   "musicDevices": {
     "playOn": "Reproducir en",

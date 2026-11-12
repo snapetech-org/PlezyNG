@@ -165,4 +165,114 @@ void main() {
     expect(find.text('Playlist 1'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  for (final accept in [true, false]) {
+    testWidgets('whole invitation $accept requires confirmation and refreshes accepted browse', (tester) async {
+      var pending = true;
+      final writes = <http.Request>[];
+      await pump(tester, (request) async {
+        if (request.url.path == '/api/v2/shared_sources/invites/received/pending') {
+          return jsonResponse([
+            if (pending)
+              {
+                'id': 42,
+                'status': 'pending',
+                'owner': {'id': 7, 'username': 'Inviter'},
+                'invited': {'id': 8},
+              },
+          ]);
+        }
+        if (request.method != 'GET') {
+          writes.add(request);
+          pending = false;
+          return http.Response('', 204);
+        }
+        return jsonResponse([]);
+      });
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip(t.musicTools.sharingInvitationsTitle));
+      await tester.pumpAndSettle();
+      expect(find.text('Inviter'), findsOneWidget);
+      final action = accept ? t.musicTools.sharingInvitationAccept : t.musicTools.sharingInvitationReject;
+      await tester.tap(find.text(action));
+      await tester.pumpAndSettle();
+      expect(find.text(t.musicTools.sharingInvitationHint), findsNWidgets(2));
+      await tester.tap(find.text(t.common.cancel));
+      await tester.pumpAndSettle();
+      expect(writes, isEmpty);
+      await tester.tap(find.text(action));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(action).last);
+      await tester.pumpAndSettle();
+      expect(writes, hasLength(1));
+      expect(writes.single.method, accept ? 'POST' : 'DELETE');
+      expect(writes.single.url.path, '/api/v2/shared_sources/42${accept ? '/accept' : ''}');
+      expect(find.text(t.musicTools.noSharingInvitations), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('profile retirement in invitation confirmation sends no decision', (tester) async {
+    var writes = 0;
+    final profile = await pump(tester, (request) async {
+      if (request.method != 'GET') {
+        writes++;
+        return http.Response('', 204);
+      }
+      return jsonResponse(
+        request.url.path.endsWith('/pending')
+            ? [
+                {
+                  'id': 42,
+                  'owner': {'id': 7, 'username': 'Inviter'},
+                  'invited': {'id': 8},
+                },
+              ]
+            : [],
+      );
+    });
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.musicTools.sharingInvitationsTitle));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(t.musicTools.sharingInvitationAccept));
+    await tester.pumpAndSettle();
+    profile.retire();
+    await tester.pump();
+    await tester.tap(find.text(t.musicTools.sharingInvitationAccept).last);
+    await tester.pumpAndSettle();
+    expect(writes, 0);
+    expect(find.text('Inviter'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('invitation controls and confirmation fit 320px at 200 percent text', (tester) async {
+    tester.view.physicalSize = const Size(320, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await pump(
+      tester,
+      (request) async => jsonResponse(
+        request.url.path.endsWith('/pending')
+            ? [
+                {
+                  'id': 42,
+                  'owner': {'id': 7, 'username': 'Inviter'},
+                  'invited': {'id': 8},
+                },
+              ]
+            : [],
+      ),
+      textScale: 2,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.musicTools.sharingInvitationsTitle));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text(t.musicTools.sharingInvitationReject));
+    await tester.tap(find.text(t.musicTools.sharingInvitationReject));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text(t.common.cancel));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
 }

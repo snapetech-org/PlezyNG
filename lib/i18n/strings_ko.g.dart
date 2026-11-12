@@ -4389,6 +4389,13 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get bass => '저음';
 	@override String get treble => '고음';
 	@override String get sharedPlaylists => '공유 재생목록';
+	@override String get sharingInvitationsTitle => 'Plex 공유 초대';
+	@override String get noSharingInvitations => '대기 중인 초대 없음';
+	@override String get sharingInvitationAccept => '초대 수락';
+	@override String get sharingInvitationReject => '초대 거절';
+	@override String get sharingInvitationHint => '결정은 이 음악 라이브러리 외부의 미디어를 포함하여 초대의 모든 항목에 적용됩니다.';
+	@override String sharingAcceptConfirm({required Object owner}) => '${owner}의 초대 전체를 수락할까요?';
+	@override String sharingDeclineConfirm({required Object owner}) => '${owner}의 초대 전체를 거절할까요?';
 }
 
 // Path: musicDevices
@@ -9618,6 +9625,13 @@ extension on TranslationsKo {
 			'musicTools.bass' => '저음',
 			'musicTools.treble' => '고음',
 			'musicTools.sharedPlaylists' => '공유 재생목록',
+			'musicTools.sharingInvitationsTitle' => 'Plex 공유 초대',
+			'musicTools.noSharingInvitations' => '대기 중인 초대 없음',
+			'musicTools.sharingInvitationAccept' => '초대 수락',
+			'musicTools.sharingInvitationReject' => '초대 거절',
+			'musicTools.sharingInvitationHint' => '결정은 이 음악 라이브러리 외부의 미디어를 포함하여 초대의 모든 항목에 적용됩니다.',
+			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner}의 초대 전체를 수락할까요?',
+			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner}의 초대 전체를 거절할까요?',
 			'musicDevices.playOn' => '재생 기기',
 			'musicDevices.thisDevice' => '이 기기',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',

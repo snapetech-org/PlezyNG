@@ -1,6 +1,6 @@
 # PlezyNG karaoke implementation
 
-> Runner policy update (2026-11-09): compatible GitHub-hosted runners are the
+> Runner policy update (2026-11-10): compatible GitHub-hosted runners are the
 > default. Private JIT is reserved for platform, device, private-network, or
 > storage requirements that hosted runners cannot satisfy. Historical
 > no-hosted-fallback wording below is superseded.
@@ -10,7 +10,7 @@ Owner request: implement the full 48-requirement karaoke assessment dated 2026-1
 ## Integration and validation
 
 - PR #110 was closed without merging. Its source was reconciled with current `main` on 2026-11-05, preserving subsequent main changes.
-- Companion queue/protocol/restart regression tests pass. Flutter format/CD+G/MIDI cases are checked in but have not executed here; no Dart/Flutter SDK is installed in this workspace. Historical batch notes below describe their original validation, rather than current instructions.
+- Source validation on 2026-11-11: maintained Dart formatting and codegen freshness passed; targeted analysis passed for the changed karaoke and subtitle files; hardcoded-string and user-facing-error checks passed. The repository commit hook started its broader test suite but was interrupted, so no full test result is claimed. No platform build or device qualification was run. Historical batch notes below describe their original validation, rather than current instructions.
 - Reuse existing music/source/player/subtitle ownership. Coordinate optional SeerrNG integration.
 - Do not claim provider access, native packaging, singing-model accuracy or device qualification from source implementation.
 
@@ -65,7 +65,7 @@ Owner request: implement the full 48-requirement karaoke assessment dated 2026-1
 | K45 | P7 | **Optional community layer.** Plan opted-in profile libraries, performance links, shared song packages, following/comments/reactions, discovery and moderation. Public publishing requires an actual hosted service, access controls and supported content permissions; local recording stays independent. [S01,S09,S13] | Blocked: public community requires hosting, moderation and content permissions |
 | K46 | P5 | **Portable collections and sync.** Export/import complete open packages, favorites, singer presets and setlists; optionally sync them through existing configured storage. Resolve conflicts explicitly and revoke sharing links. Data formats are versioned and preserve source identity. [S13,S16; PlezyNG design] | Partial: versioned singer/setlist collection and open package export; no account sync |
 | K47 | P0/P6 | **Platform capability and packaging.** Publish per-build capabilities for formats, pitch/tempo, stems, microphones, scoring, capture and secondary output. Package codecs/DSP/models with version and license records. Unsupported features must return a specific reason rather than silently succeed. [C07,C10] | Partial: source capability gates and companion capability report; platform packaging remains unqualified |
-| K48 | P6 | **Release evidence and completion.** Track implemented, integrated, packaged and device-qualified status separately for every requirement. Cover full menu-to-performance-to-save/next-singer flows, migration and failure recovery. Use private ephemeral JIT runners when validation is authorized; no hosted fallback. [C12] | Not qualified: no builds, tests, analyzers, CI or device checks run under the standing instruction |
+| K48 | P6 | **Release evidence and completion.** Track implemented, integrated, packaged and device-qualified status separately for every requirement. Cover full menu-to-performance-to-save/next-singer flows, migration and failure recovery. Use compatible GitHub-hosted runners by default and private ephemeral JIT only when platform, device, network, storage or tooling needs require it. [C12] | Not qualified: source formatting, codegen freshness, targeted analysis and repository static checks have passed; the broader test run was interrupted, and full tests, builds and device qualification remain open |
 
 ## Delivery order
 

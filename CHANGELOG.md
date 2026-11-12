@@ -6,6 +6,8 @@
 
 - Pause and restart queued karaoke companion work around active music playback, and prioritize preparation for the track most recently selected by the host.
 
+- Add a TV-first karaoke layout with a scaled D-pad navigation rail, couch-readable song rows, stage-first performance view, queue routing after requests, and no file-picker actions on TV.
+
 - Save karaoke A–B practice loops per rendition and restore them with the profile session.
 
 - Compare a private karaoke take with its matching guide vocal or original audio at the recorded rendition position, key and tempo where supported.

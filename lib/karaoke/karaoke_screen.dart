@@ -1,5 +1,8 @@
 import '../services/file_picker_service.dart';
 import '../utils/local_server_security.dart';
+import '../utils/layout_constants.dart';
+import '../utils/platform_detector.dart';
+import '../theme/mono_tokens.dart';
 import '../widgets/app_icon.dart';
 
 import 'package:material_symbols_icons/symbols.dart';
@@ -107,6 +110,9 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
   @override
   void initState() {
     super.initState();
+    if (PlatformDetector.isTV() && s.hasPerformance) {
+      _tab = 2;
+    }
     WidgetsBinding.instance.addObserver(this);
     _backgrounded = WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed;
     s.addListener(_syncPreparationAvailability);
@@ -341,6 +347,8 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
         if (mounted) {
           setState(() => _tab = 2);
         }
+      } else if (PlatformDetector.isTV() && mounted) {
+        setState(() => _tab = 1);
       }
     });
   }
@@ -464,11 +472,12 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
         appBar: AppBar(
           title: Text(tr('title')),
           actions: [
-            IconButton(
-              tooltip: tr('import'),
-              onPressed: _busy ? null : _import,
-              icon: const AppIcon(Symbols.file_open_rounded),
-            ),
+            if (!PlatformDetector.isTV())
+              IconButton(
+                tooltip: tr('import'),
+                onPressed: _busy ? null : _import,
+                icon: const AppIcon(Symbols.file_open_rounded),
+              ),
             PopupMenuButton<String>(
               tooltip: l10n.t.karaokeUi.karaokeTools,
               onSelected: (value) async {
@@ -498,43 +507,89 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
             ),
           ],
         ),
-        body: Column(
-          children: [
-            if (_busy) const LinearProgressIndicator(),
-            if (s.error != null)
-              MaterialBanner(
-                content: Text(s.error!, maxLines: 4),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      s.error = null;
-                      setState(() {});
-                    },
-                    child: Text(tr('close')),
-                  ),
+        body: PlatformDetector.isTV() ? _tvBody(context) : _screenContent(),
+        bottomNavigationBar: PlatformDetector.isTV()
+            ? null
+            : NavigationBar(
+                selectedIndex: _tab,
+                onDestinationSelected: (v) => setState(() => _tab = v),
+                destinations: [
+                  NavigationDestination(icon: const AppIcon(Symbols.library_music_rounded), label: tr('library')),
+                  NavigationDestination(icon: const AppIcon(Symbols.group_rounded), label: tr('queue')),
+                  NavigationDestination(icon: const AppIcon(Symbols.mic_rounded), label: tr('sing')),
                 ],
               ),
-            Expanded(
-              child: switch (_tab) {
-                0 => _library(),
-                1 => _queue(),
-                _ => _performance(),
-              },
-            ),
-          ],
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _tab,
-          onDestinationSelected: (v) => setState(() => _tab = v),
-          destinations: [
-            NavigationDestination(icon: const AppIcon(Symbols.library_music_rounded), label: tr('library')),
-            NavigationDestination(icon: const AppIcon(Symbols.group_rounded), label: tr('queue')),
-            NavigationDestination(icon: const AppIcon(Symbols.mic_rounded), label: tr('sing')),
-          ],
-        ),
       ),
     ),
   );
+
+  Widget _screenContent() => Column(
+    children: [
+      if (_busy) const LinearProgressIndicator(),
+      if (s.error != null)
+        MaterialBanner(
+          content: Text(s.error!, maxLines: 4),
+          actions: [
+            TextButton(
+              onPressed: () {
+                s.error = null;
+                setState(() {});
+              },
+              child: Text(tr('close')),
+            ),
+          ],
+        ),
+      Expanded(
+        child: switch (_tab) {
+          0 => _library(),
+          1 => _queue(),
+          _ => _performance(),
+        },
+      ),
+    ],
+  );
+
+  Widget _tvBody(BuildContext context) {
+    final scale = TvLayoutConstants.scaleOf(context);
+    final inset = TvLayoutConstants.horizontalInset * scale;
+    final theme = Theme.of(context);
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(inset, 18 * scale, inset, 18 * scale),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            NavigationRail(
+              backgroundColor: tokens(context).bg,
+              selectedIndex: _tab,
+              onDestinationSelected: (value) => setState(() => _tab = value),
+              labelType: NavigationRailLabelType.all,
+              groupAlignment: -.7,
+              minWidth: 96 * scale,
+              useIndicator: true,
+              indicatorColor: theme.colorScheme.secondaryContainer,
+              selectedIconTheme: IconThemeData(size: 34 * scale),
+              unselectedIconTheme: IconThemeData(size: 30 * scale),
+              selectedLabelTextStyle: theme.textTheme.titleSmall?.copyWith(fontSize: 16 * scale),
+              unselectedLabelTextStyle: theme.textTheme.titleSmall?.copyWith(fontSize: 16 * scale),
+              destinations: [
+                NavigationRailDestination(
+                  icon: const AppIcon(Symbols.library_music_rounded),
+                  label: Text(tr('library')),
+                ),
+                NavigationRailDestination(icon: const AppIcon(Symbols.group_rounded), label: Text(tr('queue'))),
+                NavigationRailDestination(icon: const AppIcon(Symbols.mic_rounded), label: Text(tr('sing'))),
+              ],
+            ),
+            SizedBox(width: 20 * scale),
+            VerticalDivider(width: 1, color: tokens(context).outline),
+            SizedBox(width: 20 * scale),
+            Expanded(child: _screenContent()),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _singerPicker() => Wrap(
     spacing: 12,
@@ -565,6 +620,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
     ],
   );
   Widget _library() {
+    final tvScale = PlatformDetector.isTV() ? TvLayoutConstants.scaleOf(context) : 1.0;
     final tracks = s.search(
       _query.text,
       offline: _offline,
@@ -591,7 +647,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(PlatformDetector.isTV() ? 24 * tvScale : 16),
           child: Column(
             children: [
               TextField(
@@ -727,9 +783,27 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
                           : tr('notScored'),
                       if (suggested != null) 'Suggested key ${suggested > 0 ? '+' : ''}$suggested',
                     ].where((v) => v.isNotEmpty).join(' · ');
+                    final isTv = PlatformDetector.isTV();
+                    final theme = Theme.of(context);
                     return ListTile(
-                      title: Text(track.title),
-                      subtitle: Text(details),
+                      contentPadding: isTv
+                          ? EdgeInsets.symmetric(horizontal: 24 * tvScale, vertical: 10 * tvScale)
+                          : null,
+                      minVerticalPadding: isTv ? 16 * tvScale : null,
+                      shape: isTv
+                          ? RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens(context).radiusMd))
+                          : null,
+                      tileColor: isTv ? tokens(context).surface : null,
+                      title: Text(
+                        track.title,
+                        style: isTv ? theme.textTheme.titleLarge?.copyWith(fontSize: 24 * tvScale) : null,
+                      ),
+                      subtitle: Text(
+                        details,
+                        maxLines: isTv ? 2 : null,
+                        overflow: isTv ? TextOverflow.ellipsis : null,
+                        style: isTv ? theme.textTheme.bodyLarge : null,
+                      ),
                       leading: IconButton(
                         tooltip: tr('favorite'),
                         icon: AppIcon(favorite ? Symbols.star_rounded : Symbols.star_border_rounded),
@@ -806,8 +880,10 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
                             value: 'prepare',
                             child: Text(l10n.t.karaokeUi.prepareBackingTimingAndGuidance),
                           ),
-                          PopupMenuItem(value: 'invite', child: Text(l10n.t.karaokeUi.exportPrivateDuetInvitation)),
-                          if (track.assets.isNotEmpty) PopupMenuItem(value: 'export', child: Text(tr('export'))),
+                          if (!isTv)
+                            PopupMenuItem(value: 'invite', child: Text(l10n.t.karaokeUi.exportPrivateDuetInvitation)),
+                          if (!isTv && track.assets.isNotEmpty)
+                            PopupMenuItem(value: 'export', child: Text(tr('export'))),
                           if (track.assets.isNotEmpty) PopupMenuItem(value: 'verify', child: Text(tr('verify'))),
                         ],
                       ),
@@ -965,20 +1041,22 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
   );
   Widget _performance() => LayoutBuilder(
     builder: (context, constraints) {
+      final isTv = PlatformDetector.isTV();
+      final tvScale = isTv ? TvLayoutConstants.scaleOf(context) : 1.0;
       final stage = SizedBox(
-        height: constraints.maxHeight * .55,
+        height: constraints.maxHeight * (isTv ? .6 : .55),
         child: KaraokeStage(session: s),
       );
       return ListView(
         children: [
           stage,
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(isTv ? 28 * tvScale : 16),
             child: Column(
               children: [
                 Wrap(
-                  spacing: 12,
-                  runSpacing: 8,
+                  spacing: isTv ? 16 * tvScale : 12,
+                  runSpacing: isTv ? 12 * tvScale : 8,
                   alignment: WrapAlignment.center,
                   children: [
                     FilledButton.icon(

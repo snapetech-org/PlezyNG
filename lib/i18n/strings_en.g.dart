@@ -14206,6 +14206,24 @@ class Translations$karaokeUi$en {
 	/// en: '${value1} · ${value2} BPM · ${value3} · estimated'
 	String bpmEstimated({required Object value1, required Object value2, required Object value3}) => '${value1} · ${value2} BPM · ${value3} · estimated';
 
+	/// en: 'Correct song analysis'
+	String get correctAnalysis => 'Correct song analysis';
+
+	/// en: 'Blank chord lists remove chord cues. Use estimates to discard all manual corrections. Manual corrections do not certify a singing score.'
+	String get analysisCorrectionsDoNotCertifyScoring => 'Blank chord lists remove chord cues. Use estimates to discard all manual corrections. Manual corrections do not certify a singing score.';
+
+	/// en: 'Key'
+	String get analysisKey => 'Key';
+
+	/// en: 'Tempo (BPM)'
+	String get analysisTempoBpm => 'Tempo (BPM)';
+
+	/// en: 'Chord timeline (one line per chord: milliseconds, then chord)'
+	String get chordTimeline => 'Chord timeline (one line per chord: milliseconds, then chord)';
+
+	/// en: 'Use estimates'
+	String get useAnalysisEstimates => 'Use estimates';
+
 	/// en: 'Mix and export privately'
 	String get mixAndExportPrivately => 'Mix and export privately';
 
@@ -22693,6 +22711,12 @@ extension on Translations {
 			'karaokeUi.guideVocals' => 'Guide vocals',
 			'karaokeUi.instrumental' => 'Instrumental',
 			'karaokeUi.bpmEstimated' => ({required Object value1, required Object value2, required Object value3}) => '${value1} · ${value2} BPM · ${value3} · estimated',
+			'karaokeUi.correctAnalysis' => 'Correct song analysis',
+			'karaokeUi.analysisCorrectionsDoNotCertifyScoring' => 'Blank chord lists remove chord cues. Use estimates to discard all manual corrections. Manual corrections do not certify a singing score.',
+			'karaokeUi.analysisKey' => 'Key',
+			'karaokeUi.analysisTempoBpm' => 'Tempo (BPM)',
+			'karaokeUi.chordTimeline' => 'Chord timeline (one line per chord: milliseconds, then chord)',
+			'karaokeUi.useAnalysisEstimates' => 'Use estimates',
 			'karaokeUi.mixAndExportPrivately' => 'Mix and export privately',
 			'karaokeUi.theDryVocalStaysUnchangedChooseGainsEffectsAnd' => 'The dry vocal stays unchanged. Choose gains, effects and trim for a new render.',
 			'karaokeUi.backing' => 'Backing',
@@ -22727,14 +22751,14 @@ extension on Translations {
 			'karaokeUi.stageBanner' => 'Stage banner',
 			'karaokeUi.stageTextSize' => 'Stage text size',
 			'karaokeUi.displayOffsetMs' => ({required Object value1}) => 'Display offset: ${value1} ms',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.perSingerPendingRequestLimit' => 'Per-singer pending request limit',
 			'karaokeUi.openRequestKiosk' => 'Open request kiosk',
 			'karaokeUi.theKioskLimitsThisScreenToSongRequestsUse' => 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.',
 			'karaokeUi.savedSets' => 'Saved sets',
 			'karaokeUi.createASetlist' => 'Create a setlist',
 			'karaokeUi.songs' => ({required Object value1}) => '${value1} songs',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.queueThisSetlist' => 'Queue this setlist',
 			'karaokeUi.auditCompleteOfflineAssets' => 'Audit complete offline assets',
 			'karaokeUi.removeSetlist' => 'Remove setlist',

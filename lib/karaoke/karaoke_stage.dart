@@ -2,8 +2,11 @@ import '../i18n/strings.g.dart' as l10n;
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import '../widgets/app_icon.dart';
 import '../media/lyrics.dart';
 import '../mpv/video.dart';
+import 'karaoke_analysis.dart';
 import 'cdg_decoder.dart';
 import 'karaoke_models.dart';
 import 'karaoke_session.dart';
@@ -53,6 +56,98 @@ class _KaraokeStageState extends State<KaraokeStage> {
       }
     } catch (e) {
       widget.session.report(e);
+    }
+  }
+
+  Future<void> _correctAnalysis(KaraokeTrack track) async {
+    final messenger = ScaffoldMessenger.of(context);
+    await widget.session.loadAnalysis(track.id);
+    if (!mounted) return;
+    final current = widget.session.analysis[track.id];
+    final key = TextEditingController(text: current?['key']?.toString() ?? '');
+    final bpm = TextEditingController(text: current?['bpm']?.toString() ?? '');
+    final chords = TextEditingController(text: KaraokeAnalysis.chordLines(current));
+    try {
+      final corrections = await showDialog<Map<String, dynamic>>(
+        context: context,
+        builder: (dialogContext) {
+          String? validationError;
+          return StatefulBuilder(
+            builder: (dialogContext, updateDialog) => AlertDialog(
+              title: Text(l10n.t.karaokeUi.correctAnalysis),
+              content: SizedBox(
+                width: 480,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(l10n.t.karaokeUi.analysisCorrectionsDoNotCertifyScoring),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: key,
+                        maxLength: 32,
+                        decoration: InputDecoration(labelText: l10n.t.karaokeUi.analysisKey),
+                      ),
+                      TextField(
+                        controller: bpm,
+                        maxLength: 7,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        decoration: InputDecoration(labelText: l10n.t.karaokeUi.analysisTempoBpm),
+                      ),
+                      TextField(
+                        controller: chords,
+                        minLines: 3,
+                        maxLines: 8,
+                        maxLength: 2 * 1024 * 1024,
+                        decoration: InputDecoration(labelText: l10n.t.karaokeUi.chordTimeline),
+                      ),
+                      if (validationError != null)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            validationError!,
+                            style: TextStyle(color: Theme.of(dialogContext).colorScheme.error),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.t.common.cancel)),
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, <String, dynamic>{}),
+                  child: Text(l10n.t.karaokeUi.useAnalysisEstimates),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    try {
+                      Navigator.pop(
+                        dialogContext,
+                        KaraokeAnalysis.correctionsFromFields(key: key.text, bpm: bpm.text, chords: chords.text),
+                      );
+                    } catch (error) {
+                      updateDialog(() => validationError = error.toString());
+                    }
+                  },
+                  child: Text(l10n.t.common.save),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+      if (corrections == null || !mounted) return;
+      await widget.session.saveAnalysisCorrections(track.id, corrections);
+      if (mounted) setState(() {});
+    } catch (error) {
+      if (mounted) {
+        messenger.showSnackBar(SnackBar(content: Text(error.toString())));
+      }
+    } finally {
+      key.dispose();
+      bpm.dispose();
+      chords.dispose();
     }
   }
 
@@ -106,6 +201,20 @@ class _KaraokeStageState extends State<KaraokeStage> {
                       child: CdgView(decoder: _cdg!, positionMs: time),
                     ),
                   if (s.videoPlayer != null && lyrics?.isEmpty == false) const ColoredBox(color: Color(0x66000000)),
+                  if (song != null && s.mode == KaraokeMode.host)
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: IconButton.filledTonal(
+                            tooltip: l10n.t.karaokeUi.correctAnalysis,
+                            onPressed: () => _correctAnalysis(song),
+                            icon: const AppIcon(Symbols.tune_rounded),
+                          ),
+                        ),
+                      ),
+                    ),
                   SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.all(24),

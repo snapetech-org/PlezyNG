@@ -75,9 +75,9 @@ playback and converter messages, the explicit English fallbacks, and the review
 limits for those drafts.
 
 Steam connected-experience, service-integration, cross-media discovery,
-cloud-sync privacy and Trakt export messages currently use the documented
-English fallback for non-English catalogs until reviewed translations are
-available. They are listed in
+cloud-sync privacy, Trakt export and host-stage karaoke analysis correction
+messages currently use the documented English fallback for non-English
+catalogs until reviewed translations are available. They are listed in
 `lib/i18n/english_fallbacks.json`; this fallback is not a claim of translation
 or native-speaker review.
 

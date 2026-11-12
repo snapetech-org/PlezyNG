@@ -13,6 +13,7 @@ import '../mpv/player/player.dart';
 import '../services/music/music_playback_service.dart';
 import '../services/music/music_queue_controller.dart';
 import '../services/playback_coordinator.dart';
+import 'karaoke_analysis.dart';
 import 'karaoke_models.dart';
 import 'karaoke_packages.dart';
 import 'karaoke_store.dart';
@@ -30,8 +31,9 @@ class KaraokeConflict implements Exception {
 /// restored automatically. Commands are serialized and acknowledged only after
 /// the resulting snapshot and idempotency receipt have reached durable storage.
 class KaraokeSession extends ChangeNotifier {
-  KaraokeSession({required this.music, required String profileId}) : store = KaraokeStore(profileId) {
-    packages = KaraokePackages(store);
+  KaraokeSession({required this.music, required String profileId, KaraokeStore? store})
+    : store = store ?? KaraokeStore(profileId) {
+    packages = KaraokePackages(this.store);
     ready = _restore();
     music.addListener(_onMusic);
     _clock = Timer.periodic(const Duration(milliseconds: 100), (_) => _tick());
@@ -78,6 +80,8 @@ class KaraokeSession extends ChangeNotifier {
   StreamSubscription<bool>? _fillerSubscription;
   Map<String, dynamic>? duetInvitation;
   final Map<String, Map<String, dynamic>> analysis = {};
+  final Map<String, Map<String, dynamic>> _analysisSources = {};
+  final Map<String, Map<String, dynamic>> _analysisCorrections = {};
   final Map<String, Future<void>> _analysisLoads = {};
   String banner = '';
   int stageColor = 0xff101018;
@@ -199,8 +203,32 @@ class KaraokeSession extends ChangeNotifier {
   Future<void> save() => store.write('session', _snapshot());
   String _analysisKey(String id) => 'analysis-${sha256.convert(utf8.encode(id))}';
   Future<void> saveAnalysis(String id, Map<String, dynamic> value) async {
-    analysis[id] = value;
-    await store.write(_analysisKey(id), {'schema': 1, 'renditionId': id, 'analysis': value});
+    await loadAnalysis(id);
+    final estimates = KaraokeAnalysis.normalize(value);
+    final corrections = _analysisCorrections[id] ?? const <String, dynamic>{};
+    await store.write(_analysisKey(id), {
+      'schema': 2,
+      'renditionId': id,
+      'analysis': estimates,
+      'corrections': corrections,
+    });
+    _analysisSources[id] = estimates;
+    analysis[id] = KaraokeAnalysis.withCorrections(estimates, corrections);
+    _notify();
+  }
+
+  Future<void> saveAnalysisCorrections(String id, Map<String, dynamic> value) async {
+    await loadAnalysis(id);
+    final corrections = KaraokeAnalysis.normalizeCorrections(value);
+    final estimates = _analysisSources[id] ?? const <String, dynamic>{};
+    await store.write(_analysisKey(id), {
+      'schema': 2,
+      'renditionId': id,
+      'analysis': estimates,
+      'corrections': corrections,
+    });
+    _analysisCorrections[id] = corrections;
+    analysis[id] = KaraokeAnalysis.withCorrections(estimates, corrections);
     _notify();
   }
 
@@ -216,8 +244,17 @@ class KaraokeSession extends ChangeNotifier {
     final loading = Future<void>(() async {
       try {
         final saved = await store.read(_analysisKey(id));
-        if (saved?['schema'] == 1 && saved?['renditionId'] == id && saved?['analysis'] is Map) {
-          analysis[id] = Map<String, dynamic>.from(saved!['analysis'] as Map);
+        final schema = saved?['schema'];
+        if ((schema == 1 || schema == 2) && saved?['renditionId'] == id && saved?['analysis'] is Map) {
+          final estimates = KaraokeAnalysis.normalize(Map<String, dynamic>.from(saved!['analysis'] as Map));
+          final corrections = schema == 2
+              ? KaraokeAnalysis.normalizeCorrections(
+                  Map<String, dynamic>.from(saved['corrections'] as Map? ?? const {}),
+                )
+              : const <String, dynamic>{};
+          _analysisSources[id] = estimates;
+          _analysisCorrections[id] = corrections;
+          analysis[id] = KaraokeAnalysis.withCorrections(estimates, corrections);
           _notify();
         }
       } catch (error) {

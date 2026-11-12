@@ -392,3 +392,35 @@ source or sink waits for the previous physical renderer, capture lease and
 Companion listener to retire. A blocked-output regression reproduces the old
 port collision and verifies that the eventual replacement keeps its capture
 enabled and direct output muted; failed requests do not poison later changes.
+
+## Generated native gapless file output
+
+The standalone test/native/music_gapless_pcm_probe.py uses a caller-prepared
+libmpv and FFmpeg without downloading or changing the audio engine. Require the
+expected library SHA-256, prepare its runtime library path normally, and run:
+
+    python3 test/native/music_gapless_pcm_probe.py --library /prepared/libmpv.so --expected-sha256 SHA256 --output-dir .dart_tool/native-gapless
+
+It writes each run to a fresh directory, retaining generated inputs, rendered
+outputs and receipt.json. Each input is a 24,000-frame, 48 kHz stereo chirp with
+opposite channels. Nonrepeating phase exposes boundary displacement; a track
+length not divisible by the MPEG audio frame also exercises encoder padding.
+The probe checks both output channels, total frames and a 2,048-frame join
+window. Lossless joins require RMS error below 0.000001; lossy MP3 permits
+0.02 RMS error against the original quantized chirp.
+
+The actual prepared Linux x64 library
+c15082fe79b3a6f31332b016c7cb03c0bd87dec00c13cf5345bb680de35afcb0
+passed all four joins, each with exactly 48,000 rendered frames:
+
+| Join | Both-channel join RMS error |
+| --- | --- |
+| WAV to WAV | 0 |
+| FLAC to FLAC | 0 |
+| MP3 to MP3 | 0.007113033 |
+| FLAC to WAV | 0 |
+
+These are decoder/file-output results. They do not qualify physical speakers,
+OS interruption handling or every application/platform path. Existing
+shared-session and native bridge tests cover queue arming, cancellation and
+offline source ownership separately.

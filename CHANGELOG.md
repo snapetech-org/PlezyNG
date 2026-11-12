@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add reproducible native gapless file-output qualification for WAV, FLAC, MP3 encoder padding and mixed lossless joins, pinned by the tested library checksum.
+
 - Expose Plex server radio and personalized mixes in Music home and native car Recommended browsing, with server family labels, scoped voice lookup, shuffle/repeat and finite enqueue actions.
 
 - Use the current Swift Cast request-abort callback so acknowledged queue rearming compiles against the iOS SDK.

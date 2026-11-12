@@ -1230,7 +1230,6 @@
     "mediaUnavailable": "このコンテンツは利用できなくなりました。",
     "errorLoadingFileInfo": "ファイル情報の読み込みエラー: ${error}",
     "errorLoadingSeries": "シリーズの読み込みエラー",
-    "musicNotSupported": "音楽の再生はまだサポートされていません",
     "noDescriptionAvailable": "説明はありません",
     "noProfilesAvailable": "利用可能なプロフィールがありません",
     "contactAdminForProfiles": "プロフィールを追加するには、サーバー管理者に連絡してください",

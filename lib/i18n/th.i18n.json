@@ -1225,7 +1225,6 @@
     "mediaUnavailable": "เนื้อหานี้ไม่สามารถใช้ได้อีกต่อไป",
     "errorLoadingFileInfo": "ข้อมูลไฟล์โหลดข้อผิดพลาด: ${error}",
     "errorLoadingSeries": "ชุดโหลดข้อผิดพลาด",
-    "musicNotSupported": "การเล่นเพลงยังไม่ได้สนับสนุน",
     "noDescriptionAvailable": "ไม่มีคําอธิบาย",
     "noProfilesAvailable": "ไม่มีโปรไฟล์",
     "contactAdminForProfiles": "ติดต่อผู้ดูแลระบบเซิร์ฟเวอร์ของคุณเพื่อเพิ่มโปรไฟล์",

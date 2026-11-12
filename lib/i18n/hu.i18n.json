@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "Ez a tartalom már nem érhető el.",
     "errorLoadingFileInfo": "Hiba a fájlinformációk betöltésekor: ${error}",
     "errorLoadingSeries": "Hiba a sorozat betöltésekor",
-    "musicNotSupported": "A zenelejátszás még nem támogatott",
     "noDescriptionAvailable": "Nincs elérhető leírás",
     "noProfilesAvailable": "Nincsenek elérhető profilok",
     "contactAdminForProfiles": "Lépj kapcsolatba a szerver adminisztrátorával profilok hozzáadásához",

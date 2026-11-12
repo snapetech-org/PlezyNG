@@ -1327,7 +1327,6 @@ class _Translations$messages$hi extends Translations$messages$en {
 	@override String get mediaUnavailable => 'यह सामग्री अब उपलब्ध नहीं है।';
 	@override String errorLoadingFileInfo({required Object error}) => 'त्रुटि लोड फ़ाइल जानकारी: ${error}';
 	@override String get errorLoadingSeries => 'त्रुटि चार्जिंग श्रृंखला';
-	@override String get musicNotSupported => 'संगीत प्लेबैक अभी तक समर्थित नहीं है';
 	@override String get noDescriptionAvailable => 'कोई विवरण उपलब्ध नहीं';
 	@override String get noProfilesAvailable => 'कोई प्रोफ़ाइल उपलब्ध नहीं';
 	@override String get contactAdminForProfiles => 'प्रोफ़ाइल जोड़ने के लिए अपने सर्वर व्यवस्थापक से संपर्क करें';
@@ -6635,7 +6634,6 @@ extension on TranslationsHi {
 			'messages.mediaUnavailable' => 'यह सामग्री अब उपलब्ध नहीं है।',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'त्रुटि लोड फ़ाइल जानकारी: ${error}',
 			'messages.errorLoadingSeries' => 'त्रुटि चार्जिंग श्रृंखला',
-			'messages.musicNotSupported' => 'संगीत प्लेबैक अभी तक समर्थित नहीं है',
 			'messages.noDescriptionAvailable' => 'कोई विवरण उपलब्ध नहीं',
 			'messages.noProfilesAvailable' => 'कोई प्रोफ़ाइल उपलब्ध नहीं',
 			'messages.contactAdminForProfiles' => 'प्रोफ़ाइल जोड़ने के लिए अपने सर्वर व्यवस्थापक से संपर्क करें',
@@ -7051,9 +7049,9 @@ extension on TranslationsHi {
 			'libraries.libraryOptions' => 'पुस्तकालय विकल्प',
 			'libraries.content' => 'पुस्तकालय सामग्री',
 			'libraries.selectLibrary' => 'पुस्तकालय चुनें',
+			'libraries.filtersWithCount' => ({required Object count}) => 'फ़िल्टर (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'फ़िल्टर (${count})',
 			'libraries.noRecommendations' => 'कोई प्रस्ताव उपलब्ध नहीं है',
 			'libraries.noCollections' => 'इस पुस्तकालय में कोई संग्रह नहीं',
 			'libraries.noFoldersFound' => 'कोई फ़ोल्डर नहीं मिला',
@@ -7565,9 +7563,9 @@ extension on TranslationsHi {
 			'watchTogether.roomCode' => 'कमरे का कोड',
 			'watchTogether.paste' => 'पास्ता',
 			'watchTogether.noCodeInClipboard' => 'क्लिपबोर्ड में कोई कमरे कोड नहीं है',
+			'watchTogether.copyCode' => 'कॉपी कोड',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'कॉपी कोड',
 			'watchTogether.codeCopied' => 'कमरे का कोड कॉपी',
 			'watchTogether.shareInvite' => 'आमंत्रण साझा',
 			'watchTogether.inviteCopied' => 'इसे कॉपी करें. इसे एक संदेश में डालें.',
@@ -8079,9 +8077,9 @@ extension on TranslationsHi {
 			'metadataEdit.selectSquareArt' => 'Square Art का चयन करें',
 			'metadataEdit.fromUrl' => 'URL से',
 			'metadataEdit.uploadFile' => 'फ़ाइल अपलोड करें',
+			'metadataEdit.enterImageUrl' => 'इमेज URL',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'इमेज URL',
 			'metadataEdit.imageUrl' => 'इमेज URL',
 			'metadataEdit.metadataUpdated' => 'मेटाडेटा अपडेट',
 			'metadataEdit.metadataUpdateFailed' => 'मेटाडेटा अपडेट करने में असफल',
@@ -8593,9 +8591,9 @@ extension on TranslationsHi {
 			'universalMedia.openWhat' => 'आप क्या खोलना चाहते हैं?',
 			'universalMedia.stream' => 'स्ट्रीम एड्रेस',
 			'universalMedia.playlist' => 'प्लेलिस्ट',
+			'universalMedia.files' => 'डिवाइस फ़ाइल',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'डिवाइस फ़ाइल',
 			'universalMedia.favorites' => 'बचाए गए स्ट्रीम पसंदीदा',
 			'universalMedia.address' => 'मीडिया संदेश',
 			'universalMedia.addressHelp' => 'मान्यता प्राप्त क्रेडिट या हस्ताक्षर पैरामीटर वाले URL का उपयोग केवल इस सत्र के लिए किया जाता है और पसंदीदा के रूप में संग्रहीत नहीं किया जा सकता है।',
@@ -9107,9 +9105,9 @@ extension on TranslationsHi {
 			'sourceSetup.nfsTrustInvalid' => 'PEM प्रारूप में CA या सर्वर प्रमाणपत्र इस्तेमाल करें। निजी कुंजी शामिल न करें।',
 			'sourceSetup.addTrustCertificate' => 'कस्टम भरोसेमंद प्रमाणपत्र जोड़ें',
 			'sourceSetup.replaceTrustCertificate' => 'सहेजा गया कस्टम प्रमाणपत्र बदलें',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS सामान्य NFS और माउंट सेवा पोर्ट इस्तेमाल करता है और NAS में RFC 9289 का समर्थन होना ज़रूरी है। TLS 1.3 अनिवार्य है। होस्ट का नाम या IP प्रमाणपत्र से मेल खाना चाहिए। एन्क्रिप्टेड चैनल में भी AUTH_SYS UID/GID लागू रहते हैं।',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS सामान्य NFS और माउंट सेवा पोर्ट इस्तेमाल करता है और NAS में RFC 9289 का समर्थन होना ज़रूरी है। TLS 1.3 अनिवार्य है। होस्ट का नाम या IP प्रमाणपत्र से मेल खाना चाहिए। एन्क्रिप्टेड चैनल में भी AUTH_SYS UID/GID लागू रहते हैं।',
 			'sourceSetup.clientCertificate' => 'क्लाइंट प्रमाणपत्र (वैकल्पिक)',
 			'sourceSetup.clientCertificateHelp' => 'NAS को इस क्लाइंट की पहचान सत्यापित करने देता है; AUTH_SYS ID अब भी NAS की एक्सपोर्ट नीति पर निर्भर रहते हैं।',
 			'sourceSetup.savedIdentity' => 'सहेजी गई क्लाइंट पहचान इस्तेमाल की जाएगी।',

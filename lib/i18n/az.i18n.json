@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "Bu məzmun artıq əlçatan deyil.",
     "errorLoadingFileInfo": "Fayl məlumatı yüklənərkən xəta: ${error}",
     "errorLoadingSeries": "Serial yüklənərkən xəta",
-    "musicNotSupported": "Musiqi oynatması hələ dəstəklənmir",
     "noDescriptionAvailable": "Təsvir əlçatan deyil",
     "noProfilesAvailable": "Profil yoxdur",
     "contactAdminForProfiles": "Profil əlavə etmək üçün server inzibatçınızla əlaqə saxlayın",

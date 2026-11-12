@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "Dette indhold er ikke længere tilgængeligt.",
     "errorLoadingFileInfo": "Fejl ved indlæsning af filinfo: ${error}",
     "errorLoadingSeries": "Fejl ved indlæsning af serie",
-    "musicNotSupported": "Musikafspilning understøttes endnu ikke",
     "noDescriptionAvailable": "Ingen beskrivelse tilgængelig",
     "noProfilesAvailable": "Ingen profiler tilgængelige",
     "contactAdminForProfiles": "Kontakt din serveradministrator for at tilføje profiler",

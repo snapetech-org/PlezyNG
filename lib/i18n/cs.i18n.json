@@ -1244,7 +1244,6 @@
     "mediaUnavailable": "Tento obsah již není k dispozici.",
     "errorLoadingFileInfo": "Informace o souboru chyby: ${error}",
     "errorLoadingSeries": "Chyby v seriálu",
-    "musicNotSupported": "Hudební playback zatím není podporován",
     "noDescriptionAvailable": "Žádný popis k dispozici",
     "noProfilesAvailable": "Žádné profily k dispozici",
     "contactAdminForProfiles": "Kontaktujte správce serveru, abyste přidali profily",

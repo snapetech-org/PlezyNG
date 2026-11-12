@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "Deze inhoud is niet langer beschikbaar.",
     "errorLoadingFileInfo": "Fout bij laden van bestandsinformatie: ${error}",
     "errorLoadingSeries": "Fout bij laden van serie",
-    "musicNotSupported": "Muziek afspelen wordt nog niet ondersteund",
     "noDescriptionAvailable": "Geen beschrijving beschikbaar",
     "noProfilesAvailable": "Geen profielen beschikbaar",
     "contactAdminForProfiles": "Neem contact op met je serverbeheerder om profielen toe te voegen",

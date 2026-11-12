@@ -1320,7 +1320,6 @@ class _Translations$messages$vi extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Nội dung này không còn có sẵn nữa.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Lỗi tải file info: ${error}';
 	@override String get errorLoadingSeries => 'Lỗi Loading Series';
-	@override String get musicNotSupported => 'Music playback chưa được hỗ trợ';
 	@override String get noDescriptionAvailable => 'Không có mô tả';
 	@override String get noProfilesAvailable => 'Không có hồ sơ có sẵn';
 	@override String get contactAdminForProfiles => 'Liên hệ với người quản trị máy chủ của bạn để thêm hồ sơ';
@@ -6610,7 +6609,6 @@ extension on TranslationsVi {
 			'messages.mediaUnavailable' => 'Nội dung này không còn có sẵn nữa.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Lỗi tải file info: ${error}',
 			'messages.errorLoadingSeries' => 'Lỗi Loading Series',
-			'messages.musicNotSupported' => 'Music playback chưa được hỗ trợ',
 			'messages.noDescriptionAvailable' => 'Không có mô tả',
 			'messages.noProfilesAvailable' => 'Không có hồ sơ có sẵn',
 			'messages.contactAdminForProfiles' => 'Liên hệ với người quản trị máy chủ của bạn để thêm hồ sơ',
@@ -7026,9 +7024,9 @@ extension on TranslationsVi {
 			'libraries.libraryOptions' => 'Tùy chọn thư viện',
 			'libraries.content' => 'Thư viện Content',
 			'libraries.selectLibrary' => 'Chọn thư viện',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Bộ lọc (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Bộ lọc (${count})',
 			'libraries.noRecommendations' => 'Không có khuyến nghị có sẵn',
 			'libraries.noCollections' => 'Không có tập hợp trong thư viện này',
 			'libraries.noFoldersFound' => 'Không tìm thấy thư mục',
@@ -7540,9 +7538,9 @@ extension on TranslationsVi {
 			'watchTogether.roomCode' => 'Mã phòng',
 			'watchTogether.paste' => 'Ăn bánh',
 			'watchTogether.noCodeInClipboard' => 'Clipboard không chứa mã phòng',
+			'watchTogether.copyCode' => 'Copy mã',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Copy mã',
 			'watchTogether.codeCopied' => 'Mã phòng copy',
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
@@ -8054,9 +8052,9 @@ extension on TranslationsVi {
 			'metadataEdit.selectSquareArt' => 'Chọn Square Art',
 			'metadataEdit.fromUrl' => 'Từ URL',
 			'metadataEdit.uploadFile' => 'tải file',
+			'metadataEdit.enterImageUrl' => 'Nhập hình ảnh URL',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Nhập hình ảnh URL',
 			'metadataEdit.imageUrl' => 'Ảnh URL',
 			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
@@ -8568,9 +8566,9 @@ extension on TranslationsVi {
 			'universalMedia.openWhat' => 'Bạn muốn mở cái gì?',
 			'universalMedia.stream' => 'Địa chỉ Stream',
 			'universalMedia.playlist' => 'Danh sách Playlist',
+			'universalMedia.files' => 'Thiết bị file',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'Thiết bị file',
 			'universalMedia.favorites' => 'Save Stream yêu thích',
 			'universalMedia.address' => 'Địa chỉ Media',
 			'universalMedia.addressHelp' => 'URL với các thông số xác nhận hoặc ký tự được công nhận chỉ được sử dụng cho phiên này và không thể được lưu như là yêu thích.',
@@ -9082,9 +9080,9 @@ extension on TranslationsVi {
 			'sourceSetup.nfsTrustInvalid' => 'Dùng chứng chỉ CA hoặc máy chủ ở định dạng PEM. Không kèm khóa riêng.',
 			'sourceSetup.addTrustCertificate' => 'Thêm chứng chỉ tin cậy tùy chỉnh',
 			'sourceSetup.replaceTrustCertificate' => 'Thay chứng chỉ tùy chỉnh đã lưu',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS dùng các cổng thông thường của NFS và dịch vụ gắn kết, đồng thời yêu cầu NAS hỗ trợ RFC 9289. Bắt buộc dùng TLS 1.3. Tên máy chủ hoặc địa chỉ IP phải khớp với chứng chỉ. AUTH_SYS UID/GID vẫn áp dụng trong kênh được mã hóa.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS dùng các cổng thông thường của NFS và dịch vụ gắn kết, đồng thời yêu cầu NAS hỗ trợ RFC 9289. Bắt buộc dùng TLS 1.3. Tên máy chủ hoặc địa chỉ IP phải khớp với chứng chỉ. AUTH_SYS UID/GID vẫn áp dụng trong kênh được mã hóa.',
 			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
 			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
 			'sourceSetup.savedIdentity' => 'Sẽ dùng danh tính máy khách đã lưu.',

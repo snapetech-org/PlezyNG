@@ -1327,7 +1327,6 @@ class _Translations$messages$fa extends Translations$messages$en {
 	@override String get mediaUnavailable => 'این محتوا دیگر در دسترس نیست.';
 	@override String errorLoadingFileInfo({required Object error}) => 'خطای بارگذاری فایل اطلاعات: ${error}';
 	@override String get errorLoadingSeries => 'خطای شارژ سری';
-	@override String get musicNotSupported => 'پخش موسیقی هنوز پشتیبانی نشده است';
 	@override String get noDescriptionAvailable => 'هیچ توضیحی در دسترس نیست';
 	@override String get noProfilesAvailable => 'هیچ پروفایل در دسترس';
 	@override String get contactAdminForProfiles => 'تماس با مدیر سرور برای اضافه کردن پروفایل ها';
@@ -6635,7 +6634,6 @@ extension on TranslationsFa {
 			'messages.mediaUnavailable' => 'این محتوا دیگر در دسترس نیست.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'خطای بارگذاری فایل اطلاعات: ${error}',
 			'messages.errorLoadingSeries' => 'خطای شارژ سری',
-			'messages.musicNotSupported' => 'پخش موسیقی هنوز پشتیبانی نشده است',
 			'messages.noDescriptionAvailable' => 'هیچ توضیحی در دسترس نیست',
 			'messages.noProfilesAvailable' => 'هیچ پروفایل در دسترس',
 			'messages.contactAdminForProfiles' => 'تماس با مدیر سرور برای اضافه کردن پروفایل ها',
@@ -7051,9 +7049,9 @@ extension on TranslationsFa {
 			'libraries.libraryOptions' => 'گزینه های کتابخانه',
 			'libraries.content' => 'محتوای کتابخانه',
 			'libraries.selectLibrary' => 'انتخاب کتابخانه',
+			'libraries.filtersWithCount' => ({required Object count}) => 'فیلترها (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'فیلترها (${count})',
 			'libraries.noRecommendations' => 'بدون توصیه در دسترس',
 			'libraries.noCollections' => 'هیچ مجموعه ای در این کتابخانه وجود ندارد',
 			'libraries.noFoldersFound' => 'هیچ پوشه ای یافت نشد',
@@ -7565,9 +7563,9 @@ extension on TranslationsFa {
 			'watchTogether.roomCode' => 'کد اتاق',
 			'watchTogether.paste' => 'پستی',
 			'watchTogether.noCodeInClipboard' => 'این صفحه شامل کد اتاق نیست.',
+			'watchTogether.copyCode' => 'کپی کد',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'کپی کد',
 			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
 			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
 			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
@@ -8079,9 +8077,9 @@ extension on TranslationsFa {
 			'metadataEdit.selectSquareArt' => 'انتخاب میدان هنر',
 			'metadataEdit.fromUrl' => 'از URL',
 			'metadataEdit.uploadFile' => 'دانلود فایل',
+			'metadataEdit.enterImageUrl' => 'URL تصویر را وارد کنید',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'URL تصویر را وارد کنید',
 			'metadataEdit.imageUrl' => 'تصویر URL',
 			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
 			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
@@ -8593,9 +8591,9 @@ extension on TranslationsFa {
 			'universalMedia.openWhat' => 'چه چیزی را دوست دارید باز کنید؟',
 			'universalMedia.stream' => 'آدرس جریان',
 			'universalMedia.playlist' => 'بازی لیست',
+			'universalMedia.files' => 'فایل های دستگاه',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'فایل های دستگاه',
 			'universalMedia.favorites' => 'ذخیره جریان مورد علاقه',
 			'universalMedia.address' => 'آدرس رسانه ها',
 			'universalMedia.addressHelp' => 'URL ها با پارامترهای اعتباربخشی یا امضای شناخته شده تنها برای این جلسه مورد استفاده قرار می گیرند و نمی توانند به عنوان محبوب ذخیره شوند.',
@@ -9107,9 +9105,9 @@ extension on TranslationsFa {
 			'sourceSetup.nfsTrustInvalid' => 'از گواهی CA یا سرور با قالب PEM استفاده کنید. کلید خصوصی را در آن قرار ندهید.',
 			'sourceSetup.addTrustCertificate' => 'افزودن گواهی اعتماد سفارشی',
 			'sourceSetup.replaceTrustCertificate' => 'جایگزینی گواهی سفارشی ذخیره‌شده',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS از درگاه‌های معمول NFS و سرویس mount استفاده می‌کند و به پشتیبانی NAS از RFC 9289 نیاز دارد. TLS 1.3 الزامی است. نام میزبان یا IP باید با گواهی مطابقت داشته باشد. AUTH_SYS UID/GID در کانال رمزگذاری‌شده نیز اعمال می‌شوند.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS از درگاه‌های معمول NFS و سرویس mount استفاده می‌کند و به پشتیبانی NAS از RFC 9289 نیاز دارد. TLS 1.3 الزامی است. نام میزبان یا IP باید با گواهی مطابقت داشته باشد. AUTH_SYS UID/GID در کانال رمزگذاری‌شده نیز اعمال می‌شوند.',
 			'sourceSetup.clientCertificate' => 'گواهی کارخواه (اختیاری)',
 			'sourceSetup.clientCertificateHelp' => 'به NAS اجازه می‌دهد هویت این کارخواه را تأیید کند؛ شناسه‌های AUTH_SYS همچنان تابع سیاست اشتراک‌گذاری NAS هستند.',
 			'sourceSetup.savedIdentity' => 'از هویت ذخیره‌شدهٔ کارخواه استفاده می‌شود.',

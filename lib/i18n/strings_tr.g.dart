@@ -1327,7 +1327,6 @@ class _Translations$messages$tr extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Bu içerik artık mevcut değil.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Dosya bilgisi yüklenirken hata: ${error}';
 	@override String get errorLoadingSeries => 'Dizi yüklenirken hata';
-	@override String get musicNotSupported => 'Müzik oynatma henüz desteklenmiyor';
 	@override String get noDescriptionAvailable => 'Açıklama mevcut değil';
 	@override String get noProfilesAvailable => 'Profil bulunmuyor';
 	@override String get contactAdminForProfiles => 'Profil eklemek için sunucu yöneticinizle iletişime geçin';
@@ -6635,7 +6634,6 @@ extension on TranslationsTr {
 			'messages.mediaUnavailable' => 'Bu içerik artık mevcut değil.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Dosya bilgisi yüklenirken hata: ${error}',
 			'messages.errorLoadingSeries' => 'Dizi yüklenirken hata',
-			'messages.musicNotSupported' => 'Müzik oynatma henüz desteklenmiyor',
 			'messages.noDescriptionAvailable' => 'Açıklama mevcut değil',
 			'messages.noProfilesAvailable' => 'Profil bulunmuyor',
 			'messages.contactAdminForProfiles' => 'Profil eklemek için sunucu yöneticinizle iletişime geçin',
@@ -7051,9 +7049,9 @@ extension on TranslationsTr {
 			'libraries.libraryOptions' => 'Kitaplık seçenekleri',
 			'libraries.content' => 'kitaplık içeriği',
 			'libraries.selectLibrary' => 'Kitaplık seç',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtreler (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtreler (${count})',
 			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			'libraries.noCollections' => 'Bu kitaplıkta koleksiyon yok',
 			'libraries.noFoldersFound' => 'Klasör bulunamadı',
@@ -7565,9 +7563,9 @@ extension on TranslationsTr {
 			'watchTogether.roomCode' => 'Oda Kodu',
 			'watchTogether.paste' => 'Yapıştır',
 			'watchTogether.noCodeInClipboard' => 'Panoda oda kodu yok',
+			'watchTogether.copyCode' => 'Kodu Kopyala',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Kodu Kopyala',
 			'watchTogether.codeCopied' => 'Oda kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Daveti Paylaş',
 			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
@@ -8079,9 +8077,9 @@ extension on TranslationsTr {
 			'metadataEdit.selectSquareArt' => 'Kare Görsel Seç',
 			'metadataEdit.fromUrl' => 'URL\'den',
 			'metadataEdit.uploadFile' => 'Dosya Yükle',
+			'metadataEdit.enterImageUrl' => 'Görsel URL\'si girin',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Görsel URL\'si girin',
 			'metadataEdit.imageUrl' => 'Görsel URL\'si',
 			'metadataEdit.metadataUpdated' => 'Meta veriler güncellendi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta veriler güncellenemedi',
@@ -8593,9 +8591,9 @@ extension on TranslationsTr {
 			'universalMedia.openWhat' => 'Neyi açmak ister misiniz?',
 			'universalMedia.stream' => 'Stream Adresi',
 			'universalMedia.playlist' => 'Oyun Listesi',
+			'universalMedia.files' => 'cihaz dosyaları',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'cihaz dosyaları',
 			'universalMedia.favorites' => 'Saved Stream Favori',
 			'universalMedia.address' => 'Medya Adresi',
 			'universalMedia.addressHelp' => 'HTTPS tercih edilir. tanınmış kimlik veya imza parametreleri olan URL\'ler yalnızca bu oturum için kullanılır ve favori olarak kaydedilemez.',
@@ -9107,9 +9105,9 @@ extension on TranslationsTr {
 			'sourceSetup.nfsTrustInvalid' => 'PEM biçiminde bir CA veya sunucu sertifikası kullanın. Özel anahtar eklemeyin.',
 			'sourceSetup.addTrustCertificate' => 'Özel güven sertifikası ekle',
 			'sourceSetup.replaceTrustCertificate' => 'Kaydedilmiş özel sertifikayı değiştir',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS normal NFS ve bağlama hizmeti bağlantı noktalarını kullanır ve NAS’ta RFC 9289 desteği gerektirir. TLS 1.3 zorunludur. Ana makine adı veya IP adresi sertifikayla eşleşmelidir. Şifreli kanal içinde de AUTH_SYS UID/GID geçerlidir.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS normal NFS ve bağlama hizmeti bağlantı noktalarını kullanır ve NAS’ta RFC 9289 desteği gerektirir. TLS 1.3 zorunludur. Ana makine adı veya IP adresi sertifikayla eşleşmelidir. Şifreli kanal içinde de AUTH_SYS UID/GID geçerlidir.',
 			'sourceSetup.clientCertificate' => 'İstemci sertifikası (isteğe bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS’ın bu istemcinin kimliğini doğrulamasını sağlar; AUTH_SYS kimlikleri hâlâ NAS’ın NFS paylaşım ilkesine bağlıdır.',
 			'sourceSetup.savedIdentity' => 'Kaydedilmiş bir istemci kimliği kullanılacak.',

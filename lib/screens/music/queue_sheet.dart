@@ -154,9 +154,12 @@ class _QueueListState extends State<QueueList> {
   double _rowHeight = TrackRow.height;
   int? _renderedSession;
   List<MediaItem> _renderedQueue = [];
+  List<MediaItem>? _sourceQueue;
   List<Object> _rowKeys = [];
 
   void _reconcileRows(List<MediaItem> queue, int session) {
+    if (_renderedSession == session && identical(_sourceQueue, queue)) return;
+    _sourceQueue = queue;
     final available = HashMap<MediaItem, Queue<Object>>.identity();
     if (_renderedSession == session) {
       for (var i = 0; i < _renderedQueue.length; i++) {
@@ -176,6 +179,7 @@ class _QueueListState extends State<QueueList> {
   bool _matches(MusicPlaybackService service, List<MediaItem> expected, int session) {
     if (!mounted || service.queueSessionRevision != session) return false;
     final actual = service.queue;
+    if (identical(actual, expected) && identical(_sourceQueue, expected)) return true;
     if (actual.length != expected.length || _renderedQueue.length != expected.length) return false;
     for (var i = 0; i < actual.length; i++) {
       if (!identical(actual[i], expected[i]) || !identical(_renderedQueue[i], expected[i])) return false;
@@ -188,6 +192,7 @@ class _QueueListState extends State<QueueList> {
     // Retire the exact occurrence key before notifying. Removing the first
     // of identical objects must not keep a dismissed widget mounted.
     setState(() {
+      _sourceQueue = null;
       _renderedQueue.removeAt(index);
       _rowKeys.removeAt(index);
     });

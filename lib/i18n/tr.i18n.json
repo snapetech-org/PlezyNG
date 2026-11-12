@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "Bu içerik artık mevcut değil.",
     "errorLoadingFileInfo": "Dosya bilgisi yüklenirken hata: ${error}",
     "errorLoadingSeries": "Dizi yüklenirken hata",
-    "musicNotSupported": "Müzik oynatma henüz desteklenmiyor",
     "noDescriptionAvailable": "Açıklama mevcut değil",
     "noProfilesAvailable": "Profil bulunmuyor",
     "contactAdminForProfiles": "Profil eklemek için sunucu yöneticinizle iletişime geçin",

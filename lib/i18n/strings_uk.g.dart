@@ -1339,7 +1339,6 @@ class _Translations$messages$uk extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Цей контент більше не доступний.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Помилка завантаження файлу інформація: ${error}';
 	@override String get errorLoadingSeries => 'Серія помилок завантаження';
-	@override String get musicNotSupported => 'Музичне відтворення ще не підтримується';
 	@override String get noDescriptionAvailable => 'Опис не доступний';
 	@override String get noProfilesAvailable => 'Доступні профілі немає';
 	@override String get contactAdminForProfiles => 'Зв\'яжіться з адміністратором сервера, щоб додати профілі';
@@ -6679,7 +6678,6 @@ extension on TranslationsUk {
 			'messages.mediaUnavailable' => 'Цей контент більше не доступний.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Помилка завантаження файлу інформація: ${error}',
 			'messages.errorLoadingSeries' => 'Серія помилок завантаження',
-			'messages.musicNotSupported' => 'Музичне відтворення ще не підтримується',
 			'messages.noDescriptionAvailable' => 'Опис не доступний',
 			'messages.noProfilesAvailable' => 'Доступні профілі немає',
 			'messages.contactAdminForProfiles' => 'Зв\'яжіться з адміністратором сервера, щоб додати профілі',
@@ -7095,9 +7093,9 @@ extension on TranslationsUk {
 			'libraries.libraryOptions' => 'Бібліотечні варіанти',
 			'libraries.content' => 'Бібліотека контент',
 			'libraries.selectLibrary' => 'Вибір бібліотеки',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Фільтри (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Фільтри (${count})',
 			'libraries.noRecommendations' => 'Немає доступних рекомендацій',
 			'libraries.noCollections' => 'Ніяких колекцій в цій бібліотеці',
 			'libraries.noFoldersFound' => 'Не знайдено жодних паперів',
@@ -7609,9 +7607,9 @@ extension on TranslationsUk {
 			'watchTogether.roomCode' => 'Код кімнати',
 			'watchTogether.paste' => 'Пастир',
 			'watchTogether.noCodeInClipboard' => 'Кліпборд не містить коду кімнати',
+			'watchTogether.copyCode' => 'Копіювати код',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Копіювати код',
 			'watchTogether.codeCopied' => 'Код кімнати копіюється',
 			'watchTogether.shareInvite' => 'Поділимо запрошення',
 			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
@@ -8123,9 +8121,9 @@ extension on TranslationsUk {
 			'metadataEdit.selectSquareArt' => 'Вибір площі мистецтва',
 			'metadataEdit.fromUrl' => 'Від URL',
 			'metadataEdit.uploadFile' => 'Завантажити файл',
+			'metadataEdit.enterImageUrl' => 'Введіть URL',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Введіть URL',
 			'metadataEdit.imageUrl' => 'Зображення URL',
 			'metadataEdit.metadataUpdated' => 'Актуальні метастази',
 			'metadataEdit.metadataUpdateFailed' => 'Не вдалося оновити метаданни',
@@ -8637,9 +8635,9 @@ extension on TranslationsUk {
 			'universalMedia.openWhat' => 'Що ви хотіли б відкрити?',
 			'universalMedia.stream' => 'Потік адреси',
 			'universalMedia.playlist' => 'Ігровий список',
+			'universalMedia.files' => 'Файли пристроїв',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'Файли пристроїв',
 			'universalMedia.favorites' => 'Збережений потік улюблених',
 			'universalMedia.address' => 'Медіа адреса',
 			'universalMedia.addressHelp' => 'URL-адреси з визнаними параметрами акредитації або підпису використовуються тільки для цієї сесії і не можуть бути збережені як улюблені.',
@@ -9151,9 +9149,9 @@ extension on TranslationsUk {
 			'sourceSetup.nfsTrustInvalid' => 'Використайте сертифікат CA або сервера у форматі PEM. Не додавайте приватний ключ.',
 			'sourceSetup.addTrustCertificate' => 'Додати власний довірений сертифікат',
 			'sourceSetup.replaceTrustCertificate' => 'Замінити збережений власний сертифікат',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS використовує звичайні порти NFS і служби монтування та потребує підтримки RFC 9289 на NAS. Потрібен TLS 1.3. Ім’я хоста або IP-адреса мають відповідати сертифікату. UID/GID AUTH_SYS і далі застосовуються в зашифрованому каналі.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS використовує звичайні порти NFS і служби монтування та потребує підтримки RFC 9289 на NAS. Потрібен TLS 1.3. Ім’я хоста або IP-адреса мають відповідати сертифікату. UID/GID AUTH_SYS і далі застосовуються в зашифрованому каналі.',
 			'sourceSetup.clientCertificate' => 'Сертифікат клієнта (необов’язково)',
 			'sourceSetup.clientCertificateHelp' => 'Дає змогу NAS автентифікувати цього клієнта; ID AUTH_SYS і далі залежать від правил експорту NFS на NAS.',
 			'sourceSetup.savedIdentity' => 'Буде використано збережені ідентифікаційні дані клієнта.',

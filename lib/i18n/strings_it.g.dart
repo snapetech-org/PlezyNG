@@ -1329,7 +1329,6 @@ class _Translations$messages$it extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Questo contenuto non è più disponibile.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Errore durante il caricamento delle informazioni sul file: ${error}';
 	@override String get errorLoadingSeries => 'Errore durante il caricamento della serie';
-	@override String get musicNotSupported => 'La riproduzione musicale non è ancora supportata';
 	@override String get noDescriptionAvailable => 'Nessuna descrizione disponibile';
 	@override String get noProfilesAvailable => 'Nessun profilo disponibile';
 	@override String get contactAdminForProfiles => 'Contatta l\'amministratore del server per aggiungere profili';
@@ -6642,7 +6641,6 @@ extension on TranslationsIt {
 			'messages.mediaUnavailable' => 'Questo contenuto non è più disponibile.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Errore durante il caricamento delle informazioni sul file: ${error}',
 			'messages.errorLoadingSeries' => 'Errore durante il caricamento della serie',
-			'messages.musicNotSupported' => 'La riproduzione musicale non è ancora supportata',
 			'messages.noDescriptionAvailable' => 'Nessuna descrizione disponibile',
 			'messages.noProfilesAvailable' => 'Nessun profilo disponibile',
 			'messages.contactAdminForProfiles' => 'Contatta l\'amministratore del server per aggiungere profili',
@@ -7058,9 +7056,9 @@ extension on TranslationsIt {
 			'libraries.libraryOptions' => 'Opzioni libreria',
 			'libraries.content' => 'contenuto della libreria',
 			'libraries.selectLibrary' => 'Seleziona libreria',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtri (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtri (${count})',
 			'libraries.noRecommendations' => 'Nessun consiglio disponibile',
 			'libraries.noCollections' => 'Nessuna raccolta in questa libreria',
 			'libraries.noFoldersFound' => 'Nessuna cartella trovata',
@@ -7572,9 +7570,9 @@ extension on TranslationsIt {
 			'watchTogether.roomCode' => 'Codice stanza',
 			'watchTogether.paste' => 'Incolla',
 			'watchTogether.noCodeInClipboard' => 'Gli appunti non contengono un codice stanza',
+			'watchTogether.copyCode' => 'Copia codice',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Copia codice',
 			'watchTogether.codeCopied' => 'Codice stanza copiato',
 			'watchTogether.shareInvite' => 'Condividi invito',
 			'watchTogether.inviteCopied' => 'Invito copiato. Incollalo in un messaggio.',
@@ -8086,9 +8084,9 @@ extension on TranslationsIt {
 			'metadataEdit.selectSquareArt' => 'Seleziona immagine quadrata',
 			'metadataEdit.fromUrl' => 'Da URL',
 			'metadataEdit.uploadFile' => 'Carica file',
+			'metadataEdit.enterImageUrl' => 'Inserisci URL immagine',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Inserisci URL immagine',
 			'metadataEdit.imageUrl' => 'URL immagine',
 			'metadataEdit.metadataUpdated' => 'Metadati aggiornati correttamente',
 			'metadataEdit.metadataUpdateFailed' => 'Impossibile aggiornare i metadati',
@@ -8600,9 +8598,9 @@ extension on TranslationsIt {
 			'universalMedia.openWhat' => 'Cosa vorresti aprire?',
 			'universalMedia.stream' => 'Indirizzo Stream',
 			'universalMedia.playlist' => 'giocattoli',
+			'universalMedia.files' => 'Dispositivi di file',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'Dispositivi di file',
 			'universalMedia.favorites' => 'Salva i tuoi preferiti',
 			'universalMedia.address' => 'Indirizzo Media',
 			'universalMedia.addressHelp' => 'Gli URL con parametri di credenziale o di firma riconosciuti sono utilizzati solo per questa sessione e non possono essere salvati come preferiti.',
@@ -9114,9 +9112,9 @@ extension on TranslationsIt {
 			'sourceSetup.nfsTrustInvalid' => 'Usa un certificato di una CA o del server in formato PEM. Non includere una chiave privata.',
 			'sourceSetup.addTrustCertificate' => 'Aggiungi un certificato attendibile personalizzato',
 			'sourceSetup.replaceTrustCertificate' => 'Sostituisci il certificato personalizzato salvato',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS usa le normali porte NFS e del servizio di montaggio e richiede che il NAS supporti RFC 9289. È necessario TLS 1.3. Il nome host o l’indirizzo IP deve corrispondere al certificato. Gli UID/GID AUTH_SYS restano validi anche nel canale crittografato.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS usa le normali porte NFS e del servizio di montaggio e richiede che il NAS supporti RFC 9289. È necessario TLS 1.3. Il nome host o l’indirizzo IP deve corrispondere al certificato. Gli UID/GID AUTH_SYS restano validi anche nel canale crittografato.',
 			'sourceSetup.clientCertificate' => 'Certificato client (facoltativo)',
 			'sourceSetup.clientCertificateHelp' => 'Consente al NAS di autenticare questo client; gli ID AUTH_SYS dipendono comunque dai criteri della condivisione NFS del NAS.',
 			'sourceSetup.savedIdentity' => 'Verrà usata un’identità client salvata.',

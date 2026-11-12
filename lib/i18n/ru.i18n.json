@@ -1246,7 +1246,6 @@
     "mediaUnavailable": "Этот контент больше недоступен.",
     "errorLoadingFileInfo": "Ошибка загрузки информации о файле: ${error}",
     "errorLoadingSeries": "Ошибка загрузки сериала",
-    "musicNotSupported": "Воспроизведение музыки пока не поддерживается",
     "noDescriptionAvailable": "Описание недоступно",
     "noProfilesAvailable": "Профили недоступны",
     "contactAdminForProfiles": "Обратитесь к администратору сервера для добавления профилей",

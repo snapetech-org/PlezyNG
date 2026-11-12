@@ -42,6 +42,7 @@ class MusicQueueController {
 
   /// Playback order: indexes into [_items]. Identity when unshuffled.
   List<int> _order = [];
+  List<MediaItem>? _queueSnapshot;
 
   int _cursor = -1;
   bool _shuffled = false;
@@ -58,7 +59,7 @@ class MusicQueueController {
   MediaItem? get current => trackAt(_cursor);
 
   /// Full queue in playback order (what the UI renders).
-  List<MediaItem> get queue => [for (final i in _order) _items[i]];
+  List<MediaItem> get queue => _queueSnapshot ??= List.unmodifiable([for (final i in _order) _items[i]]);
 
   MediaItem? trackAt(int queueIndex) =>
       queueIndex >= 0 && queueIndex < _order.length ? _items[_order[queueIndex]] : null;
@@ -117,6 +118,7 @@ class MusicQueueController {
       if (index < 0 || index >= length || seen[index]) return false;
       seen[index] = true;
     }
+    _queueSnapshot = null;
     _items
       ..clear()
       ..addAll(state.items);
@@ -137,6 +139,7 @@ class MusicQueueController {
   /// included. Collapsing "no start track" into index 0 is what pinned every
   /// shuffled playlist to its first track (#1811).
   void load(List<MediaItem> tracks, {int? startIndex, bool shuffle = false}) {
+    _queueSnapshot = null;
     _items
       ..clear()
       ..addAll(tracks);
@@ -152,6 +155,7 @@ class MusicQueueController {
   }
 
   void clear() {
+    _queueSnapshot = null;
     _items.clear();
     _order = [];
     _cursor = -1;
@@ -187,12 +191,14 @@ class MusicQueueController {
   /// Insert [tracks] directly after the current entry.
   void addNext(List<MediaItem> tracks) {
     if (tracks.isEmpty) return;
+    _queueSnapshot = null;
     _order.insertAll(_cursor < 0 ? 0 : _cursor + 1, _append(tracks));
     if (_cursor < 0) _cursor = 0;
   }
 
   void addToEnd(List<MediaItem> tracks) {
     if (tracks.isEmpty) return;
+    _queueSnapshot = null;
     _order.addAll(_append(tracks));
     if (_cursor < 0) _cursor = 0;
   }
@@ -210,6 +216,7 @@ class MusicQueueController {
   /// decides whether to open it.
   bool removeAt(int queueIndex) {
     if (queueIndex < 0 || queueIndex >= _order.length) return false;
+    _queueSnapshot = null;
     final wasCurrent = queueIndex == _cursor;
     final itemIndex = _order.removeAt(queueIndex);
     _items.removeAt(itemIndex);
@@ -230,6 +237,7 @@ class MusicQueueController {
     if (from < 0 || from >= _order.length || to < 0 || to >= _order.length || from == to) {
       return;
     }
+    _queueSnapshot = null;
     final entry = _order.removeAt(from);
     _order.insert(to, entry);
     if (from == _cursor) {
@@ -246,6 +254,7 @@ class MusicQueueController {
   /// with the cursor following the current track.
   void toggleShuffle() {
     if (_items.isEmpty) return;
+    _queueSnapshot = null;
     if (_shuffled) {
       final currentItem = _order[_cursor];
       _order = List.generate(_items.length, (i) => i);
@@ -261,6 +270,7 @@ class MusicQueueController {
   /// remain separate entries inside their block.
   void shuffleAlbums() {
     if (_items.isEmpty) return;
+    _queueSnapshot = null;
     final currentItem = _order[_cursor];
     final blocks = <String, List<int>>{};
     String key(int i) => _items[i].parentId == null ? 'entry:$i' : '${_items[i].serverId}:${_items[i].parentId}';
@@ -317,13 +327,23 @@ class MusicQueueController {
   /// the underlying canonical items.
   void clearUpcoming() {
     if (_cursor < 0 || _cursor >= _order.length - 1) return;
-    final removedItemIndexes = _order.sublist(_cursor + 1)..sort();
-    _order.removeRange(_cursor + 1, _order.length);
-    for (final itemIndex in removedItemIndexes.reversed) {
-      _items.removeAt(itemIndex);
-      for (var i = 0; i < _order.length; i++) {
-        if (_order[i] > itemIndex) _order[i]--;
+    _queueSnapshot = null;
+    final retained = _order.sublist(0, _cursor + 1);
+    final keep = List<bool>.filled(_items.length, false);
+    for (final index in retained) {
+      keep[index] = true;
+    }
+    final remap = List<int>.filled(_items.length, -1);
+    var length = 0;
+    // Compact canonical occurrences once. Repeated removeAt plus index
+    // repair made dropping a large shuffled tail quadratic.
+    for (var index = 0; index < _items.length; index++) {
+      if (keep[index]) {
+        remap[index] = length;
+        _items[length++] = _items[index];
       }
     }
+    _items.removeRange(length, _items.length);
+    _order = [for (final index in retained) remap[index]];
   }
 }

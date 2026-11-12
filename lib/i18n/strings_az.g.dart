@@ -1327,7 +1327,6 @@ class _Translations$messages$az extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Bu məzmun artıq əlçatan deyil.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Fayl məlumatı yüklənərkən xəta: ${error}';
 	@override String get errorLoadingSeries => 'Serial yüklənərkən xəta';
-	@override String get musicNotSupported => 'Musiqi oynatması hələ dəstəklənmir';
 	@override String get noDescriptionAvailable => 'Təsvir əlçatan deyil';
 	@override String get noProfilesAvailable => 'Profil yoxdur';
 	@override String get contactAdminForProfiles => 'Profil əlavə etmək üçün server inzibatçınızla əlaqə saxlayın';
@@ -6635,7 +6634,6 @@ extension on TranslationsAz {
 			'messages.mediaUnavailable' => 'Bu məzmun artıq əlçatan deyil.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Fayl məlumatı yüklənərkən xəta: ${error}',
 			'messages.errorLoadingSeries' => 'Serial yüklənərkən xəta',
-			'messages.musicNotSupported' => 'Musiqi oynatması hələ dəstəklənmir',
 			'messages.noDescriptionAvailable' => 'Təsvir əlçatan deyil',
 			'messages.noProfilesAvailable' => 'Profil yoxdur',
 			'messages.contactAdminForProfiles' => 'Profil əlavə etmək üçün server inzibatçınızla əlaqə saxlayın',
@@ -7051,9 +7049,9 @@ extension on TranslationsAz {
 			'libraries.libraryOptions' => 'Kitabxana seçimləri',
 			'libraries.content' => 'kitabxana məzmunu',
 			'libraries.selectLibrary' => 'Kitabxana seç',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlər (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlər (${count})',
 			'libraries.noRecommendations' => 'Tövsiyə yoxdur',
 			'libraries.noCollections' => 'Bu kitabxanada kolleksiya yoxdur',
 			'libraries.noFoldersFound' => 'Qovluq tapılmadı',
@@ -7565,9 +7563,9 @@ extension on TranslationsAz {
 			'watchTogether.roomCode' => 'Otaq kodu',
 			'watchTogether.paste' => 'Yapışdır',
 			'watchTogether.noCodeInClipboard' => 'Buferdə otaq kodu yoxdur',
+			'watchTogether.copyCode' => 'Kodu kopyala',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Kodu kopyala',
 			'watchTogether.codeCopied' => 'Otaq kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Dəvəti paylaş',
 			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
@@ -8079,9 +8077,9 @@ extension on TranslationsAz {
 			'metadataEdit.selectSquareArt' => 'Kvadrat şəkil seç',
 			'metadataEdit.fromUrl' => 'URL-dən',
 			'metadataEdit.uploadFile' => 'Fayl yüklə',
+			'metadataEdit.enterImageUrl' => 'Şəkil URL-i daxil edin',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Şəkil URL-i daxil edin',
 			'metadataEdit.imageUrl' => 'Şəkil URL-i',
 			'metadataEdit.metadataUpdated' => 'Meta-məlumatlar yeniləndi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta-məlumatlar yenilənə bilmədi',
@@ -8593,9 +8591,9 @@ extension on TranslationsAz {
 			'universalMedia.openWhat' => '- Neyi açmaq istəyirsiniz?',
 			'universalMedia.stream' => 'Trafik adresi',
 			'universalMedia.playlist' => 'Oyunçı',
+			'universalMedia.files' => 'Fillər',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'Fillər',
 			'universalMedia.favorites' => 'Sürücüsüz favoritlər',
 			'universalMedia.address' => 'Medyanın adresi',
 			'universalMedia.addressHelp' => 'HTTPS-i tercih edilir. tanınmış kimlik və ya imza parametrləri olan URL-lər yalnız bu oturum üçün istifadə edilir və favori olarak saklanamaz.',
@@ -9107,9 +9105,9 @@ extension on TranslationsAz {
 			'sourceSetup.nfsTrustInvalid' => 'PEM formatında CA və ya server sertifikatı istifadə edin. Özəl açar daxil etməyin.',
 			'sourceSetup.addTrustCertificate' => 'Xüsusi etibar sertifikatı əlavə et',
 			'sourceSetup.replaceTrustCertificate' => 'Yadda saxlanmış xüsusi sertifikatı əvəz et',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS adi NFS və mount xidməti portlarını istifadə edir və NAS-da RFC 9289 dəstəyi tələb edir. TLS 1.3 tələb olunur. Host adı və ya IP ünvanı sertifikata uyğun gəlməlidir. Şifrələnmiş kanalda da AUTH_SYS UID/GID qüvvədə qalır.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS adi NFS və mount xidməti portlarını istifadə edir və NAS-da RFC 9289 dəstəyi tələb edir. TLS 1.3 tələb olunur. Host adı və ya IP ünvanı sertifikata uyğun gəlməlidir. Şifrələnmiş kanalda da AUTH_SYS UID/GID qüvvədə qalır.',
 			'sourceSetup.clientCertificate' => 'Klient sertifikatı (istəyə bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-a bu klientin kimliyini təsdiqləməyə imkan verir; AUTH_SYS ID-ləri yenə NAS-ın NFS paylaşım qaydalarından asılıdır.',
 			'sourceSetup.savedIdentity' => 'Yadda saxlanmış klient kimlik məlumatları istifadə olunacaq.',

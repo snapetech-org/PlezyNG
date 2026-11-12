@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "Bu kontent endi mavjud emas.",
     "errorLoadingFileInfo": "Fayl maʼlumotlarini yuklashda xatolik: ${error}",
     "errorLoadingSeries": "Serialni yuklashda xatolik",
-    "musicNotSupported": "Musiqa ijrosi hali qoʻllab-quvvatlanmaydi",
     "noDescriptionAvailable": "Tavsif mavjud emas",
     "noProfilesAvailable": "Profillar yoʻq",
     "contactAdminForProfiles": "Profil qoʻshish uchun administratorga murojaat qiling",

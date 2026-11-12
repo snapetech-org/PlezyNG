@@ -37,6 +37,8 @@
 
 - Stop playlist pagination and artist/album expansion when their account, profile, library visibility or play request changes. Validate queue rows against the original source and keep offline playlist occurrences limited to owned files.
 
+- Clear large shuffled queue tails in one compaction pass while preserving canonical duplicate occurrences. Reuse immutable queue snapshots across cursor and status updates so the queue sheet can skip unchanged row reconciliation.
+
 - Assemble the complete frozen release from independently signed iOS and tvOS sibling runs, verifying both IPA attestations and original platform artifact identities before publication.
 - Keep shared libraries read-only for collection changes and bind collection confirmations to their original authorized account.
 

@@ -1327,7 +1327,6 @@ class _Translations$messages$kk extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Бұл мазмұн енді қолжетімді емес.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Файл ақпаратын жүктеу қатесі: ${error}';
 	@override String get errorLoadingSeries => 'Сериалды жүктеу қатесі';
-	@override String get musicNotSupported => 'Музыка ойнату әлі қолдау таппайды';
 	@override String get noDescriptionAvailable => 'Сипаттамасы жоқ';
 	@override String get noProfilesAvailable => 'Профильдер жоқ';
 	@override String get contactAdminForProfiles => 'Профиль қосу үшін администраторға хабарласыңыз';
@@ -6635,7 +6634,6 @@ extension on TranslationsKk {
 			'messages.mediaUnavailable' => 'Бұл мазмұн енді қолжетімді емес.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Файл ақпаратын жүктеу қатесі: ${error}',
 			'messages.errorLoadingSeries' => 'Сериалды жүктеу қатесі',
-			'messages.musicNotSupported' => 'Музыка ойнату әлі қолдау таппайды',
 			'messages.noDescriptionAvailable' => 'Сипаттамасы жоқ',
 			'messages.noProfilesAvailable' => 'Профильдер жоқ',
 			'messages.contactAdminForProfiles' => 'Профиль қосу үшін администраторға хабарласыңыз',
@@ -7051,9 +7049,9 @@ extension on TranslationsKk {
 			'libraries.libraryOptions' => 'Кітапхана параметрлері',
 			'libraries.content' => 'кітапхана мазмұны',
 			'libraries.selectLibrary' => 'Кітапхананы таңдау',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтрлер (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтрлер (${count})',
 			'libraries.noRecommendations' => 'Ұсыныстар жоқ',
 			'libraries.noCollections' => 'Бұл кітапханада топтамалар жоқ',
 			'libraries.noFoldersFound' => 'Қапшықтар табылмады',
@@ -7565,9 +7563,9 @@ extension on TranslationsKk {
 			'watchTogether.roomCode' => 'Бөлме коды',
 			'watchTogether.paste' => 'Қою',
 			'watchTogether.noCodeInClipboard' => 'Алмасу буферінде бөлме коды жоқ',
+			'watchTogether.copyCode' => 'Кодты көшіру',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Кодты көшіру',
 			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
 			'watchTogether.shareInvite' => 'Шақыру жіберу',
 			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
@@ -8079,9 +8077,9 @@ extension on TranslationsKk {
 			'metadataEdit.selectSquareArt' => 'Шаршы суретті таңдау',
 			'metadataEdit.fromUrl' => 'URL арқылы',
 			'metadataEdit.uploadFile' => 'Файлды жүктеу',
+			'metadataEdit.enterImageUrl' => 'Сурет URL-ін енгізіңіз',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Сурет URL-ін енгізіңіз',
 			'metadataEdit.imageUrl' => 'Сурет URL-і',
 			'metadataEdit.metadataUpdated' => 'Метадеректер жаңартылды',
 			'metadataEdit.metadataUpdateFailed' => 'Метадеректерді жаңарту мүмкін болмады',
@@ -8593,9 +8591,9 @@ extension on TranslationsKk {
 			'universalMedia.openWhat' => 'Қанша идеялардан тұрады?',
 			'universalMedia.stream' => 'Тегін адресы',
 			'universalMedia.playlist' => 'Жүзілік',
+			'universalMedia.files' => 'Файлы',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'Файлы',
 			'universalMedia.favorites' => 'Алдыңғы ең айқын көргенде',
 			'universalMedia.address' => 'Медыялық адресы',
 			'universalMedia.addressHelp' => 'Өзі сүйікті жабдықтардан тұрып қара сөздерін, аудармаларын жазды.',
@@ -9107,9 +9105,9 @@ extension on TranslationsKk {
 			'sourceSetup.nfsTrustInvalid' => 'PEM пішіміндегі CA немесе сервер сертификатын пайдаланыңыз. Жеке кілтті қоспаңыз.',
 			'sourceSetup.addTrustCertificate' => 'Теңшелетін сенім сертификатын қосу',
 			'sourceSetup.replaceTrustCertificate' => 'Сақталған теңшелетін сертификатты ауыстыру',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS әдеттегі NFS және mount қызметінің порттарын пайдаланады және NAS-та RFC 9289 қолдауын талап етеді. TLS 1.3 қажет. Хост атауы немесе IP мекенжайы сертификатқа сәйкес болуы керек. Шифрланған арнада да AUTH_SYS UID/GID қолданылады.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS әдеттегі NFS және mount қызметінің порттарын пайдаланады және NAS-та RFC 9289 қолдауын талап етеді. TLS 1.3 қажет. Хост атауы немесе IP мекенжайы сертификатқа сәйкес болуы керек. Шифрланған арнада да AUTH_SYS UID/GID қолданылады.',
 			'sourceSetup.clientCertificate' => 'Клиент сертификаты (міндетті емес)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-қа осы клиентті аутентификациялауға мүмкіндік береді; AUTH_SYS ID мәндері әлі де NAS-тағы NFS ортақ ресурсының ережелеріне тәуелді.',
 			'sourceSetup.savedIdentity' => 'Сақталған клиенттің сәйкестендіру деректері пайдаланылады.',

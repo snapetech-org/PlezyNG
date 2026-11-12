@@ -1333,7 +1333,6 @@ class Translations$messages$es extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Este contenido ya no está disponible.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Error al cargar la información del archivo: ${error}';
 	@override String get errorLoadingSeries => 'Error al cargar la serie';
-	@override String get musicNotSupported => 'La reproducción de música aún no es compatible';
 	@override String get noDescriptionAvailable => 'No hay descripción disponible';
 	@override String get noProfilesAvailable => 'No hay perfiles disponibles';
 	@override String get contactAdminForProfiles => 'Contacta a tu administrador del servidor para añadir perfiles';
@@ -6762,7 +6761,6 @@ extension on TranslationsEs {
 			'messages.mediaUnavailable' => 'Este contenido ya no está disponible.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Error al cargar la información del archivo: ${error}',
 			'messages.errorLoadingSeries' => 'Error al cargar la serie',
-			'messages.musicNotSupported' => 'La reproducción de música aún no es compatible',
 			'messages.noDescriptionAvailable' => 'No hay descripción disponible',
 			'messages.noProfilesAvailable' => 'No hay perfiles disponibles',
 			'messages.contactAdminForProfiles' => 'Contacta a tu administrador del servidor para añadir perfiles',
@@ -7175,9 +7173,9 @@ extension on TranslationsEs {
 			'libraries.allLibrariesHidden' => 'Todas las bibliotecas están ocultas',
 			'libraries.hiddenLibrariesCount' => ({required Object count}) => 'Bibliotecas ocultas (${count})',
 			'libraries.thisLibraryIsEmpty' => 'Esta biblioteca está vacía',
+			'libraries.noItemsMatchFilters' => 'Ningún elemento coincide con los filtros activos',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noItemsMatchFilters' => 'Ningún elemento coincide con los filtros activos',
 			'libraries.resetFilters' => 'Restablecer filtros',
 			'libraries.all' => 'Todos',
 			'libraries.clearAll' => 'Borrar todo',
@@ -7689,9 +7687,9 @@ extension on TranslationsEs {
 			'music.discography.singlesAndEps' => 'Sencillos y EP',
 			'music.discography.live' => 'En directo',
 			'music.discography.compilations' => 'Recopilaciones',
+			'music.backTo' => 'Volver a',
 			_ => null,
 		} ?? switch (path) {
-			'music.backTo' => 'Volver a',
 			'music.upNext' => 'A continuación',
 			'watchTogether.title' => 'Ver juntos',
 			'watchTogether.description' => 'Mira contenido sincronizado con amigos y familiares',
@@ -8203,9 +8201,9 @@ extension on TranslationsEs {
 			'metadataEdit.screenTitle' => 'Editar metadatos',
 			'metadataEdit.basicInfo' => 'Información básica',
 			'metadataEdit.artwork' => 'Imágenes',
+			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
 			'metadataEdit.title' => 'Título',
 			'metadataEdit.sortTitle' => 'Título de ordenación',
 			'metadataEdit.originalTitle' => 'Título original',
@@ -8717,9 +8715,9 @@ extension on TranslationsEs {
 			'homeLayout.editHomeRow' => 'Edit Home Rue',
 			'homeLayout.resetHeroButton' => 'Reset el layout de héroe a stock Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Reorganización desbloqueada',
+			'homeLayout.reorderingLocked' => 'Reorganización localizada',
 			_ => null,
 		} ?? switch (path) {
-			'homeLayout.reorderingLocked' => 'Reorganización localizada',
 			'homeLayout.rowsCanBeDragged' => 'Las rayas pueden ser atraídas — tapar el cierre para evitar que',
 			'homeLayout.tapLockToDrag' => 'Toma el cierre para sacar líneas',
 			'homeLayout.customRowLabel' => ({required Object title}) => 'Cálculo: ${title}',
@@ -9231,9 +9229,9 @@ extension on TranslationsEs {
 			'sourceSetup.nfsEndpointInvalid' => 'Introduce una URL NFS, como nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'No se encontraron servidores DLNA. Introduce manualmente la URL de descripción del dispositivo.',
 			'sourceSetup.dlnaServers' => 'Servidores multimedia DLNA',
+			'sourceSetup.dlnaUnavailable' => 'La detección DLNA no está disponible en esta red. Introduce manualmente la URL de descripción del dispositivo.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.dlnaUnavailable' => 'La detección DLNA no está disponible en esta red. Introduce manualmente la URL de descripción del dispositivo.',
 			'sourceSetup.dlnaSearching' => 'Buscando servidores DLNA en la red local',
 			'sourceSetup.networkSearching' => 'Buscando en la red local…',
 			'sourceSetup.dlnaDiscover' => 'Detectar servidores DLNA',
@@ -9745,9 +9743,9 @@ extension on TranslationsEs {
 			'musicExperience.remove' => 'Eliminar',
 			'musicExperience.play' => 'Reproducir selección',
 			'musicExperience.next' => 'Reproducir a continuación',
+			'musicExperience.error' => 'La solicitud de música ha fallado',
 			_ => null,
 		} ?? switch (path) {
-			'musicExperience.error' => 'La solicitud de música ha fallado',
 			'musicExperience.on' => 'En',
 			'musicExperience.off' => 'Desactivado',
 			'musicExperience.unknown' => 'Desconocido',

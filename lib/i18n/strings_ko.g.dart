@@ -1325,7 +1325,6 @@ class _Translations$messages$ko extends Translations$messages$en {
 	@override String get mediaUnavailable => '이 콘텐츠는 더 이상 사용할 수 없습니다.';
 	@override String errorLoadingFileInfo({required Object error}) => '파일 정보 로딩 중 오류: ${error}';
 	@override String get errorLoadingSeries => '시리즈 로딩 중 오류';
-	@override String get musicNotSupported => '음악 재생 미지원';
 	@override String get noDescriptionAvailable => '설명이 없습니다';
 	@override String get noProfilesAvailable => '사용 가능한 프로필이 없습니다';
 	@override String get contactAdminForProfiles => '프로필을 추가하려면 서버 관리자에게 문의하세요';
@@ -6630,7 +6629,6 @@ extension on TranslationsKo {
 			'messages.mediaUnavailable' => '이 콘텐츠는 더 이상 사용할 수 없습니다.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => '파일 정보 로딩 중 오류: ${error}',
 			'messages.errorLoadingSeries' => '시리즈 로딩 중 오류',
-			'messages.musicNotSupported' => '음악 재생 미지원',
 			'messages.noDescriptionAvailable' => '설명이 없습니다',
 			'messages.noProfilesAvailable' => '사용 가능한 프로필이 없습니다',
 			'messages.contactAdminForProfiles' => '프로필을 추가하려면 서버 관리자에게 문의하세요',
@@ -7046,9 +7044,9 @@ extension on TranslationsKo {
 			'libraries.libraryOptions' => '미디어 라이브러리 옵션',
 			'libraries.content' => '미디어 라이브러리 콘텐츠',
 			'libraries.selectLibrary' => '미디어 라이브러리 선택',
+			'libraries.filtersWithCount' => ({required Object count}) => '필터 (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => '필터 (${count})',
 			'libraries.noRecommendations' => '추천 없음',
 			'libraries.noCollections' => '이 미디어 라이브러리에는 컬렉션이 없습니다',
 			'libraries.noFoldersFound' => '폴더를 찾을 수 없습니다',
@@ -7560,9 +7558,9 @@ extension on TranslationsKo {
 			'watchTogether.roomCode' => '방 코드',
 			'watchTogether.paste' => '붙여넣기',
 			'watchTogether.noCodeInClipboard' => '클립보드에 방 코드가 없습니다',
+			'watchTogether.copyCode' => '코드 복사',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => '코드 복사',
 			'watchTogether.codeCopied' => '방 코드가 복사되었습니다',
 			'watchTogether.shareInvite' => '초대 공유',
 			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
@@ -8074,9 +8072,9 @@ extension on TranslationsKo {
 			'metadataEdit.selectSquareArt' => '정사각형 아트 선택',
 			'metadataEdit.fromUrl' => 'URL에서',
 			'metadataEdit.uploadFile' => '파일 업로드',
+			'metadataEdit.enterImageUrl' => '이미지 URL 입력',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => '이미지 URL 입력',
 			'metadataEdit.imageUrl' => '이미지 URL',
 			'metadataEdit.metadataUpdated' => '메타데이터가 업데이트되었습니다',
 			'metadataEdit.metadataUpdateFailed' => '메타데이터 업데이트 실패',
@@ -8588,9 +8586,9 @@ extension on TranslationsKo {
 			'universalMedia.openWhat' => '무엇을 열고 싶으신가요?',
 			'universalMedia.stream' => '흐름 주소',
 			'universalMedia.playlist' => '플레이리스트',
+			'universalMedia.files' => '장치 파일',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => '장치 파일',
 			'universalMedia.favorites' => '저장된 스트림 좋아하는',
 			'universalMedia.address' => '미디어 주소',
 			'universalMedia.addressHelp' => '인증 또는 서명 매개 변수를 가진 URL은 이 세션에만 사용되며 좋아하는 것으로 저장될 수 없습니다.',
@@ -9102,9 +9100,9 @@ extension on TranslationsKo {
 			'sourceSetup.nfsTrustInvalid' => 'PEM 형식의 CA 또는 서버 인증서를 사용하세요. 개인 키는 포함하지 마세요.',
 			'sourceSetup.addTrustCertificate' => '사용자 지정 신뢰 인증서 추가',
 			'sourceSetup.replaceTrustCertificate' => '저장된 사용자 지정 인증서 교체',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS는 일반 NFS 및 마운트 서비스 포트를 사용하며, NAS가 RFC 9289를 지원해야 합니다. TLS 1.3이 필수입니다. 호스트 이름 또는 IP가 인증서와 일치해야 합니다. 암호화된 채널에서도 AUTH_SYS UID/GID가 적용됩니다.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS는 일반 NFS 및 마운트 서비스 포트를 사용하며, NAS가 RFC 9289를 지원해야 합니다. TLS 1.3이 필수입니다. 호스트 이름 또는 IP가 인증서와 일치해야 합니다. 암호화된 채널에서도 AUTH_SYS UID/GID가 적용됩니다.',
 			'sourceSetup.clientCertificate' => '클라이언트 인증서(선택 사항)',
 			'sourceSetup.clientCertificateHelp' => 'NAS가 이 클라이언트를 인증하도록 합니다. AUTH_SYS ID에는 여전히 NAS 내보내기 정책이 적용됩니다.',
 			'sourceSetup.savedIdentity' => '저장된 클라이언트 인증 정보를 사용합니다.',

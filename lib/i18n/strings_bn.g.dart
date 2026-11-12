@@ -1327,7 +1327,6 @@ class _Translations$messages$bn extends Translations$messages$en {
 	@override String get mediaUnavailable => 'এই বিষয়বস্তু এখন আর পাওয়া যায় না।';
 	@override String errorLoadingFileInfo({required Object error}) => 'ভুল লোড ফাইল তথ্য: ${error}';
 	@override String get errorLoadingSeries => 'ভুল লোডিং সিরিজ';
-	@override String get musicNotSupported => 'Music Playback এখনো সমর্থিত হয় না';
 	@override String get noDescriptionAvailable => 'কোন বিবরণ পাওয়া যায় না';
 	@override String get noProfilesAvailable => 'কোন প্রোফাইল পাওয়া যায় না';
 	@override String get contactAdminForProfiles => 'আপনার সার্ভার প্রশাসককে যোগাযোগ করুন প্রোফাইল যোগ করার জন্য';
@@ -6635,7 +6634,6 @@ extension on TranslationsBn {
 			'messages.mediaUnavailable' => 'এই বিষয়বস্তু এখন আর পাওয়া যায় না।',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'ভুল লোড ফাইল তথ্য: ${error}',
 			'messages.errorLoadingSeries' => 'ভুল লোডিং সিরিজ',
-			'messages.musicNotSupported' => 'Music Playback এখনো সমর্থিত হয় না',
 			'messages.noDescriptionAvailable' => 'কোন বিবরণ পাওয়া যায় না',
 			'messages.noProfilesAvailable' => 'কোন প্রোফাইল পাওয়া যায় না',
 			'messages.contactAdminForProfiles' => 'আপনার সার্ভার প্রশাসককে যোগাযোগ করুন প্রোফাইল যোগ করার জন্য',
@@ -7051,9 +7049,9 @@ extension on TranslationsBn {
 			'libraries.libraryOptions' => 'লাইব্রেরি বিকল্প',
 			'libraries.content' => 'লাইব্রেরি বিষয়বস্তু',
 			'libraries.selectLibrary' => 'লাইব্রেরি নির্বাচন',
+			'libraries.filtersWithCount' => ({required Object count}) => 'ফিল্টার (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'ফিল্টার (${count})',
 			'libraries.noRecommendations' => 'উপলব্ধি নেই',
 			'libraries.noCollections' => 'এই লাইব্রেরিতে কোন সংগ্রহ নেই',
 			'libraries.noFoldersFound' => 'কোন ফাইল পাওয়া যায়নি',
@@ -7565,9 +7563,9 @@ extension on TranslationsBn {
 			'watchTogether.roomCode' => 'রুম কোড',
 			'watchTogether.paste' => 'পেস্ট',
 			'watchTogether.noCodeInClipboard' => 'ক্লাববের কোডে রুম কোড নেই।',
+			'watchTogether.copyCode' => 'কপি কোড',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'কপি কোড',
 			'watchTogether.codeCopied' => 'রুম কোড কপি',
 			'watchTogether.shareInvite' => 'বিতর্ক invitaciones',
 			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
@@ -8079,9 +8077,9 @@ extension on TranslationsBn {
 			'metadataEdit.selectSquareArt' => 'পৃথিবী শিল্প নির্বাচন',
 			'metadataEdit.fromUrl' => 'URL থেকে',
 			'metadataEdit.uploadFile' => 'ফাইল আপলোড',
+			'metadataEdit.enterImageUrl' => 'ইমেজ URL লিখুন',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'ইমেজ URL লিখুন',
 			'metadataEdit.imageUrl' => 'ইমেজ URL',
 			'metadataEdit.metadataUpdated' => 'মেটাদাডেট আপডেট',
 			'metadataEdit.metadataUpdateFailed' => 'মেটাদাটা আপডেট করতে পারেনি',
@@ -8593,9 +8591,9 @@ extension on TranslationsBn {
 			'universalMedia.openWhat' => 'আপনি কী খুলে দিতে চান?',
 			'universalMedia.stream' => 'স্ট্রিম ঠিকানা',
 			'universalMedia.playlist' => 'Playlist খেলা',
+			'universalMedia.files' => 'ডিভাইস ফাইল',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'ডিভাইস ফাইল',
 			'universalMedia.favorites' => 'সুরক্ষিত প্রদর্শন পছন্দ',
 			'universalMedia.address' => 'মিডিয়া ঠিকানা',
 			'universalMedia.addressHelp' => 'HTTPS preferred. recognized credential বা signature parameters সঙ্গে URLs শুধুমাত্র এই session জন্য ব্যবহার করা হয় এবং পছন্দ হিসাবে সংরক্ষণ করা যাবে না।',
@@ -9107,9 +9105,9 @@ extension on TranslationsBn {
 			'sourceSetup.nfsTrustInvalid' => 'PEM ফরম্যাটে CA বা সার্ভার সার্টিফিকেট ব্যবহার করুন। ব্যক্তিগত কী অন্তর্ভুক্ত করবেন না।',
 			'sourceSetup.addTrustCertificate' => 'কাস্টম বিশ্বস্ত সার্টিফিকেট যোগ করুন',
 			'sourceSetup.replaceTrustCertificate' => 'সংরক্ষিত কাস্টম সার্টিফিকেট প্রতিস্থাপন করুন',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS সাধারণ NFS ও মাউন্ট সেবার পোর্ট ব্যবহার করে এবং NAS-এ RFC 9289 সমর্থন থাকা প্রয়োজন। TLS 1.3 বাধ্যতামূলক। হোস্টের নাম বা IP সার্টিফিকেটের সঙ্গে মিলতে হবে। এনক্রিপ্ট করা চ্যানেলের ভেতরেও AUTH_SYS UID/GID প্রযোজ্য থাকে।',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS সাধারণ NFS ও মাউন্ট সেবার পোর্ট ব্যবহার করে এবং NAS-এ RFC 9289 সমর্থন থাকা প্রয়োজন। TLS 1.3 বাধ্যতামূলক। হোস্টের নাম বা IP সার্টিফিকেটের সঙ্গে মিলতে হবে। এনক্রিপ্ট করা চ্যানেলের ভেতরেও AUTH_SYS UID/GID প্রযোজ্য থাকে।',
 			'sourceSetup.clientCertificate' => 'ক্লায়েন্ট সার্টিফিকেট (ঐচ্ছিক)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-কে এই ক্লায়েন্টের পরিচয় যাচাই করতে দেয়; AUTH_SYS ID এখনো NAS এক্সপোর্টের নীতির ওপর নির্ভর করে।',
 			'sourceSetup.savedIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র ব্যবহার করা হবে।',

@@ -1230,7 +1230,6 @@
     "mediaUnavailable": "此內容已無法使用。",
     "errorLoadingFileInfo": "載入檔案資訊時發生錯誤：${error}",
     "errorLoadingSeries": "載入影集時發生錯誤",
-    "musicNotSupported": "目前不支援播放音樂",
     "noDescriptionAvailable": "目前沒有描述",
     "noProfilesAvailable": "沒有可用的使用者設定檔",
     "contactAdminForProfiles": "請聯絡伺服器管理員新增使用者設定檔",

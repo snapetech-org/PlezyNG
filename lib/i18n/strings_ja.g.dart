@@ -1325,7 +1325,6 @@ class _Translations$messages$ja extends Translations$messages$en {
 	@override String get mediaUnavailable => 'このコンテンツは利用できなくなりました。';
 	@override String errorLoadingFileInfo({required Object error}) => 'ファイル情報の読み込みエラー: ${error}';
 	@override String get errorLoadingSeries => 'シリーズの読み込みエラー';
-	@override String get musicNotSupported => '音楽の再生はまだサポートされていません';
 	@override String get noDescriptionAvailable => '説明はありません';
 	@override String get noProfilesAvailable => '利用可能なプロフィールがありません';
 	@override String get contactAdminForProfiles => 'プロフィールを追加するには、サーバー管理者に連絡してください';
@@ -6630,7 +6629,6 @@ extension on TranslationsJa {
 			'messages.mediaUnavailable' => 'このコンテンツは利用できなくなりました。',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'ファイル情報の読み込みエラー: ${error}',
 			'messages.errorLoadingSeries' => 'シリーズの読み込みエラー',
-			'messages.musicNotSupported' => '音楽の再生はまだサポートされていません',
 			'messages.noDescriptionAvailable' => '説明はありません',
 			'messages.noProfilesAvailable' => '利用可能なプロフィールがありません',
 			'messages.contactAdminForProfiles' => 'プロフィールを追加するには、サーバー管理者に連絡してください',
@@ -7046,9 +7044,9 @@ extension on TranslationsJa {
 			'libraries.libraryOptions' => 'ライブラリオプション',
 			'libraries.content' => 'ライブラリコンテンツ',
 			'libraries.selectLibrary' => 'ライブラリを選択',
+			'libraries.filtersWithCount' => ({required Object count}) => 'フィルター (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'フィルター (${count})',
 			'libraries.noRecommendations' => 'おすすめがありません',
 			'libraries.noCollections' => 'このライブラリにコレクションがありません',
 			'libraries.noFoldersFound' => 'フォルダが見つかりません',
@@ -7560,9 +7558,9 @@ extension on TranslationsJa {
 			'watchTogether.roomCode' => 'ルームコード',
 			'watchTogether.paste' => '貼り付け',
 			'watchTogether.noCodeInClipboard' => 'クリップボードにルームコードがありません',
+			'watchTogether.copyCode' => 'コードをコピー',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'コードをコピー',
 			'watchTogether.codeCopied' => 'ルームコードをコピーしました',
 			'watchTogether.shareInvite' => '招待を共有',
 			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
@@ -8074,9 +8072,9 @@ extension on TranslationsJa {
 			'metadataEdit.selectSquareArt' => '正方形アートを選択',
 			'metadataEdit.fromUrl' => 'URLから',
 			'metadataEdit.uploadFile' => 'ファイルをアップロード',
+			'metadataEdit.enterImageUrl' => '画像URLを入力',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => '画像URLを入力',
 			'metadataEdit.imageUrl' => '画像URL',
 			'metadataEdit.metadataUpdated' => 'メタデータを更新しました',
 			'metadataEdit.metadataUpdateFailed' => 'メタデータの更新に失敗しました',
@@ -8588,9 +8586,9 @@ extension on TranslationsJa {
 			'universalMedia.openWhat' => '何を開けたいですか?',
 			'universalMedia.stream' => 'ストリームアドレス',
 			'universalMedia.playlist' => 'プレイリスト',
+			'universalMedia.files' => 'デバイスファイル',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'デバイスファイル',
 			'universalMedia.favorites' => 'お気に入りのSave Stream',
 			'universalMedia.address' => 'メディアアドレス',
 			'universalMedia.addressHelp' => '認定認証またはサインパラメーターを持つURLは、このセッションのみに使用され、お気に入りとして保存することはできません。',
@@ -9102,9 +9100,9 @@ extension on TranslationsJa {
 			'sourceSetup.nfsTrustInvalid' => 'PEM 形式の CA 証明書またはサーバー証明書を使用してください。秘密鍵を含めないでください。',
 			'sourceSetup.addTrustCertificate' => 'カスタムの信頼証明書を追加',
 			'sourceSetup.replaceTrustCertificate' => '保存済みのカスタム証明書を置き換え',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS は通常の NFS およびマウントサービスのポートを使用し、NAS の RFC 9289 対応が必要です。TLS 1.3 が必須です。ホスト名または IP アドレスは証明書と一致する必要があります。暗号化された通信でも AUTH_SYS UID/GID は引き続き適用されます。',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS は通常の NFS およびマウントサービスのポートを使用し、NAS の RFC 9289 対応が必要です。TLS 1.3 が必須です。ホスト名または IP アドレスは証明書と一致する必要があります。暗号化された通信でも AUTH_SYS UID/GID は引き続き適用されます。',
 			'sourceSetup.clientCertificate' => 'クライアント証明書（任意）',
 			'sourceSetup.clientCertificateHelp' => 'NAS がこのクライアントを認証できるようにします。AUTH_SYS ID は引き続き NAS のエクスポートポリシーに従います。',
 			'sourceSetup.savedIdentity' => '保存済みのクライアント認証情報を使用します。',

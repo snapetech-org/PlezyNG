@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "এই বিষয়বস্তু এখন আর পাওয়া যায় না।",
     "errorLoadingFileInfo": "ভুল লোড ফাইল তথ্য: ${error}",
     "errorLoadingSeries": "ভুল লোডিং সিরিজ",
-    "musicNotSupported": "Music Playback এখনো সমর্থিত হয় না",
     "noDescriptionAvailable": "কোন বিবরণ পাওয়া যায় না",
     "noProfilesAvailable": "কোন প্রোফাইল পাওয়া যায় না",
     "contactAdminForProfiles": "আপনার সার্ভার প্রশাসককে যোগাযোগ করুন প্রোফাইল যোগ করার জন্য",

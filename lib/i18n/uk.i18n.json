@@ -1244,7 +1244,6 @@
     "mediaUnavailable": "Цей контент більше не доступний.",
     "errorLoadingFileInfo": "Помилка завантаження файлу інформація: ${error}",
     "errorLoadingSeries": "Серія помилок завантаження",
-    "musicNotSupported": "Музичне відтворення ще не підтримується",
     "noDescriptionAvailable": "Опис не доступний",
     "noProfilesAvailable": "Доступні профілі немає",
     "contactAdminForProfiles": "Зв'яжіться з адміністратором сервера, щоб додати профілі",

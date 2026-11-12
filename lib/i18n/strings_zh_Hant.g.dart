@@ -1326,7 +1326,6 @@ class _Translations$messages$zh_Hant extends Translations$messages$zh {
 	@override String get mediaUnavailable => '此內容已無法使用。';
 	@override String errorLoadingFileInfo({required Object error}) => '載入檔案資訊時發生錯誤：${error}';
 	@override String get errorLoadingSeries => '載入影集時發生錯誤';
-	@override String get musicNotSupported => '目前不支援播放音樂';
 	@override String get noDescriptionAvailable => '目前沒有描述';
 	@override String get noProfilesAvailable => '沒有可用的使用者設定檔';
 	@override String get contactAdminForProfiles => '請聯絡伺服器管理員新增使用者設定檔';
@@ -6631,7 +6630,6 @@ extension on TranslationsZhHant {
 			'messages.mediaUnavailable' => '此內容已無法使用。',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => '載入檔案資訊時發生錯誤：${error}',
 			'messages.errorLoadingSeries' => '載入影集時發生錯誤',
-			'messages.musicNotSupported' => '目前不支援播放音樂',
 			'messages.noDescriptionAvailable' => '目前沒有描述',
 			'messages.noProfilesAvailable' => '沒有可用的使用者設定檔',
 			'messages.contactAdminForProfiles' => '請聯絡伺服器管理員新增使用者設定檔',
@@ -7047,9 +7045,9 @@ extension on TranslationsZhHant {
 			'libraries.libraryOptions' => '媒體庫選項',
 			'libraries.content' => '媒體庫內容',
 			'libraries.selectLibrary' => '選擇媒體庫',
+			'libraries.filtersWithCount' => ({required Object count}) => '篩選器（${count}）',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => '篩選器（${count}）',
 			'libraries.noRecommendations' => '目前沒有推薦',
 			'libraries.noCollections' => '此媒體庫中沒有收藏集',
 			'libraries.noFoldersFound' => '找不到資料夾',
@@ -7561,9 +7559,9 @@ extension on TranslationsZhHant {
 			'watchTogether.roomCode' => '房間代碼',
 			'watchTogether.paste' => '貼上',
 			'watchTogether.noCodeInClipboard' => '剪貼簿中沒有房間代碼',
+			'watchTogether.copyCode' => '複製代碼',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => '複製代碼',
 			'watchTogether.codeCopied' => '房間代碼已複製',
 			'watchTogether.shareInvite' => '分享邀請',
 			'watchTogether.inviteCopied' => '已複製邀請。請將其貼到訊息中。',
@@ -8075,9 +8073,9 @@ extension on TranslationsZhHant {
 			'metadataEdit.selectSquareArt' => '選擇方形圖片',
 			'metadataEdit.fromUrl' => '自訂網址',
 			'metadataEdit.uploadFile' => '上傳檔案',
+			'metadataEdit.enterImageUrl' => '輸入圖片 URL',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => '輸入圖片 URL',
 			'metadataEdit.imageUrl' => '圖片 URL',
 			'metadataEdit.metadataUpdated' => '中繼資料已更新',
 			'metadataEdit.metadataUpdateFailed' => '中繼資料更新失敗',
@@ -8589,9 +8587,9 @@ extension on TranslationsZhHant {
 			'universalMedia.openWhat' => '你想開啟什麼?',
 			'universalMedia.stream' => '流地址',
 			'universalMedia.playlist' => '播放列表',
+			'universalMedia.files' => '裝置檔案',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => '裝置檔案',
 			'universalMedia.favorites' => '儲存流喜愛',
 			'universalMedia.address' => '媒體地址',
 			'universalMedia.addressHelp' => 'HTTPS 是優先的. 有認可或簽名引數的 URL 僅用於此會議,並且不能儲存為喜愛。',
@@ -9103,9 +9101,9 @@ extension on TranslationsZhHant {
 			'sourceSetup.nfsTrustInvalid' => '請使用 PEM 格式的 CA 或伺服器憑證。請勿包含私密金鑰。',
 			'sourceSetup.addTrustCertificate' => '新增自訂信任憑證',
 			'sourceSetup.replaceTrustCertificate' => '取代已儲存的自訂憑證',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用一般的 NFS 和掛載服務連接埠，並要求 NAS 支援 RFC 9289。必須使用 TLS 1.3。主機名稱或 IP 位址必須與憑證相符。加密通道內仍須使用 AUTH_SYS UID/GID。',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用一般的 NFS 和掛載服務連接埠，並要求 NAS 支援 RFC 9289。必須使用 TLS 1.3。主機名稱或 IP 位址必須與憑證相符。加密通道內仍須使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '用戶端憑證（選填）',
 			'sourceSetup.clientCertificateHelp' => '讓 NAS 驗證此用戶端的身分；AUTH_SYS ID 仍受 NAS 匯出原則約束。',
 			'sourceSetup.savedIdentity' => '將使用已儲存的用戶端身分憑證。',

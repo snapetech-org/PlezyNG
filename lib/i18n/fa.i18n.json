@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "این محتوا دیگر در دسترس نیست.",
     "errorLoadingFileInfo": "خطای بارگذاری فایل اطلاعات: ${error}",
     "errorLoadingSeries": "خطای شارژ سری",
-    "musicNotSupported": "پخش موسیقی هنوز پشتیبانی نشده است",
     "noDescriptionAvailable": "هیچ توضیحی در دسترس نیست",
     "noProfilesAvailable": "هیچ پروفایل در دسترس",
     "contactAdminForProfiles": "تماس با مدیر سرور برای اضافه کردن پروفایل ها",

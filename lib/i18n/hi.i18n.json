@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "यह सामग्री अब उपलब्ध नहीं है।",
     "errorLoadingFileInfo": "त्रुटि लोड फ़ाइल जानकारी: ${error}",
     "errorLoadingSeries": "त्रुटि चार्जिंग श्रृंखला",
-    "musicNotSupported": "संगीत प्लेबैक अभी तक समर्थित नहीं है",
     "noDescriptionAvailable": "कोई विवरण उपलब्ध नहीं",
     "noProfilesAvailable": "कोई प्रोफ़ाइल उपलब्ध नहीं",
     "contactAdminForProfiles": "प्रोफ़ाइल जोड़ने के लिए अपने सर्वर व्यवस्थापक से संपर्क करें",

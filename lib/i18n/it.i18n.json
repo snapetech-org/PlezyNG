@@ -1234,7 +1234,6 @@
     "mediaUnavailable": "Questo contenuto non è più disponibile.",
     "errorLoadingFileInfo": "Errore durante il caricamento delle informazioni sul file: ${error}",
     "errorLoadingSeries": "Errore durante il caricamento della serie",
-    "musicNotSupported": "La riproduzione musicale non è ancora supportata",
     "noDescriptionAvailable": "Nessuna descrizione disponibile",
     "noProfilesAvailable": "Nessun profilo disponibile",
     "contactAdminForProfiles": "Contatta l'amministratore del server per aggiungere profili",

@@ -1320,7 +1320,6 @@ class _Translations$messages$id extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Konten ini tidak lagi tersedia.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Info file kesalahan: ${error}';
 	@override String get errorLoadingSeries => 'Serangkaian Error Loading';
-	@override String get musicNotSupported => 'Playback musik belum disokong';
 	@override String get noDescriptionAvailable => 'Tidak ada deskripsi yang tersedia';
 	@override String get noProfilesAvailable => 'Tidak ada profil tersedia';
 	@override String get contactAdminForProfiles => 'Hubungi administrator server Anda untuk menambahkan profil';
@@ -6610,7 +6609,6 @@ extension on TranslationsId {
 			'messages.mediaUnavailable' => 'Konten ini tidak lagi tersedia.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Info file kesalahan: ${error}',
 			'messages.errorLoadingSeries' => 'Serangkaian Error Loading',
-			'messages.musicNotSupported' => 'Playback musik belum disokong',
 			'messages.noDescriptionAvailable' => 'Tidak ada deskripsi yang tersedia',
 			'messages.noProfilesAvailable' => 'Tidak ada profil tersedia',
 			'messages.contactAdminForProfiles' => 'Hubungi administrator server Anda untuk menambahkan profil',
@@ -7026,9 +7024,9 @@ extension on TranslationsId {
 			'libraries.libraryOptions' => 'Pilihan perpustakaan',
 			'libraries.content' => 'Perpustakaan konten',
 			'libraries.selectLibrary' => 'Pilih perpustakaan',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			'libraries.noRecommendations' => 'Tidak ada rekomendasi tersedia',
 			'libraries.noCollections' => 'Tidak ada koleksi di perpustakaan ini',
 			'libraries.noFoldersFound' => 'Tidak ditemukan folder',
@@ -7540,9 +7538,9 @@ extension on TranslationsId {
 			'watchTogether.roomCode' => 'Kode kamar',
 			'watchTogether.paste' => 'Tempel',
 			'watchTogether.noCodeInClipboard' => 'Clipboard tidak mengandung kode kamar',
+			'watchTogether.copyCode' => 'Kopi kode',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Kopi kode',
 			'watchTogether.codeCopied' => 'Kode kamar disalin',
 			'watchTogether.shareInvite' => 'Membagi Jemputan',
 			'watchTogether.inviteCopied' => 'Tuliskan pesan, masukkan ke dalam pesan.',
@@ -8054,9 +8052,9 @@ extension on TranslationsId {
 			'metadataEdit.selectSquareArt' => 'Seleksi Square Art',
 			'metadataEdit.fromUrl' => 'dari URL',
 			'metadataEdit.uploadFile' => 'Upload file',
+			'metadataEdit.enterImageUrl' => 'Masukkan URL gambar',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Masukkan URL gambar',
 			'metadataEdit.imageUrl' => 'Gambar URL',
 			'metadataEdit.metadataUpdated' => 'Metadata yang diperbarui',
 			'metadataEdit.metadataUpdateFailed' => 'Tidak dapat mengemas kini metadata',
@@ -8568,9 +8566,9 @@ extension on TranslationsId {
 			'universalMedia.openWhat' => 'Apa yang ingin Anda buka?',
 			'universalMedia.stream' => 'Alamat Stream',
 			'universalMedia.playlist' => 'Daftar Playlist',
+			'universalMedia.files' => 'perangkat file',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'perangkat file',
 			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
 			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diakui hanya digunakan untuk sesi ini dan tidak dapat disimpan sebagai favorit.',
@@ -9082,9 +9080,9 @@ extension on TranslationsId {
 			'sourceSetup.nfsTrustInvalid' => 'Gunakan sertifikat CA atau server dalam format PEM. Jangan sertakan kunci privat.',
 			'sourceSetup.addTrustCertificate' => 'Tambahkan sertifikat kepercayaan khusus',
 			'sourceSetup.replaceTrustCertificate' => 'Ganti sertifikat khusus yang tersimpan',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan layanan mount biasa serta memerlukan dukungan RFC 9289 pada NAS. TLS 1.3 wajib digunakan. Nama host atau IP harus cocok dengan sertifikat. AUTH_SYS UID/GID tetap berlaku di dalam saluran terenkripsi.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan layanan mount biasa serta memerlukan dukungan RFC 9289 pada NAS. TLS 1.3 wajib digunakan. Nama host atau IP harus cocok dengan sertifikat. AUTH_SYS UID/GID tetap berlaku di dalam saluran terenkripsi.',
 			'sourceSetup.clientCertificate' => 'Sertifikat klien (opsional)',
 			'sourceSetup.clientCertificateHelp' => 'Memungkinkan NAS mengautentikasi klien ini; ID AUTH_SYS tetap bergantung pada kebijakan ekspor NFS di NAS.',
 			'sourceSetup.savedIdentity' => 'Identitas klien yang tersimpan akan digunakan.',

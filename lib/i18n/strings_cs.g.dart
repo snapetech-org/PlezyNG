@@ -1339,7 +1339,6 @@ class _Translations$messages$cs extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Tento obsah již není k dispozici.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Informace o souboru chyby: ${error}';
 	@override String get errorLoadingSeries => 'Chyby v seriálu';
-	@override String get musicNotSupported => 'Hudební playback zatím není podporován';
 	@override String get noDescriptionAvailable => 'Žádný popis k dispozici';
 	@override String get noProfilesAvailable => 'Žádné profily k dispozici';
 	@override String get contactAdminForProfiles => 'Kontaktujte správce serveru, abyste přidali profily';
@@ -6679,7 +6678,6 @@ extension on TranslationsCs {
 			'messages.mediaUnavailable' => 'Tento obsah již není k dispozici.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Informace o souboru chyby: ${error}',
 			'messages.errorLoadingSeries' => 'Chyby v seriálu',
-			'messages.musicNotSupported' => 'Hudební playback zatím není podporován',
 			'messages.noDescriptionAvailable' => 'Žádný popis k dispozici',
 			'messages.noProfilesAvailable' => 'Žádné profily k dispozici',
 			'messages.contactAdminForProfiles' => 'Kontaktujte správce serveru, abyste přidali profily',
@@ -7095,9 +7093,9 @@ extension on TranslationsCs {
 			'libraries.libraryOptions' => 'Možnosti knihovny',
 			'libraries.content' => 'Obsah knihovny',
 			'libraries.selectLibrary' => 'Vyberte knihovnu',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			'libraries.noCollections' => 'Žádné sbírky v této knihovně',
 			'libraries.noFoldersFound' => 'Žádné složky nenajdete',
@@ -7609,9 +7607,9 @@ extension on TranslationsCs {
 			'watchTogether.roomCode' => 'Kód místnosti',
 			'watchTogether.paste' => 'Vložit',
 			'watchTogether.noCodeInClipboard' => 'Klipboard neobsahuje kód místnosti',
+			'watchTogether.copyCode' => 'Kopírování kódu',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Kopírování kódu',
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
@@ -8123,9 +8121,9 @@ extension on TranslationsCs {
 			'metadataEdit.selectSquareArt' => 'Výběr Square Art',
 			'metadataEdit.fromUrl' => 'Od URL',
 			'metadataEdit.uploadFile' => 'Upload souborů',
+			'metadataEdit.enterImageUrl' => 'Vložte obrázek URL',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Vložte obrázek URL',
 			'metadataEdit.imageUrl' => 'obrázek URL',
 			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
 			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
@@ -8637,9 +8635,9 @@ extension on TranslationsCs {
 			'universalMedia.openWhat' => 'Co byste chtěli otevřít?',
 			'universalMedia.stream' => 'Streamová adresa',
 			'universalMedia.playlist' => 'Playlisty',
+			'universalMedia.files' => 'Přístrojové soubory',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'Přístrojové soubory',
 			'universalMedia.favorites' => 'Úsporný stream oblíbené',
 			'universalMedia.address' => 'Mediální adresa',
 			'universalMedia.addressHelp' => 'URL s uznanými parametry ověřování nebo podpisů se používají pouze pro tuto schůzku a nelze je uložit jako oblíbené.',
@@ -9151,9 +9149,9 @@ extension on TranslationsCs {
 			'sourceSetup.nfsTrustInvalid' => 'Použijte certifikát CA nebo serveru ve formátu PEM. Nevkládejte soukromý klíč.',
 			'sourceSetup.addTrustCertificate' => 'Přidat vlastní důvěryhodný certifikát',
 			'sourceSetup.replaceTrustCertificate' => 'Nahradit uložený vlastní certifikát',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS používá běžné porty NFS a služby připojení a vyžaduje podporu RFC 9289 na NAS. Je nutné TLS 1.3. Název hostitele nebo IP adresa musí odpovídat certifikátu. UID/GID AUTH_SYS nadále platí i v šifrovaném kanálu.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS používá běžné porty NFS a služby připojení a vyžaduje podporu RFC 9289 na NAS. Je nutné TLS 1.3. Název hostitele nebo IP adresa musí odpovídat certifikátu. UID/GID AUTH_SYS nadále platí i v šifrovaném kanálu.',
 			'sourceSetup.clientCertificate' => 'Klientský certifikát (nepovinné)',
 			'sourceSetup.clientCertificateHelp' => 'Umožňuje NAS ověřit tohoto klienta; ID AUTH_SYS stále podléhají pravidlům exportu NFS na NAS.',
 			'sourceSetup.savedIdentity' => 'Bude použita uložená identita klienta.',

@@ -1230,7 +1230,6 @@
     "mediaUnavailable": "이 콘텐츠는 더 이상 사용할 수 없습니다.",
     "errorLoadingFileInfo": "파일 정보 로딩 중 오류: ${error}",
     "errorLoadingSeries": "시리즈 로딩 중 오류",
-    "musicNotSupported": "음악 재생 미지원",
     "noDescriptionAvailable": "설명이 없습니다",
     "noProfilesAvailable": "사용 가능한 프로필이 없습니다",
     "contactAdminForProfiles": "프로필을 추가하려면 서버 관리자에게 문의하세요",

@@ -347,4 +347,58 @@ void main() {
       expect(q.cursor, 1);
     });
   });
+  test('queue snapshots are stable, immutable and retired by each structural edit', () {
+    final q = controller()..load(tracks);
+    final original = q.queue;
+    expect(q.queue, same(original));
+    expect(() => original.clear(), throwsUnsupportedError);
+    q.jumpTo(2);
+    q.repeatMode = MusicRepeatMode.all;
+    expect(q.queue, same(original));
+    for (final edit in <void Function()>[
+      () => q.addNext([tracks.first]),
+      () => q.addToEnd([tracks.last]),
+      () => q.move(0, 1),
+      () => q.removeAt(0),
+      q.toggleShuffle,
+      q.shuffleAlbums,
+      q.clearUpcoming,
+      () => q.load(tracks),
+      () => q.restoreState(q.captureState()),
+      q.clear,
+    ]) {
+      final before = q.queue, saved = List.of(q.queue);
+      edit();
+      expect(q.queue, isNot(same(before)));
+      expect(before, saved);
+      expect(q.queue, same(q.queue));
+    }
+    expect(original, tracks);
+  });
+
+  test('large shuffled tail compaction preserves canonical duplicates and active occurrence', () {
+    final repeated = _track('duplicate');
+    final items = [for (var i = 0; i < 10000; i++) i % 100 == 0 ? repeated : _track('$i')];
+    for (final cursor in [0, 51, 5000, 9998]) {
+      final q = controller()..load(items, shuffle: true);
+      q.jumpTo(cursor);
+      final state = q.captureState();
+      final retained = state.order.take(cursor + 1).toList();
+      final playback = q.queue.take(cursor + 1).toList();
+      final active = q.current;
+      q.clearUpcoming();
+      expect(q.queue, playback);
+      expect(q.current, same(active));
+      expect(q.length, cursor + 1);
+      expect(q.cursor, cursor);
+      expect(q.shuffled, isTrue);
+      q.toggleShuffle();
+      final canonical = retained..sort();
+      expect(q.queue, [for (final index in canonical) items[index]]);
+      expect(q.current, same(active));
+      final restored = controller();
+      expect(restored.restoreState(q.captureState()), isTrue);
+      expect(restored.queue, q.queue);
+    }
+  });
 }

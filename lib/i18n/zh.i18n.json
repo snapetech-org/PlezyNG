@@ -1230,7 +1230,6 @@
     "mediaUnavailable": "此内容不再可用。",
     "errorLoadingFileInfo": "加载文件信息时出错：${error}",
     "errorLoadingSeries": "加载剧集时出错",
-    "musicNotSupported": "尚不支持播放音乐",
     "noDescriptionAvailable": "暂无描述",
     "noProfilesAvailable": "没有可用的用户资料",
     "contactAdminForProfiles": "请联系服务器管理员添加用户资料",

@@ -1325,7 +1325,6 @@ class Translations$messages$zh extends Translations$messages$en {
 	@override String get mediaUnavailable => '此内容不再可用。';
 	@override String errorLoadingFileInfo({required Object error}) => '加载文件信息时出错：${error}';
 	@override String get errorLoadingSeries => '加载剧集时出错';
-	@override String get musicNotSupported => '尚不支持播放音乐';
 	@override String get noDescriptionAvailable => '暂无描述';
 	@override String get noProfilesAvailable => '没有可用的用户资料';
 	@override String get contactAdminForProfiles => '请联系服务器管理员添加用户资料';
@@ -6630,7 +6629,6 @@ extension on TranslationsZh {
 			'messages.mediaUnavailable' => '此内容不再可用。',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => '加载文件信息时出错：${error}',
 			'messages.errorLoadingSeries' => '加载剧集时出错',
-			'messages.musicNotSupported' => '尚不支持播放音乐',
 			'messages.noDescriptionAvailable' => '暂无描述',
 			'messages.noProfilesAvailable' => '没有可用的用户资料',
 			'messages.contactAdminForProfiles' => '请联系服务器管理员添加用户资料',
@@ -7046,9 +7044,9 @@ extension on TranslationsZh {
 			'libraries.libraryOptions' => '媒体库选项',
 			'libraries.content' => '媒体库内容',
 			'libraries.selectLibrary' => '选择媒体库',
+			'libraries.filtersWithCount' => ({required Object count}) => '筛选器（${count}）',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => '筛选器（${count}）',
 			'libraries.noRecommendations' => '暂无推荐',
 			'libraries.noCollections' => '此媒体库中没有合集',
 			'libraries.noFoldersFound' => '未找到文件夹',
@@ -7560,9 +7558,9 @@ extension on TranslationsZh {
 			'watchTogether.roomCode' => '房间代码',
 			'watchTogether.paste' => '粘贴',
 			'watchTogether.noCodeInClipboard' => '剪贴板中没有房间代码',
+			'watchTogether.copyCode' => '复制代码',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => '复制代码',
 			'watchTogether.codeCopied' => '房间代码已复制',
 			'watchTogether.shareInvite' => '分享邀请',
 			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
@@ -8074,9 +8072,9 @@ extension on TranslationsZh {
 			'metadataEdit.selectSquareArt' => '选择方形图片',
 			'metadataEdit.fromUrl' => '通过 URL',
 			'metadataEdit.uploadFile' => '上传文件',
+			'metadataEdit.enterImageUrl' => '输入图片 URL',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => '输入图片 URL',
 			'metadataEdit.imageUrl' => '图片 URL',
 			'metadataEdit.metadataUpdated' => '元数据已更新',
 			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
@@ -8588,9 +8586,9 @@ extension on TranslationsZh {
 			'universalMedia.openWhat' => '你想打开什么?',
 			'universalMedia.stream' => '流地址',
 			'universalMedia.playlist' => '播放列表',
+			'universalMedia.files' => '设备文件',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => '设备文件',
 			'universalMedia.favorites' => '保存流喜爱',
 			'universalMedia.address' => '媒體地址',
 			'universalMedia.addressHelp' => 'HTTPS 是优先的. 有认可或签名参数的 URL 仅用于此会议,并且不能保存为喜爱。',
@@ -9102,9 +9100,9 @@ extension on TranslationsZh {
 			'sourceSetup.nfsTrustInvalid' => '请使用 PEM 格式的 CA 或服务器证书。不要包含私钥。',
 			'sourceSetup.addTrustCertificate' => '添加自定义信任证书',
 			'sourceSetup.replaceTrustCertificate' => '替换已保存的自定义证书',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用常规 NFS 和挂载服务端口，并要求 NAS 支持 RFC 9289。必须使用 TLS 1.3。主机名或 IP 地址必须与证书匹配。加密通道内仍需使用 AUTH_SYS UID/GID。',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用常规 NFS 和挂载服务端口，并要求 NAS 支持 RFC 9289。必须使用 TLS 1.3。主机名或 IP 地址必须与证书匹配。加密通道内仍需使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '客户端证书（可选）',
 			'sourceSetup.clientCertificateHelp' => '允许 NAS 验证此客户端的身份；AUTH_SYS ID 仍受 NAS 导出策略约束。',
 			'sourceSetup.savedIdentity' => '将使用已保存的客户端身份凭据。',

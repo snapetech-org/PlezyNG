@@ -1331,7 +1331,6 @@ class Translations$messages$fr extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Ce contenu n’est plus disponible.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Erreur lors du chargement des informations sur le fichier : ${error}';
 	@override String get errorLoadingSeries => 'Erreur lors du chargement de la série';
-	@override String get musicNotSupported => 'La lecture de musique n\'est pas encore prise en charge';
 	@override String get noDescriptionAvailable => 'Aucune description disponible';
 	@override String get noProfilesAvailable => 'Aucun profil disponible';
 	@override String get contactAdminForProfiles => 'Contactez votre administrateur serveur pour ajouter des profils';
@@ -6689,7 +6688,6 @@ extension on TranslationsFr {
 			'messages.mediaUnavailable' => 'Ce contenu n’est plus disponible.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Erreur lors du chargement des informations sur le fichier : ${error}',
 			'messages.errorLoadingSeries' => 'Erreur lors du chargement de la série',
-			'messages.musicNotSupported' => 'La lecture de musique n\'est pas encore prise en charge',
 			'messages.noDescriptionAvailable' => 'Aucune description disponible',
 			'messages.noProfilesAvailable' => 'Aucun profil disponible',
 			'messages.contactAdminForProfiles' => 'Contactez votre administrateur serveur pour ajouter des profils',
@@ -7105,9 +7103,9 @@ extension on TranslationsFr {
 			'libraries.manageLibraries' => 'Gérer les bibliothèques',
 			'libraries.sort' => 'Trier',
 			'libraries.sortBy' => 'Trier par',
+			'libraries.filters' => 'Filtres',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filters' => 'Filtres',
 			'libraries.confirmActionMessage' => 'Êtes-vous sûr de vouloir effectuer cette action ?',
 			'libraries.showLibrary' => 'Afficher la bibliothèque',
 			'libraries.hideLibrary' => 'Masquer la bibliothèque',
@@ -7619,9 +7617,9 @@ extension on TranslationsFr {
 			'watchTogether.relayPublic' => 'Les salons utilisent les relais publics Open Watch Party.',
 			'watchTogether.relayCustom' => ({required Object url}) => 'Les salons utilisent votre relais à l’adresse ${url}.',
 			'watchTogether.recentRooms' => 'Salons récents',
+			'watchTogether.roomActions' => 'Actions du salon',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.roomActions' => 'Actions du salon',
 			'watchTogether.renameRoom' => 'Renommer le salon',
 			'watchTogether.removeRoom' => 'Supprimer',
 			'watchTogether.enterRoomCode' => 'Saisissez le code à 6 caractères communiqué par l’hôte.',
@@ -8133,9 +8131,9 @@ extension on TranslationsFr {
 			'metadataEdit.poster' => 'Affiche',
 			'metadataEdit.background' => 'Arrière-plan',
 			'metadataEdit.logo' => 'Logo',
+			'metadataEdit.squareArt' => 'Image carrée',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.squareArt' => 'Image carrée',
 			'metadataEdit.selectPoster' => 'Sélectionner l\'affiche',
 			'metadataEdit.selectBackground' => 'Sélectionner l\'arrière-plan',
 			'metadataEdit.selectLogo' => 'Sélectionner le logo',
@@ -8647,9 +8645,9 @@ extension on TranslationsFr {
 			'platform.localNetworkPermission' => 'Pleazyng se connecte à vos serveurs multimédias et à vos appareils de lecture sur votre réseau local.',
 			'platform.locationPermission' => 'Pleazyng utilise l\'accès à la localisation lorsque iOS l\'exige pour détecter votre réseau local et se connecter à vos serveurs de médias.',
 			'platform.photoLibraryPermission' => 'Choisissez des images de votre photothèque pour illustrer vos médias.',
+			'platform.cameraPermission' => 'Scannez des codes QR pour associer une Companion Remote.',
 			_ => null,
 		} ?? switch (path) {
-			'platform.cameraPermission' => 'Scannez des codes QR pour associer une Companion Remote.',
 			'universalMedia.title' => 'Médias ouverts',
 			'universalMedia.shortcutHelp' => 'Jouez à un lien, une playlist ou un fichier pour cette session.',
 			'universalMedia.intro' => 'Ouvrez un lien, une liste de lecture ou un fichier. Playback utilise le lecteur standard de Pleazyng et n’ajoute pas d’historique à votre bibliothèque.',
@@ -9161,9 +9159,9 @@ extension on TranslationsFr {
 			'sourceSetup.nfsMountPortHelp' => 'Par défaut : 20048',
 			'sourceSetup.nfsUserId' => 'Identifiant utilisateur NFS (AUTH_SYS)',
 			'sourceSetup.nfsUserIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant autorisé par le partage NFS du NAS.',
+			'sourceSetup.nfsGroupId' => 'Identifiant de groupe NFS (AUTH_SYS)',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsGroupId' => 'Identifiant de groupe NFS (AUTH_SYS)',
 			'sourceSetup.nfsGroupIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant de groupe autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsEncryption' => 'Exiger NFS chiffré (RPC-with-TLS)',
 			'sourceSetup.nfsEncryptionHelp' => 'Exiger TLS 1.3 pour NFS et le service de montage. Si le NAS ne le prend pas en charge, la connexion est refusée.',
@@ -9675,9 +9673,9 @@ extension on TranslationsFr {
 			'musicDevices.forget' => 'Oublier cet appareil',
 			'musicDevices.receive' => 'Autoriser la lecture sur cet appareil',
 			'musicDevices.nearbyHint' => 'Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.',
+			'musicDevices.receiverHint' => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.',
 			_ => null,
 		} ?? switch (path) {
-			'musicDevices.receiverHint' => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.',
 			'musicDevices.moveFailed' => 'Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.',
 			'musicDevices.uncertain' => 'Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.',
 			'musicDevices.away' => 'Hors de chez soi',

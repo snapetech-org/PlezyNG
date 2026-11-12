@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "Това съдържание вече не е налично.",
     "errorLoadingFileInfo": "Грешка при зареждане на информация за файла: ${error}",
     "errorLoadingSeries": "Грешка при зареждане на сериала",
-    "musicNotSupported": "Възпроизвеждането на музика все още не се поддържа",
     "noDescriptionAvailable": "Няма налично описание",
     "noProfilesAvailable": "Няма налични профили",
     "contactAdminForProfiles": "Свържете се с администратора на сървъра, за да добави профили",

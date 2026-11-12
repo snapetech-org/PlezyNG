@@ -1329,7 +1329,6 @@ class _Translations$messages$he extends Translations$messages$en {
 	@override String get mediaUnavailable => 'תוכן זה כבר לא זמין.';
 	@override String errorLoadingFileInfo({required Object error}) => 'טעות טעינה קובץ מידע: ${error}';
 	@override String get errorLoadingSeries => 'שגיאות סדרת טעינה';
-	@override String get musicNotSupported => 'שחקני מוסיקה עדיין לא נתמכים';
 	@override String get noDescriptionAvailable => 'אין תיאור זמין';
 	@override String get noProfilesAvailable => 'אין פרופיל זמין';
 	@override String get contactAdminForProfiles => 'צור קשר עם מנהל השרת שלך כדי להוסיף פרופיל';
@@ -6643,7 +6642,6 @@ extension on TranslationsHe {
 			'messages.mediaUnavailable' => 'תוכן זה כבר לא זמין.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'טעות טעינה קובץ מידע: ${error}',
 			'messages.errorLoadingSeries' => 'שגיאות סדרת טעינה',
-			'messages.musicNotSupported' => 'שחקני מוסיקה עדיין לא נתמכים',
 			'messages.noDescriptionAvailable' => 'אין תיאור זמין',
 			'messages.noProfilesAvailable' => 'אין פרופיל זמין',
 			'messages.contactAdminForProfiles' => 'צור קשר עם מנהל השרת שלך כדי להוסיף פרופיל',
@@ -7059,9 +7057,9 @@ extension on TranslationsHe {
 			'libraries.libraryOptions' => 'אפשרויות ספרייה',
 			'libraries.content' => 'ספרייה תוכן',
 			'libraries.selectLibrary' => 'בחר ספרייה',
+			'libraries.filtersWithCount' => ({required Object count}) => 'מסננים (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'מסננים (${count})',
 			'libraries.noRecommendations' => 'אין המלצות זמינות',
 			'libraries.noCollections' => 'אין אוסף בספריה זו',
 			'libraries.noFoldersFound' => 'לא נמצאו קבצים',
@@ -7573,9 +7571,9 @@ extension on TranslationsHe {
 			'watchTogether.roomCode' => 'קוד חדר',
 			'watchTogether.paste' => 'פסטה',
 			'watchTogether.noCodeInClipboard' => 'הקליפ לא מכיל קוד חדר',
+			'watchTogether.copyCode' => 'עותק קוד',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'עותק קוד',
 			'watchTogether.codeCopied' => 'קוד חדר עותק',
 			'watchTogether.shareInvite' => 'שיתוף הזמנה',
 			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
@@ -8087,9 +8085,9 @@ extension on TranslationsHe {
 			'metadataEdit.selectSquareArt' => 'בחר Square Art',
 			'metadataEdit.fromUrl' => 'מתוך URL',
 			'metadataEdit.uploadFile' => 'להעלות קובץ',
+			'metadataEdit.enterImageUrl' => 'כניסת תמונה URL',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'כניסת תמונה URL',
 			'metadataEdit.imageUrl' => 'תמונה URL',
 			'metadataEdit.metadataUpdated' => 'נתונים מתעדכנים',
 			'metadataEdit.metadataUpdateFailed' => 'לא הצלחתי לעדכן את הנתונים',
@@ -8601,9 +8599,9 @@ extension on TranslationsHe {
 			'universalMedia.openWhat' => 'מה היית רוצה לפתוח?',
 			'universalMedia.stream' => 'כתובת זרם',
 			'universalMedia.playlist' => 'Playlist',
+			'universalMedia.files' => 'מכשיר קבצים',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'מכשיר קבצים',
 			'universalMedia.favorites' => 'זרם אחסון האהובים',
 			'universalMedia.address' => 'כתובת התקשורת',
 			'universalMedia.addressHelp' => 'כתובות URL עם פרמטרים של זיהוי או חתימה מוכרים משמשים רק עבור הפגישה הזו ולא ניתן לשמור אותם כפופולריים.',
@@ -9115,9 +9113,9 @@ extension on TranslationsHe {
 			'sourceSetup.nfsTrustInvalid' => 'יש להשתמש באישור CA או שרת בפורמט PEM. אין לכלול מפתח פרטי.',
 			'sourceSetup.addTrustCertificate' => 'הוספת אישור אמון מותאם אישית',
 			'sourceSetup.replaceTrustCertificate' => 'החלפת האישור המותאם אישית השמור',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS משתמש ביציאות הרגילות של NFS ושירות ה־mount, ודורש תמיכה ב־RFC 9289 מצד ה־NAS. נדרש TLS 1.3. שם המארח או כתובת ה־IP חייבים להתאים לאישור. מזהי AUTH_SYS UID/GID עדיין חלים בתוך הערוץ המוצפן.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS משתמש ביציאות הרגילות של NFS ושירות ה־mount, ודורש תמיכה ב־RFC 9289 מצד ה־NAS. נדרש TLS 1.3. שם המארח או כתובת ה־IP חייבים להתאים לאישור. מזהי AUTH_SYS UID/GID עדיין חלים בתוך הערוץ המוצפן.',
 			'sourceSetup.clientCertificate' => 'אישור לקוח (רשות)',
 			'sourceSetup.clientCertificateHelp' => 'מאפשר ל־NAS לאמת את הלקוח הזה; מזהי AUTH_SYS עדיין כפופים למדיניות הייצוא של ה־NAS.',
 			'sourceSetup.savedIdentity' => 'ייעשה שימוש בפרטי הזיהוי השמורים של הלקוח.',

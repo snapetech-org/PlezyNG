@@ -1327,7 +1327,6 @@ class _Translations$messages$sv extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Det här innehållet är inte längre tillgängligt.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Fel vid laddning av filinformation: ${error}';
 	@override String get errorLoadingSeries => 'Fel vid laddning av serie';
-	@override String get musicNotSupported => 'Musikuppspelning stöds inte ännu';
 	@override String get noDescriptionAvailable => 'Ingen beskrivning tillgänglig';
 	@override String get noProfilesAvailable => 'Inga profiler tillgängliga';
 	@override String get contactAdminForProfiles => 'Kontakta din serveradministratör för att lägga till profiler';
@@ -6635,7 +6634,6 @@ extension on TranslationsSv {
 			'messages.mediaUnavailable' => 'Det här innehållet är inte längre tillgängligt.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Fel vid laddning av filinformation: ${error}',
 			'messages.errorLoadingSeries' => 'Fel vid laddning av serie',
-			'messages.musicNotSupported' => 'Musikuppspelning stöds inte ännu',
 			'messages.noDescriptionAvailable' => 'Ingen beskrivning tillgänglig',
 			'messages.noProfilesAvailable' => 'Inga profiler tillgängliga',
 			'messages.contactAdminForProfiles' => 'Kontakta din serveradministratör för att lägga till profiler',
@@ -7051,9 +7049,9 @@ extension on TranslationsSv {
 			'libraries.libraryOptions' => 'Biblioteksalternativ',
 			'libraries.content' => 'bibliotekets innehåll',
 			'libraries.selectLibrary' => 'Välj bibliotek',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			'libraries.noRecommendations' => 'Inga rekommendationer tillgängliga',
 			'libraries.noCollections' => 'Inga samlingar i det här biblioteket',
 			'libraries.noFoldersFound' => 'Inga mappar hittades',
@@ -7565,9 +7563,9 @@ extension on TranslationsSv {
 			'watchTogether.roomCode' => 'Rumskod',
 			'watchTogether.paste' => 'Klistra in',
 			'watchTogether.noCodeInClipboard' => 'Urklippet innehåller ingen rumskod',
+			'watchTogether.copyCode' => 'Kopiera kod',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Kopiera kod',
 			'watchTogether.codeCopied' => 'Rumskod kopierad',
 			'watchTogether.shareInvite' => 'Dela inbjudan',
 			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
@@ -8079,9 +8077,9 @@ extension on TranslationsSv {
 			'metadataEdit.selectSquareArt' => 'Välj kvadratisk bild',
 			'metadataEdit.fromUrl' => 'Från URL',
 			'metadataEdit.uploadFile' => 'Ladda upp fil',
+			'metadataEdit.enterImageUrl' => 'Ange bild-URL',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Ange bild-URL',
 			'metadataEdit.imageUrl' => 'Bild-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata har uppdaterats',
 			'metadataEdit.metadataUpdateFailed' => 'Det gick inte att uppdatera metadata',
@@ -8593,9 +8591,9 @@ extension on TranslationsSv {
 			'universalMedia.openWhat' => 'Vad skulle du vilja öppna?',
 			'universalMedia.stream' => 'Stream adress',
 			'universalMedia.playlist' => 'Spellista',
+			'universalMedia.files' => 'Device filer',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'Device filer',
 			'universalMedia.favorites' => 'Spara ström favoriter',
 			'universalMedia.address' => 'Media adresser',
 			'universalMedia.addressHelp' => 'URL-adresser med erkända verifierings- eller signaturparametrar används endast för den här sessionen och kan inte sparas som favorit.',
@@ -9107,9 +9105,9 @@ extension on TranslationsSv {
 			'sourceSetup.nfsTrustInvalid' => 'Använd ett CA- eller servercertifikat i PEM-format. Ta inte med någon privat nyckel.',
 			'sourceSetup.addTrustCertificate' => 'Lägg till anpassat betrott certifikat',
 			'sourceSetup.replaceTrustCertificate' => 'Ersätt sparat anpassat certifikat',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS använder de vanliga portarna för NFS och monteringstjänsten och kräver stöd för RFC 9289 i NAS-enheten. TLS 1.3 krävs. Värdnamnet eller IP-adressen måste stämma överens med certifikatet. AUTH_SYS UID/GID gäller fortfarande i den krypterade kanalen.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS använder de vanliga portarna för NFS och monteringstjänsten och kräver stöd för RFC 9289 i NAS-enheten. TLS 1.3 krävs. Värdnamnet eller IP-adressen måste stämma överens med certifikatet. AUTH_SYS UID/GID gäller fortfarande i den krypterade kanalen.',
 			'sourceSetup.clientCertificate' => 'Klientcertifikat (valfritt)',
 			'sourceSetup.clientCertificateHelp' => 'Låter NAS-enheten autentisera den här klienten; AUTH_SYS-ID:n styrs fortfarande av reglerna för NAS-enhetens NFS-delning.',
 			'sourceSetup.savedIdentity' => 'En sparad klientidentitet kommer att användas.',

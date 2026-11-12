@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "Бұл мазмұн енді қолжетімді емес.",
     "errorLoadingFileInfo": "Файл ақпаратын жүктеу қатесі: ${error}",
     "errorLoadingSeries": "Сериалды жүктеу қатесі",
-    "musicNotSupported": "Музыка ойнату әлі қолдау таппайды",
     "noDescriptionAvailable": "Сипаттамасы жоқ",
     "noProfilesAvailable": "Профильдер жоқ",
     "contactAdminForProfiles": "Профиль қосу үшін администраторға хабарласыңыз",

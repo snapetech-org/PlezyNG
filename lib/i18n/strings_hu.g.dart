@@ -1327,7 +1327,6 @@ class _Translations$messages$hu extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Ez a tartalom már nem érhető el.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Hiba a fájlinformációk betöltésekor: ${error}';
 	@override String get errorLoadingSeries => 'Hiba a sorozat betöltésekor';
-	@override String get musicNotSupported => 'A zenelejátszás még nem támogatott';
 	@override String get noDescriptionAvailable => 'Nincs elérhető leírás';
 	@override String get noProfilesAvailable => 'Nincsenek elérhető profilok';
 	@override String get contactAdminForProfiles => 'Lépj kapcsolatba a szerver adminisztrátorával profilok hozzáadásához';
@@ -6635,7 +6634,6 @@ extension on TranslationsHu {
 			'messages.mediaUnavailable' => 'Ez a tartalom már nem érhető el.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Hiba a fájlinformációk betöltésekor: ${error}',
 			'messages.errorLoadingSeries' => 'Hiba a sorozat betöltésekor',
-			'messages.musicNotSupported' => 'A zenelejátszás még nem támogatott',
 			'messages.noDescriptionAvailable' => 'Nincs elérhető leírás',
 			'messages.noProfilesAvailable' => 'Nincsenek elérhető profilok',
 			'messages.contactAdminForProfiles' => 'Lépj kapcsolatba a szerver adminisztrátorával profilok hozzáadásához',
@@ -7051,9 +7049,9 @@ extension on TranslationsHu {
 			'libraries.libraryOptions' => 'Könyvtár beállításai',
 			'libraries.content' => 'könyvtár tartalma',
 			'libraries.selectLibrary' => 'Könyvtár kiválasztása',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Szűrők (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Szűrők (${count})',
 			'libraries.noRecommendations' => 'Nincsenek elérhető ajánlások',
 			'libraries.noCollections' => 'Nincsenek gyűjtemények ebben a könyvtárban',
 			'libraries.noFoldersFound' => 'Nem találhatók mappák',
@@ -7565,9 +7563,9 @@ extension on TranslationsHu {
 			'watchTogether.roomCode' => 'Szobakód',
 			'watchTogether.paste' => 'Beillesztés',
 			'watchTogether.noCodeInClipboard' => 'A vágólapon nincs szobakód',
+			'watchTogether.copyCode' => 'Kód másolása',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Kód másolása',
 			'watchTogether.codeCopied' => 'Szobakód másolva',
 			'watchTogether.shareInvite' => 'Meghívó megosztása',
 			'watchTogether.inviteCopied' => 'Meghívó másolva. Illeszd be egy üzenetbe.',
@@ -8079,9 +8077,9 @@ extension on TranslationsHu {
 			'metadataEdit.selectSquareArt' => 'Négyzetes kép kiválasztása',
 			'metadataEdit.fromUrl' => 'URL-ről',
 			'metadataEdit.uploadFile' => 'Fájl feltöltése',
+			'metadataEdit.enterImageUrl' => 'Add meg a kép URL-címét',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Add meg a kép URL-címét',
 			'metadataEdit.imageUrl' => 'Kép URL-címe',
 			'metadataEdit.metadataUpdated' => 'Metaadatok frissítve',
 			'metadataEdit.metadataUpdateFailed' => 'Nem sikerült a metaadatok frissítése',
@@ -8593,9 +8591,9 @@ extension on TranslationsHu {
 			'universalMedia.openWhat' => 'Mit szeretne megnyitni?',
 			'universalMedia.stream' => 'Stream cím',
 			'universalMedia.playlist' => 'játéklisták',
+			'universalMedia.files' => 'készülék fájl',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'készülék fájl',
 			'universalMedia.favorites' => 'Megtakarított stream kedvencek',
 			'universalMedia.address' => 'média cím',
 			'universalMedia.addressHelp' => 'Az elismert hitelesítési vagy aláírási paraméterekkel rendelkező URL-k csak ebben az ülésen használhatók, és nem menthetők kedvencként.',
@@ -9107,9 +9105,9 @@ extension on TranslationsHu {
 			'sourceSetup.nfsTrustInvalid' => 'PEM-formátumú CA- vagy szervertanúsítványt használj. Ne adj meg privát kulcsot.',
 			'sourceSetup.addTrustCertificate' => 'Egyéni megbízható tanúsítvány hozzáadása',
 			'sourceSetup.replaceTrustCertificate' => 'Mentett egyéni tanúsítvány cseréje',
+			'sourceSetup.nfsTlsHelp' => 'Az RPC-with-TLS a szokásos NFS- és csatolásiszolgáltatás-portokat használja, és RFC 9289-támogatást igényel a NAS-on. TLS 1.3 szükséges. A gépnévnek vagy IP-címnek egyeznie kell a tanúsítvánnyal. Az AUTH_SYS UID/GID a titkosított csatornán belül is érvényes.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'Az RPC-with-TLS a szokásos NFS- és csatolásiszolgáltatás-portokat használja, és RFC 9289-támogatást igényel a NAS-on. TLS 1.3 szükséges. A gépnévnek vagy IP-címnek egyeznie kell a tanúsítvánnyal. Az AUTH_SYS UID/GID a titkosított csatornán belül is érvényes.',
 			'sourceSetup.clientCertificate' => 'Kliens tanúsítványa (nem kötelező)',
 			'sourceSetup.clientCertificateHelp' => 'Lehetővé teszi, hogy a NAS hitelesítse ezt a klienst; az AUTH_SYS-azonosítók továbbra is a NAS NFS-megosztásának szabályaitól függenek.',
 			'sourceSetup.savedIdentity' => 'A mentett kliensazonosság lesz használva.',

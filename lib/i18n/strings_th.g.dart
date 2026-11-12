@@ -1320,7 +1320,6 @@ class _Translations$messages$th extends Translations$messages$en {
 	@override String get mediaUnavailable => 'เนื้อหานี้ไม่สามารถใช้ได้อีกต่อไป';
 	@override String errorLoadingFileInfo({required Object error}) => 'ข้อมูลไฟล์โหลดข้อผิดพลาด: ${error}';
 	@override String get errorLoadingSeries => 'ชุดโหลดข้อผิดพลาด';
-	@override String get musicNotSupported => 'การเล่นเพลงยังไม่ได้สนับสนุน';
 	@override String get noDescriptionAvailable => 'ไม่มีคําอธิบาย';
 	@override String get noProfilesAvailable => 'ไม่มีโปรไฟล์';
 	@override String get contactAdminForProfiles => 'ติดต่อผู้ดูแลระบบเซิร์ฟเวอร์ของคุณเพื่อเพิ่มโปรไฟล์';
@@ -6610,7 +6609,6 @@ extension on TranslationsTh {
 			'messages.mediaUnavailable' => 'เนื้อหานี้ไม่สามารถใช้ได้อีกต่อไป',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'ข้อมูลไฟล์โหลดข้อผิดพลาด: ${error}',
 			'messages.errorLoadingSeries' => 'ชุดโหลดข้อผิดพลาด',
-			'messages.musicNotSupported' => 'การเล่นเพลงยังไม่ได้สนับสนุน',
 			'messages.noDescriptionAvailable' => 'ไม่มีคําอธิบาย',
 			'messages.noProfilesAvailable' => 'ไม่มีโปรไฟล์',
 			'messages.contactAdminForProfiles' => 'ติดต่อผู้ดูแลระบบเซิร์ฟเวอร์ของคุณเพื่อเพิ่มโปรไฟล์',
@@ -7026,9 +7024,9 @@ extension on TranslationsTh {
 			'libraries.libraryOptions' => 'ตัวเลือกห้องสมุด',
 			'libraries.content' => 'วัสดุห้องสมุด',
 			'libraries.selectLibrary' => 'เลือกห้องสมุด',
+			'libraries.filtersWithCount' => ({required Object count}) => 'ตัวกรอง (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'ตัวกรอง (${count})',
 			'libraries.noRecommendations' => 'ไม่มีคําแนะนําที่มีอยู่',
 			'libraries.noCollections' => 'ไม่มีคอลเลกชันในห้องสมุดนี้',
 			'libraries.noFoldersFound' => 'ไม่พบโฟลเดอร์',
@@ -7540,9 +7538,9 @@ extension on TranslationsTh {
 			'watchTogether.roomCode' => 'รหัสห้อง',
 			'watchTogether.paste' => 'แพสติ้ง',
 			'watchTogether.noCodeInClipboard' => 'แผ่นคลิปไม่ได้มีรหัสห้อง',
+			'watchTogether.copyCode' => 'รหัสคัดลอก',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'รหัสคัดลอก',
 			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
 			'watchTogether.shareInvite' => 'คู่มือ',
 			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
@@ -8054,9 +8052,9 @@ extension on TranslationsTh {
 			'metadataEdit.selectSquareArt' => 'เลือก Square Art',
 			'metadataEdit.fromUrl' => 'จาก URL',
 			'metadataEdit.uploadFile' => 'ดาวน์โหลดไฟล์',
+			'metadataEdit.enterImageUrl' => 'หมายเลข URL',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'หมายเลข URL',
 			'metadataEdit.imageUrl' => 'ภาพ URL',
 			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
 			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
@@ -8568,9 +8566,9 @@ extension on TranslationsTh {
 			'universalMedia.openWhat' => 'สิ่งที่คุณต้องการเปิด',
 			'universalMedia.stream' => 'หมายเลข Stream',
 			'universalMedia.playlist' => 'เล่น',
+			'universalMedia.files' => 'ไฟล์อุปกรณ์',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'ไฟล์อุปกรณ์',
 			'universalMedia.favorites' => 'เก็บ Stream มือสมัครเล่น',
 			'universalMedia.address' => 'อ้างอิงสื่อ',
 			'universalMedia.addressHelp' => 'HTTPS เป็นความต้องการ URL ที่มีพารามิเตอร์การรับรองหรือสัญญาที่ได้รับการยอมรับจะใช้เฉพาะสําหรับเซสชั่นนี้และไม่สามารถบันทึกเป็นโปรด',
@@ -9082,9 +9080,9 @@ extension on TranslationsTh {
 			'sourceSetup.nfsTrustInvalid' => 'ใช้ใบรับรอง CA หรือเซิร์ฟเวอร์ในรูปแบบ PEM ห้ามใส่กุญแจส่วนตัว',
 			'sourceSetup.addTrustCertificate' => 'เพิ่มใบรับรองความเชื่อถือที่กำหนดเอง',
 			'sourceSetup.replaceTrustCertificate' => 'แทนที่ใบรับรองที่กำหนดเองซึ่งบันทึกไว้',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS ใช้พอร์ต NFS และบริการเมานต์ตามปกติ และ NAS ต้องรองรับ RFC 9289 ต้องใช้ TLS 1.3 ชื่อโฮสต์หรือ IP ต้องตรงกับใบรับรอง AUTH_SYS UID/GID ยังคงมีผลภายในช่องทางที่เข้ารหัส',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS ใช้พอร์ต NFS และบริการเมานต์ตามปกติ และ NAS ต้องรองรับ RFC 9289 ต้องใช้ TLS 1.3 ชื่อโฮสต์หรือ IP ต้องตรงกับใบรับรอง AUTH_SYS UID/GID ยังคงมีผลภายในช่องทางที่เข้ารหัส',
 			'sourceSetup.clientCertificate' => 'ใบรับรองไคลเอนต์ (ไม่บังคับ)',
 			'sourceSetup.clientCertificateHelp' => 'ช่วยให้ NAS ยืนยันตัวตนของไคลเอนต์นี้ได้ โดย ID ของ AUTH_SYS ยังขึ้นอยู่กับนโยบายส่วนแบ่งปัน NFS ของ NAS',
 			'sourceSetup.savedIdentity' => 'จะใช้ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',

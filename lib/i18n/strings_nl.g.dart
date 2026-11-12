@@ -1327,7 +1327,6 @@ class _Translations$messages$nl extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Deze inhoud is niet langer beschikbaar.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Fout bij laden van bestandsinformatie: ${error}';
 	@override String get errorLoadingSeries => 'Fout bij laden van serie';
-	@override String get musicNotSupported => 'Muziek afspelen wordt nog niet ondersteund';
 	@override String get noDescriptionAvailable => 'Geen beschrijving beschikbaar';
 	@override String get noProfilesAvailable => 'Geen profielen beschikbaar';
 	@override String get contactAdminForProfiles => 'Neem contact op met je serverbeheerder om profielen toe te voegen';
@@ -6635,7 +6634,6 @@ extension on TranslationsNl {
 			'messages.mediaUnavailable' => 'Deze inhoud is niet langer beschikbaar.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Fout bij laden van bestandsinformatie: ${error}',
 			'messages.errorLoadingSeries' => 'Fout bij laden van serie',
-			'messages.musicNotSupported' => 'Muziek afspelen wordt nog niet ondersteund',
 			'messages.noDescriptionAvailable' => 'Geen beschrijving beschikbaar',
 			'messages.noProfilesAvailable' => 'Geen profielen beschikbaar',
 			'messages.contactAdminForProfiles' => 'Neem contact op met je serverbeheerder om profielen toe te voegen',
@@ -7051,9 +7049,9 @@ extension on TranslationsNl {
 			'libraries.libraryOptions' => 'Bibliotheekopties',
 			'libraries.content' => 'bibliotheekinhoud',
 			'libraries.selectLibrary' => 'Bibliotheek kiezen',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
 			'libraries.noRecommendations' => 'Geen aanbevelingen beschikbaar',
 			'libraries.noCollections' => 'Geen collecties in deze bibliotheek',
 			'libraries.noFoldersFound' => 'Geen mappen gevonden',
@@ -7565,9 +7563,9 @@ extension on TranslationsNl {
 			'watchTogether.roomCode' => 'Kamercode',
 			'watchTogether.paste' => 'Plakken',
 			'watchTogether.noCodeInClipboard' => 'Het klembord bevat geen kamercode',
+			'watchTogether.copyCode' => 'Code kopiëren',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Code kopiëren',
 			'watchTogether.codeCopied' => 'Kamercode gekopieerd',
 			'watchTogether.shareInvite' => 'Uitnodiging delen',
 			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
@@ -8079,9 +8077,9 @@ extension on TranslationsNl {
 			'metadataEdit.selectSquareArt' => 'Vierkante afbeelding selecteren',
 			'metadataEdit.fromUrl' => 'Vanaf URL',
 			'metadataEdit.uploadFile' => 'Bestand uploaden',
+			'metadataEdit.enterImageUrl' => 'Voer de afbeeldings-URL in',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Voer de afbeeldings-URL in',
 			'metadataEdit.imageUrl' => 'Afbeeldings-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata bijgewerkt',
 			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
@@ -8593,9 +8591,9 @@ extension on TranslationsNl {
 			'universalMedia.openWhat' => 'Wat wil je graag openen?',
 			'universalMedia.stream' => 'Streamadres',
 			'universalMedia.playlist' => 'Playlijst',
+			'universalMedia.files' => 'Gerelateerde bestanden',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'Gerelateerde bestanden',
 			'universalMedia.favorites' => 'Save Stream favorieten',
 			'universalMedia.address' => 'Media adres',
 			'universalMedia.addressHelp' => 'URL\'s met geïdentificeerde credentiale of signature parameters worden alleen gebruikt voor deze sessie en kunnen niet als favorieten worden opgeslagen.',
@@ -9107,9 +9105,9 @@ extension on TranslationsNl {
 			'sourceSetup.nfsTrustInvalid' => 'Gebruik een CA- of servercertificaat in PEM-formaat. Voeg geen privésleutel toe.',
 			'sourceSetup.addTrustCertificate' => 'Aangepast vertrouwenscertificaat toevoegen',
 			'sourceSetup.replaceTrustCertificate' => 'Opgeslagen aangepast certificaat vervangen',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS gebruikt de gebruikelijke poorten van NFS en de mountservice en vereist RFC 9289-ondersteuning op de NAS. TLS 1.3 is verplicht. De hostnaam of het IP-adres moet overeenkomen met het certificaat. AUTH_SYS-UID/GID blijven ook binnen het versleutelde kanaal gelden.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS gebruikt de gebruikelijke poorten van NFS en de mountservice en vereist RFC 9289-ondersteuning op de NAS. TLS 1.3 is verplicht. De hostnaam of het IP-adres moet overeenkomen met het certificaat. AUTH_SYS-UID/GID blijven ook binnen het versleutelde kanaal gelden.',
 			'sourceSetup.clientCertificate' => 'Clientcertificaat (optioneel)',
 			'sourceSetup.clientCertificateHelp' => 'Hiermee kan de NAS deze client authenticeren; AUTH_SYS-ID’s blijven afhankelijk van het beleid van de NFS-share op de NAS.',
 			'sourceSetup.savedIdentity' => 'Er wordt een opgeslagen clientidentiteit gebruikt.',

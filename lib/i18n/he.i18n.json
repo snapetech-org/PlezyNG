@@ -1234,7 +1234,6 @@
     "mediaUnavailable": "תוכן זה כבר לא זמין.",
     "errorLoadingFileInfo": "טעות טעינה קובץ מידע: ${error}",
     "errorLoadingSeries": "שגיאות סדרת טעינה",
-    "musicNotSupported": "שחקני מוסיקה עדיין לא נתמכים",
     "noDescriptionAvailable": "אין תיאור זמין",
     "noProfilesAvailable": "אין פרופיל זמין",
     "contactAdminForProfiles": "צור קשר עם מנהל השרת שלך כדי להוסיף פרופיל",

@@ -1260,7 +1260,6 @@
     "mediaUnavailable": "هذا المحتوى لم يعد متاحا.",
     "errorLoadingFileInfo": "أخطاء تحميل ملف المعلومات: ${error}",
     "errorLoadingSeries": "خطأ سلسلة تحميل",
-    "musicNotSupported": "لم يتم دعم Playback الموسيقي بعد",
     "noDescriptionAvailable": "لا توجد وصفات متاحة",
     "noProfilesAvailable": "لا توجد ملفات تعريف متاحة",
     "contactAdminForProfiles": "اتصل بمدير الخادم لإضافة ملفات تعريف",

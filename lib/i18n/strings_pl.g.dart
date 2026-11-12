@@ -1341,7 +1341,6 @@ class _Translations$messages$pl extends Translations$messages$en {
 	@override String get mediaUnavailable => 'Ta treść nie jest już dostępna.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Błąd ładowania informacji o pliku: ${error}';
 	@override String get errorLoadingSeries => 'Błąd ładowania serialu';
-	@override String get musicNotSupported => 'Odtwarzanie muzyki nie jest jeszcze obsługiwane';
 	@override String get noDescriptionAvailable => 'Brak dostępnego opisu';
 	@override String get noProfilesAvailable => 'Brak dostępnych profili';
 	@override String get contactAdminForProfiles => 'Skontaktuj się z administratorem serwera, aby dodać profile';
@@ -6685,7 +6684,6 @@ extension on TranslationsPl {
 			'messages.mediaUnavailable' => 'Ta treść nie jest już dostępna.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Błąd ładowania informacji o pliku: ${error}',
 			'messages.errorLoadingSeries' => 'Błąd ładowania serialu',
-			'messages.musicNotSupported' => 'Odtwarzanie muzyki nie jest jeszcze obsługiwane',
 			'messages.noDescriptionAvailable' => 'Brak dostępnego opisu',
 			'messages.noProfilesAvailable' => 'Brak dostępnych profili',
 			'messages.contactAdminForProfiles' => 'Skontaktuj się z administratorem serwera, aby dodać profile',
@@ -7101,9 +7099,9 @@ extension on TranslationsPl {
 			'libraries.libraryOptions' => 'Opcje biblioteki',
 			'libraries.content' => 'zawartość biblioteki',
 			'libraries.selectLibrary' => 'Wybierz bibliotekę',
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			'libraries.noRecommendations' => 'Brak dostępnych rekomendacji',
 			'libraries.noCollections' => 'Brak kolekcji w tej bibliotece',
 			'libraries.noFoldersFound' => 'Nie znaleziono folderów',
@@ -7615,9 +7613,9 @@ extension on TranslationsPl {
 			'watchTogether.roomCode' => 'Kod pokoju',
 			'watchTogether.paste' => 'Wklej',
 			'watchTogether.noCodeInClipboard' => 'Schowek nie zawiera kodu pokoju',
+			'watchTogether.copyCode' => 'Kopiuj kod',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.copyCode' => 'Kopiuj kod',
 			'watchTogether.codeCopied' => 'Skopiowano kod pokoju',
 			'watchTogether.shareInvite' => 'Udostępnij zaproszenie',
 			'watchTogether.inviteCopied' => 'Skopiowano zaproszenie. Wklej je do wiadomości.',
@@ -8129,9 +8127,9 @@ extension on TranslationsPl {
 			'metadataEdit.selectSquareArt' => 'Wybierz kwadratowy obraz',
 			'metadataEdit.fromUrl' => 'Z URL',
 			'metadataEdit.uploadFile' => 'Prześlij plik',
+			'metadataEdit.enterImageUrl' => 'Wprowadź URL obrazu',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.enterImageUrl' => 'Wprowadź URL obrazu',
 			'metadataEdit.imageUrl' => 'URL obrazu',
 			'metadataEdit.metadataUpdated' => 'Metadane zaktualizowane',
 			'metadataEdit.metadataUpdateFailed' => 'Nie udało się zaktualizować metadanych',
@@ -8643,9 +8641,9 @@ extension on TranslationsPl {
 			'universalMedia.openWhat' => 'Co chciałbyś otworzyć?',
 			'universalMedia.stream' => 'adres strumieniowy',
 			'universalMedia.playlist' => 'Playlisty',
+			'universalMedia.files' => 'Archiwum urządzeń',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.files' => 'Archiwum urządzeń',
 			'universalMedia.favorites' => 'Zbawiony strumień ulubionych',
 			'universalMedia.address' => 'Adres medialny',
 			'universalMedia.addressHelp' => 'URL z rozpoznawalnymi parametrami uwierzytelniania lub podpisów są używane tylko do tej sesji i nie mogą być przechowywane jako ulubione.',
@@ -9157,9 +9155,9 @@ extension on TranslationsPl {
 			'sourceSetup.nfsTrustInvalid' => 'Użyj certyfikatu CA lub serwera w formacie PEM. Nie dołączaj klucza prywatnego.',
 			'sourceSetup.addTrustCertificate' => 'Dodaj własny zaufany certyfikat',
 			'sourceSetup.replaceTrustCertificate' => 'Zastąp zapisany własny certyfikat',
+			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS używa standardowych portów NFS i usługi montowania oraz wymaga obsługi RFC 9289 przez NAS. Wymagany jest TLS 1.3. Nazwa hosta lub adres IP musi odpowiadać certyfikatowi. UID/GID AUTH_SYS nadal obowiązują wewnątrz szyfrowanego kanału.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS używa standardowych portów NFS i usługi montowania oraz wymaga obsługi RFC 9289 przez NAS. Wymagany jest TLS 1.3. Nazwa hosta lub adres IP musi odpowiadać certyfikatowi. UID/GID AUTH_SYS nadal obowiązują wewnątrz szyfrowanego kanału.',
 			'sourceSetup.clientCertificate' => 'Certyfikat klienta (opcjonalnie)',
 			'sourceSetup.clientCertificateHelp' => 'Pozwala NAS uwierzytelnić tego klienta; ID AUTH_SYS nadal zależą od zasad eksportu NFS na NAS.',
 			'sourceSetup.savedIdentity' => 'Zostanie użyta zapisana tożsamość klienta.',

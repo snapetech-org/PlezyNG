@@ -1225,7 +1225,6 @@
     "mediaUnavailable": "Konten ini tidak lagi tersedia.",
     "errorLoadingFileInfo": "Info file kesalahan: ${error}",
     "errorLoadingSeries": "Serangkaian Error Loading",
-    "musicNotSupported": "Playback musik belum disokong",
     "noDescriptionAvailable": "Tidak ada deskripsi yang tersedia",
     "noProfilesAvailable": "Tidak ada profil tersedia",
     "contactAdminForProfiles": "Hubungi administrator server Anda untuk menambahkan profil",

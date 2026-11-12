@@ -1225,7 +1225,6 @@
     "mediaUnavailable": "Kandungan ini tidak lagi tersedia.",
     "errorLoadingFileInfo": "Fail pengecasan kesilapan info: ${error}",
     "errorLoadingSeries": "Kesilapan siri pengisian",
-    "musicNotSupported": "Playback muzik belum disokong",
     "noDescriptionAvailable": "Tiada penerangan yang tersedia",
     "noProfilesAvailable": "Tiada profil yang tersedia",
     "contactAdminForProfiles": "Hubungi pentadbir pelayan anda untuk menambah profil",

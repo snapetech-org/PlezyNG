@@ -1232,7 +1232,6 @@
     "mediaUnavailable": "This content is no longer available.",
     "errorLoadingFileInfo": "Error loading file info: ${error}",
     "errorLoadingSeries": "Error loading series",
-    "musicNotSupported": "Music playback is not yet supported",
     "noDescriptionAvailable": "No description available",
     "noProfilesAvailable": "No profiles available",
     "contactAdminForProfiles": "Contact your server administrator to add profiles",

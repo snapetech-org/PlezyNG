@@ -1225,7 +1225,6 @@
     "mediaUnavailable": "Nội dung này không còn có sẵn nữa.",
     "errorLoadingFileInfo": "Lỗi tải file info: ${error}",
     "errorLoadingSeries": "Lỗi Loading Series",
-    "musicNotSupported": "Music playback chưa được hỗ trợ",
     "noDescriptionAvailable": "Không có mô tả",
     "noProfilesAvailable": "Không có hồ sơ có sẵn",
     "contactAdminForProfiles": "Liên hệ với người quản trị máy chủ của bạn để thêm hồ sơ",

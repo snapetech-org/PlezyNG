@@ -1246,7 +1246,6 @@
     "mediaUnavailable": "Ta treść nie jest już dostępna.",
     "errorLoadingFileInfo": "Błąd ładowania informacji o pliku: ${error}",
     "errorLoadingSeries": "Błąd ładowania serialu",
-    "musicNotSupported": "Odtwarzanie muzyki nie jest jeszcze obsługiwane",
     "noDescriptionAvailable": "Brak dostępnego opisu",
     "noProfilesAvailable": "Brak dostępnych profili",
     "contactAdminForProfiles": "Skontaktuj się z administratorem serwera, aby dodać profile",

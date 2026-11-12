@@ -4275,6 +4275,7 @@ class _Translations$karaokeUi$fa extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'ادغام نیازمند یکسان بودن نقش‌های خوانندگی، وجود تلفظ و میزان اطمینان است.';
 	@override String get invalidLyricSpanTiming => 'هر بخش به زمان شروع و پایان معتبر نیاز دارد.';
 	@override String get listenToGuideTrack => 'شنیدن قطعه راهنما';
+	@override String get countInOnPracticeLoops => 'شمارش هنگام شروع دوبارهٔ حلقهٔ تمرین';
 }
 
 // Path: musicExperience
@@ -9533,6 +9534,7 @@ extension on TranslationsFa {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'ادغام نیازمند یکسان بودن نقش‌های خوانندگی، وجود تلفظ و میزان اطمینان است.',
 			'karaokeUi.invalidLyricSpanTiming' => 'هر بخش به زمان شروع و پایان معتبر نیاز دارد.',
 			'karaokeUi.listenToGuideTrack' => 'شنیدن قطعه راهنما',
+			'karaokeUi.countInOnPracticeLoops' => 'شمارش هنگام شروع دوبارهٔ حلقهٔ تمرین',
 			'musicExperience.title' => 'کشف موسیقی',
 			'musicExperience.mix' => 'ساخت میکس',
 			'musicExperience.adventure' => 'ماجراجویی صوتی',
@@ -9654,9 +9656,9 @@ extension on TranslationsFa {
 			'musicDevices.receive' => 'اجازه پخش در این دستگاه',
 			'musicDevices.receiverHint' => 'برای دریافت موسیقی Pleazyng را باز نگه دارید. با این کد یک بار جفت‌سازی کنید.',
 			'musicDevices.moveFailed' => 'پخش منتقل نشد. بررسی کنید دستگاه روشن و جفت‌شده باشد و به سرور موسیقی دسترسی داشته باشد.',
-			'musicDevices.uncertain' => 'ارتباط قطع شد. برای بررسی پخش دوباره به دستگاه انتخاب‌شده وصل شوید.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'ارتباط قطع شد. برای بررسی پخش دوباره به دستگاه انتخاب‌شده وصل شوید.',
 			'musicDevices.away' => 'بیرون از خانه',
 			'musicDevices.relay' => 'نشانی رلهٔ موسیقی',
 			'musicDevices.relayHint' => 'در دستگاه گیرنده فعال کنید و یک بار در همان شبکه جفت کنید. Pleazyng را باز نگه دارید. رله فرمان‌های رمزگذاری‌شدهٔ موسیقی را منتقل می‌کند و نشانی‌های شبکه را می‌بیند. هر پخش‌کننده از سرور رسانهٔ خودش پخش می‌کند.',

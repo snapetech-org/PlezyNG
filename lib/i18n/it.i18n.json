@@ -5501,7 +5501,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Conto alla rovescia al riavvio del ciclo di esercitazione"
   },
   "musicExperience": {
     "title": "Scoperta musicale",

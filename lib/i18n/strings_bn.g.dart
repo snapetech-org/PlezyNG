@@ -4275,6 +4275,7 @@ class _Translations$karaokeUi$bn extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'যুক্ত করতে গায়কের অংশ, উচ্চারণের উপস্থিতি ও নির্ভরযোগ্যতা একই হতে হবে।';
 	@override String get invalidLyricSpanTiming => 'প্রতিটি অংশের বৈধ শুরু ও শেষের সময় প্রয়োজন।';
 	@override String get listenToGuideTrack => 'গাইড ট্র্যাক শুনুন';
+	@override String get countInOnPracticeLoops => 'অনুশীলনের লুপ পুনরায় শুরু হলে গণনা';
 }
 
 // Path: musicExperience
@@ -9533,6 +9534,7 @@ extension on TranslationsBn {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'যুক্ত করতে গায়কের অংশ, উচ্চারণের উপস্থিতি ও নির্ভরযোগ্যতা একই হতে হবে।',
 			'karaokeUi.invalidLyricSpanTiming' => 'প্রতিটি অংশের বৈধ শুরু ও শেষের সময় প্রয়োজন।',
 			'karaokeUi.listenToGuideTrack' => 'গাইড ট্র্যাক শুনুন',
+			'karaokeUi.countInOnPracticeLoops' => 'অনুশীলনের লুপ পুনরায় শুরু হলে গণনা',
 			'musicExperience.title' => 'সংগীত আবিষ্কার',
 			'musicExperience.mix' => 'মিক্স তৈরি',
 			'musicExperience.adventure' => 'ধ্বনি যাত্রা',
@@ -9654,9 +9656,9 @@ extension on TranslationsBn {
 			'musicDevices.receive' => 'এই ডিভাইসে প্লেব্যাকের অনুমতি দিন',
 			'musicDevices.receiverHint' => 'গান গ্রহণ করতে Pleazyng খোলা রাখুন। এই কোড দিয়ে একবার জোড়া লাগান।',
 			'musicDevices.moveFailed' => 'প্লেব্যাক সরানো যায়নি। ডিভাইসটি চালু ও জোড়া লাগানো আছে এবং গান সার্ভারে প্রবেশ করতে পারে কিনা দেখুন।',
-			'musicDevices.uncertain' => 'সংযোগ বিচ্ছিন্ন হয়েছে। প্লেব্যাক দেখতে নির্বাচিত ডিভাইসে আবার সংযুক্ত হন।',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'সংযোগ বিচ্ছিন্ন হয়েছে। প্লেব্যাক দেখতে নির্বাচিত ডিভাইসে আবার সংযুক্ত হন।',
 			'musicDevices.away' => 'বাড়ির বাইরে',
 			'musicDevices.relay' => 'মিউজিক রিলে URL',
 			'musicDevices.relayHint' => 'গ্রহণকারী ডিভাইসে চালু করুন, তারপর একই নেটওয়ার্কে একবার পেয়ার করুন। Pleazyng খোলা রাখুন। রিলে এনক্রিপ্ট করা সঙ্গীত নিয়ন্ত্রণ পাঠায় এবং নেটওয়ার্ক ঠিকানা দেখতে পায়। প্রতিটি প্লেয়ার নিজস্ব মিডিয়া সার্ভার থেকে স্ট্রিম করে।',

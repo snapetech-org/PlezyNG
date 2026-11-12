@@ -5497,7 +5497,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Cuenta atrás al reiniciar el bucle de práctica"
   },
   "bonusExtras": {
     "title": "Extras",

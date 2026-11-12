@@ -4252,6 +4252,7 @@ class _Translations$karaokeUi$id extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Penggabungan memerlukan bagian vokal, keberadaan pelafalan, dan keyakinan yang sama.';
 	@override String get invalidLyricSpanTiming => 'Setiap rentang memerlukan waktu mulai dan akhir yang valid.';
 	@override String get listenToGuideTrack => 'Dengarkan trek panduan';
+	@override String get countInOnPracticeLoops => 'Hitung mundur saat putaran latihan dimulai ulang';
 }
 
 // Path: musicExperience
@@ -9508,6 +9509,7 @@ extension on TranslationsId {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Penggabungan memerlukan bagian vokal, keberadaan pelafalan, dan keyakinan yang sama.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Setiap rentang memerlukan waktu mulai dan akhir yang valid.',
 			'karaokeUi.listenToGuideTrack' => 'Dengarkan trek panduan',
+			'karaokeUi.countInOnPracticeLoops' => 'Hitung mundur saat putaran latihan dimulai ulang',
 			'musicExperience.title' => 'Jelajahi musik',
 			'musicExperience.mix' => 'Pembuat mix',
 			'musicExperience.adventure' => 'Petualangan suara',
@@ -9629,9 +9631,9 @@ extension on TranslationsId {
 			'musicDevices.receive' => 'Izinkan pemutaran di perangkat ini',
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.',
 			'musicDevices.moveFailed' => 'Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.',
-			'musicDevices.uncertain' => 'Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.',
 			'musicDevices.away' => 'Di luar rumah',
 			'musicDevices.relay' => 'URL relai musik',
 			'musicDevices.relayHint' => 'Aktifkan di perangkat penerima, lalu pasangkan sekali di jaringan yang sama. Biarkan Pleazyng terbuka. Relai meneruskan kontrol musik terenkripsi dan melihat alamat jaringan. Setiap pemutar melakukan streaming dari server medianya sendiri.',

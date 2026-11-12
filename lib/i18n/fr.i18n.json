@@ -5501,7 +5501,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Décompte au redémarrage de la boucle d’entraînement"
   },
   "musicExperience": {
     "title": "Découverte musicale",

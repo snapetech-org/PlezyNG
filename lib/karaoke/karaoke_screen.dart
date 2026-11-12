@@ -1092,6 +1092,14 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
                     TextButton(onPressed: () => _run(() => s.setLoop(null, null)), child: Text(tr('clearLoop'))),
                   ],
                 ),
+                if (s.loopStartMs != null && s.loopEndMs != null)
+                  SwitchListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.t.karaokeUi.countInOnPracticeLoops),
+                    value: s.practiceCountInEnabled,
+                    onChanged: _busy ? null : (value) => _run(() => s.setPracticeCountInEnabled(value)),
+                  ),
               ],
             ),
           ),

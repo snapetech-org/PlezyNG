@@ -5492,7 +5492,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Aftellen wanneer de oefenlus opnieuw start"
   },
   "musicExperience": {
     "title": "Muziek ontdekken",

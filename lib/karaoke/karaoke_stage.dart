@@ -311,6 +311,30 @@ class _KaraokeStageState extends State<KaraokeStage> {
                       ),
                     ),
                   ),
+                  if (s.countInBeat case final beat?)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: ColoredBox(
+                          color: const Color(0xcc000000),
+                          child: Center(
+                            child: Semantics(
+                              liveRegion: true,
+                              label: '${l10n.t.karaokeUi.countInOnPracticeLoops}: $beat',
+                              child: ExcludeSemantics(
+                                child: Text(
+                                  '$beat',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: font * 2.5,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               );
             },

@@ -14409,6 +14409,9 @@ class Translations$karaokeUi$en {
 
 	/// en: 'Search songs'
 	String get searchSongs => 'Search songs';
+
+	/// en: 'Count in on practice loops'
+	String get countInOnPracticeLoops => 'Count in on practice loops';
 }
 
 // Path: bonusExtras
@@ -22784,6 +22787,7 @@ extension on Translations {
 			'karaokeUi.hostUnlock' => 'Host unlock',
 			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
 			'karaokeUi.searchSongs' => 'Search songs',
+			'karaokeUi.countInOnPracticeLoops' => 'Count in on practice loops',
 			'bonusExtras.title' => 'Extras',
 			'bonusExtras.seeAll' => 'See all extras',
 			'bonusExtras.findMore' => 'Find more',

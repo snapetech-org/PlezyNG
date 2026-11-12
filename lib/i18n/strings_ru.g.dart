@@ -4321,6 +4321,7 @@ class _Translations$karaokeUi$ru extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Для объединения должны совпадать вокальные партии, наличие произношения и оценка уверенности.';
 	@override String get invalidLyricSpanTiming => 'Каждому фрагменту нужны допустимые времена начала и конца.';
 	@override String get listenToGuideTrack => 'Прослушать направляющую дорожку';
+	@override String get countInOnPracticeLoops => 'Обратный отсчёт при перезапуске тренировочного цикла';
 }
 
 // Path: musicExperience
@@ -9583,6 +9584,7 @@ extension on TranslationsRu {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Для объединения должны совпадать вокальные партии, наличие произношения и оценка уверенности.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Каждому фрагменту нужны допустимые времена начала и конца.',
 			'karaokeUi.listenToGuideTrack' => 'Прослушать направляющую дорожку',
+			'karaokeUi.countInOnPracticeLoops' => 'Обратный отсчёт при перезапуске тренировочного цикла',
 			'musicExperience.title' => 'Открывайте музыку',
 			'musicExperience.mix' => 'Создание микса',
 			'musicExperience.adventure' => 'Звуковое путешествие',
@@ -9704,9 +9706,9 @@ extension on TranslationsRu {
 			'musicDevices.receive' => 'Разрешить воспроизведение на этом устройстве',
 			'musicDevices.receiverHint' => 'Оставьте Pleazyng открытым для приёма музыки. Один раз выполните сопряжение с этим кодом.',
 			'musicDevices.moveFailed' => 'Не удалось перенести воспроизведение. Проверьте, что устройство активно, сопряжено и имеет доступ к музыкальному серверу.',
-			'musicDevices.uncertain' => 'Соединение прервано. Подключитесь к выбранному устройству снова, чтобы проверить воспроизведение.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'Соединение прервано. Подключитесь к выбранному устройству снова, чтобы проверить воспроизведение.',
 			'musicDevices.away' => 'Вне дома',
 			'musicDevices.relay' => 'URL музыкального ретранслятора',
 			'musicDevices.relayHint' => 'Включите на принимающем устройстве и один раз выполните сопряжение в одной сети. Оставьте Pleazyng открытым. Ретранслятор передаёт зашифрованные команды и видит сетевые адреса. Каждый плеер использует свой медиасервер.',

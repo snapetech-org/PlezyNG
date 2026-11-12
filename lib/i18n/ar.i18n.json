@@ -5600,7 +5600,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "العدّ التمهيدي عند إعادة بدء حلقة التدريب"
   },
   "musicExperience": {
     "title": "اكتشاف الموسيقى",

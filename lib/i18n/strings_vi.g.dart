@@ -4252,6 +4252,7 @@ class _Translations$karaokeUi$vi extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Khi gộp, phần hát, trạng thái có cách đọc và độ tin cậy phải khớp nhau.';
 	@override String get invalidLyricSpanTiming => 'Mỗi đoạn cần thời điểm bắt đầu và kết thúc hợp lệ.';
 	@override String get listenToGuideTrack => 'Nghe bản nhạc hướng dẫn';
+	@override String get countInOnPracticeLoops => 'Đếm ngược khi vòng lặp luyện tập bắt đầu lại';
 }
 
 // Path: musicExperience
@@ -9508,6 +9509,7 @@ extension on TranslationsVi {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Khi gộp, phần hát, trạng thái có cách đọc và độ tin cậy phải khớp nhau.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Mỗi đoạn cần thời điểm bắt đầu và kết thúc hợp lệ.',
 			'karaokeUi.listenToGuideTrack' => 'Nghe bản nhạc hướng dẫn',
+			'karaokeUi.countInOnPracticeLoops' => 'Đếm ngược khi vòng lặp luyện tập bắt đầu lại',
 			'musicExperience.title' => 'Khám phá âm nhạc',
 			'musicExperience.mix' => 'Tạo bản phối',
 			'musicExperience.adventure' => 'Hành trình âm thanh',
@@ -9629,9 +9631,9 @@ extension on TranslationsVi {
 			'musicDevices.receive' => 'Cho phép phát trên thiết bị này',
 			'musicDevices.receiverHint' => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.',
 			'musicDevices.moveFailed' => 'Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.',
-			'musicDevices.uncertain' => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.',
 			'musicDevices.away' => 'Khi xa nhà',
 			'musicDevices.relay' => 'URL chuyển tiếp nhạc',
 			'musicDevices.relayHint' => 'Bật trên thiết bị nhận rồi ghép đôi một lần trên cùng mạng. Giữ Pleazyng mở. Máy chuyển tiếp truyền lệnh nhạc được mã hóa và thấy địa chỉ mạng. Mỗi trình phát truyền từ máy chủ phương tiện riêng.',

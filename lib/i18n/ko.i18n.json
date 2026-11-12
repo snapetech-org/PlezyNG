@@ -5487,7 +5487,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "연습 구간이 다시 시작될 때 카운트인"
   },
   "musicExperience": {
     "title": "음악 둘러보기",

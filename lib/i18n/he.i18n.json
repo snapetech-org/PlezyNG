@@ -5502,7 +5502,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "ספירה לאחור בהפעלה מחדש של לולאת התרגול"
   },
   "musicExperience": {
     "title": "גילוי מוזיקה",

@@ -4292,6 +4292,7 @@ class Translations$karaokeUi$es extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Para unir, deben coincidir las partes vocales, la presencia de pronunciación y la confianza.';
 	@override String get invalidLyricSpanTiming => 'Cada segmento necesita tiempos de inicio y fin válidos.';
 	@override String get listenToGuideTrack => 'Escuchar pista guía';
+	@override String get countInOnPracticeLoops => 'Cuenta atrás al reiniciar el bucle de práctica';
 }
 
 // Path: bonusExtras
@@ -9684,6 +9685,7 @@ extension on TranslationsEs {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Para unir, deben coincidir las partes vocales, la presencia de pronunciación y la confianza.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Cada segmento necesita tiempos de inicio y fin válidos.',
 			'karaokeUi.listenToGuideTrack' => 'Escuchar pista guía',
+			'karaokeUi.countInOnPracticeLoops' => 'Cuenta atrás al reiniciar el bucle de práctica',
 			'bonusExtras.title' => 'Extras',
 			'bonusExtras.seeAll' => 'Ver todos los extras',
 			'bonusExtras.findMore' => 'Buscar más',
@@ -9778,9 +9780,9 @@ extension on TranslationsEs {
 			'musicExperience.exitDriving' => 'Salir de la vista de conducción',
 			'musicExperience.signalPath' => 'Ruta de la señal de audio',
 			'musicExperience.source' => 'Fuente',
-			'musicExperience.local' => 'Audio descargado',
 			_ => null,
 		} ?? switch (path) {
+			'musicExperience.local' => 'Audio descargado',
 			'musicExperience.network' => 'Audio del servidor',
 			'musicExperience.engine' => 'Motor de reproducción',
 			'musicExperience.codec' => 'Códec de origen',

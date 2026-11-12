@@ -5487,7 +5487,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "練習循環重新開始時倒數"
   },
   "musicExperience": {
     "title": "探索音樂",

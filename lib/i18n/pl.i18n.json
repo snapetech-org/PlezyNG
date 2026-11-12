@@ -5546,7 +5546,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Odliczanie przy ponownym uruchomieniu pętli ćwiczeniowej"
   },
   "musicExperience": {
     "title": "Odkrywaj muzykę",

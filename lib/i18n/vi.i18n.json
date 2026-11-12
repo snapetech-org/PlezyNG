@@ -5465,7 +5465,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Đếm ngược khi vòng lặp luyện tập bắt đầu lại"
   },
   "musicExperience": {
     "title": "Khám phá âm nhạc",

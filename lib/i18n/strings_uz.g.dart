@@ -4275,6 +4275,7 @@ class _Translations$karaokeUi$uz extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Birlashtirish uchun vokal partiyalari, talaffuz mavjudligi va ishonchlilik mos bo‘lishi kerak.';
 	@override String get invalidLyricSpanTiming => 'Har bir qism uchun to‘g‘ri boshlanish va tugash vaqti kerak.';
 	@override String get listenToGuideTrack => 'Yo‘riqnoma trekini tinglash';
+	@override String get countInOnPracticeLoops => 'Mashq sikli qayta boshlanganda teskari sanoq';
 }
 
 // Path: musicExperience
@@ -9533,6 +9534,7 @@ extension on TranslationsUz {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Birlashtirish uchun vokal partiyalari, talaffuz mavjudligi va ishonchlilik mos bo‘lishi kerak.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Har bir qism uchun to‘g‘ri boshlanish va tugash vaqti kerak.',
 			'karaokeUi.listenToGuideTrack' => 'Yo‘riqnoma trekini tinglash',
+			'karaokeUi.countInOnPracticeLoops' => 'Mashq sikli qayta boshlanganda teskari sanoq',
 			'musicExperience.title' => 'Musiqa kashf etish',
 			'musicExperience.mix' => 'Miks yaratish',
 			'musicExperience.adventure' => 'Ovozli sayohat',
@@ -9654,9 +9656,9 @@ extension on TranslationsUz {
 			'musicDevices.receive' => 'Bu qurilmada ijroga ruxsat berish',
 			'musicDevices.receiverHint' => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.',
 			'musicDevices.moveFailed' => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.',
-			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
 			'musicDevices.away' => 'Uydan tashqarida',
 			'musicDevices.relay' => 'Musiqa relesi URL manzili',
 			'musicDevices.relayHint' => 'Qabul qiluvchi qurilmada yoqing, so‘ng bir tarmoqda bir marta juftlang. Pleazyng ochiq tursin. Rele shifrlangan musiqa buyruqlarini uzatadi va tarmoq manzillarini ko‘radi. Har bir pleyer o‘z media serveridan uzatadi.',

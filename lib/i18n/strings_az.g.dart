@@ -4275,6 +4275,7 @@ class _Translations$karaokeUi$az extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Birləşdirmək üçün vokal partiyaları, tələffüzün mövcudluğu və etibarlılıq uyğun olmalıdır.';
 	@override String get invalidLyricSpanTiming => 'Hər hissənin etibarlı başlanğıc və bitmə vaxtı olmalıdır.';
 	@override String get listenToGuideTrack => 'Bələdçi treki dinlə';
+	@override String get countInOnPracticeLoops => 'Məşq dövrəsi yenidən başlayanda sayım';
 }
 
 // Path: musicExperience
@@ -9533,6 +9534,7 @@ extension on TranslationsAz {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Birləşdirmək üçün vokal partiyaları, tələffüzün mövcudluğu və etibarlılıq uyğun olmalıdır.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Hər hissənin etibarlı başlanğıc və bitmə vaxtı olmalıdır.',
 			'karaokeUi.listenToGuideTrack' => 'Bələdçi treki dinlə',
+			'karaokeUi.countInOnPracticeLoops' => 'Məşq dövrəsi yenidən başlayanda sayım',
 			'musicExperience.title' => 'Musiqi kəşfi',
 			'musicExperience.mix' => 'Miks yarat',
 			'musicExperience.adventure' => 'Səs səyahəti',
@@ -9654,9 +9656,9 @@ extension on TranslationsAz {
 			'musicDevices.receive' => 'Bu cihazda səsləndirməyə icazə ver',
 			'musicDevices.receiverHint' => 'Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.',
 			'musicDevices.moveFailed' => 'Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.',
-			'musicDevices.uncertain' => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.',
 			'musicDevices.away' => 'Evdən kənarda',
 			'musicDevices.relay' => 'Musiqi rele ünvanı',
 			'musicDevices.relayHint' => 'Qəbul edən cihazda aktivləşdirin, sonra eyni şəbəkədə bir dəfə qoşalaşdırın. Pleazyng açıq qalsın. Rele şifrələnmiş musiqi əmrlərini ötürür və şəbəkə ünvanlarını görür. Hər pleyer öz media serverindən yayımlayır.',

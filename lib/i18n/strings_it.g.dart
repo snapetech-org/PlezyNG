@@ -4282,6 +4282,7 @@ class _Translations$karaokeUi$it extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Per unire devono coincidere parti vocali, presenza della pronuncia e attendibilità.';
 	@override String get invalidLyricSpanTiming => 'Ogni segmento richiede tempi di inizio e fine validi.';
 	@override String get listenToGuideTrack => 'Ascolta la traccia guida';
+	@override String get countInOnPracticeLoops => 'Conto alla rovescia al riavvio del ciclo di esercitazione';
 }
 
 // Path: musicExperience
@@ -9540,6 +9541,7 @@ extension on TranslationsIt {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Per unire devono coincidere parti vocali, presenza della pronuncia e attendibilità.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Ogni segmento richiede tempi di inizio e fine validi.',
 			'karaokeUi.listenToGuideTrack' => 'Ascolta la traccia guida',
+			'karaokeUi.countInOnPracticeLoops' => 'Conto alla rovescia al riavvio del ciclo di esercitazione',
 			'musicExperience.title' => 'Scoperta musicale',
 			'musicExperience.mix' => 'Crea mix',
 			'musicExperience.adventure' => 'Avventura sonora',
@@ -9661,9 +9663,9 @@ extension on TranslationsIt {
 			'musicDevices.receive' => 'Consenti la riproduzione su questo dispositivo',
 			'musicDevices.receiverHint' => 'Tieni Pleazyng aperto per ricevere musica. Associa una volta con questo codice.',
 			'musicDevices.moveFailed' => 'Impossibile spostare la riproduzione. Controlla che il dispositivo sia attivo, associato e possa accedere al server musicale.',
-			'musicDevices.uncertain' => 'Connessione interrotta. Riconnettiti al dispositivo selezionato per verificare la riproduzione.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'Connessione interrotta. Riconnettiti al dispositivo selezionato per verificare la riproduzione.',
 			'musicDevices.away' => 'Fuori casa',
 			'musicDevices.relay' => 'URL del relay musicale',
 			'musicDevices.relayHint' => 'Attiva sul dispositivo ricevente, poi associa una volta sulla stessa rete. Tieni Pleazyng aperto. Il relay trasmette comandi musicali cifrati e vede gli indirizzi di rete. Ogni lettore riproduce dal proprio server multimediale.',

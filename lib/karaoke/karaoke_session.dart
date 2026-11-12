@@ -30,6 +30,16 @@ class KaraokeConflict implements Exception {
 typedef KaraokePracticeMarkers = ({int? startMs, int? endMs});
 
 const _maxPracticeMarkerRenditions = 512;
+const _defaultPracticeCountInBpm = 120;
+
+int karaokePracticeCountInBpm(num? sourceBpm, {required double tempo}) {
+  final source = sourceBpm?.toDouble();
+  final baseBpm = source != null && source.isFinite && source > 0 ? source : _defaultPracticeCountInBpm.toDouble();
+  final rate = tempo.isFinite && tempo > 0 ? tempo : 1.0;
+  return (baseBpm * rate).round().clamp(20, 400).toInt();
+}
+
+Duration karaokePracticeCountInBeatDuration(int bpm) => Duration(microseconds: (60000000 / bpm.clamp(20, 400)).round());
 
 /// One profile, one authority and one playback clock. Microphones are never
 /// restored automatically. Commands are serialized and acknowledged only after
@@ -61,6 +71,9 @@ class KaraokeSession extends ChangeNotifier {
   Future<void> _commands = Future.value();
   Future<void>? _stoppingPlayback;
   int _playbackGeneration = 0;
+  int _countInGeneration = 0;
+  bool _countInRunning = false;
+  int? countInBeat;
   Player? _player;
   KaraokeStemMixer? mixer;
   VideoPlayerLease? _videoLease;
@@ -68,6 +81,7 @@ class KaraokeSession extends ChangeNotifier {
   int revision = 0, epoch = 0, _turnNumber = 0, _savedAt = 0;
   int? loopStartMs, loopEndMs, _undoSeek;
   bool fairRotation = true, allowExplicit = true, requireApproval = true, allowVotes = false, held = false;
+  bool practiceCountInEnabled = false;
   bool _disposed = false, _loopSeeking = false, _finishing = false;
   bool _usingMusic = false, _started = false;
   bool _resumeAfterQuiz = false;
@@ -169,6 +183,7 @@ class KaraokeSession extends ChangeNotifier {
       allowExplicit = j['allowExplicit'] != false;
       requireApproval = j['requireApproval'] != false;
       allowVotes = j['allowVotes'] == true;
+      practiceCountInEnabled = j['practiceCountInEnabled'] == true;
       banner = j['banner'] as String? ?? '';
       stageColor = j['stageColor'] as int? ?? stageColor;
       stageTextScale = ((j['stageTextScale'] as num?)?.toDouble() ?? 1).clamp(.75, 2).toDouble();
@@ -216,6 +231,7 @@ class KaraokeSession extends ChangeNotifier {
     'allowExplicit': allowExplicit,
     'requireApproval': requireApproval,
     'allowVotes': allowVotes,
+    'practiceCountInEnabled': practiceCountInEnabled,
     'party': party.toJson(),
     'duetInvitation': duetInvitation,
     'fillerTrackIds': fillerTrackIds,
@@ -1044,6 +1060,7 @@ class KaraokeSession extends ChangeNotifier {
     resumeMs = math.max(resumeMs, request.clipStartMs ?? 0);
     current = request;
     _loopRenditionId = song.id;
+    unawaited(loadAnalysis(song.id));
     final markers = practiceMarkersFor(song.id);
     loopStartMs = markers?.startMs;
     loopEndMs = markers?.endMs;
@@ -1151,6 +1168,7 @@ class KaraokeSession extends ChangeNotifier {
   }
 
   Future<void> pause() async {
+    _cancelPracticeCountIn();
     await stopCapture?.call();
     epoch++;
     if (_usingMusic) {
@@ -1164,6 +1182,10 @@ class KaraokeSession extends ChangeNotifier {
   Future<void> resume() async {
     if (_disposed || !_started) {
       throw StateError('No active performance');
+    }
+    final wasCountingIn = _cancelPracticeCountIn();
+    if (wasCountingIn && loopStartMs != null) {
+      await _seekPlaybackTo(loopStartMs!);
     }
     if (_usingMusic) {
       await music.play();
@@ -1185,6 +1207,7 @@ class KaraokeSession extends ChangeNotifier {
     if (current?.clipEndMs != null && target.inMilliseconds > current!.clipEndMs!) {
       throw StateError('Seek stays inside this medley section');
     }
+    final wasCountingIn = _cancelPracticeCountIn();
     epoch++;
     if (_usingMusic) {
       await music.seek(target);
@@ -1193,6 +1216,13 @@ class KaraokeSession extends ChangeNotifier {
     }
     if (!_disposed) {
       positionMs.value = target.inMilliseconds;
+    }
+    if (wasCountingIn) {
+      if (_usingMusic) {
+        await music.play();
+      } else {
+        await _player?.play();
+      }
     }
     _notify();
   }
@@ -1214,6 +1244,7 @@ class KaraokeSession extends ChangeNotifier {
   }
 
   Future<void> setLoop(int? start, int? end) async {
+    final oldLoopStart = loopStartMs;
     final duration = durationMs;
     if ((start == null && end != null) ||
         (start != null && start < 0) ||
@@ -1227,14 +1258,17 @@ class KaraokeSession extends ChangeNotifier {
     if (start != null && (renditionId == null || !catalog.containsKey(renditionId))) {
       throw StateError('Choose a valid rendition before saving a practice loop');
     }
+    if (start != null &&
+        !_practiceMarkers.containsKey(renditionId) &&
+        _practiceMarkers.length >= _maxPracticeMarkerRenditions) {
+      throw StateError('Practice loop limit reached');
+    }
+    final wasCountingIn = _cancelPracticeCountIn();
     if (renditionId != null) {
       if (start == null) {
         _practiceMarkers.remove(renditionId);
         _loopRenditionId = null;
       } else {
-        if (!_practiceMarkers.containsKey(renditionId) && _practiceMarkers.length >= _maxPracticeMarkerRenditions) {
-          throw StateError('Practice loop limit reached');
-        }
         _loopRenditionId = renditionId;
         _practiceMarkers[renditionId] = (startMs: start, endMs: end);
       }
@@ -1242,7 +1276,151 @@ class KaraokeSession extends ChangeNotifier {
     loopStartMs = start;
     loopEndMs = end;
     _notify();
+    if (wasCountingIn && _started) {
+      await _seekPlaybackTo(start ?? oldLoopStart ?? positionMs.value);
+      if (_usingMusic) {
+        await music.play();
+      } else {
+        await _player?.play();
+      }
+    }
     await save();
+  }
+
+  Future<void> setPracticeCountInEnabled(bool enabled) async {
+    practiceCountInEnabled = enabled;
+    final wasCountingIn = !enabled && _cancelPracticeCountIn();
+    _notify();
+    if (wasCountingIn && _started) {
+      if (loopStartMs != null) {
+        await _seekPlaybackTo(loopStartMs!);
+      }
+      if (_usingMusic) {
+        await music.play();
+      } else {
+        await _player?.play();
+      }
+    }
+    await save();
+  }
+
+  bool _cancelPracticeCountIn() {
+    final wasRunning = _countInRunning;
+    _countInGeneration++;
+    _countInRunning = false;
+    if (countInBeat != null) {
+      countInBeat = null;
+    }
+    if (wasRunning) {
+      _notify();
+    }
+    return wasRunning;
+  }
+
+  Future<void> _seekPlaybackTo(int ms) async {
+    final target = Duration(milliseconds: ms.clamp(0, durationMs > 0 ? durationMs : math.max(0, ms)));
+    if (current?.clipStartMs != null && target.inMilliseconds < current!.clipStartMs!) {
+      throw StateError('Seek stays inside this medley section');
+    }
+    if (current?.clipEndMs != null && target.inMilliseconds > current!.clipEndMs!) {
+      throw StateError('Seek stays inside this medley section');
+    }
+    if (_usingMusic) {
+      await music.seek(target);
+    } else {
+      await _player?.seek(target);
+    }
+    if (!_disposed) {
+      positionMs.value = target.inMilliseconds;
+      _notify();
+    }
+  }
+
+  Future<void> _startPracticeCountIn() async {
+    final renditionId = current?.trackId;
+    final startMs = loopStartMs;
+    if (!_started ||
+        !playing ||
+        !practiceCountInEnabled ||
+        stopCapture != null ||
+        renditionId == null ||
+        startMs == null ||
+        loopEndMs == null) {
+      return;
+    }
+
+    final token = ++_countInGeneration;
+    _countInRunning = true;
+    bool isCurrent() =>
+        token == _countInGeneration &&
+        _countInRunning &&
+        !_disposed &&
+        _started &&
+        practiceCountInEnabled &&
+        current?.trackId == renditionId &&
+        loopStartMs == startMs &&
+        loopEndMs != null;
+
+    try {
+      if (_usingMusic) {
+        await music.pause();
+      } else {
+        await _player?.pause();
+      }
+      if (!isCurrent()) {
+        return;
+      }
+      final bpm = karaokePracticeCountInBpm(analysis[renditionId]?['bpm'] as num?, tempo: current?.tempo ?? 1);
+      final beatDuration = karaokePracticeCountInBeatDuration(bpm);
+      for (var beat = 4; beat >= 1; beat--) {
+        if (!isCurrent()) {
+          return;
+        }
+        countInBeat = beat;
+        _notify();
+        await Future<void>.delayed(beatDuration);
+      }
+      if (!isCurrent()) {
+        return;
+      }
+      countInBeat = null;
+      _notify();
+      await _seekPlaybackTo(startMs);
+      if (!isCurrent()) {
+        return;
+      }
+      if (_usingMusic) {
+        await music.play();
+      } else {
+        await _player?.play();
+      }
+    } catch (error) {
+      if (isCurrent()) {
+        report(error);
+        countInBeat = null;
+        _notify();
+        try {
+          await _seekPlaybackTo(startMs);
+          if (isCurrent()) {
+            if (_usingMusic) {
+              await music.play();
+            } else {
+              await _player?.play();
+            }
+          }
+        } catch (fallbackError) {
+          report(fallbackError);
+        }
+      }
+    } finally {
+      if (token == _countInGeneration) {
+        _countInRunning = false;
+        if (countInBeat != null) {
+          countInBeat = null;
+          _notify();
+        }
+      }
+    }
   }
 
   Future<void> setControls(double key, double tempo) async {
@@ -1262,12 +1440,25 @@ class KaraokeSession extends ChangeNotifier {
       if (music is! MusicKaraokeControls) {
         throw UnsupportedError('Music backend does not support independent key/tempo');
       }
+    } else {
+      final player = _player;
+      if (player == null || player.playerType != 'mpv' || player is! AudioEffectsCapable) {
+        throw UnsupportedError('Key/tempo require MPV');
+      }
+    }
+    final wasCountingIn = _cancelPracticeCountIn();
+    if (wasCountingIn && loopStartMs != null) {
+      await _seekPlaybackTo(loopStartMs!);
+      if (_usingMusic) {
+        await music.play();
+      } else {
+        await _player?.play();
+      }
+    }
+    if (_usingMusic) {
       await (music as MusicKaraokeControls).setKaraokeControls(semitones: key, tempo: tempo);
     } else {
       final player = _player!;
-      if (player.playerType != 'mpv' || player is! AudioEffectsCapable) {
-        throw UnsupportedError('Key/tempo require MPV');
-      }
       await player.setAudioPassthrough(false);
       await (player as AudioEffectsCapable).setAudioEffects((stereoWidth: 0, spatializer: false, pitchSemitones: key));
       await player.setRate(tempo);
@@ -1340,6 +1531,7 @@ class KaraokeSession extends ChangeNotifier {
 
   Future<void> _stopPlayback() async {
     PlaybackCoordinator.instance.unregisterKaraoke(stopPlayback);
+    _cancelPracticeCountIn();
     _started = false;
     Object? failure;
     Future<void> attempt(Future<void> Function() action) async {
@@ -1523,14 +1715,15 @@ class KaraokeSession extends ChangeNotifier {
     if (_started && ms != positionMs.value) {
       positionMs.value = ms;
     }
-    if (loopStartMs != null && loopEndMs != null && ms >= loopEndMs! && !_loopSeeking) {
+    if (_started && loopStartMs != null && loopEndMs != null && ms >= loopEndMs! && playing && !_loopSeeking) {
       _loopSeeking = true;
-      unawaited(seek(loopStartMs!).catchError(report).whenComplete(() => _loopSeeking = false));
+      final restart = practiceCountInEnabled && stopCapture == null ? _startPracticeCountIn() : seek(loopStartMs!);
+      unawaited(restart.catchError(report).whenComplete(() => _loopSeeking = false));
     }
     if (current?.clipEndMs != null && ms >= current!.clipEndMs! && playing) {
       unawaited(_completeAtBoundary());
     }
-    if (_usingMusic && !playing && durationMs > 0 && ms >= durationMs - 150) {
+    if (_usingMusic && loopEndMs == null && !playing && durationMs > 0 && ms >= durationMs - 150) {
       unawaited(_completeAtBoundary());
     }
     final now = DateTime.now().millisecondsSinceEpoch;

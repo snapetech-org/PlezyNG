@@ -5465,7 +5465,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Hitung mundur saat putaran latihan dimulai ulang"
   },
   "musicExperience": {
     "title": "Jelajahi musik",

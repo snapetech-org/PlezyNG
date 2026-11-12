@@ -4317,6 +4317,7 @@ class _Translations$karaokeUi$cs extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Sloučení vyžaduje shodné pěvecké party, přítomnost výslovnosti a míru jistoty.';
 	@override String get invalidLyricSpanTiming => 'Každý úsek potřebuje platný začátek a konec.';
 	@override String get listenToGuideTrack => 'Přehrát vodicí stopu';
+	@override String get countInOnPracticeLoops => 'Odpočítávání při opakování cvičební smyčky';
 }
 
 // Path: musicExperience
@@ -9577,6 +9578,7 @@ extension on TranslationsCs {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Sloučení vyžaduje shodné pěvecké party, přítomnost výslovnosti a míru jistoty.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Každý úsek potřebuje platný začátek a konec.',
 			'karaokeUi.listenToGuideTrack' => 'Přehrát vodicí stopu',
+			'karaokeUi.countInOnPracticeLoops' => 'Odpočítávání při opakování cvičební smyčky',
 			'musicExperience.title' => 'Objevování hudby',
 			'musicExperience.mix' => 'Tvorba mixu',
 			'musicExperience.adventure' => 'Zvukové dobrodružství',
@@ -9698,9 +9700,9 @@ extension on TranslationsCs {
 			'musicDevices.receive' => 'Povolit přehrávání na tomto zařízení',
 			'musicDevices.receiverHint' => 'Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.',
 			'musicDevices.moveFailed' => 'Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.',
-			'musicDevices.uncertain' => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.',
 			'musicDevices.away' => 'Mimo domov',
 			'musicDevices.relay' => 'URL hudebního relé',
 			'musicDevices.relayHint' => 'Zapněte na přijímajícím zařízení a jednou spárujte ve stejné síti. Nechte Pleazyng otevřený. Relé přenáší šifrované ovládání hudby a vidí síťové adresy. Každý přehrávač streamuje z vlastního mediálního serveru.',

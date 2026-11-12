@@ -46,6 +46,7 @@ void main() {
       first.requests.add(requestA);
       first.current = requestA;
       await first.setLoop(1200, 3100);
+      await first.setPracticeCountInEnabled(true);
 
       first.current = _request('rendition-b');
       await first.setLoop(8400, null);
@@ -61,6 +62,7 @@ void main() {
       expect(restored.current?.trackId, 'rendition-a');
       expect(restored.loopStartMs, 1200);
       expect(restored.loopEndMs, 3100);
+      expect(restored.practiceCountInEnabled, isTrue);
       expect(restored.practiceMarkersFor('rendition-b'), (startMs: 8400, endMs: null));
 
       first.dispose();
@@ -121,6 +123,18 @@ void main() {
       expect(session.practiceMarkersFor('known-reversed'), isNull);
       expect(session.practiceMarkersFor('known-malformed'), isNull);
       session.dispose();
+    });
+  });
+
+  group('Karaoke practice count-in timing', () {
+    test('uses source BPM at the current playback rate and clamps extremes', () {
+      expect(karaokePracticeCountInBpm(100, tempo: 1.25), 125);
+      expect(karaokePracticeCountInBpm(100, tempo: .5), 50);
+      expect(karaokePracticeCountInBpm(null, tempo: .5), 60);
+      expect(karaokePracticeCountInBpm(double.nan, tempo: 1), 120);
+      expect(karaokePracticeCountInBpm(900, tempo: 2), 400);
+      expect(karaokePracticeCountInBpm(1, tempo: .5), 20);
+      expect(karaokePracticeCountInBeatDuration(120), const Duration(milliseconds: 500));
     });
   });
 }

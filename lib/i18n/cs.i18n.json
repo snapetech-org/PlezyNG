@@ -5540,7 +5540,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Odpočítávání při opakování cvičební smyčky"
   },
   "musicExperience": {
     "title": "Objevování hudby",

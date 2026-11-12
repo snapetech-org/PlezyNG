@@ -4275,6 +4275,7 @@ class _Translations$karaokeUi$kk extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Біріктіру үшін вокал партиялары, айтылымның болуы және сенімділік сәйкес болуы керек.';
 	@override String get invalidLyricSpanTiming => 'Әр бөліктің басталу және аяқталу уақыты жарамды болуы керек.';
 	@override String get listenToGuideTrack => 'Бағыттаушы жолды тыңдау';
+	@override String get countInOnPracticeLoops => 'Жаттығу циклі қайта басталғанда кері санау';
 }
 
 // Path: musicExperience
@@ -9533,6 +9534,7 @@ extension on TranslationsKk {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Біріктіру үшін вокал партиялары, айтылымның болуы және сенімділік сәйкес болуы керек.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Әр бөліктің басталу және аяқталу уақыты жарамды болуы керек.',
 			'karaokeUi.listenToGuideTrack' => 'Бағыттаушы жолды тыңдау',
+			'karaokeUi.countInOnPracticeLoops' => 'Жаттығу циклі қайта басталғанда кері санау',
 			'musicExperience.title' => 'Музыка іздеу',
 			'musicExperience.mix' => 'Микс жасау',
 			'musicExperience.adventure' => 'Дыбыстық саяхат',
@@ -9654,9 +9656,9 @@ extension on TranslationsKk {
 			'musicDevices.receive' => 'Осы құрылғыда ойнатуға рұқсат беру',
 			'musicDevices.receiverHint' => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.',
 			'musicDevices.moveFailed' => 'Ойнатуды көшіру мүмкін болмады. Құрылғының қосулы, жұптастырылған және музыка серверіне қолжетімді екенін тексеріңіз.',
-			'musicDevices.uncertain' => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.',
 			'musicDevices.away' => 'Үйден тыс жерде',
 			'musicDevices.relay' => 'Музыка релесінің URL мекенжайы',
 			'musicDevices.relayHint' => 'Қабылдаушы құрылғыда қосып, бір желіде бір рет жұптастырыңыз. Pleazyng ашық тұрсын. Реле шифрланған музыка пәрмендерін тасымалдайды және желі мекенжайларын көреді. Әр ойнатқыш өз медиа серверінен ағын алады.',

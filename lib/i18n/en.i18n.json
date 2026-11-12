@@ -5499,7 +5499,8 @@
     "requestASong": "Request a song",
     "hostUnlock": "Host unlock",
     "chooseYourSingerName": "Choose your singer name",
-    "searchSongs": "Search songs"
+    "searchSongs": "Search songs",
+    "countInOnPracticeLoops": "Count in on practice loops"
   },
   "bonusExtras": {
     "title": "Extras",

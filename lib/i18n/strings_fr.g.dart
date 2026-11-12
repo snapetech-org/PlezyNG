@@ -4316,6 +4316,7 @@ class Translations$karaokeUi$fr extends Translations$karaokeUi$en {
 	@override String get selectTrustedPEMCertificate => 'Sélectionner un certificat PEM de confiance';
 	@override String get listenToGuideTrack => 'Écouter la piste guide';
 	@override String get hostExitPIN => 'Code PIN de sortie de l’animateur';
+	@override String get countInOnPracticeLoops => 'Décompte au redémarrage de la boucle d’entraînement';
 }
 
 // Path: musicExperience
@@ -9604,6 +9605,7 @@ extension on TranslationsFr {
 			'karaokeUi.selectTrustedPEMCertificate' => 'Sélectionner un certificat PEM de confiance',
 			'karaokeUi.listenToGuideTrack' => 'Écouter la piste guide',
 			'karaokeUi.hostExitPIN' => 'Code PIN de sortie de l’animateur',
+			'karaokeUi.countInOnPracticeLoops' => 'Décompte au redémarrage de la boucle d’entraînement',
 			'musicExperience.title' => 'Découverte musicale',
 			'musicExperience.mix' => 'Créateur de mix',
 			'musicExperience.adventure' => 'Aventure sonore',
@@ -9698,9 +9700,9 @@ extension on TranslationsFr {
 			'musicTools.playlistRecipient' => 'Nom d’utilisateur Plex ou e-mail',
 			'musicTools.playlistSharingHint' => 'Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.',
 			'musicTools.playlistSharingFailed' => 'Impossible de demander l’accès à la liste.',
-			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
 			_ => null,
 		} ?? switch (path) {
+			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
 			'musicTools.playlistAccessList' => 'Accès actuel',
 			'musicTools.playlistAccessNone' => 'Aucun accès accordé à cette liste',
 			'musicTools.filterType' => 'Type de filtre',

@@ -5540,7 +5540,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Зворотний відлік під час повторного запуску циклу тренування"
   },
   "musicExperience": {
     "title": "Відкривайте музику",

@@ -4252,6 +4252,7 @@ class _Translations$karaokeUi$ms extends Translations$karaokeUi$en {
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Penggabungan memerlukan bahagian vokal, kewujudan sebutan dan keyakinan yang sepadan.';
 	@override String get invalidLyricSpanTiming => 'Setiap bahagian memerlukan masa mula dan tamat yang sah.';
 	@override String get listenToGuideTrack => 'Dengar trek panduan';
+	@override String get countInOnPracticeLoops => 'Kira detik apabila gelung latihan dimulakan semula';
 }
 
 // Path: musicExperience
@@ -9508,6 +9509,7 @@ extension on TranslationsMs {
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Penggabungan memerlukan bahagian vokal, kewujudan sebutan dan keyakinan yang sepadan.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Setiap bahagian memerlukan masa mula dan tamat yang sah.',
 			'karaokeUi.listenToGuideTrack' => 'Dengar trek panduan',
+			'karaokeUi.countInOnPracticeLoops' => 'Kira detik apabila gelung latihan dimulakan semula',
 			'musicExperience.title' => 'Terokai muzik',
 			'musicExperience.mix' => 'Pembina campuran',
 			'musicExperience.adventure' => 'Pengembaraan bunyi',
@@ -9629,9 +9631,9 @@ extension on TranslationsMs {
 			'musicDevices.receive' => 'Benarkan main balik pada peranti ini',
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.',
 			'musicDevices.moveFailed' => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.',
-			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
 			'musicDevices.away' => 'Di luar rumah',
 			'musicDevices.relay' => 'URL geganti muzik',
 			'musicDevices.relayHint' => 'Aktifkan pada peranti penerima, kemudian pasangkan sekali pada rangkaian yang sama. Biarkan Pleazyng terbuka. Geganti menghantar kawalan muzik yang disulitkan dan melihat alamat rangkaian. Setiap pemain menstrim daripada pelayan medianya sendiri.',

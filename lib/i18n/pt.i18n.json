@@ -5501,7 +5501,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "Contagem antes de reiniciar o ciclo de prática"
   },
   "musicExperience": {
     "title": "Descoberta musical",

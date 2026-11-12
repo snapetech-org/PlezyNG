@@ -5465,7 +5465,8 @@
     "requestASong": "",
     "hostUnlock": "",
     "chooseYourSingerName": "",
-    "searchSongs": ""
+    "searchSongs": "",
+    "countInOnPracticeLoops": "นับจังหวะก่อนเริ่มวนฝึกซ้ำ"
   },
   "musicExperience": {
     "title": "ค้นพบเพลง",

@@ -149,7 +149,8 @@ jobs:
           }
           $env:PATH = "$dotnetRoot;$env:PATH"
           $manifestRoot = Join-Path $PWD "winget-submit\manifests\s\SnapeTech\Pleazyng\$env:RELEASE_VERSION"
-          $manifestPath = Join-Path $manifestRoot 'SnapeTech.Pleazyng.yaml'
-          if (-not (Test-Path $manifestPath)) { throw "Version manifest is missing: $manifestPath" }
-          & .\wingetcreate.exe submit --prtitle "SnapeTech.Pleazyng $env:RELEASE_VERSION" --no-open $manifestPath
+          foreach ($name in @('SnapeTech.Pleazyng.yaml', 'SnapeTech.Pleazyng.installer.yaml', 'SnapeTech.Pleazyng.locale.en-US.yaml')) {
+            if (-not (Test-Path (Join-Path $manifestRoot $name))) { throw "Required manifest is missing: $name" }
+          }
+          & .\wingetcreate.exe submit --prtitle "SnapeTech.Pleazyng $env:RELEASE_VERSION" --no-open $manifestRoot
           if ($LASTEXITCODE -ne 0) { throw "wingetcreate submit failed with exit code $LASTEXITCODE" }

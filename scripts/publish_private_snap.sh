@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
-# Upload one verified release package from a private JIT job without snapd/LXD.
+# Upload one verified release package from an isolated trusted-main job without snapd/LXD.
 set +x
 set -Eeuo pipefail
 
-: "${GITHUB_ACTIONS:?Run this publication helper in its private JIT workflow}"
+: "${GITHUB_ACTIONS:?Run this publication helper in its release workflow}"
 : "${GITHUB_RUN_ID:?The task run ID is required}"
 : "${RUNNER_TEMP:?The job temporary directory is required}"
-if [[ "$GITHUB_ACTIONS" != true || "${RUNNER_ENVIRONMENT:-}" != self-hosted || ! "$GITHUB_RUN_ID" =~ ^[0-9]+$ ]]; then
-  echo 'Snap publication requires the private self-hosted JIT job.' >&2
+if [[ "$GITHUB_ACTIONS" != true || ! "${RUNNER_ENVIRONMENT:-}" =~ ^(self-hosted|github-hosted)$ ||
+      "${GITHUB_REPOSITORY:-}" != snapetech-org/pleazyng ||
+      "${GITHUB_REF:-}" != refs/heads/main ||
+      "${GITHUB_EVENT_NAME:-}" != workflow_dispatch ||
+      ! "$GITHUB_RUN_ID" =~ ^[0-9]+$ ]]; then
+  echo 'Snap publication requires an isolated trusted-main job.' >&2
   exit 1
 fi
 if [[ "$(uname -s):$(uname -m)" != Linux:x86_64 ]]; then
@@ -38,11 +42,11 @@ from urllib.parse import urlsplit
 lock = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 raw, temporary, package = sys.argv[2:]
 proxy = urlsplit(raw)
-if (not raw or any(character.isspace() for character in raw)
+if raw and (any(character.isspace() for character in raw)
         or proxy.scheme != "http" or not proxy.hostname or not proxy.port
         or proxy.username or proxy.password or proxy.path not in ("", "/")
         or proxy.query or proxy.fragment):
-    raise SystemExit("An unauthenticated private HTTP proxy with host and port is required")
+    raise SystemExit("Any configured proxy must be an unauthenticated HTTP host and port")
 if (lock["base"] != "core24" or "linux/amd64" not in lock["platforms"]
         or not re.fullmatch(r"ghcr\.io/canonical/snapcraft@sha256:[0-9a-f]{64}", lock["image"])):
     raise SystemExit("The Canonical Snapcraft image must be digest-pinned")
@@ -84,10 +88,17 @@ if [[ -e "$cid_file" || -L "$cid_file" ]]; then
   exit 1
 fi
 
-sudo -n apt-get update -o Acquire::Retries=3 \
-  -o "Acquire::http::Proxy=$proxy" -o "Acquire::https::Proxy=$proxy"
+proxy_options=()
+if [[ -n "$proxy" ]]; then
+  proxy_options=(-o "Acquire::http::Proxy=$proxy" -o "Acquire::https::Proxy=$proxy")
+fi
+if [[ "${RUNNER_ENVIRONMENT:-}" == self-hosted && -z "$proxy" ]]; then
+  echo 'The private runner requires its configured HTTP proxy.' >&2
+  exit 1
+fi
+sudo -n apt-get update -o Acquire::Retries=3 "${proxy_options[@]}"
 sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  -o Acquire::Retries=3 -o "Acquire::http::Proxy=$proxy" -o "Acquire::https::Proxy=$proxy" podman
+  -o Acquire::Retries=3 "${proxy_options[@]}" podman
 sudo -n env HTTP_PROXY="$proxy" HTTPS_PROXY="$proxy" http_proxy="$proxy" https_proxy="$proxy" \
   podman pull --platform linux/amd64 "$image"
 if [[ "$(sudo -n podman image inspect --format '{{.Architecture}}' "$image")" != amd64 ]]; then

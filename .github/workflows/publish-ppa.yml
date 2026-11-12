@@ -112,6 +112,13 @@ jobs:
             [[ "$expected" == "$actual" ]] || { echo "Checksum mismatch for $asset" >&2; exit 1; }
           done
 
+      - name: Install provisioned PPA packaging tools
+        if: steps.settings.outputs.configured == 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            debhelper devscripts dput
+
       - name: Verify package tools and import signing key
         if: steps.settings.outputs.configured == 'true'
         id: signing

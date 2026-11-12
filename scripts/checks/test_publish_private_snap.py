@@ -63,6 +63,8 @@ if 'podman' in args:
             "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
             "GITHUB_ACTIONS": "true", "GITHUB_RUN_ID": "123456",
             "RUNNER_ENVIRONMENT": "self-hosted", "RUNNER_TEMP": str(self.temporary),
+            "GITHUB_REPOSITORY": "snapetech-org/pleazyng",
+            "GITHUB_REF": "refs/heads/main", "GITHUB_EVENT_NAME": "workflow_dispatch",
             "HTTPS_PROXY": "http://10.0.2.100:3128",
             "SNAPCRAFT_STORE_CREDENTIALS": self.secret,
             "FAKE_COMMANDS": str(self.commands),
@@ -96,6 +98,11 @@ if 'podman' in args:
         self.assertTrue(any(args[-4:] == ["rm", "--force", "--ignore", "a" * 64] for args in commands))
         self.assertNotIn(self.secret, self.commands.read_text() + result.stdout + result.stderr)
 
+    def test_hosted_main_upload_uses_direct_network_without_private_proxy(self):
+        result = self.run_helper(RUNNER_ENVIRONMENT="github-hosted", HTTPS_PROXY="", https_proxy="")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue(any("run" in args for args in self.recorded()))
+
     def test_upload_failure_propagates_and_cleans_only_owned_container(self):
         result = self.run_helper(FAKE_UPLOAD_STATUS="13")
         self.assertEqual(result.returncode, 13, result.stdout + result.stderr)
@@ -107,8 +114,9 @@ if 'podman' in args:
         self.assertFalse(any("run" in args for args in self.recorded()))
 
     def test_untrusted_context_and_unsupported_host_fail_before_tools(self):
-        for override in [{"GITHUB_ACTIONS": "false"}, {"RUNNER_ENVIRONMENT": "github-hosted"},
-                         {"GITHUB_RUN_ID": "invalid"}, {"FAKE_MACHINE": "aarch64"}]:
+        for override in [{"GITHUB_ACTIONS": "false"}, {"RUNNER_ENVIRONMENT": "unknown"},
+                         {"GITHUB_RUN_ID": "invalid"}, {"FAKE_MACHINE": "aarch64"},
+                         {"GITHUB_REPOSITORY": "other/project"}, {"GITHUB_REF": "refs/heads/feature"}]:
             with self.subTest(override=override):
                 self.assert_rejected_before_tools(self.run_helper(**override))
 

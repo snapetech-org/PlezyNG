@@ -33,15 +33,17 @@ A verified private Apple recovery completed iOS in 1h43 and tvOS in 26 minutes
 The release controller starts the runner on demand and serializes Apple jobs
 because the private lane has one Mac slot. Direct workflow dispatches default
 to hosted Apple. The release controller monitors tvOS acquisition and switches
-to private JIT after the bounded unassigned queue wait; `--apple-arm-runner-pool
-hosted|private` remains available as an explicit route override. GitHub does not
-expose global hosted macOS capacity, so queued jobs in this repository cannot
-prove whether the global hosted pool is free or busy.
+to private JIT after the bounded unassigned queue wait;
+`--apple-arm-runner-pool hosted|private` selects the route for iOS, tvOS, macOS
+and their Apple CI checks. GitHub does not expose global hosted macOS capacity,
+so queued jobs in this repository cannot prove whether the global hosted pool
+is free or busy. The macOS compile step is bounded at 100 minutes, with a
+150-minute job limit; recent successful hosted compiles took 64–74 minutes.
 
 Release CI's Apple native reliability checks use the same selected route as
-the iOS/tvOS package jobs. This prevents a private-capacity decision for the
-packages from silently sending their prerequisite checks to a congested hosted
-Mac queue. Other hybrid lanes retain their platform-compatible routes.
+the iOS, tvOS and macOS package jobs. This prevents a private-capacity decision
+for the packages from silently sending prerequisite checks to a congested
+hosted Mac queue. Other hybrid lanes retain their platform-compatible routes.
 
 ## Pinned tvOS host tools on Apple silicon
 

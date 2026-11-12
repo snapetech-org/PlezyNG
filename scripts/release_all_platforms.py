@@ -2359,8 +2359,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--source-commit", help="Resume a selected 40-character canonical-main ancestor without incorporating later development.")
     parser.add_argument(
         "--apple-arm-runner-pool", choices=("auto", "hosted", "private"), default="auto",
-        help=("Auto uses compatible hosted macOS first; a verified tvOS no-runner cancellation retries on private Apple JIT. "
-              "Explicitly select hosted or private to force a route."),
+        help=("Select the compatible hosted Apple route by default; a verified tvOS no-runner cancellation retries on private Apple JIT. "
+              "Explicitly select hosted or private to route iOS, tvOS, macOS, and Apple CI together."),
     )
     parser.add_argument(
         "--reuse-platform-run", type=int,

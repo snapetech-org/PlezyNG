@@ -1,5 +1,5 @@
 # ng-runner-policy: hosted-first-v1
-# The trusted-main hybrid profile uses compatible hosted runners by default; the release controller retries tvOS on private Apple JIT only after verified runner non-acquisition.
+# Hybrid builds use compatible hosted runners by default; the explicit private Apple route sends every Apple package job to the run-scoped JIT Mac.
 # packer-windows-jit-v1
 name: Pleazyng Release
 run-name: ${{ inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'build' && format('action:{0}:pool:{1}:mode:{2}:version:{3}:runner-retry-of:{4}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}:runner-retry-of:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && inputs.reuse_platform_run_id != '' && inputs.rebuild_tvos && format('action:{0}:pool:{1}:tag:v{2}:recovery:source:{3}:tvos', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_platform_run_id) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
@@ -48,7 +48,7 @@ on:
         required: false
         type: string
       tvos_runner_pool:
-        description: Use hosted macOS by default; the release controller retries privately only when GitHub canceled tvOS before assigning a runner
+        description: Use hosted macOS for Apple packages by default; private selects the Apple JIT route for iOS, tvOS, and macOS
         required: false
         type: choice
         options: [hosted, private]
@@ -1831,7 +1831,8 @@ jobs:
   build-macos:
     if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_macos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'macos-validation') }}
     needs: validate-trusted-ref
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-macos"]}}', github.run_id)) }}
+    timeout-minutes: 150
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-macos"]}}', github.run_id)) }}
     permissions:
       actions: read
       id-token: write
@@ -2088,6 +2089,7 @@ jobs:
 
       - name: Build macOS
         if: inputs.macos_compilation_job_id == ''
+        timeout-minutes: 100
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         env:
           FLUTTER_XCODE_CODE_SIGNING_ALLOWED: "NO"

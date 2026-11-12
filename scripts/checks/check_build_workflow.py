@@ -93,7 +93,7 @@ require(
     tvos_pool_input is not None
     and "options: [hosted, private]" in tvos_pool_input.group("body")
     and "default: hosted" in tvos_pool_input.group("body"),
-    "full iOS/tvOS release builds must default to compatible hosted Apple",
+    "Apple release builds must default to compatible hosted macOS",
 )
 require(
     "inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos"
@@ -118,8 +118,10 @@ require(
 )
 require(
     "timeout-minutes: 240" in job("build-ios")
-    and "timeout-minutes: 180" in job("build-tvos"),
-    "iOS and tvOS package jobs must have explicit bounded timeouts",
+    and "timeout-minutes: 180" in job("build-tvos")
+    and "timeout-minutes: 150" in job("build-macos")
+    and "timeout-minutes: 100" in named_step(job("build-macos"), "Build macOS"),
+    "Apple package jobs and the macOS compile step must have explicit bounded timeouts",
 )
 release_driver_ast = ast.parse(release_driver_text)
 apple_pool_argument = next((
@@ -1856,6 +1858,12 @@ require(
     and "!inputs.rebuild_tvos && needs.build-tvos.result == 'skipped'" in release_condition
     and "inputs.rebuild_tvos" in named_step(release, "Download tvOS artifact"),
     "tvOS AOT recovery requires a compatible ARM host and a successful fresh artifact",
+)
+require(
+    "inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format(" in job("build-macos")
+    and '"group":"private-apple-builds"' in job("build-macos")
+    and '"gha-{0}-build-macos"' in job("build-macos"),
+    "the explicit private Apple route must include macOS on the run-scoped ARM JIT runner",
 )
 require(
     "scripts/recover_release_platforms.py" in recovery_gate

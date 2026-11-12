@@ -405,6 +405,40 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
                     result.stderr,
                 )
 
+    def test_macos_private_route_and_bounded_build_timeouts_are_enforced(self) -> None:
+        workflow = self._workflow()
+        start = workflow.index("  build-macos:\n")
+        end = workflow.index("  build-windows:\n", start)
+        macos = workflow[start:end]
+        self.assertIn("inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format(", macos)
+        self.assertIn("timeout-minutes: 150", macos)
+        self.assertIn("timeout-minutes: 100", macos)
+
+        mutations = (
+            (
+                "inputs.tvos_runner_pool != 'private' && 'macos-26-intel' ||",
+                "inputs.execution_profile == 'hybrid' && 'macos-26-intel' ||",
+                "the explicit private Apple route must include macOS",
+            ),
+            (
+                "timeout-minutes: 150",
+                "timeout-minutes: 360",
+                "Apple package jobs and the macOS compile step must have explicit bounded timeouts",
+            ),
+            (
+                "timeout-minutes: 100",
+                "timeout-minutes: 360",
+                "Apple package jobs and the macOS compile step must have explicit bounded timeouts",
+            ),
+        )
+        for original, replacement, expected in mutations:
+            with self.subTest(original=original):
+                changed = workflow[:start] + macos.replace(original, replacement, 1) + workflow[end:]
+                self.assertNotEqual(changed, workflow)
+                result = self._run(changed)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(expected, result.stderr)
+
     def test_macos_signing_preflight_cannot_move_after_compilation(self) -> None:
         workflow = self._workflow()
         start = workflow.index("      - name: Import Code Signing Certificate\n")

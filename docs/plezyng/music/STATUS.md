@@ -228,8 +228,8 @@ passed; tests were not run.
 
 Remaining limits include provider/reference metadata equivalence, merged
 server/local history, additional discovery controls, bounded queue-index
-storage, unbounded standalone Cast queues, and native group device/acoustic
-qualification.
+storage, the 32-track/48 KiB standalone Cast transfer cap with rolling
+continuation disabled, and native group device/acoustic qualification.
 Native car artwork/provisioning and physical iPhone/Pi/car/Cast/DAC/codec and
 acoustic qualification remain. No complete-parity claim is made.
 

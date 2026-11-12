@@ -84,6 +84,15 @@ jobs:
           ref: ${{ steps.release.outputs.tag }}
           persist-credentials: false
 
+      # Packaging recipe fixes on main must apply when re-uploading an existing
+      # release; the release tag above supplies only the payload files.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          path: .ppa-recipe
+          sparse-checkout: linux/packaging/ppa
+          persist-credentials: false
+
       - name: Check Launchpad publisher settings
         id: settings
         env:
@@ -152,6 +161,8 @@ jobs:
           }
           owner="${BASH_REMATCH[1]}"
           archive="${BASH_REMATCH[2]}"
+          echo "owner=$owner" >> "$GITHUB_OUTPUT"
+          echo "archive=$archive" >> "$GITHUB_OUTPUT"
           archive_api="https://api.launchpad.net/1.0/~${owner}/+archive/ubuntu/${archive}"
           curl --fail --silent --show-error "$archive_api" >/dev/null || {
             echo "Launchpad PPA does not exist or is not public: $LAUNCHPAD_PPA" >&2
@@ -174,17 +185,47 @@ jobs:
           UBUNTU_SERIES: ${{ matrix.ubuntu_series }}
           GPG_FINGERPRINT: ${{ steps.signing.outputs.fingerprint }}
           PPA_REVISION: ${{ inputs.ppa_revision || '1' }}
+          PPA_OWNER: ${{ steps.ppa.outputs.owner }}
+          PPA_ARCHIVE: ${{ steps.ppa.outputs.archive }}
         run: |
           set -euo pipefail
           version="$RELEASE_VERSION"
           source_name="pleazyng-${version}"
           work="$RUNNER_TEMP/pleazyng-ppa/build"
           source_dir="$work/$source_name"
+          orig="$work/pleazyng_${version}.orig.tar.gz"
+          mkdir -p "$work"
+          # Launchpad requires every upload of one upstream version to carry a
+          # byte-identical orig tarball. Reuse the PPA's copy when it exists.
+          orig_url="https://ppa.launchpadcontent.net/${PPA_OWNER}/${PPA_ARCHIVE}/ubuntu/pool/main/p/pleazyng/pleazyng_${version}.orig.tar.gz"
+          status="$(curl --silent --show-error --location --output "$orig" --write-out '%{http_code}' "$orig_url")"
+          if [[ "$status" == "200" ]]; then
+            tar -xzf "$orig" -C "$work"
+            test -d "$source_dir"
+            for asset in pleazyng-linux-x64.tar.gz pleazyng-linux-arm64.tar.gz; do
+              cmp "$source_dir/$asset" "$RUNNER_TEMP/pleazyng-ppa/assets/$asset" || {
+                echo "Existing PPA orig tarball does not contain release asset $asset" >&2
+                exit 1
+              }
+            done
+            source_flag="-sd"
+          elif [[ "$status" == "404" ]]; then
+            rm -f "$orig"
+            mkdir -p "$source_dir"
+            cp "$RUNNER_TEMP/pleazyng-ppa/assets/pleazyng-linux-x64.tar.gz" "$source_dir/"
+            cp "$RUNNER_TEMP/pleazyng-ppa/assets/pleazyng-linux-arm64.tar.gz" "$source_dir/"
+            cp linux/packaging/pleazyng.sh linux/packaging/org.snapetech.pleazyng.desktop assets/pleazyng.png LICENSE "$source_dir/"
+            # Deterministic so parallel series jobs produce identical bytes.
+            orig_epoch="$(git log -1 --format=%ct)"
+            tar --sort=name --mtime="@$orig_epoch" --owner=0 --group=0 --numeric-owner \
+              -cf - -C "$work" "$source_name" | gzip -n -9 > "$orig"
+            source_flag="-sa"
+          else
+            echo "Unable to query existing orig tarball ($status): $orig_url" >&2
+            exit 1
+          fi
           mkdir -p "$source_dir/debian"
-          cp "$RUNNER_TEMP/pleazyng-ppa/assets/pleazyng-linux-x64.tar.gz" "$source_dir/"
-          cp "$RUNNER_TEMP/pleazyng-ppa/assets/pleazyng-linux-arm64.tar.gz" "$source_dir/"
-          cp linux/packaging/pleazyng.sh linux/packaging/org.snapetech.pleazyng.desktop assets/pleazyng.png LICENSE "$source_dir/"
-          cp -a linux/packaging/ppa/debian/. "$source_dir/debian/"
+          cp -a .ppa-recipe/linux/packaging/ppa/debian/. "$source_dir/debian/"
           [[ "$PPA_REVISION" =~ ^[1-9][0-9]*$ ]] || { echo "Invalid PPA revision: $PPA_REVISION" >&2; exit 1; }
           ppa_version="${version}-1ppa${PPA_REVISION}~${UBUNTU_SERIES}1"
           cat > "$source_dir/debian/changelog" <<EOF
@@ -194,9 +235,8 @@ jobs:
 
            -- SnapeTech <noreply@github.com>  $(date -R)
           EOF
-          tar -czf "$work/pleazyng_${version}.orig.tar.gz" --exclude="$source_name/debian" -C "$work" "$source_name"
           cd "$source_dir"
-          dpkg-buildpackage -S -sa -d -k"$GPG_FINGERPRINT"
+          dpkg-buildpackage -S "$source_flag" -d -k"$GPG_FINGERPRINT"
           changes="$(find "$work" -maxdepth 1 -type f -name "pleazyng_${ppa_version}_source.changes" -print -quit)"
           test -n "$changes" && test -s "$changes"
           dput -f pleazyng-ppa "$changes"

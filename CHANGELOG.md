@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Fix Launchpad PPA binary uploads rejected for 1970 timestamps on bundled Dolby Vision tools, and allow re-uploading an existing release with a new PPA revision.
+- Fix Launchpad PPA binary uploads rejected for 1970 timestamps on bundled Dolby Vision tools, and allow re-uploading an existing release with a new PPA revision using the PPA's existing source tarball and current packaging fixes.
 
 - Keep paged local folder listings in a deterministic order when filenames differ only by letter case.
 

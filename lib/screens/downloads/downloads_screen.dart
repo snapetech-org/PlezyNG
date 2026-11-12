@@ -148,42 +148,7 @@ class DownloadsScreenState extends State<DownloadsScreen>
     if (unavailable) showErrorSnackBar(context, t.errors.connectionFailed);
   }
 
-  Future<void> _reviewOrphanDownloads() async {
-    final provider = context.read<DownloadProvider>();
-    final scan = await provider.scanOrphanDownloads();
-    if (!mounted) return;
-
-    if (!scan.isComplete) {
-      showAppSnackBar(context, t.downloads.orphanCleanupFailed);
-      return;
-    }
-    if (scan.files.isEmpty) {
-      showAppSnackBar(context, t.downloads.orphanCleanupNone);
-      return;
-    }
-
-    final confirmed = await showScopedDialog<bool>(
-      context: context,
-      builder: (dialogContext) => _OrphanDownloadReviewDialog(scan: scan),
-    );
-    if (confirmed != true || !mounted) return;
-
-    final result = await provider.deleteOrphanDownloads(scan);
-    if (!mounted) return;
-    if (result.deletedCount == 0 && result.skippedCount > 0) {
-      showAppSnackBar(context, t.downloads.orphanCleanupChanged);
-    } else if (result.deletedCount > 0) {
-      showSuccessSnackBar(
-        context,
-        t.downloads.orphanCleanupComplete(
-          count: result.deletedCount,
-          size: ByteFormatter.formatBytes(result.deletedBytes),
-        ),
-      );
-    } else {
-      showAppSnackBar(context, t.downloads.orphanCleanupNone);
-    }
-  }
+  Future<void> _reviewOrphanDownloads() => reviewOrphanDownloads(context, context.read<DownloadProvider>());
 
   /// Focus the top of the currently active tab — its chips bar on
   /// desktop/TV, its first content item on mobile.
@@ -734,6 +699,44 @@ class _DownloadsGridContentState extends State<_DownloadsGridContent>
         iconSize: 80,
       ),
     );
+  }
+}
+
+/// Review only app-managed files with no matching download record or active
+/// task. The provider rescans before deletion, including from Settings.
+Future<void> reviewOrphanDownloads(BuildContext context, DownloadProvider provider) async {
+  final scan = await provider.scanOrphanDownloads();
+  if (!context.mounted) return;
+
+  if (!scan.isComplete) {
+    showAppSnackBar(context, t.downloads.orphanCleanupFailed);
+    return;
+  }
+  if (scan.files.isEmpty) {
+    showAppSnackBar(context, t.downloads.orphanCleanupNone);
+    return;
+  }
+
+  final confirmed = await showScopedDialog<bool>(
+    context: context,
+    builder: (dialogContext) => _OrphanDownloadReviewDialog(scan: scan),
+  );
+  if (confirmed != true || !context.mounted) return;
+
+  final result = await provider.deleteOrphanDownloads(scan);
+  if (!context.mounted) return;
+  if (result.deletedCount == 0 && result.skippedCount > 0) {
+    showAppSnackBar(context, t.downloads.orphanCleanupChanged);
+  } else if (result.deletedCount > 0) {
+    showSuccessSnackBar(
+      context,
+      t.downloads.orphanCleanupComplete(
+        count: result.deletedCount,
+        size: ByteFormatter.formatBytes(result.deletedBytes),
+      ),
+    );
+  } else {
+    showAppSnackBar(context, t.downloads.orphanCleanupNone);
   }
 }
 

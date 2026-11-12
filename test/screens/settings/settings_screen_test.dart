@@ -274,6 +274,20 @@ void main() {
     expect(materialUpdateTile.focusNode, isNotNull);
   });
 
+  testWidgets('download settings offers orphan review only where supported', (tester) async {
+    final harness = await _pumpSettingsScreen(tester, requireWiFiOverride: (_) async => true);
+    addTearDown(() => harness.dispose(tester));
+
+    if (Platform.isIOS) {
+      expect(find.text(t.downloads.reviewOrphanFiles), findsNothing);
+      return;
+    }
+
+    final review = _focusableTileFor(t.downloads.reviewOrphanFiles);
+    expect(review, findsOneWidget);
+    expect(tester.widget<FocusableListTile>(review).onTap, isNotNull);
+  });
+
   testWidgets('background downloads tile renders and opens the injected blocked status', (tester) async {
     const channel = MethodChannel('com.plezy/device.settings-background-test');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
@@ -870,6 +884,9 @@ class _FixtureLibrariesProvider extends LibrariesProvider {
 }
 
 class _WritableDownloadStorage extends Fake implements DownloadStorageService {
+  @override
+  bool isUsingCustomPath() => false;
+
   @override
   Future<bool> isDirectoryWritable(Directory dir) async => true;
 }

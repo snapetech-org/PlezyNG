@@ -15,6 +15,7 @@ import '../../focus/focusable_text_field.dart';
 import '../../focus/input_mode_tracker.dart';
 import '../../i18n/strings.g.dart';
 import '../main_screen.dart';
+import '../downloads/downloads_screen.dart';
 import '../../mixins/mounted_set_state_mixin.dart';
 import '../../mixins/refreshable.dart';
 import '../../providers/account_preferences_controller.dart';
@@ -116,6 +117,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
   static const _kDownloadLocation = 'download_location';
   static const _kDownloadOnWifiOnly = 'download_on_wifi_only';
   static const _kAutoRemoveWatchedDownloads = 'auto_remove_watched_downloads';
+  static const _kReviewOrphanDownloads = 'review_orphan_downloads';
   static const _kAutoDownloadContinueWatching = 'auto_download_continue_watching';
   static const _kDownloadQuality = 'download_quality';
   static const _kAskDownloadQualityEachTime = 'ask_download_quality_each_time';
@@ -608,6 +610,14 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
           title: t.settings.autoRemoveWatchedDownloads,
           subtitle: t.settings.autoRemoveWatchedDownloadsDescription,
         ),
+        if (context.watch<DownloadProvider>().canReviewOrphanDownloads)
+          FocusableListTile(
+            focusNode: _focusTracker.get(_kReviewOrphanDownloads),
+            leading: const AppIcon(Symbols.folder_delete_rounded, fill: 1),
+            title: Text(t.downloads.reviewOrphanFiles),
+            subtitle: Text(t.downloads.orphanReviewDescription),
+            onTap: () => unawaited(reviewOrphanDownloads(context, context.read<DownloadProvider>())),
+          ),
         SettingSwitchTile(
           focusNode: _focusTracker.get(_kAutoDownloadContinueWatching),
           pref: settings.SettingsService.autoDownloadContinueWatching,
@@ -623,8 +633,8 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
           },
         ),
         if (_backgroundWorkDiagnostics.isSupported) _buildBackgroundDownloadsTile(),
-        // TODO: "Remove orphaned downloads" toggle (#1413) goes here, next to
-        // autoRemoveWatchedDownloads.
+        // Automatic orphan cleanup (#1413) is distinct from this reviewed,
+        // user-confirmed action.
       ],
     );
   }

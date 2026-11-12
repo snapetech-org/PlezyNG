@@ -94,6 +94,7 @@ void main() {
     expect(radios.single.title, 'Library Radio');
     expect(requests.single.url.path, '/hubs/sections/3');
     expect(requests.single.url.queryParameters['includeStations'], '1');
+    expect(requests.single.url.queryParameters['includeMyMixes'], '1');
     expect(requests.single.url.queryParameters['count'], '32');
     expect(() => radios.clear(), throwsUnsupportedError);
     final tracks = await client.serverMusicRadioTracks(radios.single, limit: 1);
@@ -106,6 +107,22 @@ void main() {
     expect(requests.last.url.queryParameters['type'], 'audio');
     expect(requests.last.url.queryParameters['uri'], 'server://srv/com.plexapp.plugins.library$radioKey');
     expect(requests.every((r) => !r.url.path.endsWith('/items')), isTrue);
+  });
+
+  test('personalized radio families preserve server labels without a hard-coded context allowlist', () async {
+    final body = catalog();
+    ((body['MediaContainer'] as Map)['Hub'] as List).add(<String, dynamic>{
+      'context': 'hub.music.personalized-family',
+      'title': 'Mixes For You',
+      'Metadata': [station(key: '/library/metadata/11/station/personal?type=10')],
+    });
+    final client = testPlexClient(handler: (_) async => json(body));
+    addTearDown(client.close);
+    final radios = await client.serverMusicRadios('3');
+    expect(radios, hasLength(2));
+    expect(radios.last.familyId, 'hub.music.personalized-family');
+    expect(radios.last.familyTitle, 'Mixes For You');
+    expect(ServerMusicRadio.fromJson(radios.last.toJson()).familyTitle, 'Mixes For You');
   });
 
   test('catalog rejects foreign and nonradio playlists and deduplicates keys', () async {

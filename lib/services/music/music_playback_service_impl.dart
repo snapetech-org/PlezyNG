@@ -2382,7 +2382,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   @override
-  Future<InstantMixOutcome> playServerRadio(ServerMusicRadio radio) async {
+  Future<InstantMixOutcome> playServerRadio(ServerMusicRadio radio, {bool shuffle = false}) async {
     if (!radio.valid) throw ArgumentError('Invalid server radio');
     final intent = beginPlayIntent();
     final source = MediaItem(
@@ -2424,6 +2424,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     await _startQueue(
       tracks: tracks,
       sourceCurrent: current,
+      shuffle: shuffle,
       playContext: MusicPlayContext(title: radio.title, kind: MusicPlayContextKind.mix),
     );
     if (_disposed || _queueSessionRevision != expectedRevision || !current()) return InstantMixOutcome.superseded;

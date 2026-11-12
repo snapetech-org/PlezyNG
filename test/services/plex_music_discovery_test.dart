@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/media/ids.dart';
+import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/services/plex_api_cache.dart';
 import '../test_helpers/backend_client_fixtures.dart';
 
@@ -49,6 +50,27 @@ void main() {
     await client.sonicPath(libraryId: '3', startId: '41', endId: '42', count: 25, maxDistance: .4);
     expect(requests.last.queryParameters['count'], '25');
     expect(requests.last.queryParameters['maxDistance'], '0.4');
+  });
+
+  test('music recommendation reads explicitly request personalized mixes', () async {
+    final requests = <Uri>[];
+    final client = testPlexClient(
+      handler: (request) async {
+        requests.add(request.url);
+        return http.Response(
+          jsonEncode({
+            'MediaContainer': {'Hub': []},
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      },
+    );
+    addTearDown(client.close);
+    await client.fetchLibraryHubs('3', libraryName: 'Music', libraryKind: MediaKind.artist);
+    expect(requests.last.queryParameters['includeMyMixes'], '1');
+    await client.fetchLibraryHubs('4', libraryName: 'Movies', libraryKind: MediaKind.movie);
+    expect(requests.last.queryParameters.containsKey('includeMyMixes'), isFalse);
   });
 
   test('invalid bounds do not make requests; forbidden analysis is not an empty success', () async {

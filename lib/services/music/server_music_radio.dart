@@ -3,8 +3,16 @@ import '../../media/media_item.dart';
 /// Server-authored stations retain their original names and opaque local keys.
 /// Only the client that issued a row may open it; this is not a stream URL.
 class ServerMusicRadio {
-  const ServerMusicRadio({required this.serverId, required this.libraryId, required this.key, required this.title});
+  const ServerMusicRadio({
+    required this.serverId,
+    required this.libraryId,
+    required this.key,
+    required this.title,
+    this.familyId,
+    this.familyTitle,
+  });
   final String serverId, libraryId, key, title;
+  final String? familyId, familyTitle;
 
   bool get valid =>
       serverId.isNotEmpty &&
@@ -13,18 +21,29 @@ class ServerMusicRadio {
       libraryId.length <= 128 &&
       title.trim().isNotEmpty &&
       title.length <= 1024 &&
+      (familyId == null || familyId!.isNotEmpty && familyId!.length <= 256) &&
+      (familyTitle == null || familyTitle!.trim().isNotEmpty && familyTitle!.length <= 1024) &&
       validServerMusicRadioKey(key, libraryId);
 
   Map<String, Object> toJson() {
     if (!valid) throw ArgumentError('Invalid music radio recipe');
-    return {'serverId': serverId, 'libraryId': libraryId, 'key': key, 'title': title};
+    return {
+      'serverId': serverId,
+      'libraryId': libraryId,
+      'key': key,
+      'title': title,
+      'familyId': ?familyId,
+      'familyTitle': ?familyTitle,
+    };
   }
 
   factory ServerMusicRadio.fromJson(Map<String, dynamic> json) {
     if (json['serverId'] is! String ||
         json['libraryId'] is! String ||
         json['key'] is! String ||
-        json['title'] is! String) {
+        json['title'] is! String ||
+        json['familyId'] != null && json['familyId'] is! String ||
+        json['familyTitle'] != null && json['familyTitle'] is! String) {
       throw const FormatException('Invalid music radio recipe');
     }
     final radio = ServerMusicRadio(
@@ -32,6 +51,8 @@ class ServerMusicRadio {
       libraryId: json['libraryId'],
       key: json['key'],
       title: json['title'],
+      familyId: json['familyId'],
+      familyTitle: json['familyTitle'],
     );
     if (!radio.valid) throw const FormatException('Invalid music radio recipe');
     return radio;

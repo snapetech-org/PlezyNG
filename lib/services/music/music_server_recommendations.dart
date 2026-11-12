@@ -1,3 +1,4 @@
+import 'server_music_radio.dart';
 import '../../media/media_hub.dart';
 import '../../media/media_item.dart';
 import '../../media/media_kind.dart';
@@ -30,6 +31,14 @@ class MusicServerRecommendation {
   bool get isCurrent => _current();
 }
 
+class MusicServerRadioRecommendation {
+  MusicServerRadioRecommendation._(this.radio, this.source, this._current);
+  final ServerMusicRadio radio;
+  final MusicRecommendationSource source;
+  final bool Function() _current;
+  bool get isCurrent => _current() && (source.client as ServerMusicRadioClient).serverMusicRadioCurrent(radio);
+}
+
 class _Batch {
   _Batch(this.source)
     : authentication = source.client.authenticationSessionId,
@@ -38,7 +47,9 @@ class _Batch {
   final Object authentication;
   final String account;
   List<MusicServerRecommendation> shelves = [];
-  bool failed = false;
+  bool _hubsFailed = false, _radioFailed = false;
+  bool get failed => _hubsFailed || _radioFailed;
+  List<MusicServerRadioRecommendation> radios = [];
   bool get current =>
       source.isCurrent() &&
       !source.client.isOfflineMode &&
@@ -46,6 +57,33 @@ class _Batch {
       account == musicAccountScope(source.client);
 
   Future<void> load() async {
+    await Future.wait([_loadHubs(), _loadRadios()]);
+  }
+
+  Future<void> _loadRadios() async {
+    final client = source.client;
+    if (client is! ServerMusicRadioClient || !current) return;
+    final radioClient = client as ServerMusicRadioClient;
+    try {
+      final issued = await radioClient.serverMusicRadios(source.libraryId).timeout(const Duration(seconds: 10));
+      if (!current) return;
+      final seen = <String>{};
+      radios = List.unmodifiable([
+        for (final row in issued.take(32))
+          if (row.valid &&
+              row.serverId == client.serverId.value &&
+              row.libraryId == source.libraryId &&
+              seen.add(row.key) &&
+              radioClient.serverMusicRadioCurrent(row))
+            MusicServerRadioRecommendation._(row, source, () => current),
+      ]);
+    } catch (_) {
+      _radioFailed = true;
+      radios = [];
+    }
+  }
+
+  Future<void> _loadHubs() async {
     if (!current) return;
     try {
       final diagnostics = HubFetchDiagnostics();
@@ -60,7 +98,7 @@ class _Batch {
           )
           .timeout(const Duration(seconds: 10));
       if (!current) return;
-      failed = diagnostics.failed;
+      _hubsFailed = diagnostics.failed;
       final seen = <String>{};
       for (final hub in hubs.take(64)) {
         if (shelves.length >= 8) break;
@@ -94,7 +132,7 @@ class _Batch {
         shelves.add(MusicServerRecommendation._(preview, source, () => current));
       }
     } catch (_) {
-      failed = true;
+      _hubsFailed = true;
       shelves = [];
     }
   }
@@ -117,6 +155,21 @@ class MusicServerRecommendations {
       for (final pool in pools) {
         if (index < pool.length) rows.add(pool[index]);
         if (rows.length == maximumShelves) break;
+      }
+    }
+    return List.unmodifiable(rows);
+  }
+
+  List<MusicServerRadioRecommendation> get radios {
+    final pools = [
+      for (final batch in _batches)
+        if (batch.current) batch.radios,
+    ];
+    final rows = <MusicServerRadioRecommendation>[];
+    for (var index = 0; index < 32 && rows.length < 64; index++) {
+      for (final pool in pools) {
+        if (index < pool.length && pool[index].isCurrent) rows.add(pool[index]);
+        if (rows.length == 64) break;
       }
     }
     return List.unmodifiable(rows);

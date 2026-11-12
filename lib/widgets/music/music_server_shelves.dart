@@ -48,6 +48,7 @@ class _MusicServerShelvesState extends State<MusicServerShelves> {
       profiles?.activeId,
       profiles?.isBinding,
       profiles?.lastBindingSucceeded,
+      profiles?.identityMutationGeneration,
       libraries?.libraries
           .map(
             (library) => (
@@ -69,12 +70,14 @@ class _MusicServerShelvesState extends State<MusicServerShelves> {
     if (_signature == signature) return;
     _signature = signature;
     final generation = _generation = Object();
+    final profileGeneration = profiles?.identityMutationGeneration;
     bool current() =>
         mounted &&
         identical(generation, _generation) &&
         experience != null &&
         experience.store.active &&
         profiles != null &&
+        profiles.identityMutationGeneration == profileGeneration &&
         profiles.activeId == experience.store.profileId &&
         !profiles.isBinding &&
         profiles.lastBindingSucceeded;
@@ -187,6 +190,27 @@ class _MusicServerShelvesState extends State<MusicServerShelves> {
     }
   }
 
+  Future<void> _openRadio(MusicServerRadioRecommendation selection) async {
+    if (!mounted || !selection.isCurrent) return;
+    final music = context.read<MusicPlaybackService>();
+    if (music is! MusicServerRadioControls) {
+      showErrorSnackBar(context, t.musicExperience.error);
+      return;
+    }
+    bool current() => mounted && selection.isCurrent && identical(context.read<MusicPlaybackService>(), music);
+    try {
+      final outcome = await (music as MusicServerRadioControls).playServerRadio(selection.radio);
+      if (!mounted || !current()) return;
+      if (outcome == InstantMixOutcome.empty) {
+        showErrorSnackBar(context, t.music.instantMixEmpty);
+      } else if (outcome == InstantMixOutcome.started && PlatformDetector.isTV()) {
+        await openNowPlaying(context);
+      }
+    } catch (_) {
+      if (mounted && current()) showErrorSnackBar(context, t.musicExperience.error);
+    }
+  }
+
   @override
   void dispose() {
     _generation = null;
@@ -199,13 +223,50 @@ class _MusicServerShelvesState extends State<MusicServerShelves> {
     builder: (context, snapshot) {
       if (snapshot.connectionState != ConnectionState.done) return const LinearProgressIndicator();
       final selection = snapshot.data, shelves = selection?.shelves ?? [];
+      final radios = selection?.radios ?? [];
+      final radioFamilies = <(String, String, String?, String?), List<MusicServerRadioRecommendation>>{};
+      for (final row in radios) {
+        final radio = row.radio;
+        (radioFamilies[(radio.serverId, radio.libraryId, radio.familyId, radio.familyTitle)] ??= []).add(row);
+      }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (snapshot.hasError || selection?.hasFailures == true)
             Padding(padding: const EdgeInsets.all(16), child: Text(t.musicExperience.error)),
-          if (shelves.isEmpty && !snapshot.hasError && selection?.hasFailures != true)
+          if (shelves.isEmpty && radios.isEmpty && !snapshot.hasError && selection?.hasFailures != true)
             Padding(padding: const EdgeInsets.all(16), child: Text(t.libraries.noRecommendations)),
+          for (final family in radioFamilies.values)
+            ExpansionTile(
+              key: ValueKey((
+                'serverRadio',
+                family.first.radio.serverId,
+                family.first.radio.libraryId,
+                family.first.radio.familyId,
+                family.first.radio.familyTitle,
+              )),
+              title: Text(family.first.radio.familyTitle ?? t.musicTools.stations),
+              subtitle: Text(
+                [
+                  family.first.source.client.serverName,
+                  family.first.source.libraryName,
+                ].whereType<String>().where((value) => value.isNotEmpty).join(' · '),
+              ),
+              children: [
+                for (final selection in family)
+                  ListTile(
+                    key: ValueKey((selection.radio.serverId, selection.radio.libraryId, selection.radio.key)),
+                    title: Text(selection.radio.title),
+                    subtitle: Text(
+                      [
+                        selection.source.client.serverName,
+                        selection.source.libraryName,
+                      ].whereType<String>().where((value) => value.isNotEmpty).join(' · '),
+                    ),
+                    onTap: () => _openRadio(selection),
+                  ),
+              ],
+            ),
           for (final shelf in shelves)
             ExpansionTile(
               key: ValueKey((shelf.source.client.serverId.value, shelf.source.libraryId, shelf.hub.id)),

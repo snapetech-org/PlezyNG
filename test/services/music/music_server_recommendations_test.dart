@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:plezy/services/music/server_music_radio.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/media_hub.dart';
@@ -30,6 +31,22 @@ class _Client extends ExperienceClient {
   }
 }
 
+class _RadioClient extends _Client implements ServerMusicRadioClient {
+  List<ServerMusicRadio> radioRows = [];
+  bool radioFailure = false;
+  Future<List<ServerMusicRadio>>? pendingRadios;
+  @override
+  Future<List<ServerMusicRadio>> serverMusicRadios(String libraryId) async {
+    if (radioFailure) throw StateError('Forbidden radio');
+    return pendingRadios ?? radioRows;
+  }
+
+  @override
+  bool serverMusicRadioCurrent(ServerMusicRadio radio) => radioRows.any((row) => identical(row, radio));
+  @override
+  Future<List<MediaItem>> serverMusicRadioTracks(ServerMusicRadio radio, {int limit = 100}) async => [];
+}
+
 MediaHub hub({String id = 'server-family', String server = 's', String? library, List<MediaItem>? items}) => MediaHub(
   id: id,
   identifier: 'music.server.actual-family',
@@ -46,6 +63,55 @@ MusicRecommendationSource _source(_Client client, {String id = 'library', bool F
 MediaItem item(String id, String library) => MediaItem.fromJson({...musicTrack(id).toJson(), 'libraryId': library});
 
 void main() {
+  const radio = ServerMusicRadio(
+    serverId: 's',
+    libraryId: 'library',
+    key: '/library/metadata/1/station/radio?type=10',
+    title: 'Radio family',
+  );
+  test('radio families retain their exact source and retire with authorization', () async {
+    final client = _RadioClient()
+      ..radioRows = [
+        radio,
+        radio,
+        const ServerMusicRadio(
+          serverId: 'foreign',
+          libraryId: 'library',
+          key: '/library/metadata/2/station/radio',
+          title: 'Foreign',
+        ),
+      ];
+    var current = true;
+    final selection = await MusicServerRecommendations.load([_source(client, current: () => current)]);
+    final entry = selection.radios.single;
+    expect(identical(entry.radio, radio), isTrue);
+    expect(selection.shelves, hasLength(1));
+    client.radioRows = [];
+    expect(entry.isCurrent, isFalse);
+    expect(selection.radios, isEmpty);
+    current = false;
+    expect(selection.shelves, isEmpty);
+  });
+
+  test('radio failure is visible without discarding valid album recommendations', () async {
+    final client = _RadioClient()..radioFailure = true;
+    final selection = await MusicServerRecommendations.load([_source(client)]);
+    expect(selection.hasFailures, isTrue);
+    expect(selection.radios, isEmpty);
+    expect(selection.shelves, hasLength(1));
+  });
+
+  test('a late radio catalog cannot outlive its original authentication', () async {
+    final client = _RadioClient()..radioRows = [radio];
+    final pending = Completer<List<ServerMusicRadio>>();
+    client.pendingRadios = pending.future;
+    final load = MusicServerRecommendations.load([_source(client)]);
+    await Future<void>.delayed(Duration.zero);
+    client.authenticationSessionId = Object();
+    pending.complete([radio]);
+    expect((await load).radios, isEmpty);
+  });
+
   test('previews preserve native family identity and reject foreign or non-music rows', () async {
     final client = _Client();
     client.fetch = (_, _) async => [

@@ -2096,6 +2096,16 @@ void main() {
     expect(h.client.instantMixReads, 0);
   });
 
+  test('explicit server radio shuffle can return to the provider occurrence order', () async {
+    h.client.serverRadios = [serverRadio];
+    final tracks = [for (var i = 0; i < 20; i++) radioTrack('r$i', 'a')];
+    h.client.serverRadioWindows.add(tracks);
+    expect(await h.service.playServerRadio(serverRadio, shuffle: true), InstantMixOutcome.started);
+    expect(h.service.shuffled, isTrue);
+    h.service.toggleShuffle();
+    expect(h.service.queue.map((track) => track.id), tracks.map((track) => track.id));
+  });
+
   test('foreign server radio tracks cannot replace the audible queue', () async {
     await h.playTracks([t3]);
     h.client.serverRadios = [serverRadio];

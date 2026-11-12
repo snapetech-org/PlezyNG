@@ -1,3 +1,4 @@
+import 'server_music_radio.dart';
 import 'music_experience.dart';
 import 'music_driving_routes.dart';
 import 'music_system_audio_route_monitor.dart';
@@ -65,6 +66,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   final _artworkItems =
       <String, ({MediaItem item, MediaServerClient? client, Object? authentication, String? scope})>{};
   final Map<String, MediaItem> _items = {};
+  final _serverRadios = <String, ({ServerMusicRadio radio, MediaServerClient client, bool Function() current})>{};
   final _authorizations =
       <String, ({MediaServerClient? client, Object? authentication, String? account, int generation})>{};
   Object? _queueShape;
@@ -163,6 +165,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       ]);
       if (_catalogShape == shape) return;
       _catalogShape = shape;
+      _serverRadios.clear();
       _artworkItems.clear();
       _carArtwork.clear();
       unawaited(_send('catalogChanged'));
@@ -232,6 +235,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     _artworkItems.clear();
     _artworkHttp.close();
     _items.clear();
+    _serverRadios.clear();
     _authorizations.clear();
     super.dispose();
   }
@@ -394,6 +398,8 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
 
   Future<Object?> _handle(MethodCall call) async {
     if (!mounted || !_current || _profileId == null) throw PlatformException(code: 'profile_unavailable');
+    final requestGeneration = _profiles.identityMutationGeneration;
+    bool requestCurrent() => _current && requestGeneration == _profiles.identityMutationGeneration;
     final args = call.arguments is Map ? Map<String, dynamic>.from(call.arguments as Map) : <String, dynamic>{};
     switch (call.method) {
       case 'transport':
@@ -426,7 +432,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         final album = (args['album'] as String? ?? '').trim().toLowerCase();
         final kind = args['kind'] as String?;
         final results = await _search(args['query'] as String? ?? '');
-        if (!mounted || !_current) return [];
+        if (!mounted || !requestCurrent()) return [];
         final resolved = results
             .where(
               (item) =>
@@ -443,7 +449,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           final store = MusicLibraryStore(context.read<AppDatabase>(), _profileId);
           final stations = await store.documents('station');
           final recipes = await MusicRecipeStore(store.database, _profileId).load();
-          if (!_current) return [];
+          if (!requestCurrent()) return [];
           resolved.addAll(
             stations
                 .where(
@@ -469,7 +475,12 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
                 ),
           );
         }
-        return resolved.take(10).toList();
+        if (artist.isEmpty && album.isEmpty && (kind == null || kind == 'station')) {
+          final radios = await _serverRadioRows();
+          if (!requestCurrent()) return [];
+          resolved.addAll(radios.where((row) => (row['title'] as String).trim().toLowerCase() == title));
+        }
+        return requestCurrent() ? resolved.take(10).toList() : [];
       case 'playItem':
         final id = args['id'] as String? ?? '';
         if (id.startsWith('queue:')) {
@@ -480,6 +491,31 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           final index = int.tryParse(parts[2]);
           if (index == null || index < 0 || index >= _music.queue.length) throw PlatformException(code: 'stale_queue');
           await _music.jumpTo(index);
+        } else if (id.startsWith('serverRadio:')) {
+          final entry = _serverRadios[id];
+          if (entry == null || !entry.current()) throw PlatformException(code: 'stale_item');
+          if (args['queue'] == 'next' || args['queue'] == 'later') {
+            final intent = _music.beginPlayIntent();
+            final tracks = await (entry.client as ServerMusicRadioClient).serverMusicRadioTracks(entry.radio);
+            if (!entry.current() || !_music.isPlayIntentCurrent(intent)) return false;
+            if (tracks.any(
+              (track) =>
+                  track.kind != MediaKind.track ||
+                  track.id.isEmpty ||
+                  track.backend != entry.client.backend ||
+                  track.serverId != entry.radio.serverId ||
+                  track.libraryId != entry.radio.libraryId,
+            )) {
+              throw const FormatException('Foreign music radio track');
+            }
+            return tracks.isNotEmpty && _enqueueRequested(tracks, args);
+          }
+          if (_music is! MusicServerRadioControls) throw PlatformException(code: 'unsupported_server_radio');
+          final outcome = await (_music as MusicServerRadioControls).playServerRadio(
+            entry.radio,
+            shuffle: args['shuffle'] == true,
+          );
+          if (outcome != InstantMixOutcome.started) return false;
         } else if (id.startsWith('station:')) {
           final generation = _profiles.identityMutationGeneration;
           bool stationCurrent() => _current && generation == _profiles.identityMutationGeneration;
@@ -710,6 +746,84 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     return false;
   }
 
+  Future<List<Map<String, Object?>>> _serverRadioRows({String? libraryKey}) async {
+    final generation = _profiles.identityMutationGeneration;
+    final hidden = context.read<HiddenLibrariesProvider>();
+    final libraries = context.read<LibrariesProvider>();
+    final manager = context.read<MultiServerProvider>().serverManager;
+    bool current() =>
+        _current && generation == _profiles.identityMutationGeneration && !libraries.isDisposed && !hidden.isDisposed;
+    await hidden.ensureInitialized();
+    if (!current()) return [];
+    // Capture all original owners before the first catalog request.
+    final sources =
+        [
+              for (final library in libraries.libraries)
+                if (library.kind == MediaKind.artist &&
+                    library.serverId != null &&
+                    !library.hidden &&
+                    (libraryKey == null || libraryKey == library.globalKey) &&
+                    !hidden.hiddenLibraryKeys.contains(library.globalKey))
+                  (library, manager.getClient(ServerId(library.serverId!))),
+            ]
+            .where(
+              (source) =>
+                  source.$2 is ServerMusicRadioClient &&
+                  manager.isServerVisible(source.$2!.serverId) &&
+                  manager.isClientOnline(source.$2!.serverId),
+            )
+            .take(16)
+            .map((source) => (source.$1, source.$2!, _readClient(source.$2!)))
+            .toList();
+    final rows = <Map<String, Object?>>[];
+    for (var start = 0; start < sources.length; start += 4) {
+      final batches = await Future.wait(
+        sources.skip(start).take(4).map((source) async {
+          final (library, client, ownerCurrent) = source;
+          final radioClient = client as ServerMusicRadioClient;
+          bool visible() =>
+              current() &&
+              ownerCurrent() &&
+              !hidden.hiddenLibraryKeys.contains(library.globalKey) &&
+              libraries.libraries.any((row) => row.globalKey == library.globalKey && !row.hidden);
+          if (!visible()) return <Map<String, Object?>>[];
+          final catalog = await radioClient.serverMusicRadios(library.id).timeout(const Duration(seconds: 10));
+          if (!visible()) return <Map<String, Object?>>[];
+          final result = <Map<String, Object?>>[], seen = <String>{};
+          for (final radio in catalog.take(32)) {
+            if (!radio.valid ||
+                radio.serverId != client.serverId.value ||
+                radio.libraryId != library.id ||
+                !radioClient.serverMusicRadioCurrent(radio) ||
+                !seen.add(radio.key)) {
+              continue;
+            }
+            final id = 'serverRadio:$_itemScope:${++_itemSequence}';
+            if (_serverRadios.length >= 512) _serverRadios.remove(_serverRadios.keys.first);
+            _serverRadios[id] = (
+              radio: radio,
+              client: client,
+              current: () => visible() && radioClient.serverMusicRadioCurrent(radio),
+            );
+            result.add({
+              'id': id,
+              'title': radio.title,
+              'subtitle': [library.title, radio.familyTitle].whereType<String>().join(' · '),
+              'kind': 'station',
+              'playable': true,
+            });
+          }
+          return result;
+        }),
+      );
+      if (!current()) return [];
+      for (final batch in batches) {
+        rows.addAll(batch);
+      }
+    }
+    return rows;
+  }
+
   static const _pageSize = 99;
 
   Map<String, Object?> _nextPage(String id, int offset) =>
@@ -741,6 +855,11 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         _folder('playlists', t.common.mediaKind.playlist),
         _folder('recipes', t.musicExperience.saved),
         _folder('stations', t.musicTools.stations),
+        if (context.read<MultiServerProvider?>()?.serverManager.visibleOnlineClients.values.any(
+              (client) => client is ServerMusicRadioClient,
+            ) ==
+            true)
+          _folder('serverRadio', t.libraries.tabs.recommended),
         _folder('recent', t.musicTools.recent),
       ];
     }
@@ -818,6 +937,26 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     final libraries = context.read<LibrariesProvider>().libraries.where(
       (library) => library.kind == MediaKind.artist && !hidden.hiddenLibraryKeys.contains(library.globalKey),
     );
+    if (id == 'serverRadio') {
+      final manager = context.read<MultiServerProvider>().serverManager;
+      return _page(
+        libraries
+            .where(
+              (library) =>
+                  !library.hidden &&
+                  library.serverId != null &&
+                  manager.isServerVisible(ServerId(library.serverId!)) &&
+                  manager.isClientOnline(ServerId(library.serverId!)) &&
+                  manager.getClient(ServerId(library.serverId!)) is ServerMusicRadioClient,
+            )
+            .map((library) => _folder('radioLibrary:${library.globalKey}', library.title)),
+        id,
+        offset,
+      );
+    }
+    if (id.startsWith('radioLibrary:')) {
+      return _page(await _serverRadioRows(libraryKey: id.substring(13)), id, offset);
+    }
     if (id == 'libraries') {
       return _page(libraries.map((library) => _folder('library:${library.globalKey}', library.title)), id, offset);
     }

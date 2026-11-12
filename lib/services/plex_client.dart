@@ -2851,10 +2851,11 @@ class PlexClient
     String sectionId, {
     int limit = defaultHubPreviewLimit,
     String? libraryName,
+    bool music = false,
     HubFetchDiagnostics? diagnostics,
   }) => _fetchHubs(
     path: '/hubs/sections/$sectionId',
-    queryParameters: {'count': limit, 'includeGuids': 1},
+    queryParameters: {'count': limit, 'includeGuids': 1, if (music) 'includeMyMixes': 1},
     operation: 'Plex library hubs',
     deadline: MediaServerTimeouts.libraryHubDeadline,
     failureLabel: 'library hubs',
@@ -4112,7 +4113,7 @@ class PlexClient
         identical(_musicRadioCatalogs[libraryId]?.generation, generation);
     final response = await _getWithFailover(
       '/hubs/sections/${Uri.encodeComponent(libraryId)}',
-      queryParameters: {'includeStations': 1, 'count': 32},
+      queryParameters: {'includeStations': 1, 'includeMyMixes': 1, 'count': 32},
     );
     if (!current()) throw StateError('Music radio catalog account changed');
     final data = response.data;
@@ -4129,11 +4130,12 @@ class PlexClient
     }
     final rows = <ServerMusicRadio>[], seen = <String>{};
     for (final hub in rawHubs) {
-      if (hub is! Map ||
-          hub['context'] != 'hub.music.stations' ||
-          hub['librarySectionID'] != null && hub['librarySectionID'].toString() != libraryId) {
+      if (hub is! Map || hub['librarySectionID'] != null && hub['librarySectionID'].toString() != libraryId) {
         continue;
       }
+      final context = hub['context'], family = hub['title'];
+      final familyId = context is String && context.isNotEmpty && context.length <= 256 ? context : null;
+      final familyTitle = family is String && family.trim().isNotEmpty && family.length <= 1024 ? family : null;
       final rawRows = hub['Metadata'] ?? hub['Playlist'] ?? const [];
       if (rawRows is! List || rawRows.length > 64) {
         throw const FormatException('Unbounded music radio catalog');
@@ -4156,8 +4158,23 @@ class PlexClient
         // A catalog refresh must not retire unchanged rows used by another
         // music surface or by the active shared-session radio.
         rows.add(
-          previousRows.where((row) => row.key == key && row.title == title).firstOrNull ??
-              ServerMusicRadio(serverId: serverId.value, libraryId: libraryId, key: key, title: title),
+          previousRows
+                  .where(
+                    (row) =>
+                        row.key == key &&
+                        row.title == title &&
+                        row.familyId == familyId &&
+                        row.familyTitle == familyTitle,
+                  )
+                  .firstOrNull ??
+              ServerMusicRadio(
+                serverId: serverId.value,
+                libraryId: libraryId,
+                key: key,
+                title: title,
+                familyId: familyId,
+                familyTitle: familyTitle,
+              ),
         );
         if (rows.length == 32) break;
       }
@@ -5301,7 +5318,13 @@ class PlexClient
   }) async {
     // libraryName is unused: Plex's /hubs/sections/{id} returns hubs already
     // titled per-library (e.g. "Recently Added in Movies").
-    final hubs = await _getLibraryHubs(libraryId, limit: limit, libraryName: libraryName, diagnostics: diagnostics);
+    final hubs = await _getLibraryHubs(
+      libraryId,
+      limit: limit,
+      libraryName: libraryName,
+      music: libraryKind == MediaKind.artist,
+      diagnostics: diagnostics,
+    );
     return hubs.map((h) => PlexMappers.mediaHub(h)).toList();
   }
 

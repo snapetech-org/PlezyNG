@@ -1,3 +1,4 @@
+import 'package:plezy/services/music/server_music_radio.dart';
 import 'package:drift/native.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/services/music/music_experience.dart';
@@ -173,6 +174,8 @@ class CatalogHidden extends ChangeNotifier implements HiddenLibrariesProvider {
 
 class CatalogLibraries extends ChangeNotifier implements LibrariesProvider {
   @override
+  bool get isDisposed => false;
+  @override
   final libraries = [
     const MediaLibrary(
       id: 'library',
@@ -199,6 +202,60 @@ class CatalogClient extends ExperienceClient {
   }) async {
     reads++;
     return tracksPage!(start ?? 0, size ?? 200);
+  }
+}
+
+const nativeRadio = ServerMusicRadio(
+  serverId: 's',
+  libraryId: 'library',
+  key: '/library/metadata/1/station/radio?type=10',
+  title: 'Native Radio',
+);
+
+class ServerRadioClient extends CatalogClient implements ServerMusicRadioClient {
+  List<ServerMusicRadio> radioRows = [nativeRadio];
+  Future<List<ServerMusicRadio>>? pendingRadios;
+  Future<List<MediaItem>>? pendingTracks;
+  int radioReads = 0;
+  @override
+  Future<List<ServerMusicRadio>> serverMusicRadios(String libraryId) async {
+    expect(libraryId, 'library');
+    return pendingRadios ?? radioRows;
+  }
+
+  @override
+  bool serverMusicRadioCurrent(ServerMusicRadio radio) => radioRows.any((row) => identical(row, radio));
+  @override
+  Future<List<MediaItem>> serverMusicRadioTracks(ServerMusicRadio radio, {int limit = 100}) async {
+    radioReads++;
+    return pendingTracks ?? [musicTrack('radio-one')];
+  }
+}
+
+class ServerRadioMusic extends RadioMusic implements MusicServerRadioControls {
+  ServerMusicRadio? serverRadio;
+  bool radioShuffle = false;
+  MusicRepeatMode? requestedRepeat;
+  @override
+  void setRepeatMode(MusicRepeatMode mode) {
+    requestedRepeat = mode;
+    super.setRepeatMode(mode);
+  }
+
+  List<MediaItem> enqueued = [];
+  @override
+  void addNext(List<MediaItem> tracks) {
+    enqueued = tracks;
+    super.addNext(tracks);
+  }
+
+  @override
+  Future<InstantMixOutcome> playServerRadio(ServerMusicRadio radio, {bool shuffle = false}) async {
+    beginPlayIntent();
+    serverRadio = radio;
+    radioShuffle = shuffle;
+    playing = true;
+    return InstantMixOutcome.started;
   }
 }
 
@@ -283,6 +340,138 @@ void main() {
     );
     await tester.pump();
   }
+
+  for (final retirement in ['none', 'account', 'profile', 'hidden', 'removed', 'forged']) {
+    testWidgets('native server radio has opaque rows and scoped shared playback ($retirement)', (tester) async {
+      final music = ServerRadioMusic(), profiles = Profiles(), hidden = CatalogHidden(), libraries = CatalogLibraries();
+      final client = ServerRadioClient();
+      final servers = testMultiServer(clients: [client]);
+      await mount(tester, music, profiles, servers: servers.provider, hidden: hidden, libraries: libraries);
+      final root = await native('browse', {'id': 'root'}) as List;
+      expect(root.where((row) => row['id'] == 'serverRadio'), hasLength(1));
+      final folders = await native('browse', {'id': 'serverRadio'}) as List;
+      expect(folders.single['id'], 'radioLibrary:s:library');
+      final rows = await native('browse', {'id': folders.single['id']}) as List;
+      expect(rows.single['title'], 'Native Radio');
+      expect(jsonEncode(rows), isNot(contains(nativeRadio.key)));
+      expect(jsonEncode(rows), isNot(contains(client.scopedServerId)));
+      final id = rows.single['id'] as String;
+      if (retirement == 'account') client.scopedServerId = 's/other';
+      if (retirement == 'profile') profiles.identityMutationGeneration++;
+      if (retirement == 'hidden') hidden.hiddenLibraryKeys.add('s:library');
+      if (retirement == 'removed') client.radioRows = [];
+      if (retirement == 'none') {
+        expect(await native('playItem', {'id': id}), isTrue);
+        expect(identical(music.serverRadio, nativeRadio), isTrue);
+      } else {
+        await expectLater(
+          native('playItem', {'id': retirement == 'forged' ? 'serverRadio:forged' : id}),
+          throwsA(isA<PlatformException>()),
+        );
+        expect(music.serverRadio, isNull);
+      }
+      expect(music.started, isNull);
+      await tester.pumpWidget(const SizedBox());
+      music.dispose();
+      profiles.dispose();
+      hidden.dispose();
+      libraries.dispose();
+    });
+  }
+
+  for (final retirement in ['account', 'profile', 'hidden']) {
+    testWidgets('native late radio catalogs retire on $retirement', (tester) async {
+      final music = ServerRadioMusic(), profiles = Profiles(), hidden = CatalogHidden(), libraries = CatalogLibraries();
+      final client = ServerRadioClient();
+      final servers = testMultiServer(clients: [client]);
+      await mount(tester, music, profiles, servers: servers.provider, hidden: hidden, libraries: libraries);
+      await tester.runAsync(() async {
+        final reply = Completer<List<ServerMusicRadio>>();
+        client.pendingRadios = reply.future;
+        final pending = native('browse', {'id': 'radioLibrary:s:library'});
+        await pumpEventQueue();
+        if (retirement == 'account') client.authenticationSessionId = Object();
+        if (retirement == 'profile') profiles.identityMutationGeneration++;
+        if (retirement == 'hidden') hidden.hiddenLibraryKeys.add('s:library');
+        reply.complete([nativeRadio]);
+        expect(await pending, isEmpty);
+      });
+      await tester.pumpWidget(const SizedBox());
+      music.dispose();
+      profiles.dispose();
+      hidden.dispose();
+      libraries.dispose();
+    });
+  }
+
+  for (final retirement in ['none', 'intent', 'foreign']) {
+    testWidgets('native server radio enqueue remains finite and source-guarded ($retirement)', (tester) async {
+      final music = ServerRadioMusic(), profiles = Profiles(), hidden = CatalogHidden(), libraries = CatalogLibraries();
+      final client = ServerRadioClient();
+      final servers = testMultiServer(clients: [client]);
+      await mount(tester, music, profiles, servers: servers.provider, hidden: hidden, libraries: libraries);
+      final rows = await native('browse', {'id': 'radioLibrary:s:library'}) as List;
+      await tester.runAsync(() async {
+        final reply = Completer<List<MediaItem>>();
+        client.pendingTracks = reply.future;
+        final pending = native('playItem', {'id': rows.single['id'], 'queue': 'next'});
+        final check = retirement == 'foreign' ? expectLater(pending, throwsA(isA<PlatformException>())) : null;
+        await pumpEventQueue();
+        if (retirement == 'intent') music.beginPlayIntent();
+        reply.complete([musicTrack('radio-one', server: retirement == 'foreign' ? 'foreign' : 's')]);
+        if (check != null) {
+          await check;
+        } else {
+          expect(await pending, retirement == 'none');
+        }
+      });
+      expect(music.enqueued.map((track) => track.id), retirement == 'none' ? ['radio-one'] : isEmpty);
+      expect(music.serverRadio, isNull);
+      expect(client.radioReads, 1);
+      await tester.pumpWidget(const SizedBox());
+      music.dispose();
+      profiles.dispose();
+      hidden.dispose();
+      libraries.dispose();
+    });
+  }
+
+  testWidgets('voice can resolve server radio without exposing its key', (tester) async {
+    final music = ServerRadioMusic(), profiles = Profiles(), hidden = CatalogHidden(), libraries = CatalogLibraries();
+    final downloads = CatalogDownloads();
+    final client = ServerRadioClient();
+    final servers = testMultiServer(clients: [client]);
+    late AppDatabase database;
+    await tester.runAsync(() async {
+      database = AppDatabase.forTesting(NativeDatabase.memory());
+    });
+    await mount(
+      tester,
+      music,
+      profiles,
+      servers: servers.provider,
+      hidden: hidden,
+      libraries: libraries,
+      database: database,
+      downloads: downloads,
+    );
+    await tester.runAsync(() async {
+      final rows = await native('resolveVoice', {'query': 'Native Radio', 'kind': 'station'}) as List;
+      expect(rows.single['kind'], 'station');
+      expect(jsonEncode(rows), isNot(contains(nativeRadio.key)));
+      expect(await native('playItem', {'id': rows.single['id'], 'shuffle': true, 'repeat': 'all'}), isTrue);
+      expect(music.serverRadio?.title, 'Native Radio');
+      expect(music.radioShuffle, isTrue);
+      expect(music.requestedRepeat, MusicRepeatMode.all);
+    });
+    await tester.pumpWidget(const SizedBox());
+    downloads.dispose();
+    music.dispose();
+    profiles.dispose();
+    hidden.dispose();
+    libraries.dispose();
+    await tester.runAsync(database.close);
+  });
 
   for (final source in ['matching', 'server', 'library']) {
     testWidgets('offline native continuous station remains finite and source-qualified ($source)', (tester) async {

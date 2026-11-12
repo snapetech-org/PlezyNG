@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Expose Plex server radio and personalized mixes in Music home and native car Recommended browsing, with server family labels, scoped voice lookup, shuffle/repeat and finite enqueue actions.
+
 - Use the current Swift Cast request-abort callback so acknowledged queue rearming compiles against the iOS SDK.
 
 - Play Plex server radio through the shared music session, retain manual exclusions during rolling refills, and persist credential-free recipes that require fresh library authorization after restart.

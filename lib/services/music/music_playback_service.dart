@@ -63,7 +63,7 @@ class MusicPlayContext {
 
 /// Server-authored radio is owned by the same queue and player as all music.
 abstract interface class MusicServerRadioControls {
-  Future<InstantMixOutcome> playServerRadio(ServerMusicRadio radio);
+  Future<InstantMixOutcome> playServerRadio(ServerMusicRadio radio, {bool shuffle = false});
 }
 
 /// Optional whole-album sonic radio through the authoritative music session.

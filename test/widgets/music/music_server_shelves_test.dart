@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:plezy/services/music/server_music_radio.dart';
 
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +59,8 @@ class _Hidden extends ChangeNotifier implements HiddenLibrariesProvider {
 
 class _Profile extends ChangeNotifier implements ActiveProfileProvider {
   @override
+  int identityMutationGeneration = 1;
+  @override
   String activeId = 'p';
   @override
   bool isBinding = false;
@@ -75,7 +78,22 @@ class _Experience extends ChangeNotifier implements MusicExperience {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class _Client extends ExperienceClient {
+const _radio = ServerMusicRadio(
+  serverId: 's',
+  libraryId: 'library',
+  key: '/library/metadata/1/station/radio?type=10',
+  title: 'Server Radio',
+);
+
+class _Client extends ExperienceClient implements ServerMusicRadioClient {
+  List<ServerMusicRadio> radios = [];
+  @override
+  Future<List<ServerMusicRadio>> serverMusicRadios(String libraryId) async => radios;
+  @override
+  bool serverMusicRadioCurrent(ServerMusicRadio radio) => radios.any((row) => identical(row, radio));
+  @override
+  Future<List<MediaItem>> serverMusicRadioTracks(ServerMusicRadio radio, {int limit = 100}) async => [];
+
   bool failed = false, empty = false;
   int reads = 0;
   Future<List<MediaItem>>? album;
@@ -110,7 +128,14 @@ class _Client extends ExperienceClient {
       album ?? [musicTrack('A track'), musicTrack('Next track')];
 }
 
-class _Music extends ExperienceMusic {
+class _Music extends ExperienceMusic implements MusicServerRadioControls {
+  ServerMusicRadio? radio;
+  @override
+  Future<InstantMixOutcome> playServerRadio(ServerMusicRadio source, {bool shuffle = false}) async {
+    radio = source;
+    return InstantMixOutcome.started;
+  }
+
   List<MediaItem> started = [];
   MusicPlayContext? startedContext;
   @override
@@ -189,6 +214,60 @@ void main() {
   Future<void> close(WidgetTester tester) async {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpAndSettle();
+  }
+
+  testWidgets('server radio is reachable from recommendations and uses shared playback', (tester) async {
+    client.radios = [_radio];
+    await mount(tester, large: true);
+    await tester.tap(find.text(t.musicTools.stations));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Server Radio'));
+    await tester.pumpAndSettle();
+    expect(identical(music.radio, _radio), isTrue);
+    expect(music.started, isEmpty);
+    expect(tester.takeException(), isNull);
+    await close(tester);
+  });
+
+  testWidgets('personalized radio keeps the server family heading', (tester) async {
+    client.radios = [
+      const ServerMusicRadio(
+        serverId: 's',
+        libraryId: 'library',
+        key: '/library/metadata/11/station/personal?type=10',
+        title: 'Personal mix',
+        familyId: 'hub.music.personalized-family',
+        familyTitle: 'Mixes For You',
+      ),
+    ];
+    await mount(tester, large: true);
+    expect(find.text('Mixes For You'), findsOneWidget);
+    await tester.tap(find.text('Mixes For You'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Personal mix'));
+    await tester.pumpAndSettle();
+    expect(music.radio?.title, 'Personal mix');
+    expect(tester.takeException(), isNull);
+    await close(tester);
+  });
+
+  for (final retirement in ['hidden', 'profile-generation', 'removed']) {
+    testWidgets('retained radio callbacks retire on $retirement', (tester) async {
+      client.radios = [_radio];
+      await mount(tester);
+      await tester.tap(find.text(t.musicTools.stations));
+      await tester.pumpAndSettle();
+      final tile = tester.widget<ListTile>(
+        find.ancestor(of: find.text('Server Radio'), matching: find.byType(ListTile)),
+      );
+      if (retirement == 'hidden') hidden.hiddenLibraryKeys.add('s:library');
+      if (retirement == 'profile-generation') profile.identityMutationGeneration++;
+      if (retirement == 'removed') client.radios = [];
+      tile.onTap!();
+      await tester.pumpAndSettle();
+      expect(music.radio, isNull);
+      await close(tester);
+    });
   }
 
   testWidgets('server previews start the shared album queue with owned rows', (tester) async {

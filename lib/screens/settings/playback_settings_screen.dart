@@ -292,8 +292,8 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
                 ),
                 SettingNavigationTile(
                   icon: Symbols.subtitles_rounded,
-                  title: 'Preferred subtitle languages',
-                  subtitle: 'Order device-local fallback languages; the server profile language takes priority.',
+                  title: t.subtitleLanguageOrderUi.preferredSubtitleLanguages,
+                  subtitle: t.subtitleLanguageOrderUi.languageFallbackOrderDescription,
                   destinationBuilder: (_) => const SubtitleLanguageOrderScreen(),
                 ),
                 if (!PlatformDetector.isTizenBuild())

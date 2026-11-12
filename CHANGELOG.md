@@ -17,11 +17,10 @@
 - Remove an obsolete music-playback warning from translations so release code analysis recognizes the working music player.
 - Add optional per-span pronunciation readings to karaoke lyric packages and render them as ruby annotations on the Flutter and browser stages, with line-level pronunciation retained as a fallback.
 - Preserve simple WebVTT ruby readings through import and export as timed per-span pronunciations. Refuse LRC/WebVTT exports when the format cannot preserve other lyric metadata or timing, and close WebVTT speaker tags correctly.
-- Preserve simple WebVTT ruby readings through import and export as timed per-span pronunciations.
 - Preserve syllable units and optional source confidence in karaoke lyric editor revisions; unknown confidence remains unknown.
 - Keep existing line end times, word/syllable spans and pronunciation when tap-timing a karaoke lyric line.
 - Reject unknown lyric span units and invalid confidence metadata instead of silently converting them to word timings.
-- Update the karaoke qualification ledger to reflect current source checks and the current hosted-runner default.
+- Update the karaoke qualification ledger to reflect current source checks and runner routing.
 - Include span-level singer assignments in karaoke duet choices, stage labels, and part colors.
 - Ignore empty karaoke singer-part IDs in duet choices and stage coloring.
 - Reject karaoke lyric packages whose timed spans do not reconstruct their parent lyric text.
@@ -180,6 +179,8 @@
 - Reject iOS worker signing profiles that omit requested Enhanced Security grants before native compilation, preserving the extension's security settings and existing distribution identity.
 
 - Wake aerynOS source tracking after canonical main updates and automated release-metadata reconciliation using a dedicated repository-scoped credential, retaining scheduled catch-up and independent native qualification before package publication.
+
+## [3.0.33] - 2026-11-11
 
 - Pin Apple authentication dependency metadata to its immutable official specification and normalized sandbox checksum, preserving the same code and dependency versions when CocoaPods CDN metadata changes.
 

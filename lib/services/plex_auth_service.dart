@@ -82,6 +82,76 @@ class PlexAuthService {
     String? deviceName,
   }) : this._(http, clientIdentifier, appVersion, platformVersion, platform, deviceName);
 
+  /// Grant a Plex account access to a live playlist through Plex's item
+  /// sharing service. Returns the acknowledged shared-source id; recipients
+  /// may still need to accept an invitation. This never copies the playlist.
+  ///
+  /// Contract: Plex Web 4.163.0, public saveItemShare action and URI builder.
+  /// The caller supplies the current verified server-owner/profile lease.
+  /// Mutations are issued once, without a cloud/server failover retry.
+  Future<int> grantPlaylistAccess({
+    required String authToken,
+    required String playlistUri,
+    required String title,
+    required String recipient,
+    required bool Function() isCurrent,
+  }) async {
+    void check() {
+      if (!isCurrent()) throw StateError('Playlist sharing source changed');
+    }
+
+    check();
+    final destination = recipient.trim();
+    final uri = Uri.tryParse(playlistUri);
+    if (authToken.isEmpty ||
+        destination.isEmpty ||
+        destination.length > 320 ||
+        destination.runes.any((rune) => rune < 32 || rune == 127) ||
+        title.isEmpty ||
+        title.length > 1000 ||
+        uri == null ||
+        uri.scheme != 'server' ||
+        uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty ||
+        uri.hasPort ||
+        uri.hasQuery ||
+        uri.hasFragment ||
+        !RegExp(r'^/com\.plexapp\.plugins\.library/playlists/[a-zA-Z0-9_-]+/items$').hasMatch(uri.path)) {
+      throw ArgumentError('A playlist source and Plex recipient are required');
+    }
+    final payload = jsonEncode({
+      'items': [
+        {'uri': playlistUri, 'type': 'playlist', 'title': title},
+      ],
+      'invitedEmail': destination,
+    });
+    final response = await _http.post(
+      '$_plexApiBase/shared_items',
+      headers: {
+        ..._getCommonHeaders(authToken: authToken),
+        'Content-Type': 'application/json',
+      },
+      body: payload,
+      timeout: MediaServerTimeouts.plexTvReceive,
+    );
+    check();
+    _checkStatus(response);
+    final data = response.data;
+    if (data is! List || data.length != 1 || data.single is! Map) {
+      throw const FormatException('Plex did not acknowledge playlist access');
+    }
+    final value = (data.single as Map)['sharedSourceId'];
+    final sourceId = value is int
+        ? value
+        : value is String
+        ? int.tryParse(value)
+        : null;
+    if (sourceId == null || sourceId <= 0) {
+      throw const FormatException('Plex did not acknowledge playlist access');
+    }
+    return sourceId;
+  }
+
   /// Close the underlying HTTP client. Call when the service is short-lived
   /// (created for a single API call) to avoid leaking sockets.
   void dispose() => _http.close();

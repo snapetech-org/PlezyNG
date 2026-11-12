@@ -112,6 +112,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$bn deepLinks = _Translations$deepLinks$bn._(_root);
 	@override late final _Translations$householdSetup$bn householdSetup = _Translations$householdSetup$bn._(_root);
 	@override late final _Translations$issueReport$bn issueReport = _Translations$issueReport$bn._(_root);
+	@override late final _Translations$podcasts$bn podcasts = _Translations$podcasts$bn._(_root);
 	@override late final _Translations$romm$bn romm = _Translations$romm$bn._(_root);
 	@override late final _Translations$subtitleCapture$bn subtitleCapture = _Translations$subtitleCapture$bn._(_root);
 	@override late final _Translations$musicExperience$bn musicExperience = _Translations$musicExperience$bn._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$bn extends Translations$issueReport$en {
 	@override String get privacy => 'খসড়ায় অ্যাপের সংস্করণ, প্ল্যাটফর্ম ও সংযোগের সংখ্যা থাকে। সার্ভারের ঠিকানা, অ্যাকাউন্ট বা প্রোফাইলের নাম, মিডিয়ার শিরোনাম ও ফাইলের পথ থাকে না।';
 	@override String get logPrivacy => 'লগ ঐচ্ছিক। আপলোডের আগে দেখে নিন। লগ আইডি খসড়ায় যোগ হবে, যা সবার জন্য দৃশ্যমান হতে পারে।';
 	@override String get openDraft => 'GitHub খসড়া খুলুন';
+}
+
+// Path: podcasts
+class _Translations$podcasts$bn extends Translations$podcasts$en {
+	_Translations$podcasts$bn._(TranslationsBn root) : this._root = root, super.internal(root);
+
+	final TranslationsBn _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'সর্বশেষ পর্বগুলো স্বয়ংক্রিয়ভাবে ডাউনলোড করুন';
+	@override String get removeFinishedAfter => 'শেষ করা ডাউনলোডগুলো এই সময় পরে সরান';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsBn {
 			'issueReport.privacy' => 'খসড়ায় অ্যাপের সংস্করণ, প্ল্যাটফর্ম ও সংযোগের সংখ্যা থাকে। সার্ভারের ঠিকানা, অ্যাকাউন্ট বা প্রোফাইলের নাম, মিডিয়ার শিরোনাম ও ফাইলের পথ থাকে না।',
 			'issueReport.logPrivacy' => 'লগ ঐচ্ছিক। আপলোডের আগে দেখে নিন। লগ আইডি খসড়ায় যোগ হবে, যা সবার জন্য দৃশ্যমান হতে পারে।',
 			'issueReport.openDraft' => 'GitHub খসড়া খুলুন',
+			'podcasts.autoDownloadLatest' => 'সর্বশেষ পর্বগুলো স্বয়ংক্রিয়ভাবে ডাউনলোড করুন',
+			'podcasts.removeFinishedAfter' => 'শেষ করা ডাউনলোডগুলো এই সময় পরে সরান',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

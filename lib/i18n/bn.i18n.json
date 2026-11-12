@@ -4851,7 +4851,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "সর্বশেষ পর্বগুলো স্বয়ংক্রিয়ভাবে ডাউনলোড করুন",
+    "removeFinishedAfter": "শেষ করা ডাউনলোডগুলো এই সময় পরে সরান"
   },
   "subtitleAiUi": {
     "cutRepair": "",

@@ -112,6 +112,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$ru deepLinks = _Translations$deepLinks$ru._(_root);
 	@override late final _Translations$householdSetup$ru householdSetup = _Translations$householdSetup$ru._(_root);
 	@override late final _Translations$issueReport$ru issueReport = _Translations$issueReport$ru._(_root);
+	@override late final _Translations$podcasts$ru podcasts = _Translations$podcasts$ru._(_root);
 	@override late final _Translations$romm$ru romm = _Translations$romm$ru._(_root);
 	@override late final _Translations$subtitleCapture$ru subtitleCapture = _Translations$subtitleCapture$ru._(_root);
 	@override late final _Translations$musicExperience$ru musicExperience = _Translations$musicExperience$ru._(_root);
@@ -4073,6 +4074,17 @@ class _Translations$issueReport$ru extends Translations$issueReport$en {
 	@override String get privacy => 'Черновик включает версию приложения, платформу и число подключений. Адреса серверов, имена аккаунтов и профилей, названия медиа и пути к файлам не добавляются.';
 	@override String get logPrivacy => 'Журналы необязательны. Проверьте их перед загрузкой. Их ID добавляется в черновик, который может быть общедоступным.';
 	@override String get openDraft => 'Открыть черновик GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$ru extends Translations$podcasts$en {
+	_Translations$podcasts$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Автоматически скачивать последние выпуски';
+	@override String get removeFinishedAfter => 'Удалять завершённые загрузки через';
 }
 
 // Path: romm
@@ -9322,6 +9334,8 @@ extension on TranslationsRu {
 			'issueReport.privacy' => 'Черновик включает версию приложения, платформу и число подключений. Адреса серверов, имена аккаунтов и профилей, названия медиа и пути к файлам не добавляются.',
 			'issueReport.logPrivacy' => 'Журналы необязательны. Проверьте их перед загрузкой. Их ID добавляется в черновик, который может быть общедоступным.',
 			'issueReport.openDraft' => 'Открыть черновик GitHub',
+			'podcasts.autoDownloadLatest' => 'Автоматически скачивать последние выпуски',
+			'podcasts.removeFinishedAfter' => 'Удалять завершённые загрузки через',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

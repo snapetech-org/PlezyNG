@@ -112,6 +112,7 @@ class TranslationsKo extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$ko deepLinks = _Translations$deepLinks$ko._(_root);
 	@override late final _Translations$householdSetup$ko householdSetup = _Translations$householdSetup$ko._(_root);
 	@override late final _Translations$issueReport$ko issueReport = _Translations$issueReport$ko._(_root);
+	@override late final _Translations$podcasts$ko podcasts = _Translations$podcasts$ko._(_root);
 	@override late final _Translations$romm$ko romm = _Translations$romm$ko._(_root);
 	@override late final _Translations$subtitleCapture$ko subtitleCapture = _Translations$subtitleCapture$ko._(_root);
 	@override late final _Translations$musicExperience$ko musicExperience = _Translations$musicExperience$ko._(_root);
@@ -4022,6 +4023,17 @@ class _Translations$issueReport$ko extends Translations$issueReport$en {
 	@override String get privacy => '초안에는 앱 버전, 플랫폼, 연결 수가 포함됩니다. 서버 주소, 계정 및 프로필 이름, 미디어 제목, 파일 경로는 포함되지 않습니다.';
 	@override String get logPrivacy => '로그 첨부는 선택 사항입니다. 업로드 전에 확인하세요. 로그 ID는 공개될 수 있는 초안에 추가됩니다.';
 	@override String get openDraft => 'GitHub 초안 열기';
+}
+
+// Path: podcasts
+class _Translations$podcasts$ko extends Translations$podcasts$en {
+	_Translations$podcasts$ko._(TranslationsKo root) : this._root = root, super.internal(root);
+
+	final TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => '최신 에피소드 자동 다운로드';
+	@override String get removeFinishedAfter => '완료한 다운로드를 다음 기간 후 삭제';
 }
 
 // Path: romm
@@ -9267,6 +9279,8 @@ extension on TranslationsKo {
 			'issueReport.privacy' => '초안에는 앱 버전, 플랫폼, 연결 수가 포함됩니다. 서버 주소, 계정 및 프로필 이름, 미디어 제목, 파일 경로는 포함되지 않습니다.',
 			'issueReport.logPrivacy' => '로그 첨부는 선택 사항입니다. 업로드 전에 확인하세요. 로그 ID는 공개될 수 있는 초안에 추가됩니다.',
 			'issueReport.openDraft' => 'GitHub 초안 열기',
+			'podcasts.autoDownloadLatest' => '최신 에피소드 자동 다운로드',
+			'podcasts.removeFinishedAfter' => '완료한 다운로드를 다음 기간 후 삭제',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

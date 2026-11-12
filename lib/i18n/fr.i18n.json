@@ -4860,7 +4860,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Télécharger automatiquement les derniers épisodes",
+    "removeFinishedAfter": "Supprimer les téléchargements terminés après"
   },
   "subtitleAiUi": {
     "cutRepair": "",

@@ -4824,7 +4824,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "ดาวน์โหลดตอนล่าสุดโดยอัตโนมัติ",
+    "removeFinishedAfter": "ลบไฟล์ดาวน์โหลดที่ฟังจบแล้วหลังจาก"
   },
   "subtitleAiUi": {
     "cutRepair": "",

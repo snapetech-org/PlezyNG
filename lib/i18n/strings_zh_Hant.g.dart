@@ -113,6 +113,7 @@ class TranslationsZhHant extends TranslationsZh with BaseTranslations<AppLocale,
 	@override late final _Translations$deepLinks$zh_Hant deepLinks = _Translations$deepLinks$zh_Hant._(_root);
 	@override late final _Translations$householdSetup$zh_Hant householdSetup = _Translations$householdSetup$zh_Hant._(_root);
 	@override late final _Translations$issueReport$zh_Hant issueReport = _Translations$issueReport$zh_Hant._(_root);
+	@override late final _Translations$podcasts$zh_Hant podcasts = _Translations$podcasts$zh_Hant._(_root);
 	@override late final _Translations$romm$zh_Hant romm = _Translations$romm$zh_Hant._(_root);
 	@override late final _Translations$subtitleCapture$zh_Hant subtitleCapture = _Translations$subtitleCapture$zh_Hant._(_root);
 	@override late final _Translations$musicExperience$zh_Hant musicExperience = _Translations$musicExperience$zh_Hant._(_root);
@@ -4023,6 +4024,17 @@ class _Translations$issueReport$zh_Hant extends Translations$issueReport$zh {
 	@override String get privacy => '草稿包含應用程式版本、平台和連線數量，不包含伺服器位址、帳戶或個人資料名稱、媒體標題及檔案路徑。';
 	@override String get logPrivacy => '記錄檔為選填。上傳前請先檢查。記錄檔 ID 會加入草稿，而問題可能是公開的。';
 	@override String get openDraft => '開啟 GitHub 草稿';
+}
+
+// Path: podcasts
+class _Translations$podcasts$zh_Hant extends Translations$podcasts$zh {
+	_Translations$podcasts$zh_Hant._(TranslationsZhHant root) : this._root = root, super.internal(root);
+
+	final TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => '自動下載最新單集';
+	@override String get removeFinishedAfter => '在以下時間後移除已聽完的下載';
 }
 
 // Path: romm
@@ -9268,6 +9280,8 @@ extension on TranslationsZhHant {
 			'issueReport.privacy' => '草稿包含應用程式版本、平台和連線數量，不包含伺服器位址、帳戶或個人資料名稱、媒體標題及檔案路徑。',
 			'issueReport.logPrivacy' => '記錄檔為選填。上傳前請先檢查。記錄檔 ID 會加入草稿，而問題可能是公開的。',
 			'issueReport.openDraft' => '開啟 GitHub 草稿',
+			'podcasts.autoDownloadLatest' => '自動下載最新單集',
+			'podcasts.removeFinishedAfter' => '在以下時間後移除已聽完的下載',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

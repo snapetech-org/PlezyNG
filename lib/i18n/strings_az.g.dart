@@ -112,6 +112,7 @@ class TranslationsAz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$az deepLinks = _Translations$deepLinks$az._(_root);
 	@override late final _Translations$householdSetup$az householdSetup = _Translations$householdSetup$az._(_root);
 	@override late final _Translations$issueReport$az issueReport = _Translations$issueReport$az._(_root);
+	@override late final _Translations$podcasts$az podcasts = _Translations$podcasts$az._(_root);
 	@override late final _Translations$romm$az romm = _Translations$romm$az._(_root);
 	@override late final _Translations$subtitleCapture$az subtitleCapture = _Translations$subtitleCapture$az._(_root);
 	@override late final _Translations$musicExperience$az musicExperience = _Translations$musicExperience$az._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$az extends Translations$issueReport$en {
 	@override String get privacy => 'Qaralamaya tətbiqin versiyası, platforma və bağlantı sayı daxildir. Server ünvanları, hesab və profil adları, media başlıqları və fayl yolları daxil edilmir.';
 	@override String get logPrivacy => 'Jurnallar istəyə bağlıdır. Yükləməzdən əvvəl nəzərdən keçirin. Jurnal ID-si ictimai ola bilən qaralamaya əlavə olunur.';
 	@override String get openDraft => 'GitHub qaralamasını açın';
+}
+
+// Path: podcasts
+class _Translations$podcasts$az extends Translations$podcasts$en {
+	_Translations$podcasts$az._(TranslationsAz root) : this._root = root, super.internal(root);
+
+	final TranslationsAz _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Ən son epizodları avtomatik endir';
+	@override String get removeFinishedAfter => 'Bitmiş endirmələri bu müddətdən sonra sil';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsAz {
 			'issueReport.privacy' => 'Qaralamaya tətbiqin versiyası, platforma və bağlantı sayı daxildir. Server ünvanları, hesab və profil adları, media başlıqları və fayl yolları daxil edilmir.',
 			'issueReport.logPrivacy' => 'Jurnallar istəyə bağlıdır. Yükləməzdən əvvəl nəzərdən keçirin. Jurnal ID-si ictimai ola bilən qaralamaya əlavə olunur.',
 			'issueReport.openDraft' => 'GitHub qaralamasını açın',
+			'podcasts.autoDownloadLatest' => 'Ən son epizodları avtomatik endir',
+			'podcasts.removeFinishedAfter' => 'Bitmiş endirmələri bu müddətdən sonra sil',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

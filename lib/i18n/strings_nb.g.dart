@@ -112,6 +112,7 @@ class TranslationsNb extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$nb deepLinks = _Translations$deepLinks$nb._(_root);
 	@override late final _Translations$householdSetup$nb householdSetup = _Translations$householdSetup$nb._(_root);
 	@override late final _Translations$issueReport$nb issueReport = _Translations$issueReport$nb._(_root);
+	@override late final _Translations$podcasts$nb podcasts = _Translations$podcasts$nb._(_root);
 	@override late final _Translations$romm$nb romm = _Translations$romm$nb._(_root);
 	@override late final _Translations$subtitleCapture$nb subtitleCapture = _Translations$subtitleCapture$nb._(_root);
 	@override late final _Translations$musicExperience$nb musicExperience = _Translations$musicExperience$nb._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$nb extends Translations$issueReport$en {
 	@override String get privacy => 'Utkastet inneholder appversjon, plattform og antall tilkoblinger. Serveradresser, konto- og profilnavn, medietitler og filstier utelates.';
 	@override String get logPrivacy => 'Logger er valgfrie. Se gjennom dem før opplasting. Logg-ID-en legges til i utkastet, som kan være offentlig.';
 	@override String get openDraft => 'Åpne GitHub-utkast';
+}
+
+// Path: podcasts
+class _Translations$podcasts$nb extends Translations$podcasts$en {
+	_Translations$podcasts$nb._(TranslationsNb root) : this._root = root, super.internal(root);
+
+	final TranslationsNb _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Last ned de nyeste episodene automatisk';
+	@override String get removeFinishedAfter => 'Fjern ferdigspilte nedlastinger etter';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsNb {
 			'issueReport.privacy' => 'Utkastet inneholder appversjon, plattform og antall tilkoblinger. Serveradresser, konto- og profilnavn, medietitler og filstier utelates.',
 			'issueReport.logPrivacy' => 'Logger er valgfrie. Se gjennom dem før opplasting. Logg-ID-en legges til i utkastet, som kan være offentlig.',
 			'issueReport.openDraft' => 'Åpne GitHub-utkast',
+			'podcasts.autoDownloadLatest' => 'Last ned de nyeste episodene automatisk',
+			'podcasts.removeFinishedAfter' => 'Fjern ferdigspilte nedlastinger etter',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

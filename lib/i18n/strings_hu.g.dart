@@ -112,6 +112,7 @@ class TranslationsHu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$hu deepLinks = _Translations$deepLinks$hu._(_root);
 	@override late final _Translations$householdSetup$hu householdSetup = _Translations$householdSetup$hu._(_root);
 	@override late final _Translations$issueReport$hu issueReport = _Translations$issueReport$hu._(_root);
+	@override late final _Translations$podcasts$hu podcasts = _Translations$podcasts$hu._(_root);
 	@override late final _Translations$romm$hu romm = _Translations$romm$hu._(_root);
 	@override late final _Translations$subtitleCapture$hu subtitleCapture = _Translations$subtitleCapture$hu._(_root);
 	@override late final _Translations$musicExperience$hu musicExperience = _Translations$musicExperience$hu._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$hu extends Translations$issueReport$en {
 	@override String get privacy => 'A vázlat az alkalmazás verzióját, a platformot és a kapcsolatok számát tartalmazza. Nem tartalmaz szervercímeket, fiók- vagy profilneveket, médiacímeket és fájlútvonalakat.';
 	@override String get logPrivacy => 'A naplók megadása nem kötelező. Feltöltés előtt nézd át őket. Az azonosítójuk bekerülhet a nyilvános vázlatba.';
 	@override String get openDraft => 'GitHub-vázlat megnyitása';
+}
+
+// Path: podcasts
+class _Translations$podcasts$hu extends Translations$podcasts$en {
+	_Translations$podcasts$hu._(TranslationsHu root) : this._root = root, super.internal(root);
+
+	final TranslationsHu _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Legújabb epizódok automatikus letöltése';
+	@override String get removeFinishedAfter => 'Befejezett letöltések eltávolítása ennyi idő után';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsHu {
 			'issueReport.privacy' => 'A vázlat az alkalmazás verzióját, a platformot és a kapcsolatok számát tartalmazza. Nem tartalmaz szervercímeket, fiók- vagy profilneveket, médiacímeket és fájlútvonalakat.',
 			'issueReport.logPrivacy' => 'A naplók megadása nem kötelező. Feltöltés előtt nézd át őket. Az azonosítójuk bekerülhet a nyilvános vázlatba.',
 			'issueReport.openDraft' => 'GitHub-vázlat megnyitása',
+			'podcasts.autoDownloadLatest' => 'Legújabb epizódok automatikus letöltése',
+			'podcasts.removeFinishedAfter' => 'Befejezett letöltések eltávolítása ennyi idő után',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

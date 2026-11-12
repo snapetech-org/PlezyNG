@@ -112,6 +112,7 @@ class TranslationsSv extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$sv deepLinks = _Translations$deepLinks$sv._(_root);
 	@override late final _Translations$householdSetup$sv householdSetup = _Translations$householdSetup$sv._(_root);
 	@override late final _Translations$issueReport$sv issueReport = _Translations$issueReport$sv._(_root);
+	@override late final _Translations$podcasts$sv podcasts = _Translations$podcasts$sv._(_root);
 	@override late final _Translations$romm$sv romm = _Translations$romm$sv._(_root);
 	@override late final _Translations$subtitleCapture$sv subtitleCapture = _Translations$subtitleCapture$sv._(_root);
 	@override late final _Translations$musicExperience$sv musicExperience = _Translations$musicExperience$sv._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$sv extends Translations$issueReport$en {
 	@override String get privacy => 'Utkastet innehåller appversion, plattform och antal anslutningar. Serveradresser, konto- och profilnamn, medietitlar och filsökvägar utelämnas.';
 	@override String get logPrivacy => 'Loggar är valfria. Granska dem före uppladdning. Deras ID läggs till i utkastet, som kan vara offentligt.';
 	@override String get openDraft => 'Öppna GitHub-utkast';
+}
+
+// Path: podcasts
+class _Translations$podcasts$sv extends Translations$podcasts$en {
+	_Translations$podcasts$sv._(TranslationsSv root) : this._root = root, super.internal(root);
+
+	final TranslationsSv _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Ladda ned de senaste avsnitten automatiskt';
+	@override String get removeFinishedAfter => 'Ta bort färdiglyssnade nedladdningar efter';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsSv {
 			'issueReport.privacy' => 'Utkastet innehåller appversion, plattform och antal anslutningar. Serveradresser, konto- och profilnamn, medietitlar och filsökvägar utelämnas.',
 			'issueReport.logPrivacy' => 'Loggar är valfria. Granska dem före uppladdning. Deras ID läggs till i utkastet, som kan vara offentligt.',
 			'issueReport.openDraft' => 'Öppna GitHub-utkast',
+			'podcasts.autoDownloadLatest' => 'Ladda ned de senaste avsnitten automatiskt',
+			'podcasts.removeFinishedAfter' => 'Ta bort färdiglyssnade nedladdningar efter',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

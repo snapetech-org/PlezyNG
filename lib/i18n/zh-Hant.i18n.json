@@ -4846,7 +4846,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "自動下載最新單集",
+    "removeFinishedAfter": "在以下時間後移除已聽完的下載"
   },
   "subtitleAiUi": {
     "cutRepair": "",

@@ -112,6 +112,7 @@ class TranslationsMs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$ms deepLinks = _Translations$deepLinks$ms._(_root);
 	@override late final _Translations$householdSetup$ms householdSetup = _Translations$householdSetup$ms._(_root);
 	@override late final _Translations$issueReport$ms issueReport = _Translations$issueReport$ms._(_root);
+	@override late final _Translations$podcasts$ms podcasts = _Translations$podcasts$ms._(_root);
 	@override late final _Translations$romm$ms romm = _Translations$romm$ms._(_root);
 	@override late final _Translations$subtitleCapture$ms subtitleCapture = _Translations$subtitleCapture$ms._(_root);
 	@override late final _Translations$musicExperience$ms musicExperience = _Translations$musicExperience$ms._(_root);
@@ -4004,6 +4005,17 @@ class _Translations$issueReport$ms extends Translations$issueReport$en {
 	@override String get privacy => 'Draf mengandungi versi aplikasi, platform dan bilangan sambungan. Alamat pelayan, nama akaun dan profil, tajuk media serta laluan fail tidak disertakan.';
 	@override String get logPrivacy => 'Log adalah pilihan. Semak sebelum memuat naik. ID log ditambahkan pada draf yang mungkin terbuka kepada umum.';
 	@override String get openDraft => 'Buka draf GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$ms extends Translations$podcasts$en {
+	_Translations$podcasts$ms._(TranslationsMs root) : this._root = root, super.internal(root);
+
+	final TranslationsMs _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Muat turun episod terkini secara automatik';
+	@override String get removeFinishedAfter => 'Alih keluar muat turun yang selesai selepas';
 }
 
 // Path: romm
@@ -9247,6 +9259,8 @@ extension on TranslationsMs {
 			'issueReport.privacy' => 'Draf mengandungi versi aplikasi, platform dan bilangan sambungan. Alamat pelayan, nama akaun dan profil, tajuk media serta laluan fail tidak disertakan.',
 			'issueReport.logPrivacy' => 'Log adalah pilihan. Semak sebelum memuat naik. ID log ditambahkan pada draf yang mungkin terbuka kepada umum.',
 			'issueReport.openDraft' => 'Buka draf GitHub',
+			'podcasts.autoDownloadLatest' => 'Muat turun episod terkini secara automatik',
+			'podcasts.removeFinishedAfter' => 'Alih keluar muat turun yang selesai selepas',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

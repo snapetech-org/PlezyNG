@@ -4851,7 +4851,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Соңғы эпизодтарды автоматты түрде жүктеп алу",
+    "removeFinishedAfter": "Аяқталған жүктеулерді кейін жою"
   },
   "subtitleAiUi": {
     "cutRepair": "",

@@ -4851,7 +4851,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Neueste Folgen automatisch herunterladen",
+    "removeFinishedAfter": "Fertig gehörte Downloads entfernen nach"
   },
   "subtitleAiUi": {
     "cutRepair": "",

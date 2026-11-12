@@ -4851,7 +4851,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "नवीनतम एपिसोड अपने आप डाउनलोड करें",
+    "removeFinishedAfter": "पूरे सुने गए डाउनलोड इतने समय बाद हटाएँ"
   },
   "subtitleAiUi": {
     "cutRepair": "",

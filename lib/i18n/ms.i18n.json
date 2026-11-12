@@ -4824,7 +4824,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Muat turun episod terkini secara automatik",
+    "removeFinishedAfter": "Alih keluar muat turun yang selesai selepas"
   },
   "subtitleAiUi": {
     "cutRepair": "",

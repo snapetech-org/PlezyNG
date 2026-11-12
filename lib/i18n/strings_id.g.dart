@@ -112,6 +112,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$id deepLinks = _Translations$deepLinks$id._(_root);
 	@override late final _Translations$householdSetup$id householdSetup = _Translations$householdSetup$id._(_root);
 	@override late final _Translations$issueReport$id issueReport = _Translations$issueReport$id._(_root);
+	@override late final _Translations$podcasts$id podcasts = _Translations$podcasts$id._(_root);
 	@override late final _Translations$romm$id romm = _Translations$romm$id._(_root);
 	@override late final _Translations$subtitleCapture$id subtitleCapture = _Translations$subtitleCapture$id._(_root);
 	@override late final _Translations$musicExperience$id musicExperience = _Translations$musicExperience$id._(_root);
@@ -4004,6 +4005,17 @@ class _Translations$issueReport$id extends Translations$issueReport$en {
 	@override String get privacy => 'Draf memuat versi aplikasi, platform, dan jumlah koneksi. Alamat server, nama akun dan profil, judul media, serta lokasi berkas tidak disertakan.';
 	@override String get logPrivacy => 'Log bersifat opsional. Tinjau sebelum mengunggah. ID log ditambahkan ke draf, yang mungkin bersifat publik.';
 	@override String get openDraft => 'Buka draf GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$id extends Translations$podcasts$en {
+	_Translations$podcasts$id._(TranslationsId root) : this._root = root, super.internal(root);
+
+	final TranslationsId _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Unduh episode terbaru secara otomatis';
+	@override String get removeFinishedAfter => 'Hapus unduhan yang selesai setelah';
 }
 
 // Path: romm
@@ -9247,6 +9259,8 @@ extension on TranslationsId {
 			'issueReport.privacy' => 'Draf memuat versi aplikasi, platform, dan jumlah koneksi. Alamat server, nama akun dan profil, judul media, serta lokasi berkas tidak disertakan.',
 			'issueReport.logPrivacy' => 'Log bersifat opsional. Tinjau sebelum mengunggah. ID log ditambahkan ke draf, yang mungkin bersifat publik.',
 			'issueReport.openDraft' => 'Buka draf GitHub',
+			'podcasts.autoDownloadLatest' => 'Unduh episode terbaru secara otomatis',
+			'podcasts.removeFinishedAfter' => 'Hapus unduhan yang selesai setelah',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

@@ -4851,7 +4851,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Soʻnggi qismlarni avtomatik yuklab olish",
+    "removeFinishedAfter": "Tugallangan yuklamalarni quyidagi muddatdan soʻng oʻchirish"
   },
   "subtitleAiUi": {
     "cutRepair": "",

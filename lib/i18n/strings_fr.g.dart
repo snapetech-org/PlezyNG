@@ -4072,6 +4072,8 @@ class Translations$podcasts$fr extends Translations$podcasts$en {
 	// Translations
 	@override String get syncPrivacy => 'Ce serveur reçoit les URL des abonnements et des épisodes, qui peuvent contenir des jetons d’abonnement privés, ainsi que les positions d’écoute. Les identifiants de connexion et les points de reprise de synchronisation sont chiffrés sur cet appareil. La suppression d’un abonnement est synchronisée ; les téléchargements et l’historique existants sont conservés.';
 	@override String get syncConsent => 'Partager les URL des podcasts et la progression d’écoute avec ce serveur';
+	@override String get autoDownloadLatest => 'Télécharger automatiquement les derniers épisodes';
+	@override String get removeFinishedAfter => 'Supprimer les téléchargements terminés après';
 }
 
 // Path: romm
@@ -9356,6 +9358,8 @@ extension on TranslationsFr {
 			'issueReport.openDraft' => 'Ouvrir le brouillon GitHub',
 			'podcasts.syncPrivacy' => 'Ce serveur reçoit les URL des abonnements et des épisodes, qui peuvent contenir des jetons d’abonnement privés, ainsi que les positions d’écoute. Les identifiants de connexion et les points de reprise de synchronisation sont chiffrés sur cet appareil. La suppression d’un abonnement est synchronisée ; les téléchargements et l’historique existants sont conservés.',
 			'podcasts.syncConsent' => 'Partager les URL des podcasts et la progression d’écoute avec ce serveur',
+			'podcasts.autoDownloadLatest' => 'Télécharger automatiquement les derniers épisodes',
+			'podcasts.removeFinishedAfter' => 'Supprimer les téléchargements terminés après',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9666,6 +9670,8 @@ extension on TranslationsFr {
 			'musicDevices.uncertain' => 'Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.',
 			'musicDevices.away' => 'Hors de chez soi',
 			'musicDevices.relay' => 'URL du relais musical',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Activez sur l’appareil récepteur, puis associez une fois sur le même réseau. Gardez Pleazyng ouvert. Le relais transmet les commandes musicales chiffrées et voit les adresses réseau. Chaque lecteur utilise son propre serveur multimédia.',
 			'musicDevices.relayInvalid' => 'Saisissez une adresse HTTPS pour le relais.',
 			_ => null,

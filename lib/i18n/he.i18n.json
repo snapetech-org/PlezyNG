@@ -4861,7 +4861,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "הורדה אוטומטית של הפרקים האחרונים",
+    "removeFinishedAfter": "הסרת הורדות שהושלמו לאחר"
   },
   "subtitleAiUi": {
     "cutRepair": "",

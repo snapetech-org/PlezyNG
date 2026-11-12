@@ -112,6 +112,7 @@ class TranslationsDa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$da deepLinks = _Translations$deepLinks$da._(_root);
 	@override late final _Translations$householdSetup$da householdSetup = _Translations$householdSetup$da._(_root);
 	@override late final _Translations$issueReport$da issueReport = _Translations$issueReport$da._(_root);
+	@override late final _Translations$podcasts$da podcasts = _Translations$podcasts$da._(_root);
 	@override late final _Translations$romm$da romm = _Translations$romm$da._(_root);
 	@override late final _Translations$subtitleCapture$da subtitleCapture = _Translations$subtitleCapture$da._(_root);
 	@override late final _Translations$musicExperience$da musicExperience = _Translations$musicExperience$da._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$da extends Translations$issueReport$en {
 	@override String get privacy => 'Udkastet indeholder appversion, platform og antal forbindelser. Det indeholder ikke serveradresser, konto- eller profilnavne, medietitler eller filstier.';
 	@override String get logPrivacy => 'Logfiler er valgfri. Gennemgå dem før upload. Deres ID føjes til udkastet, som kan være offentligt.';
 	@override String get openDraft => 'Åbn GitHub-udkast';
+}
+
+// Path: podcasts
+class _Translations$podcasts$da extends Translations$podcasts$en {
+	_Translations$podcasts$da._(TranslationsDa root) : this._root = root, super.internal(root);
+
+	final TranslationsDa _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Download automatisk de nyeste episoder';
+	@override String get removeFinishedAfter => 'Fjern færdigafspillede downloads efter';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsDa {
 			'issueReport.privacy' => 'Udkastet indeholder appversion, platform og antal forbindelser. Det indeholder ikke serveradresser, konto- eller profilnavne, medietitler eller filstier.',
 			'issueReport.logPrivacy' => 'Logfiler er valgfri. Gennemgå dem før upload. Deres ID føjes til udkastet, som kan være offentligt.',
 			'issueReport.openDraft' => 'Åbn GitHub-udkast',
+			'podcasts.autoDownloadLatest' => 'Download automatisk de nyeste episoder',
+			'podcasts.removeFinishedAfter' => 'Fjern færdigafspillede downloads efter',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

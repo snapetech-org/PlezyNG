@@ -12441,6 +12441,12 @@ class Translations$podcasts$en {
 
 	/// en: 'Some remote changes are waiting for local episodes, manual feed setup, or playback to finish.'
 	String get syncPending => 'Some remote changes are waiting for local episodes, manual feed setup, or playback to finish.';
+
+	/// en: 'Automatically download latest episodes'
+	String get autoDownloadLatest => 'Automatically download latest episodes';
+
+	/// en: 'Remove finished downloads after'
+	String get removeFinishedAfter => 'Remove finished downloads after';
 }
 
 // Path: subtitleAiUi
@@ -22040,6 +22046,8 @@ extension on Translations {
 			'podcasts.syncDevicesHelp' => 'Each installation needs its own device ID. Link the devices in your server\'s device synchronization settings to share subscription changes. Listening actions are account-wide. HTTPS feeds can be imported automatically; HTTP feeds wait for manual setup.',
 			'podcasts.syncNow' => 'Sync now',
 			'podcasts.syncPending' => 'Some remote changes are waiting for local episodes, manual feed setup, or playback to finish.',
+			'podcasts.autoDownloadLatest' => 'Automatically download latest episodes',
+			'podcasts.removeFinishedAfter' => 'Remove finished downloads after',
 			'subtitleAiUi.cutRepair' => 'Cut repair',
 			'subtitleAiUi.automaticSync' => 'Automatic sync',
 			'subtitleAiUi.cutRepairLowercase' => 'cut repair',
@@ -22127,10 +22135,10 @@ extension on Translations {
 			'subtitleAiUi.speechLanguage' => 'Speech language',
 			'subtitleAiUi.autoDetect' => 'Auto-detect',
 			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
-			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
-			'subtitleAiUi.inferenceBackend' => 'Inference backend',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
+			'subtitleAiUi.inferenceBackend' => 'Inference backend',
 			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
 			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
@@ -22641,10 +22649,10 @@ extension on Translations {
 			'karaokeUi.removePackage' => 'Remove package',
 			'karaokeUi.thisBuild' => 'This build',
 			'karaokeUi.packageImportLyricStageCDGHostingQuizzesEditing' => 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.',
-			'karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire' => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.',
-			'karaokeUi.hostExitPIN' => 'Host exit PIN',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire' => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.',
+			'karaokeUi.hostExitPIN' => 'Host exit PIN',
 			'karaokeUi.unlock' => 'Unlock',
 			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
 			'karaokeUi.requestASong' => 'Request a song',

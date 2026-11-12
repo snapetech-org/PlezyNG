@@ -112,6 +112,7 @@ class TranslationsPl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$pl deepLinks = _Translations$deepLinks$pl._(_root);
 	@override late final _Translations$householdSetup$pl householdSetup = _Translations$householdSetup$pl._(_root);
 	@override late final _Translations$issueReport$pl issueReport = _Translations$issueReport$pl._(_root);
+	@override late final _Translations$podcasts$pl podcasts = _Translations$podcasts$pl._(_root);
 	@override late final _Translations$romm$pl romm = _Translations$romm$pl._(_root);
 	@override late final _Translations$subtitleCapture$pl subtitleCapture = _Translations$subtitleCapture$pl._(_root);
 	@override late final _Translations$musicExperience$pl musicExperience = _Translations$musicExperience$pl._(_root);
@@ -4073,6 +4074,17 @@ class _Translations$issueReport$pl extends Translations$issueReport$en {
 	@override String get privacy => 'Szkic zawiera wersję aplikacji, platformę i liczbę połączeń. Nie zawiera adresów serwerów, nazw kont i profili, tytułów multimediów ani ścieżek plików.';
 	@override String get logPrivacy => 'Logi są opcjonalne. Przejrzyj je przed przesłaniem. Ich identyfikator zostanie dodany do szkicu, który może być publiczny.';
 	@override String get openDraft => 'Otwórz szkic GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$pl extends Translations$podcasts$en {
+	_Translations$podcasts$pl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Automatycznie pobieraj najnowsze odcinki';
+	@override String get removeFinishedAfter => 'Usuwaj ukończone pobrania po';
 }
 
 // Path: romm
@@ -9322,6 +9334,8 @@ extension on TranslationsPl {
 			'issueReport.privacy' => 'Szkic zawiera wersję aplikacji, platformę i liczbę połączeń. Nie zawiera adresów serwerów, nazw kont i profili, tytułów multimediów ani ścieżek plików.',
 			'issueReport.logPrivacy' => 'Logi są opcjonalne. Przejrzyj je przed przesłaniem. Ich identyfikator zostanie dodany do szkicu, który może być publiczny.',
 			'issueReport.openDraft' => 'Otwórz szkic GitHub',
+			'podcasts.autoDownloadLatest' => 'Automatycznie pobieraj najnowsze odcinki',
+			'podcasts.removeFinishedAfter' => 'Usuwaj ukończone pobrania po',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

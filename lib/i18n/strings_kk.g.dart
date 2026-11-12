@@ -112,6 +112,7 @@ class TranslationsKk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$kk deepLinks = _Translations$deepLinks$kk._(_root);
 	@override late final _Translations$householdSetup$kk householdSetup = _Translations$householdSetup$kk._(_root);
 	@override late final _Translations$issueReport$kk issueReport = _Translations$issueReport$kk._(_root);
+	@override late final _Translations$podcasts$kk podcasts = _Translations$podcasts$kk._(_root);
 	@override late final _Translations$romm$kk romm = _Translations$romm$kk._(_root);
 	@override late final _Translations$subtitleCapture$kk subtitleCapture = _Translations$subtitleCapture$kk._(_root);
 	@override late final _Translations$musicExperience$kk musicExperience = _Translations$musicExperience$kk._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$kk extends Translations$issueReport$en {
 	@override String get privacy => 'Жобада қолданба нұсқасы, платформа және байланыстар саны болады. Сервер мекенжайлары, тіркелгі мен профиль атаулары, медиа атаулары және файл жолдары қосылмайды.';
 	@override String get logPrivacy => 'Журналдар міндетті емес. Жүктемес бұрын тексеріңіз. Олардың ID-і ашық болуы мүмкін жобаға қосылады.';
 	@override String get openDraft => 'GitHub жобасын ашу';
+}
+
+// Path: podcasts
+class _Translations$podcasts$kk extends Translations$podcasts$en {
+	_Translations$podcasts$kk._(TranslationsKk root) : this._root = root, super.internal(root);
+
+	final TranslationsKk _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Соңғы эпизодтарды автоматты түрде жүктеп алу';
+	@override String get removeFinishedAfter => 'Аяқталған жүктеулерді кейін жою';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsKk {
 			'issueReport.privacy' => 'Жобада қолданба нұсқасы, платформа және байланыстар саны болады. Сервер мекенжайлары, тіркелгі мен профиль атаулары, медиа атаулары және файл жолдары қосылмайды.',
 			'issueReport.logPrivacy' => 'Журналдар міндетті емес. Жүктемес бұрын тексеріңіз. Олардың ID-і ашық болуы мүмкін жобаға қосылады.',
 			'issueReport.openDraft' => 'GitHub жобасын ашу',
+			'podcasts.autoDownloadLatest' => 'Соңғы эпизодтарды автоматты түрде жүктеп алу',
+			'podcasts.removeFinishedAfter' => 'Аяқталған жүктеулерді кейін жою',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

@@ -112,6 +112,7 @@ class TranslationsEs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$deepLinks$es deepLinks = Translations$deepLinks$es.internal(_root);
 	@override late final Translations$householdSetup$es householdSetup = Translations$householdSetup$es.internal(_root);
 	@override late final Translations$issueReport$es issueReport = Translations$issueReport$es.internal(_root);
+	@override late final Translations$podcasts$es podcasts = Translations$podcasts$es.internal(_root);
 	@override late final Translations$romm$es romm = Translations$romm$es.internal(_root);
 	@override late final Translations$subtitleCapture$es subtitleCapture = Translations$subtitleCapture$es.internal(_root);
 	@override late final Translations$bonusExtras$es bonusExtras = Translations$bonusExtras$es.internal(_root);
@@ -4044,6 +4045,17 @@ class Translations$issueReport$es extends Translations$issueReport$en {
 	@override String get privacy => 'El borrador incluye la versión de la aplicación, la plataforma y el número de conexiones. No incluye direcciones de servidores, nombres de cuentas o perfiles, títulos ni rutas de archivos.';
 	@override String get logPrivacy => 'Los registros son opcionales. Revísalos antes de subirlos. Su ID se añade al borrador, que podría ser público.';
 	@override String get openDraft => 'Abrir borrador de GitHub';
+}
+
+// Path: podcasts
+class Translations$podcasts$es extends Translations$podcasts$en {
+	Translations$podcasts$es.internal(TranslationsEs root) : this._root = root, super.internal(root);
+
+	final TranslationsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Descargar automáticamente los episodios más recientes';
+	@override String get removeFinishedAfter => 'Eliminar las descargas terminadas después de';
 }
 
 // Path: romm
@@ -9423,6 +9435,8 @@ extension on TranslationsEs {
 			'issueReport.privacy' => 'El borrador incluye la versión de la aplicación, la plataforma y el número de conexiones. No incluye direcciones de servidores, nombres de cuentas o perfiles, títulos ni rutas de archivos.',
 			'issueReport.logPrivacy' => 'Los registros son opcionales. Revísalos antes de subirlos. Su ID se añade al borrador, que podría ser público.',
 			'issueReport.openDraft' => 'Abrir borrador de GitHub',
+			'podcasts.autoDownloadLatest' => 'Descargar automáticamente los episodios más recientes',
+			'podcasts.removeFinishedAfter' => 'Eliminar las descargas terminadas después de',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9726,10 +9740,10 @@ extension on TranslationsEs {
 			'musicExperience.remove' => 'Eliminar',
 			'musicExperience.play' => 'Reproducir selección',
 			'musicExperience.next' => 'Reproducir a continuación',
-			'musicExperience.error' => 'La solicitud de música ha fallado',
-			'musicExperience.on' => 'En',
 			_ => null,
 		} ?? switch (path) {
+			'musicExperience.error' => 'La solicitud de música ha fallado',
+			'musicExperience.on' => 'En',
 			'musicExperience.off' => 'Desactivado',
 			'musicExperience.unknown' => 'Desconocido',
 			'musicExperience.routeLost' => 'Salida de audio desconectada. Reproducción pausada.',

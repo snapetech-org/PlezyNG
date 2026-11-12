@@ -112,6 +112,7 @@ class TranslationsTr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$tr deepLinks = _Translations$deepLinks$tr._(_root);
 	@override late final _Translations$householdSetup$tr householdSetup = _Translations$householdSetup$tr._(_root);
 	@override late final _Translations$issueReport$tr issueReport = _Translations$issueReport$tr._(_root);
+	@override late final _Translations$podcasts$tr podcasts = _Translations$podcasts$tr._(_root);
 	@override late final _Translations$romm$tr romm = _Translations$romm$tr._(_root);
 	@override late final _Translations$subtitleCapture$tr subtitleCapture = _Translations$subtitleCapture$tr._(_root);
 	@override late final _Translations$musicExperience$tr musicExperience = _Translations$musicExperience$tr._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$tr extends Translations$issueReport$en {
 	@override String get privacy => 'Taslakta uygulama sürümü, platform ve bağlantı sayısı bulunur. Sunucu adresleri, hesap ve profil adları, medya başlıkları ve dosya yolları eklenmez.';
 	@override String get logPrivacy => 'Günlükler isteğe bağlıdır. Yüklemeden önce inceleyin. Günlük kimliği herkese açık olabilecek taslağa eklenir.';
 	@override String get openDraft => 'GitHub taslağını aç';
+}
+
+// Path: podcasts
+class _Translations$podcasts$tr extends Translations$podcasts$en {
+	_Translations$podcasts$tr._(TranslationsTr root) : this._root = root, super.internal(root);
+
+	final TranslationsTr _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'En yeni bölümleri otomatik indir';
+	@override String get removeFinishedAfter => 'Bitirilen indirmeleri şu süreden sonra kaldır';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsTr {
 			'issueReport.privacy' => 'Taslakta uygulama sürümü, platform ve bağlantı sayısı bulunur. Sunucu adresleri, hesap ve profil adları, medya başlıkları ve dosya yolları eklenmez.',
 			'issueReport.logPrivacy' => 'Günlükler isteğe bağlıdır. Yüklemeden önce inceleyin. Günlük kimliği herkese açık olabilecek taslağa eklenir.',
 			'issueReport.openDraft' => 'GitHub taslağını aç',
+			'podcasts.autoDownloadLatest' => 'En yeni bölümleri otomatik indir',
+			'podcasts.removeFinishedAfter' => 'Bitirilen indirmeleri şu süreden sonra kaldır',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

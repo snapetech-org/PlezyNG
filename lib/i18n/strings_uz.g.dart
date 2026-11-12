@@ -112,6 +112,7 @@ class TranslationsUz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$uz deepLinks = _Translations$deepLinks$uz._(_root);
 	@override late final _Translations$householdSetup$uz householdSetup = _Translations$householdSetup$uz._(_root);
 	@override late final _Translations$issueReport$uz issueReport = _Translations$issueReport$uz._(_root);
+	@override late final _Translations$podcasts$uz podcasts = _Translations$podcasts$uz._(_root);
 	@override late final _Translations$romm$uz romm = _Translations$romm$uz._(_root);
 	@override late final _Translations$subtitleCapture$uz subtitleCapture = _Translations$subtitleCapture$uz._(_root);
 	@override late final _Translations$musicExperience$uz musicExperience = _Translations$musicExperience$uz._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$uz extends Translations$issueReport$en {
 	@override String get privacy => 'Qoralamada ilova versiyasi, platforma va ulanishlar soni bo‘ladi. Server manzillari, hisob va profil nomlari, media sarlavhalari hamda fayl yo‘llari kiritilmaydi.';
 	@override String get logPrivacy => 'Jurnallar ixtiyoriy. Yuklashdan oldin ko‘rib chiqing. Ularning ID raqami ommaviy bo‘lishi mumkin bo‘lgan qoralamaga qo‘shiladi.';
 	@override String get openDraft => 'GitHub qoralamasini ochish';
+}
+
+// Path: podcasts
+class _Translations$podcasts$uz extends Translations$podcasts$en {
+	_Translations$podcasts$uz._(TranslationsUz root) : this._root = root, super.internal(root);
+
+	final TranslationsUz _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Soʻnggi qismlarni avtomatik yuklab olish';
+	@override String get removeFinishedAfter => 'Tugallangan yuklamalarni quyidagi muddatdan soʻng oʻchirish';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsUz {
 			'issueReport.privacy' => 'Qoralamada ilova versiyasi, platforma va ulanishlar soni bo‘ladi. Server manzillari, hisob va profil nomlari, media sarlavhalari hamda fayl yo‘llari kiritilmaydi.',
 			'issueReport.logPrivacy' => 'Jurnallar ixtiyoriy. Yuklashdan oldin ko‘rib chiqing. Ularning ID raqami ommaviy bo‘lishi mumkin bo‘lgan qoralamaga qo‘shiladi.',
 			'issueReport.openDraft' => 'GitHub qoralamasini ochish',
+			'podcasts.autoDownloadLatest' => 'Soʻnggi qismlarni avtomatik yuklab olish',
+			'podcasts.removeFinishedAfter' => 'Tugallangan yuklamalarni quyidagi muddatdan soʻng oʻchirish',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

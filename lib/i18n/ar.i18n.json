@@ -4959,7 +4959,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "تنزيل أحدث الحلقات تلقائيًا",
+    "removeFinishedAfter": "إزالة التنزيلات المنتهية بعد"
   },
   "subtitleAiUi": {
     "cutRepair": "",

@@ -112,6 +112,7 @@ class TranslationsZh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$deepLinks$zh deepLinks = Translations$deepLinks$zh.internal(_root);
 	@override late final Translations$householdSetup$zh householdSetup = Translations$householdSetup$zh.internal(_root);
 	@override late final Translations$issueReport$zh issueReport = Translations$issueReport$zh.internal(_root);
+	@override late final Translations$podcasts$zh podcasts = Translations$podcasts$zh.internal(_root);
 	@override late final Translations$romm$zh romm = Translations$romm$zh.internal(_root);
 	@override late final Translations$subtitleCapture$zh subtitleCapture = Translations$subtitleCapture$zh.internal(_root);
 	@override late final Translations$musicExperience$zh musicExperience = Translations$musicExperience$zh.internal(_root);
@@ -4022,6 +4023,17 @@ class Translations$issueReport$zh extends Translations$issueReport$en {
 	@override String get privacy => '草稿包含应用版本、平台和连接数量，不包含服务器地址、账户或个人资料名称、媒体标题及文件路径。';
 	@override String get logPrivacy => '日志为可选项。上传前请先检查。日志 ID 会加入草稿，而问题可能是公开的。';
 	@override String get openDraft => '打开 GitHub 草稿';
+}
+
+// Path: podcasts
+class Translations$podcasts$zh extends Translations$podcasts$en {
+	Translations$podcasts$zh.internal(TranslationsZh root) : this._root = root, super.internal(root);
+
+	final TranslationsZh _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => '自动下载最新单集';
+	@override String get removeFinishedAfter => '在以下时间后移除已听完的下载';
 }
 
 // Path: romm
@@ -9267,6 +9279,8 @@ extension on TranslationsZh {
 			'issueReport.privacy' => '草稿包含应用版本、平台和连接数量，不包含服务器地址、账户或个人资料名称、媒体标题及文件路径。',
 			'issueReport.logPrivacy' => '日志为可选项。上传前请先检查。日志 ID 会加入草稿，而问题可能是公开的。',
 			'issueReport.openDraft' => '打开 GitHub 草稿',
+			'podcasts.autoDownloadLatest' => '自动下载最新单集',
+			'podcasts.removeFinishedAfter' => '在以下时间后移除已听完的下载',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

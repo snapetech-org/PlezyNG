@@ -112,6 +112,7 @@ class TranslationsIt extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$it deepLinks = _Translations$deepLinks$it._(_root);
 	@override late final _Translations$householdSetup$it householdSetup = _Translations$householdSetup$it._(_root);
 	@override late final _Translations$issueReport$it issueReport = _Translations$issueReport$it._(_root);
+	@override late final _Translations$podcasts$it podcasts = _Translations$podcasts$it._(_root);
 	@override late final _Translations$romm$it romm = _Translations$romm$it._(_root);
 	@override late final _Translations$subtitleCapture$it subtitleCapture = _Translations$subtitleCapture$it._(_root);
 	@override late final _Translations$musicExperience$it musicExperience = _Translations$musicExperience$it._(_root);
@@ -4034,6 +4035,17 @@ class _Translations$issueReport$it extends Translations$issueReport$en {
 	@override String get privacy => 'La bozza include versione dell’app, piattaforma e numero di connessioni. Esclude indirizzi dei server, nomi di account e profili, titoli e percorsi dei file.';
 	@override String get logPrivacy => 'I log sono facoltativi. Controllali prima di caricarli. Il loro ID viene aggiunto alla bozza, che potrebbe essere pubblica.';
 	@override String get openDraft => 'Apri la bozza GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$it extends Translations$podcasts$en {
+	_Translations$podcasts$it._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Scarica automaticamente gli episodi più recenti';
+	@override String get removeFinishedAfter => 'Rimuovi i download completati dopo';
 }
 
 // Path: romm
@@ -9279,6 +9291,8 @@ extension on TranslationsIt {
 			'issueReport.privacy' => 'La bozza include versione dell’app, piattaforma e numero di connessioni. Esclude indirizzi dei server, nomi di account e profili, titoli e percorsi dei file.',
 			'issueReport.logPrivacy' => 'I log sono facoltativi. Controllali prima di caricarli. Il loro ID viene aggiunto alla bozza, che potrebbe essere pubblica.',
 			'issueReport.openDraft' => 'Apri la bozza GitHub',
+			'podcasts.autoDownloadLatest' => 'Scarica automaticamente gli episodi più recenti',
+			'podcasts.removeFinishedAfter' => 'Rimuovi i download completati dopo',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

@@ -4851,7 +4851,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "بارگیری خودکار تازه‌ترین قسمت‌ها",
+    "removeFinishedAfter": "حذف بارگیری‌های تمام‌شده پس از"
   },
   "subtitleAiUi": {
     "cutRepair": "",

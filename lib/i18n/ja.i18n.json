@@ -4846,7 +4846,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "最新のエピソードを自動ダウンロード",
+    "removeFinishedAfter": "再生済みのダウンロードを削除するまでの期間"
   },
   "subtitleAiUi": {
     "cutRepair": "",

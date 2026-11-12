@@ -4899,7 +4899,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Автоматично завантажувати останні випуски",
+    "removeFinishedAfter": "Видаляти завершені завантаження через"
   },
   "subtitleAiUi": {
     "cutRepair": "",

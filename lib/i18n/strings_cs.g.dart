@@ -112,6 +112,7 @@ class TranslationsCs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$cs deepLinks = _Translations$deepLinks$cs._(_root);
 	@override late final _Translations$householdSetup$cs householdSetup = _Translations$householdSetup$cs._(_root);
 	@override late final _Translations$issueReport$cs issueReport = _Translations$issueReport$cs._(_root);
+	@override late final _Translations$podcasts$cs podcasts = _Translations$podcasts$cs._(_root);
 	@override late final _Translations$romm$cs romm = _Translations$romm$cs._(_root);
 	@override late final _Translations$subtitleCapture$cs subtitleCapture = _Translations$subtitleCapture$cs._(_root);
 	@override late final _Translations$musicExperience$cs musicExperience = _Translations$musicExperience$cs._(_root);
@@ -4069,6 +4070,17 @@ class _Translations$issueReport$cs extends Translations$issueReport$en {
 	@override String get privacy => 'Návrh obsahuje verzi aplikace, platformu a počty připojení. Neobsahuje adresy serverů, názvy účtů a profilů, názvy médií ani cesty k souborům.';
 	@override String get logPrivacy => 'Protokoly jsou volitelné. Před nahráním je zkontrolujte. Jejich ID se přidá do návrhu, který může být veřejný.';
 	@override String get openDraft => 'Otevřít návrh na GitHubu';
+}
+
+// Path: podcasts
+class _Translations$podcasts$cs extends Translations$podcasts$en {
+	_Translations$podcasts$cs._(TranslationsCs root) : this._root = root, super.internal(root);
+
+	final TranslationsCs _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Automaticky stahovat nejnovější epizody';
+	@override String get removeFinishedAfter => 'Odstranit dokončená stažení po';
 }
 
 // Path: romm
@@ -9316,6 +9328,8 @@ extension on TranslationsCs {
 			'issueReport.privacy' => 'Návrh obsahuje verzi aplikace, platformu a počty připojení. Neobsahuje adresy serverů, názvy účtů a profilů, názvy médií ani cesty k souborům.',
 			'issueReport.logPrivacy' => 'Protokoly jsou volitelné. Před nahráním je zkontrolujte. Jejich ID se přidá do návrhu, který může být veřejný.',
 			'issueReport.openDraft' => 'Otevřít návrh na GitHubu',
+			'podcasts.autoDownloadLatest' => 'Automaticky stahovat nejnovější epizody',
+			'podcasts.removeFinishedAfter' => 'Odstranit dokončená stažení po',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

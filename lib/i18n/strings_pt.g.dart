@@ -112,6 +112,7 @@ class TranslationsPt extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$deepLinks$pt deepLinks = Translations$deepLinks$pt.internal(_root);
 	@override late final Translations$householdSetup$pt householdSetup = Translations$householdSetup$pt.internal(_root);
 	@override late final Translations$issueReport$pt issueReport = Translations$issueReport$pt.internal(_root);
+	@override late final Translations$podcasts$pt podcasts = Translations$podcasts$pt.internal(_root);
 	@override late final Translations$romm$pt romm = Translations$romm$pt.internal(_root);
 	@override late final Translations$subtitleCapture$pt subtitleCapture = Translations$subtitleCapture$pt.internal(_root);
 	@override late final Translations$musicExperience$pt musicExperience = Translations$musicExperience$pt.internal(_root);
@@ -4034,6 +4035,17 @@ class Translations$issueReport$pt extends Translations$issueReport$en {
 	@override String get privacy => 'O rascunho inclui a versão da aplicação, a plataforma e o número de ligações. Exclui endereços de servidores, nomes de contas e perfis, títulos e caminhos de ficheiros.';
 	@override String get logPrivacy => 'Os registos são opcionais. Reveja-os antes de os carregar. O respetivo ID é adicionado ao rascunho, que pode ser público.';
 	@override String get openDraft => 'Abrir rascunho do GitHub';
+}
+
+// Path: podcasts
+class Translations$podcasts$pt extends Translations$podcasts$en {
+	Translations$podcasts$pt.internal(TranslationsPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Transferir automaticamente os episódios mais recentes';
+	@override String get removeFinishedAfter => 'Remover transferências concluídas após';
 }
 
 // Path: romm
@@ -9279,6 +9291,8 @@ extension on TranslationsPt {
 			'issueReport.privacy' => 'O rascunho inclui a versão da aplicação, a plataforma e o número de ligações. Exclui endereços de servidores, nomes de contas e perfis, títulos e caminhos de ficheiros.',
 			'issueReport.logPrivacy' => 'Os registos são opcionais. Reveja-os antes de os carregar. O respetivo ID é adicionado ao rascunho, que pode ser público.',
 			'issueReport.openDraft' => 'Abrir rascunho do GitHub',
+			'podcasts.autoDownloadLatest' => 'Transferir automaticamente os episódios mais recentes',
+			'podcasts.removeFinishedAfter' => 'Remover transferências concluídas após',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

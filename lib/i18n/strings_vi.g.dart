@@ -112,6 +112,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$vi deepLinks = _Translations$deepLinks$vi._(_root);
 	@override late final _Translations$householdSetup$vi householdSetup = _Translations$householdSetup$vi._(_root);
 	@override late final _Translations$issueReport$vi issueReport = _Translations$issueReport$vi._(_root);
+	@override late final _Translations$podcasts$vi podcasts = _Translations$podcasts$vi._(_root);
 	@override late final _Translations$romm$vi romm = _Translations$romm$vi._(_root);
 	@override late final _Translations$subtitleCapture$vi subtitleCapture = _Translations$subtitleCapture$vi._(_root);
 	@override late final _Translations$musicExperience$vi musicExperience = _Translations$musicExperience$vi._(_root);
@@ -4004,6 +4005,17 @@ class _Translations$issueReport$vi extends Translations$issueReport$en {
 	@override String get privacy => 'Bản nháp gồm phiên bản ứng dụng, nền tảng và số lượng kết nối. Bản nháp không có địa chỉ máy chủ, tên tài khoản hoặc hồ sơ, tiêu đề nội dung hay đường dẫn tệp.';
 	@override String get logPrivacy => 'Nhật ký là tùy chọn. Hãy xem lại trước khi tải lên. ID nhật ký được thêm vào bản nháp, có thể hiển thị công khai.';
 	@override String get openDraft => 'Mở bản nháp GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$vi extends Translations$podcasts$en {
+	_Translations$podcasts$vi._(TranslationsVi root) : this._root = root, super.internal(root);
+
+	final TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Tự động tải các tập mới nhất';
+	@override String get removeFinishedAfter => 'Xóa bản tải xuống đã nghe xong sau';
 }
 
 // Path: romm
@@ -9247,6 +9259,8 @@ extension on TranslationsVi {
 			'issueReport.privacy' => 'Bản nháp gồm phiên bản ứng dụng, nền tảng và số lượng kết nối. Bản nháp không có địa chỉ máy chủ, tên tài khoản hoặc hồ sơ, tiêu đề nội dung hay đường dẫn tệp.',
 			'issueReport.logPrivacy' => 'Nhật ký là tùy chọn. Hãy xem lại trước khi tải lên. ID nhật ký được thêm vào bản nháp, có thể hiển thị công khai.',
 			'issueReport.openDraft' => 'Mở bản nháp GitHub',
+			'podcasts.autoDownloadLatest' => 'Tự động tải các tập mới nhất',
+			'podcasts.removeFinishedAfter' => 'Xóa bản tải xuống đã nghe xong sau',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

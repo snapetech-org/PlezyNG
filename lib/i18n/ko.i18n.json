@@ -4846,7 +4846,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "최신 에피소드 자동 다운로드",
+    "removeFinishedAfter": "완료한 다운로드를 다음 기간 후 삭제"
   },
   "subtitleAiUi": {
     "cutRepair": "",

@@ -4852,7 +4852,9 @@
     "syncDevice": "Device ID",
     "syncDevicesHelp": "Each installation needs its own device ID. Link the devices in your server's device synchronization settings to share subscription changes. Listening actions are account-wide. HTTPS feeds can be imported automatically; HTTP feeds wait for manual setup.",
     "syncNow": "Sync now",
-    "syncPending": "Some remote changes are waiting for local episodes, manual feed setup, or playback to finish."
+    "syncPending": "Some remote changes are waiting for local episodes, manual feed setup, or playback to finish.",
+    "autoDownloadLatest": "Automatically download latest episodes",
+    "removeFinishedAfter": "Remove finished downloads after"
   },
   "subtitleAiUi": {
     "cutRepair": "Cut repair",

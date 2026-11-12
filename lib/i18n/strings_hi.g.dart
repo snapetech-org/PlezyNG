@@ -112,6 +112,7 @@ class TranslationsHi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$hi deepLinks = _Translations$deepLinks$hi._(_root);
 	@override late final _Translations$householdSetup$hi householdSetup = _Translations$householdSetup$hi._(_root);
 	@override late final _Translations$issueReport$hi issueReport = _Translations$issueReport$hi._(_root);
+	@override late final _Translations$podcasts$hi podcasts = _Translations$podcasts$hi._(_root);
 	@override late final _Translations$romm$hi romm = _Translations$romm$hi._(_root);
 	@override late final _Translations$subtitleCapture$hi subtitleCapture = _Translations$subtitleCapture$hi._(_root);
 	@override late final _Translations$musicExperience$hi musicExperience = _Translations$musicExperience$hi._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$hi extends Translations$issueReport$en {
 	@override String get privacy => 'ड्राफ़्ट में ऐप संस्करण, प्लेटफ़ॉर्म और कनेक्शन की संख्या होती है। इसमें सर्वर पते, खाते या प्रोफ़ाइल के नाम, मीडिया शीर्षक या फ़ाइल पथ शामिल नहीं होते।';
 	@override String get logPrivacy => 'लॉग वैकल्पिक हैं। अपलोड करने से पहले उन्हें देखें। उनका ID ड्राफ़्ट में जुड़ता है, जो सार्वजनिक हो सकता है।';
 	@override String get openDraft => 'GitHub ड्राफ़्ट खोलें';
+}
+
+// Path: podcasts
+class _Translations$podcasts$hi extends Translations$podcasts$en {
+	_Translations$podcasts$hi._(TranslationsHi root) : this._root = root, super.internal(root);
+
+	final TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'नवीनतम एपिसोड अपने आप डाउनलोड करें';
+	@override String get removeFinishedAfter => 'पूरे सुने गए डाउनलोड इतने समय बाद हटाएँ';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsHi {
 			'issueReport.privacy' => 'ड्राफ़्ट में ऐप संस्करण, प्लेटफ़ॉर्म और कनेक्शन की संख्या होती है। इसमें सर्वर पते, खाते या प्रोफ़ाइल के नाम, मीडिया शीर्षक या फ़ाइल पथ शामिल नहीं होते।',
 			'issueReport.logPrivacy' => 'लॉग वैकल्पिक हैं। अपलोड करने से पहले उन्हें देखें। उनका ID ड्राफ़्ट में जुड़ता है, जो सार्वजनिक हो सकता है।',
 			'issueReport.openDraft' => 'GitHub ड्राफ़्ट खोलें',
+			'podcasts.autoDownloadLatest' => 'नवीनतम एपिसोड अपने आप डाउनलोड करें',
+			'podcasts.removeFinishedAfter' => 'पूरे सुने गए डाउनलोड इतने समय बाद हटाएँ',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

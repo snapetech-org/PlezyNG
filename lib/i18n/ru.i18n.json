@@ -4905,7 +4905,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Автоматически скачивать последние выпуски",
+    "removeFinishedAfter": "Удалять завершённые загрузки через"
   },
   "subtitleAiUi": {
     "cutRepair": "",

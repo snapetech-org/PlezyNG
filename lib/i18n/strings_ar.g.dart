@@ -112,6 +112,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$ar deepLinks = _Translations$deepLinks$ar._(_root);
 	@override late final _Translations$householdSetup$ar householdSetup = _Translations$householdSetup$ar._(_root);
 	@override late final _Translations$issueReport$ar issueReport = _Translations$issueReport$ar._(_root);
+	@override late final _Translations$podcasts$ar podcasts = _Translations$podcasts$ar._(_root);
 	@override late final _Translations$romm$ar romm = _Translations$romm$ar._(_root);
 	@override late final _Translations$subtitleCapture$ar subtitleCapture = _Translations$subtitleCapture$ar._(_root);
 	@override late final _Translations$musicExperience$ar musicExperience = _Translations$musicExperience$ar._(_root);
@@ -4119,6 +4120,17 @@ class _Translations$issueReport$ar extends Translations$issueReport$en {
 	@override String get privacy => 'تتضمن المسودة إصدار التطبيق والمنصة وأعداد الاتصالات. لا تتضمن عناوين الخوادم أو أسماء الحسابات والملفات الشخصية أو عناوين الوسائط أو مسارات الملفات.';
 	@override String get logPrivacy => 'السجلات اختيارية. راجعها قبل رفعها. يُضاف معرّف السجل إلى المسودة، وقد تكون المشكلة عامة.';
 	@override String get openDraft => 'فتح مسودة GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$ar extends Translations$podcasts$en {
+	_Translations$podcasts$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'تنزيل أحدث الحلقات تلقائيًا';
+	@override String get removeFinishedAfter => 'إزالة التنزيلات المنتهية بعد';
 }
 
 // Path: romm
@@ -9372,6 +9384,8 @@ extension on TranslationsAr {
 			'issueReport.privacy' => 'تتضمن المسودة إصدار التطبيق والمنصة وأعداد الاتصالات. لا تتضمن عناوين الخوادم أو أسماء الحسابات والملفات الشخصية أو عناوين الوسائط أو مسارات الملفات.',
 			'issueReport.logPrivacy' => 'السجلات اختيارية. راجعها قبل رفعها. يُضاف معرّف السجل إلى المسودة، وقد تكون المشكلة عامة.',
 			'issueReport.openDraft' => 'فتح مسودة GitHub',
+			'podcasts.autoDownloadLatest' => 'تنزيل أحدث الحلقات تلقائيًا',
+			'podcasts.removeFinishedAfter' => 'إزالة التنزيلات المنتهية بعد',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

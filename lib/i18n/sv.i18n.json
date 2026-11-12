@@ -4851,7 +4851,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Ladda ned de senaste avsnitten automatiskt",
+    "removeFinishedAfter": "Ta bort färdiglyssnade nedladdningar efter"
   },
   "subtitleAiUi": {
     "cutRepair": "",

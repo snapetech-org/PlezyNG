@@ -4824,7 +4824,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Unduh episode terbaru secara otomatis",
+    "removeFinishedAfter": "Hapus unduhan yang selesai setelah"
   },
   "subtitleAiUi": {
     "cutRepair": "",

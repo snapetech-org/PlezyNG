@@ -112,6 +112,7 @@ class TranslationsTh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$th deepLinks = _Translations$deepLinks$th._(_root);
 	@override late final _Translations$householdSetup$th householdSetup = _Translations$householdSetup$th._(_root);
 	@override late final _Translations$issueReport$th issueReport = _Translations$issueReport$th._(_root);
+	@override late final _Translations$podcasts$th podcasts = _Translations$podcasts$th._(_root);
 	@override late final _Translations$romm$th romm = _Translations$romm$th._(_root);
 	@override late final _Translations$subtitleCapture$th subtitleCapture = _Translations$subtitleCapture$th._(_root);
 	@override late final _Translations$musicExperience$th musicExperience = _Translations$musicExperience$th._(_root);
@@ -4004,6 +4005,17 @@ class _Translations$issueReport$th extends Translations$issueReport$en {
 	@override String get privacy => 'ฉบับร่างมีเวอร์ชันแอป แพลตฟอร์ม และจำนวนการเชื่อมต่อ โดยไม่รวมที่อยู่เซิร์ฟเวอร์ ชื่อบัญชีหรือโปรไฟล์ ชื่อสื่อ หรือเส้นทางไฟล์';
 	@override String get logPrivacy => 'บันทึกเป็นทางเลือก โปรดตรวจสอบก่อนอัปโหลด ID ของบันทึกจะเพิ่มลงในฉบับร่าง ซึ่งอาจเปิดเผยต่อสาธารณะ';
 	@override String get openDraft => 'เปิดฉบับร่าง GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$th extends Translations$podcasts$en {
+	_Translations$podcasts$th._(TranslationsTh root) : this._root = root, super.internal(root);
+
+	final TranslationsTh _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'ดาวน์โหลดตอนล่าสุดโดยอัตโนมัติ';
+	@override String get removeFinishedAfter => 'ลบไฟล์ดาวน์โหลดที่ฟังจบแล้วหลังจาก';
 }
 
 // Path: romm
@@ -9247,6 +9259,8 @@ extension on TranslationsTh {
 			'issueReport.privacy' => 'ฉบับร่างมีเวอร์ชันแอป แพลตฟอร์ม และจำนวนการเชื่อมต่อ โดยไม่รวมที่อยู่เซิร์ฟเวอร์ ชื่อบัญชีหรือโปรไฟล์ ชื่อสื่อ หรือเส้นทางไฟล์',
 			'issueReport.logPrivacy' => 'บันทึกเป็นทางเลือก โปรดตรวจสอบก่อนอัปโหลด ID ของบันทึกจะเพิ่มลงในฉบับร่าง ซึ่งอาจเปิดเผยต่อสาธารณะ',
 			'issueReport.openDraft' => 'เปิดฉบับร่าง GitHub',
+			'podcasts.autoDownloadLatest' => 'ดาวน์โหลดตอนล่าสุดโดยอัตโนมัติ',
+			'podcasts.removeFinishedAfter' => 'ลบไฟล์ดาวน์โหลดที่ฟังจบแล้วหลังจาก',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

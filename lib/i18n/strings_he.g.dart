@@ -112,6 +112,7 @@ class TranslationsHe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$he deepLinks = _Translations$deepLinks$he._(_root);
 	@override late final _Translations$householdSetup$he householdSetup = _Translations$householdSetup$he._(_root);
 	@override late final _Translations$issueReport$he issueReport = _Translations$issueReport$he._(_root);
+	@override late final _Translations$podcasts$he podcasts = _Translations$podcasts$he._(_root);
 	@override late final _Translations$romm$he romm = _Translations$romm$he._(_root);
 	@override late final _Translations$subtitleCapture$he subtitleCapture = _Translations$subtitleCapture$he._(_root);
 	@override late final _Translations$musicExperience$he musicExperience = _Translations$musicExperience$he._(_root);
@@ -4035,6 +4036,17 @@ class _Translations$issueReport$he extends Translations$issueReport$en {
 	@override String get privacy => 'הטיוטה כוללת את גרסת האפליקציה, הפלטפורמה ומספר החיבורים. היא אינה כוללת כתובות שרתים, שמות חשבונות ופרופילים, שמות מדיה או נתיבי קבצים.';
 	@override String get logPrivacy => 'יומנים הם אפשרות בלבד. בדקו אותם לפני ההעלאה. המזהה שלהם נוסף לטיוטה, שעשויה להיות ציבורית.';
 	@override String get openDraft => 'פתיחת טיוטה ב-GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$he extends Translations$podcasts$en {
+	_Translations$podcasts$he._(TranslationsHe root) : this._root = root, super.internal(root);
+
+	final TranslationsHe _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'הורדה אוטומטית של הפרקים האחרונים';
+	@override String get removeFinishedAfter => 'הסרת הורדות שהושלמו לאחר';
 }
 
 // Path: romm
@@ -9280,6 +9292,8 @@ extension on TranslationsHe {
 			'issueReport.privacy' => 'הטיוטה כוללת את גרסת האפליקציה, הפלטפורמה ומספר החיבורים. היא אינה כוללת כתובות שרתים, שמות חשבונות ופרופילים, שמות מדיה או נתיבי קבצים.',
 			'issueReport.logPrivacy' => 'יומנים הם אפשרות בלבד. בדקו אותם לפני ההעלאה. המזהה שלהם נוסף לטיוטה, שעשויה להיות ציבורית.',
 			'issueReport.openDraft' => 'פתיחת טיוטה ב-GitHub',
+			'podcasts.autoDownloadLatest' => 'הורדה אוטומטית של הפרקים האחרונים',
+			'podcasts.removeFinishedAfter' => 'הסרת הורדות שהושלמו לאחר',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

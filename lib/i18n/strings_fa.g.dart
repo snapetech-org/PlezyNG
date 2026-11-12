@@ -112,6 +112,7 @@ class TranslationsFa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$fa deepLinks = _Translations$deepLinks$fa._(_root);
 	@override late final _Translations$householdSetup$fa householdSetup = _Translations$householdSetup$fa._(_root);
 	@override late final _Translations$issueReport$fa issueReport = _Translations$issueReport$fa._(_root);
+	@override late final _Translations$podcasts$fa podcasts = _Translations$podcasts$fa._(_root);
 	@override late final _Translations$romm$fa romm = _Translations$romm$fa._(_root);
 	@override late final _Translations$subtitleCapture$fa subtitleCapture = _Translations$subtitleCapture$fa._(_root);
 	@override late final _Translations$musicExperience$fa musicExperience = _Translations$musicExperience$fa._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$fa extends Translations$issueReport$en {
 	@override String get privacy => 'پیش‌نویس نسخه برنامه، پلتفرم و تعداد اتصال‌ها را دارد. نشانی سرورها، نام حساب‌ها و پروفایل‌ها، عنوان رسانه‌ها و مسیر فایل‌ها در آن نیست.';
 	@override String get logPrivacy => 'گزارش‌ها اختیاری‌اند. پیش از بارگذاری آن‌ها را بررسی کنید. شناسه گزارش به پیش‌نویس اضافه می‌شود و ممکن است عمومی باشد.';
 	@override String get openDraft => 'باز کردن پیش‌نویس GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$fa extends Translations$podcasts$en {
+	_Translations$podcasts$fa._(TranslationsFa root) : this._root = root, super.internal(root);
+
+	final TranslationsFa _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'بارگیری خودکار تازه‌ترین قسمت‌ها';
+	@override String get removeFinishedAfter => 'حذف بارگیری‌های تمام‌شده پس از';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsFa {
 			'issueReport.privacy' => 'پیش‌نویس نسخه برنامه، پلتفرم و تعداد اتصال‌ها را دارد. نشانی سرورها، نام حساب‌ها و پروفایل‌ها، عنوان رسانه‌ها و مسیر فایل‌ها در آن نیست.',
 			'issueReport.logPrivacy' => 'گزارش‌ها اختیاری‌اند. پیش از بارگذاری آن‌ها را بررسی کنید. شناسه گزارش به پیش‌نویس اضافه می‌شود و ممکن است عمومی باشد.',
 			'issueReport.openDraft' => 'باز کردن پیش‌نویس GitHub',
+			'podcasts.autoDownloadLatest' => 'بارگیری خودکار تازه‌ترین قسمت‌ها',
+			'podcasts.removeFinishedAfter' => 'حذف بارگیری‌های تمام‌شده پس از',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

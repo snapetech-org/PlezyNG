@@ -4899,7 +4899,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Automaticky stahovat nejnovější epizody",
+    "removeFinishedAfter": "Odstranit dokončená stažení po"
   },
   "subtitleAiUi": {
     "cutRepair": "",

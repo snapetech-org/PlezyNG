@@ -4824,7 +4824,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Tự động tải các tập mới nhất",
+    "removeFinishedAfter": "Xóa bản tải xuống đã nghe xong sau"
   },
   "subtitleAiUi": {
     "cutRepair": "",

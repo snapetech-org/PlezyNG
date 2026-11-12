@@ -112,6 +112,7 @@ class TranslationsNl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$nl deepLinks = _Translations$deepLinks$nl._(_root);
 	@override late final _Translations$householdSetup$nl householdSetup = _Translations$householdSetup$nl._(_root);
 	@override late final _Translations$issueReport$nl issueReport = _Translations$issueReport$nl._(_root);
+	@override late final _Translations$podcasts$nl podcasts = _Translations$podcasts$nl._(_root);
 	@override late final _Translations$romm$nl romm = _Translations$romm$nl._(_root);
 	@override late final _Translations$subtitleCapture$nl subtitleCapture = _Translations$subtitleCapture$nl._(_root);
 	@override late final _Translations$musicExperience$nl musicExperience = _Translations$musicExperience$nl._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$nl extends Translations$issueReport$en {
 	@override String get privacy => 'Het concept bevat de appversie, het platform en het aantal verbindingen. Serveradressen, account- en profielnamen, mediatitels en bestandspaden worden weggelaten.';
 	@override String get logPrivacy => 'Logboeken zijn optioneel. Controleer ze voordat je ze uploadt. Hun ID wordt toegevoegd aan het concept, dat openbaar kan zijn.';
 	@override String get openDraft => 'GitHub-concept openen';
+}
+
+// Path: podcasts
+class _Translations$podcasts$nl extends Translations$podcasts$en {
+	_Translations$podcasts$nl._(TranslationsNl root) : this._root = root, super.internal(root);
+
+	final TranslationsNl _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Nieuwste afleveringen automatisch downloaden';
+	@override String get removeFinishedAfter => 'Voltooide downloads verwijderen na';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsNl {
 			'issueReport.privacy' => 'Het concept bevat de appversie, het platform en het aantal verbindingen. Serveradressen, account- en profielnamen, mediatitels en bestandspaden worden weggelaten.',
 			'issueReport.logPrivacy' => 'Logboeken zijn optioneel. Controleer ze voordat je ze uploadt. Hun ID wordt toegevoegd aan het concept, dat openbaar kan zijn.',
 			'issueReport.openDraft' => 'GitHub-concept openen',
+			'podcasts.autoDownloadLatest' => 'Nieuwste afleveringen automatisch downloaden',
+			'podcasts.removeFinishedAfter' => 'Voltooide downloads verwijderen na',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

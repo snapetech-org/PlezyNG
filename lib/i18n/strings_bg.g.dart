@@ -112,6 +112,7 @@ class TranslationsBg extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$bg deepLinks = _Translations$deepLinks$bg._(_root);
 	@override late final _Translations$householdSetup$bg householdSetup = _Translations$householdSetup$bg._(_root);
 	@override late final _Translations$issueReport$bg issueReport = _Translations$issueReport$bg._(_root);
+	@override late final _Translations$podcasts$bg podcasts = _Translations$podcasts$bg._(_root);
 	@override late final _Translations$romm$bg romm = _Translations$romm$bg._(_root);
 	@override late final _Translations$subtitleCapture$bg subtitleCapture = _Translations$subtitleCapture$bg._(_root);
 	@override late final _Translations$musicExperience$bg musicExperience = _Translations$musicExperience$bg._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$bg extends Translations$issueReport$en {
 	@override String get privacy => 'Черновата включва версията на приложението, платформата и броя на връзките. Не включва адреси на сървъри, имена на профили, заглавия или пътища до файлове.';
 	@override String get logPrivacy => 'Регистрационните файлове са по избор. Прегледайте ги преди качване. Идентификаторът им се добавя към чернова, която може да е публична.';
 	@override String get openDraft => 'Отваряне на чернова в GitHub';
+}
+
+// Path: podcasts
+class _Translations$podcasts$bg extends Translations$podcasts$en {
+	_Translations$podcasts$bg._(TranslationsBg root) : this._root = root, super.internal(root);
+
+	final TranslationsBg _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Автоматично изтегляне на последните епизоди';
+	@override String get removeFinishedAfter => 'Премахване на завършените изтегляния след';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsBg {
 			'issueReport.privacy' => 'Черновата включва версията на приложението, платформата и броя на връзките. Не включва адреси на сървъри, имена на профили, заглавия или пътища до файлове.',
 			'issueReport.logPrivacy' => 'Регистрационните файлове са по избор. Прегледайте ги преди качване. Идентификаторът им се добавя към чернова, която може да е публична.',
 			'issueReport.openDraft' => 'Отваряне на чернова в GitHub',
+			'podcasts.autoDownloadLatest' => 'Автоматично изтегляне на последните епизоди',
+			'podcasts.removeFinishedAfter' => 'Премахване на завършените изтегляния след',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

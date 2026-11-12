@@ -4851,7 +4851,9 @@
     "syncDevice": "",
     "syncDevicesHelp": "",
     "syncNow": "",
-    "syncPending": ""
+    "syncPending": "",
+    "autoDownloadLatest": "Legújabb epizódok automatikus letöltése",
+    "removeFinishedAfter": "Befejezett letöltések eltávolítása ennyi idő után"
   },
   "subtitleAiUi": {
     "cutRepair": "",

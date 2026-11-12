@@ -78,9 +78,10 @@ class _PodcastSettingsScreenState extends State<PodcastSettingsScreen> {
               children: [
                 DropdownButtonFormField<int>(
                   initialValue: count,
-                  decoration: InputDecoration(labelText: t.downloads.downloadNow),
+                  decoration: InputDecoration(labelText: t.podcasts.autoDownloadLatest),
                   items: [
-                    for (final n in {0, 1, 3, 5, 10, 20, 50, count}) DropdownMenuItem(value: n, child: Text('$n')),
+                    for (final n in {0, 1, 3, 5, 10, 20, 50, count})
+                      DropdownMenuItem(value: n, child: Text(n == 0 ? t.common.off : '$n')),
                   ],
                   onChanged: (n) => change(() => count = n ?? 0),
                 ),
@@ -96,7 +97,7 @@ class _PodcastSettingsScreenState extends State<PodcastSettingsScreen> {
                 ),
                 DropdownButtonFormField<int>(
                   initialValue: days,
-                  decoration: InputDecoration(labelText: t.settings.autoRemoveWatchedDownloads),
+                  decoration: InputDecoration(labelText: t.podcasts.removeFinishedAfter),
                   items: [
                     for (final n in {0, 1, 7, 30, days})
                       DropdownMenuItem(value: n, child: Text(n == 0 ? t.common.off : '$n d')),
@@ -145,7 +146,7 @@ class _PodcastSettingsScreenState extends State<PodcastSettingsScreen> {
             final source = feeds[index], policy = _policies[source.id];
             return FocusableListTile(
               title: Text(source.name),
-              subtitle: Text('${t.downloads.downloadNow}: ${policy?.keepLatest ?? 0}'),
+              subtitle: Text('${t.podcasts.autoDownloadLatest}: ${policy?.keepLatest ?? 0}'),
               onTap: _loading ? null : () => _edit(source),
             );
           },

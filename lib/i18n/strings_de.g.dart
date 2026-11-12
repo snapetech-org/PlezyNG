@@ -112,6 +112,7 @@ class TranslationsDe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$deepLinks$de deepLinks = _Translations$deepLinks$de._(_root);
 	@override late final _Translations$householdSetup$de householdSetup = _Translations$householdSetup$de._(_root);
 	@override late final _Translations$issueReport$de issueReport = _Translations$issueReport$de._(_root);
+	@override late final _Translations$podcasts$de podcasts = _Translations$podcasts$de._(_root);
 	@override late final _Translations$romm$de romm = _Translations$romm$de._(_root);
 	@override late final _Translations$subtitleCapture$de subtitleCapture = _Translations$subtitleCapture$de._(_root);
 	@override late final _Translations$musicExperience$de musicExperience = _Translations$musicExperience$de._(_root);
@@ -4027,6 +4028,17 @@ class _Translations$issueReport$de extends Translations$issueReport$en {
 	@override String get privacy => 'Der Entwurf enthält App-Version, Plattform und Verbindungszahlen. Serveradressen, Konto- und Profilnamen, Medientitel und Dateipfade bleiben außen vor.';
 	@override String get logPrivacy => 'Protokolle sind optional. Prüfe sie vor dem Hochladen. Ihre ID wird dem Entwurf hinzugefügt, der öffentlich sein kann.';
 	@override String get openDraft => 'GitHub-Entwurf öffnen';
+}
+
+// Path: podcasts
+class _Translations$podcasts$de extends Translations$podcasts$en {
+	_Translations$podcasts$de._(TranslationsDe root) : this._root = root, super.internal(root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get autoDownloadLatest => 'Neueste Folgen automatisch herunterladen';
+	@override String get removeFinishedAfter => 'Fertig gehörte Downloads entfernen nach';
 }
 
 // Path: romm
@@ -9272,6 +9284,8 @@ extension on TranslationsDe {
 			'issueReport.privacy' => 'Der Entwurf enthält App-Version, Plattform und Verbindungszahlen. Serveradressen, Konto- und Profilnamen, Medientitel und Dateipfade bleiben außen vor.',
 			'issueReport.logPrivacy' => 'Protokolle sind optional. Prüfe sie vor dem Hochladen. Ihre ID wird dem Entwurf hinzugefügt, der öffentlich sein kann.',
 			'issueReport.openDraft' => 'GitHub-Entwurf öffnen',
+			'podcasts.autoDownloadLatest' => 'Neueste Folgen automatisch herunterladen',
+			'podcasts.removeFinishedAfter' => 'Fertig gehörte Downloads entfernen nach',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',

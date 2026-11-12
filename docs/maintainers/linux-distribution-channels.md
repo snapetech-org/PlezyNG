@@ -138,11 +138,12 @@ test instance. The current Moss CLI uses `moss index --input-dir <output-dir>`,
 `moss repo add <name> file://<absolute-output-dir>/stone.index`, and
 `moss -y pkg add pleazyng`. Keep qualification repositories local to the test guest until native QA passes. Retain the package, manifest, build/install logs and runtime QA
 evidence. Increment `release` for recipe-only changes to an already distributed
-version. See the [native qualification record](aerynos-qualification.md): build
-and installation pass; the published v3.0.7 input fails video playback QA.
-The separately versioned [3.0.22+181 source snapshot](aerynos-snapshot-qualification.md)
-passes native visible-video and fallback checks and is delivered through the
-[independent preview feed](https://github.com/snapetech-org/pleazyng-aerynos).
+version. The v3.0.7 playback failure remains in the
+[historical qualification record](aerynos-qualification.md). The current
+[3.0.33-5 package](aerynos-sync.md) passed native build, Moss upgrade, playback
+QA, and anonymous installation from the live and pinned public feeds. Physical
+HDR/FEL accuracy remains unqualified; official aerynOS repository acceptance
+is separate from this independent downstream publication.
 
 aerynOS is a downstream publication target. Qualify the exact package before
 publishing an independent Moss repository; retain the source checksum and native

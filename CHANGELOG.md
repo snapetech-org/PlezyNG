@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Correct current aerynOS release guidance to reflect the qualified 3.0.33-5 downstream package; retain the v3.0.7 playback failure as historical evidence.
+
 - Add Android GameStream to app-owned Multiview through a retained Moonlight surface with session-owned connection, audio/input leases and teardown; enforce Moonlight's one-active-connection limit. Independently adapted from the pinned [Moonlight Android receiver revision](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d), authored upstream by [@cgutman](https://github.com/cgutman); see [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md#credited-moonlight-android-source).
 
 - Expand Multiview's isolated native video capacity to four sessions across Apple TV, Android, desktop and TV controller backends; reject a fifth open before player construction.

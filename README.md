@@ -280,7 +280,7 @@ The flake pins nixpkgs and the published Pleazyng release. Native builds pass on
 
 ### aerynOS — Moss
 
-An x86_64 recipe for packaging Pleazyng's Linux release bundle is available through the [Linux channel guide](docs/maintainers/linux-distribution-channels.md#aerynos). Native build and installation pass, but video playback in the v3.0.7 bundle fails [aerynOS qualification](docs/maintainers/aerynos-qualification.md). There is no official aerynOS repository entry for Pleazyng.
+The independent [aerynOS 3.0.33-5 preview](https://github.com/snapetech-org/pleazyng-aerynos/releases/tag/main-240994590dd3-r5) passed native build, Moss upgrade, playback QA and anonymous installation from its live and pinned feeds. Physical HDR/FEL accuracy and official aerynOS repository acceptance remain unqualified. See the [qualification record](docs/maintainers/aerynos-sync.md) and [Linux channel guide](docs/maintainers/linux-distribution-channels.md#aerynos). The v3.0.7 playback failure is retained as historical evidence, not the current channel status.
 
 Package publication and store acceptance are separate from the complete GitHub release. See the [channel readiness and qualification steps](docs/maintainers/linux-distribution-channels.md).
 

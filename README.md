@@ -466,13 +466,13 @@ This list covers the current Pleazyng codebase, including additions since the fo
 - RomM catalog, exact-copy selection, in-app browser/stream/native play routes, offline files and durable save synchronization are integrated in source; native cores and signing remain platform build inputs. See the [RomM integration](docs/games/ROMM_INTEGRATION.md)
 - Supported Steam quality/audio preferences, reconnect controls, account-linked reference catalogs and host-bound game activity
 - Separately permissioned Companion Remote game-session and host actions
-- See the [Games architecture](docs/games/ARCHITECTURE.md) and [validation record](docs/games/VALIDATION.md). Native build coverage and real host/controller/device qualification vary by platform; HDR and automatic internet traversal are unfinished.
+- See the [Games architecture](docs/games/ARCHITECTURE.md) and [validation record](docs/games/VALIDATION.md). HDR presentation and paired internet traversal are implemented in source; native build coverage and real host/controller/device/network qualification vary by platform.
 
 ### Experimental playback and workspace
 
 - **Neural motion processing:** opt-in desktop PME, Android LiteRT/QNN and Apple paths, on-demand verified model packs with progress, live Performance/Balanced/Quality switching where supported, capability diagnostics and smoothing/normal-playback fallbacks. Real-time device and presentation qualification remains separate; see [motion processing](docs/plezyng/motion-processing.md).
 - **Dolby Vision FEL:** Linux reconstruction engine, Android synthetic experiment, Apple dual-layer host and offline FEL-to-HDR/SDR pipeline. Implemented paths are included in normal compatible builds and requested automatically by default, with compatibility fallback and a persisted Off override. Platform/display qualification remains separate; see [Dolby Vision experiments](#dolby-vision-experiments).
-- **Multiview:** app-owned floating/side-by-side media workspace with session tray, move/resize/return controls, separate audio/input ownership and capability-gated video, reading, music and Steam surfaces. Concurrent decoding, native composition and platform/device acceptance remain open; desktop detached windows are unfinished. See the [workspace delivery record](docs/plezyng/multiview/DELIVERY.md).
+- **Multiview:** app-owned floating/side-by-side media workspace with session tray, move/resize/return controls, separate audio/input ownership and capability-gated video, reading, music and Steam surfaces. The workspace reserves two native video slots and implements detached desktop video windows; concurrent decoding, native composition and platform/device acceptance remain unverified. See the [workspace delivery record](docs/plezyng/multiview/DELIVERY.md).
 - Native preset visualization has its own [runtime requirements](docs/plezyng/visualizations/USER_GUIDE.md); provider-gated lending, Watchmode availability and the Apple MusicKit pilot retain their separate activation requirements. The optional full Discord client remains a deferred design.
 
 ### <img src="assets/readme_icons/integrations.svg" height="20" alt="" align="center" /> Integrations
@@ -622,7 +622,7 @@ lacks music, subtitles, recommendations or file playback in general.
 | [Embedded GameStream/Moonlight game receiver](docs/games/ARCHITECTURE.md) | **Plex Arcade retired**<br>*(not a GameStream client)* | **—** | **Experimental**<br>*(Android and compatible hosts)* |
 | [Embedded Steam receivers and game-session controls](docs/games/ARCHITECTURE.md) | **—** | **—** | **Experimental**<br>*(host, SDK and network qualification varies)* |
 | [RomM catalogs, play routes, offline games and save sync](docs/games/ROMM_INTEGRATION.md) | **—** | **—** | **Partial**<br>*(core/signing/device limits documented)* |
-| [App-owned floating / side-by-side Multiview workspace](docs/plezyng/multiview/DELIVERY.md) | **—** | **—** | **Partial**<br>*(concurrent decoding/composition limits; detached windows unfinished)* |
+| [App-owned floating / side-by-side Multiview workspace](docs/plezyng/multiview/DELIVERY.md) | **—** | **—** | **Partial**<br>*(two video slots and detached desktop windows are implemented in source; concurrent decoding/composition remain unverified)* |
 | [Local PIN gates for Settings, download deletion and Explore](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | **Plex Home PIN is a different account control** | **—** | **Yes**<br>*(profile-local gates and Explore visibility)* |
 | [Portable settings backup/restore through HTTPS WebDAV](docs/plezyng/HANDOFF.md#remaining-work-and-platform-limits) | **—** | **Local settings import/export only** | **Yes**<br>*(excludes credentials, media and history)* |
 

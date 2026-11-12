@@ -33,15 +33,34 @@ class LyricSpan {
     if (confidence != null) 'confidence': confidence,
   };
 
-  factory LyricSpan.fromJson(Map<String, dynamic> json) => LyricSpan(
-    text: json['text'] as String,
-    startMs: json['startMs'] as int,
-    endMs: json['endMs'] as int?,
-    part: json['part'] as String?,
-    pronunciation: json['pronunciation'] as String?,
-    confidence: (json['confidence'] as num?)?.toDouble(),
-    unit: LyricUnit.values.firstWhere((u) => u.name == json['unit'], orElse: () => LyricUnit.word),
-  );
+  factory LyricSpan.fromJson(Map<String, dynamic> json) {
+    final rawUnit = json['unit'];
+    final rawConfidence = json['confidence'];
+    var unit = LyricUnit.word;
+    if (rawUnit != null) {
+      if (rawUnit is! String) {
+        throw const FormatException('Invalid lyric span unit');
+      }
+      final units = LyricUnit.values.where((candidate) => candidate.name == rawUnit);
+      if (units.isEmpty) {
+        throw FormatException('Unsupported lyric span unit: $rawUnit');
+      }
+      unit = units.first;
+    }
+    if (rawConfidence != null &&
+        (rawConfidence is! num || !rawConfidence.isFinite || rawConfidence < 0 || rawConfidence > 1)) {
+      throw const FormatException('Invalid lyric span confidence');
+    }
+    return LyricSpan(
+      text: json['text'] as String,
+      startMs: json['startMs'] as int,
+      endMs: json['endMs'] as int?,
+      part: json['part'] as String?,
+      pronunciation: json['pronunciation'] as String?,
+      confidence: (rawConfidence as num?)?.toDouble(),
+      unit: unit,
+    );
+  }
 }
 
 /// One lyric line. [startMs] is the offset from track start, `null` when the

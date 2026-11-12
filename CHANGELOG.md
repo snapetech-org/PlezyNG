@@ -10,6 +10,7 @@
 - Preserve simple WebVTT ruby readings through import and export as timed per-span pronunciations.
 - Preserve syllable units and optional source confidence in karaoke lyric editor revisions; unknown confidence remains unknown.
 - Keep existing line end times, word/syllable spans and pronunciation when tap-timing a karaoke lyric line.
+- Reject unknown lyric span units and invalid confidence metadata instead of silently converting them to word timings.
 - Page large music playlists directly into the bounded metadata window, validate each page against its original account and library, and keep the audible queue intact if preparing replacement metadata fails. Validate owned offline playlist batches without repeatedly scanning every download.
 
 - Flush the TrueHD decoder's stream state through FFmpeg on reset instead of recreating its native context, and align the Android decoder ABI check with the pinned FFmpeg 9 libraries. Independently adapted from [upstream 54a002f](https://github.com/edde746/plezy/commit/54a002f9b7271603d6eecba16079990dd1f83d28), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).

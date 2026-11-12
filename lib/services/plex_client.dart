@@ -1,3 +1,5 @@
+import 'music/server_music_radio.dart';
+import 'music/music_account_scope.dart';
 import 'music/music_discovery.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -472,6 +474,7 @@ class PlexClient
         ConvertedDownloadClient,
         MediaDeletionPermissionClient,
         PlaylistMetadataClient,
+        ServerMusicRadioClient,
         PlaylistArtworkClient,
         PlexLoudnessProfileClient,
         SonicMusicClient,
@@ -716,6 +719,7 @@ class PlexClient
 
   @override
   void close() {
+    _musicRadioCatalogs.clear();
     _discoverHttp.close();
     _epgCloudHttp.close();
     _http.close();
@@ -4076,6 +4080,149 @@ class PlexClient
       MediaKind.artist => fetchPlayableDescendantsPage(parentId, start: start, size: size, abort: abort),
       _ => throw ArgumentError.value(kind, 'kind', 'Expected an album or artist'),
     };
+  }
+
+  final _musicRadioCatalogs =
+      <String, ({Object generation, Object authentication, String account, List<ServerMusicRadio> rows})>{};
+
+  @override
+  Future<List<ServerMusicRadio>> serverMusicRadios(String libraryId) async {
+    if (libraryId.isEmpty || libraryId.length > 128 || isOfflineMode) {
+      throw ArgumentError('A live music library is required');
+    }
+    final generation = Object(), authentication = authenticationSessionId, account = musicAccountScope(this);
+    if (!_musicRadioCatalogs.containsKey(libraryId) && _musicRadioCatalogs.length >= 16) {
+      _musicRadioCatalogs.remove(_musicRadioCatalogs.keys.first);
+    }
+    final previous = _musicRadioCatalogs[libraryId];
+    final previousRows =
+        previous != null && identical(previous.authentication, authentication) && previous.account == account
+        ? previous.rows
+        : const <ServerMusicRadio>[];
+    _musicRadioCatalogs[libraryId] = (
+      generation: generation,
+      authentication: authentication,
+      account: account,
+      rows: previousRows,
+    );
+    bool current() =>
+        !isOfflineMode &&
+        identical(authenticationSessionId, authentication) &&
+        musicAccountScope(this) == account &&
+        identical(_musicRadioCatalogs[libraryId]?.generation, generation);
+    final response = await _getWithFailover(
+      '/hubs/sections/${Uri.encodeComponent(libraryId)}',
+      queryParameters: {'includeStations': 1, 'count': 32},
+    );
+    if (!current()) throw StateError('Music radio catalog account changed');
+    final data = response.data;
+    if (data is! Map || data['MediaContainer'] is! Map) {
+      throw const FormatException('Invalid music radio catalog');
+    }
+    final container = data['MediaContainer'] as Map;
+    if (container['librarySectionID'] != null && container['librarySectionID'].toString() != libraryId) {
+      throw const FormatException('Foreign music radio library');
+    }
+    final rawHubs = container['Hub'] ?? const [];
+    if (rawHubs is! List || rawHubs.length > 64) {
+      throw const FormatException('Invalid music radio hub list');
+    }
+    final rows = <ServerMusicRadio>[], seen = <String>{};
+    for (final hub in rawHubs) {
+      if (hub is! Map ||
+          hub['context'] != 'hub.music.stations' ||
+          hub['librarySectionID'] != null && hub['librarySectionID'].toString() != libraryId) {
+        continue;
+      }
+      final rawRows = hub['Metadata'] ?? hub['Playlist'] ?? const [];
+      if (rawRows is! List || rawRows.length > 64) {
+        throw const FormatException('Unbounded music radio catalog');
+      }
+      for (final raw in rawRows) {
+        if (raw is! Map || raw['type'] != 'playlist' || raw['playlistType'] != 'audio' || !flexibleBool(raw['radio'])) {
+          continue;
+        }
+        final key = raw['key'], title = raw['title'];
+        final section = raw['librarySectionID'];
+        if (key is! String ||
+            title is! String ||
+            title.trim().isEmpty ||
+            title.length > 1024 ||
+            section != null && section.toString() != libraryId ||
+            !validServerMusicRadioKey(key, libraryId) ||
+            !seen.add(key)) {
+          continue;
+        }
+        // A catalog refresh must not retire unchanged rows used by another
+        // music surface or by the active shared-session radio.
+        rows.add(
+          previousRows.where((row) => row.key == key && row.title == title).firstOrNull ??
+              ServerMusicRadio(serverId: serverId.value, libraryId: libraryId, key: key, title: title),
+        );
+        if (rows.length == 32) break;
+      }
+      if (rows.length == 32) break;
+    }
+    if (!current()) throw StateError('Music radio catalog account changed');
+    final frozen = List<ServerMusicRadio>.unmodifiable(rows);
+    _musicRadioCatalogs[libraryId] = (
+      generation: generation,
+      authentication: authentication,
+      account: account,
+      rows: frozen,
+    );
+    return frozen;
+  }
+
+  @override
+  bool serverMusicRadioCurrent(ServerMusicRadio radio) {
+    final catalog = _musicRadioCatalogs[radio.libraryId];
+    return !isOfflineMode &&
+        radio.serverId == serverId.value &&
+        catalog != null &&
+        identical(catalog.authentication, authenticationSessionId) &&
+        catalog.account == musicAccountScope(this) &&
+        catalog.rows.any((row) => identical(row, radio));
+  }
+
+  @override
+  Future<List<MediaItem>> serverMusicRadioTracks(ServerMusicRadio radio, {int limit = 100}) async {
+    if (limit < 1 || limit > 500) throw ArgumentError('Invalid radio track budget');
+    if (!serverMusicRadioCurrent(radio)) throw StateError('Music radio source changed');
+    final response = await _postWithFailover(
+      '/playQueues',
+      queryParameters: {'uri': 'server://${serverId.value}/com.plexapp.plugins.library${radio.key}', 'type': 'audio'},
+    );
+    if (!serverMusicRadioCurrent(radio)) throw StateError('Music radio source changed');
+    final data = response.data;
+    if (data is! Map || data['MediaContainer'] is! Map<String, dynamic>) {
+      throw const FormatException('Invalid music radio queue');
+    }
+    final container = data['MediaContainer'] as Map<String, dynamic>;
+    final metadata = container['Metadata'] ?? const [];
+    if (metadata is! List ||
+        metadata.length > 500 ||
+        metadata.any((row) => row is! Map<String, dynamic>) ||
+        container['librarySectionID'] != null && container['librarySectionID'].toString() != radio.libraryId) {
+      throw const FormatException('Invalid music radio queue window');
+    }
+    final queue = _parsePlayQueueResponse(data, librarySectionID: int.tryParse(radio.libraryId));
+    final tracks = queue.items ?? const <MediaItem>[];
+    if (queue.playQueueID <= 0 ||
+        tracks.length > 500 ||
+        queue.size != null && queue.size != tracks.length ||
+        queue.playQueueTotalCount != null && queue.playQueueTotalCount! < tracks.length ||
+        tracks.any(
+          (track) =>
+              track.kind != MediaKind.track ||
+              track.id.isEmpty ||
+              track.backend != backend ||
+              track.serverId != radio.serverId ||
+              track.libraryId != radio.libraryId,
+        )) {
+      throw const FormatException('Invalid server music radio queue');
+    }
+    return List.unmodifiable(tracks.take(limit));
   }
 
   /// Plex "instant mix": a station play queue seeded from [itemId]. The

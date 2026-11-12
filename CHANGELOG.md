@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Read Plex server-authored radio catalogs and open only account-authorized station keys through the audio PlayQueue API; reject foreign or malformed catalog and queue windows.
+
 - Preserve incremental music queue saves with bounded order storage: write only moved positions, changed metadata and new or retired occurrences.
 
 - Add optional rolling playback for saved filtered music stations, with exact-preview adoption, persisted rules, whole-album exclusions and native car controls. Keep downloads and offline playback finite and reject snapshots from another station source.

@@ -893,5 +893,11 @@
     "processingAudio": "Traitement local de l’audio…",
     "processingAudioProgress": "Traitement local de l’audio (${percent}%)…",
     "cpuFallback": "Le traitement vocal sur le GPU a échoué. Nouvelle tentative sur le CPU…"
+  },
+  "musicTools": {
+    "serverAnalysis": "Analyse du serveur",
+    "sonicAnalysis": "Analyse sonore",
+    "serverAnalysisScope": "Toutes les bibliothèques musicales admissibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.",
+    "serverActivities": "Activités du serveur"
   }
 }

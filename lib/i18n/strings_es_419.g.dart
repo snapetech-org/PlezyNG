@@ -88,6 +88,7 @@ class TranslationsEs419 extends TranslationsEs with BaseTranslations<AppLocale, 
 	@override late final _Translations$issueReport$es_419 issueReport = _Translations$issueReport$es_419._(_root);
 	@override late final _Translations$romm$es_419 romm = _Translations$romm$es_419._(_root);
 	@override late final _Translations$subtitleCapture$es_419 subtitleCapture = _Translations$subtitleCapture$es_419._(_root);
+	@override late final _Translations$musicTools$es_419 musicTools = _Translations$musicTools$es_419._(_root);
 }
 
 // Path: cast
@@ -1048,6 +1049,19 @@ class _Translations$subtitleCapture$es_419 extends Translations$subtitleCapture$
 	@override String get cpuFallback => 'El procesamiento de voz en la GPU falló. Reintentando con la CPU…';
 }
 
+// Path: musicTools
+class _Translations$musicTools$es_419 extends Translations$musicTools$es {
+	_Translations$musicTools$es_419._(TranslationsEs419 root) : this._root = root, super.internal(root);
+
+	final TranslationsEs419 _root; // ignore: unused_field
+
+	// Translations
+	@override String get serverAnalysis => 'Análisis del servidor';
+	@override String get sonicAnalysis => 'Análisis sonoro';
+	@override String get serverAnalysisScope => 'Todas las bibliotecas de música aptas de este servidor. No se cambia su configuración de análisis.';
+	@override String get serverActivities => 'Actividad del servidor';
+}
+
 // Path: common.mediaKind
 class _Translations$common$mediaKind$es_419 extends Translations$common$mediaKind$es {
 	_Translations$common$mediaKind$es_419._(TranslationsEs419 root) : this._root = root, super.internal(root);
@@ -1929,6 +1943,10 @@ extension on TranslationsEs419 {
 			'subtitleCapture.processingAudio' => 'Procesando audio localmente…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Procesando audio localmente (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'El procesamiento de voz en la GPU falló. Reintentando con la CPU…',
+			'musicTools.serverAnalysis' => 'Análisis del servidor',
+			'musicTools.sonicAnalysis' => 'Análisis sonoro',
+			'musicTools.serverAnalysisScope' => 'Todas las bibliotecas de música aptas de este servidor. No se cambia su configuración de análisis.',
+			'musicTools.serverActivities' => 'Actividad del servidor',
 			_ => null,
 		};
 	}

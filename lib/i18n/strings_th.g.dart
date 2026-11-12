@@ -4319,6 +4319,10 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get pins => 'เพลงที่ปักหมุด';
 	@override String get pinToHome => 'ปักหมุดในหน้าหลักเพลง';
 	@override String get unpin => 'เลิกปักหมุด';
+	@override String get serverAnalysis => 'การวิเคราะห์เซิร์ฟเวอร์';
+	@override String get sonicAnalysis => 'การวิเคราะห์เสียง';
+	@override String get serverAnalysisScope => 'คลังเพลงที่เข้าเกณฑ์ทั้งหมดบนเซิร์ฟเวอร์นี้ การตั้งค่าการวิเคราะห์ของคลังจะไม่เปลี่ยนแปลง';
+	@override String get serverActivities => 'กิจกรรมเซิร์ฟเวอร์';
 }
 
 // Path: musicDevices
@@ -9514,6 +9518,10 @@ extension on TranslationsTh {
 			'musicTools.pins' => 'เพลงที่ปักหมุด',
 			'musicTools.pinToHome' => 'ปักหมุดในหน้าหลักเพลง',
 			'musicTools.unpin' => 'เลิกปักหมุด',
+			'musicTools.serverAnalysis' => 'การวิเคราะห์เซิร์ฟเวอร์',
+			'musicTools.sonicAnalysis' => 'การวิเคราะห์เสียง',
+			'musicTools.serverAnalysisScope' => 'คลังเพลงที่เข้าเกณฑ์ทั้งหมดบนเซิร์ฟเวอร์นี้ การตั้งค่าการวิเคราะห์ของคลังจะไม่เปลี่ยนแปลง',
+			'musicTools.serverActivities' => 'กิจกรรมเซิร์ฟเวอร์',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',

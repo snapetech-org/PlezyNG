@@ -4342,6 +4342,10 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get pins => 'Rögzített zenék';
 	@override String get pinToHome => 'Rögzítés a zenei kezdőlapon';
 	@override String get unpin => 'Rögzítés feloldása';
+	@override String get serverAnalysis => 'Szerverelemzés';
+	@override String get sonicAnalysis => 'Hangelemzés';
+	@override String get serverAnalysisScope => 'A szerver összes alkalmas zenei könyvtára. Az elemzési beállításaik nem változnak.';
+	@override String get serverActivities => 'Szervertevékenységek';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsHu {
 			'musicTools.pins' => 'Rögzített zenék',
 			'musicTools.pinToHome' => 'Rögzítés a zenei kezdőlapon',
 			'musicTools.unpin' => 'Rögzítés feloldása',
+			'musicTools.serverAnalysis' => 'Szerverelemzés',
+			'musicTools.sonicAnalysis' => 'Hangelemzés',
+			'musicTools.serverAnalysisScope' => 'A szerver összes alkalmas zenei könyvtára. Az elemzési beállításaik nem változnak.',
+			'musicTools.serverActivities' => 'Szervertevékenységek',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',

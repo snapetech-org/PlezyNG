@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "موسیقی سنجاق‌شده",
     "pinToHome": "سنجاق به صفحهٔ اصلی موسیقی",
-    "unpin": "برداشتن سنجاق"
+    "unpin": "برداشتن سنجاق",
+    "serverAnalysis": "تحلیل سرور",
+    "sonicAnalysis": "تحلیل صوتی",
+    "serverAnalysisScope": "همهٔ کتابخانه‌های موسیقی واجد شرایط در این سرور. تنظیمات تحلیل آن‌ها تغییر نمی‌کند.",
+    "serverActivities": "فعالیت‌های سرور"
   },
   "musicDevices": {
     "playOn": "پخش در",

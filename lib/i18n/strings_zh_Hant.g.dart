@@ -4338,6 +4338,10 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String get pins => '釘選音樂';
 	@override String get pinToHome => '釘選至音樂首頁';
 	@override String get unpin => '取消釘選';
+	@override String get serverAnalysis => '伺服器分析';
+	@override String get sonicAnalysis => '音訊特徵分析';
+	@override String get serverAnalysisScope => '此伺服器上所有符合條件的音樂資料庫。不會更改其分析設定。';
+	@override String get serverActivities => '伺服器工作';
 }
 
 // Path: musicDevices
@@ -9535,6 +9539,10 @@ extension on TranslationsZhHant {
 			'musicTools.pins' => '釘選音樂',
 			'musicTools.pinToHome' => '釘選至音樂首頁',
 			'musicTools.unpin' => '取消釘選',
+			'musicTools.serverAnalysis' => '伺服器分析',
+			'musicTools.sonicAnalysis' => '音訊特徵分析',
+			'musicTools.serverAnalysisScope' => '此伺服器上所有符合條件的音樂資料庫。不會更改其分析設定。',
+			'musicTools.serverActivities' => '伺服器工作',
 			'musicDevices.playOn' => '播放裝置',
 			'musicDevices.thisDevice' => '此裝置',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

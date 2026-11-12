@@ -5619,7 +5619,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Przypięta muzyka",
     "pinToHome": "Przypnij na stronie głównej muzyki",
-    "unpin": "Odepnij"
+    "unpin": "Odepnij",
+    "serverAnalysis": "Analiza serwera",
+    "sonicAnalysis": "Analiza dźwięku",
+    "serverAnalysisScope": "Wszystkie kwalifikujące się biblioteki muzyczne na tym serwerze. Ich ustawienia analizy nie zostaną zmienione.",
+    "serverActivities": "Aktywność serwera"
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

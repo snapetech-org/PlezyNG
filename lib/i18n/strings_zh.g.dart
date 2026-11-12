@@ -4337,6 +4337,10 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	@override String get pins => '置顶音乐';
 	@override String get pinToHome => '置顶到音乐主页';
 	@override String get unpin => '取消置顶';
+	@override String get serverAnalysis => '服务器分析';
+	@override String get sonicAnalysis => '音频特征分析';
+	@override String get serverAnalysisScope => '此服务器上所有符合条件的音乐资料库。不会更改其分析设置。';
+	@override String get serverActivities => '服务器任务';
 }
 
 // Path: musicDevices
@@ -9534,6 +9538,10 @@ extension on TranslationsZh {
 			'musicTools.pins' => '置顶音乐',
 			'musicTools.pinToHome' => '置顶到音乐主页',
 			'musicTools.unpin' => '取消置顶',
+			'musicTools.serverAnalysis' => '服务器分析',
+			'musicTools.sonicAnalysis' => '音频特征分析',
+			'musicTools.serverAnalysisScope' => '此服务器上所有符合条件的音乐资料库。不会更改其分析设置。',
+			'musicTools.serverActivities' => '服务器任务',
 			'musicDevices.playOn' => '播放设备',
 			'musicDevices.thisDevice' => '此设备',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

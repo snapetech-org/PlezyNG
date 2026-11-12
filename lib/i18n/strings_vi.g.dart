@@ -4319,6 +4319,10 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get pins => 'Nhạc đã ghim';
 	@override String get pinToHome => 'Ghim vào trang chủ âm nhạc';
 	@override String get unpin => 'Bỏ ghim';
+	@override String get serverAnalysis => 'Phân tích máy chủ';
+	@override String get sonicAnalysis => 'Phân tích âm thanh';
+	@override String get serverAnalysisScope => 'Tất cả thư viện nhạc đủ điều kiện trên máy chủ này. Không thay đổi cài đặt phân tích của chúng.';
+	@override String get serverActivities => 'Hoạt động máy chủ';
 }
 
 // Path: musicDevices
@@ -9514,6 +9518,10 @@ extension on TranslationsVi {
 			'musicTools.pins' => 'Nhạc đã ghim',
 			'musicTools.pinToHome' => 'Ghim vào trang chủ âm nhạc',
 			'musicTools.unpin' => 'Bỏ ghim',
+			'musicTools.serverAnalysis' => 'Phân tích máy chủ',
+			'musicTools.sonicAnalysis' => 'Phân tích âm thanh',
+			'musicTools.serverAnalysisScope' => 'Tất cả thư viện nhạc đủ điều kiện trên máy chủ này. Không thay đổi cài đặt phân tích của chúng.',
+			'musicTools.serverActivities' => 'Hoạt động máy chủ',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',

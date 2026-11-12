@@ -5644,7 +5644,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Pinned music",
     "pinToHome": "Pin to Music Home",
-    "unpin": "Unpin"
+    "unpin": "Unpin",
+    "serverAnalysis": "Server analysis",
+    "sonicAnalysis": "Sonic analysis",
+    "serverAnalysisScope": "All eligible music libraries on this server. This does not change their analysis settings.",
+    "serverActivities": "Server activities"
   },
   "musicDevices": {
     "playOn": "Play on",

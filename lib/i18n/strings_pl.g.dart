@@ -4388,6 +4388,10 @@ class _Translations$musicTools$pl extends Translations$musicTools$en {
 	@override String get pins => 'Przypięta muzyka';
 	@override String get pinToHome => 'Przypnij na stronie głównej muzyki';
 	@override String get unpin => 'Odepnij';
+	@override String get serverAnalysis => 'Analiza serwera';
+	@override String get sonicAnalysis => 'Analiza dźwięku';
+	@override String get serverAnalysisScope => 'Wszystkie kwalifikujące się biblioteki muzyczne na tym serwerze. Ich ustawienia analizy nie zostaną zmienione.';
+	@override String get serverActivities => 'Aktywność serwera';
 }
 
 // Path: musicDevices
@@ -9589,6 +9593,10 @@ extension on TranslationsPl {
 			'musicTools.pins' => 'Przypięta muzyka',
 			'musicTools.pinToHome' => 'Przypnij na stronie głównej muzyki',
 			'musicTools.unpin' => 'Odepnij',
+			'musicTools.serverAnalysis' => 'Analiza serwera',
+			'musicTools.sonicAnalysis' => 'Analiza dźwięku',
+			'musicTools.serverAnalysisScope' => 'Wszystkie kwalifikujące się biblioteki muzyczne na tym serwerze. Ich ustawienia analizy nie zostaną zmienione.',
+			'musicTools.serverActivities' => 'Aktywność serwera',
 			'musicDevices.playOn' => 'Odtwarzaj na',
 			'musicDevices.thisDevice' => 'To urządzenie',
 			'musicDevices.playingOn' => ({required Object device}) => 'Odtwarzanie na ${device}',

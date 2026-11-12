@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Fastgjort musik",
     "pinToHome": "Fastgør på musikforsiden",
-    "unpin": "Frigør"
+    "unpin": "Frigør",
+    "serverAnalysis": "Serveranalyse",
+    "sonicAnalysis": "Lydanalyse",
+    "serverAnalysisScope": "Alle egnede musikbiblioteker på denne server. Deres analyseindstillinger ændres ikke.",
+    "serverActivities": "Serveraktiviteter"
   },
   "musicDevices": {
     "playOn": "Afspil på",

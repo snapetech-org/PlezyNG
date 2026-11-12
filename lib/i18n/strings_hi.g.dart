@@ -4342,6 +4342,10 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get pins => 'पिन किया गया संगीत';
 	@override String get pinToHome => 'संगीत होम पर पिन करें';
 	@override String get unpin => 'पिन हटाएँ';
+	@override String get serverAnalysis => 'सर्वर विश्लेषण';
+	@override String get sonicAnalysis => 'ध्वनि विश्लेषण';
+	@override String get serverAnalysisScope => 'इस सर्वर की सभी पात्र संगीत लाइब्रेरी। इससे उनकी विश्लेषण सेटिंग नहीं बदलती।';
+	@override String get serverActivities => 'सर्वर गतिविधियाँ';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsHi {
 			'musicTools.pins' => 'पिन किया गया संगीत',
 			'musicTools.pinToHome' => 'संगीत होम पर पिन करें',
 			'musicTools.unpin' => 'पिन हटाएँ',
+			'musicTools.serverAnalysis' => 'सर्वर विश्लेषण',
+			'musicTools.sonicAnalysis' => 'ध्वनि विश्लेषण',
+			'musicTools.serverAnalysisScope' => 'इस सर्वर की सभी पात्र संगीत लाइब्रेरी। इससे उनकी विश्लेषण सेटिंग नहीं बदलती।',
+			'musicTools.serverActivities' => 'सर्वर गतिविधियाँ',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',

@@ -5560,7 +5560,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "固定した音楽",
     "pinToHome": "音楽ホームに固定",
-    "unpin": "固定を解除"
+    "unpin": "固定を解除",
+    "serverAnalysis": "サーバー解析",
+    "sonicAnalysis": "音響解析",
+    "serverAnalysisScope": "このサーバー上の対象となるすべての音楽ライブラリ。解析設定は変更されません。",
+    "serverActivities": "サーバーの処理状況"
   },
   "musicDevices": {
     "playOn": "再生先",

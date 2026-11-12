@@ -5538,7 +5538,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Nhạc đã ghim",
     "pinToHome": "Ghim vào trang chủ âm nhạc",
-    "unpin": "Bỏ ghim"
+    "unpin": "Bỏ ghim",
+    "serverAnalysis": "Phân tích máy chủ",
+    "sonicAnalysis": "Phân tích âm thanh",
+    "serverAnalysisScope": "Tất cả thư viện nhạc đủ điều kiện trên máy chủ này. Không thay đổi cài đặt phân tích của chúng.",
+    "serverActivities": "Hoạt động máy chủ"
   },
   "musicDevices": {
     "playOn": "Phát trên",

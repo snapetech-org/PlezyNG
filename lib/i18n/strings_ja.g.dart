@@ -4337,6 +4337,10 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	@override String get pins => '固定した音楽';
 	@override String get pinToHome => '音楽ホームに固定';
 	@override String get unpin => '固定を解除';
+	@override String get serverAnalysis => 'サーバー解析';
+	@override String get sonicAnalysis => '音響解析';
+	@override String get serverAnalysisScope => 'このサーバー上の対象となるすべての音楽ライブラリ。解析設定は変更されません。';
+	@override String get serverActivities => 'サーバーの処理状況';
 }
 
 // Path: musicDevices
@@ -9534,6 +9538,10 @@ extension on TranslationsJa {
 			'musicTools.pins' => '固定した音楽',
 			'musicTools.pinToHome' => '音楽ホームに固定',
 			'musicTools.unpin' => '固定を解除',
+			'musicTools.serverAnalysis' => 'サーバー解析',
+			'musicTools.sonicAnalysis' => '音響解析',
+			'musicTools.serverAnalysisScope' => 'このサーバー上の対象となるすべての音楽ライブラリ。解析設定は変更されません。',
+			'musicTools.serverActivities' => 'サーバーの処理状況',
 			'musicDevices.playOn' => '再生先',
 			'musicDevices.thisDevice' => 'このデバイス',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} で再生中',

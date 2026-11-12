@@ -4350,6 +4350,10 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String get pins => 'מוזיקה מוצמדת';
 	@override String get pinToHome => 'הצמדה לדף הבית של המוזיקה';
 	@override String get unpin => 'ביטול הצמדה';
+	@override String get serverAnalysis => 'ניתוח בשרת';
+	@override String get sonicAnalysis => 'ניתוח צליל';
+	@override String get serverAnalysisScope => 'כל ספריות המוזיקה המתאימות בשרת זה. הגדרות הניתוח שלהן לא ישתנו.';
+	@override String get serverActivities => 'פעילויות השרת';
 }
 
 // Path: musicDevices
@@ -9547,6 +9551,10 @@ extension on TranslationsHe {
 			'musicTools.pins' => 'מוזיקה מוצמדת',
 			'musicTools.pinToHome' => 'הצמדה לדף הבית של המוזיקה',
 			'musicTools.unpin' => 'ביטול הצמדה',
+			'musicTools.serverAnalysis' => 'ניתוח בשרת',
+			'musicTools.sonicAnalysis' => 'ניתוח צליל',
+			'musicTools.serverAnalysisScope' => 'כל ספריות המוזיקה המתאימות בשרת זה. הגדרות הניתוח שלהן לא ישתנו.',
+			'musicTools.serverActivities' => 'פעילויות השרת',
 			'musicDevices.playOn' => 'ניגון באמצעות',
 			'musicDevices.thisDevice' => 'מכשיר זה',
 			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',

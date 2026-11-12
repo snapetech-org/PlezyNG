@@ -4342,6 +4342,10 @@ class _Translations$musicTools$nb extends Translations$musicTools$en {
 	@override String get pins => 'Festet musikk';
 	@override String get pinToHome => 'Fest til musikkhjem';
 	@override String get unpin => 'Løsne';
+	@override String get serverAnalysis => 'Serveranalyse';
+	@override String get sonicAnalysis => 'Lydanalyse';
+	@override String get serverAnalysisScope => 'Alle kvalifiserte musikkbiblioteker på denne serveren. Analyseinnstillingene deres endres ikke.';
+	@override String get serverActivities => 'Serveraktiviteter';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsNb {
 			'musicTools.pins' => 'Festet musikk',
 			'musicTools.pinToHome' => 'Fest til musikkhjem',
 			'musicTools.unpin' => 'Løsne',
+			'musicTools.serverAnalysis' => 'Serveranalyse',
+			'musicTools.sonicAnalysis' => 'Lydanalyse',
+			'musicTools.serverAnalysisScope' => 'Alle kvalifiserte musikkbiblioteker på denne serveren. Analyseinnstillingene deres endres ikke.',
+			'musicTools.serverActivities' => 'Serveraktiviteter',
 			'musicDevices.playOn' => 'Spill av på',
 			'musicDevices.thisDevice' => 'Denne enheten',
 			'musicDevices.playingOn' => ({required Object device}) => 'Spiller av på ${device}',

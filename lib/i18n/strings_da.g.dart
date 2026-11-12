@@ -4342,6 +4342,10 @@ class _Translations$musicTools$da extends Translations$musicTools$en {
 	@override String get pins => 'Fastgjort musik';
 	@override String get pinToHome => 'Fastgør på musikforsiden';
 	@override String get unpin => 'Frigør';
+	@override String get serverAnalysis => 'Serveranalyse';
+	@override String get sonicAnalysis => 'Lydanalyse';
+	@override String get serverAnalysisScope => 'Alle egnede musikbiblioteker på denne server. Deres analyseindstillinger ændres ikke.';
+	@override String get serverActivities => 'Serveraktiviteter';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsDa {
 			'musicTools.pins' => 'Fastgjort musik',
 			'musicTools.pinToHome' => 'Fastgør på musikforsiden',
 			'musicTools.unpin' => 'Frigør',
+			'musicTools.serverAnalysis' => 'Serveranalyse',
+			'musicTools.sonicAnalysis' => 'Lydanalyse',
+			'musicTools.serverAnalysisScope' => 'Alle egnede musikbiblioteker på denne server. Deres analyseindstillinger ændres ikke.',
+			'musicTools.serverActivities' => 'Serveraktiviteter',
 			'musicDevices.playOn' => 'Afspil på',
 			'musicDevices.thisDevice' => 'Denne enhed',
 			'musicDevices.playingOn' => ({required Object device}) => 'Afspiller på ${device}',

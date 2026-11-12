@@ -5613,7 +5613,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Закріплена музика",
     "pinToHome": "Закріпити на головній сторінці музики",
-    "unpin": "Відкріпити"
+    "unpin": "Відкріпити",
+    "serverAnalysis": "Аналіз сервера",
+    "sonicAnalysis": "Звуковий аналіз",
+    "serverAnalysisScope": "Усі відповідні музичні бібліотеки на цьому сервері. Їхні налаштування аналізу не змінюються.",
+    "serverActivities": "Завдання сервера"
   },
   "musicDevices": {
     "playOn": "Відтворити на",

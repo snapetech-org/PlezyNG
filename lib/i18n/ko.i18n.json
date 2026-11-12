@@ -5560,7 +5560,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "고정한 음악",
     "pinToHome": "음악 홈에 고정",
-    "unpin": "고정 해제"
+    "unpin": "고정 해제",
+    "serverAnalysis": "서버 분석",
+    "sonicAnalysis": "음향 분석",
+    "serverAnalysisScope": "이 서버에서 분석 가능한 모든 음악 라이브러리에 적용됩니다. 분석 설정은 변경되지 않습니다.",
+    "serverActivities": "서버 작업"
   },
   "musicDevices": {
     "playOn": "재생 기기",

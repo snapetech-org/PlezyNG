@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Sabitlenen müzik",
     "pinToHome": "Müzik ana sayfasına sabitle",
-    "unpin": "Sabitlemeyi kaldır"
+    "unpin": "Sabitlemeyi kaldır",
+    "serverAnalysis": "Sunucu analizi",
+    "sonicAnalysis": "Ses analizi",
+    "serverAnalysisScope": "Bu sunucudaki uygun tüm müzik kitaplıkları. Analiz ayarları değiştirilmez.",
+    "serverActivities": "Sunucu etkinlikleri"
   },
   "musicDevices": {
     "playOn": "Şurada çal",

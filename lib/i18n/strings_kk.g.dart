@@ -4342,6 +4342,10 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get pins => 'Бекітілген музыка';
 	@override String get pinToHome => 'Музыка басты бетіне бекіту';
 	@override String get unpin => 'Бекітуді алу';
+	@override String get serverAnalysis => 'Серверді талдау';
+	@override String get sonicAnalysis => 'Дыбыстық талдау';
+	@override String get serverAnalysisScope => 'Осы сервердегі барлық жарамды музыка кітапханалары. Олардың талдау параметрлері өзгермейді.';
+	@override String get serverActivities => 'Сервер әрекеттері';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsKk {
 			'musicTools.pins' => 'Бекітілген музыка',
 			'musicTools.pinToHome' => 'Музыка басты бетіне бекіту',
 			'musicTools.unpin' => 'Бекітуді алу',
+			'musicTools.serverAnalysis' => 'Серверді талдау',
+			'musicTools.sonicAnalysis' => 'Дыбыстық талдау',
+			'musicTools.serverAnalysisScope' => 'Осы сервердегі барлық жарамды музыка кітапханалары. Олардың талдау параметрлері өзгермейді.',
+			'musicTools.serverActivities' => 'Сервер әрекеттері',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',

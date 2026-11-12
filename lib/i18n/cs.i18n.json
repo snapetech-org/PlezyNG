@@ -5613,7 +5613,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Připnutá hudba",
     "pinToHome": "Připnout na úvodní stránku hudby",
-    "unpin": "Odepnout"
+    "unpin": "Odepnout",
+    "serverAnalysis": "Analýza serveru",
+    "sonicAnalysis": "Zvuková analýza",
+    "serverAnalysisScope": "Všechny způsobilé hudební knihovny na tomto serveru. Jejich nastavení analýzy se nezmění.",
+    "serverActivities": "Aktivity serveru"
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

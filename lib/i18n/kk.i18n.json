@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Бекітілген музыка",
     "pinToHome": "Музыка басты бетіне бекіту",
-    "unpin": "Бекітуді алу"
+    "unpin": "Бекітуді алу",
+    "serverAnalysis": "Серверді талдау",
+    "sonicAnalysis": "Дыбыстық талдау",
+    "serverAnalysisScope": "Осы сервердегі барлық жарамды музыка кітапханалары. Олардың талдау параметрлері өзгермейді.",
+    "serverActivities": "Сервер әрекеттері"
   },
   "musicDevices": {
     "playOn": "Ойнату құрылғысы",

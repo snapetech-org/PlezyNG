@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import '../media/tizen_playback_profile.dart';
 import '../media/webos_playback_profile.dart';
+import '../utils/serial_future_queue.dart';
 import '../utils/platform_detector.dart';
 import '../utils/isolate_helper.dart';
 import '../utils/json_utils.dart';
@@ -504,6 +505,7 @@ class PlexClient
   String? plexMusicUserIdentifier;
 
   ({Object authentication, String user})? _musicHistoryOwner;
+  late final _musicServerAnalysisChanges = SerialFutureQueue();
   ({Object authentication, String account, String user, bool owner})? _musicHistoryBinding;
   int? _musicHistoryAccount;
 

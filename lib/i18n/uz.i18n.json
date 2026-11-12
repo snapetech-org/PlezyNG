@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Qadalgan musiqa",
     "pinToHome": "Musiqa bosh sahifasiga qadash",
-    "unpin": "Qadashni bekor qilish"
+    "unpin": "Qadashni bekor qilish",
+    "serverAnalysis": "Server tahlili",
+    "sonicAnalysis": "Ovoz tahlili",
+    "serverAnalysisScope": "Ushbu serverdagi barcha mos musiqa kutubxonalari. Ularning tahlil sozlamalari o‘zgarmaydi.",
+    "serverActivities": "Server faoliyati"
   },
   "musicDevices": {
     "playOn": "Shu qurilmada ijro etish",

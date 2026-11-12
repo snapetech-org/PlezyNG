@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Fäst musik",
     "pinToHome": "Fäst på musikstartsidan",
-    "unpin": "Lossa"
+    "unpin": "Lossa",
+    "serverAnalysis": "Serveranalys",
+    "sonicAnalysis": "Ljudanalys",
+    "serverAnalysisScope": "Alla kvalificerade musikbibliotek på den här servern. Deras analysinställningar ändras inte.",
+    "serverActivities": "Serveraktiviteter"
   },
   "musicDevices": {
     "playOn": "Spela på",

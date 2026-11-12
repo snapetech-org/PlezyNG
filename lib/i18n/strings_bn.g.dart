@@ -4342,6 +4342,10 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String get pins => 'পিন করা সঙ্গীত';
 	@override String get pinToHome => 'সঙ্গীতের হোমে পিন করুন';
 	@override String get unpin => 'পিন সরান';
+	@override String get serverAnalysis => 'সার্ভার বিশ্লেষণ';
+	@override String get sonicAnalysis => 'সোনিক বিশ্লেষণ';
+	@override String get serverAnalysisScope => 'এই সার্ভারের সব উপযুক্ত সঙ্গীত লাইব্রেরি। এতে তাদের বিশ্লেষণ সেটিংস বদলাবে না।';
+	@override String get serverActivities => 'সার্ভারের কার্যকলাপ';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsBn {
 			'musicTools.pins' => 'পিন করা সঙ্গীত',
 			'musicTools.pinToHome' => 'সঙ্গীতের হোমে পিন করুন',
 			'musicTools.unpin' => 'পিন সরান',
+			'musicTools.serverAnalysis' => 'সার্ভার বিশ্লেষণ',
+			'musicTools.sonicAnalysis' => 'সোনিক বিশ্লেষণ',
+			'musicTools.serverAnalysisScope' => 'এই সার্ভারের সব উপযুক্ত সঙ্গীত লাইব্রেরি। এতে তাদের বিশ্লেষণ সেটিংস বদলাবে না।',
+			'musicTools.serverActivities' => 'সার্ভারের কার্যকলাপ',
 			'musicDevices.playOn' => 'এখানে চালান',
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',

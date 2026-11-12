@@ -4342,6 +4342,10 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get pins => 'Sabitlenen müzik';
 	@override String get pinToHome => 'Müzik ana sayfasına sabitle';
 	@override String get unpin => 'Sabitlemeyi kaldır';
+	@override String get serverAnalysis => 'Sunucu analizi';
+	@override String get sonicAnalysis => 'Ses analizi';
+	@override String get serverAnalysisScope => 'Bu sunucudaki uygun tüm müzik kitaplıkları. Analiz ayarları değiştirilmez.';
+	@override String get serverActivities => 'Sunucu etkinlikleri';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsTr {
 			'musicTools.pins' => 'Sabitlenen müzik',
 			'musicTools.pinToHome' => 'Müzik ana sayfasına sabitle',
 			'musicTools.unpin' => 'Sabitlemeyi kaldır',
+			'musicTools.serverAnalysis' => 'Sunucu analizi',
+			'musicTools.sonicAnalysis' => 'Ses analizi',
+			'musicTools.serverAnalysisScope' => 'Bu sunucudaki uygun tüm müzik kitaplıkları. Analiz ayarları değiştirilmez.',
+			'musicTools.serverActivities' => 'Sunucu etkinlikleri',
 			'musicDevices.playOn' => 'Şurada çal',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} üzerinde çalınıyor',

@@ -5560,7 +5560,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "置顶音乐",
     "pinToHome": "置顶到音乐主页",
-    "unpin": "取消置顶"
+    "unpin": "取消置顶",
+    "serverAnalysis": "服务器分析",
+    "sonicAnalysis": "音频特征分析",
+    "serverAnalysisScope": "此服务器上所有符合条件的音乐资料库。不会更改其分析设置。",
+    "serverActivities": "服务器任务"
   },
   "musicDevices": {
     "playOn": "播放设备",

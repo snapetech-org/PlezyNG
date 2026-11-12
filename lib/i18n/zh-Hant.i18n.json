@@ -5560,7 +5560,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "釘選音樂",
     "pinToHome": "釘選至音樂首頁",
-    "unpin": "取消釘選"
+    "unpin": "取消釘選",
+    "serverAnalysis": "伺服器分析",
+    "sonicAnalysis": "音訊特徵分析",
+    "serverAnalysisScope": "此伺服器上所有符合條件的音樂資料庫。不會更改其分析設定。",
+    "serverActivities": "伺服器工作"
   },
   "musicDevices": {
     "playOn": "播放裝置",

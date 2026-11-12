@@ -5538,7 +5538,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Musik yang disematkan",
     "pinToHome": "Sematkan ke Beranda Musik",
-    "unpin": "Lepas sematan"
+    "unpin": "Lepas sematan",
+    "serverAnalysis": "Analisis server",
+    "sonicAnalysis": "Analisis sonik",
+    "serverAnalysisScope": "Semua pustaka musik yang memenuhi syarat di server ini. Pengaturan analisisnya tidak diubah.",
+    "serverActivities": "Aktivitas server"
   },
   "musicDevices": {
     "playOn": "Putar di",

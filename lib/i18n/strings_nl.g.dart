@@ -4342,6 +4342,10 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	@override String get pins => 'Vastgemaakte muziek';
 	@override String get pinToHome => 'Vastmaken aan muziekstartpagina';
 	@override String get unpin => 'Losmaken';
+	@override String get serverAnalysis => 'Serveranalyse';
+	@override String get sonicAnalysis => 'Geluidsanalyse';
+	@override String get serverAnalysisScope => 'Alle geschikte muziekbibliotheken op deze server. Hun analyse-instellingen worden niet gewijzigd.';
+	@override String get serverActivities => 'Serveractiviteiten';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsNl {
 			'musicTools.pins' => 'Vastgemaakte muziek',
 			'musicTools.pinToHome' => 'Vastmaken aan muziekstartpagina',
 			'musicTools.unpin' => 'Losmaken',
+			'musicTools.serverAnalysis' => 'Serveranalyse',
+			'musicTools.sonicAnalysis' => 'Geluidsanalyse',
+			'musicTools.serverAnalysisScope' => 'Alle geschikte muziekbibliotheken op deze server. Hun analyse-instellingen worden niet gewijzigd.',
+			'musicTools.serverActivities' => 'Serveractiviteiten',
 			'musicDevices.playOn' => 'Afspelen op',
 			'musicDevices.thisDevice' => 'Dit apparaat',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',

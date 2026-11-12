@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Festet musikk",
     "pinToHome": "Fest til musikkhjem",
-    "unpin": "Løsne"
+    "unpin": "Løsne",
+    "serverAnalysis": "Serveranalyse",
+    "sonicAnalysis": "Lydanalyse",
+    "serverAnalysisScope": "Alle kvalifiserte musikkbiblioteker på denne serveren. Analyseinnstillingene deres endres ikke.",
+    "serverActivities": "Serveraktiviteter"
   },
   "musicDevices": {
     "playOn": "Spill av på",

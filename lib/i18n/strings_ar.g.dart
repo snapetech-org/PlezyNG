@@ -4434,6 +4434,10 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String get pins => 'الموسيقى المثبتة';
 	@override String get pinToHome => 'تثبيت في صفحة الموسيقى الرئيسية';
 	@override String get unpin => 'إلغاء التثبيت';
+	@override String get serverAnalysis => 'تحليل الخادم';
+	@override String get sonicAnalysis => 'التحليل الصوتي';
+	@override String get serverAnalysisScope => 'كل مكتبات الموسيقى المؤهلة على هذا الخادم. لا يغيّر هذا إعدادات التحليل الخاصة بها.';
+	@override String get serverActivities => 'أنشطة الخادم';
 }
 
 // Path: musicDevices
@@ -9639,6 +9643,10 @@ extension on TranslationsAr {
 			'musicTools.pins' => 'الموسيقى المثبتة',
 			'musicTools.pinToHome' => 'تثبيت في صفحة الموسيقى الرئيسية',
 			'musicTools.unpin' => 'إلغاء التثبيت',
+			'musicTools.serverAnalysis' => 'تحليل الخادم',
+			'musicTools.sonicAnalysis' => 'التحليل الصوتي',
+			'musicTools.serverAnalysisScope' => 'كل مكتبات الموسيقى المؤهلة على هذا الخادم. لا يغيّر هذا إعدادات التحليل الخاصة بها.',
+			'musicTools.serverActivities' => 'أنشطة الخادم',
 			'musicDevices.playOn' => 'التشغيل على',
 			'musicDevices.thisDevice' => 'هذا الجهاز',
 			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',

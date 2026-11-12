@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Vastgemaakte muziek",
     "pinToHome": "Vastmaken aan muziekstartpagina",
-    "unpin": "Losmaken"
+    "unpin": "Losmaken",
+    "serverAnalysis": "Serveranalyse",
+    "sonicAnalysis": "Geluidsanalyse",
+    "serverAnalysisScope": "Alle geschikte muziekbibliotheken op deze server. Hun analyse-instellingen worden niet gewijzigd.",
+    "serverActivities": "Serveractiviteiten"
   },
   "musicDevices": {
     "playOn": "Afspelen op",

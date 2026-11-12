@@ -5538,7 +5538,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "เพลงที่ปักหมุด",
     "pinToHome": "ปักหมุดในหน้าหลักเพลง",
-    "unpin": "เลิกปักหมุด"
+    "unpin": "เลิกปักหมุด",
+    "serverAnalysis": "การวิเคราะห์เซิร์ฟเวอร์",
+    "sonicAnalysis": "การวิเคราะห์เสียง",
+    "serverAnalysisScope": "คลังเพลงที่เข้าเกณฑ์ทั้งหมดบนเซิร์ฟเวอร์นี้ การตั้งค่าการวิเคราะห์ของคลังจะไม่เปลี่ยนแปลง",
+    "serverActivities": "กิจกรรมเซิร์ฟเวอร์"
   },
   "musicDevices": {
     "playOn": "เล่นบน",

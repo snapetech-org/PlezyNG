@@ -4319,6 +4319,10 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	@override String get pins => 'Musik yang disematkan';
 	@override String get pinToHome => 'Sematkan ke Beranda Musik';
 	@override String get unpin => 'Lepas sematan';
+	@override String get serverAnalysis => 'Analisis server';
+	@override String get sonicAnalysis => 'Analisis sonik';
+	@override String get serverAnalysisScope => 'Semua pustaka musik yang memenuhi syarat di server ini. Pengaturan analisisnya tidak diubah.';
+	@override String get serverActivities => 'Aktivitas server';
 }
 
 // Path: musicDevices
@@ -9514,6 +9518,10 @@ extension on TranslationsId {
 			'musicTools.pins' => 'Musik yang disematkan',
 			'musicTools.pinToHome' => 'Sematkan ke Beranda Musik',
 			'musicTools.unpin' => 'Lepas sematan',
+			'musicTools.serverAnalysis' => 'Analisis server',
+			'musicTools.sonicAnalysis' => 'Analisis sonik',
+			'musicTools.serverAnalysisScope' => 'Semua pustaka musik yang memenuhi syarat di server ini. Pengaturan analisisnya tidak diubah.',
+			'musicTools.serverActivities' => 'Aktivitas server',
 			'musicDevices.playOn' => 'Putar di',
 			'musicDevices.thisDevice' => 'Perangkat ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',

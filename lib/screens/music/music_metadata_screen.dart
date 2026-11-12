@@ -20,6 +20,7 @@ import '../../services/plex_client.dart';
 import '../../utils/codec_utils.dart';
 import '../../utils/formatters.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../widgets/music/server_analysis_panel.dart';
 import '../../widgets/app_icon.dart';
 
 class MusicMetadataScreen extends StatefulWidget {
@@ -89,6 +90,12 @@ class _MusicMetadataScreenState extends State<MusicMetadataScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (client.hasVerifiedMusicServerOwner)
+          MusicServerAnalysisPanel(
+            key: ValueKey((client, _authentication, _scope)),
+            client: client,
+            current: () => _sourceCurrent,
+          ),
         ListTile(
           leading: const AppIcon(Symbols.graphic_eq_rounded),
           title: Text(t.music.visualizerPlexLoudness),

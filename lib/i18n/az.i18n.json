@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Sabitlənmiş musiqi",
     "pinToHome": "Musiqi ana səhifəsinə sabitlə",
-    "unpin": "Sabitləməni ləğv et"
+    "unpin": "Sabitləməni ləğv et",
+    "serverAnalysis": "Server analizi",
+    "sonicAnalysis": "Səs analizi",
+    "serverAnalysisScope": "Bu serverdəki bütün uyğun musiqi kitabxanaları. Onların analiz parametrləri dəyişmir.",
+    "serverActivities": "Server fəaliyyətləri"
   },
   "musicDevices": {
     "playOn": "Burada səsləndir",

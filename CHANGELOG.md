@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Manage advertised Sonic and loudness tasks from track details with verified-owner checks, server-wide confirmation and live individual server activities. Retired accounts, routes and background panels cannot send late actions.
+
 - Isolate native music socket fixtures across parallel test processes and inject the independent source-speaker decoder in output EQ tests.
 
 - Hold the music play/pause control to stop the shared session from Now Playing, the mini-player or driving view. Keep taps and keyboard selection on play/pause, suppress accidental card actions, and announce the hold action to screen readers.

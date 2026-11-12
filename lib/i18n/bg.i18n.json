@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Закачена музика",
     "pinToHome": "Закачи в началната страница за музика",
-    "unpin": "Откачи"
+    "unpin": "Откачи",
+    "serverAnalysis": "Анализ на сървъра",
+    "sonicAnalysis": "Звуков анализ",
+    "serverAnalysisScope": "Всички подходящи музикални библиотеки на този сървър. Настройките им за анализ не се променят.",
+    "serverActivities": "Дейности на сървъра"
   },
   "musicDevices": {
     "playOn": "Възпроизвеждане на",

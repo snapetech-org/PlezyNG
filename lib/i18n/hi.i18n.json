@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "पिन किया गया संगीत",
     "pinToHome": "संगीत होम पर पिन करें",
-    "unpin": "पिन हटाएँ"
+    "unpin": "पिन हटाएँ",
+    "serverAnalysis": "सर्वर विश्लेषण",
+    "sonicAnalysis": "ध्वनि विश्लेषण",
+    "serverAnalysisScope": "इस सर्वर की सभी पात्र संगीत लाइब्रेरी। इससे उनकी विश्लेषण सेटिंग नहीं बदलती।",
+    "serverActivities": "सर्वर गतिविधियाँ"
   },
   "musicDevices": {
     "playOn": "इस पर चलाएँ",

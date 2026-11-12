@@ -4342,6 +4342,10 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	@override String get pins => 'Закачена музика';
 	@override String get pinToHome => 'Закачи в началната страница за музика';
 	@override String get unpin => 'Откачи';
+	@override String get serverAnalysis => 'Анализ на сървъра';
+	@override String get sonicAnalysis => 'Звуков анализ';
+	@override String get serverAnalysisScope => 'Всички подходящи музикални библиотеки на този сървър. Настройките им за анализ не се променят.';
+	@override String get serverActivities => 'Дейности на сървъра';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsBg {
 			'musicTools.pins' => 'Закачена музика',
 			'musicTools.pinToHome' => 'Закачи в началната страница за музика',
 			'musicTools.unpin' => 'Откачи',
+			'musicTools.serverAnalysis' => 'Анализ на сървъра',
+			'musicTools.sonicAnalysis' => 'Звуков анализ',
+			'musicTools.serverAnalysisScope' => 'Всички подходящи музикални библиотеки на този сървър. Настройките им за анализ не се променят.',
+			'musicTools.serverActivities' => 'Дейности на сървъра',
 			'musicDevices.playOn' => 'Възпроизвеждане на',
 			'musicDevices.thisDevice' => 'Това устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',

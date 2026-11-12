@@ -5647,7 +5647,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Música fijada",
     "pinToHome": "Fijar en el inicio de música",
-    "unpin": "Desfijar"
+    "unpin": "Desfijar",
+    "serverAnalysis": "Análisis del servidor",
+    "sonicAnalysis": "Análisis sonoro",
+    "serverAnalysisScope": "Todas las bibliotecas de música aptas de este servidor. No se cambia su configuración de análisis.",
+    "serverActivities": "Actividad del servidor"
   },
   "musicDevices": {
     "playOn": "Reproducir en",

@@ -4384,6 +4384,10 @@ class _Translations$musicTools$uk extends Translations$musicTools$en {
 	@override String get pins => 'Закріплена музика';
 	@override String get pinToHome => 'Закріпити на головній сторінці музики';
 	@override String get unpin => 'Відкріпити';
+	@override String get serverAnalysis => 'Аналіз сервера';
+	@override String get sonicAnalysis => 'Звуковий аналіз';
+	@override String get serverAnalysisScope => 'Усі відповідні музичні бібліотеки на цьому сервері. Їхні налаштування аналізу не змінюються.';
+	@override String get serverActivities => 'Завдання сервера';
 }
 
 // Path: musicDevices
@@ -9583,6 +9587,10 @@ extension on TranslationsUk {
 			'musicTools.pins' => 'Закріплена музика',
 			'musicTools.pinToHome' => 'Закріпити на головній сторінці музики',
 			'musicTools.unpin' => 'Відкріпити',
+			'musicTools.serverAnalysis' => 'Аналіз сервера',
+			'musicTools.sonicAnalysis' => 'Звуковий аналіз',
+			'musicTools.serverAnalysisScope' => 'Усі відповідні музичні бібліотеки на цьому сервері. Їхні налаштування аналізу не змінюються.',
+			'musicTools.serverActivities' => 'Завдання сервера',
 			'musicDevices.playOn' => 'Відтворити на',
 			'musicDevices.thisDevice' => 'Цей пристрій',
 			'musicDevices.playingOn' => ({required Object device}) => 'Відтворюється на ${device}',

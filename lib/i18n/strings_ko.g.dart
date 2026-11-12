@@ -4337,6 +4337,10 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get pins => '고정한 음악';
 	@override String get pinToHome => '음악 홈에 고정';
 	@override String get unpin => '고정 해제';
+	@override String get serverAnalysis => '서버 분석';
+	@override String get sonicAnalysis => '음향 분석';
+	@override String get serverAnalysisScope => '이 서버에서 분석 가능한 모든 음악 라이브러리에 적용됩니다. 분석 설정은 변경되지 않습니다.';
+	@override String get serverActivities => '서버 작업';
 }
 
 // Path: musicDevices
@@ -9534,6 +9538,10 @@ extension on TranslationsKo {
 			'musicTools.pins' => '고정한 음악',
 			'musicTools.pinToHome' => '음악 홈에 고정',
 			'musicTools.unpin' => '고정 해제',
+			'musicTools.serverAnalysis' => '서버 분석',
+			'musicTools.sonicAnalysis' => '음향 분석',
+			'musicTools.serverAnalysisScope' => '이 서버에서 분석 가능한 모든 음악 라이브러리에 적용됩니다. 분석 설정은 변경되지 않습니다.',
+			'musicTools.serverActivities' => '서버 작업',
 			'musicDevices.playOn' => '재생 기기',
 			'musicDevices.thisDevice' => '이 기기',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',

@@ -5565,7 +5565,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "Rögzített zenék",
     "pinToHome": "Rögzítés a zenei kezdőlapon",
-    "unpin": "Rögzítés feloldása"
+    "unpin": "Rögzítés feloldása",
+    "serverAnalysis": "Szerverelemzés",
+    "sonicAnalysis": "Hangelemzés",
+    "serverAnalysisScope": "A szerver összes alkalmas zenei könyvtára. Az elemzési beállításaik nem változnak.",
+    "serverActivities": "Szervertevékenységek"
   },
   "musicDevices": {
     "playOn": "Lejátszás itt",

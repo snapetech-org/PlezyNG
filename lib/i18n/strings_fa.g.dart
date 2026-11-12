@@ -4342,6 +4342,10 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get pins => 'موسیقی سنجاق‌شده';
 	@override String get pinToHome => 'سنجاق به صفحهٔ اصلی موسیقی';
 	@override String get unpin => 'برداشتن سنجاق';
+	@override String get serverAnalysis => 'تحلیل سرور';
+	@override String get sonicAnalysis => 'تحلیل صوتی';
+	@override String get serverAnalysisScope => 'همهٔ کتابخانه‌های موسیقی واجد شرایط در این سرور. تنظیمات تحلیل آن‌ها تغییر نمی‌کند.';
+	@override String get serverActivities => 'فعالیت‌های سرور';
 }
 
 // Path: musicDevices
@@ -9539,6 +9543,10 @@ extension on TranslationsFa {
 			'musicTools.pins' => 'موسیقی سنجاق‌شده',
 			'musicTools.pinToHome' => 'سنجاق به صفحهٔ اصلی موسیقی',
 			'musicTools.unpin' => 'برداشتن سنجاق',
+			'musicTools.serverAnalysis' => 'تحلیل سرور',
+			'musicTools.sonicAnalysis' => 'تحلیل صوتی',
+			'musicTools.serverAnalysisScope' => 'همهٔ کتابخانه‌های موسیقی واجد شرایط در این سرور. تنظیمات تحلیل آن‌ها تغییر نمی‌کند.',
+			'musicTools.serverActivities' => 'فعالیت‌های سرور',
 			'musicDevices.playOn' => 'پخش در',
 			'musicDevices.thisDevice' => 'این دستگاه',
 			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',

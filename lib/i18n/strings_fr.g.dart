@@ -4403,6 +4403,10 @@ class Translations$musicTools$fr extends Translations$musicTools$en {
 	@override String get pins => 'Musique épinglée';
 	@override String get pinToHome => 'Épingler à l’accueil musique';
 	@override String get unpin => 'Désépingler';
+	@override String get serverAnalysis => 'Analyse du serveur';
+	@override String get sonicAnalysis => 'Analyse sonore';
+	@override String get serverAnalysisScope => 'Toutes les bibliothèques musicales éligibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.';
+	@override String get serverActivities => 'Activités du serveur';
 }
 
 // Path: musicDevices
@@ -9630,6 +9634,10 @@ extension on TranslationsFr {
 			'musicTools.pins' => 'Musique épinglée',
 			'musicTools.pinToHome' => 'Épingler à l’accueil musique',
 			'musicTools.unpin' => 'Désépingler',
+			'musicTools.serverAnalysis' => 'Analyse du serveur',
+			'musicTools.sonicAnalysis' => 'Analyse sonore',
+			'musicTools.serverAnalysisScope' => 'Toutes les bibliothèques musicales éligibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.',
+			'musicTools.serverActivities' => 'Activités du serveur',
 			'musicDevices.playOn' => 'Lire sur',
 			'musicDevices.thisDevice' => 'Cet appareil',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lecture sur ${device}',

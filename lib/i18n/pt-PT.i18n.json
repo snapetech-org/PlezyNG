@@ -932,5 +932,11 @@
     "processingAudio": "A processar áudio localmente…",
     "processingAudioProgress": "A processar áudio localmente (${percent}%)…",
     "cpuFallback": "O processamento de voz na GPU falhou. A tentar novamente com a CPU…"
+  },
+  "musicTools": {
+    "serverAnalysis": "Análise do servidor",
+    "sonicAnalysis": "Análise sonora",
+    "serverAnalysisScope": "Todas as bibliotecas de música elegíveis neste servidor. As definições de análise não são alteradas.",
+    "serverActivities": "Atividades do servidor"
   }
 }

@@ -5575,7 +5575,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "מוזיקה מוצמדת",
     "pinToHome": "הצמדה לדף הבית של המוזיקה",
-    "unpin": "ביטול הצמדה"
+    "unpin": "ביטול הצמדה",
+    "serverAnalysis": "ניתוח בשרת",
+    "sonicAnalysis": "ניתוח צליל",
+    "serverAnalysisScope": "כל ספריות המוזיקה המתאימות בשרת זה. הגדרות הניתוח שלהן לא ישתנו.",
+    "serverActivities": "פעילויות השרת"
   },
   "musicDevices": {
     "playOn": "ניגון באמצעות",

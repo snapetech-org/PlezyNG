@@ -4384,6 +4384,10 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get pins => 'Připnutá hudba';
 	@override String get pinToHome => 'Připnout na úvodní stránku hudby';
 	@override String get unpin => 'Odepnout';
+	@override String get serverAnalysis => 'Analýza serveru';
+	@override String get sonicAnalysis => 'Zvuková analýza';
+	@override String get serverAnalysisScope => 'Všechny způsobilé hudební knihovny na tomto serveru. Jejich nastavení analýzy se nezmění.';
+	@override String get serverActivities => 'Aktivity serveru';
 }
 
 // Path: musicDevices
@@ -9583,6 +9587,10 @@ extension on TranslationsCs {
 			'musicTools.pins' => 'Připnutá hudba',
 			'musicTools.pinToHome' => 'Připnout na úvodní stránku hudby',
 			'musicTools.unpin' => 'Odepnout',
+			'musicTools.serverAnalysis' => 'Analýza serveru',
+			'musicTools.sonicAnalysis' => 'Zvuková analýza',
+			'musicTools.serverAnalysisScope' => 'Všechny způsobilé hudební knihovny na tomto serveru. Jejich nastavení analýzy se nezmění.',
+			'musicTools.serverActivities' => 'Aktivity serveru',
 			'musicDevices.playOn' => 'Přehrávat na',
 			'musicDevices.thisDevice' => 'Toto zařízení',
 			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',

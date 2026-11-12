@@ -14819,6 +14819,18 @@ class Translations$musicTools$en {
 
 	/// en: 'Unpin'
 	String get unpin => 'Unpin';
+
+	/// en: 'Server analysis'
+	String get serverAnalysis => 'Server analysis';
+
+	/// en: 'Sonic analysis'
+	String get sonicAnalysis => 'Sonic analysis';
+
+	/// en: 'All eligible music libraries on this server. This does not change their analysis settings.'
+	String get serverAnalysisScope => 'All eligible music libraries on this server. This does not change their analysis settings.';
+
+	/// en: 'Server activities'
+	String get serverActivities => 'Server activities';
 }
 
 // Path: musicDevices
@@ -22774,6 +22786,10 @@ extension on Translations {
 			'musicTools.pins' => 'Pinned music',
 			'musicTools.pinToHome' => 'Pin to Music Home',
 			'musicTools.unpin' => 'Unpin',
+			'musicTools.serverAnalysis' => 'Server analysis',
+			'musicTools.sonicAnalysis' => 'Sonic analysis',
+			'musicTools.serverAnalysisScope' => 'All eligible music libraries on this server. This does not change their analysis settings.',
+			'musicTools.serverActivities' => 'Server activities',
 			'musicDevices.playOn' => 'Play on',
 			'musicDevices.thisDevice' => 'This device',
 			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',

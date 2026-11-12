@@ -5673,7 +5673,11 @@
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen",
     "pins": "الموسيقى المثبتة",
     "pinToHome": "تثبيت في صفحة الموسيقى الرئيسية",
-    "unpin": "إلغاء التثبيت"
+    "unpin": "إلغاء التثبيت",
+    "serverAnalysis": "تحليل الخادم",
+    "sonicAnalysis": "التحليل الصوتي",
+    "serverAnalysisScope": "كل مكتبات الموسيقى المؤهلة على هذا الخادم. لا يغيّر هذا إعدادات التحليل الخاصة بها.",
+    "serverActivities": "أنشطة الخادم"
   },
   "musicDevices": {
     "playOn": "التشغيل على",

@@ -9,7 +9,15 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
   /// rather than `ParentId` because Jellyfin links albums to artists via
   /// tags — an artist's albums are usually not its folder children.
   @override
-  Future<List<MediaItem>> fetchArtistAlbums(MediaItem artist) async {
+  Future<List<MediaItem>> fetchArtistAlbums(MediaItem artist) {
+    if (isOfflineMode) return _fetchArtistAlbumsUnpaged(artist);
+    return drainPages<MediaItem>(
+      (start, size) => fetchArtistAlbumsPage(artist, start: start, size: size),
+      pageSize: _pagedListPageSize,
+    );
+  }
+
+  Future<List<MediaItem>> _fetchArtistAlbumsUnpaged(MediaItem artist) async {
     final response = await _http.get(
       '/Items',
       queryParameters: {
@@ -38,7 +46,7 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
     final offset = start ?? 0, pageSize = size ?? 100;
     if (offset < 0 || pageSize < 1 || pageSize > 1000) throw ArgumentError('Invalid artist album page bounds');
     if (isOfflineMode) {
-      final albums = await fetchArtistAlbums(artist);
+      final albums = await _fetchArtistAlbumsUnpaged(artist);
       final safeOffset = offset.clamp(0, albums.length).toInt();
       final end = (safeOffset + pageSize).clamp(0, albums.length).toInt();
       return LibraryPage(items: albums.sublist(safeOffset, end), totalCount: albums.length, offset: offset);

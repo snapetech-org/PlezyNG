@@ -61,6 +61,13 @@ class _Manager extends MultiServerManager {
 
 class _Client extends ExperienceClient {
   final List<String> removals = [];
+  final List<String> deletions = [];
+  @override
+  Future<bool> deleteCollection(MediaItem item) async {
+    deletions.add(item.id);
+    return true;
+  }
+
   @override
   Future<bool> removeFromCollection({required String collectionId, required MediaItem item}) async {
     removals.add('$collectionId:${item.id}');
@@ -186,46 +193,70 @@ void main() {
     expect(h.scope.current, isFalse);
   });
 
-  for (final changed in [false, true]) {
-    testWidgets('collection removal changed=$changed pins the confirmation account', (tester) async {
-      LocaleSettings.setLocaleSync(AppLocale.en);
-      TvDetectionService.debugSetAppleTVOverride(true);
-      addTearDown(() => TvDetectionService.debugSetAppleTVOverride(null));
-      final original = _Client(), replacement = _Client();
-      final manager = _Manager()..debugRegisterClientForTesting(original);
-      final servers = testMultiServerProvider(manager), profile = _Profile();
-      addTearDown(() {
-        servers.dispose();
-        manager.dispose();
-        profile.dispose();
-      });
-      final key = GlobalKey<MediaContextMenuState>();
-      await tester.pumpWidget(
-        TranslationProvider(
-          child: MultiProvider(
-            providers: [
-              ChangeNotifierProvider<MultiServerProvider>.value(value: servers),
-              ChangeNotifierProvider<ActiveProfileProvider>.value(value: profile),
-            ],
-            child: MaterialApp(
-              theme: monoTheme(MonoPalette.dark),
-              home: Scaffold(
-                body: MediaContextMenu(key: key, item: _album, collectionId: 'collection', child: const Text('target')),
+  for (final deleting in [false, true]) {
+    for (final changed in [false, true]) {
+      testWidgets('collection delete=$deleting changed=$changed pins the confirmation account', (tester) async {
+        LocaleSettings.setLocaleSync(AppLocale.en);
+        TvDetectionService.debugSetAppleTVOverride(true);
+        addTearDown(() => TvDetectionService.debugSetAppleTVOverride(null));
+        final original = _Client(), replacement = _Client();
+        final manager = _Manager()..debugRegisterClientForTesting(original);
+        final servers = testMultiServerProvider(manager), profile = _Profile();
+        addTearDown(() {
+          servers.dispose();
+          manager.dispose();
+          profile.dispose();
+        });
+        final key = GlobalKey<MediaContextMenuState>();
+        await tester.pumpWidget(
+          TranslationProvider(
+            child: MultiProvider(
+              providers: [
+                ChangeNotifierProvider<MultiServerProvider>.value(value: servers),
+                ChangeNotifierProvider<ActiveProfileProvider>.value(value: profile),
+              ],
+              child: MaterialApp(
+                theme: monoTheme(MonoPalette.dark),
+                home: Scaffold(
+                  body: MediaContextMenu(
+                    key: key,
+                    item: deleting
+                        ? testMediaItem(
+                            id: 'collection',
+                            title: 'Collection',
+                            kind: MediaKind.collection,
+                            serverId: 's',
+                            libraryId: 'music',
+                          )
+                        : _album,
+                    collectionId: 'collection',
+                    child: const Text('target'),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      );
-      key.currentState!.showContextMenu(key.currentContext!);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(t.collections.removeFromCollection));
-      await tester.pumpAndSettle();
-      expect(find.byType(AlertDialog), findsOneWidget);
-      if (changed) manager.debugRegisterClientForTesting(replacement);
-      await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.text(t.common.delete)));
-      await tester.pumpAndSettle();
-      expect(original.removals, changed ? isEmpty : ['collection:album']);
-      expect(replacement.removals, isEmpty);
-    });
+        );
+        key.currentState!.showContextMenu(key.currentContext!);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(deleting ? t.common.delete : t.collections.removeFromCollection));
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsOneWidget);
+        if (changed) manager.debugRegisterClientForTesting(replacement);
+        await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.text(t.common.delete)));
+        await tester.pumpAndSettle();
+        expect(original.removals, changed || deleting ? isEmpty : ['collection:album']);
+        expect(original.deletions, changed || !deleting ? isEmpty : ['collection']);
+        expect(replacement.deletions, isEmpty);
+        expect(replacement.removals, isEmpty);
+        if (deleting) {
+          manager.owner = false;
+          key.currentState!.showContextMenu(key.currentContext!);
+          await tester.pumpAndSettle();
+          expect(find.text(t.common.delete), findsNothing);
+          expect(find.text(t.metadataEdit.editMetadata), findsNothing);
+        }
+      });
+    }
   }
 }

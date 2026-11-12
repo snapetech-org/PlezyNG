@@ -19,7 +19,11 @@ class PlexMetadataEditAdapter extends MetadataEditAdapter {
 
   @override
   bool supportsKind(MediaKind kind) =>
-      kind == MediaKind.movie || kind == MediaKind.show || kind == MediaKind.season || kind == MediaKind.episode;
+      kind == MediaKind.movie ||
+      kind == MediaKind.show ||
+      kind == MediaKind.season ||
+      kind == MediaKind.episode ||
+      kind == MediaKind.collection;
 
   @override
   Future<MetadataEditDraft> load(MediaItem item) async {
@@ -32,8 +36,15 @@ class PlexMetadataEditAdapter extends MetadataEditAdapter {
       throw StateError('Editable Plex metadata item is unavailable');
     }
 
+    if (item.kind == MediaKind.collection &&
+        (fullItem.globalKey != item.globalKey ||
+            fullItem.kind != item.kind ||
+            (item.libraryId != null && fullItem.libraryId != item.libraryId))) {
+      throw StateError('Editable collection source changed');
+    }
+
     late final Map<String, String> preferences;
-    if (fullItem.kind == MediaKind.episode) {
+    if (fullItem.kind == MediaKind.episode || fullItem.kind == MediaKind.collection) {
       preferences = const {};
     } else {
       try {
@@ -63,14 +74,27 @@ class PlexMetadataEditAdapter extends MetadataEditAdapter {
       MetadataEditSection(id: 'basic', title: t.metadataEdit.basicInfo, fields: metadataBasicFields(kind)),
       if (_tagFields(kind).isNotEmpty)
         MetadataEditSection(id: 'tags', title: t.metadataEdit.tags, fields: _tagFields(kind)),
-      MetadataEditSection(id: 'artwork', title: t.metadataEdit.artwork, fields: _artworkFields(kind)),
-      if (kind != MediaKind.episode)
+      MetadataEditSection(
+        id: 'artwork',
+        title: t.metadataEdit.artwork,
+        fields: _artworkFields(
+          kind,
+          musicCollection:
+              draft.currentItem is PlexMediaItem &&
+              const {'artist', 'album'}.contains((draft.currentItem as PlexMediaItem).subtype),
+        ),
+      ),
+      if (kind != MediaKind.episode && kind != MediaKind.collection)
         MetadataEditSection(id: 'advanced', title: t.metadataEdit.advancedSettings, fields: _advancedFields(kind)),
     ];
   }
 
   @override
   Future<bool> save(MetadataEditDraft draft) async {
+    if (draft.sourceItem.kind == MediaKind.collection && draft.fieldChanged('title')) {
+      final title = draft.value<String>('title')?.trim() ?? '';
+      if (title.isEmpty || title.runes.length > 255) return false;
+    }
     final sectionId = int.tryParse(draft.currentItem.libraryId ?? draft.sourceItem.libraryId ?? '');
     if (sectionId == null) return false;
 
@@ -87,7 +111,7 @@ class PlexMetadataEditAdapter extends MetadataEditAdapter {
     final success = await client.updateMetadata(
       sectionId: sectionId,
       ratingKey: draft.sourceItem.id,
-      // supportsKind restricts drafts to the four video kinds.
+      // Plex collections use metadata type 18, including music collections.
       typeNumber: PlexMetadataType.forKind(draft.sourceItem.kind) ?? 0,
       title: _changedString(draft, 'title'),
       titleSort: _changedString(draft, 'titleSort'),
@@ -253,13 +277,14 @@ class PlexMetadataEditAdapter extends MetadataEditAdapter {
     };
   }
 
-  List<MetadataEditField> _artworkFields(MediaKind kind) => metadataArtworkFields(
+  List<MetadataEditField> _artworkFields(MediaKind kind, {bool musicCollection = false}) => metadataArtworkFields(
     kind,
     posterKey: 'posters',
     backdropKey: 'arts',
     logoKey: 'clearLogos',
     squareKey: 'squareArts',
-    logoKinds: const {MediaKind.movie, MediaKind.show, MediaKind.collection},
+    logoKinds: const {MediaKind.movie, MediaKind.show},
+    squarePoster: musicCollection,
   );
 
   List<MetadataEditField> _advancedFields(MediaKind kind) {

@@ -6,6 +6,9 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import '../media/ids.dart';
 import '../utils/media_collection_actions.dart';
+import '../utils/library_refresh_notifier.dart';
+import '../metadata_edit/metadata_edit_adapters.dart';
+import 'metadata_edit_screen.dart';
 import '../profiles/active_profile_provider.dart';
 import '../providers/multi_server_provider.dart';
 import '../providers/hidden_libraries_provider.dart';
@@ -79,21 +82,23 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
 
   final FocusNode _summaryFocusNode = FocusNode(debugLabel: 'collection_summary');
   MediaCollectionWriteScope? _collectionScope;
+  MediaItem? _editedCollection;
+  MediaItem get _collection => _editedCollection ?? widget.collection;
 
   @override
   void initState() {
     super.initState();
-    if (!widget.isOffline) _collectionScope = MediaCollectionWriteScope.forItem(context, widget.collection);
+    if (!widget.isOffline) _collectionScope = MediaCollectionWriteScope.forItem(context, _collection);
   }
 
   bool get _collectionCurrent =>
-      _collectionScope?.current == true && _collectionScope!.item.globalKey == widget.collection.globalKey;
+      _collectionScope?.current == true && _collectionScope!.item.globalKey == _collection.globalKey;
 
   @override
-  MediaItem get mediaItem => widget.collection;
+  MediaItem get mediaItem => _collection;
 
   @override
-  String get title => widget.collection.title!;
+  String get title => _collection.title!;
 
   @override
   String get emptyMessage => t.collections.empty;
@@ -129,16 +134,16 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
   @override
   Future<LibraryPage<MediaItem>> fetchPage(int start, int size, AbortController? abort) async {
     if (widget.isOffline) {
-      final items = context.read<DownloadProvider>().downloadedCollectionItems(widget.collection.globalKey);
+      final items = context.read<DownloadProvider>().downloadedCollectionItems(_collection.globalKey);
       return LibraryPage(items: items.skip(start).take(size).toList(), totalCount: items.length, offset: start);
     }
     return mediaClient.fetchCollectionPage(
-      widget.collection.id,
+      _collection.id,
       start: start,
       size: size,
       abort: abort,
-      libraryId: widget.collection.libraryId,
-      libraryTitle: widget.collection.libraryTitle,
+      libraryId: _collection.libraryId,
+      libraryTitle: _collection.libraryTitle,
     );
   }
 
@@ -149,7 +154,7 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
       errorMessageFor: (error, stackTrace) =>
           localizedLoadErrorMessage(error, stackTrace, context: t.collections.collection),
       onLoaded: (loadedCount, totalCount) {
-        appLogger.d('Loaded $loadedCount of $totalCount items for collection: ${widget.collection.title}');
+        appLogger.d('Loaded $loadedCount of $totalCount items for collection: ${_collection.title}');
         autoFocusFirstItemAfterLoad();
       },
     );
@@ -176,11 +181,13 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
       ...buildSyncRuleActions(
         context,
         ruleKey: ruleKey,
-        displayTitle: widget.collection.displayTitle,
+        displayTitle: _collection.displayTitle,
         hasRule: hasRule,
         showDownload: true,
         onDownload: _downloadCollection,
       ),
+      if (_collectionCurrent && supportsMetadataEdit(_collectionScope!.client, _collection.kind))
+        FocusableAction(icon: Symbols.edit_rounded, tooltip: t.metadataEdit.editMetadata, onPressed: _editCollection),
       if (_collectionCurrent)
         FocusableAction(
           icon: Symbols.delete_rounded,
@@ -194,7 +201,7 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
   /// The offline header actions: mark the downloaded titles watched or
   /// unwatched, and delete them.
   List<FocusableAction> _downloadsFolderActions() {
-    final folderKey = widget.collection.globalKey;
+    final folderKey = _collection.globalKey;
     final allWatched = context.select<DownloadProvider, bool>(
       (provider) => provider.downloadedCollectionItems(folderKey).every((item) => item.isWatched),
     );
@@ -203,7 +210,7 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
         FocusableAction(
           icon: allWatched ? Symbols.remove_circle_outline_rounded : Symbols.check_circle_outline_rounded,
           tooltip: allWatched ? t.mediaMenu.markAsUnwatched : t.mediaMenu.markAsWatched,
-          onPressed: () => setDownloadsFolderWatched(context, widget.collection, watched: !allWatched),
+          onPressed: () => setDownloadsFolderWatched(context, _collection, watched: !allWatched),
         ),
       FocusableAction(
         icon: Symbols.delete_rounded,
@@ -215,13 +222,13 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
   }
 
   Future<void> _deleteDownloads() async {
-    final deleted = await deleteDownloadsFolder(context, widget.collection);
+    final deleted = await deleteDownloadsFolder(context, _collection);
     if (deleted && mounted) Navigator.pop(context);
   }
 
   /// The downloaded copy of [artworkPath] in offline mode, else null.
   String? _offlineArtworkPath(String? artworkPath) {
-    final serverId = serverIdOrNull(widget.collection.serverId);
+    final serverId = serverIdOrNull(_collection.serverId);
     if (!widget.isOffline || serverId == null) return null;
     return context.read<DownloadProvider>().getArtworkLocalPath(serverId, artworkPath);
   }
@@ -238,13 +245,38 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
       downloadProvider: context.read<DownloadProvider>(),
       fetchItems: () => fetchAllCollectionItemsPaged(
         mediaClient,
-        widget.collection.id,
-        libraryId: widget.collection.libraryId,
-        libraryTitle: widget.collection.libraryTitle,
+        _collection.id,
+        libraryId: _collection.libraryId,
+        libraryTitle: _collection.libraryTitle,
       ),
-      rootMetadata: widget.collection,
+      rootMetadata: _collection,
       targetType: ContentTypes.collection,
     );
+  }
+
+  Future<void> _editCollection() async {
+    final scope = _collectionScope;
+    if (scope == null || !_collectionCurrent) return;
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => MetadataEditScreen(metadata: _collection, collectionScope: scope),
+      ),
+    );
+    if (!mounted || !_collectionCurrent) return;
+    try {
+      final refreshed = await scope.client.fetchItem(scope.item.id);
+      if (!mounted || !_collectionCurrent) return;
+      if (refreshed != null &&
+          refreshed.globalKey == scope.item.globalKey &&
+          refreshed.kind == scope.item.kind &&
+          refreshed.libraryId == scope.item.libraryId) {
+        setState(() => _editedCollection = refreshed);
+      }
+      LibraryRefreshNotifier().notifyCollectionsChanged();
+      await loadItems();
+    } catch (error, stack) {
+      appLogger.w('Unable to refresh edited collection', error: error, stackTrace: stack);
+    }
   }
 
   Future<void> _deleteCollection() async {
@@ -253,7 +285,7 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
     final confirmed = await showDeleteConfirmation(
       context,
       title: t.collections.deleteCollection,
-      message: t.collections.deleteConfirm(title: widget.collection.displayTitle),
+      message: t.collections.deleteConfirm(title: _collection.displayTitle),
     );
 
     if (!confirmed || !mounted || !_collectionCurrent || !identical(scope, _collectionScope)) return;
@@ -283,7 +315,7 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
   /// item is loaded, so a partially fetched collection never reports a range
   /// narrower than the truth.
   String _metaLine() {
-    final count = totalSize > 0 ? totalSize : (widget.collection.childCount ?? 0);
+    final count = totalSize > 0 ? totalSize : (_collection.childCount ?? 0);
     final parts = <String>[t.playlists.itemCount(count: count)];
     if (totalSize > 0 && loadedItems.length == totalSize) {
       final years = loadedItems.values.map((i) => i.year).nonNulls.toList();
@@ -293,7 +325,7 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
         parts.add(lo == hi ? '$lo' : '$lo–$hi');
       }
     }
-    final rating = widget.collection.contentRating;
+    final rating = _collection.contentRating;
     if (rating != null && rating.isNotEmpty) parts.add(rating);
     return parts.join('  ·  ');
   }
@@ -304,8 +336,8 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
       borderRadius: BorderRadius.circular(16),
       child: OptimizedMediaImage(
         client: widget.isOffline ? null : mediaClient,
-        imagePath: widget.collection.thumbPath,
-        localFilePath: _offlineArtworkPath(widget.collection.thumbPath),
+        imagePath: _collection.thumbPath,
+        localFilePath: _offlineArtworkPath(_collection.thumbPath),
         imageType: square ? ImageType.square : ImageType.poster,
         width: square ? height : height * 2 / 3,
         height: height,
@@ -317,14 +349,14 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
   Widget _buildInfo(BuildContext context, {required bool centered, required bool isTv}) {
     final theme = Theme.of(context);
     final tk = tokens(context);
-    final summary = widget.collection.summary;
+    final summary = _collection.summary;
     final align = centered ? TextAlign.center : TextAlign.start;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: centered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         Text(
-          widget.collection.displayTitle,
+          _collection.displayTitle,
           style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, fontSize: isTv ? 34 : null),
           textAlign: align,
         ),
@@ -408,9 +440,9 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
     final theme = Theme.of(context);
     final bg = theme.scaffoldBackgroundColor;
     final containerAspect = size.width / height;
-    final artPaths = widget.collection.heroArtCandidates(containerAspectRatio: containerAspect);
+    final artPaths = _collection.heroArtCandidates(containerAspectRatio: containerAspect);
     final usePoster = artPaths.isEmpty;
-    final paths = usePoster ? [?widget.collection.thumbPath] : artPaths;
+    final paths = usePoster ? [?_collection.thumbPath] : artPaths;
     if (paths.isEmpty) return const SizedBox.shrink();
 
     // A poster standing in for a missing backdrop only reads behind a heavy
@@ -422,8 +454,8 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
     Widget art = flattenPoster
         ? ColoredBox(color: theme.colorScheme.surfaceContainerHighest)
         : CyclingMediaBackdrop(
-            mediaKey: widget.collection.globalKey,
-            imagePaths: usePoster ? paths : widget.collection.heroRotationPaths(containerAspectRatio: containerAspect),
+            mediaKey: _collection.globalKey,
+            imagePaths: usePoster ? paths : _collection.heroRotationPaths(containerAspectRatio: containerAspect),
             fallbackImagePaths: paths,
             client: widget.isOffline ? null : mediaClient,
             localArtworkPathResolver: widget.isOffline ? _offlineArtworkPath : null,
@@ -507,7 +539,7 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
             padding: EdgeInsets.only(top: statusBar),
             child: Center(
               child: Text(
-                widget.collection.displayTitle,
+                _collection.displayTitle,
                 style: theme.textTheme.titleLarge,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -550,7 +582,7 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
               itemAt: (index) => loadedItems[index],
               onRefresh: updateItem,
               onSkeletonVisible: (index) => ensureIndexLoaded(index, pageSize: _pageSize),
-              collectionId: widget.isOffline ? null : widget.collection.id,
+              collectionId: widget.isOffline ? null : _collection.id,
               onListRefresh: loadItems,
               isOffline: widget.isOffline,
               shape: _isMusic ? CardShape.square : null,

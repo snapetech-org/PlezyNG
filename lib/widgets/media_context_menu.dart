@@ -515,7 +515,10 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     final itemServerOnline =
         _itemServerId != null && multiServerProvider.serverManager.isClientOnline(ServerId(_itemServerId!));
     final canRemoveFromContinueWatching = mediaClient?.capabilities.continueWatchingRemoval ?? false;
-    final canEditMetadata = isAdmin && supportsMetadataEdit(mediaClient, mediaKind);
+    final canEditMetadata =
+        isAdmin &&
+        (mediaKind != MediaKind.collection || collectionScope?.current == true) &&
+        supportsMetadataEdit(mediaClient, mediaKind);
 
     // Watchlist (movies and shows), backed by the connected catalog sources
     // (Trakt, Plex, MAL, ...). Whether THIS item resolves in a source needs
@@ -668,7 +671,10 @@ class MediaContextMenuState extends State<MediaContextMenu> {
           hasAnyDownload: false,
           downloadValue: menu.isPlaylist ? 'download_playlist' : 'download_collection',
         ),
-      _MenuAction(value: 'delete', icon: Symbols.delete_rounded, label: t.common.delete, destructive: true),
+      if (menu.isPlaylist || menu.canManageCollections)
+        _MenuAction(value: 'delete', icon: Symbols.delete_rounded, label: t.common.delete, destructive: true),
+      if (menu.isCollection && menu.canEditMetadata)
+        _MenuAction(value: 'edit_metadata', icon: Symbols.edit_rounded, label: t.metadataEdit.editMetadata),
     ];
   }
 
@@ -935,7 +941,10 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         await _handleRemoveSyncRule(context);
         break;
       case 'delete':
-        await _handleDelete(context, menu.isCollection, menu.isPlaylist);
+        await _handleDelete(context, menu.isPlaylist, menu.collectionScope);
+        break;
+      case 'edit_metadata':
+        await _editCollectionMetadata(context, menu);
         break;
     }
   }
@@ -1014,7 +1023,11 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         break;
       case 'edit_metadata':
         outcome.didNavigate = true;
-        if (context.mounted) await _pushAndRefresh(context, mediaItem, MetadataEditScreen(metadata: mediaItem));
+        if (mediaItem.kind == MediaKind.collection) {
+          await _editCollectionMetadata(context, menu);
+        } else if (context.mounted) {
+          await _pushAndRefresh(context, mediaItem, MetadataEditScreen(metadata: mediaItem));
+        }
         break;
       case 'quick_tag':
         if (context.mounted) await _showQuickTagDialog(context, mediaItem);
@@ -1170,6 +1183,19 @@ class MediaContextMenuState extends State<MediaContextMenu> {
   }
 
   /// Push a full-screen editor for [item] and refresh its source once it pops.
+  Future<void> _editCollectionMetadata(BuildContext context, _MenuContext menu) async {
+    final scope = menu.collectionScope;
+    if (scope == null || !scope.current || !context.mounted) return;
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => MetadataEditScreen(metadata: scope.item, collectionScope: scope),
+      ),
+    );
+    if (!context.mounted || !scope.current) return;
+    _notifyRefresh(scope.item);
+    LibraryRefreshNotifier().notifyCollectionsChanged();
+  }
+
   Future<void> _pushAndRefresh(BuildContext context, MediaItem item, Widget screen) async {
     await Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
     _notifyRefresh(item);
@@ -1881,10 +1907,9 @@ class MediaContextMenuState extends State<MediaContextMenu> {
   }
 
   /// Handle delete action for collections and playlists
-  Future<void> _handleDelete(BuildContext context, bool _, bool isPlaylist) async {
-    final client = _getMediaClientForItem();
-
+  Future<void> _handleDelete(BuildContext context, bool isPlaylist, MediaCollectionWriteScope? scope) async {
     if (isPlaylist) {
+      final client = _getMediaClientForItem();
       await deletePlaylistWithConfirm(
         context,
         client: client,
@@ -1895,16 +1920,18 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       return;
     }
 
+    if (scope?.current != true) return;
+    final client = scope!.client;
     final confirmed = await showDeleteConfirmation(
       context,
       title: t.collections.deleteCollection,
-      message: t.collections.deleteConfirm(title: _itemDisplayTitle()),
+      message: t.collections.deleteConfirm(title: scope.item.displayTitle),
     );
-    if (!confirmed || !context.mounted) return;
+    if (!confirmed || !context.mounted || !scope.current) return;
 
     try {
-      final success = await client.deleteCollection(_mediaItem!);
-      if (context.mounted) {
+      final success = await client.deleteCollection(scope.item);
+      if (context.mounted && scope.current) {
         if (success) {
           showSuccessSnackBar(context, t.collections.deleted);
           _notifyListRefresh();
@@ -1914,7 +1941,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       }
     } catch (e) {
       appLogger.e('Failed to delete collection', error: e);
-      if (context.mounted) {
+      if (context.mounted && scope.current) {
         showErrorSnackBar(context, t.collections.deleteFailedWithError(error: localizedErrorReason(e)));
       }
     }

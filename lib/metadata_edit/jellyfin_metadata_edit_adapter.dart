@@ -16,7 +16,11 @@ class JellyfinMetadataEditAdapter extends MetadataEditAdapter {
 
   @override
   bool supportsKind(MediaKind kind) =>
-      kind == MediaKind.movie || kind == MediaKind.show || kind == MediaKind.season || kind == MediaKind.episode;
+      kind == MediaKind.movie ||
+      kind == MediaKind.show ||
+      kind == MediaKind.season ||
+      kind == MediaKind.episode ||
+      kind == MediaKind.collection;
 
   @override
   Future<MetadataEditDraft> load(MediaItem item) async {
@@ -47,6 +51,10 @@ class JellyfinMetadataEditAdapter extends MetadataEditAdapter {
 
   @override
   Future<bool> save(MetadataEditDraft draft) async {
+    if (draft.sourceItem.kind == MediaKind.collection && draft.fieldChanged('title')) {
+      final title = draft.value<String>('title')?.trim() ?? '';
+      if (title.isEmpty || title.runes.length > 255) return false;
+    }
     final raw = draft.extras['raw'];
     if (raw is! Map<String, dynamic>) return false;
     final dto = Map<String, dynamic>.from(raw);

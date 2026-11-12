@@ -172,6 +172,13 @@ List<MetadataEditField> metadataBasicFields(
   MediaKind kind, {
   MetadataEditFieldType studioType = MetadataEditFieldType.text,
 }) {
+  if (kind == MediaKind.collection) {
+    return [
+      MetadataEditField(id: 'title', label: t.metadataEdit.title, type: MetadataEditFieldType.text),
+      MetadataEditField(id: 'titleSort', label: t.metadataEdit.sortTitle, type: MetadataEditFieldType.text),
+      MetadataEditField(id: 'summary', label: t.metadataEdit.summary, type: MetadataEditFieldType.multilineText),
+    ];
+  }
   return [
     MetadataEditField(id: 'title', label: t.metadataEdit.title, type: MetadataEditFieldType.text),
     if (kind != MediaKind.season)
@@ -203,6 +210,7 @@ List<MetadataEditField> metadataArtworkFields(
   required String logoKey,
   String? squareKey,
   Set<MediaKind> logoKinds = const {MediaKind.movie, MediaKind.show},
+  bool squarePoster = false,
 }) {
   final fields = <MetadataEditField>[
     // Episode "posters" are 16:9 thumbnails, not 2:3 poster art.
@@ -217,9 +225,17 @@ List<MetadataEditField> metadataArtworkFields(
             16 / 9,
             imageType: ImageType.thumb,
           )
-        : metadataArtworkField(posterKey, t.metadataEdit.poster, t.metadataEdit.selectPoster, 40, 60, 3, 2 / 3),
+        : metadataArtworkField(
+            posterKey,
+            t.metadataEdit.poster,
+            t.metadataEdit.selectPoster,
+            squarePoster ? 60 : 40,
+            60,
+            3,
+            squarePoster ? 1 : 2 / 3,
+          ),
   ];
-  if (kind == MediaKind.movie || kind == MediaKind.show || kind == MediaKind.episode) {
+  if (kind == MediaKind.movie || kind == MediaKind.show || kind == MediaKind.episode || kind == MediaKind.collection) {
     fields.add(
       metadataArtworkField(
         backdropKey,

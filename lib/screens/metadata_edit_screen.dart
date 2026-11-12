@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
 import '../media/ids.dart';
+import '../media/media_kind.dart';
+import '../providers/multi_server_provider.dart';
+import '../providers/hidden_libraries_provider.dart';
+import '../utils/media_collection_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -31,8 +35,9 @@ import 'settings/settings_utils.dart';
 
 class MetadataEditScreen extends StatefulWidget {
   final MediaItem metadata;
+  final MediaCollectionWriteScope? collectionScope;
 
-  const MetadataEditScreen({super.key, required this.metadata});
+  const MetadataEditScreen({super.key, required this.metadata, this.collectionScope});
 
   @override
   State<MetadataEditScreen> createState() => _MetadataEditScreenState();
@@ -44,6 +49,12 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
   bool _isLoading = true;
   bool _isCommitting = false;
   int _loadGeneration = 0;
+  bool get _current =>
+      mounted &&
+      (widget.metadata.kind != MediaKind.collection ||
+          widget.collectionScope != null &&
+              widget.collectionScope!.current &&
+              widget.collectionScope!.item.globalKey == widget.metadata.globalKey);
 
   @override
   void initState() {
@@ -54,7 +65,10 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
   @override
   void didUpdateWidget(covariant MetadataEditScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_sameMedia(oldWidget.metadata, widget.metadata)) return;
+    if (_sameMedia(oldWidget.metadata, widget.metadata) &&
+        identical(oldWidget.collectionScope, widget.collectionScope)) {
+      return;
+    }
 
     _adapter = null;
     _draft = null;
@@ -65,11 +79,17 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
   Future<void> _loadMetadata() async {
     final generation = ++_loadGeneration;
     final metadata = widget.metadata;
+    if (!_current) {
+      _isLoading = false;
+      return;
+    }
     try {
-      final client = context.getMediaClientWithFallback(serverIdOrNull(metadata.serverId));
+      final client = widget.metadata.kind == MediaKind.collection
+          ? widget.collectionScope!.client
+          : context.getMediaClientWithFallback(serverIdOrNull(metadata.serverId));
       final adapter = metadataEditAdapterFor(client);
       if (adapter == null || !adapter.supportsKind(metadata.kind)) {
-        if (!mounted || generation != _loadGeneration || !_sameMedia(widget.metadata, metadata)) return;
+        if (!mounted || !_current || generation != _loadGeneration || !_sameMedia(widget.metadata, metadata)) return;
         setState(() {
           _adapter = adapter;
           _isLoading = false;
@@ -77,7 +97,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
         return;
       }
       final draft = await adapter.load(metadata);
-      if (!mounted || generation != _loadGeneration || !_sameMedia(widget.metadata, metadata)) return;
+      if (!mounted || !_current || generation != _loadGeneration || !_sameMedia(widget.metadata, metadata)) return;
       setState(() {
         _adapter = adapter;
         _draft = draft;
@@ -85,7 +105,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
       });
     } catch (e, st) {
       appLogger.e('Failed to load metadata editor', error: e, stackTrace: st);
-      if (!mounted || generation != _loadGeneration || !_sameMedia(widget.metadata, metadata)) return;
+      if (!mounted || !_current || generation != _loadGeneration || !_sameMedia(widget.metadata, metadata)) return;
       setState(() => _isLoading = false);
       showErrorSnackBar(context, t.metadataEdit.metadataUpdateFailed);
     }
@@ -101,7 +121,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
     final adapter = _adapter;
     final draft = _draft;
     final metadata = widget.metadata;
-    if (adapter == null || draft == null || !_hasChanges || _isCommitting) return;
+    if (!_current || adapter == null || draft == null || !_hasChanges || _isCommitting) return;
 
     setState(() => _isCommitting = true);
     // Snapshot newly added values per stringList field before save() runs
@@ -127,7 +147,12 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
       appLogger.e('Failed to update metadata', error: e, stackTrace: st);
     }
 
-    if (success && addedByField.isNotEmpty && profileId != null && profileId.isNotEmpty && serverId != null) {
+    if (_current &&
+        success &&
+        addedByField.isNotEmpty &&
+        profileId != null &&
+        profileId.isNotEmpty &&
+        serverId != null) {
       for (final entry in addedByField.entries) {
         unawaited(
           RecentTagsService.addRecentTags(entry.value, profileId: profileId, serverId: serverId, fieldId: entry.key),
@@ -136,7 +161,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
     }
 
     if (!mounted) return;
-    final ownsCompletion = identical(_draft, draft) && _sameMedia(widget.metadata, metadata);
+    final ownsCompletion = _current && identical(_draft, draft) && _sameMedia(widget.metadata, metadata);
     setState(() => _isCommitting = false);
     if (!ownsCompletion) return;
 
@@ -150,7 +175,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
 
   Future<void> _editTextField(MetadataEditField field, {bool multiline = false}) async {
     final draft = _draft;
-    if (draft == null || _isCommitting) return;
+    if (!_current || draft == null || _isCommitting) return;
     final currentValue = draft.value<String>(field.id) ?? '';
     final result = await showTextInputDialog(
       context,
@@ -161,14 +186,14 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
       multiline: multiline,
     );
 
-    if (result != null && mounted && !_isCommitting && identical(_draft, draft)) {
+    if (result != null && _current && !_isCommitting && identical(_draft, draft)) {
       setState(() => draft.setValue(field.id, result));
     }
   }
 
   Future<void> _editDate(MetadataEditField field) async {
     final draft = _draft;
-    if (draft == null || _isCommitting) return;
+    if (!_current || draft == null || _isCommitting) return;
     DateTime initial = DateTime.now();
     final current = draft.value<String>(field.id);
     if (current != null && current.isNotEmpty) {
@@ -184,7 +209,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
       useRootNavigator: false,
     );
 
-    if (picked != null && mounted && !_isCommitting && identical(_draft, draft)) {
+    if (picked != null && _current && !_isCommitting && identical(_draft, draft)) {
       setState(() {
         draft.setValue(field.id, '${picked.year}-${padNumber(picked.month, 2)}-${padNumber(picked.day, 2)}');
       });
@@ -194,7 +219,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
   Future<void> _editStringList(MetadataEditField field) async {
     final adapter = _adapter;
     final draft = _draft;
-    if (adapter == null || draft == null || _isCommitting) return;
+    if (!_current || adapter == null || draft == null || _isCommitting) return;
     final profileId = context.read<ActiveProfileProvider>().activeId;
     final serverId = widget.metadata.serverId;
     final recent = (profileId == null || profileId.isEmpty || serverId == null)
@@ -218,7 +243,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
         suggestionsFuture: suggestionsFuture,
       ),
     );
-    if (result != null && mounted && !_isCommitting && identical(_draft, draft)) {
+    if (result != null && _current && !_isCommitting && identical(_draft, draft)) {
       setState(() => draft.setValue(field.id, result));
     }
   }
@@ -226,7 +251,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
   Future<void> _editChoice(MetadataEditField field) async {
     final adapter = _adapter;
     final draft = _draft;
-    if (adapter == null || draft == null || _isCommitting) return;
+    if (!_current || adapter == null || draft == null || _isCommitting) return;
     final current = draft.value<String>(field.id) ?? '';
     final picked = await showSelectionDialog<String>(
       context: context,
@@ -235,7 +260,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
       currentValue: current,
     );
 
-    if (picked == null || !mounted || _isCommitting || !identical(_draft, draft)) return;
+    if (picked == null || !_current || _isCommitting || !identical(_draft, draft)) return;
     final result = picked.value;
     if (field.saveMode == MetadataEditSaveMode.immediate) {
       final metadata = widget.metadata;
@@ -251,7 +276,7 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
         appLogger.e('Failed to update metadata field', error: e, stackTrace: st);
       }
       if (!mounted) return;
-      final ownsCompletion = identical(_draft, draft) && _sameMedia(widget.metadata, metadata);
+      final ownsCompletion = _current && identical(_draft, draft) && _sameMedia(widget.metadata, metadata);
       setState(() {
         _isCommitting = false;
         if (!success && ownsCompletion && metadataEditValueEquals(draft.values[field.id], result)) {
@@ -268,13 +293,18 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
   Future<void> _openArtworkPicker(MetadataEditField field) async {
     final adapter = _adapter;
     final draft = _draft;
-    if (adapter == null || draft == null || _isCommitting) return;
+    if (!_current || adapter == null || draft == null || _isCommitting) return;
     final result = await showScopedDialog<bool>(
       context: context,
-      builder: (context) => ArtworkPickerDialog(adapter: adapter, draft: draft, field: field),
+      builder: (context) => ArtworkPickerDialog(
+        adapter: adapter,
+        draft: draft,
+        field: field,
+        isCurrent: () => _current && identical(_draft, draft),
+      ),
     );
 
-    if (result == true && mounted && !_isCommitting && identical(_draft, draft)) {
+    if (result == true && _current && !_isCommitting && identical(_draft, draft)) {
       await _reloadArtwork();
     }
   }
@@ -282,11 +312,11 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
   Future<void> _reloadArtwork() async {
     final adapter = _adapter;
     final draft = _draft;
-    if (adapter == null || draft == null) return;
+    if (!_current || adapter == null || draft == null) return;
     try {
       final item = await adapter.reloadItem(draft);
       if (!mounted) return;
-      if (item != null) {
+      if (_current && identical(_draft, draft) && item != null && item.globalKey == widget.metadata.globalKey) {
         setState(() => adapter.syncReloadedItem(draft, item));
       }
     } catch (_) {
@@ -296,6 +326,17 @@ class _MetadataEditScreenState extends State<MetadataEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.metadata.kind == MediaKind.collection) {
+      context.watch<ActiveProfileProvider?>();
+      context.watch<MultiServerProvider?>();
+      context.watch<HiddenLibrariesProvider?>();
+      if (!_current) {
+        return FocusedScrollScaffold(
+          title: Text(t.metadataEdit.screenTitle),
+          slivers: [SliverFillRemaining(child: Center(child: Text(t.metadataEdit.metadataUpdateFailed)))],
+        );
+      }
+    }
     if (_isLoading) {
       return FocusedScrollScaffold(title: Text(t.metadataEdit.screenTitle), slivers: [LoadingIndicatorBox.sliver]);
     }
@@ -453,8 +494,15 @@ class ArtworkPickerDialog extends StatefulWidget {
   final MetadataEditAdapter adapter;
   final MetadataEditDraft draft;
   final MetadataEditField field;
+  final bool Function()? isCurrent;
 
-  const ArtworkPickerDialog({super.key, required this.adapter, required this.draft, required this.field});
+  const ArtworkPickerDialog({
+    super.key,
+    required this.adapter,
+    required this.draft,
+    required this.field,
+    this.isCurrent,
+  });
 
   @override
   State<ArtworkPickerDialog> createState() => _ArtworkPickerDialogState();
@@ -464,6 +512,7 @@ class _ArtworkPickerDialogState extends State<ArtworkPickerDialog> {
   List<MetadataArtworkOption>? _artworkList;
   bool _isLoading = true;
   bool _isApplying = false;
+  bool get _current => mounted && (widget.isCurrent?.call() ?? true);
 
   MetadataArtworkConfig get _config => widget.field.artwork!;
 
@@ -474,16 +523,17 @@ class _ArtworkPickerDialogState extends State<ArtworkPickerDialog> {
   }
 
   Future<void> _loadArtwork() async {
+    if (!_current) return;
     try {
       final artwork = await widget.adapter.fetchArtwork(widget.draft, widget.field);
-      if (!mounted) return;
+      if (!_current) return;
       setState(() {
         _artworkList = artwork;
         _isLoading = false;
       });
     } catch (e, st) {
       appLogger.e('Failed to load artwork', error: e, stackTrace: st);
-      if (!mounted) return;
+      if (!_current) return;
       setState(() {
         _artworkList = const [];
         _isLoading = false;
@@ -492,11 +542,12 @@ class _ArtworkPickerDialogState extends State<ArtworkPickerDialog> {
   }
 
   Future<void> _selectArtwork(MetadataArtworkOption artwork) async {
-    if (_isApplying) return;
+    if (!_current || _isApplying) return;
     await _runArtworkUpdate(() => widget.adapter.applyArtworkOption(widget.draft, widget.field, artwork));
   }
 
   Future<void> _addFromUrl() async {
+    if (!_current || _isApplying) return;
     final url = await showTextInputDialog(
       context,
       title: t.metadataEdit.fromUrl,
@@ -504,13 +555,14 @@ class _ArtworkPickerDialogState extends State<ArtworkPickerDialog> {
       hintText: t.metadataEdit.enterImageUrl,
     );
 
-    if (url == null || url.isEmpty || !mounted) return;
+    if (url == null || url.isEmpty || !_current) return;
     await _runArtworkUpdate(() => widget.adapter.applyArtworkFromUrl(widget.draft, widget.field, url));
   }
 
   Future<void> _uploadFile() async {
+    if (!_current || _isApplying) return;
     final result = await FilePickerService.instance.pickFiles(type: FileType.image, withData: true);
-    if (result == null || result.files.isEmpty || !mounted) return;
+    if (result == null || result.files.isEmpty || !_current) return;
     final file = result.files.first;
     final bytes = file.bytes;
     if (bytes == null) return;
@@ -518,7 +570,7 @@ class _ArtworkPickerDialogState extends State<ArtworkPickerDialog> {
   }
 
   Future<void> _runArtworkUpdate(Future<bool> Function() action) async {
-    if (_isApplying) return;
+    if (!_current || _isApplying) return;
     setState(() => _isApplying = true);
     bool success = false;
     try {
@@ -528,6 +580,7 @@ class _ArtworkPickerDialogState extends State<ArtworkPickerDialog> {
     }
     if (!mounted) return;
     setState(() => _isApplying = false);
+    if (!_current) return;
     if (success) {
       showSuccessSnackBar(context, t.metadataEdit.artworkUpdated);
       Navigator.pop(context, true);

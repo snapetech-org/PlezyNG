@@ -13,6 +13,7 @@ import 'package:plezy/focus/focusable_wrapper.dart';
 import 'package:plezy/focus/input_mode_tracker.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/media/ids.dart';
+import 'package:plezy/utils/media_collection_actions.dart';
 import 'package:plezy/media/media_backend.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
@@ -40,6 +41,82 @@ import '../test_helpers/profile_stack.dart';
 void main() {
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
+  });
+
+  testWidgets('music collection editor saves only supported presentation fields as type 18', (tester) async {
+    final requests = _PlexMetadataRequests()..isCollection = true;
+    final harness = await _pumpEditor(tester, requests);
+    addTearDown(harness.dispose);
+    expect(find.text('Advanced Settings'), findsNothing);
+    expect(find.text('Release Date'), findsNothing);
+    expect(find.text('Content Rating'), findsNothing);
+    await _editTitle(tester, 'New collection');
+    await tester.tap(find.byTooltip('Save'));
+    await tester.pumpAndSettle();
+    expect(requests.metadataUpdateCalls, 1);
+    final payload = requests.metadataUpdatePayloads.single;
+    expect(payload['type'], '18');
+    expect(payload['id'], 'show-1');
+    expect(payload['title.value'], 'New collection');
+    expect(payload.containsKey('summary.value'), isFalse);
+  });
+
+  testWidgets('collection save does not write through an expired account scope', (tester) async {
+    var current = true;
+    final requests = _PlexMetadataRequests()..isCollection = true;
+    final harness = await _pumpEditor(tester, requests, isCurrent: () => current);
+    addTearDown(harness.dispose);
+    await _editTitle(tester, 'New collection');
+    current = false;
+    await tester.tap(find.byTooltip('Save'));
+    await tester.pumpAndSettle();
+    expect(requests.metadataUpdateCalls, 0);
+  });
+
+  testWidgets('collection scope changing while title input is open rejects the returned edit', (tester) async {
+    var current = true;
+    final requests = _PlexMetadataRequests()..isCollection = true;
+    final harness = await _pumpEditor(tester, requests, isCurrent: () => current);
+    addTearDown(harness.dispose);
+    await tester.tap(_fieldTile('Title'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'New account title');
+    current = false;
+    await tester.tap(find.widgetWithText(DialogActionButton, 'Save'));
+    await tester.pumpAndSettle();
+    expect(_tileText('Title', 'New account title'), findsNothing);
+    expect(requests.metadataUpdateCalls, 0);
+  });
+
+  testWidgets('artwork URL decision cannot write after its original scope expires', (tester) async {
+    var current = true;
+    final adapter = _ArtworkAdapter(), result = _DialogResult();
+    await _pumpArtworkDialog(tester, adapter, result, isCurrent: () => current);
+    await tester.tap(find.text('From URL'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'https://images.example.com/poster.jpg');
+    current = false;
+    await tester.tap(find.widgetWithText(DialogActionButton, 'Save'));
+    await tester.pumpAndSettle();
+    expect(adapter.urlCalls, 0);
+    expect(result.completions, 0);
+  });
+
+  testWidgets('stale artwork acknowledgement cannot pop a replacement account route', (tester) async {
+    var current = true;
+    final completion = Completer<bool>();
+    final adapter = _ArtworkAdapter()..applyResult = completion.future;
+    final result = _DialogResult();
+    await _pumpArtworkDialog(tester, adapter, result, isCurrent: () => current);
+    await tester.tap(_artworkOption());
+    await tester.pump();
+    expect(adapter.applyCalls, 1);
+    current = false;
+    completion.complete(true);
+    await tester.pumpAndSettle();
+    expect(result.completions, 0);
+    expect(find.byType(ArtworkPickerDialog), findsOneWidget);
+    expect(find.text('Artwork updated'), findsNothing);
   });
 
   testWidgets('immediate choices serialize commits and block edits and route dismissal', (tester) async {
@@ -384,7 +461,11 @@ Future<void> _editTitle(WidgetTester tester, String title) async {
   expect(_tileText('Title', title), findsOneWidget);
 }
 
-Future<_EditorHarness> _pumpEditor(WidgetTester tester, _PlexMetadataRequests requests) async {
+Future<_EditorHarness> _pumpEditor(
+  WidgetTester tester,
+  _PlexMetadataRequests requests, {
+  bool Function()? isCurrent,
+}) async {
   tester.view.physicalSize = const Size(1280, 720);
   tester.view.devicePixelRatio = 1;
 
@@ -394,7 +475,14 @@ Future<_EditorHarness> _pumpEditor(WidgetTester tester, _PlexMetadataRequests re
   final manager = MultiServerManager()..debugRegisterClientForTesting(client);
   final provider = testMultiServerProvider(manager);
   final stack = await ProfileStack.create(db: database, withStorage: false);
-  final metadata = ValueNotifier<MediaItem>(_show());
+  final metadata = ValueNotifier<MediaItem>(
+    requests.isCollection
+        ? testMediaItem(id: 'show-1', kind: MediaKind.collection, serverId: 'server-1', libraryId: '1')
+        : _show(),
+  );
+  final scope = requests.isCollection
+      ? MediaCollectionWriteScope(client: client, item: metadata.value, authorized: isCurrent ?? () => true)
+      : null;
 
   await tester.pumpWidget(
     InputModeTracker(
@@ -415,7 +503,7 @@ Future<_EditorHarness> _pumpEditor(WidgetTester tester, _PlexMetadataRequests re
                         MaterialPageRoute<void>(
                           builder: (_) => ValueListenableBuilder<MediaItem>(
                             valueListenable: metadata,
-                            builder: (context, item, _) => MetadataEditScreen(metadata: item),
+                            builder: (context, item, _) => MetadataEditScreen(metadata: item, collectionScope: scope),
                           ),
                         ),
                       );
@@ -486,6 +574,8 @@ class _EditorHarness {
 }
 
 class _PlexMetadataRequests {
+  bool isCollection = false;
+  final List<Map<String, String>> metadataUpdatePayloads = [];
   final serverPreferences = <String, Object>{
     'episodeSort': '-1',
     'autoDeletionItemPolicyUnwatchedLibrary': '0',
@@ -540,7 +630,8 @@ class _PlexMetadataRequests {
           'Metadata': [
             {
               'ratingKey': id,
-              'type': 'show',
+              'type': isCollection ? 'collection' : 'show',
+              if (isCollection) 'subtype': 'album',
               'title': title,
               'originalTitle': 'Original $title',
               'summary': 'Summary',
@@ -612,6 +703,7 @@ class _PlexMetadataRequests {
     }
 
     if (request.method == 'PUT' && path == '/library/sections/1/all') {
+      metadataUpdatePayloads.add(Map.of(request.url.queryParameters));
       metadataUpdateCalls++;
       return _metadataResponses.isEmpty ? _ok() : await _metadataResponses.removeFirst();
     }
@@ -620,7 +712,12 @@ class _PlexMetadataRequests {
   }
 }
 
-Future<void> _pumpArtworkDialog(WidgetTester tester, _ArtworkAdapter adapter, _DialogResult result) async {
+Future<void> _pumpArtworkDialog(
+  WidgetTester tester,
+  _ArtworkAdapter adapter,
+  _DialogResult result, {
+  bool Function()? isCurrent,
+}) async {
   tester.view.physicalSize = const Size(900, 700);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
@@ -637,7 +734,12 @@ Future<void> _pumpArtworkDialog(WidgetTester tester, _ArtworkAdapter adapter, _D
                 onPressed: () async {
                   final value = await showDialog<bool>(
                     context: context,
-                    builder: (_) => ArtworkPickerDialog(adapter: adapter, draft: adapter.draft, field: adapter.field),
+                    builder: (_) => ArtworkPickerDialog(
+                      adapter: adapter,
+                      draft: adapter.draft,
+                      field: adapter.field,
+                      isCurrent: isCurrent,
+                    ),
                   );
                   result.value = value;
                   result.completions++;
@@ -685,6 +787,7 @@ class _ArtworkAdapter extends MetadataEditAdapter {
   Future<bool> uploadResult = Future.value(true);
   int applyCalls = 0;
   int uploadCalls = 0;
+  int urlCalls = 0;
 
   @override
   MediaServerClient get mediaClient => _client;
@@ -713,7 +816,10 @@ class _ArtworkAdapter extends MetadataEditAdapter {
   }
 
   @override
-  Future<bool> applyArtworkFromUrl(MetadataEditDraft draft, MetadataEditField field, String url) async => true;
+  Future<bool> applyArtworkFromUrl(MetadataEditDraft draft, MetadataEditField field, String url) async {
+    urlCalls++;
+    return true;
+  }
 
   @override
   Future<bool> uploadArtwork(MetadataEditDraft draft, MetadataEditField field, List<int> bytes, {String? fileName}) {

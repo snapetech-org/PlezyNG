@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/focus/focusable_action_bar.dart';
@@ -35,12 +37,13 @@ MediaItem _track(String id, String title) => testMediaItem(
 );
 
 class _FakeQueueService extends StubMusicPlaybackService {
-  final _queue = MusicQueueController();
+  final MusicQueueController _queue;
   final List<int> jumps = [], removals = [];
   final List<(int, int)> moves = [];
   int _session = 0;
 
-  _FakeQueueService(List<MediaItem> tracks, {int start = 1}) {
+  _FakeQueueService(List<MediaItem> tracks, {int start = 1, Directory? scratch})
+    : _queue = MusicQueueController(spillLargeQueues: scratch != null, queueScratchDirectory: scratch) {
     _queue.load(tracks, startIndex: start);
   }
 
@@ -87,6 +90,12 @@ class _FakeQueueService extends StubMusicPlaybackService {
   void clearUpcoming() {
     _queue.clearUpcoming();
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _queue.clear();
+    super.dispose();
   }
 
   void replace(List<MediaItem> tracks) {
@@ -277,6 +286,39 @@ void main() {
     await tester.tap(find.text(t.music.upNext));
     await tester.pump();
     expect(find.text('Gamma'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets('spilled metadata eviction preserves visible duplicate keys and retires old edits', (tester) async {
+    final parent = Directory('.dart_tool/queue-spool-tests')..createSync(recursive: true);
+    final root = parent.createTempSync('ui-');
+    addTearDown(() => root.deleteSync(recursive: true));
+    final repeated = _track('repeat', 'Repeat');
+    final service = _FakeQueueService(
+      [_track('first', 'First'), repeated, repeated, for (var i = 3; i < 600; i++) _track('$i', 'Track $i')],
+      start: 0,
+      scratch: root,
+    );
+    await draw(tester, service);
+    final before = tester.widgetList<Dismissible>(find.byType(Dismissible)).map((widget) => widget.key).toList();
+    service._queue.trimDecodedMetadata();
+    service.notifyListeners();
+    await tester.pump();
+    final after = tester.widgetList<Dismissible>(find.byType(Dismissible)).map((widget) => widget.key).toList();
+    expect(after, before);
+    expect(find.byType(TrackRow).evaluate().length, lessThan(40));
+    final stale = tester.widgetList<TrackRow>(find.byType(TrackRow)).elementAt(1);
+    service.reorder(1, 2);
+    stale.onTrailingTap?.call();
+    expect(service.removals, isEmpty);
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text(t.music.upNext));
+    await tester.pump();
+    await tester.drag(find.byType(Dismissible).first, const Offset(-600, 0));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(service.removals, [1]);
+    expect(service.queue.length, 599);
     expect(tester.takeException(), isNull);
   });
 }

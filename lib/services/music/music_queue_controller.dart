@@ -1,7 +1,10 @@
 import 'dart:math';
+import 'dart:collection';
+import 'dart:io';
 
 import '../../media/media_item.dart';
 import 'music_playback_service.dart';
+import 'music_queue_items.dart';
 
 /// Immutable copy of the queue's full state, for session persistence (#2148).
 /// [order] indexes into [items] (canonical order); [cursor] indexes [order].
@@ -19,9 +22,22 @@ class MusicQueueState {
     required this.shuffled,
     required this.repeatMode,
   });
+
+  /// Validate the shape without decoding/copying the metadata payload.
+  bool get isValid {
+    final length = items.length;
+    if (length == 0 || order.length != length || cursor < 0 || cursor >= length) return false;
+    final seen = List<bool>.filled(length, false);
+    for (final index in order) {
+      if (index < 0 || index >= length || seen[index]) return false;
+      seen[index] = true;
+    }
+    return true;
+  }
 }
 
-/// Pure, deterministic queue state for the music session — no I/O, no player.
+/// Queue state for the music session, independent of the audio player.
+/// Small/test queues stay in memory; production can spool large metadata.
 ///
 /// Holds the canonical track list ([_items], insertion order) plus a playback
 /// order ([_order], indexes into the canonical list; the identity permutation
@@ -32,13 +48,15 @@ class MusicQueueState {
 /// The controller only mutates state; deciding what to do about it (open a
 /// new track, re-arm gapless, stop) is the service's job.
 class MusicQueueController {
-  MusicQueueController({Random? random}) : _random = random ?? Random();
+  MusicQueueController({Random? random, bool spillLargeQueues = false, Directory? queueScratchDirectory})
+    : _random = random ?? Random(),
+      _items = MusicQueueItems(spill: spillLargeQueues, scratchRoot: queueScratchDirectory);
 
   final Random _random;
 
   /// Canonical tracks in the order they were loaded/enqueued. Restored as
   /// the playback order when shuffle turns off.
-  final List<MediaItem> _items = [];
+  final MusicQueueItems _items;
 
   /// Playback order: indexes into [_items]. Identity when unshuffled.
   List<int> _order = [];
@@ -59,7 +77,7 @@ class MusicQueueController {
   MediaItem? get current => trackAt(_cursor);
 
   /// Full queue in playback order (what the UI renders).
-  List<MediaItem> get queue => _queueSnapshot ??= List.unmodifiable([for (final i in _order) _items[i]]);
+  List<MediaItem> get queue => _queueSnapshot ??= MusicQueueView._(_items.snapshot(), List.unmodifiable(_order));
 
   MediaItem? trackAt(int queueIndex) =>
       queueIndex >= 0 && queueIndex < _order.length ? _items[_order[queueIndex]] : null;
@@ -98,7 +116,7 @@ class MusicQueueController {
   /// shuffle permutation the public [queue] getter flattens away, so a
   /// restored session can still un-shuffle back to the original order.
   MusicQueueState captureState() => MusicQueueState(
-    items: List.of(_items),
+    items: _items.snapshot(),
     order: List.of(_order),
     cursor: _cursor,
     shuffled: _shuffled,
@@ -110,18 +128,9 @@ class MusicQueueController {
   /// items, cursor out of range) — a corrupt snapshot must not produce a
   /// half-valid session.
   bool restoreState(MusicQueueState state) {
-    final length = state.items.length;
-    if (length == 0 || state.order.length != length) return false;
-    if (state.cursor < 0 || state.cursor >= length) return false;
-    final seen = List<bool>.filled(length, false);
-    for (final index in state.order) {
-      if (index < 0 || index >= length || seen[index]) return false;
-      seen[index] = true;
-    }
+    if (!state.isValid) return false;
     _queueSnapshot = null;
-    _items
-      ..clear()
-      ..addAll(state.items);
+    _items.replaceWith(state.items);
     _order = List.of(state.order);
     _cursor = state.cursor;
     _shuffled = state.shuffled;
@@ -140,9 +149,7 @@ class MusicQueueController {
   /// shuffled playlist to its first track (#1811).
   void load(List<MediaItem> tracks, {int? startIndex, bool shuffle = false}) {
     _queueSnapshot = null;
-    _items
-      ..clear()
-      ..addAll(tracks);
+    _items.replaceWith(tracks);
     _order = List.generate(tracks.length, (i) => i);
     _shuffled = false;
     _cursor = tracks.isEmpty ? -1 : (startIndex ?? 0).clamp(0, tracks.length - 1);
@@ -153,6 +160,8 @@ class MusicQueueController {
       _shuffleAnchoringCurrent();
     }
   }
+
+  void trimDecodedMetadata() => _items.trimDecodedMetadata();
 
   void clear() {
     _queueSnapshot = null;
@@ -340,10 +349,27 @@ class MusicQueueController {
     for (var index = 0; index < _items.length; index++) {
       if (keep[index]) {
         remap[index] = length;
-        _items[length++] = _items[index];
+        length++;
       }
     }
-    _items.removeRange(length, _items.length);
+    _items.retainCanonical(retained.toSet());
     _order = [for (final index in retained) remap[index]];
   }
+}
+
+/// Immutable playback-order view. Occurrence keys never depend on decoded
+/// object identity, so metadata eviction cannot duplicate or resurrect a row.
+class MusicQueueView extends ListBase<MediaItem> {
+  MusicQueueView._(this._items, this._order);
+  final MusicQueueItemsSnapshot _items;
+  final List<int> _order;
+  Object occurrenceAt(int index) => _items.occurrenceAt(_order[index]);
+  @override
+  int get length => _order.length;
+  @override
+  MediaItem operator [](int index) => _items[_order[index]];
+  @override
+  set length(int value) => throw UnsupportedError('Immutable music queue');
+  @override
+  void operator []=(int index, MediaItem value) => throw UnsupportedError('Immutable music queue');
 }

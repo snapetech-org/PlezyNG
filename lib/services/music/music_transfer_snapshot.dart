@@ -189,5 +189,5 @@ class MusicTransferSnapshot {
             (item.durationMs == null ||
                 item.durationMs! >= 0 && item.durationMs! <= const Duration(hours: 24).inMilliseconds),
       ) &&
-      MusicQueueController().restoreState(queue);
+      queue.isValid;
 }

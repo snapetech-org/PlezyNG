@@ -1425,7 +1425,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
        // ignore: prefer_initializing_formals
        _overlapPlayerFactory = overlapPlayerFactory,
        _coordinator = PlaybackCoordinator.instance,
-       _queue = MusicQueueController(random: queueRandom),
+       _queue = MusicQueueController(random: queueRandom, spillLargeQueues: true),
        _volumePersistenceWriter = volumePersistenceWriter ?? _writePersistedVolume {
     _coordinator.registerMusicSession(stopAndDispose: _stopForVideoClaim);
     // tvOS has no background-audio session in v1, so it pauses on
@@ -4873,6 +4873,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   @override
+  void didHaveMemoryPressure() {
+    _queue.trimDecodedMetadata();
+  }
+
+  @override
   void dispose() {
     final nativeHost = _calderaHost;
     _calderaHost = null;
@@ -4913,6 +4918,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     unawaited(_errorsController.close());
     _loudnessProfileRequests.clear();
     _loadedLoudnessProfiles.clear();
+    _queue.clear();
     _volumeNotifier.dispose();
     super.dispose();
   }

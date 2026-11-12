@@ -10,6 +10,7 @@ import '../../focus/input_mode_tracker.dart';
 import '../../i18n/strings.g.dart';
 import '../../media/media_item.dart';
 import '../../services/music/music_playback_service.dart';
+import '../../services/music/music_queue_controller.dart';
 import '../../theme/mono_tokens.dart';
 import '../../utils/platform_detector.dart';
 import '../../widgets/app_icon.dart';
@@ -160,6 +161,12 @@ class _QueueListState extends State<QueueList> {
   void _reconcileRows(List<MediaItem> queue, int session) {
     if (_renderedSession == session && identical(_sourceQueue, queue)) return;
     _sourceQueue = queue;
+    if (queue is MusicQueueView) {
+      _renderedQueue = queue;
+      _rowKeys = [];
+      _renderedSession = session;
+      return;
+    }
     final available = HashMap<MediaItem, Queue<Object>>.identity();
     if (_renderedSession == session) {
       for (var i = 0; i < _renderedQueue.length; i++) {
@@ -179,6 +186,9 @@ class _QueueListState extends State<QueueList> {
   bool _matches(MusicPlaybackService service, List<MediaItem> expected, int session) {
     if (!mounted || service.queueSessionRevision != session) return false;
     final actual = service.queue;
+    if (actual is MusicQueueView || expected is MusicQueueView) {
+      return identical(actual, expected) && identical(_sourceQueue, expected);
+    }
     if (identical(actual, expected) && identical(_sourceQueue, expected)) return true;
     if (actual.length != expected.length || _renderedQueue.length != expected.length) return false;
     for (var i = 0; i < actual.length; i++) {
@@ -193,8 +203,10 @@ class _QueueListState extends State<QueueList> {
     // of identical objects must not keep a dismissed widget mounted.
     setState(() {
       _sourceQueue = null;
-      _renderedQueue.removeAt(index);
-      _rowKeys.removeAt(index);
+      if (_renderedQueue is! MusicQueueView) {
+        _renderedQueue.removeAt(index);
+        _rowKeys.removeAt(index);
+      }
     });
     service.removeAt(index);
   }
@@ -290,15 +302,18 @@ class _QueueListState extends State<QueueList> {
       onReorderItem: (oldIndex, newIndex) {
         if (oldIndex == newIndex || !_matches(service, queue, session)) return;
         final from = start + oldIndex, to = start + newIndex;
-        final item = _renderedQueue.removeAt(from), key = _rowKeys.removeAt(from);
-        _renderedQueue.insert(to, item);
-        _rowKeys.insert(to, key);
+        _sourceQueue = null;
+        if (_renderedQueue is! MusicQueueView) {
+          final item = _renderedQueue.removeAt(from), key = _rowKeys.removeAt(from);
+          _renderedQueue.insert(to, item);
+          _rowKeys.insert(to, key);
+        }
         service.reorder(from, to);
       },
       itemBuilder: (context, visibleIndex) {
         final index = start + visibleIndex;
         final item = queue[index];
-        final rowKey = _rowKeys[index];
+        final rowKey = queue is MusicQueueView ? queue.occurrenceAt(index) : _rowKeys[index];
         final isCurrent = index == currentIndex;
 
         Widget row = TrackRow(

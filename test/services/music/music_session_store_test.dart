@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,21 +8,27 @@ import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
+import 'package:plezy/services/music/music_queue_items.dart';
 import 'package:plezy/services/music/music_session_store.dart';
 import '../../test_helpers/media_items.dart';
 
 void main() {
   late AppDatabase db;
+  late Directory scratch;
 
   setUp(() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
+    final parent = Directory('.dart_tool/queue-spool-tests')..createSync(recursive: true);
+    scratch = parent.createTempSync('restore-');
   });
 
   tearDown(() async {
     await db.close();
+    scratch.deleteSync(recursive: true);
   });
 
-  MusicSessionStore store({String profileId = 'p1'}) => MusicSessionStore(database: db, profileId: profileId);
+  MusicSessionStore store({String profileId = 'p1'}) =>
+      MusicSessionStore(database: db, profileId: profileId, queueScratchDirectory: scratch);
 
   MediaItem track(String id) =>
       testMediaItem(id: id, kind: MediaKind.track, title: 'Track $id', serverId: 'srv', durationMs: 180000);
@@ -407,7 +414,9 @@ void main() {
       ),
     );
     final loaded = await session.load();
-    expect(loaded!.queue.items, hasLength(10000));
+    expect(loaded!.queue.items, isA<MusicQueueItemsSnapshot>());
+    expect(loaded.queue.items, hasLength(10000));
+    expect(scratch.listSync(), hasLength(1));
     expect(loaded.queue.order, order);
     expect(loaded.queue.cursor, 700);
     final controller = MusicQueueController();

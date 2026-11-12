@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:drift/drift.dart' show Variable;
 
@@ -10,6 +11,7 @@ import '../../media/media_kind.dart';
 import '../../utils/app_logger.dart';
 import 'music_playback_service.dart';
 import 'music_queue_controller.dart';
+import 'music_queue_items.dart';
 
 /// Everything needed to rebuild a parked music session on the next launch:
 /// the full queue state plus provenance and the playhead. Volume is excluded —
@@ -41,11 +43,12 @@ class MusicSessionSnapshot {
 /// the throttled position tick. Decoding is best-effort: any malformed row is
 /// discarded as a whole — restore must never produce a half-valid session.
 class MusicSessionStore {
-  MusicSessionStore({required AppDatabase database, required String profileId})
+  MusicSessionStore({required AppDatabase database, required String profileId, this.queueScratchDirectory})
     : _database = database,
       _profileId = profileId,
       _epoch = database.musicDataEpoch(profileId);
 
+  final Directory? queueScratchDirectory;
   final AppDatabase _database;
   final String _profileId;
   final int _epoch;
@@ -62,7 +65,7 @@ class MusicSessionStore {
   Future<void> save(MusicSessionSnapshot snapshot) => _writes.run(() async {
     if (!_active) return;
     final queue = snapshot.queue;
-    if (!MusicQueueController().restoreState(queue)) {
+    if (!queue.isValid) {
       throw ArgumentError('Invalid music queue snapshot');
     }
     await _database.transaction(() async {
@@ -195,9 +198,9 @@ class MusicSessionStore {
     return _database.transaction(() async {
       final row = await _database.getMusicSession(_profileId);
       if (row == null || !_active) return null;
+      final items = MusicQueueItems(spill: true, scratchRoot: queueScratchDirectory);
       try {
         final payload = jsonDecode(row.queueJson);
-        final items = <MediaItem>[];
         final order = <int>[];
         MediaItem? continuationSeed;
         String? continuationAccount;
@@ -253,13 +256,13 @@ class MusicSessionStore {
         if (repeatMode == null) return null;
         final contextKind = row.contextKind != null ? _contextKindFromId(row.contextKind!) : null;
         final queue = MusicQueueState(
-          items: items,
+          items: items.snapshot(),
           order: order,
           cursor: row.cursor,
           shuffled: row.shuffled,
           repeatMode: repeatMode,
         );
-        if (!MusicQueueController().restoreState(queue)) return null;
+        if (!queue.isValid) return null;
         if (!_active) return null;
         return MusicSessionSnapshot(
           queue: queue,
@@ -274,6 +277,8 @@ class MusicSessionStore {
       } catch (e, st) {
         appLogger.w('Discarding malformed persisted music session', error: e, stackTrace: st);
         return null;
+      } finally {
+        items.clear();
       }
     });
   }

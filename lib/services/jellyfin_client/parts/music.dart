@@ -60,6 +60,41 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
     return _mapItems(_itemsArray(response.data));
   }
 
+  @override
+  Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
+    String parentId, {
+    required MediaKind kind,
+    int? start,
+    int? size,
+    AbortController? abort,
+  }) async {
+    if (kind != MediaKind.album && kind != MediaKind.artist) {
+      throw ArgumentError.value(kind, 'kind', 'Expected an album or artist');
+    }
+    final offset = start ?? 0, pageSize = size ?? 200;
+    final response = await _http.get(
+      '/Items',
+      queryParameters: {
+        'userId': connection.userId,
+        if (kind == MediaKind.album) 'AlbumIds': parentId else 'AlbumArtistIds': parentId,
+        'IncludeItemTypes': 'Audio',
+        'Recursive': 'true',
+        'SortBy': kind == MediaKind.album
+            ? 'ParentIndexNumber,IndexNumber,SortName'
+            : 'Album,ParentIndexNumber,IndexNumber,SortName',
+        'SortOrder': 'Ascending',
+        'Fields': _musicTrackRowFields,
+        'StartIndex': offset.toString(),
+        'Limit': pageSize.toString(),
+        ..._excludeVirtualItemsQuery,
+        ...jellyfinImageQueryParameters,
+      },
+      abort: abort,
+    );
+    throwIfHttpError(response);
+    return _pagedItems(response.data, offset: offset, requestedSize: pageSize, map: _mapItems);
+  }
+
   /// Server-built radio seeded from a track/album/artist/playlist id.
   @override
   Future<List<MediaItem>> fetchInstantMix(String itemId, {int limit = 100}) async {

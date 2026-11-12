@@ -124,6 +124,23 @@ class ExperienceClient implements MediaServerClient, SonicMusicClient, ScopedMed
   @override
   Future<List<MediaItem>> fetchAlbumTracks(String id) async => albums[id] ?? [];
   @override
+  Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
+    String id, {
+    required MediaKind kind,
+    int? start,
+    int? size,
+    AbortController? abort,
+  }) async {
+    final tracks = kind == MediaKind.album ? await fetchAlbumTracks(id) : await fetchPlayableDescendants(id);
+    final offset = start ?? 0;
+    return LibraryPage(
+      items: tracks.skip(offset).take(size ?? 200).toList(),
+      totalCount: tracks.length,
+      offset: offset,
+    );
+  }
+
+  @override
   Future<LibraryPage<MediaItem>> fetchLibraryPagedContent(
     String libraryId, {
     required LibraryQuery query,

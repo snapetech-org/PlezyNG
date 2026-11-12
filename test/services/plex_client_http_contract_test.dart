@@ -38,6 +38,44 @@ void main() {
   PlexClient makeClient(Future<http.Response> Function(http.Request request) handler) =>
       testPlexClient(serverId: publicServerId, profileScopeId: defaultProfileScopeId, handler: handler);
 
+  for (final kind in [MediaKind.album, MediaKind.artist]) {
+    test('music page uses bounded correct Plex children for $kind', () async {
+      final requests = <Uri>[];
+      final client = makeClient((request) async {
+        requests.add(request.url);
+        return http.Response(
+          jsonEncode({
+            'MediaContainer': {
+              'size': 1,
+              'totalSize': 10000,
+              'Metadata': [
+                {
+                  'ratingKey': 't200',
+                  'type': 'track',
+                  'title': 'Track',
+                  'parentRatingKey': 'album',
+                  'librarySectionID': 7,
+                },
+              ],
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+      addTearDown(client.close);
+      final endpoint = kind == MediaKind.album ? 'children' : 'grandchildren';
+      final page = await client.fetchMusicTracksPage('parent', kind: kind, start: 200, size: 200);
+      expect(requests, hasLength(1));
+      expect(requests.single.path, '/library/metadata/parent/$endpoint');
+      expect(requests.single.queryParameters['X-Plex-Container-Start'], '200');
+      expect(requests.single.queryParameters['X-Plex-Container-Size'], '200');
+      expect(page.offset, 200);
+      expect(page.totalCount, 10000);
+      expect(page.items.single.kind, MediaKind.track);
+    });
+  }
+
   group('Plex item lookup HTTP/cache contract', () {
     const jsonHeaders = {'content-type': 'application/json'};
     final apis = [(name: 'fetchItem', includeOnDeck: false), (name: 'fetchItemWithOnDeck', includeOnDeck: true)];

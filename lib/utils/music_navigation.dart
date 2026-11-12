@@ -12,6 +12,7 @@ import '../screens/music/now_playing_screen.dart';
 import '../services/device_performance.dart';
 import '../services/music/music_playback_service.dart';
 import '../services/music/music_queue_items.dart';
+import '../services/music/music_tracks_loader.dart';
 import '../services/playlist_items_loader.dart';
 import '../services/playback_initialization_types.dart';
 import '../theme/mono_motion.dart';
@@ -277,12 +278,18 @@ Future<void> playTrackWithAlbumContext(BuildContext context, MediaItem track, {b
   final client = scope!.client;
   if (albumId != null && albumId.isNotEmpty && client != null) {
     try {
-      final tracks = await client.fetchAlbumTracks(albumId);
+      final tracks = await fetchMusicTracks(
+        client,
+        albumId,
+        kind: MediaKind.album,
+        current: current,
+        acceptsItem: (item) => scope.ownsAlbumTrack(item, albumId),
+      );
       if (!current()) return;
       final startIndex = tracks.indexWhere(
         (item) => item.globalKey == track.globalKey && item.backend == track.backend,
       );
-      if (startIndex != -1 && tracks.every((item) => scope.ownsAlbumTrack(item, albumId))) {
+      if (startIndex != -1) {
         if (!context.mounted) return;
         await playTracks(
           context,

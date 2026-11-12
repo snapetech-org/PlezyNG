@@ -10,8 +10,10 @@ import '../../media/artist_discography.dart';
 import '../../i18n/strings.g.dart';
 import '../../media/ids.dart';
 import '../../media/media_item.dart';
+import '../../media/media_kind.dart';
 import '../../mixins/grid_focus_node_mixin.dart';
 import '../../services/music/music_playback_service.dart';
+import '../../services/music/music_tracks_loader.dart';
 import '../../theme/mono_tokens.dart';
 import '../../utils/formatters.dart';
 import '../../utils/error_message_utils.dart';
@@ -91,7 +93,7 @@ class _ArtistDetailScreenState extends BaseMediaListDetailScreen<ArtistDetailScr
   }
 
   /// Plays the artist's full track list. The tracks aren't part of the album
-  /// listing this screen loads, so this costs one extra server round-trip.
+  /// listing this screen loads, so playback pages them from the same source.
   Future<void> _playAll({bool shuffle = false}) async {
     final client = mediaClient;
     MusicReadScope? scope;
@@ -103,12 +105,13 @@ class _ArtistDetailScreenState extends BaseMediaListDetailScreen<ArtistDetailScr
         preparing = false;
         if (!current()) return [];
         if (scope!.offline) return scope!.offlineTracks;
-        final tracks = await client.fetchPlayableDescendants(widget.artist.id);
-        if (!current()) return [];
-        if (!scope!.ownsTracks(tracks)) {
-          throw StateError('Artist tracks do not belong to the selected source');
-        }
-        return tracks;
+        return fetchMusicTracks(
+          client,
+          widget.artist.id,
+          kind: MediaKind.artist,
+          current: current,
+          acceptsItem: scope!.ownsTrack,
+        );
       },
       sourceCurrent: () => preparing || scope?.current == true,
       offline: client.isOfflineMode,

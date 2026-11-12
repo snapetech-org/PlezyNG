@@ -341,6 +341,16 @@ abstract class MediaServerClient {
   /// physical folder still resolve).
   Future<List<MediaItem>> fetchAlbumTracks(String albumId);
 
+  /// Bounded track admission for an album or artist. Results keep the backend's
+  /// album/disc ordering and music-credit semantics; never video descendants.
+  Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
+    String parentId, {
+    required MediaKind kind,
+    int? start,
+    int? size,
+    AbortController? abort,
+  });
+
   /// Server-built "instant mix" / radio track list seeded from [itemId]
   /// (track, album, artist, or playlist). Jellyfin:
   /// `/Items/{id}/InstantMix`; Plex: a station play queue

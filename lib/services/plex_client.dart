@@ -4016,6 +4016,21 @@ class PlexClient
   @override
   Future<List<MediaItem>> fetchAlbumTracks(String albumId) => fetchChildren(albumId);
 
+  @override
+  Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
+    String parentId, {
+    required MediaKind kind,
+    int? start,
+    int? size,
+    AbortController? abort,
+  }) {
+    return switch (kind) {
+      MediaKind.album => fetchChildrenPage(parentId, start: start, size: size, abort: abort),
+      MediaKind.artist => fetchPlayableDescendantsPage(parentId, start: start, size: size, abort: abort),
+      _ => throw ArgumentError.value(kind, 'kind', 'Expected an album or artist'),
+    };
+  }
+
   /// Plex "instant mix": a station play queue seeded from [itemId]. The
   /// station uri's trailing `?type=10` (track results) is part of the
   /// station path and rides inside the encoded uri value. Consumed as a

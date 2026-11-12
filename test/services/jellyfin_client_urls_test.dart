@@ -141,6 +141,38 @@ const _testIdentity = DeviceIdentity(platform: 'Test');
 /// URL-builder smoke tests. Without a live Jellyfin server, pin query keys and
 /// authentication parameters directly.
 void main() {
+  for (final emby in [false, true]) {
+    for (final kind in [MediaKind.album, MediaKind.artist]) {
+      test('music page preserves $kind credits and bounds (emby=$emby)', () async {
+        final requests = <Uri>[];
+        final client = JellyfinClient.forTesting(
+          connection: emby ? testEmbyConnection() : _conn(),
+          httpClient: MockClient((request) async {
+            requests.add(request.url);
+            return jsonResponse({
+              'Items': [
+                {'Id': 't', 'Name': 'Track', 'Type': 'Audio'},
+              ],
+              'TotalRecordCount': 10000,
+            });
+          }),
+        );
+        addTearDown(client.close);
+        final page = await client.fetchMusicTracksPage('parent', kind: kind, start: 200, size: 200);
+        final query = requests.single.queryParameters;
+        expect(query['IncludeItemTypes'], 'Audio');
+        expect(query[kind == MediaKind.album ? 'AlbumIds' : 'AlbumArtistIds'], 'parent');
+        expect(query.containsKey('ParentId'), isFalse);
+        expect(query['StartIndex'], '200');
+        expect(query['Limit'], '200');
+        expect(query['SortBy'], contains('ParentIndexNumber,IndexNumber'));
+        expect(page.offset, 200);
+        expect(page.totalCount, 10000);
+        expect(page.items.single.kind, MediaKind.track);
+      });
+    }
+  }
+
   // URL-builder tests never contact a real server. Any missing transport mock
   // must stay inside Flutter's HTTP-400 test override, including failover probes.
   TestWidgetsFlutterBinding.ensureInitialized();

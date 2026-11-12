@@ -466,3 +466,23 @@ without decoding all queue metadata. Reordering indistinguishable duplicate
 tracks still retires old native row references. Karaoke retains a leased
 immutable queue view while it holds playback resources, copying only legacy
 mutable lists. The focused car-host and karaoke-format suites pass 21 tests.
+
+
+### Album and artist admission
+
+Ordinary album/artist play and enqueue actions, including track-to-album
+navigation, now read bounded pages into the metadata window. Plex albums use
+children and artists use grandchildren. MediaBrowser album and artist pages
+retain their tag-based credit queries and disc/track ordering. Each page checks
+the original source and request before and after the read. Foreign rows,
+oversized pages, mismatched offsets and missing known rows fail before the
+replacement queue is adopted.
+
+The draft passed 387 backend, navigation, menu and artist tests with clean
+targeted analysis. A further 54 loader/source tests cover malformed pagination,
+10,000-track admission and in-flight retirement. Native catalog and deep-link
+admission are being handled separately.
+
+Canonical integration passed **1,051 tests**, including the shared music player,
+native groups, Cast, car host, both backend HTTP contracts and the affected
+navigation/menu screens. Targeted analysis passes with fatal info diagnostics.

@@ -17,6 +17,7 @@ import '../metadata_edit/metadata_edit_models.dart';
 import '../services/plex_client.dart';
 import '../services/media_list_playback_launcher.dart';
 import '../services/music/music_playback_service.dart';
+import '../services/music/music_tracks_loader.dart';
 import '../services/offline_watch_sync_service.dart';
 import '../services/playlist_items_loader.dart';
 import '../services/recent_tags_service.dart';
@@ -1521,21 +1522,17 @@ class MediaContextMenuState extends State<MediaContextMenu> {
 
   /// The track list music playback should operate on for [item]: the item
   /// itself for a track, an album's tracks, or an artist's playable
-  /// descendants (one server round-trip for the container kinds).
-  Future<List<MediaItem>> _musicTracksForItem(MediaItem item, MusicReadScope scope) async {
-    if (!scope.current) return [];
+  /// descendants, admitted in bounded pages for the container kinds.
+  Future<List<MediaItem>> _musicTracksForItem(MediaItem item, MusicReadScope scope, {bool Function()? current}) async {
+    bool currentSource() => scope.current && (current?.call() ?? true);
+    if (!currentSource()) return [];
     if (scope.offline) return scope.offlineTracks;
     final client = scope.client!;
-    final tracks = switch (item.kind) {
-      MediaKind.album => await client.fetchAlbumTracks(item.id),
-      MediaKind.artist => await client.fetchPlayableDescendants(item.id),
-      _ => [item],
-    };
-    if (!scope.current) return [];
-    if (!scope.ownsTracks(tracks)) {
-      throw StateError('Music descendants do not belong to the selected source');
+    if (item.kind == MediaKind.track) {
+      if (!scope.ownsTrack(item)) throw StateError('Music track source retired');
+      return [item];
     }
-    return tracks;
+    return fetchMusicTracks(client, item.id, kind: item.kind, current: currentSource, acceptsItem: scope.ownsTrack);
   }
 
   Future<void> _handleMusicPlay(BuildContext context) async {
@@ -1552,7 +1549,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         scope = await MusicReadScope.forItem(context, item, offline: widget.isOffline);
         preparing = false;
         if (!context.mounted || !current()) return [];
-        return _musicTracksForItem(item, scope!);
+        return _musicTracksForItem(item, scope!, current: current);
       },
       sourceCurrent: () => preparing || scope?.current == true,
       offline: widget.isOffline,
@@ -1577,7 +1574,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     if (!current()) return;
     List<MediaItem> tracks;
     try {
-      tracks = await _musicTracksForItem(item, scope!);
+      tracks = await _musicTracksForItem(item, scope!, current: current);
     } catch (_) {
       if (!current()) return;
       rethrow;

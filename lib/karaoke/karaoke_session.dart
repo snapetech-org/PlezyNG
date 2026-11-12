@@ -11,6 +11,7 @@ import '../media/media_item.dart';
 import '../mpv/models.dart';
 import '../mpv/player/player.dart';
 import '../services/music/music_playback_service.dart';
+import '../services/music/music_queue_controller.dart';
 import '../services/playback_coordinator.dart';
 import 'karaoke_models.dart';
 import 'karaoke_packages.dart';
@@ -286,8 +287,9 @@ class KaraokeSession extends ChangeNotifier {
         music.currentTrack != null &&
         music.playContext?.title != 'Karaoke' &&
         music.playContext?.title != 'Karaoke filler') {
+      final queue = music.queue;
       _musicSnapshot = _KaraokeMusicSnapshot(
-        tracks: List.of(music.queue),
+        tracks: queue is MusicQueueView ? queue : List.of(queue),
         current: music.currentTrack!,
         position: music.position,
         context: music.playContext,

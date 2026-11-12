@@ -457,3 +457,12 @@ Other browse admission and compact index storage remain separate work.
 Validation: the canonical admission, shared music player, native-group, Cast,
 Now Playing, car-host, playlist, artist and library-page suites passed **749
 tests** with clean targeted analysis. This is automated code validation.
+
+
+### Large queue consumers
+
+Car status snapshots now use the immutable queue-view identity and cursor
+without decoding all queue metadata. Reordering indistinguishable duplicate
+tracks still retires old native row references. Karaoke retains a leased
+immutable queue view while it holds playback resources, copying only legacy
+mutable lists. The focused car-host and karaoke-format suites pass 21 tests.

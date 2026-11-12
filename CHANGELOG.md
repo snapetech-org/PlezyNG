@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Correct the optional live audio spectrum filter so FFmpeg accepts its centroid and flatness measurements during music visualization.
+- Keep large music queues lazy through car status updates and karaoke snapshots; reject stale native queue references after identical duplicate tracks are reordered.
 
 - Remove an obsolete music-playback warning from translations so release code analysis recognizes the working music player.
 - Add optional per-span pronunciation readings to karaoke lyric packages and render them as ruby annotations on the Flutter and browser stages, with line-level pronunciation retained as a fallback.

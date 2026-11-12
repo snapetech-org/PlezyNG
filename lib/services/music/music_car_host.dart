@@ -29,6 +29,7 @@ import '../../services/settings_service.dart';
 import '../../utils/provider_extensions.dart';
 import '../../utils/media_server_http_client.dart';
 import 'music_car_artwork.dart';
+import 'music_queue_controller.dart';
 import 'music_discovery.dart';
 import 'music_playback_service.dart';
 import 'music_library_store.dart';
@@ -63,7 +64,8 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       <String, ({MediaItem item, MediaServerClient? client, Object? authentication, String? scope})>{};
   final Map<String, MediaItem> _items = {};
   final Map<String, Object?> _authorizations = {};
-  String? _queueShape, _catalogShape;
+  Object? _queueShape;
+  String? _catalogShape;
   final List<Listenable> _catalogSources = [];
   bool _catalogPending = false;
   MusicDrivingRoutes? _drivingRoutes;
@@ -161,11 +163,15 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
 
   void _publish() {
     if (!mounted || !_current) return;
-    final shape = jsonEncode([
+    final queue = _music.queue;
+    // Production snapshots change only when occurrences/order change. Status
+    // updates must not decode a whole file-backed queue, and duplicate rows
+    // must still retire old native positions after a reorder.
+    final shape = (
       _music.queueSessionRevision,
       _music.currentIndex,
-      _music.queue.map((item) => item.globalKey).toList(),
-    ]);
+      queue is MusicQueueView ? queue : jsonEncode(queue.map((item) => item.globalKey).toList()),
+    );
     if (_queueShape != shape) {
       _queueShape = shape;
       _catalogRevision++;

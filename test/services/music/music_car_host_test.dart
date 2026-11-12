@@ -19,6 +19,7 @@ import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/providers/download_provider.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/services/music/music_car_host.dart';
+import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
 import 'package:plezy/screens/music/music_driving_screen.dart';
 import 'package:plezy/services/settings_service.dart';
@@ -71,6 +72,20 @@ class Music extends StubMusicPlaybackService {
 
   void edit() {
     tracks.removeLast();
+    notifyListeners();
+  }
+}
+
+class WindowMusic extends Music {
+  final controller = MusicQueueController();
+  @override
+  List<MediaItem> get queue => controller.queue;
+  @override
+  int get currentIndex => controller.cursor;
+  void publish() => notifyListeners();
+  @override
+  void reorder(int from, int to) {
+    controller.move(from, to);
     notifyListeners();
   }
 }
@@ -250,6 +265,29 @@ void main() {
     await native('connection', {'connected': true});
     await tester.pumpAndSettle();
     expect(find.byType(MusicDrivingScreen), findsNothing);
+    expect(music.jumped, isNull);
+    await tester.pumpWidget(const SizedBox());
+    music.dispose();
+    profiles.dispose();
+  });
+
+  testWidgets('immutable queue status retains native references and duplicate reorder retires them', (tester) async {
+    final calls = <MethodCall>[];
+    final music = WindowMusic(), profiles = Profiles();
+    final repeated = testMediaItem(id: 'duplicate', serverId: 'server', kind: MediaKind.track);
+    music.controller.load(List.filled(10000, repeated));
+    await mount(tester, music, profiles, onNative: calls.add);
+    Map snapshot() => calls.lastWhere((call) => call.method == 'snapshot').arguments as Map;
+    final original = Map.of(snapshot());
+    final rows = await native('browse', {'id': 'queue'}) as List;
+    final reference = (rows.first as Map)['id'];
+    music.publish();
+    await tester.pump();
+    expect(snapshot()['revision'], original['revision']);
+    music.reorder(0, 1);
+    await tester.pump();
+    expect(snapshot()['revision'], isNot(original['revision']));
+    await expectLater(native('playItem', {'id': reference}), throwsA(isA<PlatformException>()));
     expect(music.jumped, isNull);
     await tester.pumpWidget(const SizedBox());
     music.dispose();

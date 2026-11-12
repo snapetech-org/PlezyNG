@@ -4269,6 +4269,8 @@ class _Translations$musicExperience$id extends Translations$musicExperience$en {
 	@override String get routeLost => 'Keluaran audio terputus. Pemutaran dijeda.';
 	@override String get autoDriving => 'Buka tampilan berkendara saat terhubung ke mobil';
 	@override String get routeHint => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.';
+	@override String get bluetoothDriving => 'Output Bluetooth untuk berkendara';
+	@override String get bluetoothDrivingHint => 'Pilih output Bluetooth terhubung yang otomatis membuka tampilan berkendara.';
 }
 
 // Path: musicTools
@@ -9477,6 +9479,8 @@ extension on TranslationsId {
 			'musicExperience.routeLost' => 'Keluaran audio terputus. Pemutaran dijeda.',
 			'musicExperience.autoDriving' => 'Buka tampilan berkendara saat terhubung ke mobil',
 			'musicExperience.routeHint' => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.',
+			'musicExperience.bluetoothDriving' => 'Output Bluetooth untuk berkendara',
+			'musicExperience.bluetoothDrivingHint' => 'Pilih output Bluetooth terhubung yang otomatis membuka tampilan berkendara.',
 			'musicTools.loudnessMissing' => 'Tidak ada data kenyaringan yang dikembalikan',
 			'musicTools.loudnessRequested' => 'Permintaan analisis dikirim',
 			'musicTools.loudnessUnsupported' => 'Versi server ini tidak mendukung permintaan analisis',

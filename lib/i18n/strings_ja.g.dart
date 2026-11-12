@@ -4287,6 +4287,8 @@ class _Translations$musicExperience$ja extends Translations$musicExperience$en {
 	@override String get routeLost => '音声出力が切断されました。再生を一時停止しました。';
 	@override String get autoDriving => '車に接続したら運転用画面を開く';
 	@override String get routeHint => 'アプリを自動表示できるかどうかは車のシステムによって決まります。';
+	@override String get bluetoothDriving => '運転画面用のBluetooth出力';
+	@override String get bluetoothDrivingHint => '運転画面を自動で開く、接続中のBluetooth出力を選択します。';
 }
 
 // Path: musicTools
@@ -9497,6 +9499,8 @@ extension on TranslationsJa {
 			'musicExperience.routeLost' => '音声出力が切断されました。再生を一時停止しました。',
 			'musicExperience.autoDriving' => '車に接続したら運転用画面を開く',
 			'musicExperience.routeHint' => 'アプリを自動表示できるかどうかは車のシステムによって決まります。',
+			'musicExperience.bluetoothDriving' => '運転画面用のBluetooth出力',
+			'musicExperience.bluetoothDrivingHint' => '運転画面を自動で開く、接続中のBluetooth出力を選択します。',
 			'musicTools.loudnessMissing' => 'ラウドネスデータが返されませんでした',
 			'musicTools.loudnessRequested' => '解析リクエストを送信しました',
 			'musicTools.loudnessUnsupported' => 'このサーバーバージョンは解析リクエストに対応していません',

@@ -5242,6 +5242,8 @@
   "musicExperience.routeLost": "1707903762d12ea8",
   "musicExperience.autoDriving": "f28e0a5c3710aa0c",
   "musicExperience.routeHint": "aae7ee597d96590f",
+  "musicExperience.bluetoothDriving": "725fdc3cb96b86fd",
+  "musicExperience.bluetoothDrivingHint": "5494cdc5db9a8635",
   "musicTools.loudnessMissing": "82b14fc26f0fbfd6",
   "musicTools.loudnessRequested": "c9aecd40d9d46f30",
   "musicTools.loudnessUnsupported": "fa2ebd0cb176f681",

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Choose selected Bluetooth music outputs for profile-owned automatic driving view entry. Respect the foreground, profile/PIN result and master preference; retire automatic routes with their owner and preserve manual routes and shared playback on disconnect.
+
 - Observe Android 13+ selected media routes through the public audio-attribute API, with stable Bluetooth identities, foreground subscription cleanup and explicit unknown measurements. Available or communication devices and masked addresses cannot arm driving entry.
 
 - Persist explicitly selected Bluetooth driving-route identities per profile, with bounded storage, serialized changes and retirement guards. Reuse one foreground-only OS-route observer for Apple diagnostics and driving integration.

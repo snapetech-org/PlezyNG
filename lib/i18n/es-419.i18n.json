@@ -920,5 +920,9 @@
     "sonicAnalysis": "Análisis sonoro",
     "serverAnalysisScope": "Todas las bibliotecas de música aptas de este servidor. No se cambia su configuración de análisis.",
     "serverActivities": "Actividad del servidor"
+  },
+  "musicExperience": {
+    "bluetoothDriving": "Salidas Bluetooth para conducir",
+    "bluetoothDrivingHint": "Elige las salidas Bluetooth conectadas que abren automáticamente la vista de conducción."
   }
 }

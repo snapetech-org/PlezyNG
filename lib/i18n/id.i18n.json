@@ -5495,7 +5495,9 @@
     "unknown": "Tidak Dikenal",
     "routeLost": "Keluaran audio terputus. Pemutaran dijeda.",
     "autoDriving": "Buka tampilan berkendara saat terhubung ke mobil",
-    "routeHint": "Sistem mobil menentukan apakah aplikasi dapat muncul otomatis."
+    "routeHint": "Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.",
+    "bluetoothDriving": "Output Bluetooth untuk berkendara",
+    "bluetoothDrivingHint": "Pilih output Bluetooth terhubung yang otomatis membuka tampilan berkendara."
   },
   "musicTools": {
     "loudnessMissing": "Tidak ada data kenyaringan yang dikembalikan",

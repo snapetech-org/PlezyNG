@@ -5522,7 +5522,9 @@
     "unknown": "Onbekend",
     "routeLost": "Audio-uitvoer verbroken. Afspelen gepauzeerd.",
     "autoDriving": "Rijweergave openen bij verbinding met een auto",
-    "routeHint": "Het autosysteem bepaalt of de app automatisch kan verschijnen."
+    "routeHint": "Het autosysteem bepaalt of de app automatisch kan verschijnen.",
+    "bluetoothDriving": "Bluetooth-uitgangen voor autorijden",
+    "bluetoothDrivingHint": "Kies verbonden Bluetooth-uitgangen die de rijweergave automatisch openen."
   },
   "musicTools": {
     "loudnessMissing": "Geen luidheidsgegevens ontvangen",

@@ -40,7 +40,8 @@ class MusicDrivingRoutes extends ChangeNotifier {
   final MusicLibraryStore store;
   late final Future<void> ready;
   late final _writes = SerialFutureQueue();
-  bool _disposed = false, _available = false;
+  bool _disposed = false, _available = false, _loaded = false;
+  bool get loaded => _loaded;
   Map<String, MusicDrivingRoute> _routes = {};
   bool get available => !_disposed && store.active && _available;
   List<MusicDrivingRoute> get routes => List.unmodifiable(_routes.values);
@@ -70,6 +71,7 @@ class MusicDrivingRoutes extends ChangeNotifier {
       _routes = {};
       _available = false;
     }
+    _loaded = true;
     if (!_disposed) notifyListeners();
   }
 

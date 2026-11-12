@@ -5522,7 +5522,9 @@
     "unknown": "Nomaʼlum",
     "routeLost": "Audio chiqishi uzildi. Ijro to‘xtatildi.",
     "autoDriving": "Avtomobilga ulanganda haydash ko‘rinishini ochish",
-    "routeHint": "Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi."
+    "routeHint": "Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.",
+    "bluetoothDriving": "Haydash uchun Bluetooth chiqishlari",
+    "bluetoothDrivingHint": "Haydash ko‘rinishini avtomatik ochadigan ulangan Bluetooth chiqishlarini tanlang."
   },
   "musicTools": {
     "loudnessMissing": "Ovoz balandligi ma’lumotlari qaytarilmadi",

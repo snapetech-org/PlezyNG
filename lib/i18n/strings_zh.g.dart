@@ -4287,6 +4287,8 @@ class Translations$musicExperience$zh extends Translations$musicExperience$en {
 	@override String get routeLost => '音频输出已断开。播放已暂停。';
 	@override String get autoDriving => '连接汽车时打开驾驶界面';
 	@override String get routeHint => '是否允许自动显示应用由汽车系统决定。';
+	@override String get bluetoothDriving => '驾驶视图蓝牙输出';
+	@override String get bluetoothDrivingHint => '选择会自动打开驾驶视图的已连接蓝牙输出。';
 }
 
 // Path: musicTools
@@ -9497,6 +9499,8 @@ extension on TranslationsZh {
 			'musicExperience.routeLost' => '音频输出已断开。播放已暂停。',
 			'musicExperience.autoDriving' => '连接汽车时打开驾驶界面',
 			'musicExperience.routeHint' => '是否允许自动显示应用由汽车系统决定。',
+			'musicExperience.bluetoothDriving' => '驾驶视图蓝牙输出',
+			'musicExperience.bluetoothDrivingHint' => '选择会自动打开驾驶视图的已连接蓝牙输出。',
 			'musicTools.loudnessMissing' => '未返回响度数据',
 			'musicTools.loudnessRequested' => '已发送分析请求',
 			'musicTools.loudnessUnsupported' => '此服务器版本不支持分析请求',

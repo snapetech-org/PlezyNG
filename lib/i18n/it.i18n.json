@@ -5531,7 +5531,9 @@
     "unknown": "Sconosciuto",
     "routeLost": "Uscita audio scollegata. Riproduzione in pausa.",
     "autoDriving": "Apri la vista guida quando ti colleghi a un’auto",
-    "routeHint": "Il sistema dell’auto decide se l’app può apparire automaticamente."
+    "routeHint": "Il sistema dell’auto decide se l’app può apparire automaticamente.",
+    "bluetoothDriving": "Uscite Bluetooth per la guida",
+    "bluetoothDrivingHint": "Scegli le uscite Bluetooth connesse che aprono automaticamente la vista di guida."
   },
   "musicTools": {
     "loudnessMissing": "Nessun dato sulla sonorità restituito",

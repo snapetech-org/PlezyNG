@@ -4269,6 +4269,8 @@ class _Translations$musicExperience$th extends Translations$musicExperience$en {
 	@override String get routeLost => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว';
 	@override String get autoDriving => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ';
 	@override String get routeHint => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่';
+	@override String get bluetoothDriving => 'เอาต์พุต Bluetooth สำหรับการขับรถ';
+	@override String get bluetoothDrivingHint => 'เลือกเอาต์พุต Bluetooth ที่เชื่อมต่อเพื่อเปิดมุมมองการขับรถโดยอัตโนมัติ';
 }
 
 // Path: musicTools
@@ -9477,6 +9479,8 @@ extension on TranslationsTh {
 			'musicExperience.routeLost' => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว',
 			'musicExperience.autoDriving' => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ',
 			'musicExperience.routeHint' => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่',
+			'musicExperience.bluetoothDriving' => 'เอาต์พุต Bluetooth สำหรับการขับรถ',
+			'musicExperience.bluetoothDrivingHint' => 'เลือกเอาต์พุต Bluetooth ที่เชื่อมต่อเพื่อเปิดมุมมองการขับรถโดยอัตโนมัติ',
 			'musicTools.loudnessMissing' => 'ไม่ได้รับข้อมูลความดัง',
 			'musicTools.loudnessRequested' => 'ส่งคำขอวิเคราะห์แล้ว',
 			'musicTools.loudnessUnsupported' => 'เซิร์ฟเวอร์เวอร์ชันนี้ไม่รองรับคำขอวิเคราะห์',

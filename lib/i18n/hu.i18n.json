@@ -5522,7 +5522,9 @@
     "unknown": "Ismeretlen",
     "routeLost": "A hangkimenet megszakadt. Lejátszás szüneteltetve.",
     "autoDriving": "Vezetési nézet megnyitása autóhoz csatlakozáskor",
-    "routeHint": "Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e."
+    "routeHint": "Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.",
+    "bluetoothDriving": "Bluetooth-kimenetek vezetéshez",
+    "bluetoothDrivingHint": "Válassza ki azokat a csatlakoztatott Bluetooth-kimeneteket, amelyek automatikusan megnyitják a vezetési nézetet."
   },
   "musicTools": {
     "loudnessMissing": "Nem érkeztek hangerőadatok",

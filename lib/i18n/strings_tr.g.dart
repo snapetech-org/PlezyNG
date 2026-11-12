@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$tr extends Translations$musicExperience$en {
 	@override String get routeLost => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.';
 	@override String get autoDriving => 'Arabaya bağlanınca sürüş görünümünü aç';
 	@override String get routeHint => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.';
+	@override String get bluetoothDriving => 'Sürüş için Bluetooth çıkışları';
+	@override String get bluetoothDrivingHint => 'Sürüş görünümünü otomatik açan bağlı Bluetooth çıkışlarını seçin.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsTr {
 			'musicExperience.routeLost' => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.',
 			'musicExperience.autoDriving' => 'Arabaya bağlanınca sürüş görünümünü aç',
 			'musicExperience.routeHint' => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.',
+			'musicExperience.bluetoothDriving' => 'Sürüş için Bluetooth çıkışları',
+			'musicExperience.bluetoothDrivingHint' => 'Sürüş görünümünü otomatik açan bağlı Bluetooth çıkışlarını seçin.',
 			'musicTools.loudnessMissing' => 'Ses yüksekliği verisi alınmadı',
 			'musicTools.loudnessRequested' => 'Analiz isteği gönderildi',
 			'musicTools.loudnessUnsupported' => 'Bu sunucu sürümü analiz isteklerini desteklemiyor',

@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$de extends Translations$musicExperience$en {
 	@override String get routeLost => 'Audioausgabe getrennt. Wiedergabe pausiert.';
 	@override String get autoDriving => 'Fahransicht bei Verbindung mit einem Auto öffnen';
 	@override String get routeHint => 'Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann.';
+	@override String get bluetoothDriving => 'Bluetooth-Ausgänge für die Fahransicht';
+	@override String get bluetoothDrivingHint => 'Wähle verbundene Bluetooth-Ausgänge, die die Fahransicht automatisch öffnen.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsDe {
 			'musicExperience.routeLost' => 'Audioausgabe getrennt. Wiedergabe pausiert.',
 			'musicExperience.autoDriving' => 'Fahransicht bei Verbindung mit einem Auto öffnen',
 			'musicExperience.routeHint' => 'Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann.',
+			'musicExperience.bluetoothDriving' => 'Bluetooth-Ausgänge für die Fahransicht',
+			'musicExperience.bluetoothDrivingHint' => 'Wähle verbundene Bluetooth-Ausgänge, die die Fahransicht automatisch öffnen.',
 			'musicTools.loudnessMissing' => 'Keine Lautheitsdaten erhalten',
 			'musicTools.loudnessRequested' => 'Analyse angefordert',
 			'musicTools.loudnessUnsupported' => 'Diese Serverversion unterstützt keine Analyseanfragen',

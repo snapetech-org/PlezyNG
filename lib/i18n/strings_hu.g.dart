@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$hu extends Translations$musicExperience$en {
 	@override String get routeLost => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.';
 	@override String get autoDriving => 'Vezetési nézet megnyitása autóhoz csatlakozáskor';
 	@override String get routeHint => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.';
+	@override String get bluetoothDriving => 'Bluetooth-kimenetek vezetéshez';
+	@override String get bluetoothDrivingHint => 'Válassza ki azokat a csatlakoztatott Bluetooth-kimeneteket, amelyek automatikusan megnyitják a vezetési nézetet.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsHu {
 			'musicExperience.routeLost' => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.',
 			'musicExperience.autoDriving' => 'Vezetési nézet megnyitása autóhoz csatlakozáskor',
 			'musicExperience.routeHint' => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.',
+			'musicExperience.bluetoothDriving' => 'Bluetooth-kimenetek vezetéshez',
+			'musicExperience.bluetoothDrivingHint' => 'Válassza ki azokat a csatlakoztatott Bluetooth-kimeneteket, amelyek automatikusan megnyitják a vezetési nézetet.',
 			'musicTools.loudnessMissing' => 'Nem érkeztek hangerőadatok',
 			'musicTools.loudnessRequested' => 'Az elemzési kérés elküldve',
 			'musicTools.loudnessUnsupported' => 'Ez a kiszolgálóverzió nem támogatja az elemzési kéréseket',

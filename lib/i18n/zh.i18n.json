@@ -5517,7 +5517,9 @@
     "unknown": "未知",
     "routeLost": "音频输出已断开。播放已暂停。",
     "autoDriving": "连接汽车时打开驾驶界面",
-    "routeHint": "是否允许自动显示应用由汽车系统决定。"
+    "routeHint": "是否允许自动显示应用由汽车系统决定。",
+    "bluetoothDriving": "驾驶视图蓝牙输出",
+    "bluetoothDrivingHint": "选择会自动打开驾驶视图的已连接蓝牙输出。"
   },
   "musicTools": {
     "loudnessMissing": "未返回响度数据",

@@ -5522,7 +5522,9 @@
     "unknown": "Məlum deyil",
     "routeLost": "Səs çıxışı ayrıldı. Oynatma dayandırıldı.",
     "autoDriving": "Avtomobilə qoşulduqda sürücülük görünüşünü aç",
-    "routeHint": "Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir."
+    "routeHint": "Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.",
+    "bluetoothDriving": "Sürücülük üçün Bluetooth çıxışları",
+    "bluetoothDrivingHint": "Sürücülük görünüşünü avtomatik açan qoşulmuş Bluetooth çıxışlarını seçin."
   },
   "musicTools": {
     "loudnessMissing": "Səs ucalığı məlumatı qaytarılmadı",

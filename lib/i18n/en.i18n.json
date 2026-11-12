@@ -5600,7 +5600,9 @@
     "unknown": "Unknown",
     "routeLost": "Audio output disconnected. Playback paused.",
     "autoDriving": "Open driving view when connected to a car",
-    "routeHint": "The car system controls whether the app can appear automatically."
+    "routeHint": "The car system controls whether the app can appear automatically.",
+    "bluetoothDriving": "Bluetooth driving outputs",
+    "bluetoothDrivingHint": "Choose connected Bluetooth outputs that automatically open driving view."
   },
   "musicTools": {
     "loudnessMissing": "No loudness data returned",

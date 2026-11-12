@@ -4384,6 +4384,8 @@ class _Translations$musicExperience$ar extends Translations$musicExperience$en {
 	@override String get routeLost => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.';
 	@override String get autoDriving => 'فتح واجهة القيادة عند الاتصال بسيارة';
 	@override String get routeHint => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.';
+	@override String get bluetoothDriving => 'مخارج بلوتوث لعرض القيادة';
+	@override String get bluetoothDrivingHint => 'اختر مخارج بلوتوث المتصلة التي تفتح عرض القيادة تلقائيًا.';
 }
 
 // Path: musicTools
@@ -9602,6 +9604,8 @@ extension on TranslationsAr {
 			'musicExperience.routeLost' => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.',
 			'musicExperience.autoDriving' => 'فتح واجهة القيادة عند الاتصال بسيارة',
 			'musicExperience.routeHint' => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.',
+			'musicExperience.bluetoothDriving' => 'مخارج بلوتوث لعرض القيادة',
+			'musicExperience.bluetoothDrivingHint' => 'اختر مخارج بلوتوث المتصلة التي تفتح عرض القيادة تلقائيًا.',
 			'musicTools.loudnessMissing' => 'لم يُرجع الخادم بيانات مستوى الصوت',
 			'musicTools.loudnessRequested' => 'تم إرسال طلب التحليل',
 			'musicTools.loudnessUnsupported' => 'إصدار الخادم لا يدعم طلب التحليل',

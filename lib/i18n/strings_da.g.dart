@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$da extends Translations$musicExperience$en {
 	@override String get routeLost => 'Lydudgang afbrudt. Afspilning sat på pause.';
 	@override String get autoDriving => 'Åbn kørselsvisning ved forbindelse til en bil';
 	@override String get routeHint => 'Bilens system bestemmer, om appen kan vises automatisk.';
+	@override String get bluetoothDriving => 'Bluetooth-udgange til kørsel';
+	@override String get bluetoothDrivingHint => 'Vælg tilsluttede Bluetooth-udgange, der automatisk åbner kørevisningen.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsDa {
 			'musicExperience.routeLost' => 'Lydudgang afbrudt. Afspilning sat på pause.',
 			'musicExperience.autoDriving' => 'Åbn kørselsvisning ved forbindelse til en bil',
 			'musicExperience.routeHint' => 'Bilens system bestemmer, om appen kan vises automatisk.',
+			'musicExperience.bluetoothDriving' => 'Bluetooth-udgange til kørsel',
+			'musicExperience.bluetoothDrivingHint' => 'Vælg tilsluttede Bluetooth-udgange, der automatisk åbner kørevisningen.',
 			'musicTools.loudnessMissing' => 'Ingen data om lydstyrke modtaget',
 			'musicTools.loudnessRequested' => 'Anmodning om analyse sendt',
 			'musicTools.loudnessUnsupported' => 'Denne serverversion understøtter ikke analyseanmodninger',

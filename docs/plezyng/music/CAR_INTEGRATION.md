@@ -154,3 +154,25 @@ The source follows Android's [media manifest](https://developer.android.com/trai
 and [Automotive media](https://developer.android.com/training/cars/media/automotive-os)
 contracts. Store approval, OEM behavior and native/device qualification are
 separate from this source implementation.
+
+## Selected Bluetooth driving outputs
+
+The music discovery settings offer a profile-owned list of explicitly selected
+Bluetooth media outputs. Only the current OS media route can be added; merely
+available devices cannot arm automatic entry. Saved disconnected outputs remain
+removable. The list is bounded to 32 platform-qualified identities and can be
+reset explicitly if saved data is unreadable.
+
+Foreground entry requires the automatic-driving preference and a successful,
+current profile binding. A late route inspection or event cannot open a retired
+profile. Disconnect and profile retirement remove only the automatic view.
+Bluetooth UI changes do not start or pause the shared player and do not count
+as a projection connection. Native audio-session focus and interruption policy
+continue to own playback loss handling.
+
+Apple reads the selected audio-session ports. Android 13 and later query the
+public media-attribute route; this is anticipated routing for a music AudioTrack,
+not an acoustic measurement. Earlier Android versions, unknown selections and
+masked addresses remain unavailable. Sample-rate and channel capabilities are
+not reported as measured current output. Native/device route and vehicle
+qualification remain separate from the automated tests.

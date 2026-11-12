@@ -5522,7 +5522,9 @@
     "unknown": "Okänd",
     "routeLost": "Ljudutgången kopplades från. Uppspelningen pausades.",
     "autoDriving": "Öppna körvyn vid anslutning till en bil",
-    "routeHint": "Bilens system avgör om appen kan visas automatiskt."
+    "routeHint": "Bilens system avgör om appen kan visas automatiskt.",
+    "bluetoothDriving": "Bluetooth-utgångar för körning",
+    "bluetoothDrivingHint": "Välj anslutna Bluetooth-utgångar som automatiskt öppnar körvyn."
   },
   "musicTools": {
     "loudnessMissing": "Inga ljudstyrkedata returnerades",

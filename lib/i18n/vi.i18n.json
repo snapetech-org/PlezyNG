@@ -5495,7 +5495,9 @@
     "unknown": "Không rõ",
     "routeLost": "Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.",
     "autoDriving": "Mở giao diện lái xe khi kết nối với ô tô",
-    "routeHint": "Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không."
+    "routeHint": "Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.",
+    "bluetoothDriving": "Đầu ra Bluetooth cho chế độ lái xe",
+    "bluetoothDrivingHint": "Chọn đầu ra Bluetooth đã kết nối để tự động mở giao diện lái xe."
   },
   "musicTools": {
     "loudnessMissing": "Không nhận được dữ liệu độ lớn âm thanh",

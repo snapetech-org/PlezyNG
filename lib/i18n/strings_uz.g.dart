@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$uz extends Translations$musicExperience$en {
 	@override String get routeLost => 'Audio chiqishi uzildi. Ijro to‘xtatildi.';
 	@override String get autoDriving => 'Avtomobilga ulanganda haydash ko‘rinishini ochish';
 	@override String get routeHint => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.';
+	@override String get bluetoothDriving => 'Haydash uchun Bluetooth chiqishlari';
+	@override String get bluetoothDrivingHint => 'Haydash ko‘rinishini avtomatik ochadigan ulangan Bluetooth chiqishlarini tanlang.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsUz {
 			'musicExperience.routeLost' => 'Audio chiqishi uzildi. Ijro to‘xtatildi.',
 			'musicExperience.autoDriving' => 'Avtomobilga ulanganda haydash ko‘rinishini ochish',
 			'musicExperience.routeHint' => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.',
+			'musicExperience.bluetoothDriving' => 'Haydash uchun Bluetooth chiqishlari',
+			'musicExperience.bluetoothDrivingHint' => 'Haydash ko‘rinishini avtomatik ochadigan ulangan Bluetooth chiqishlarini tanlang.',
 			'musicTools.loudnessMissing' => 'Ovoz balandligi ma’lumotlari qaytarilmadi',
 			'musicTools.loudnessRequested' => 'Tahlil so‘rovi yuborildi',
 			'musicTools.loudnessUnsupported' => 'Serverning bu versiyasi tahlil so‘rovlarini qo‘llamaydi',

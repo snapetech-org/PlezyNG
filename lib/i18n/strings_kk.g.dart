@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$kk extends Translations$musicExperience$en {
 	@override String get routeLost => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.';
 	@override String get autoDriving => 'Көлікке қосылғанда жүргізу көрінісін ашу';
 	@override String get routeHint => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.';
+	@override String get bluetoothDriving => 'Көлік жүргізуге арналған Bluetooth шығыстары';
+	@override String get bluetoothDrivingHint => 'Көлік жүргізу көрінісін автоматты түрде ашатын қосылған Bluetooth шығыстарын таңдаңыз.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsKk {
 			'musicExperience.routeLost' => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.',
 			'musicExperience.autoDriving' => 'Көлікке қосылғанда жүргізу көрінісін ашу',
 			'musicExperience.routeHint' => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.',
+			'musicExperience.bluetoothDriving' => 'Көлік жүргізуге арналған Bluetooth шығыстары',
+			'musicExperience.bluetoothDrivingHint' => 'Көлік жүргізу көрінісін автоматты түрде ашатын қосылған Bluetooth шығыстарын таңдаңыз.',
 			'musicTools.loudnessMissing' => 'Дыбыс қаттылығы туралы дерек алынбады',
 			'musicTools.loudnessRequested' => 'Талдау сұрауы жіберілді',
 			'musicTools.loudnessUnsupported' => 'Сервердің бұл нұсқасы талдау сұрауларын қолдамайды',

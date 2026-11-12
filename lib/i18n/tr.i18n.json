@@ -5522,7 +5522,9 @@
     "unknown": "Bilinmiyor",
     "routeLost": "Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.",
     "autoDriving": "Arabaya bağlanınca sürüş görünümünü aç",
-    "routeHint": "Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler."
+    "routeHint": "Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.",
+    "bluetoothDriving": "Sürüş için Bluetooth çıkışları",
+    "bluetoothDrivingHint": "Sürüş görünümünü otomatik açan bağlı Bluetooth çıkışlarını seçin."
   },
   "musicTools": {
     "loudnessMissing": "Ses yüksekliği verisi alınmadı",

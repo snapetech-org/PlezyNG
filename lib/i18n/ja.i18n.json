@@ -5517,7 +5517,9 @@
     "unknown": "不明",
     "routeLost": "音声出力が切断されました。再生を一時停止しました。",
     "autoDriving": "車に接続したら運転用画面を開く",
-    "routeHint": "アプリを自動表示できるかどうかは車のシステムによって決まります。"
+    "routeHint": "アプリを自動表示できるかどうかは車のシステムによって決まります。",
+    "bluetoothDriving": "運転画面用のBluetooth出力",
+    "bluetoothDrivingHint": "運転画面を自動で開く、接続中のBluetooth出力を選択します。"
   },
   "musicTools": {
     "loudnessMissing": "ラウドネスデータが返されませんでした",

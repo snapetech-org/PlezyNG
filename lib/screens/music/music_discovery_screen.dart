@@ -1,3 +1,5 @@
+import '../../services/music/music_experience.dart';
+import '../../widgets/music/driving_routes_picker.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import '../../widgets/app_icon.dart';
 import '../../services/settings_service.dart';
@@ -254,6 +256,16 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
               if (mounted) setState(() {});
             },
           ),
+          if (context.watch<MusicExperience?>() case final experience?)
+            MusicDrivingRoutesPicker(
+              key: ObjectKey(experience.drivingRoutes),
+              routes: experience.drivingRoutes,
+              current: () =>
+                  _currentProfile &&
+                  identical(context.read<MusicExperience?>(), experience) &&
+                  !context.read<ActiveProfileProvider>().isBinding &&
+                  context.read<ActiveProfileProvider>().lastBindingSucceeded,
+            ),
           if (discovery != null) ...[
             SwitchListTile(
               title: Text(strings.continuation),

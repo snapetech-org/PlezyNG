@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$fa extends Translations$musicExperience$en {
 	@override String get routeLost => 'خروجی صدا قطع شد. پخش مکث شد.';
 	@override String get autoDriving => 'باز کردن نمای رانندگی هنگام اتصال به خودرو';
 	@override String get routeHint => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.';
+	@override String get bluetoothDriving => 'خروجی‌های بلوتوث برای رانندگی';
+	@override String get bluetoothDrivingHint => 'خروجی‌های بلوتوث متصل را انتخاب کنید که نمای رانندگی را خودکار باز می‌کنند.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsFa {
 			'musicExperience.routeLost' => 'خروجی صدا قطع شد. پخش مکث شد.',
 			'musicExperience.autoDriving' => 'باز کردن نمای رانندگی هنگام اتصال به خودرو',
 			'musicExperience.routeHint' => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.',
+			'musicExperience.bluetoothDriving' => 'خروجی‌های بلوتوث برای رانندگی',
+			'musicExperience.bluetoothDrivingHint' => 'خروجی‌های بلوتوث متصل را انتخاب کنید که نمای رانندگی را خودکار باز می‌کنند.',
 			'musicTools.loudnessMissing' => 'داده‌ای درباره بلندی صدا دریافت نشد',
 			'musicTools.loudnessRequested' => 'درخواست تحلیل ارسال شد',
 			'musicTools.loudnessUnsupported' => 'این نسخهٔ سرور از درخواست تحلیل پشتیبانی نمی‌کند',

@@ -4334,6 +4334,8 @@ class _Translations$musicExperience$uk extends Translations$musicExperience$en {
 	@override String get routeLost => 'Аудіовихід від’єднано. Відтворення призупинено.';
 	@override String get autoDriving => 'Відкривати режим водіння при підключенні до авто';
 	@override String get routeHint => 'Система автомобіля визначає, чи може застосунок з’являтися автоматично.';
+	@override String get bluetoothDriving => 'Виходи Bluetooth для водіння';
+	@override String get bluetoothDrivingHint => 'Виберіть підключені виходи Bluetooth, які автоматично відкривають режим водіння.';
 }
 
 // Path: musicTools
@@ -9546,6 +9548,8 @@ extension on TranslationsUk {
 			'musicExperience.routeLost' => 'Аудіовихід від’єднано. Відтворення призупинено.',
 			'musicExperience.autoDriving' => 'Відкривати режим водіння при підключенні до авто',
 			'musicExperience.routeHint' => 'Система автомобіля визначає, чи може застосунок з’являтися автоматично.',
+			'musicExperience.bluetoothDriving' => 'Виходи Bluetooth для водіння',
+			'musicExperience.bluetoothDrivingHint' => 'Виберіть підключені виходи Bluetooth, які автоматично відкривають режим водіння.',
 			'musicTools.loudnessMissing' => 'Дані про гучність не отримано',
 			'musicTools.loudnessRequested' => 'Запит на аналіз надіслано',
 			'musicTools.loudnessUnsupported' => 'Ця версія сервера не підтримує запити на аналіз',

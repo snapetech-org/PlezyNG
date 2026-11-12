@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$nl extends Translations$musicExperience$en {
 	@override String get routeLost => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.';
 	@override String get autoDriving => 'Rijweergave openen bij verbinding met een auto';
 	@override String get routeHint => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.';
+	@override String get bluetoothDriving => 'Bluetooth-uitgangen voor autorijden';
+	@override String get bluetoothDrivingHint => 'Kies verbonden Bluetooth-uitgangen die de rijweergave automatisch openen.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsNl {
 			'musicExperience.routeLost' => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.',
 			'musicExperience.autoDriving' => 'Rijweergave openen bij verbinding met een auto',
 			'musicExperience.routeHint' => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.',
+			'musicExperience.bluetoothDriving' => 'Bluetooth-uitgangen voor autorijden',
+			'musicExperience.bluetoothDrivingHint' => 'Kies verbonden Bluetooth-uitgangen die de rijweergave automatisch openen.',
 			'musicTools.loudnessMissing' => 'Geen luidheidsgegevens ontvangen',
 			'musicTools.loudnessRequested' => 'Analyseverzoek verzonden',
 			'musicTools.loudnessUnsupported' => 'Deze serverversie ondersteunt geen analyseverzoeken',

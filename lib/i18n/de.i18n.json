@@ -5522,7 +5522,9 @@
     "unknown": "Unbekannt",
     "routeLost": "Audioausgabe getrennt. Wiedergabe pausiert.",
     "autoDriving": "Fahransicht bei Verbindung mit einem Auto öffnen",
-    "routeHint": "Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann."
+    "routeHint": "Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann.",
+    "bluetoothDriving": "Bluetooth-Ausgänge für die Fahransicht",
+    "bluetoothDrivingHint": "Wähle verbundene Bluetooth-Ausgänge, die die Fahransicht automatisch öffnen."
   },
   "musicTools": {
     "loudnessMissing": "Keine Lautheitsdaten erhalten",

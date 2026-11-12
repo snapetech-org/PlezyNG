@@ -4269,6 +4269,8 @@ class _Translations$musicExperience$vi extends Translations$musicExperience$en {
 	@override String get routeLost => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.';
 	@override String get autoDriving => 'Mở giao diện lái xe khi kết nối với ô tô';
 	@override String get routeHint => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.';
+	@override String get bluetoothDriving => 'Đầu ra Bluetooth cho chế độ lái xe';
+	@override String get bluetoothDrivingHint => 'Chọn đầu ra Bluetooth đã kết nối để tự động mở giao diện lái xe.';
 }
 
 // Path: musicTools
@@ -9477,6 +9479,8 @@ extension on TranslationsVi {
 			'musicExperience.routeLost' => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.',
 			'musicExperience.autoDriving' => 'Mở giao diện lái xe khi kết nối với ô tô',
 			'musicExperience.routeHint' => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.',
+			'musicExperience.bluetoothDriving' => 'Đầu ra Bluetooth cho chế độ lái xe',
+			'musicExperience.bluetoothDrivingHint' => 'Chọn đầu ra Bluetooth đã kết nối để tự động mở giao diện lái xe.',
 			'musicTools.loudnessMissing' => 'Không nhận được dữ liệu độ lớn âm thanh',
 			'musicTools.loudnessRequested' => 'Đã gửi yêu cầu phân tích',
 			'musicTools.loudnessUnsupported' => 'Phiên bản máy chủ này không hỗ trợ yêu cầu phân tích',

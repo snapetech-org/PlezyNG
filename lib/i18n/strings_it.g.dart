@@ -4299,6 +4299,8 @@ class _Translations$musicExperience$it extends Translations$musicExperience$en {
 	@override String get routeLost => 'Uscita audio scollegata. Riproduzione in pausa.';
 	@override String get autoDriving => 'Apri la vista guida quando ti colleghi a un’auto';
 	@override String get routeHint => 'Il sistema dell’auto decide se l’app può apparire automaticamente.';
+	@override String get bluetoothDriving => 'Uscite Bluetooth per la guida';
+	@override String get bluetoothDrivingHint => 'Scegli le uscite Bluetooth connesse che aprono automaticamente la vista di guida.';
 }
 
 // Path: musicTools
@@ -9509,6 +9511,8 @@ extension on TranslationsIt {
 			'musicExperience.routeLost' => 'Uscita audio scollegata. Riproduzione in pausa.',
 			'musicExperience.autoDriving' => 'Apri la vista guida quando ti colleghi a un’auto',
 			'musicExperience.routeHint' => 'Il sistema dell’auto decide se l’app può apparire automaticamente.',
+			'musicExperience.bluetoothDriving' => 'Uscite Bluetooth per la guida',
+			'musicExperience.bluetoothDrivingHint' => 'Scegli le uscite Bluetooth connesse che aprono automaticamente la vista di guida.',
 			'musicTools.loudnessMissing' => 'Nessun dato sulla sonorità restituito',
 			'musicTools.loudnessRequested' => 'Richiesta di analisi inviata',
 			'musicTools.loudnessUnsupported' => 'Questa versione del server non supporta le richieste di analisi',

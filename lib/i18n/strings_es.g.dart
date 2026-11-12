@@ -4382,6 +4382,8 @@ class Translations$musicExperience$es extends Translations$musicExperience$en {
 	@override String get routeLost => 'Salida de audio desconectada. Reproducción pausada.';
 	@override String get autoDriving => 'Abrir la vista de conducción al conectar con un coche';
 	@override String get routeHint => 'El sistema del coche decide si la aplicación puede aparecer automáticamente.';
+	@override String get bluetoothDriving => 'Salidas Bluetooth para conducir';
+	@override String get bluetoothDrivingHint => 'Elige las salidas Bluetooth conectadas que abren automáticamente la vista de conducción.';
 }
 
 // Path: musicTools
@@ -9728,6 +9730,8 @@ extension on TranslationsEs {
 			'musicExperience.routeLost' => 'Salida de audio desconectada. Reproducción pausada.',
 			'musicExperience.autoDriving' => 'Abrir la vista de conducción al conectar con un coche',
 			'musicExperience.routeHint' => 'El sistema del coche decide si la aplicación puede aparecer automáticamente.',
+			'musicExperience.bluetoothDriving' => 'Salidas Bluetooth para conducir',
+			'musicExperience.bluetoothDrivingHint' => 'Elige las salidas Bluetooth conectadas que abren automáticamente la vista de conducción.',
 			'musicTools.loudnessMissing' => 'El servidor no devolvió datos de sonoridad',
 			'musicTools.loudnessRequested' => 'Solicitud de análisis enviada',
 			'musicTools.loudnessUnsupported' => 'Esta versión del servidor no admite solicitudes de análisis',

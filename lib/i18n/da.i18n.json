@@ -5522,7 +5522,9 @@
     "unknown": "Ukendt",
     "routeLost": "Lydudgang afbrudt. Afspilning sat på pause.",
     "autoDriving": "Åbn kørselsvisning ved forbindelse til en bil",
-    "routeHint": "Bilens system bestemmer, om appen kan vises automatisk."
+    "routeHint": "Bilens system bestemmer, om appen kan vises automatisk.",
+    "bluetoothDriving": "Bluetooth-udgange til kørsel",
+    "bluetoothDrivingHint": "Vælg tilsluttede Bluetooth-udgange, der automatisk åbner kørevisningen."
   },
   "musicTools": {
     "loudnessMissing": "Ingen data om lydstyrke modtaget",

@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$bg extends Translations$musicExperience$en {
 	@override String get routeLost => 'Аудиоизходът е прекъснат. Възпроизвеждането е на пауза.';
 	@override String get autoDriving => 'Отваряне на изгледа за шофиране при свързване с кола';
 	@override String get routeHint => 'Системата на колата определя дали приложението може да се показва автоматично.';
+	@override String get bluetoothDriving => 'Bluetooth изходи за шофиране';
+	@override String get bluetoothDrivingHint => 'Изберете свързани Bluetooth изходи, които автоматично отварят изгледа за шофиране.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsBg {
 			'musicExperience.routeLost' => 'Аудиоизходът е прекъснат. Възпроизвеждането е на пауза.',
 			'musicExperience.autoDriving' => 'Отваряне на изгледа за шофиране при свързване с кола',
 			'musicExperience.routeHint' => 'Системата на колата определя дали приложението може да се показва автоматично.',
+			'musicExperience.bluetoothDriving' => 'Bluetooth изходи за шофиране',
+			'musicExperience.bluetoothDrivingHint' => 'Изберете свързани Bluetooth изходи, които автоматично отварят изгледа за шофиране.',
 			'musicTools.loudnessMissing' => 'Няма получени данни за силата на звука',
 			'musicTools.loudnessRequested' => 'Заявката за анализ е изпратена',
 			'musicTools.loudnessUnsupported' => 'Тази версия на сървъра не поддържа заявки за анализ',

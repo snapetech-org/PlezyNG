@@ -1,3 +1,11 @@
+import 'package:drift/native.dart';
+import 'package:plezy/database/app_database.dart';
+import 'package:plezy/services/music/music_experience.dart';
+import 'package:plezy/services/music/music_driving_routes.dart';
+import 'package:plezy/services/music/music_library_store.dart';
+import 'package:plezy/services/music/music_system_audio_routes.dart';
+import 'package:plezy/services/music/music_background_frames.dart';
+import 'music_system_audio_routes_test.dart' show route;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -23,6 +31,19 @@ class Profiles extends ChangeNotifier implements ActiveProfileProvider {
   String id = 'one';
   @override
   String get activeId => id;
+  bool binding = false, succeeded = true;
+  @override
+  bool get isBinding => binding;
+  @override
+  bool get lastBindingSucceeded => succeeded;
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _Experience extends ChangeNotifier implements MusicExperience {
+  _Experience(this.drivingRoutes);
+  @override
+  final MusicDrivingRoutes drivingRoutes;
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -97,6 +118,7 @@ void main() {
     Music music,
     Profiles profiles, {
     CatalogDownloads? downloads,
+    MusicDrivingRoutes? drivingRoutes,
     void Function(MethodCall)? onNative,
   }) async {
     final navigator = GlobalKey<NavigatorState>();
@@ -110,6 +132,7 @@ void main() {
           ChangeNotifierProvider<MusicPlaybackService>.value(value: music),
           ChangeNotifierProvider<ActiveProfileProvider>.value(value: profiles),
           if (downloads != null) ChangeNotifierProvider<DownloadProvider>.value(value: downloads),
+          if (drivingRoutes != null) ChangeNotifierProvider<MusicExperience>(create: (_) => _Experience(drivingRoutes)),
         ],
         child: MaterialApp(
           navigatorKey: navigator,
@@ -310,4 +333,159 @@ void main() {
     music.dispose();
     profiles.dispose();
   });
+
+  Future<void> bluetoothScenario(
+    WidgetTester tester,
+    Future<void> Function(MusicDrivingRoutes, Music, Profiles, Future<void> Function(Object)) body,
+  ) async {
+    resetSharedPreferencesForTest();
+    SettingsService.resetForTesting();
+    await SettingsService.getInstance();
+    late AppDatabase database;
+    late MusicDrivingRoutes preferences;
+    await tester.runAsync(() async {
+      database = AppDatabase.forTesting(NativeDatabase.memory());
+      preferences = MusicDrivingRoutes(MusicLibraryStore(database, 'one'));
+      await preferences.ready;
+      await preferences.select(
+        platform: 'ios',
+        output: const MusicSystemAudioOutput(
+          id: 'stable-system-id',
+          name: 'Car',
+          type: 'BluetoothA2DPOutput',
+          bluetooth: true,
+          channels: 2,
+        ),
+        current: () => true,
+      );
+    });
+    const methods = MethodChannel('com.pleazyng/music_audio_route');
+    const events = MethodChannel('com.pleazyng/music_audio_route/events');
+    final binding = tester.binding, messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(methods, (_) async => route());
+    messenger.setMockMethodCallHandler(events, (_) async => null);
+    Future<void> emit(Object data) async {
+      binding.channelBuffers.push(events.name, codec.encodeSuccessEnvelope(data), (_) {});
+      await tester.pumpAndSettle();
+    }
+
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    final music = Music(), profiles = Profiles();
+    try {
+      await body(preferences, music, profiles, emit);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
+      messenger.setMockMethodCallHandler(methods, null);
+      messenger.setMockMethodCallHandler(events, null);
+      preferences.dispose();
+      music.dispose();
+      profiles.dispose();
+      await tester.runAsync(database.close);
+      SettingsService.resetForTesting();
+    }
+  }
+
+  testWidgets('selected Bluetooth opens driving once without projection or playback entitlement', (tester) async {
+    await bluetoothScenario(tester, (preferences, music, profiles, emit) async {
+      await mount(tester, music, profiles, drivingRoutes: preferences);
+      await tester.pumpAndSettle();
+      expect(find.byType(MusicDrivingScreen), findsOneWidget);
+      expect(MusicBackgroundFrames.carConnected, isFalse);
+      expect(music.pauses, 0);
+      Navigator.of(tester.element(find.byType(MusicDrivingScreen))).pop();
+      await tester.pumpAndSettle();
+      await emit(route());
+      expect(
+        find.byType(MusicDrivingScreen),
+        findsNothing,
+        reason: 'A repeat snapshot must respect a manually dismissed automatic view',
+      );
+      final disconnected = route()..['outputs'] = <Object>[];
+      await emit(disconnected);
+      await emit(route());
+      expect(find.byType(MusicDrivingScreen), findsOneWidget);
+      await emit(disconnected);
+      expect(find.byType(MusicDrivingScreen), findsNothing);
+      expect(music.pauses, 0, reason: 'Bluetooth UI changes cannot issue a remote/group pause');
+    });
+  }, variant: TargetPlatformVariant({TargetPlatform.iOS}));
+
+  testWidgets('Bluetooth driving respects profile binding and an unsuccessful PIN result', (tester) async {
+    await bluetoothScenario(tester, (preferences, music, profiles, emit) async {
+      profiles.binding = true;
+      await mount(tester, music, profiles, drivingRoutes: preferences);
+      await tester.pumpAndSettle();
+      expect(find.byType(MusicDrivingScreen), findsNothing);
+      profiles.binding = false;
+      profiles.succeeded = false;
+      profiles.notifyListeners();
+      await tester.pumpAndSettle();
+      expect(find.byType(MusicDrivingScreen), findsNothing);
+      profiles.succeeded = true;
+      profiles.notifyListeners();
+      await tester.pumpAndSettle();
+      expect(find.byType(MusicDrivingScreen), findsOneWidget);
+    });
+  }, variant: TargetPlatformVariant({TargetPlatform.iOS}));
+
+  testWidgets('Bluetooth driving respects the automatic-entry master preference', (tester) async {
+    await bluetoothScenario(tester, (preferences, music, profiles, emit) async {
+      await SettingsService.instance.write(SettingsService.musicAutoDriving, false);
+      await mount(tester, music, profiles, drivingRoutes: preferences);
+      await tester.pumpAndSettle();
+      expect(find.byType(MusicDrivingScreen), findsNothing);
+      expect(MusicBackgroundFrames.carConnected, isFalse);
+    });
+  }, variant: TargetPlatformVariant({TargetPlatform.iOS}));
+  testWidgets('profile replacement retires only its automatic driving route', (tester) async {
+    await bluetoothScenario(tester, (preferences, music, profiles, emit) async {
+      await mount(tester, music, profiles, drivingRoutes: preferences);
+      await tester.pumpAndSettle();
+      expect(find.byType(MusicDrivingScreen), findsOneWidget);
+      profiles.id = 'two';
+      profiles.notifyListeners();
+      await tester.pumpAndSettle();
+      expect(find.byType(MusicDrivingScreen), findsNothing);
+      await emit(route());
+      expect(find.byType(MusicDrivingScreen), findsNothing);
+      expect(music.pauses, 0);
+    });
+  }, variant: TargetPlatformVariant({TargetPlatform.iOS}));
+
+  testWidgets('a late Bluetooth inspection cannot open a retired profile', (tester) async {
+    await bluetoothScenario(tester, (preferences, music, profiles, emit) async {
+      final response = Completer<Object?>();
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        const MethodChannel('com.pleazyng/music_audio_route'),
+        (_) => response.future,
+      );
+      await mount(tester, music, profiles, drivingRoutes: preferences);
+      profiles.id = 'two';
+      profiles.notifyListeners();
+      response.complete(route());
+      await tester.pumpAndSettle();
+      expect(find.byType(MusicDrivingScreen), findsNothing);
+      expect(MusicBackgroundFrames.carConnected, isFalse);
+    });
+  }, variant: TargetPlatformVariant({TargetPlatform.iOS}));
+
+  testWidgets('Bluetooth disconnect preserves a manually opened route', (tester) async {
+    await bluetoothScenario(tester, (preferences, music, profiles, emit) async {
+      await mount(tester, music, profiles, drivingRoutes: preferences);
+      await tester.pumpAndSettle();
+      final navigator = Navigator.of(tester.element(find.byType(MusicDrivingScreen)));
+      navigator.pop();
+      await tester.pumpAndSettle();
+      unawaited(
+        navigator.push<void>(
+          MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Manual driving view'))),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await emit(route()..['outputs'] = <Object>[]);
+      expect(find.text('Manual driving view'), findsOneWidget);
+      expect(music.pauses, 0);
+    });
+  }, variant: TargetPlatformVariant({TargetPlatform.iOS}));
 }

@@ -5495,7 +5495,9 @@
     "unknown": "yang tidak diketahui",
     "routeLost": "Output audio terputus. Main balik dijeda.",
     "autoDriving": "Buka paparan pemanduan apabila disambungkan ke kereta",
-    "routeHint": "Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik."
+    "routeHint": "Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik.",
+    "bluetoothDriving": "Output Bluetooth untuk pemanduan",
+    "bluetoothDrivingHint": "Pilih output Bluetooth tersambung yang membuka paparan pemanduan secara automatik."
   },
   "musicTools": {
     "loudnessMissing": "Tiada data kelantangan diterima",

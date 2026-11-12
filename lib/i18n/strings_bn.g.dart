@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$bn extends Translations$musicExperience$en {
 	@override String get routeLost => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।';
 	@override String get autoDriving => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন';
 	@override String get routeHint => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।';
+	@override String get bluetoothDriving => 'ড্রাইভিংয়ের জন্য Bluetooth আউটপুট';
+	@override String get bluetoothDrivingHint => 'ড্রাইভিং ভিউ স্বয়ংক্রিয়ভাবে খোলার জন্য সংযুক্ত Bluetooth আউটপুট বেছে নিন।';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsBn {
 			'musicExperience.routeLost' => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।',
 			'musicExperience.autoDriving' => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন',
 			'musicExperience.routeHint' => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।',
+			'musicExperience.bluetoothDriving' => 'ড্রাইভিংয়ের জন্য Bluetooth আউটপুট',
+			'musicExperience.bluetoothDrivingHint' => 'ড্রাইভিং ভিউ স্বয়ংক্রিয়ভাবে খোলার জন্য সংযুক্ত Bluetooth আউটপুট বেছে নিন।',
 			'musicTools.loudnessMissing' => 'শব্দের মাত্রার তথ্য ফেরত আসেনি',
 			'musicTools.loudnessRequested' => 'বিশ্লেষণের অনুরোধ পাঠানো হয়েছে',
 			'musicTools.loudnessUnsupported' => 'সার্ভারের এই সংস্করণ বিশ্লেষণের অনুরোধ সমর্থন করে না',

@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$sv extends Translations$musicExperience$en {
 	@override String get routeLost => 'Ljudutgången kopplades från. Uppspelningen pausades.';
 	@override String get autoDriving => 'Öppna körvyn vid anslutning till en bil';
 	@override String get routeHint => 'Bilens system avgör om appen kan visas automatiskt.';
+	@override String get bluetoothDriving => 'Bluetooth-utgångar för körning';
+	@override String get bluetoothDrivingHint => 'Välj anslutna Bluetooth-utgångar som automatiskt öppnar körvyn.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsSv {
 			'musicExperience.routeLost' => 'Ljudutgången kopplades från. Uppspelningen pausades.',
 			'musicExperience.autoDriving' => 'Öppna körvyn vid anslutning till en bil',
 			'musicExperience.routeHint' => 'Bilens system avgör om appen kan visas automatiskt.',
+			'musicExperience.bluetoothDriving' => 'Bluetooth-utgångar för körning',
+			'musicExperience.bluetoothDrivingHint' => 'Välj anslutna Bluetooth-utgångar som automatiskt öppnar körvyn.',
 			'musicTools.loudnessMissing' => 'Inga ljudstyrkedata returnerades',
 			'musicTools.loudnessRequested' => 'Analysbegäran skickad',
 			'musicTools.loudnessUnsupported' => 'Den här serverversionen stöder inte analysbegäranden',

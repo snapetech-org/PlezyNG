@@ -5570,7 +5570,9 @@
     "unknown": "Neznámý",
     "routeLost": "Zvukový výstup odpojen. Přehrávání pozastaveno.",
     "autoDriving": "Otevřít režim řízení při připojení k autu",
-    "routeHint": "Systém auta určuje, zda se aplikace může zobrazit automaticky."
+    "routeHint": "Systém auta určuje, zda se aplikace může zobrazit automaticky.",
+    "bluetoothDriving": "Bluetooth výstupy pro řízení",
+    "bluetoothDrivingHint": "Vyberte připojené Bluetooth výstupy, které automaticky otevřou zobrazení pro řízení."
   },
   "musicTools": {
     "loudnessMissing": "Server nevrátil údaje o hlasitosti",

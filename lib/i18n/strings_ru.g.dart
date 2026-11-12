@@ -4338,6 +4338,8 @@ class _Translations$musicExperience$ru extends Translations$musicExperience$en {
 	@override String get routeLost => 'Аудиовыход отключён. Воспроизведение приостановлено.';
 	@override String get autoDriving => 'Открывать режим вождения при подключении к машине';
 	@override String get routeHint => 'Система автомобиля определяет, может ли приложение появляться автоматически.';
+	@override String get bluetoothDriving => 'Выходы Bluetooth для вождения';
+	@override String get bluetoothDrivingHint => 'Выберите подключённые выходы Bluetooth, которые автоматически открывают режим вождения.';
 }
 
 // Path: musicTools
@@ -9552,6 +9554,8 @@ extension on TranslationsRu {
 			'musicExperience.routeLost' => 'Аудиовыход отключён. Воспроизведение приостановлено.',
 			'musicExperience.autoDriving' => 'Открывать режим вождения при подключении к машине',
 			'musicExperience.routeHint' => 'Система автомобиля определяет, может ли приложение появляться автоматически.',
+			'musicExperience.bluetoothDriving' => 'Выходы Bluetooth для вождения',
+			'musicExperience.bluetoothDrivingHint' => 'Выберите подключённые выходы Bluetooth, которые автоматически открывают режим вождения.',
 			'musicTools.loudnessMissing' => 'Данные о громкости не получены',
 			'musicTools.loudnessRequested' => 'Запрос на анализ отправлен',
 			'musicTools.loudnessUnsupported' => 'Эта версия сервера не поддерживает запросы на анализ',

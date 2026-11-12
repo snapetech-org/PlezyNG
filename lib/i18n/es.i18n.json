@@ -5604,7 +5604,9 @@
     "unknown": "Desconocido",
     "routeLost": "Salida de audio desconectada. Reproducción pausada.",
     "autoDriving": "Abrir la vista de conducción al conectar con un coche",
-    "routeHint": "El sistema del coche decide si la aplicación puede aparecer automáticamente."
+    "routeHint": "El sistema del coche decide si la aplicación puede aparecer automáticamente.",
+    "bluetoothDriving": "Salidas Bluetooth para conducir",
+    "bluetoothDrivingHint": "Elige las salidas Bluetooth conectadas que abren automáticamente la vista de conducción."
   },
   "musicTools": {
     "loudnessMissing": "El servidor no devolvió datos de sonoridad",

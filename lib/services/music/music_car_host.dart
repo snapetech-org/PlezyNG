@@ -1,9 +1,13 @@
+import 'music_experience.dart';
+import 'music_driving_routes.dart';
+import 'music_system_audio_route_monitor.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -62,6 +66,9 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   String? _queueShape, _catalogShape;
   final List<Listenable> _catalogSources = [];
   bool _catalogPending = false;
+  MusicDrivingRoutes? _drivingRoutes;
+  MusicSystemAudioRouteMonitor? _routeMonitor;
+  bool _bluetoothConnected = false;
   bool _connected = false, _drivingOpen = false;
   Route<void>? _automaticDrivingRoute;
   int _catalogRevision = 0;
@@ -85,9 +92,29 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       source.addListener(_catalogChanged);
     }
     _catalogChanged();
+    _profiles.addListener(_drivingOwnerChanged);
     WidgetsBinding.instance.addObserver(this);
     _channel.setMethodCallHandler(_handle);
     unawaited(_send('ready').then((_) => _publish()));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final routes = Provider.of<MusicExperience?>(context)?.drivingRoutes;
+    if (identical(routes, _drivingRoutes)) return;
+    _drivingRoutes?.removeListener(_bluetoothRouteChanged);
+    _routeMonitor?.removeListener(_bluetoothRouteChanged);
+    _routeMonitor?.dispose();
+    _routeMonitor = null;
+    _bluetoothConnected = false;
+    _drivingRoutes = routes;
+    if (routes != null) {
+      routes.addListener(_bluetoothRouteChanged);
+      _routeMonitor = MusicSystemAudioRouteMonitor(
+        current: () => _current && !_profiles.isBinding && _profiles.lastBindingSucceeded,
+      )..addListener(_bluetoothRouteChanged);
+    }
   }
 
   Future<void> _send(String method, [Object? arguments]) async {
@@ -164,6 +191,16 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _drivingRoutes?.removeListener(_bluetoothRouteChanged);
+    _profiles.removeListener(_drivingOwnerChanged);
+    _routeMonitor?.removeListener(_bluetoothRouteChanged);
+    _routeMonitor?.dispose();
+    final automatic = _automaticDrivingRoute;
+    if (automatic != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        automatic.navigator?.removeRoute(automatic);
+      });
+    }
     _music.removeListener(_publish);
     for (final source in _catalogSources) {
       source.removeListener(_catalogChanged);
@@ -575,8 +612,11 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         return true;
       case 'connection':
         final connected = args['connected'] == true;
-        if (_connected && !connected) await _music.pause();
-        if (!connected) {
+        if (_connected && !connected) {
+          await _music.pause();
+          if (!_current) return false;
+        }
+        if (!connected && !_bluetoothConnected) {
           final route = _automaticDrivingRoute;
           if (route != null && route.navigator != null) route.navigator!.removeRoute(route);
         }
@@ -822,6 +862,40 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         .toList();
   }
 
+  void _drivingOwnerChanged() {
+    _routeMonitor?.refresh();
+    if (!_current || _profiles.isBinding || !_profiles.lastBindingSucceeded) {
+      final automatic = _automaticDrivingRoute;
+      if (automatic != null) {
+        // Profile notifications may arrive during a provider rebuild. Retire
+        // only this host's automatic route after that frame has settled.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          automatic.navigator?.removeRoute(automatic);
+        });
+        WidgetsBinding.instance.ensureVisualUpdate();
+      }
+    }
+  }
+
+  void _bluetoothRouteChanged() {
+    final monitor = _routeMonitor, routes = _drivingRoutes;
+    if (!_current || monitor == null || routes == null) return;
+    if (!monitor.foreground) {
+      _bluetoothConnected = false;
+      return;
+    }
+    final selected = monitor.value;
+    if (selected == null) return; // Unknown is not a disconnect event.
+    final wasConnected = _bluetoothConnected;
+    final platform = defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android';
+    _bluetoothConnected = routes.matches(platform, selected);
+    if (_bluetoothConnected && !wasConnected) _openDrivingIfRequested();
+    if (wasConnected && !_bluetoothConnected && !_connected) {
+      final route = _automaticDrivingRoute;
+      if (route != null) route.navigator?.removeRoute(route);
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && _connected) _openDrivingIfRequested();
@@ -830,6 +904,9 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   void _openDrivingIfRequested() {
     if (!mounted ||
         !_current ||
+        (!_connected && !_bluetoothConnected) ||
+        _profiles.isBinding ||
+        !_profiles.lastBindingSucceeded ||
         _drivingOpen ||
         WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed ||
         !(SettingsService.instanceOrNull?.read(SettingsService.musicAutoDriving) ?? false)) {

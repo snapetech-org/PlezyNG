@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$hi extends Translations$musicExperience$en {
 	@override String get routeLost => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।';
 	@override String get autoDriving => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें';
 	@override String get routeHint => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।';
+	@override String get bluetoothDriving => 'ड्राइविंग के लिए Bluetooth आउटपुट';
+	@override String get bluetoothDrivingHint => 'वे कनेक्ट किए गए Bluetooth आउटपुट चुनें जो ड्राइविंग दृश्य अपने आप खोलते हैं।';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsHi {
 			'musicExperience.routeLost' => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।',
 			'musicExperience.autoDriving' => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें',
 			'musicExperience.routeHint' => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।',
+			'musicExperience.bluetoothDriving' => 'ड्राइविंग के लिए Bluetooth आउटपुट',
+			'musicExperience.bluetoothDrivingHint' => 'वे कनेक्ट किए गए Bluetooth आउटपुट चुनें जो ड्राइविंग दृश्य अपने आप खोलते हैं।',
 			'musicTools.loudnessMissing' => 'ध्वनि की तीव्रता का डेटा नहीं मिला',
 			'musicTools.loudnessRequested' => 'विश्लेषण का अनुरोध भेजा गया',
 			'musicTools.loudnessUnsupported' => 'सर्वर का यह संस्करण विश्लेषण अनुरोधों का समर्थन नहीं करता',

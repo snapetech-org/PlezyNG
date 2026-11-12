@@ -4300,6 +4300,8 @@ class _Translations$musicExperience$he extends Translations$musicExperience$en {
 	@override String get routeLost => 'פלט השמע נותק. הניגון הושהה.';
 	@override String get autoDriving => 'פתיחת תצוגת נהיגה בחיבור לרכב';
 	@override String get routeHint => 'מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית.';
+	@override String get bluetoothDriving => 'יציאות Bluetooth לנהיגה';
+	@override String get bluetoothDrivingHint => 'בחרו יציאות Bluetooth מחוברות שיפתחו אוטומטית את תצוגת הנהיגה.';
 }
 
 // Path: musicTools
@@ -9510,6 +9512,8 @@ extension on TranslationsHe {
 			'musicExperience.routeLost' => 'פלט השמע נותק. הניגון הושהה.',
 			'musicExperience.autoDriving' => 'פתיחת תצוגת נהיגה בחיבור לרכב',
 			'musicExperience.routeHint' => 'מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית.',
+			'musicExperience.bluetoothDriving' => 'יציאות Bluetooth לנהיגה',
+			'musicExperience.bluetoothDrivingHint' => 'בחרו יציאות Bluetooth מחוברות שיפתחו אוטומטית את תצוגת הנהיגה.',
 			'musicTools.loudnessMissing' => 'לא התקבלו נתוני עוצמת קול',
 			'musicTools.loudnessRequested' => 'בקשת ניתוח נשלחה',
 			'musicTools.loudnessUnsupported' => 'גרסת השרת הזו אינה תומכת בבקשות ניתוח',

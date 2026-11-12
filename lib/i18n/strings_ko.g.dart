@@ -4287,6 +4287,8 @@ class _Translations$musicExperience$ko extends Translations$musicExperience$en {
 	@override String get routeLost => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.';
 	@override String get autoDriving => '차에 연결하면 운전 화면 열기';
 	@override String get routeHint => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.';
+	@override String get bluetoothDriving => '운전 화면용 Bluetooth 출력';
+	@override String get bluetoothDrivingHint => '운전 화면을 자동으로 열 연결된 Bluetooth 출력을 선택하세요.';
 }
 
 // Path: musicTools
@@ -9497,6 +9499,8 @@ extension on TranslationsKo {
 			'musicExperience.routeLost' => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.',
 			'musicExperience.autoDriving' => '차에 연결하면 운전 화면 열기',
 			'musicExperience.routeHint' => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.',
+			'musicExperience.bluetoothDriving' => '운전 화면용 Bluetooth 출력',
+			'musicExperience.bluetoothDrivingHint' => '운전 화면을 자동으로 열 연결된 Bluetooth 출력을 선택하세요.',
 			'musicTools.loudnessMissing' => '음량 데이터가 반환되지 않았습니다',
 			'musicTools.loudnessRequested' => '분석 요청을 보냈습니다',
 			'musicTools.loudnessUnsupported' => '이 서버 버전은 분석 요청을 지원하지 않습니다',

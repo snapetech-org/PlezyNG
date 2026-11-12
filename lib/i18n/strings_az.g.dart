@@ -4292,6 +4292,8 @@ class _Translations$musicExperience$az extends Translations$musicExperience$en {
 	@override String get routeLost => 'Səs çıxışı ayrıldı. Oynatma dayandırıldı.';
 	@override String get autoDriving => 'Avtomobilə qoşulduqda sürücülük görünüşünü aç';
 	@override String get routeHint => 'Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.';
+	@override String get bluetoothDriving => 'Sürücülük üçün Bluetooth çıxışları';
+	@override String get bluetoothDrivingHint => 'Sürücülük görünüşünü avtomatik açan qoşulmuş Bluetooth çıxışlarını seçin.';
 }
 
 // Path: musicTools
@@ -9502,6 +9504,8 @@ extension on TranslationsAz {
 			'musicExperience.routeLost' => 'Səs çıxışı ayrıldı. Oynatma dayandırıldı.',
 			'musicExperience.autoDriving' => 'Avtomobilə qoşulduqda sürücülük görünüşünü aç',
 			'musicExperience.routeHint' => 'Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.',
+			'musicExperience.bluetoothDriving' => 'Sürücülük üçün Bluetooth çıxışları',
+			'musicExperience.bluetoothDrivingHint' => 'Sürücülük görünüşünü avtomatik açan qoşulmuş Bluetooth çıxışlarını seçin.',
 			'musicTools.loudnessMissing' => 'Səs ucalığı məlumatı qaytarılmadı',
 			'musicTools.loudnessRequested' => 'Analiz sorğusu göndərildi',
 			'musicTools.loudnessUnsupported' => 'Bu server versiyası analiz sorğusunu dəstəkləmir',

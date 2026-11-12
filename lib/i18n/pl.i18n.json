@@ -5576,7 +5576,9 @@
     "unknown": "Nieznane",
     "routeLost": "Wyjście audio odłączone. Odtwarzanie wstrzymane.",
     "autoDriving": "Otwórz widok samochodowy po połączeniu z autem",
-    "routeHint": "System samochodu decyduje, czy aplikacja może pojawić się automatycznie."
+    "routeHint": "System samochodu decyduje, czy aplikacja może pojawić się automatycznie.",
+    "bluetoothDriving": "Wyjścia Bluetooth do jazdy",
+    "bluetoothDrivingHint": "Wybierz połączone wyjścia Bluetooth, które automatycznie otwierają widok jazdy."
   },
   "musicTools": {
     "loudnessMissing": "Nie zwrócono danych o głośności",

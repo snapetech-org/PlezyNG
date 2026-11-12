@@ -89,6 +89,7 @@ class TranslationsPtBr extends TranslationsPt with BaseTranslations<AppLocale, T
 	@override late final Translations$romm$pt_BR romm = Translations$romm$pt_BR.internal(_root);
 	@override late final Translations$subtitleCapture$pt_BR subtitleCapture = Translations$subtitleCapture$pt_BR.internal(_root);
 	@override late final Translations$musicTools$pt_BR musicTools = Translations$musicTools$pt_BR.internal(_root);
+	@override late final Translations$musicExperience$pt_BR musicExperience = Translations$musicExperience$pt_BR.internal(_root);
 }
 
 // Path: cast
@@ -1068,6 +1069,17 @@ class Translations$musicTools$pt_BR extends Translations$musicTools$pt {
 	@override String get serverActivities => 'Atividades do servidor';
 }
 
+// Path: musicExperience
+class Translations$musicExperience$pt_BR extends Translations$musicExperience$pt {
+	Translations$musicExperience$pt_BR.internal(TranslationsPtBr root) : this._root = root, super.internal(root);
+
+	final TranslationsPtBr _root; // ignore: unused_field
+
+	// Translations
+	@override String get bluetoothDriving => 'Saídas Bluetooth para dirigir';
+	@override String get bluetoothDrivingHint => 'Escolha as saídas Bluetooth conectadas que abrem automaticamente a visualização de direção.';
+}
+
 // Path: common.mediaKind
 class Translations$common$mediaKind$pt_BR extends Translations$common$mediaKind$pt {
 	Translations$common$mediaKind$pt_BR.internal(TranslationsPtBr root) : this._root = root, super.internal(root);
@@ -1965,6 +1977,8 @@ extension on TranslationsPtBr {
 			'musicTools.sonicAnalysis' => 'Análise sonora',
 			'musicTools.serverAnalysisScope' => 'Todas as bibliotecas de música elegíveis neste servidor. As configurações de análise não são alteradas.',
 			'musicTools.serverActivities' => 'Atividades do servidor',
+			'musicExperience.bluetoothDriving' => 'Saídas Bluetooth para dirigir',
+			'musicExperience.bluetoothDrivingHint' => 'Escolha as saídas Bluetooth conectadas que abrem automaticamente a visualização de direção.',
 			_ => null,
 		};
 	}

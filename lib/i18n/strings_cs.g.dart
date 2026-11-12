@@ -4334,6 +4334,8 @@ class _Translations$musicExperience$cs extends Translations$musicExperience$en {
 	@override String get routeLost => 'Zvukový výstup odpojen. Přehrávání pozastaveno.';
 	@override String get autoDriving => 'Otevřít režim řízení při připojení k autu';
 	@override String get routeHint => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.';
+	@override String get bluetoothDriving => 'Bluetooth výstupy pro řízení';
+	@override String get bluetoothDrivingHint => 'Vyberte připojené Bluetooth výstupy, které automaticky otevřou zobrazení pro řízení.';
 }
 
 // Path: musicTools
@@ -9546,6 +9548,8 @@ extension on TranslationsCs {
 			'musicExperience.routeLost' => 'Zvukový výstup odpojen. Přehrávání pozastaveno.',
 			'musicExperience.autoDriving' => 'Otevřít režim řízení při připojení k autu',
 			'musicExperience.routeHint' => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.',
+			'musicExperience.bluetoothDriving' => 'Bluetooth výstupy pro řízení',
+			'musicExperience.bluetoothDrivingHint' => 'Vyberte připojené Bluetooth výstupy, které automaticky otevřou zobrazení pro řízení.',
 			'musicTools.loudnessMissing' => 'Server nevrátil údaje o hlasitosti',
 			'musicTools.loudnessRequested' => 'Požadavek na analýzu byl odeslán',
 			'musicTools.loudnessUnsupported' => 'Tato verze serveru nepodporuje požadavky na analýzu',

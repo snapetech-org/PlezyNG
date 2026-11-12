@@ -14684,6 +14684,12 @@ class Translations$musicExperience$en {
 
 	/// en: 'The car system controls whether the app can appear automatically.'
 	String get routeHint => 'The car system controls whether the app can appear automatically.';
+
+	/// en: 'Bluetooth driving outputs'
+	String get bluetoothDriving => 'Bluetooth driving outputs';
+
+	/// en: 'Choose connected Bluetooth outputs that automatically open driving view.'
+	String get bluetoothDrivingHint => 'Choose connected Bluetooth outputs that automatically open driving view.';
 }
 
 // Path: musicTools
@@ -22744,6 +22750,8 @@ extension on Translations {
 			'musicExperience.routeLost' => 'Audio output disconnected. Playback paused.',
 			'musicExperience.autoDriving' => 'Open driving view when connected to a car',
 			'musicExperience.routeHint' => 'The car system controls whether the app can appear automatically.',
+			'musicExperience.bluetoothDriving' => 'Bluetooth driving outputs',
+			'musicExperience.bluetoothDrivingHint' => 'Choose connected Bluetooth outputs that automatically open driving view.',
 			'musicTools.loudnessMissing' => 'No loudness data returned',
 			'musicTools.loudnessRequested' => 'Analysis request sent',
 			'musicTools.loudnessUnsupported' => 'This server version does not support analysis requests',

@@ -90,6 +90,7 @@ class TranslationsPtPt extends TranslationsPt with BaseTranslations<AppLocale, T
 	@override late final Translations$romm$pt_PT romm = Translations$romm$pt_PT.internal(_root);
 	@override late final Translations$subtitleCapture$pt_PT subtitleCapture = Translations$subtitleCapture$pt_PT.internal(_root);
 	@override late final Translations$musicTools$pt_PT musicTools = Translations$musicTools$pt_PT.internal(_root);
+	@override late final Translations$musicExperience$pt_PT musicExperience = Translations$musicExperience$pt_PT.internal(_root);
 }
 
 // Path: cast
@@ -1086,6 +1087,17 @@ class Translations$musicTools$pt_PT extends Translations$musicTools$pt {
 	@override String get serverActivities => 'Atividades do servidor';
 }
 
+// Path: musicExperience
+class Translations$musicExperience$pt_PT extends Translations$musicExperience$pt {
+	Translations$musicExperience$pt_PT.internal(TranslationsPtPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPtPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get bluetoothDriving => 'Saídas Bluetooth para condução';
+	@override String get bluetoothDrivingHint => 'Escolha as saídas Bluetooth ligadas que abrem automaticamente a vista de condução.';
+}
+
 // Path: common.mediaKind
 class Translations$common$mediaKind$pt_PT extends Translations$common$mediaKind$pt {
 	Translations$common$mediaKind$pt_PT.internal(TranslationsPtPt root) : this._root = root, super.internal(root);
@@ -1989,6 +2001,8 @@ extension on TranslationsPtPt {
 			'musicTools.sonicAnalysis' => 'Análise sonora',
 			'musicTools.serverAnalysisScope' => 'Todas as bibliotecas de música elegíveis neste servidor. As definições de análise não são alteradas.',
 			'musicTools.serverActivities' => 'Atividades do servidor',
+			'musicExperience.bluetoothDriving' => 'Saídas Bluetooth para condução',
+			'musicExperience.bluetoothDrivingHint' => 'Escolha as saídas Bluetooth ligadas que abrem automaticamente a vista de condução.',
 			_ => null,
 		};
 	}

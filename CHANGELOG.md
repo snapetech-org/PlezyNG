@@ -4,7 +4,8 @@
 
 - Remove an obsolete music-playback warning from translations so release code analysis recognizes the working music player.
 - Add optional per-span pronunciation readings to karaoke lyric packages and render them as ruby annotations on the Flutter and browser stages, with line-level pronunciation retained as a fallback.
-- Refuse LRC and WebVTT exports when the selected format cannot preserve lyric metadata or timing, and close WebVTT speaker tags correctly.
+- Preserve simple WebVTT ruby readings through import and export as timed per-span pronunciations. Refuse LRC/WebVTT exports when the format cannot preserve other lyric metadata or timing, and close WebVTT speaker tags correctly.
+- Preserve simple WebVTT ruby readings through import and export as timed per-span pronunciations.
 - Preserve syllable units and optional source confidence in karaoke lyric editor revisions; unknown confidence remains unknown.
 - Page large music playlists directly into the bounded metadata window, validate each page against its original account and library, and keep the audible queue intact if preparing replacement metadata fails. Validate owned offline playlist batches without repeatedly scanning every download.
 

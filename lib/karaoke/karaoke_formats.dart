@@ -94,34 +94,76 @@ class KaraokeFormats {
         warnings.add('WebVTT cue layout is preserved in the original only');
       }
       var payload = rows.skip(i + 1).join('\n').replaceFirst(RegExp(r'\n+$'), '');
-      final part = RegExp(r'<v(?:\.[^ >]+)?\s+([^>]+)>').firstMatch(payload)?[1];
-      if (RegExp(r'<(?:ruby|rt|lang)').hasMatch(payload)) {
-        warnings.add('Ruby/language markup is preserved in the original only');
+      final partTag = RegExp(r'<v(?:\.[^ >]+)?\s+([^>]+)>').firstMatch(payload)?[1];
+      final part = partTag == null ? null : _entities(partTag);
+      var markerPrefix = '\u{F0000}PLEAZYNG_RUBY_';
+      const markerSuffix = '\u{F0001}';
+      while (payload.contains(markerPrefix)) {
+        markerPrefix += '_';
+      }
+      final rubyParts = <String, List<String>>{};
+      var rubyIndex = 0;
+      final rubyPattern = RegExp(
+        r'<ruby(?:\s+[^>]*)?>(.*?)<rt(?:\s+[^>]*)?>(.*?)</rt>\s*</ruby>',
+        caseSensitive: false,
+        dotAll: true,
+      );
+      payload = payload.replaceAllMapped(rubyPattern, (match) {
+        final base = match[1]!, reading = match[2]!;
+        if (base.isEmpty ||
+            reading.isEmpty ||
+            RegExp(r'<[^>]+>').hasMatch(base) ||
+            RegExp(r'<[^>]+>').hasMatch(reading)) {
+          return match[0]!;
+        }
+        final marker = '$markerPrefix${rubyIndex++}$markerSuffix';
+        rubyParts[marker] = [_entities(base), _entities(reading)];
+        return marker;
+      });
+      if (RegExp(r'<(?:ruby|rt|lang)\b', caseSensitive: false).hasMatch(payload)) {
+        warnings.add('Unsupported ruby/language markup is preserved in the original only');
       }
       payload = payload.replaceAll(RegExp(r'</?[a-zA-Z][^>]*>'), '');
       final stamps = RegExp(r'<((?:\d+:)?\d{2}:\d{2}\.\d{3})>').allMatches(payload).toList();
       final spans = <LyricSpan>[];
+      final rubyMarker = RegExp('${RegExp.escape(markerPrefix)}\\d+${RegExp.escape(markerSuffix)}');
+      void appendTextSpans(String content, int begin, int? finish) {
+        var offset = 0;
+        for (final marker in rubyMarker.allMatches(content)) {
+          final before = _entities(content.substring(offset, marker.start));
+          if (before.isNotEmpty) {
+            spans.add(LyricSpan(text: before, startMs: begin, endMs: finish, part: part));
+          }
+          final ruby = rubyParts[marker[0]!];
+          if (ruby != null) {
+            spans.add(LyricSpan(text: ruby[0], startMs: begin, endMs: finish, part: part, pronunciation: ruby[1]));
+          }
+          offset = marker.end;
+        }
+        final tail = _entities(content.substring(offset));
+        if (tail.isNotEmpty) {
+          spans.add(LyricSpan(text: tail, startMs: begin, endMs: finish, part: part));
+        }
+      }
+
       var cursor = 0, at = start;
       for (final stamp in stamps) {
         final next = _time(stamp[1]!);
         if (next <= at || next >= end) {
           throw const FormatException('Invalid WebVTT inline timestamp');
         }
-        spans.add(
-          LyricSpan(text: _entities(payload.substring(cursor, stamp.start)), startMs: at, endMs: next, part: part),
-        );
+        appendTextSpans(payload.substring(cursor, stamp.start), at, next);
         cursor = stamp.end;
         at = next;
       }
-      spans.add(LyricSpan(text: _entities(payload.substring(cursor)), startMs: at, endMs: end, part: part));
+      appendTextSpans(payload.substring(cursor), at, end);
+      final hasRuby = rubyParts.isNotEmpty;
+      if (stamps.isEmpty && !hasRuby) {
+        spans.clear();
+      }
+      final lineText = stamps.isNotEmpty || hasRuby ? spans.map((span) => span.text).join() : _entities(payload);
       lines.add(
-        LyricLine(
-          text: spans.map((s) => s.text).join(),
-          startMs: start,
-          endMs: end,
-          part: part,
-          spans: stamps.isEmpty ? const [] : spans,
-        ),
+        LyricLine(text: lineText, startMs: start, endMs: end, part: part, spans: spans.isEmpty ? const [] : spans),
       );
     }
     lines.sort((a, b) => a.startMs!.compareTo(b.startMs!));
@@ -306,6 +348,7 @@ class KaraokeFormats {
     required bool supportsLineParts,
     required bool supportsExplicitLineEnds,
     required bool supportsCueEndForLastSpan,
+    required bool supportsSpanPronunciation,
   }) {
     final losses = <String>{};
     for (var i = 0; i < lyrics.lines.length; i++) {
@@ -333,7 +376,7 @@ class KaraokeFormats {
 
       for (var j = 0; j < line.spans.length; j++) {
         final span = line.spans[j];
-        if (span.pronunciation?.trim().isNotEmpty ?? false) {
+        if (!supportsSpanPronunciation && (span.pronunciation?.trim().isNotEmpty ?? false)) {
           losses.add('per-span pronunciation readings');
         }
         if (span.unit != LyricUnit.word) {
@@ -348,9 +391,16 @@ class KaraokeFormats {
         if (line.startMs != null && span.startMs < line.startMs!) {
           losses.add('span starts before their cue');
         }
-        final impliedEnd = j + 1 < line.spans.length
-            ? line.spans[j + 1].startMs
-            : (supportsCueEndForLastSpan ? cueEnd : null);
+        int? impliedEnd;
+        for (var next = j + 1; next < line.spans.length; next++) {
+          if (line.spans[next].startMs != span.startMs) {
+            impliedEnd = line.spans[next].startMs;
+            break;
+          }
+        }
+        if (impliedEnd == null && supportsCueEndForLastSpan) {
+          impliedEnd = cueEnd;
+        }
         if (span.endMs != null && span.endMs != impliedEnd) {
           losses.add('explicit span end times');
         }
@@ -373,6 +423,7 @@ class KaraokeFormats {
       supportsLineParts: true,
       supportsExplicitLineEnds: true,
       supportsCueEndForLastSpan: true,
+      supportsSpanPronunciation: true,
     );
     final out = StringBuffer('WEBVTT\n\n');
     for (var i = 0; i < lyrics.lines.length; i++) {
@@ -395,7 +446,12 @@ class KaraokeFormats {
           if (s.startMs > line.startMs! && s.startMs < end) {
             out.write('<${_stamp(s.startMs)}>');
           }
-          out.write(_escape(s.text));
+          final pronunciation = s.pronunciation;
+          if (pronunciation != null && pronunciation.trim().isNotEmpty) {
+            out.write('<ruby>${_escape(s.text)}<rt>${_escape(pronunciation)}</rt></ruby>');
+          } else {
+            out.write(_escape(s.text));
+          }
         }
       }
       if (line.part != null) {
@@ -414,6 +470,7 @@ class KaraokeFormats {
       supportsLineParts: false,
       supportsExplicitLineEnds: false,
       supportsCueEndForLastSpan: false,
+      supportsSpanPronunciation: false,
     );
     return lyrics.lines
         .map((l) {

@@ -62,7 +62,7 @@ public final class PlezyFfmpegPlaybackTest {
   public void sharedDecoderUsesLibmpvFfmpegAndPlaysAllFixtures() throws Exception {
     assertTrue("FFmpeg JNI library is unavailable", FfmpegLibrary.isAvailable());
     String version = FfmpegLibrary.getVersion();
-    assertTrue("Expected libmpv's FFmpeg 8, got " + version, version != null && version.startsWith("Lavc62."));
+    assertTrue("Expected libmpv's FFmpeg 9, got " + version, version != null && version.startsWith("Lavc63."));
     for (String fixture : FIXTURES) {
       playToEnd(fixture);
     }

@@ -250,23 +250,8 @@ AUDIO_DECODER_FUNC(jlong, ffmpegReset, jlong jContext, jbyteArray extraData) {
     return 0L;
   }
 
-  AVCodecID codecId = context->codec_id;
-  if (codecId == AV_CODEC_ID_TRUEHD) {
-    jboolean outputFloat = (jboolean)(context->request_sample_fmt == OUTPUT_FORMAT_PCM_FLOAT);
-    // Release and recreate the context if the codec is TrueHD.
-    // TODO: Figure out why flushing doesn't work for this codec.
-    releaseContext(context);
-    const AVCodec* codec = avcodec_find_decoder(codecId);
-    if (!codec) {
-      LOGE("Unexpected error finding codec %d.", codecId);
-      return 0L;
-    }
-    return (jlong)createContext(
-        env, codec, extraData, outputFloat,
-        /* rawSampleRate= */ -1,
-        /* rawChannelCount= */ -1);
-  }
-
+  // FFmpeg's TrueHD decoder registers its own MLP flush callback, like the other
+  // bundled audio decoders. Reusing it avoids rebuilding the codec context on seeks.
   avcodec_flush_buffers(context);
   return (jlong)context;
 }

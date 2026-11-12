@@ -20,6 +20,7 @@
 - Update the karaoke qualification ledger to reflect current source checks and the current hosted-runner default.
 - Include span-level singer assignments in karaoke duet choices, stage labels, and part colors.
 - Ignore empty karaoke singer-part IDs in duet choices and stage coloring.
+- Reject karaoke lyric packages whose timed spans do not reconstruct their parent lyric text.
 - Add a dedicated karaoke word/syllable timing editor with exact-text split/merge and explicit timing boundaries.
 - Page large music playlists directly into the bounded metadata window, validate each page against its original account and library, and keep the audible queue intact if preparing replacement metadata fails. Validate owned offline playlist batches without repeatedly scanning every download.
 

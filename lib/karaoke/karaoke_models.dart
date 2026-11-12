@@ -228,6 +228,9 @@ class KaraokeTrack {
       throw const FormatException('Invalid rendition year or difficulty');
     }
     for (final l in lyrics.lines) {
+      if (l.spans.isNotEmpty && l.spans.map((span) => span.text).join() != l.text) {
+        throw const FormatException('Lyric spans do not reproduce their line text');
+      }
       if (l.text.length > 16000 ||
           (l.startMs ?? 0) < 0 ||
           (l.endMs ?? 0) > 24 * 3600000 ||

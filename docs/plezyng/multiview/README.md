@@ -74,12 +74,12 @@ See [RESEARCH.md](RESEARCH.md) for immutable code references, platform evidence,
 
 ## Implementation boundary
 
-Current main includes profile-scoped workspace state and persistence, shared pane controls, session adapters for current video/music/source/reader surfaces, two isolated native video channels, and an Android Steam retained surface. Capability checks keep unsupported engine/platform combinations out of the embedded path. Retained desktop video pop-outs are implemented for macOS, Windows and Linux/Wayland. Non-video desktop pop-outs, additional video slots and the remaining engine/device composition work are open; see DELIVERY.md for exact boundaries. An implemented adapter is not device-qualified until the validation matrix passes.
+Current main includes profile-scoped workspace state and persistence, shared pane controls, session adapters for current video/music/source/reader surfaces, two isolated native video channels, and an Android Steam retained surface. Capability checks keep unsupported engine/platform combinations out of the embedded path. Retained desktop video windows and supported non-video Flutter views are implemented for macOS, Windows and Linux/Wayland. More than two native video slots and the remaining engine/device composition work are open; see DELIVERY.md for exact boundaries. An implemented adapter is not device-qualified until the validation matrix passes.
 
 ## Handoff boundaries
 
 The integrated source includes the Games library and Android native modules. Android Steam has a retained surface adapter and can open as an app-owned pane. GameStream/Moonlight still uses an Activity and is not advertised as an inline surface; other platform game renderers remain unavailable. Do not widen the embedded capability flag until a target has an independently owned renderer, audio/input handoff and teardown implementation.
 
-The current comic delivery document still lists renderer and device work as incomplete, and the publication reader rejects TV. Existing work may land during this handoff. Preserve it and integrate at the adapter boundary; do not replace the comic, localization, audiobook-sync, or Dolby Vision projects with parallel implementations.
+The comic renderer is implemented as described in [its delivery record](../comics/DELIVERY.md); native device, live-service and TV-reader qualification remain open. Preserve the existing comic, localization, audiobook-sync and Dolby Vision implementations and integrate at their adapter boundaries; do not replace them with parallel implementations.
 
 The latest continuation adds focused Dart and JVM regression tests and CI coverage for the Android adapter and app build. Those checks are authored but have not run in this workspace. Record their results and device qualification per backend and scenario as defined in VALIDATION.md before release.

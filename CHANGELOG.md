@@ -12,7 +12,7 @@
 
 - Compile the Android GameStream/Moonlight integration with the app for arm64, ARMv7, x86 and x86_64.
 
-- Reconcile the MilkDrop capability finding with current `.milk2` source implementation and recorded Linux rendering evidence, keeping runtime and device gates explicit.
+- Reconcile the MilkDrop capability record with the promoted ordered PCM mpv artifacts and `.milk2` source implementation, keeping rendering, runtime, rights and device qualification gates explicit.
 
 - Add Android GameStream to app-owned Multiview through a retained Moonlight surface with session-owned connection, audio/input leases and teardown; enforce Moonlight's one-active-connection limit. Independently adapted from the pinned [Moonlight Android receiver revision](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d), authored upstream by [@cgutman](https://github.com/cgutman); see [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md#credited-moonlight-android-source).
 

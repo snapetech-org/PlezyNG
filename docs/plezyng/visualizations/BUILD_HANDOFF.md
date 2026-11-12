@@ -43,14 +43,18 @@ No builder installs credentials or creates production signing keys.
 
 ## PCM dependency promotion
 
-The app's present mpv binary lock still contains old artifacts. Use the pinned
-`appMpvBuild` source and ordered PCM patch/Android session bridge described in
-`native/visualizer/README.md`. Its private-JIT publication gates must verify the
-required native exports before promotion. After real immutable artifacts exist,
-use `scripts/set_native_revision.sh` with the actual full mpv-build revision and
-repository, reviewing all resulting lock/checksum changes. Do not substitute
-source hashes for archive hashes. Tizen and the webOS SoLoud route do not use this
-mpv extension, but still need their own SDK and physical audio qualification.
+Ordered PCM artifacts have been promoted into the app lock. The v3.0.33 release
+source records the ABI and required exports in `mpv-build.lock.json`; current
+main advances the lock to mpv-build commit
+`3e674d64a821dd96a41434a03e72ae358977d83a`, with artifact and binary digests.
+Android, Apple, Linux, and Windows package manifests require the ordered PCM
+symbols. Their `executionQualified` receipts remain false, so this promotion
+does not establish actual playback. For a future native update, build and
+inspect the new artifacts, then use `scripts/set_native_revision.sh` with the
+actual full mpv-build revision and repository, reviewing all resulting
+lock/checksum changes. Never substitute source hashes for archive hashes.
+Tizen and the webOS SoLoud route do not use this mpv extension and still need
+their own SDK and physical audio qualification.
 
 ## Verification and pack delivery
 

@@ -25,8 +25,8 @@ is compatible.
 | V6 local library | Bounded loose/folder/ZIP/rmpack import, atomic install/recovery/removal, dependency-aware shared texture storage, private resolved views, preset/assets/notices export, shape/wave export and composition into a new copy. |
 | V7 downloads | Explicit catalog fetch/install/update/remove, durable bounded staging, ETag/Range-validated resume, cancel/retry/discard, checksum validation and offline use. |
 | V8 app controls | Search/favorites/playlists, engine and per-preset capability negotiation, lock/shuffle/timing/transition/fullscreen/input controls, persisted profile choices and adaptive native resolution/frame pacing. |
-| V9 qualification tooling | Source regressions, fault/lifecycle controls, private JIT jobs, reference/corpus evidence formats and per-target qualification gates. Execution and physical-device results are pending. |
-| V10 release tooling | Runtime/source/notices packaging for each claimed platform, mpv artifact promotion tooling, signing-root configuration, protected publisher/preflight and release documentation. Credential/artifact production and publication are pending. |
+| V9 qualification tooling | Source regressions, fault/lifecycle controls, compatible hosted/private JIT jobs, reference/corpus evidence formats and per-target qualification gates. Execution and physical-device results are pending. |
+| V10 release tooling | Runtime/source/notices packaging for each claimed platform, mpv artifact promotion tooling, signing-root configuration, protected publisher/preflight and release documentation. The ordered PCM mpv artifacts are promoted in the app lock; MilkRust runtime production/installation qualification, signing custody and catalog publication remain open. |
 
 ## Final code closure
 
@@ -49,12 +49,16 @@ resolve aliases without copying source packs into each consumer.
 ## Validation and delivery still pending
 
 - Compile/link, tests, corpus conversion runs, driver execution and reference
-  pixel/behavior comparisons on compatible private ephemeral JIT runners.
+  pixel/behavior comparisons on compatible hosted runners by default, using
+  private JIT only when the required platform, device, or private resource needs it.
 - Installed app, audio ownership, accessibility/localization, performance,
   lifecycle and physical-device qualification for each platform.
-- Production of the new mpv/runtime binaries, promotion of their actual digests,
-  generation/rights review/qualification of candidate packs, reviewed signing
-  custody/public root, and release/catalog publication.
+- Actual PCM playback, lifecycle, passthrough and performance qualification on
+  supported devices; the ordered PCM artifact promotion is already recorded in
+  `mpv-build.lock.json`.
+- MilkRust runtime production and installation evidence across supported
+  targets, generation/rights review/qualification of candidate packs, reviewed
+  signing custody/public root, and catalog publication.
 
 None of those pending results is recorded as passed. The source lock retains
 source-only-unqualified. Current release binaries and remote catalog

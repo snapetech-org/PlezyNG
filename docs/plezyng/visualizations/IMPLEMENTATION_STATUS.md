@@ -15,19 +15,22 @@ The first local app build linked the host's unpatched libmpv. The locked mpv-bui
 
 The Linux release and package-smoke workflows now check the final bundle for the pinned MilkRust runtime, helper, corresponding source, notices, offline starter pack and all four ordered music PCM tap exports in the bundled libmpv. This prevents a package from silently using an unpatched host libmpv while showing the native preset UI. The check passed against the local bundle after the locked mpv artifact was staged; its remaining host-library dependencies and actual music playback still require CI and installed-app qualification.
 
-Updated 2026-10-30. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/pleazyng/pull/82)
-and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
-pins the current MilkRust PR #20 source revision in `native/visualizer/sources.lock.json`; the exact dependency
-contract is in that file. The
-[original plan](COMPLETION_PLAN.md) remains the completion contract.
+Current integration as of 2026-11-12: [PlezyNG PR #82](https://github.com/snapetech-org/pleazyng/pull/82)
+and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20) are
+reconciled into main. The app pins MilkRust in
+`native/visualizer/sources.lock.json`; the exact dependency contract is in that
+file. Both the published v3.0.33 source and current main's `mpv-build.lock.json`
+record the ordered PCM ABI and required native exports for Android, Apple,
+Linux, and Windows. Package hashes and symbol inspection do not establish
+playback execution. The [original plan](COMPLETION_PLAN.md) remains the
+completion contract.
 
 **Code implementation: 100% complete for the documented legacy profile and
 app workflow.** [SOURCE_COMPLETION.md](SOURCE_COMPLETION.md) maps the completed
 source to V0–V10 and defines the separate pending validation/delivery gates.
-The user's current instruction does not require test execution to close the
-code gate. No build, test, conversion run or device run is claimed. Source
-completion does not establish universal compatibility or a working release.
-Executable acceptance work should use compatible hosted runners, with private
+The local Linux build and rendering evidence above covers two bundled samples;
+it does not establish universal compatibility, reference fidelity, or installed
+playback on every target. Use compatible hosted runners by default, with private
 JIT only where the required platform, device, or private resource demands it.
 
 
@@ -51,12 +54,13 @@ JIT only where the required platform, device, or private resource demands it.
 ## Audio and host contracts
 
 Linux, Windows, Apple and Android consume an ordered same-player mpv PCM tap.
-Its pinned source and Android session bridge are prepared. **The regular app's
-`mpv-build.lock.json` still points to older binaries without that extension.**
-The mpv-build source must first produce private-JIT artifacts, then the app's
-binary lock/verification metadata must be promoted from their real digests.
-Inventing replacement checksums cannot close this dependency. Missing PCM APIs
-remain an explicit unavailable capability and preserve normal playback.
+Its pinned source and Android session bridge are prepared. The app's
+`mpv-build.lock.json` records promoted package artifacts, their hashes, ordered
+PCM ABI 1, and the required tap exports. The package receipts still mark native
+execution unqualified; symbol inspection does not establish actual playback.
+At runtime, missing PCM APIs remain an explicit unavailable capability and
+preserve normal playback. Build and inspect real artifacts before any future
+lock promotion; never substitute source hashes for archive hashes.
 
 Linux uses helper-owned Mesa EGL/GLES 3 contexts. Windows requires helper-owned GL 3.3;
 macOS selects helper-owned CGL 4.1; iOS/tvOS/Android/TV use ES 3. Apple now links static
@@ -123,15 +127,16 @@ private key was invented.
 
 [BUILD_HANDOFF.md](BUILD_HANDOFF.md) identifies the build entrypoints, artifact
 promotion and evidence needed. [CATALOG_RELEASE.md](CATALOG_RELEASE.md) records
-public-root provisioning without private keys in source. All executable work
-must use compatible private ephemeral JIT runners under `AGENTS.md`. The user has since explicitly requested a build. No Action run is attached to
-the latest MilkRust revision, and PlezyNG's build workflows require manual
-dispatch; the connected GitHub tool exposes no workflow-dispatch action. No
-public runner may be used under repository policy.
+public-root provisioning without private keys in source. Use compatible
+GitHub-hosted runners by default; reserve private ephemeral JIT for platform,
+device, network, storage, or tooling needs that hosted runners cannot meet, as
+specified in `AGENTS.md`. The historical notes below retain the execution state
+from their dated checkpoints and do not override that current runner policy.
 
-The remaining work is broader than access to physical hardware: compiler/link
-verification, mpv artifact production/promotion, reference-pixel conformance,
-corpus qualification, rights decisions and production custody/publication are also open.
+The remaining work includes full compiler/link and corpus/reference
+qualification, actual PCM playback, per-platform runtime/package installation,
+rights decisions, and production signing custody/catalog publication. The
+ordered PCM mpv artifacts are already promoted in the app lock.
 
 ## 2026-10-29 code-completion continuation
 

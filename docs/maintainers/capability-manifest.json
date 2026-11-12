@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "reviewedOn": "2026-11-09",
+  "reviewedOn": "2026-11-12",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "d130a4e36ba7dfbac1a28bd8b719f472394de89e",
-    "note": "Current source assessment and remediation ledger. Older F01-F17 qualification entries remain historical evidence; implementation changes are not device or binary qualification.",
+    "auditedMainCommit": "f2e595c388190de8fe00e48f436384b83b9670a1",
+    "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
   "statusDefinitions": {
@@ -81,12 +81,12 @@
     "localeChoices": 37,
     "directory": "lib/i18n",
     "filePattern": "*.i18n.json",
-    "qualityStatus": "Structural locale coverage is present; native-speaker fluency review is not established by key counts or generated-file checks.",
-    "messagesPerLocale": 5166,
+    "qualityStatus": "Structural locale coverage is present: 5,344 messages across 37 locales and 44,458 explicitly allowlisted English-fallback entries. Native-speaker fluency review is not established by key counts or generated-file checks.",
+    "messagesPerLocale": 5344,
     "englishFallbackKeys": 1242,
-    "englishFallbackEntries": 44712,
+    "englishFallbackEntries": 44458,
     "coverageReport": "docs/localization/coverage.json",
-    "coverageReviewedOn": "2026-11-09"
+    "coverageReviewedOn": "2026-11-12"
   },
   "productBoundaries": [
     {
@@ -364,7 +364,7 @@
         "PRIVACY.md",
         "docs/FILES_AND_BOOKS.md"
       ],
-      "qualification": "A source-linked status ledger and repository guard now cover the audit findings, 37 locale files, privacy disclosure, and the honest releases-page link. Version 2.24.1 remains a draft; public assets and native-speaker review are not established."
+      "qualification": "The capability ledger and repository guard cover the current findings, privacy disclosure, and release facts. GitHub lists v3.0.33 as the latest published release (source commit 240994590dd3e5411ee3b02c2bcfc0a1fd51a431); its recorded platform coverage is complete. Structural localization coverage is 5,344 messages across 37 locales, with 44,458 explicitly allowlisted English-fallback entries; native-speaker fluency review is still not established. See docs/maintainers/releases/v3.0.33.json and docs/localization/coverage.json."
     },
     {
       "id": "F16",
@@ -394,7 +394,7 @@
         "docs/plezyng/visualizations/IMPLEMENTATION_STATUS.md",
         "docs/plezyng/visualizations/SOURCE_COMPLETION.md"
       ],
-      "qualification": "The current pinned source implements the documented legacy .milk/.milk2 profile and verified pack workflow; see SOURCE_COMPLETION.md and IMPLEMENTATION_STATUS.md. The 2026-11-11 local x64 Linux MilkRust build and GL/GLES smoke checks rendered 12 changing frames for both bundled samples, and a Linux release Flutter bundle included the matching runtime/helper/source/notices after staging the locked mpv artifact. That Arch host lacks libmujs.so.3, liblua5.2.so.0 and libdisplay-info.so.1, so end-to-end playback and package qualification are not established. The regular app's locked mpv binaries still lack the ordered PCM tap, leaving actual visualizer capture capability-gated. Reference fidelity/corpus conformance, signed-catalog custody, cross-platform package builds, device qualification and community-pack rights remain open; .milk2 is implemented in source, not unavailable."
+      "qualification": "The pinned source implements the documented legacy .milk/.milk2 profile and verified pack workflow; see SOURCE_COMPLETION.md and IMPLEMENTATION_STATUS.md. The 2026-11-11 local x64 Linux MilkRust build and GL/GLES smoke checks rendered 12 changing frames for both bundled samples. The app lock records ordered PCM ABI 1 and all four required tap exports for Android, Apple, Linux, and Windows; mpv-build package manifests mark native execution unqualified, so export inspection does not establish end-to-end playback. The local Arch host lacks libmujs.so.3, liblua5.2.so.0 and libdisplay-info.so.1. Reference fidelity/corpus conformance, signed-catalog custody, cross-platform runtime qualification, device qualification, and community-pack rights remain open; .milk2 is implemented in source, not unavailable."
     }
   ],
   "currentRemediation": {

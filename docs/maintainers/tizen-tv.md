@@ -156,9 +156,11 @@ identical. It never overwrites an existing signed output or guesses a TV target.
 publication. It defaults to compatible hosted Ubuntu and offers the private
 profile for tasks that require private network, storage, or provisioned SDK
 resources. The versioned release uses the hybrid route: Tizen builds run on
-hosted Ubuntu, iOS/tvOS packages use private-first capacity routing, and
-storage-constrained WebOS jobs use private JIT. Both profiles preserve the ARM
-toolchain and signing gates.
+hosted Ubuntu, and iOS/tvOS packages use hosted macOS by default. A hosted tvOS
+job canceled before runner assignment is retried on private Apple JIT after its
+run evidence passes the controller's exact no-runner checks. Storage-constrained
+WebOS jobs use private JIT. Both profiles preserve the ARM toolchain and signing
+gates.
 `build_package` defaults to false; packaging runs only on `main`. `tester_build`
 defaults to true. With no provisioned paths/profile, the ARM job checks out the
 pinned Flutter toolchain, bootstraps its isolated SDK and creates a disposable

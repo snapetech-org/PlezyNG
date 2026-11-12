@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import datetime as dt
 import json
 import os
 import subprocess
@@ -18,106 +17,26 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from verify_release_ci import _manifest_gate  # noqa: E402
+from verify_tvos_runner_acquisition import RunnerAcquisitionError  # noqa: E402
 from release_all_platforms import (  # noqa: E402
     ReleaseError,
     ensure_candidate_build,
     ensure_ci,
     ensure_tag,
     select_apple_runner_pool,
-    private_apple_capacity_from_dashboard,
-    hosted_apple_queue_busy,
     release_ci_source,
     run_has_successful_step,
 )
 
 
 class AppleRunnerRoutingTests(unittest.TestCase):
-    @patch("release_all_platforms.live_private_apple_capacity", return_value=(True, "free slot"))
-    @patch("release_all_platforms.hosted_apple_queue_busy")
-    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=False)
-    def test_private_is_selected_first_when_available(self, _private_busy, hosted_busy, _capacity) -> None:
-        self.assertEqual(select_apple_runner_pool("auto"), "private")
-        hosted_busy.assert_not_called()
-
-    @patch("release_all_platforms.hosted_apple_queue_busy", return_value=False)
-    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=True)
-    def test_hosted_is_fallback_when_private_busy_and_hosted_queue_clear(
-        self, _private_busy, _hosted_busy
-    ) -> None:
+    def test_automatic_route_uses_compatible_hosted_apple_first(self) -> None:
         self.assertEqual(select_apple_runner_pool("auto"), "hosted")
-
-    @patch("release_all_platforms.hosted_apple_queue_busy", return_value=True)
-    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=True)
-    def test_private_is_retried_when_hosted_apple_is_queued(
-        self, _private_busy, _hosted_busy
-    ) -> None:
-        self.assertEqual(select_apple_runner_pool("auto"), "private")
-
-    @patch("release_all_platforms.live_private_apple_capacity", return_value=(False, "disk reserve"))
-    @patch("release_all_platforms.hosted_apple_queue_busy", return_value=False)
-    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=False)
-    def test_offline_mac_without_launch_capacity_falls_back_to_hosted(
-        self, _private_busy, _hosted_busy, _capacity
-    ) -> None:
-        self.assertEqual(select_apple_runner_pool("auto"), "hosted")
-
-    @patch("release_all_platforms.live_private_apple_capacity", return_value=(False, "disk reserve"))
-    @patch("release_all_platforms.hosted_apple_queue_busy", return_value=True)
-    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=False)
-    def test_private_is_retried_when_hosted_is_busy_and_mac_has_no_slot(
-        self, _private_busy, _hosted_busy, _capacity
-    ) -> None:
-        self.assertEqual(select_apple_runner_pool("auto"), "private")
 
     @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner")
-    @patch("release_all_platforms.live_private_apple_capacity")
-    @patch("release_all_platforms.hosted_apple_queue_busy")
-    def test_explicit_route_override_skips_capacity_probe(
-        self, hosted_busy, capacity, private_busy
-    ) -> None:
+    def test_explicit_route_override_skips_private_capacity_probe(self, private_busy) -> None:
         self.assertEqual(select_apple_runner_pool("hosted"), "hosted")
-        hosted_busy.assert_not_called()
-        capacity.assert_not_called()
         private_busy.assert_not_called()
-
-    def test_fresh_dashboard_slot_is_available_and_disk_gate_is_not(self) -> None:
-        now = dt.datetime(2026, 11, 12, 5, 0, tzinfo=dt.timezone.utc)
-        base = {
-            "broker": {
-                "service": {"ActiveState": "active"},
-                "journal_ok": True,
-                "latest_scan": {
-                    "t": now.isoformat(),
-                    "hosts": {"macbook-air": {"free": [1], "reasons": []}},
-                },
-            }
-        }
-        self.assertEqual(
-            private_apple_capacity_from_dashboard(base, now_utc=now),
-            (True, "free Apple JIT slot"),
-        )
-        base["broker"]["latest_scan"]["hosts"]["macbook-air"] = {
-            "free": [], "reasons": ["local-disk-below-38gib"],
-        }
-        self.assertEqual(
-            private_apple_capacity_from_dashboard(base, now_utc=now),
-            (False, "local-disk-below-38gib"),
-        )
-
-    @patch("release_all_platforms.gh_json", return_value={
-        "total_count": 1,
-        "jobs": [{"status": "queued", "labels": ["macos-26"]}],
-    })
-    @patch("release_all_platforms.workflow_runs")
-    def test_hosted_apple_busy_check_includes_ci_workflow(self, runs, _gh_json) -> None:
-        def active_runs(repo: str, workflow: str, **_kwargs):
-            if workflow == "ci.yml":
-                return [{"databaseId": 42, "status": "queued"}]
-            return []
-
-        runs.side_effect = active_runs
-        self.assertTrue(hosted_apple_queue_busy())
-
 
 class ReleaseCIGateManifestTests(unittest.TestCase):
     def test_reads_release_gate_from_capability_manifest(self) -> None:
@@ -145,7 +64,7 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
                 "runner_pool": "private",
                 "execution_profile": "hybrid",
                 "build_linux_packages": "true",
-                "apple_runner_pool": "private",
+                "apple_runner_pool": "hosted",
             },
             "Pleazyng CI",
             expected_title="action:ci:pool:private",
@@ -169,7 +88,7 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
                 "runner_pool": "private",
                 "execution_profile": "hybrid",
                 "build_linux_packages": "true",
-                "apple_runner_pool": "private",
+                "apple_runner_pool": "hosted",
             },
             "Pleazyng CI",
             expected_title="action:ci:pool:private",
@@ -235,7 +154,10 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
         )
 
     @patch("release_all_platforms.ensure_remote_main_sha")
-    @patch("release_all_platforms.dispatch")
+    @patch("release_all_platforms.dispatch", return_value={
+        "databaseId": 7, "status": "completed", "conclusion": "success",
+        "jobs": [{"name": "Build Windows (arm64)", "status": "completed", "conclusion": "success"}],
+    })
     @patch("release_all_platforms.active_run", return_value=None)
     @patch("release_all_platforms.matching_run", return_value=None)
     def test_dispatches_full_nonpublishing_release_mode_on_exact_main_sha(
@@ -259,17 +181,25 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
                 "include_webos_release": "true",
                 "include_tizen_build": "true",
                 "include_apple_store_build": "false",
-                "tvos_runner_pool": "private",
+                "tvos_runner_pool": "hosted",
                 "subtitle_gpu_backend": "cpu",
                 "prepare_homebrew_cask": "false",
             },
             "Pleazyng 3.0.0 all-platform release-mode candidate",
             expected_title="action:build:pool:private:mode:release:version:3.0.0",
             expected_sha=commit_sha,
+            allow_failure=True,
         )
 
     @patch("release_all_platforms.ensure_remote_main_sha")
-    @patch("release_all_platforms.dispatch")
+    @patch("release_all_platforms.dispatch", return_value={
+        "databaseId": 8, "status": "completed", "conclusion": "success",
+        "jobs": [
+            {"name": "Build Windows (arm64)", "status": "completed", "conclusion": "success"},
+            {"name": "build-ios", "steps": [{"name": "Build signed iOS App Store IPA", "status": "completed", "conclusion": "success"}]},
+            {"name": "Build tvOS developer package (arm64)", "steps": [{"name": "Build signed tvOS App Store IPA", "status": "completed", "conclusion": "success"}]},
+        ],
+    })
     @patch("release_all_platforms.active_run", return_value=None)
     @patch("release_all_platforms.matching_run", return_value=None)
     def test_signed_apple_candidate_is_explicit_without_changing_runner_title(
@@ -301,12 +231,41 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
             expected_title="action:build:pool:private:mode:release:version:3.0.0",
         )
 
+    @patch("release_all_platforms.verify_unacquired_hosted_tvos_run", side_effect=RunnerAcquisitionError("build step ran"))
     @patch("release_all_platforms.matching_run")
-    def test_rejects_a_failed_candidate_for_the_exact_commit(self, matching_run) -> None:
+    def test_rejects_a_failed_candidate_for_the_exact_commit(self, matching_run, _verify) -> None:
         matching_run.return_value = {"databaseId": 124, "status": "completed", "conclusion": "failure"}
 
-        with self.assertRaisesRegex(ReleaseError, "refusing to tag an unvalidated commit"):
+        with self.assertRaisesRegex(ReleaseError, "not a verified hosted tvOS runner-acquisition cancellation"):
             ensure_candidate_build("3.0.0", "b" * 40)
+
+    @patch("release_all_platforms.verify_unacquired_hosted_tvos_run", return_value={"run_id": 124})
+    @patch("release_all_platforms.ensure_remote_main_sha")
+    @patch("release_all_platforms.dispatch", return_value={
+        "databaseId": 125, "status": "completed", "conclusion": "success",
+        "jobs": [{"name": "Build Windows (arm64)", "status": "completed", "conclusion": "success"}],
+    })
+    @patch("release_all_platforms.active_run", return_value=None)
+    @patch("release_all_platforms.matching_run")
+    def test_hosted_allocation_failure_dispatches_a_unique_private_candidate_retry(
+        self, matching_run, _active, dispatch, _main, verify
+    ) -> None:
+        matching_run.side_effect = [
+            {"databaseId": 124, "status": "completed", "conclusion": "failure"},
+            None,
+        ]
+
+        result = ensure_candidate_build("3.0.0", "b" * 40)
+
+        self.assertEqual(result["databaseId"], 125)
+        verify.assert_called_once_with(124, "b" * 40, "3.0.0", action="build")
+        fields = dispatch.call_args.args[3]
+        self.assertEqual(fields["tvos_runner_pool"], "private")
+        self.assertEqual(fields["runner_acquisition_retry_of"], "124")
+        self.assertEqual(
+            dispatch.call_args.kwargs["expected_title"],
+            "action:build:pool:private:mode:release:version:3.0.0:runner-retry-of:124",
+        )
 
 
 class ImmutableReleaseTagTests(unittest.TestCase):

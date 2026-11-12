@@ -765,7 +765,7 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn(
-            "build and release run names must match the private JIT broker title schema",
+            "build and release run names must uniquely identify tvOS runner recovery attempts",
             result.stderr,
         )
 

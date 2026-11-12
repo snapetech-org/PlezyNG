@@ -129,7 +129,7 @@ class CorePublicationTests(unittest.TestCase):
                     continue
                 self.assertEqual(release.main(), 0)
                 self.assertEqual(build.call_count, 2)
-                self.assertTrue(build.call_args_list[0].kwargs['start_only'])
+                self.assertFalse(build.call_args_list[0].kwargs.get('start_only', False))
                 self.assertEqual(build.call_args.kwargs['candidate_ref'], 'v3.0.1-candidate.' + 'a' * 40)
                 self.assertNotIn('source_ref', build.call_args.kwargs)
                 self.assertFalse(build.call_args.kwargs["include_apple_store_build"])

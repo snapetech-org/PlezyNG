@@ -82,12 +82,12 @@ tvos_pool_input = re.search(
 require(
     tvos_pool_input is not None
     and "options: [hosted, private]" in tvos_pool_input.group("body")
-    and "default: private" in tvos_pool_input.group("body"),
-    "full iOS/tvOS release builds must default to the proven on-demand Apple lane",
+    and "default: hosted" in tvos_pool_input.group("body"),
+    "full iOS/tvOS release builds must default to compatible hosted Apple",
 )
 require(
     "apple_runner_pool: ${{ inputs.tvos_runner_pool }}" in job("release-ci"),
-    "Release CI Apple reliability checks must share the release's private-first capacity route",
+    "Release CI Apple reliability checks must share the release's selected Apple route",
 )
 require(
     "inputs.action == 'release' && 'pleazyng-versioned-release-v2'" in text
@@ -117,13 +117,12 @@ require(
     isinstance(apple_pool_default, ast.Constant)
     and apple_pool_default.value == "auto"
     and "def select_apple_runner_pool(requested: str) -> str:" in release_driver_text
-    and "apple_queue.active_run_scoped_apple_runner()" in release_driver_text
-    and "def private_apple_capacity_from_dashboard(" in release_driver_text
-    and "RUNNER_QUEUE_SCAN_MAX_AGE_SECONDS = 180" in release_driver_text
-    and "for workflow in (RELEASE_WORKFLOW, CI_WORKFLOW)" in release_driver_text
+    and "from verify_tvos_runner_acquisition import RunnerAcquisitionError, verify_unacquired_hosted_tvos_run" in release_driver_text
+    and "runner-retry-of" in release_driver_text
+    and "recovery:source:" in release_driver_text
     and "apple_runner_pool=apple_pool" in release_driver_text
-    and 'print("Apple route: hosted Apple is also busy; queueing private for its next free slot."' in release_driver_text,
-    "release driver must prefer private Apple, fall back on capacity, and return to private when hosted Apple is queued",
+    and "private Apple JIT route" in release_driver_text,
+    "release driver must use hosted Apple first and retry privately only after verified non-acquisition",
 )
 
 
@@ -1558,12 +1557,14 @@ run_name_expression = run_name.group(1) if run_name else ""
 require(
     all(field in run_name_expression for field in ("inputs.action", "inputs.runner_pool", "inputs.build_version"))
     and "format('action:{0}:pool:{1}:tag:v{2}'" in run_name_expression
+    and "inputs.runner_acquisition_retry_of" in run_name_expression
+    and "format('action:{0}:pool:{1}:tag:v{2}:recovery:source:{3}:tvos'" in run_name_expression
     and "inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != ''" in run_name_expression
     and "format('action:{0}:pool:{1}:mode:{2}:version:{3}'" in run_name_expression
     and "format('action:{0}:pool:{1}'" in run_name_expression
     and "inputs.action == 'release'" in run_name_expression
     and "reuse:" not in run_name_expression,
-    "build and release run names must match the private JIT broker title schema",
+    "build and release run names must uniquely identify tvOS runner recovery attempts",
 )
 
 for action_pool_job in (

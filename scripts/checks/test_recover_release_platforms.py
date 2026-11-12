@@ -663,6 +663,36 @@ class ArtifactTests(unittest.TestCase):
 
 class ControllerTests(unittest.TestCase):
     @patch.object(controller, "verify_platform_recovery")
+    @patch.object(controller, "verify_unacquired_hosted_tvos_run", return_value={"run_id": 77})
+    @patch.object(controller, "matching_run")
+    @patch.object(controller, "ensure_remote_main_sha")
+    @patch.object(controller, "dispatch", return_value={
+        "databaseId": 78, "status": "completed", "conclusion": "success",
+    })
+    def test_hosted_tvos_non_acquisition_recovers_only_tvos_on_private_jit(
+        self, dispatch, ensure_main, matching, _allocation_evidence, verify
+    ):
+        matching.side_effect = [
+            {"databaseId": 77, "status": "completed", "conclusion": "failure"},
+            None,
+        ]
+
+        result = controller.ensure_release("v3.0.0", "b" * 40, include_webos_release=True)
+
+        self.assertEqual(result["databaseId"], 78)
+        ensure_main.assert_called_once_with("b" * 40, "dispatching the v3.0.0 release build")
+        verify.assert_called_once_with(77, "b" * 40, "3.0.0", rebuild_tvos=True,
+                                       webos_run=77, android_run=77)
+        fields = dispatch.call_args.args[3]
+        self.assertEqual(fields["tvos_runner_pool"], "private")
+        self.assertEqual(fields["reuse_platform_run_id"], "77")
+        self.assertEqual(fields["reuse_android_run_id"], "77")
+        self.assertEqual(fields["reuse_webos_run_id"], "77")
+        self.assertEqual(fields["rebuild_tvos"], "true")
+        self.assertEqual(dispatch.call_args.kwargs["expected_title"],
+                         "action:release:pool:private:tag:v3.0.0:recovery:source:77:tvos")
+
+    @patch.object(controller, "verify_platform_recovery")
     @patch.object(controller, "matching_run", return_value=None)
     @patch.object(controller, "ensure_remote_main_sha")
     @patch.object(controller, "dispatch")
@@ -838,7 +868,10 @@ class AssemblyCheckoutTests(unittest.TestCase):
         workflow = (root / '.github/workflows/build.yml').read_text().split('\n  create-release:\n', 1)[1]
         selection = workflow.split('          sparse-checkout: |\n', 1)[1].split('          sparse-checkout-cone-mode:', 1)[0]
         patterns = [line.strip() for line in selection.splitlines() if line.strip()]
-        tracked = subprocess.check_output(['git', 'ls-files', '-z', '--', 'scripts'], cwd=root).decode().split('\0')
+        tracked = sorted(set(
+            subprocess.check_output(['git', 'ls-files', '-z', '--', 'scripts'], cwd=root).decode().split('\0')
+            + ['scripts/verify_tvos_runner_acquisition.py']
+        ))
         with tempfile.TemporaryDirectory() as temporary:
             checkout = Path(temporary)
             for name in [name for name in tracked if name] + [name for name in patterns if '*' not in name]:

@@ -1,8 +1,8 @@
 # ng-runner-policy: hosted-first-v1
-# The trusted-main hybrid profile uses hosted runners for compatible lanes; full iOS/tvOS packages use the release controller's private-first capacity routing.
+# The trusted-main hybrid profile uses compatible hosted runners by default; the release controller retries tvOS on private Apple JIT only after verified runner non-acquisition.
 # packer-windows-jit-v1
 name: Pleazyng Release
-run-name: ${{ inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
+run-name: ${{ inputs.runner_acquisition_retry_of != '' && inputs.action == 'build' && format('action:{0}:pool:{1}:mode:{2}:version:{3}:runner-retry-of:{4}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version, inputs.runner_acquisition_retry_of) || inputs.runner_acquisition_retry_of != '' && inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}:runner-retry-of:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.runner_acquisition_retry_of) || inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && inputs.reuse_platform_run_id != '' && inputs.rebuild_tvos && format('action:{0}:pool:{1}:tag:v{2}:recovery:source:{3}:tvos', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_platform_run_id) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
 on:
   workflow_dispatch:
@@ -48,11 +48,15 @@ on:
         required: false
         type: string
       tvos_runner_pool:
-        description: Release controller prefers private Apple; it uses hosted if private is occupied and returns to private when hosted Apple jobs are queued
+        description: Use hosted macOS by default; the release controller retries privately only when GitHub canceled tvOS before assigning a runner
         required: false
         type: choice
         options: [hosted, private]
-        default: private
+        default: hosted
+      runner_acquisition_retry_of:
+        description: Exact failed release build whose hosted tvOS job was canceled before runner assignment
+        required: false
+        type: string
       macos_compilation_job_id:
         description: Recover a verified same-product Mac compilation for signing-only macos-validation
         required: false
@@ -244,8 +248,7 @@ jobs:
       runner_pool: private
       execution_profile: hybrid
       build_linux_packages: true
-      # Keep Release CI on the same private-first Apple route selected for the
-      # package jobs; the controller falls back only when live capacity says to.
+      # Keep Release CI on the same Apple route selected for the package jobs.
       apple_runner_pool: ${{ inputs.tvos_runner_pool }}
 
   freeze-qualified-source:
@@ -354,6 +357,7 @@ jobs:
           EXECUTION_PROFILE_INPUT: ${{ inputs.execution_profile }}
           MODE_INPUT: ${{ inputs.mode }}
           BUILD_VERSION_INPUT: ${{ inputs.build_version }}
+          TVOS_RUNNER_POOL_INPUT: ${{ inputs.tvos_runner_pool }}
           REF_TYPE: ${{ github.ref_type }}
           REF_NAME: ${{ github.ref_name }}
           INCLUDE_WEBOS_BUILD_INPUT: ${{ inputs.include_webos_build }}
@@ -362,6 +366,7 @@ jobs:
           INCLUDE_APPLE_STORE_BUILD_INPUT: ${{ inputs.include_apple_store_build }}
           PREPARE_HOMEBREW_CASK_INPUT: ${{ inputs.prepare_homebrew_cask }}
           SUBTITLE_GPU_BACKEND_INPUT: ${{ inputs.subtitle_gpu_backend }}
+          RUNNER_ACQUISITION_RETRY_OF: ${{ inputs.runner_acquisition_retry_of }}
           REUSE_PLATFORMS: ${{ inputs.reuse_platform_run_id }}
           REUSE_ANDROID: ${{ inputs.reuse_android_run_id }}
           MACOS_COMPILATION_JOB: ${{ inputs.macos_compilation_job_id }}
@@ -396,6 +401,10 @@ jobs:
           fi
           if [[ "$RUNNER_POOL" != "private" ]]; then
             echo "This workflow currently supports only the private runner pool." >&2
+            exit 1
+          fi
+          if [[ -n "$RUNNER_ACQUISITION_RETRY_OF" ]] && { [[ ! "$RUNNER_ACQUISITION_RETRY_OF" =~ ^[1-9][0-9]*$ ]] || [[ "$MODE" != "release" || "$TVOS_RUNNER_POOL_INPUT" != "private" ]]; }; then
+            echo "Runner-acquisition retries require a numeric failed run, release mode, and private tvOS route." >&2
             exit 1
           fi
           if [[ "$EXECUTION_PROFILE" != "private" && "$EXECUTION_PROFILE" != "hybrid" ]]; then
@@ -528,6 +537,19 @@ jobs:
             echo "prepare_homebrew_cask=$PREPARE_HOMEBREW_CASK"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Verify hosted tvOS runner-acquisition retry source
+        if: ${{ inputs.runner_acquisition_retry_of != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.runner_acquisition_retry_of }}
+          SOURCE_SHA: ${{ github.sha }}
+          VERSION: ${{ inputs.build_version }}
+          ACTION: ${{ inputs.action }}
+        run: >-
+          python3 scripts/verify_tvos_runner_acquisition.py
+          --run-id "$SOURCE_RUN" --source-sha "$SOURCE_SHA"
+          --version "$VERSION" --action "$ACTION"
+
       - name: Summarize runner execution profile
         env:
           EXECUTION_PROFILE: ${{ steps.request.outputs.execution_profile }}
@@ -536,7 +558,7 @@ jobs:
           echo "Execution profile: **$EXECUTION_PROFILE** (broker pool: private)." >> "$GITHUB_STEP_SUMMARY"
           echo "Full iOS/tvOS package runner: **$TVOS_RUNNER_POOL**." >> "$GITHUB_STEP_SUMMARY"
           if [[ "$EXECUTION_PROFILE" == "hybrid" ]]; then
-            echo "Compatible Linux, Android, Tizen, Windows, and Apple reliability jobs use standard GitHub-hosted runners; full iOS/tvOS packages use private-first capacity routing; storage-heavy WebOS uses private JIT." >> "$GITHUB_STEP_SUMMARY"
+            echo "Compatible Linux, Android, Tizen, Windows, and Apple reliability jobs use standard GitHub-hosted runners; full iOS/tvOS packages use the selected compatible Apple route; storage-heavy WebOS uses private JIT." >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Require the main branch for builds
@@ -590,7 +612,7 @@ jobs:
               webos/CMakeLists.txt)
                 python3 scripts/verify_webos_link_patch.py "$release_commit" "$GITHUB_SHA"
                 ;;
-              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/apple_jit_process_tree.py|scripts/cleanup_apple_jit_scratch.sh|scripts/checks/test_apple_jit_process_tree.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/test_prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/run_android_build.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_macos_app.py|scripts/test_recover_macos_app.py|scripts/apple/prepare_macos_app_for_signing.py|scripts/apple/test_prepare_macos_app_for_signing.py|scripts/checks/test_macos_validation_request.py|scripts/checks/test_macos_packaging_recovery.py|scripts/retain_macos_app.py|scripts/test_retain_macos_app.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/package_ipk.py|tools/webos/verify_package.py|tools/webos/tests/test_package_ipk.py|scripts/tizen/package.py|scripts/tizen/test_package.py|scripts/ci_guard_checks.sh|scripts/prepare_native_downloads.py|scripts/test_prepare_native_downloads.py|scripts/checks/check_capability_manifest.py|scripts/checks/check_codegen.py|scripts/checks/test_check_codegen.py|windows/tool/install-patched-engine.ps1|windows/tool/download-pinned-mpv.ps1|windows/tool/download-pinned-simdutf.ps1|windows/tool/download-pinned-winsparkle.ps1|windows/tool/download-pinned-sdl3.ps1|windows/tool/download-pinned-torrent-dependencies.ps1|windows/tool/prepare-build-toolchain.ps1|tools/webos/build_release_candidate.sh|scripts/fetch_linux_libmpv.py|scripts/fetch_dv_tools.py|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py|scripts/verify_webos_link_patch.py|scripts/test_verify_webos_link_patch.py|tools/webos/check_audio_plugin_syntax.sh|tools/webos/NATIVE-PREFLIGHT.md)
+              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_release_core_publication.py|scripts/checks/test_verify_tvos_runner_acquisition.py|scripts/checks/test_apple_jit_queue.py|scripts/verify_tvos_runner_acquisition.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/apple_jit_process_tree.py|scripts/cleanup_apple_jit_scratch.sh|scripts/checks/test_apple_jit_process_tree.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/test_prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/run_android_build.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_macos_app.py|scripts/test_recover_macos_app.py|scripts/apple/prepare_macos_app_for_signing.py|scripts/apple/test_prepare_macos_app_for_signing.py|scripts/checks/test_macos_validation_request.py|scripts/checks/test_macos_packaging_recovery.py|scripts/retain_macos_app.py|scripts/test_retain_macos_app.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/package_ipk.py|tools/webos/verify_package.py|tools/webos/tests/test_package_ipk.py|scripts/tizen/package.py|scripts/tizen/test_package.py|scripts/ci_guard_checks.sh|scripts/prepare_native_downloads.py|scripts/test_prepare_native_downloads.py|scripts/checks/check_capability_manifest.py|scripts/checks/check_codegen.py|scripts/checks/test_check_codegen.py|windows/tool/install-patched-engine.ps1|windows/tool/download-pinned-mpv.ps1|windows/tool/download-pinned-simdutf.ps1|windows/tool/download-pinned-winsparkle.ps1|windows/tool/download-pinned-sdl3.ps1|windows/tool/download-pinned-torrent-dependencies.ps1|windows/tool/prepare-build-toolchain.ps1|tools/webos/build_release_candidate.sh|scripts/fetch_linux_libmpv.py|scripts/fetch_dv_tools.py|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py|scripts/verify_webos_link_patch.py|scripts/test_verify_webos_link_patch.py|tools/webos/check_audio_plugin_syntax.sh|tools/webos/NATIVE-PREFLIGHT.md)
                 ;;
               *)
                 echo "Release tag $RELEASE_TAG differs from main in non-release source '$changed_file'; refusing to build mixed source." >&2

@@ -1,14 +1,23 @@
 # Pleazyng Apple JIT runner
 
-Full iOS and tvOS package routing is private-first. Before dispatch, the
-release controller checks the private runner registration and the fresh
-`https://q.home/api/state` broker scan. An offline GitHub runner is not treated
-as available by itself: the Mac must have a free JIT slot and pass its APFS
-capacity gate. If private capacity is unavailable, the controller checks
-queued Apple jobs in both `build.yml` and `ci.yml`: it uses hosted when their
-Apple queues are clear, and selects private again when hosted Apple work is
-already waiting. The private queue controller waits for the single Mac slot
-and launches each selected job as soon as it is free.
+Compatible GitHub-hosted macOS is the default for Apple package jobs. GitHub
+does not expose global hosted macOS capacity, so queued Apple jobs in this
+repository are not a valid signal that hosted capacity is free or busy.
+
+When a versioned release's hosted tvOS job is canceled before runner
+assignment, the release controller checks the exact failed run and attempt.
+It retries only when the job used `macos-26`, has no runner ID/name or steps,
+and every other source job completed successfully or was skipped. For ordinary
+developer artifacts, the retry rebuilds tvOS on the private Apple JIT lane and
+reuses the other successful platform outputs only after the existing exact
+source and artifact-digest checks pass. A nonpublishing candidate uses a
+separately titled private retry and rebuilds its complete matrix. A real tvOS
+build failure is never converted into an allocation retry.
+
+The private queue controller waits for the single Mac slot, confirms current
+APFS capacity, and launches the recovery job when it is available. The runner
+is never started while the capacity gate is closed. Explicit `hosted` and
+`private` route overrides remain available for qualification and diagnosis.
 
 This policy responds to the v3.0.33 hosted release, which waited 7h18 for its
 Apple jobs, then the signed iOS job reached its six-hour limit while archiving.

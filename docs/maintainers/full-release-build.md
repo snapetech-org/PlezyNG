@@ -80,22 +80,23 @@ equivalence checks; do not dispatch another complete build for a delivery error.
 
 ## Apple native qualification
 
-Apple native reliability CI remains on hosted `macos-26` ARM with explicit
-Xcode 26.5. Full iOS and tvOS package jobs use the release controller's
-private-first capacity route: it selects private when the Mac JIT slot is free,
-falls back to hosted when private is occupied and no hosted Apple package is
-queued, and returns to private when hosted Apple work is already queued. The
-private queue controller starts the runner on demand and serializes jobs on
-the single Mac slot. GitHub does not expose global hosted macOS capacity, so an
-already queued hosted Apple package in this repository is the busy signal. The
-controller reads `q.home`'s fresh broker scan and APFS gate; an offline GitHub
-runner alone does not prove that the private Mac can launch a job. Hosted queue
-checks include both release builds and Apple reliability CI.
-Use `--apple-arm-runner-pool hosted|private` only to override the automatic
-choice. Run the release through `scripts/release_all_platforms.py` so it can
-probe capacity and launch the private JIT controller. Every Apple build still
-checks ARM64, Xcode, simulator runtimes, and free APFS/NFS space; native tests
-retain their full coverage.
+Apple native reliability CI and full iOS/tvOS packages use compatible hosted
+macOS by default, with explicit Xcode 26.5 and native ARM64 checks. GitHub does
+not expose global hosted macOS capacity. If GitHub cancels a hosted tvOS job
+before assigning a runner, the release controller verifies the job's exact
+attempt, `macos-26` label, missing runner identity, empty step list, and the
+success of every other source job. It then retries tvOS on private Apple JIT.
+Unsigned developer releases reuse successful platform artifacts only after
+exact source and digest checks; signed Apple recovery uses the approved full
+build path. Other tvOS failures remain failures.
+
+The private queue controller waits for a free Apple slot and the Mac's APFS
+capacity gate, then launches the recovery job. Use
+`--apple-arm-runner-pool hosted|private` to force a route for qualification or
+diagnosis. Run releases through `scripts/release_all_platforms.py` so it can
+observe failure evidence and start the private JIT controller. Every Apple
+build checks ARM64, Xcode, simulator runtimes, and free APFS/NFS space; native
+tests retain their full coverage.
 Private images use their installed compatible toolchain and must qualify it.
 The test selector creates a fresh job-owned simulator using an available device
 type and runtime matching the selected SDK's major/minor version. It never
@@ -165,8 +166,9 @@ each job still run in order.
 
 Capacity determines which eligible jobs start. The hybrid Linux, Android,
 Tizen, and Windows jobs can occupy separate hosted runners concurrently.
-Apple native reliability checks and iOS/tvOS package jobs share the
-private-first capacity route described above. WebOS uses its
+Apple native reliability checks and iOS/tvOS package jobs use hosted macOS by
+default, with a verified private JIT retry when hosted tvOS was never assigned
+a runner. WebOS uses its
 own private Linux route and can remain queued until that compatible capacity is
 available; it has no dependency on an Apple job. The stage-by-stage waits in
 `release_all_platforms.py` protect the exact
@@ -514,9 +516,9 @@ complete GitHub release.
 
 The orchestrator uses the current machine's GitHub CLI authentication only for
 workflow dispatch, repository commits, and the version tag. Its default hybrid
-profile sends compatible jobs to GitHub-hosted runners, routes iOS/tvOS packages
-private-first with capacity fallback, and uses private JIT for storage-heavy
-WebOS and other private-resource work. The script does not
+profile sends compatible jobs to GitHub-hosted runners, retries tvOS on private
+Apple JIT only after verified hosted runner non-acquisition, and uses private
+JIT for storage-heavy WebOS and other private-resource work. The script does not
 accept custom runner labels or store or print credentials.
 It stops on a failed native group, FFmpeg signature, CI run,
 tag conflict, or release build. Re-running it reuses successful native,

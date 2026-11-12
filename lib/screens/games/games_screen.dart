@@ -34,6 +34,7 @@ import '../../i18n/strings.g.dart';
 import '../../mixins/refreshable.dart';
 import '../../mixins/tab_visibility_aware.dart';
 import '../../multiview/steam_game_workspace_surface.dart';
+import '../../multiview/moonlight_game_workspace_surface.dart';
 import '../../multiview/workspace_controller.dart';
 import '../../multiview/workspace_models.dart';
 import '../../profiles/active_profile_provider.dart';
@@ -77,6 +78,8 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   bool _rommLoadError = false;
   MultiviewWorkspaceController? _workspaceController;
   final Map<String, SteamGameWorkspaceSession> _workspaceGameSessions = <String, SteamGameWorkspaceSession>{};
+  final Map<String, MoonlightGameWorkspaceSession> _moonlightWorkspaceSessions =
+      <String, MoonlightGameWorkspaceSession>{};
   final _presentationRevision = ValueNotifier<int>(0);
   final _pages = <Route<dynamic>>{};
   final _pageContexts = <Route<dynamic>, BuildContext>{};
@@ -220,7 +223,12 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       workspace?.unregister(entry.key);
       entry.value.dispose();
     }
+    for (final entry in _moonlightWorkspaceSessions.entries.toList()) {
+      workspace?.unregister(entry.key);
+      entry.value.dispose();
+    }
     _workspaceGameSessions.clear();
+    _moonlightWorkspaceSessions.clear();
     _workspaceController = null;
     _rommSearch?.cancel();
     _rommSearch = null;
@@ -556,6 +564,17 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       await _engineUnavailable(host);
       return;
     }
+    if (host.protocol == GameProtocol.gameStream && MoonlightGameWorkspaceSession.hasActiveSession) {
+      final workspace = context.read<MultiviewWorkspaceController>();
+      final sessionId = 'game:${game.key}';
+      if (workspace.session(sessionId) != null) {
+        workspace.showSessionInWorkspace(sessionId, fullscreen: true);
+        workspace.focus(sessionId);
+      } else {
+        showErrorSnackBar(context, t.games.moonlightSessionLimit);
+      }
+      return;
+    }
     if (PlatformDetector.supportsEmbeddedGameStreaming() && host.protocol == GameProtocol.steam) {
       await _openInWorkspace(host, game, fullscreen: true);
       return;
@@ -723,7 +742,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         onMiniPlayer:
             enabled &&
                 PlatformDetector.supportsEmbeddedGameStreaming() &&
-                game.routes.any((r) => r.host.protocol == GameProtocol.steam)
+                game.routes.any(
+                  (r) => r.host.protocol == GameProtocol.steam || r.host.protocol == GameProtocol.gameStream,
+                )
             ? () => Navigator.pop(pageContext, 'mini')
             : null,
         onUseAsController:
@@ -853,9 +874,7 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     if (!mounted || !c.current) {
       return;
     }
-    if (!capability.embeddedSurface ||
-        host.protocol != GameProtocol.steam ||
-        !PlatformDetector.supportsEmbeddedGameStreaming()) {
+    if (!capability.embeddedSurface || !PlatformDetector.supportsEmbeddedGameStreaming()) {
       await _engineUnavailable(host);
       return;
     }
@@ -867,6 +886,64 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     if (existing != null) {
       workspace.showSessionInWorkspace(sessionId, fullscreen: fullscreen);
       workspace.focus(sessionId);
+      return;
+    }
+
+    if (host.protocol == GameProtocol.gameStream) {
+      if (controllerOnly) {
+        await _engineUnavailable(host);
+        return;
+      }
+      if (_moonlightWorkspaceSessions.isNotEmpty || MoonlightGameWorkspaceSession.hasActiveSession) {
+        showErrorSnackBar(context, t.games.moonlightSessionLimit);
+        return;
+      }
+      final session = MoonlightGameWorkspaceSession(
+        host: host,
+        game: game,
+        touchControls:
+            !PlatformDetector.isTV() &&
+            SettingsService.instance.read(SettingsService.gameTouchControlsForProfile(c.profileId)),
+        onFirstConnection: () {
+          if (c.current && game.id != '0') {
+            unawaited(c.connected(GameRoute(host: host, game: game)).catchError((Object _) {}));
+          }
+        },
+      );
+      final registration = WorkspaceSurfaceRegistration(
+        descriptor: WorkspaceSessionDescriptor(
+          id: sessionId,
+          kind: MultiviewMediaKind.game,
+          title: game.name,
+          subtitle: host.name,
+          mediaKey: game.key,
+          hasAudio: true,
+          hasVideo: true,
+          acceptsInput: true,
+          openedAt: DateTime.now(),
+        ),
+        buildSurface: (_) => session.workspaceSurface(),
+        onRestore: () => workspace.showSessionInWorkspace(sessionId, fullscreen: true),
+        onClose: () {
+          final closing = _moonlightWorkspaceSessions[sessionId];
+          if (closing != null) {
+            unawaited(closing.retire().whenComplete(() => _moonlightWorkspaceSessions.remove(sessionId)));
+          }
+        },
+        onAudioOwnershipChanged: session.setAudioEnabled,
+        onInputOwnershipChanged: session.setInputEnabled,
+      );
+      if (!workspace.register(registration)) {
+        session.dispose();
+        showErrorSnackBar(context, t.videoControls.pipFailed);
+        return;
+      }
+      _moonlightWorkspaceSessions[sessionId] = session;
+      workspace.showSessionInWorkspace(sessionId, fullscreen: fullscreen);
+      return;
+    }
+    if (host.protocol != GameProtocol.steam) {
+      await _engineUnavailable(host);
       return;
     }
 

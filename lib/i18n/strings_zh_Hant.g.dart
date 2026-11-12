@@ -3955,6 +3955,8 @@ class _Translations$games$zh_Hant extends Translations$games$zh {
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
+	@override String get inputUnavailable => '無法初始化遊戲控制。請重新連線再試一次。';
+	@override String get moonlightSessionLimit => '此裝置同一時間只能有一個 GameStream 工作階段處於啟用狀態。';
 	@override String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 	@override String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 	@override String get steamLibrary => 'Steam library';
@@ -9276,6 +9278,8 @@ extension on TranslationsZhHant {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => '無法初始化遊戲控制。請重新連線再試一次。',
+			'games.moonlightSessionLimit' => '此裝置同一時間只能有一個 GameStream 工作階段處於啟用狀態。',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamLibrary' => 'Steam library',
@@ -9649,10 +9653,10 @@ extension on TranslationsZhHant {
 			'musicDevices.receive' => '允許在此裝置上播放',
 			'musicDevices.nearbyHint' => '在另一台裝置上開啟播放裝置選單，並允許播放。',
 			'musicDevices.receiverHint' => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。',
-			'musicDevices.moveFailed' => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。',
-			'musicDevices.uncertain' => '連線中斷。請重新連線所選裝置以檢查播放狀態。',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.moveFailed' => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。',
+			'musicDevices.uncertain' => '連線中斷。請重新連線所選裝置以檢查播放狀態。',
 			'musicDevices.away' => '外出時',
 			'musicDevices.relay' => '音樂中繼 URL',
 			'musicDevices.relayHint' => '在接收裝置上啟用，然後在同一網路中配對一次。保持 Pleazyng 開啟。中繼傳遞加密的音樂控制，並能看到網路位址。每個播放器從自己的媒體伺服器串流。',

@@ -70,6 +70,188 @@ def patch_http(path: Path) -> None:
     path.write_text(source)
 
 
+def patch_audio(path: Path) -> None:
+    source = path.read_text()
+    anchor = "    private AudioTrack track;"
+    if source.count(anchor) != 1:
+        raise ValueError("AndroidAudioRenderer changed; review workspace audio ownership")
+    source = source.replace(anchor, anchor + """
+    private volatile float outputVolume = 1.0f;
+
+    public void setVolume(float volume) {
+        outputVolume = Math.max(0.0f, Math.min(1.0f, volume));
+        AudioTrack current = track;
+        if (current != null) {
+            current.setVolume(outputVolume);
+        }
+    }
+""", 1)
+    anchor = "                track = createAudioTrack(channelConfig, sampleRate, bufferSize, lowLatency);\n                track.play();"
+    if source.count(anchor) != 1:
+        raise ValueError("AndroidAudioRenderer setup changed; review workspace audio ownership")
+    source = source.replace(anchor, """                track = createAudioTrack(channelConfig, sampleRate, bufferSize, lowLatency);
+                track.setVolume(outputVolume);
+                track.play();""", 1)
+    path.write_text(source)
+
+
+def patch_connection(path: Path) -> None:
+    source = path.read_text()
+    anchor = "    private final Context appContext;"
+    if source.count(anchor) != 1:
+        raise ValueError("NvConnection changed; review retained-surface cancellation")
+    source = source.replace(anchor, anchor + """
+    // Pleazyng: a workspace surface may be retired before HTTP app launch finishes.
+    private volatile boolean stopRequested;
+    private boolean connectionPermitHeld;
+    private volatile NvHTTP activeHttpRequest;
+""", 1)
+    start = """    public void stop() {
+        // Interrupt any pending connection. This is thread-safe.
+        MoonBridge.interruptConnection();
+
+        // Moonlight-core is not thread-safe with respect to connection start and stop, so
+        // we must not invoke that functionality in parallel.
+        synchronized (MoonBridge.class) {
+            MoonBridge.stopConnection();
+            MoonBridge.cleanupBridge();
+        }
+
+        // Now a pending connection can be processed
+        connectionAllowed.release();
+    }
+"""
+    replacement = """    public void stop() {
+        NvHTTP request;
+        synchronized (this) {
+            stopRequested = true;
+            request = activeHttpRequest;
+            activeHttpRequest = null;
+        }
+        if (request != null) {
+            request.cancelPendingRequests();
+        }
+        // A connection that has not acquired the process-wide permit has no native state
+        // to stop and must not release another session's permit.
+        synchronized (MoonBridge.class) {
+            if (!connectionPermitHeld) {
+                return;
+            }
+            MoonBridge.interruptConnection();
+            MoonBridge.stopConnection();
+            MoonBridge.cleanupBridge();
+            connectionPermitHeld = false;
+            connectionAllowed.release();
+        }
+    }
+"""
+    if source.count(start) != 1:
+        raise ValueError("NvConnection stop changed; review retained-surface cancellation")
+    source = source.replace(start, replacement, 1)
+    start_app = """                ByteBuffer ib = ByteBuffer.allocate(16);
+                ib.putInt(context.riKeyId);
+
+                // Acquire the connection semaphore to ensure we only have one
+                // connection going at once.
+                try {
+                    connectionAllowed.acquire();
+                } catch (InterruptedException e) {
+                    context.connListener.displayMessage(e.getMessage());
+                    context.connListener.stageFailed(appName, 0, 0);
+                    return;
+                }
+
+                // Moonlight-core is not thread-safe with respect to connection start and stop, so
+                // we must not invoke that functionality in parallel.
+                synchronized (MoonBridge.class) {
+                    MoonBridge.setupBridge(videoDecoderRenderer, audioRenderer, connectionListener);
+"""
+    replacement_start = """                if (stopRequested) {
+                    return;
+                }
+
+                ByteBuffer ib = ByteBuffer.allocate(16);
+                ib.putInt(context.riKeyId);
+
+                // Acquire in bounded intervals so a retired workspace session cannot
+                // wait indefinitely behind another receiver.
+                boolean acquired = false;
+                while (!stopRequested && !acquired) {
+                    try {
+                        acquired = connectionAllowed.tryAcquire(100, java.util.concurrent.TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+                if (!acquired) {
+                    return;
+                }
+
+                synchronized (MoonBridge.class) {
+                    if (stopRequested) {
+                        connectionAllowed.release();
+                        return;
+                    }
+                    connectionPermitHeld = true;
+                    MoonBridge.setupBridge(videoDecoderRenderer, audioRenderer, connectionListener);
+"""
+    if source.count(start_app) != 1:
+        raise ValueError("NvConnection start changed; review retained-surface cancellation")
+    source = source.replace(start_app, replacement_start, 1)
+    anchor = """    private boolean startApp() throws XmlPullParserException, IOException
+    {
+        NvHTTP h = new NvHTTP(context.serverAddress, context.httpsPort, uniqueId, context.serverCert, cryptoProvider);
+"""
+    replacement = """    private boolean startApp() throws XmlPullParserException, IOException
+    {
+        NvHTTP h = new NvHTTP(context.serverAddress, context.httpsPort, uniqueId, context.serverCert, cryptoProvider);
+        synchronized (this) {
+            if (stopRequested) {
+                return false;
+            }
+            activeHttpRequest = h;
+        }
+"""
+    if source.count(anchor) != 1:
+        raise ValueError("NvConnection app launch changed; review HTTP cancellation")
+    source = source.replace(anchor, replacement, 1)
+    anchor = """                ByteBuffer ib = ByteBuffer.allocate(16);
+                ib.putInt(context.riKeyId);"""
+    replacement = """                synchronized (NvConnection.this) {
+                    activeHttpRequest = null;
+                    if (stopRequested) {
+                        return;
+                    }
+                }
+
+                ByteBuffer ib = ByteBuffer.allocate(16);
+                ib.putInt(context.riKeyId);"""
+    if source.count(anchor) != 1:
+        raise ValueError("NvConnection start stage changed; review cancellation boundary")
+    source = source.replace(anchor, replacement, 1)
+    failed_start = """                        // LiStartConnection() failed, so the caller is not expected
+                        // to stop the connection themselves. We need to release their
+                        // semaphore count for them.
+                        connectionAllowed.release();
+                        return;
+"""
+    if source.count(failed_start) != 1:
+        raise ValueError("NvConnection failure cleanup changed; review semaphore ownership")
+    source = source.replace(
+        failed_start,
+        """                        // LiStartConnection() failed, so the caller is not expected
+                        // to stop the connection themselves. We need to release their
+                        // semaphore count for them.
+                        connectionPermitHeld = false;
+                        connectionAllowed.release();
+                        return;
+""",
+        1,
+    )
+    path.write_text(source)
+
+
 def prepare(destination: Path) -> None:
     lock = json.loads((ROOT / "games-native.lock.json").read_text())["moonlightAndroid"]
     recipe = hashlib.sha256(Path(__file__).read_bytes() + json.dumps(lock, sort_keys=True).encode()).hexdigest()
@@ -94,6 +276,8 @@ def prepare(destination: Path) -> None:
             raise ValueError("Unexpected Moonlight common revision")
         private_manifest(checkout / "app/src/main/AndroidManifest.xml", checkout / "EmbeddedManifest.xml")
         patch_http(checkout / "app/src/main/java/com/limelight/nvstream/http/NvHTTP.java")
+        patch_connection(checkout / "app/src/main/java/com/limelight/nvstream/NvConnection.java")
+        patch_audio(checkout / "app/src/main/java/com/limelight/binding/audio/AndroidAudioRenderer.java")
         (checkout / ".plezy-recipe").write_text(recipe)
         shutil.move(str(checkout), destination)
 

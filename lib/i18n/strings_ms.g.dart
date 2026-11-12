@@ -3936,6 +3936,8 @@ class _Translations$games$ms extends Translations$games$en {
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
+	@override String get inputUnavailable => 'Kawalan permainan tidak dapat dimulakan. Sambung semula untuk mencuba lagi.';
+	@override String get moonlightSessionLimit => 'Hanya satu sesi GameStream boleh aktif pada peranti ini pada satu-satu masa.';
 	@override String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 	@override String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 	@override String get steamLibrary => 'Steam library';
@@ -9255,6 +9257,8 @@ extension on TranslationsMs {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => 'Kawalan permainan tidak dapat dimulakan. Sambung semula untuk mencuba lagi.',
+			'games.moonlightSessionLimit' => 'Hanya satu sesi GameStream boleh aktif pada peranti ini pada satu-satu masa.',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamLibrary' => 'Steam library',
@@ -9628,10 +9632,10 @@ extension on TranslationsMs {
 			'musicDevices.receive' => 'Benarkan main balik pada peranti ini',
 			'musicDevices.nearbyHint' => 'Buka pemilih peranti pada peranti lain dan benarkan main balik di sana.',
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.',
-			'musicDevices.moveFailed' => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.',
-			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.moveFailed' => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.',
+			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
 			'musicDevices.away' => 'Di luar rumah',
 			'musicDevices.relay' => 'URL geganti muzik',
 			'musicDevices.relayHint' => 'Aktifkan pada peranti penerima, kemudian pasangkan sekali pada rangkaian yang sama. Biarkan Pleazyng terbuka. Geganti menghantar kawalan muzik yang disulitkan dan melihat alamat rangkaian. Setiap pemain menstrim daripada pelayan medianya sendiri.',

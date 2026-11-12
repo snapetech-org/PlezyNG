@@ -1,10 +1,14 @@
 # Upstream source attribution
 
-This ledger publicly credits 90 source records: 89 from [edde746/plezy](https://github.com/edde746/plezy) and one compatibility fix from [superuser404notfound/AetherEngine](https://github.com/superuser404notfound/AetherEngine). They informed, supplied, or were reconciled with behavior, documentation, maintained plans, or feature context in this fork.
+This ledger publicly credits 91 source records: 89 from [edde746/plezy](https://github.com/edde746/plezy), one receiver revision from [moonlight-stream/moonlight-android](https://github.com/moonlight-stream/moonlight-android), and one compatibility fix from [superuser404notfound/AetherEngine](https://github.com/superuser404notfound/AetherEngine). They informed, supplied, or were reconciled with behavior, documentation, maintained plans, or feature context in this fork.
 
 The linked people made their reports, suggestions, discussions, or code contributions to the upstream project. This is source credit only: it does not claim that they contributed directly to this fork, endorsed it, or participated in the fork integration. Fork maintainers adapted, integrated, or verified the resulting behavior separately.
 
 The PR list comes from explicit “Squash of upstream” commit records and the selected November follow-up. The commit list covers follow-up changes that were sourced from upstream commits rather than PR records.
+
+## Credited Moonlight Android source
+
+- [Moonlight Android commit `b48494cb`](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d) — pinned receiver revision (v12.2), authored upstream by [@cgutman](https://github.com/cgutman). The author contributed this receiver implementation to the upstream Moonlight project. Pleazyng independently adapted its connection, decoder, audio-renderer and input lifecycle for a retained Android workspace surface; this record does not claim that the author contributed to, endorsed, or participated in Pleazyng.
 
 ## Credited dependency compatibility fix
 

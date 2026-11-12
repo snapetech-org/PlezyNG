@@ -3959,6 +3959,8 @@ class _Translations$games$nb extends Translations$games$en {
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
+	@override String get inputUnavailable => 'Spillkontrollene kunne ikke initialiseres. Koble til på nytt for å prøve igjen.';
+	@override String get moonlightSessionLimit => 'Bare én GameStream-økt kan være aktiv på denne enheten om gangen.';
 	@override String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 	@override String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 	@override String get steamLibrary => 'Steam library';
@@ -9280,6 +9282,8 @@ extension on TranslationsNb {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => 'Spillkontrollene kunne ikke initialiseres. Koble til på nytt for å prøve igjen.',
+			'games.moonlightSessionLimit' => 'Bare én GameStream-økt kan være aktiv på denne enheten om gangen.',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamLibrary' => 'Steam library',
@@ -9653,10 +9657,10 @@ extension on TranslationsNb {
 			'musicDevices.receive' => 'Tillat avspilling på denne enheten',
 			'musicDevices.nearbyHint' => 'Åpne enhetsvelgeren på den andre enheten og tillat avspilling der.',
 			'musicDevices.receiverHint' => 'Hold Pleazyng åpen for å motta musikk. Koble sammen én gang med denne koden.',
-			'musicDevices.moveFailed' => 'Kunne ikke flytte avspillingen. Kontroller at enheten er våken, paret og har tilgang til musikkserveren.',
-			'musicDevices.uncertain' => 'Tilkoblingen ble brutt. Koble til den valgte enheten igjen for å kontrollere avspillingen.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.moveFailed' => 'Kunne ikke flytte avspillingen. Kontroller at enheten er våken, paret og har tilgang til musikkserveren.',
+			'musicDevices.uncertain' => 'Tilkoblingen ble brutt. Koble til den valgte enheten igjen for å kontrollere avspillingen.',
 			'musicDevices.away' => 'Borte fra hjemmet',
 			'musicDevices.relay' => 'URL til musikkrelé',
 			'musicDevices.relayHint' => 'Aktiver på mottakeren, og par én gang på samme nettverk. Hold Pleazyng åpen. Reléet overfører krypterte musikkkommandoer og ser nettverksadresser. Hver spiller strømmer fra sin egen medieserver.',

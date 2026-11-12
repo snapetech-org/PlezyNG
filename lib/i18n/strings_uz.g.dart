@@ -3959,6 +3959,8 @@ class _Translations$games$uz extends Translations$games$en {
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
+	@override String get inputUnavailable => 'O‘yin boshqaruvini ishga tushirib bo‘lmadi. Qayta urinib ko‘rish uchun qayta ulaning.';
+	@override String get moonlightSessionLimit => 'Bu qurilmada bir vaqtda faqat bitta GameStream seansi faol bo‘lishi mumkin.';
 	@override String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 	@override String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 	@override String get steamLibrary => 'Steam library';
@@ -9280,6 +9282,8 @@ extension on TranslationsUz {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => 'O‘yin boshqaruvini ishga tushirib bo‘lmadi. Qayta urinib ko‘rish uchun qayta ulaning.',
+			'games.moonlightSessionLimit' => 'Bu qurilmada bir vaqtda faqat bitta GameStream seansi faol bo‘lishi mumkin.',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamLibrary' => 'Steam library',
@@ -9653,10 +9657,10 @@ extension on TranslationsUz {
 			'musicDevices.receive' => 'Bu qurilmada ijroga ruxsat berish',
 			'musicDevices.nearbyHint' => 'Boshqa qurilmada qurilma tanlovini oching va ijroga ruxsat bering.',
 			'musicDevices.receiverHint' => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.',
-			'musicDevices.moveFailed' => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.',
-			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.moveFailed' => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.',
+			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
 			'musicDevices.away' => 'Uydan tashqarida',
 			'musicDevices.relay' => 'Musiqa relesi URL manzili',
 			'musicDevices.relayHint' => 'Qabul qiluvchi qurilmada yoqing, so‘ng bir tarmoqda bir marta juftlang. Pleazyng ochiq tursin. Rele shifrlangan musiqa buyruqlarini uzatadi va tarmoq manzillarini ko‘radi. Har bir pleyer o‘z media serveridan uzatadi.',

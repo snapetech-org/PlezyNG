@@ -3982,6 +3982,8 @@ class Translations$games$fr extends Translations$games$en {
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
+	@override String get inputUnavailable => 'Les commandes du jeu n’ont pas pu être initialisées. Reconnectez-vous pour réessayer.';
+	@override String get moonlightSessionLimit => 'Une seule session GameStream peut être active à la fois sur cet appareil.';
 	@override String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 	@override String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 	@override String get steamLibrary => 'Steam library';
@@ -9333,6 +9335,8 @@ extension on TranslationsFr {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => 'Les commandes du jeu n’ont pas pu être initialisées. Reconnectez-vous pour réessayer.',
+			'games.moonlightSessionLimit' => 'Une seule session GameStream peut être active à la fois sur cet appareil.',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamLibrary' => 'Steam library',
@@ -9697,10 +9701,10 @@ extension on TranslationsFr {
 			'musicTools.playlistRecipient' => 'Nom d’utilisateur Plex ou e-mail',
 			'musicTools.playlistSharingHint' => 'Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.',
 			'musicTools.playlistSharingFailed' => 'Impossible de demander l’accès à la liste.',
-			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
-			'musicTools.playlistAccessList' => 'Accès actuel',
 			_ => null,
 		} ?? switch (path) {
+			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
+			'musicTools.playlistAccessList' => 'Accès actuel',
 			'musicTools.playlistAccessNone' => 'Aucun accès accordé à cette liste',
 			'musicTools.filterType' => 'Type de filtre',
 			'musicTools.peak' => 'Pic',

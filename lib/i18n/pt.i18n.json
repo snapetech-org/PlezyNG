@@ -4453,6 +4453,8 @@
     "saveShortcut": "Save shortcut",
     "manualHint": "For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.",
     "engineUnavailable": "In-app streaming is not available here yet",
+    "inputUnavailable": "Não foi possível inicializar os controlos do jogo. Volte a ligar-se para tentar novamente.",
+    "moonlightSessionLimit": "Apenas uma sessão GameStream pode estar ativa neste dispositivo de cada vez.",
     "nativeEnginePending": "This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.",
     "steamEnginePending": "This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.",
     "steamBetaTitle": "",

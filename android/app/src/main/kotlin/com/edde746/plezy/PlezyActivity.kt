@@ -670,6 +670,7 @@ class PlezyActivity : FlutterActivity() {
   }
 
   private var steamStreamFactory: SteamStreamPlatformViewFactory? = null
+  private var gameStreamFactory: GameStreamPlatformViewFactory? = null
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     if (steamStreamFactory?.onRequestPermissionsResult(requestCode, permissions, grantResults) != true) {
@@ -680,6 +681,8 @@ class PlezyActivity : FlutterActivity() {
   override fun onDestroy() {
     steamStreamFactory?.closeAll()
     steamStreamFactory = null
+    gameStreamFactory?.closeAll()
+    gameStreamFactory = null
     externalPlayerChannel.dispose()
     gamesChannel.dispose()
     systemBarsInsetsHost?.setOnApplyWindowInsetsListener(null)
@@ -978,6 +981,17 @@ class PlezyActivity : FlutterActivity() {
       flutterEngine.platformViewsController.registry.registerViewFactory(
         SteamStreamPlatformViewFactory.VIEW_TYPE,
         steamStreamFactory!!
+      )
+    }
+    if (runCatching {
+        Class.forName("org.snapetech.plezyng.games.MoonlightStreamView", false, classLoader)
+      }.isSuccess
+    ) {
+      gameStreamFactory?.closeAll()
+      gameStreamFactory = GameStreamPlatformViewFactory(flutterEngine.dartExecutor.binaryMessenger, this)
+      flutterEngine.platformViewsController.registry.registerViewFactory(
+        GameStreamPlatformViewFactory.VIEW_TYPE,
+        gameStreamFactory!!
       )
     }
 

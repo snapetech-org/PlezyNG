@@ -11224,6 +11224,12 @@ class Translations$games$en {
 	/// en: 'In-app streaming is not available here yet'
 	String get engineUnavailable => 'In-app streaming is not available here yet';
 
+	/// en: 'Game input could not be initialized. Reconnect to try again.'
+	String get inputUnavailable => 'Game input could not be initialized. Reconnect to try again.';
+
+	/// en: 'Only one GameStream session can be active on this device at a time.'
+	String get moonlightSessionLimit => 'Only one GameStream session can be active on this device at a time.';
+
 	/// en: 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.'
 	String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 
@@ -21741,6 +21747,8 @@ extension on Translations {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => 'Game input could not be initialized. Reconnect to try again.',
+			'games.moonlightSessionLimit' => 'Only one GameStream session can be active on this device at a time.',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
@@ -22220,10 +22228,10 @@ extension on Translations {
 			'subtitleAiUi.subtitleOperationFailed' => ({required Object error}) => 'Subtitle operation failed: ${error}',
 			'subtitleAiUi.speechLanguage' => 'Speech language',
 			'subtitleAiUi.autoDetect' => 'Auto-detect',
-			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
-			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
+			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
 			'subtitleAiUi.inferenceBackend' => 'Inference backend',
 			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
@@ -22734,10 +22742,10 @@ extension on Translations {
 			'karaokeUi.openRequestKiosk' => 'Open request kiosk',
 			'karaokeUi.theKioskLimitsThisScreenToSongRequestsUse' => 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.',
 			'karaokeUi.savedSets' => 'Saved sets',
-			'karaokeUi.createASetlist' => 'Create a setlist',
-			'karaokeUi.songs' => ({required Object value1}) => '${value1} songs',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.createASetlist' => 'Create a setlist',
+			'karaokeUi.songs' => ({required Object value1}) => '${value1} songs',
 			'karaokeUi.queueThisSetlist' => 'Queue this setlist',
 			'karaokeUi.auditCompleteOfflineAssets' => 'Audit complete offline assets',
 			'karaokeUi.removeSetlist' => 'Remove setlist',

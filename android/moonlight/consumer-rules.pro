@@ -1,5 +1,6 @@
 # Native/JNI and reflective entry points are private to the embedded engine.
 -keep class org.snapetech.plezyng.games.EmbeddedGameStream { public static *; }
+-keep class org.snapetech.plezyng.games.MoonlightStreamView { public *; }
 -keep class com.limelight.** { *; }
 -keep class org.bouncycastle.jcajce.provider.asymmetric.** { *; }
 -keep class org.bouncycastle.jcajce.provider.digest.** { *; }

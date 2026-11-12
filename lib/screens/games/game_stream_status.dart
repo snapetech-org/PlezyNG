@@ -15,9 +15,11 @@ class GameStreamStatus extends StatelessWidget {
     required this.computerName,
     required this.onReconnect,
     required this.onDisconnect,
+    this.showSteamBadge = true,
   });
   final String state, gameName, computerName;
   final VoidCallback onReconnect, onDisconnect;
+  final bool showSteamBadge;
   @override
   Widget build(BuildContext context) {
     final recoverable = state == 'failed' || state == 'disconnected';
@@ -38,8 +40,7 @@ class GameStreamStatus extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SteamSourceBadge(),
-                const SizedBox(height: 20),
+                if (showSteamBadge) ...[const SteamSourceBadge(), const SizedBox(height: 20)],
                 Text(
                   isolateDisplayText(gameName),
                   style: Theme.of(context).textTheme.titleLarge,

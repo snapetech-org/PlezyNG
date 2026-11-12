@@ -3954,6 +3954,8 @@ class Translations$games$zh extends Translations$games$en {
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
+	@override String get inputUnavailable => '无法初始化游戏控制。请重新连接后重试。';
+	@override String get moonlightSessionLimit => '此设备同一时间只能有一个 GameStream 会话处于活动状态。';
 	@override String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 	@override String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 	@override String get steamLibrary => 'Steam library';
@@ -9275,6 +9277,8 @@ extension on TranslationsZh {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => '无法初始化游戏控制。请重新连接后重试。',
+			'games.moonlightSessionLimit' => '此设备同一时间只能有一个 GameStream 会话处于活动状态。',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamLibrary' => 'Steam library',
@@ -9648,10 +9652,10 @@ extension on TranslationsZh {
 			'musicDevices.receive' => '允许在此设备上播放',
 			'musicDevices.nearbyHint' => '在另一台设备上打开播放设备菜单，并允许播放。',
 			'musicDevices.receiverHint' => '保持 Pleazyng 打开以接收音乐。使用此代码配对一次。',
-			'musicDevices.moveFailed' => '无法转移播放。请检查设备已唤醒、已配对并能访问音乐服务器。',
-			'musicDevices.uncertain' => '连接中断。请重新连接所选设备以检查播放状态。',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.moveFailed' => '无法转移播放。请检查设备已唤醒、已配对并能访问音乐服务器。',
+			'musicDevices.uncertain' => '连接中断。请重新连接所选设备以检查播放状态。',
 			'musicDevices.away' => '外出时',
 			'musicDevices.relay' => '音乐中继 URL',
 			'musicDevices.relayHint' => '在接收设备上启用，然后在同一网络中配对一次。保持 Pleazyng 打开。中继传递加密的音乐控制，并能看到网络地址。每个播放器从自己的媒体服务器串流。',

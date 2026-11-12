@@ -3954,6 +3954,8 @@ class _Translations$games$ja extends Translations$games$en {
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
+	@override String get inputUnavailable => 'ゲーム操作を初期化できませんでした。もう一度接続してください。';
+	@override String get moonlightSessionLimit => 'このデバイスで同時に有効にできる GameStream セッションは 1 つだけです。';
 	@override String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 	@override String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 	@override String get steamLibrary => 'Steam library';
@@ -9275,6 +9277,8 @@ extension on TranslationsJa {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => 'ゲーム操作を初期化できませんでした。もう一度接続してください。',
+			'games.moonlightSessionLimit' => 'このデバイスで同時に有効にできる GameStream セッションは 1 つだけです。',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamLibrary' => 'Steam library',
@@ -9648,10 +9652,10 @@ extension on TranslationsJa {
 			'musicDevices.receive' => 'このデバイスでの再生を許可',
 			'musicDevices.nearbyHint' => 'もう一方のデバイスで再生先を開き、再生を許可してください。',
 			'musicDevices.receiverHint' => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。',
-			'musicDevices.moveFailed' => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。',
-			'musicDevices.uncertain' => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.moveFailed' => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。',
+			'musicDevices.uncertain' => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。',
 			'musicDevices.away' => '外出先から',
 			'musicDevices.relay' => '音楽リレーのURL',
 			'musicDevices.relayHint' => '受信デバイスで有効にし、同じネットワークで一度ペアリングしてください。Pleazyngを開いたままにします。リレーは暗号化された音楽操作を転送し、ネットワークアドレスを参照します。各プレーヤーは自身のメディアサーバーから再生します。',

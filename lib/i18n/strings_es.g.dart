@@ -3976,6 +3976,8 @@ class Translations$games$es extends Translations$games$en {
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
+	@override String get inputUnavailable => 'No se pudieron inicializar los controles del juego. Vuelve a conectarte para intentarlo de nuevo.';
+	@override String get moonlightSessionLimit => 'Solo puede haber una sesión de GameStream activa en este dispositivo a la vez.';
 	@override String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 	@override String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 	@override String get steamLibrary => 'Steam library';
@@ -9431,6 +9433,8 @@ extension on TranslationsEs {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => 'No se pudieron inicializar los controles del juego. Vuelve a conectarte para intentarlo de nuevo.',
+			'games.moonlightSessionLimit' => 'Solo puede haber una sesión de GameStream activa en este dispositivo a la vez.',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamLibrary' => 'Steam library',
@@ -9777,10 +9781,10 @@ extension on TranslationsEs {
 			'musicExperience.exitDriving' => 'Salir de la vista de conducción',
 			'musicExperience.signalPath' => 'Ruta de la señal de audio',
 			'musicExperience.source' => 'Fuente',
-			'musicExperience.local' => 'Audio descargado',
-			'musicExperience.network' => 'Audio del servidor',
 			_ => null,
 		} ?? switch (path) {
+			'musicExperience.local' => 'Audio descargado',
+			'musicExperience.network' => 'Audio del servidor',
 			'musicExperience.engine' => 'Motor de reproducción',
 			'musicExperience.codec' => 'Códec de origen',
 			'musicExperience.channels' => 'Canales de origen',

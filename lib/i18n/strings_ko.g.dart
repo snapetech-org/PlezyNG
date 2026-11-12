@@ -3954,6 +3954,8 @@ class _Translations$games$ko extends Translations$games$en {
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
+	@override String get inputUnavailable => '게임 조작을 초기화하지 못했습니다. 다시 연결해 다시 시도하세요.';
+	@override String get moonlightSessionLimit => '이 기기에서는 한 번에 하나의 GameStream 세션만 활성화할 수 있습니다.';
 	@override String get nativeEnginePending => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.';
 	@override String get steamEnginePending => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.';
 	@override String get steamLibrary => 'Steam library';
@@ -9275,6 +9277,8 @@ extension on TranslationsKo {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
+			'games.inputUnavailable' => '게임 조작을 초기화하지 못했습니다. 다시 연결해 다시 시도하세요.',
+			'games.moonlightSessionLimit' => '이 기기에서는 한 번에 하나의 GameStream 세션만 활성화할 수 있습니다.',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamLibrary' => 'Steam library',
@@ -9648,10 +9652,10 @@ extension on TranslationsKo {
 			'musicDevices.receive' => '이 기기에서 재생 허용',
 			'musicDevices.nearbyHint' => '다른 기기에서 재생 기기 메뉴를 열고 재생을 허용하세요.',
 			'musicDevices.receiverHint' => '음악을 받으려면 Pleazyng을 열어 두세요. 이 코드로 한 번 페어링하세요.',
-			'musicDevices.moveFailed' => '재생을 옮기지 못했습니다. 기기가 켜져 있고 페어링되어 있으며 음악 서버에 접근할 수 있는지 확인하세요.',
-			'musicDevices.uncertain' => '연결이 끊겼습니다. 선택한 기기에 다시 연결하여 재생 상태를 확인하세요.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.moveFailed' => '재생을 옮기지 못했습니다. 기기가 켜져 있고 페어링되어 있으며 음악 서버에 접근할 수 있는지 확인하세요.',
+			'musicDevices.uncertain' => '연결이 끊겼습니다. 선택한 기기에 다시 연결하여 재생 상태를 확인하세요.',
 			'musicDevices.away' => '집 밖에서',
 			'musicDevices.relay' => '음악 릴레이 URL',
 			'musicDevices.relayHint' => '수신 기기에서 활성화한 다음 같은 네트워크에서 한 번 페어링하세요. Pleazyng을 열어 두세요. 릴레이는 암호화된 음악 제어를 전달하며 네트워크 주소를 볼 수 있습니다. 각 플레이어는 자체 미디어 서버에서 스트리밍합니다.',

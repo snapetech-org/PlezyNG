@@ -194,6 +194,33 @@ public final class EmbeddedGameStream {
     return true;
   }
 
+  /** Validated input for a session-owned workspace surface. */
+  public static Map<String, Object> workspaceArguments(Context context, Map<?, ?> args) throws Exception {
+    String hostId = text(args, "hostId", 256);
+    X509Certificate trusted = certificate(context, hostId);
+    if (trusted == null)
+      throw new SecurityException();
+    int appId = Integer.parseInt(text(args, "appId", 10));
+    if (appId <= 0)
+      throw new IllegalArgumentException();
+    Map<String, Object> result = new HashMap<>();
+    result.put("hostId", hostId);
+    result.put("address", address(args));
+    result.put("port", port(args));
+    result.put("appId", appId);
+    result.put("appName", text(args, "appName", 256));
+    result.put("hostName", text(args, "hostName", 256));
+    result.put("hdr", Boolean.TRUE.equals(args.get("hdr")));
+    result.put("touchControls", Boolean.TRUE.equals(args.get("touchControls")));
+    result.put("audioEnabled", !Boolean.FALSE.equals(args.get("audioEnabled")));
+    result.put("uniqueId", new IdentityManager(context).getUniqueId());
+    result.put("serverCert", trusted.getEncoded());
+    result.put("connectingLabel", textOrDefault(args, "connectingLabel", "Connecting…"));
+    result.put("failedLabel", textOrDefault(args, "failedLabel", "The stream could not start."));
+    result.put("inputUnavailableLabel", textOrDefault(args, "inputUnavailableLabel", "Game input is unavailable."));
+    return result;
+  }
+
   private static SharedPreferences preferences(Context context) {
     return context.getSharedPreferences(TRUST_STORE, Context.MODE_PRIVATE);
   }
@@ -217,6 +244,11 @@ public final class EmbeddedGameStream {
       throw new IllegalArgumentException();
     }
     return text;
+  }
+
+  private static String textOrDefault(Map<?, ?> args, String key, String fallback) {
+    Object value = args.get(key);
+    return value instanceof String && ((String) value).length() <= 256 ? (String) value : fallback;
   }
 
   private static String address(Map<?, ?> args) {

@@ -126,7 +126,7 @@ The first eligible use displays a short anchored hint at Layout: “Keep two thi
 | Native PiP unavailable for a book | Offer Float in Plezy or Pop out where supported; explain “Interactive reading stays inside Plezy on this device.” |
 | Android TV system PiP requested | Explain “Use a floating view inside Plezy on this TV.” Offer it directly |
 | Reader lacks a TV renderer | “This reader is not available on this device yet.” Keep video running; offer another item |
-| Game engine is Activity-only | “This game engine currently opens full screen. Keep your other media ready to return to?” Android Steam offers the inline workspace path; Moonlight does not yet expose one. |
+| Game engine has no embedded renderer on this platform | “This game engine currently opens full screen. Keep your other media ready to return to?” Android GameStream/Moonlight and Android Steam offer the inline workspace path. |
 | Mixing conflicts with passthrough | “Mixing needs decoded audio.” Show current output, proposed compatible output, Continue / Keep current |
 | Pair cannot overlap native planes | “Use side by side for these views.” Preserve sessions and offer the valid arrangement |
 | Pop-out/window transfer fails | Restore original pane, keep playback, and show a local Retry action |

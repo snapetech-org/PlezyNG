@@ -74,12 +74,17 @@ See [RESEARCH.md](RESEARCH.md) for immutable code references, platform evidence,
 
 ## Implementation boundary
 
-Current main includes profile-scoped workspace state and persistence, shared pane controls, session adapters for current video/music/source/reader surfaces, four independently admitted video sessions, and an Android Steam retained surface. MPV and Android ExoPlayer have per-slot native channels; Tizen and webOS controllers receive independent native player IDs. Capability checks keep unsupported engine/platform combinations out of the embedded path. Retained desktop video windows and supported non-video Flutter views are implemented for macOS, Windows and Linux/Wayland. Device resource limits and platform acceptance remain tracked in DELIVERY.md and VALIDATION.md; source integration alone is not device qualification.
+Current main includes profile-scoped workspace state and persistence, shared pane controls, session adapters for current video/music/source/reader surfaces, four independently admitted video sessions, and retained Android GameStream and Steam surfaces. MPV and Android ExoPlayer have per-slot native channels; Tizen and webOS controllers receive independent native player IDs. Capability checks keep unsupported engine/platform combinations out of the embedded path. Retained desktop video windows and supported non-video Flutter views are implemented for macOS, Windows and Linux/Wayland. Device resource limits and platform acceptance remain tracked in DELIVERY.md and VALIDATION.md; source integration alone is not device qualification.
 
 ## Handoff boundaries
 
-The integrated source includes the Games library and Android native modules. Android Steam has a retained surface adapter and can open as an app-owned pane. GameStream/Moonlight still uses an Activity and is not advertised as an inline surface; other platform game renderers remain unavailable. Do not widen the embedded capability flag until a target has an independently owned renderer, audio/input handoff and teardown implementation.
+The integrated source includes the Games library and Android native modules. Android GameStream/Moonlight and Steam each have retained native surface adapters and can open as app-owned panes. Moonlight's original Activity remains the full-screen path; workspace playback owns its own connection, decoder, audio level, input lease and teardown. The Moonlight native bridge allows one live GameStream at a time on Android; that stream can run beside other media panes. Other platform GameStream renderers remain unavailable, and Android surface/input/audio behavior still needs device qualification.
 
 The comic renderer is implemented as described in [its delivery record](../comics/DELIVERY.md); native device, live-service and TV-reader qualification remain open. Preserve the existing comic, localization, audiobook-sync and Dolby Vision implementations and integrate at their adapter boundaries; do not replace them with parallel implementations.
 
 The current source includes focused Dart and JVM regression coverage and CI jobs for the Android adapter and app build. Run those checks on the release revision and record device qualification per backend and scenario as defined in VALIDATION.md before release.
+
+## Upstream sources
+
+The Android GameStream workspace adapts the pinned Moonlight Android receiver
+and its native stream setup from [upstream commit b48494cb](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d), authored by [@cgutman](https://github.com/cgutman). Pleazyng independently adapted the receiver connection, decoder, audio and input lifecycle for a retained Android view. See [UPSTREAM_ATTRIBUTION.md](../../../UPSTREAM_ATTRIBUTION.md) for the source record.

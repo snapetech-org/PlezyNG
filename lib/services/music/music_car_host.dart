@@ -811,13 +811,25 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     final item = _items[id];
     if (item == null) return [];
     final client = _authorizations[id]?.client;
-    if (client == null || !_catalogItemCurrent(id)) return [];
+    if (client == null ||
+        !_catalogItemCurrent(id) ||
+        hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')) {
+      return [];
+    }
+    bool visibleChild(MediaItem child) =>
+        child.serverId == item.serverId && !hidden.hiddenLibraryKeys.contains('${child.serverId}:${child.libraryId}');
     if (item.kind == MediaKind.playlist) {
       final page = await client.fetchPlaylistPage(item.id, start: offset, size: _pageSize - 1);
       if (!_catalogItemCurrent(id)) return [];
+      if (page.offset != offset ||
+          page.items.length > _pageSize - 1 ||
+          page.totalCount < offset + page.items.length ||
+          page.items.isEmpty && page.totalCount > offset) {
+        throw const FormatException('Invalid music car playlist page');
+      }
       return [
         {'id': id, 'title': t.common.play, 'playable': true},
-        ...page.items.where((child) => child.kind == MediaKind.track && child.serverId == item.serverId).map(_item),
+        ...page.items.where((child) => child.kind == MediaKind.track && visibleChild(child)).map(_item),
         if (page.items.isNotEmpty && offset + page.items.length < page.totalCount)
           _nextPage(id, offset + page.items.length),
       ];
@@ -836,14 +848,17 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     } else if (item.kind == MediaKind.album) {
       page = await client.fetchMusicTracksPage(item.id, kind: MediaKind.album, start: offset, size: _pageSize);
     } else {
-      final children = await client.fetchAlbumTracks(item.id);
-      return _catalogItemCurrent(id) && !hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')
-          ? _page(children.where((child) => child.serverId == item.serverId).map(_item), id, offset)
-          : [];
+      return [];
     }
-    if (!_catalogItemCurrent(id) || hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')) return [];
+    if (!_catalogItemCurrent(id)) return [];
+    if (page.offset != offset ||
+        page.items.length > _pageSize ||
+        page.totalCount < offset + page.items.length ||
+        page.items.isEmpty && page.totalCount > offset) {
+      throw const FormatException('Invalid music car catalog page');
+    }
     return [
-      ...page.items.where((child) => child.serverId == item.serverId).map(_item),
+      ...page.items.where(visibleChild).map(_item),
       if (page.items.isNotEmpty && offset + page.items.length < page.totalCount)
         _nextPage(id, offset + page.items.length),
     ];

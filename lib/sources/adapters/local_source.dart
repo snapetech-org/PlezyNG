@@ -141,10 +141,13 @@ class LocalSourceAdapter extends SourceAdapter {
         ),
       );
     }
-    entries.sort(
-      (a, b) =>
-          a.isFolder == b.isFolder ? a.title.toLowerCase().compareTo(b.title.toLowerCase()) : (a.isFolder ? -1 : 1),
-    );
+    // Large snapshots can be re-enumerated for each page. Break case-folded
+    // title ties by stable path so those pages keep the same total ordering.
+    entries.sort((a, b) {
+      if (a.isFolder != b.isFolder) return a.isFolder ? -1 : 1;
+      final titleOrder = a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      return titleOrder == 0 ? a.id.compareTo(b.id) : titleOrder;
+    });
     final currentStamp = (await Directory(directory).stat()).modified.microsecondsSinceEpoch;
     if (currentStamp != initialStamp) throw const SourceException(SourceFailure.cancelled);
     final cached = entries.length <= _maxCachedEntries;

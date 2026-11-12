@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep paged local folder listings in a deterministic order when filenames differ only by letter case.
+
 - Read local CBR and CB7 comics through bounded RAR and 7z extraction, including source classification, BookOrbit/OPDS file metadata and codec notices in the app's Licenses screen.
 
 - Support secure Kavita OPDS onboarding from a copied Auth Key URL or a separate key field, migrate existing copied URLs into encrypted credentials, and keep the key out of saved source endpoints and entry identifiers.

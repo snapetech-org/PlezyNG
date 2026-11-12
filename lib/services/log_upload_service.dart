@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../utils/media_server_http_client.dart';
+import '../utils/log_redaction_manager.dart';
 import 'plezy_server.dart';
 
 /// Fork-owned endpoint that returns an unguessable, copyable Log ID.
@@ -45,12 +46,13 @@ String constrainLogUploadPayload({required String header, required String logs, 
 /// Shared by Settings › Logs and by the startup failure screen, which cannot
 /// reach Settings because the gate it needs has not completed (#1732).
 ///
-/// [payload] must already be redacted and allowlisted by the caller; this
-/// function performs no sanitisation of its own.
+/// [payload] must be selected and allowlisted by the caller. The upload
+/// boundary reapplies secret redaction as defence in depth.
 Future<String> uploadDiagnosticText(String payload, {MediaServerHttpClient? client, String? serviceBaseUrl}) async {
+  final safePayload = LogRedactionManager.redact(payload);
   final response = await (client ?? httpClient).post(
     serviceBaseUrl == null ? logUploadEndpoint : '${requirePleazyngServiceUrl(serviceBaseUrl)}/logs',
-    body: payload,
+    body: safePayload,
     headers: {'Content-Type': 'text/plain'},
   );
   final data = response.data is String ? jsonDecode(response.data as String) : response.data;

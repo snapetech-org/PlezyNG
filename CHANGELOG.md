@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Reject untrusted browser origins at anonymous relay and upload endpoints, redact diagnostic uploads at the egress boundary, and restrict relay container filesystem access, privileges and resources.
+
 - Allow a pinned-source release to run exact-source CI and create its stable tag through the authenticated release controller when the organization blocks Actions tag creation.
 - Route an explicit private Apple selection to macOS as well as iOS and tvOS, and bound the macOS compile and package job to 100 and 150 minutes.
 

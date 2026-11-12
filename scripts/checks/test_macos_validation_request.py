@@ -42,6 +42,7 @@ class MacRequestTests(unittest.TestCase):
                      'MODE_INPUT':'macos-validation','BUILD_VERSION_INPUT':version,'REF_TYPE':'branch','REF_NAME':'main',
                      'INCLUDE_WEBOS_BUILD_INPUT':'true','INCLUDE_WEBOS_RELEASE_INPUT':'true','INCLUDE_TIZEN_BUILD_INPUT':'true',
                      'INCLUDE_APPLE_STORE_BUILD_INPUT':'false','PREPARE_HOMEBREW_CASK_INPUT':'true','SUBTITLE_GPU_BACKEND_INPUT':'cpu',
+                     'RUNNER_ACQUISITION_RETRY_OF':'',
                      'REUSE_PLATFORMS':'','REUSE_ANDROID':'','MACOS_PACKAGE_RUN':'','MACOS_COMPILATION_JOB':'128247608189',
                      'GITHUB_SHA':'a'*40,'GITHUB_OUTPUT':str(output),'GITHUB_REF':'refs/heads/main'}
                 result=subprocess.run(['bash','-e','-o','pipefail','-c',script],cwd=ROOT,env=env,text=True,capture_output=True)

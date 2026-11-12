@@ -1319,7 +1319,7 @@ def ensure_release(
         workflow_source_sha = (existing["headSha"] if existing else workflow_source_sha)
         if workflow_source_sha is None:
             workflow_source_sha = gh_json("api", f"repos/{PLEZY_REPO}/branches/main")["commit"]["sha"]
-    else:
+    elif not reuse_platform_run_id:
         existing = matching_run(
             PLEZY_REPO,
             RELEASE_WORKFLOW,
@@ -1411,6 +1411,17 @@ def ensure_release(
         proof = verify_platform_recovery(reuse_platform_run_id, commit_sha, tag.removeprefix("v"), **options)
         if repair:
             validate_packaging_repair_proof(proof, tag, packaging_source_sha, workflow_source_sha)
+        elif reuse_platform_run_id:
+            # Validate the source artifacts before looking for or resuming a
+            # retry run. An invalid recovery request must not query or reuse a
+            # workflow run as a side effect.
+            existing = matching_run(
+                PLEZY_REPO,
+                RELEASE_WORKFLOW,
+                commit_sha,
+                ref="main",
+                expected_title=run_title,
+            )
     if existing:
         if existing.get("status") == "completed" and existing.get("conclusion") != "success":
             raise ReleaseError(

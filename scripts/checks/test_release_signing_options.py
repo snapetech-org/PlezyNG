@@ -35,12 +35,17 @@ class SigningOptionsTests(unittest.TestCase):
             for missing in [None, *required]:
                 with self.subTest(candidate=candidate, missing=missing), contextlib.ExitStack() as stack:
                     existing = {"databaseId": 42, "status": "completed", "conclusion": "success"}
+                    dispatched = {"databaseId": 43, "status": "completed", "conclusion": "success"}
                     stack.enter_context(patch.object(release, "matching_run", return_value=existing))
                     stack.enter_context(patch.object(release, "run_has_successful_job", return_value=True))
-                    step = stack.enter_context(patch.object(release, "run_has_successful_step", side_effect=lambda repo, run, job, name: (job, name) != missing))
+                    step = stack.enter_context(patch.object(
+                        release,
+                        "run_has_successful_step",
+                        side_effect=lambda repo, run, job, name: run is not existing or (job, name) != missing,
+                    ))
                     stack.enter_context(patch.object(release, "active_run", return_value=None))
                     stack.enter_context(patch.object(release, "ensure_remote_main_sha"))
-                    dispatch = stack.enter_context(patch.object(release, "dispatch"))
+                    dispatch = stack.enter_context(patch.object(release, "dispatch", return_value=dispatched))
                     options = dict(include_apple_store_build=True, prepare_homebrew_cask=True)
                     if candidate:
                         result = release.ensure_candidate_build("3.0.1", "a" * 40, **options)

@@ -208,12 +208,7 @@ class MusicGuestDj extends ChangeNotifier {
         final epoch = _epoch;
         const candidateLimit = 100;
         final page = await client
-            .fetchMusicTracksPage(
-              seed.grandparentId!,
-              kind: MediaKind.artist,
-              start: 0,
-              size: candidateLimit,
-            )
+            .fetchMusicTracksPage(seed.grandparentId!, kind: MediaKind.artist, start: 0, size: candidateLimit)
             .timeout(const Duration(seconds: 15));
         if (_disposed || epoch != _epoch) return [];
         if (page.offset != 0 ||

@@ -12,16 +12,20 @@ import '../../focus/key_event_utils.dart';
 import '../../i18n/strings.g.dart';
 import '../../media/ids.dart';
 import '../../media/media_item.dart';
+import '../../media/media_kind.dart';
 import '../../mixins/grid_focus_node_mixin.dart';
 import '../../models/download_models.dart';
 import '../../providers/download_provider.dart';
 import '../../services/music/music_playback_service.dart';
+import '../../services/music/music_queue_items.dart';
+import '../../services/music/music_tracks_loader.dart';
 import '../../theme/mono_tokens.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/download_deletion_confirmation.dart';
 import '../../utils/formatters.dart';
 import '../../utils/media_image_helper.dart';
 import '../../utils/music_navigation.dart';
+import '../../utils/music_read_scope.dart';
 import '../../utils/platform_detector.dart';
 import '../../utils/provider_extensions.dart';
 import '../../utils/snackbar_helper.dart';
@@ -90,18 +94,36 @@ class _AlbumDetailScreenState extends BaseMediaListDetailScreen<AlbumDetailScree
   bool get hasItems => items.isNotEmpty;
 
   @override
-  Future<List<MediaItem>> fetchItems() => widget.isOffline
-      ? Future.value(context.read<DownloadProvider>().getDownloadedTracksForAlbum(widget.album.globalKey))
-      : mediaClient.fetchAlbumTracks(widget.album.id);
+  Future<List<MediaItem>> fetchItems() async {
+    if (widget.isOffline) {
+      return List.of(context.read<DownloadProvider>().getDownloadedTracksForAlbum(widget.album.globalKey));
+    }
+    final client = mediaClient;
+    final scope = await MusicReadScope.forItem(context, widget.album, selectedClient: client);
+    if (scope == null) return const [];
+    if (scope.offline) return List.of(scope.offlineTracks);
+    final snapshot = await fetchMusicTracks(
+      client,
+      widget.album.id,
+      kind: MediaKind.album,
+      current: () => scope.current,
+      acceptsItem: scope.ownsTrack,
+    );
+    final boundedItems = MusicQueueItems(spill: true)..replaceWith(snapshot);
+    return boundedItems;
+  }
 
   @override
   Future<void> loadItems() async {
+    final previousItems = items;
     await super.loadItems();
+    if (!identical(previousItems, items) && previousItems is MusicQueueItems) previousItems.clear();
     autoFocusFirstItemAfterLoad();
   }
 
   @override
   void dispose() {
+    if (items is MusicQueueItems) (items as MusicQueueItems).clear();
     disposeFocusResources();
     super.dispose();
   }

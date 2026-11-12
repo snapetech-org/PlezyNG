@@ -75,6 +75,32 @@ class WindowsArm64WhisperTest(unittest.TestCase):
                     expected_sha256=expected,
                 )
 
+    def test_patch_accepts_its_exact_cached_output_on_a_repeat_build(self):
+        source = (
+            'before\n'
+            'add_subdirectory(\n'
+            '  "${FLUTTER_WHISPER_CPP_DIR}"\n'
+            '  "${CMAKE_CURRENT_BINARY_DIR}/whisper_cpp"\n'
+            '  EXCLUDE_FROM_ALL)\n'
+            + whisper.WHISPER_MSVC_WARNING_BLOCK
+            + '\nafter\n'
+        )
+        expected = hashlib.sha256(source.encode()).hexdigest()
+        with tempfile.TemporaryDirectory() as temporary:
+            cmake_file = Path(temporary) / "CMakeLists.txt"
+            cmake_file.write_text(source)
+            whisper.patch_plugin_cmake(cmake_file, Path(temporary) / "whisper-libraries", expected_sha256=expected)
+            patched_sha256 = hashlib.sha256(cmake_file.read_bytes()).hexdigest()
+
+            whisper.patch_plugin_cmake(
+                cmake_file,
+                Path(temporary) / "whisper-libraries",
+                expected_sha256=expected,
+                expected_patched_sha256=patched_sha256,
+            )
+
+            self.assertEqual(hashlib.sha256(cmake_file.read_bytes()).hexdigest(), patched_sha256)
+
     def test_patch_rejects_an_unrecognized_dependency(self):
         with tempfile.TemporaryDirectory() as temporary:
             cmake_file = Path(temporary) / "CMakeLists.txt"

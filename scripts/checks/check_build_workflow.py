@@ -281,7 +281,7 @@ require(
 whisper_arm64_builder = (ROOT / "scripts/prepare_windows_arm64_whisper.py").read_text(encoding="utf-8")
 require(
     all(value in whisper_arm64_builder for value in (
-        "WHISPER_PLUGIN_CMAKE_SHA256",
+        "WHISPER_PLUGIN_CMAKE_SHA256", "WHISPER_PLUGIN_CMAKE_PATCHED_SHA256",
         "ClangCL", "MSVC", "GGML_NATIVE=OFF", "FLUTTER_WHISPER_PREBUILT_ROOT",
         "IMPORTED_IMPLIB_RELEASE", "whisper", "ggml-base", "ggml-cpu",
     )),

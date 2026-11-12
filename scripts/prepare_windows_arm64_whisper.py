@@ -15,6 +15,10 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 WHISPER_PLUGIN_CMAKE_SHA256 = "92b12bc35aec4925c3f7f9085992659ee5dd3d90098b8efbc6701ffb2dd65b08"
+# GitHub's Pub cache persists this exact rewrite between successful Windows
+# builds. Accepting only our deterministic output keeps repeat builds safe
+# while still rejecting any other dependency contents.
+WHISPER_PLUGIN_CMAKE_PATCHED_SHA256 = "965fedcffdb2e84048ce256752631a94b56ba0a120a9ca55bd2748213f652ecf"
 WHISPER_ADD_SUBDIRECTORY = '''add_subdirectory(
   "${FLUTTER_WHISPER_CPP_DIR}"
   "${CMAKE_CURRENT_BINARY_DIR}/whisper_cpp"
@@ -65,9 +69,19 @@ def package_root(package_config: Path) -> Path:
     return Path(path).resolve()
 
 
-def patch_plugin_cmake(cmake_file: Path, prebuilt_root: Path, *, expected_sha256: str = WHISPER_PLUGIN_CMAKE_SHA256) -> None:
+def patch_plugin_cmake(
+    cmake_file: Path,
+    prebuilt_root: Path,
+    *,
+    expected_sha256: str = WHISPER_PLUGIN_CMAKE_SHA256,
+    expected_patched_sha256: str = WHISPER_PLUGIN_CMAKE_PATCHED_SHA256,
+) -> None:
     original = cmake_file.read_bytes()
     actual_sha256 = hashlib.sha256(original).hexdigest()
+    if actual_sha256 == expected_patched_sha256:
+        # The package cache can retain the output of a previous successful
+        # run because actions/cache saves it after this script completes.
+        return
     if actual_sha256 != expected_sha256:
         raise ValueError(
             "Refusing to patch an unrecognized flutter_whisper_ggml Windows CMakeLists.txt "
@@ -213,7 +227,7 @@ def prepare() -> None:
         raise RuntimeError("GITHUB_ENV is required to pass the verified Whisper libraries to Flutter CMake")
     with Path(github_env).open("a", encoding="utf-8", newline="\n") as output:
         output.write(f"FLUTTER_WHISPER_PREBUILT_ROOT={output_root}\n")
-    print(f"Built pinned ARM64 Whisper dependencies and patched the verified plugin CMake file: {output_root}")
+    print(f"Built pinned ARM64 Whisper dependencies and verified the plugin CMake file: {output_root}")
 
 
 def main() -> int:

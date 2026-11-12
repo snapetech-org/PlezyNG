@@ -4,6 +4,8 @@
 
 - Let users set Stremio add-on priority, persist it per profile, and preserve local order and enabled state when importing the account again.
 
+- Preserve the selected duplicate playlist occurrence when starting playback on a transferred device, including cloned rows and shuffled queues.
+
 - Extend reproducible native gapless qualification to ALAC, AAC and Opus, and fix JSON receipts while recording encoder versions and measured error tolerances.
 
 - Use the current Google Cast Swift queue-update method when rearming repeat playback on iOS.

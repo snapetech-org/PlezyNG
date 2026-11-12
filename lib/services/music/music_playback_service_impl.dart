@@ -101,20 +101,24 @@ class _PendingResume {
   _PendingResume({required this.globalKey, required this.position});
 }
 
+// Local and transferred queues must select the same playlist occurrence,
+// including when a detail view passes a copy of the selected entry.
+int? _musicStartIndex(List<MediaItem> tracks, MediaItem? startTrack) {
+  if (startTrack == null) return null;
+  var index = startTrack.playlistItemId == null
+      ? -1
+      : tracks.indexWhere(
+          (track) => track.globalKey == startTrack.globalKey && track.playlistItemId == startTrack.playlistItemId,
+        );
+  if (index < 0) index = tracks.indexWhere((track) => identical(track, startTrack));
+  if (index < 0) index = tracks.indexWhere((track) => track.globalKey == startTrack.globalKey);
+  return index < 0 ? null : index;
+}
+
 MusicQueueState _captureTransferQueueState(List<MediaItem> tracks, {MediaItem? startTrack, bool shuffle = false}) {
   final queue = MusicQueueController(spillLargeQueues: true);
   try {
-    int? startIndex;
-    if (startTrack != null) {
-      final exact = tracks.indexWhere((item) => identical(item, startTrack));
-      if (exact >= 0) {
-        startIndex = exact;
-      } else {
-        final fallback = tracks.indexWhere((item) => item.globalKey == startTrack.globalKey);
-        if (fallback >= 0) startIndex = fallback;
-      }
-    }
-    queue.load(tracks, startIndex: startIndex, shuffle: shuffle);
+    queue.load(tracks, startIndex: _musicStartIndex(tracks, startTrack), shuffle: shuffle);
     return queue.captureState();
   } finally {
     queue.clear();
@@ -2545,19 +2549,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     // shuffled queue randomize its head too. Collapsing that into 0 pinned
     // every shuffle launch to the list's first track (#1811) — including a
     // start track the list turns out not to contain.
-    int? startIndex;
-    if (startTrack != null) {
-      var index = startTrack.playlistItemId == null
-          ? -1
-          : tracks.indexWhere(
-              (track) => track.globalKey == startTrack.globalKey && track.playlistItemId == startTrack.playlistItemId,
-            );
-      if (index < 0) index = tracks.indexWhere((track) => identical(track, startTrack));
-      if (index < 0) index = tracks.indexWhere((track) => track.globalKey == startTrack.globalKey);
-      if (index >= 0) {
-        startIndex = index;
-      }
-    }
+    final startIndex = _musicStartIndex(tracks, startTrack);
     if (restoredQueue != null) {
       if (!_queue.restoreState(restoredQueue)) return;
     } else {

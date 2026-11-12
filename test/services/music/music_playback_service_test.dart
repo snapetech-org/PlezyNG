@@ -3022,6 +3022,19 @@ void main() {
       expect(h.service.isPlaying, isTrue);
       expect(receiver.service.isPlaying, isFalse);
       expect(await controller.moveTo(outgoing.output), MusicDeviceMoveResult.completed);
+      final first = MediaItem.fromJson({...t1.toJson(), 'playlistItemId': 10});
+      final repeated = MediaItem.fromJson({...t1.toJson(), 'playlistItemId': 11});
+      for (final shuffle in [false, true]) {
+        await h.playTracks(
+          [first, t2, repeated],
+          startTrack: repeated.copyWith(title: 'Selected'),
+          shuffle: shuffle,
+        );
+        expect(receiver.service.currentIndex, shuffle ? 0 : 2);
+        final transferred = outgoing.output.state!.snapshot!.queue;
+        expect(transferred.order[transferred.cursor], 2);
+        expect(receiver.service.isPlaying, isTrue);
+      }
       await remoteTransport.disconnect();
       await pumpEventQueue();
       expect(receiver.service.isPlaying, isTrue);

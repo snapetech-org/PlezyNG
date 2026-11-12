@@ -55,16 +55,20 @@ class KaraokeAsset {
     }
     final hash = j['sha256'] as String;
     final bytes = j['bytes'] as int;
+    final part = j['part'] as String?, clockId = j['clockId'] as String?;
     if (!RegExp(r'^[a-f0-9]{64}$').hasMatch(hash) || bytes < 0 || bytes > 4 * 1024 * 1024 * 1024) {
       throw const FormatException('Invalid karaoke asset identity');
+    }
+    if ((part?.length ?? 0) > 128 || (clockId?.length ?? 0) > 128) {
+      throw const FormatException('Karaoke asset metadata limit exceeded');
     }
     return KaraokeAsset(
       path: path,
       sha256: hash,
       bytes: bytes,
       kind: KaraokeAssetKind.values.byName(j['kind'] as String),
-      part: j['part'] as String?,
-      clockId: j['clockId'] as String?,
+      part: part,
+      clockId: clockId,
     );
   }
 }
@@ -95,15 +99,19 @@ class KaraokeNote {
   factory KaraokeNote.fromJson(Map<String, dynamic> j) {
     final start = j['startMs'] as int, end = j['endMs'] as int;
     final midi = (j['midi'] as num).toDouble();
+    final part = j['part'] as String? ?? '1', text = j['text'] as String? ?? '';
     if (start < 0 || end <= start || end > 24 * 3600000 || !midi.isFinite || midi < 0 || midi > 127) {
       throw const FormatException('Invalid karaoke note');
+    }
+    if (part.length > 128 || text.length > 512) {
+      throw const FormatException('Karaoke note metadata limit exceeded');
     }
     return KaraokeNote(
       startMs: start,
       endMs: end,
       midi: midi,
-      part: j['part'] as String? ?? '1',
-      text: j['text'] as String? ?? '',
+      part: part,
+      text: text,
       freestyle: j['freestyle'] == true,
       golden: j['golden'] == true,
     );
@@ -118,15 +126,11 @@ class KaraokeSection {
   Map<String, dynamic> toJson() => {'name': name, 'startMs': startMs, 'endMs': endMs, 'instrumental': instrumental};
   factory KaraokeSection.fromJson(Map<String, dynamic> j) {
     final start = j['startMs'] as int, end = j['endMs'] as int;
-    if (start < 0 || end <= start || end > 24 * 3600000) {
+    final name = j['name'] as String;
+    if (start < 0 || end <= start || end > 24 * 3600000 || name.trim().isEmpty || name.length > 128) {
       throw const FormatException('Invalid section');
     }
-    return KaraokeSection(
-      name: j['name'] as String,
-      startMs: start,
-      endMs: end,
-      instrumental: j['instrumental'] == true,
-    );
+    return KaraokeSection(name: name, startMs: start, endMs: end, instrumental: j['instrumental'] == true);
   }
 }
 
@@ -214,9 +218,33 @@ class KaraokeTrack {
     }
     final notes = j['notes'] as List? ?? const [];
     final assets = j['assets'] as List? ?? const [];
+    final sections = j['sections'] as List? ?? const [];
+    final rawTags = j['tags'] as List? ?? const [];
     final rawLyrics = Map<String, dynamic>.from(j['lyrics'] as Map);
-    if (notes.length > 100000 || assets.length > 256 || (rawLyrics['lines'] as List).length > 20000) {
+    if (notes.length > 100000 ||
+        assets.length > 256 ||
+        sections.length > 20000 ||
+        rawTags.length > 256 ||
+        (rawLyrics['lines'] as List).length > 20000) {
       throw const FormatException('Karaoke package limit exceeded');
+    }
+    final tags = List<String>.from(rawTags);
+    if (tags.any((tag) => tag.length > 128)) throw const FormatException('Karaoke tag metadata limit exceeded');
+    final songId = j['songId'] as String;
+    final title = j['title'] as String;
+    final artist = j['artist'] as String? ?? '';
+    final language = j['language'] as String? ?? '';
+    final producer = j['producer'] as String? ?? '';
+    final providerId = j['providerId'] as String?;
+    final license = j['license'] as String?;
+    if (songId.length > 256 ||
+        title.length > 512 ||
+        artist.length > 512 ||
+        language.length > 64 ||
+        producer.length > 256 ||
+        (providerId?.length ?? 0) > 256 ||
+        (license?.length ?? 0) > 2048) {
+      throw const FormatException('Karaoke rendition metadata limit exceeded');
     }
     final lyrics = Lyrics.fromJson(rawLyrics);
     final year = j['year'] as int?;
@@ -232,6 +260,9 @@ class KaraokeTrack {
         throw const FormatException('Lyric spans do not reproduce their line text');
       }
       if (l.text.length > 16000 ||
+          (l.part?.length ?? 0) > 128 ||
+          (l.translation?.length ?? 0) > 16000 ||
+          (l.pronunciation?.length ?? 0) > 4096 ||
           (l.startMs ?? 0) < 0 ||
           (l.endMs ?? 0) > 24 * 3600000 ||
           l.spans.length > 4096 ||
@@ -239,18 +270,23 @@ class KaraokeTrack {
         throw const FormatException('Invalid lyric timing');
       }
       for (final s in l.spans) {
-        if (s.startMs < 0 || s.startMs > 24 * 3600000 || (s.endMs != null && s.endMs! < s.startMs)) {
+        if (s.text.length > 16000 ||
+            (s.part?.length ?? 0) > 128 ||
+            (s.pronunciation?.length ?? 0) > 4096 ||
+            s.startMs < 0 ||
+            s.startMs > 24 * 3600000 ||
+            (s.endMs != null && s.endMs! < s.startMs)) {
           throw const FormatException('Invalid lyric span');
         }
       }
     }
     return KaraokeTrack(
       id: id,
-      songId: j['songId'] as String,
-      title: j['title'] as String,
-      artist: j['artist'] as String? ?? '',
-      language: j['language'] as String? ?? '',
-      producer: j['producer'] as String? ?? '',
+      songId: songId,
+      title: title,
+      artist: artist,
+      language: language,
+      producer: producer,
       genre: genre,
       year: year,
       difficulty: difficulty,
@@ -259,15 +295,15 @@ class KaraokeTrack {
       notes: List.unmodifiable(notes.map((n) => KaraokeNote.fromJson(Map<String, dynamic>.from(n as Map)))),
       assets: List.unmodifiable(assets.map((a) => KaraokeAsset.fromJson(Map<String, dynamic>.from(a as Map)))),
       sections: List.unmodifiable(
-        (j['sections'] as List? ?? const []).map((s) => KaraokeSection.fromJson(Map<String, dynamic>.from(s as Map))),
+        sections.map((section) => KaraokeSection.fromJson(Map<String, dynamic>.from(section as Map))),
       ),
       durationMs: (j['durationMs'] as int? ?? 0).clamp(0, 24 * 3600000),
       lyricOffsetMs: (j['lyricOffsetMs'] as int? ?? 0).clamp(-600000, 600000),
       chartReviewed: j['chartReviewed'] == true,
       explicit: j['explicit'] == true,
-      providerId: j['providerId'] as String?,
-      license: j['license'] as String?,
-      tags: List<String>.from(j['tags'] as List? ?? const []),
+      providerId: providerId,
+      license: license,
+      tags: tags,
     );
   }
   KaraokeTrack withLyrics(Lyrics value, {List<KaraokeNote>? chart, bool? reviewed, int? offsetMs}) {

@@ -9,7 +9,7 @@
 
 - Accept expiring OPDS acquisition URLs while keeping credentialed source and catalogue URLs rejected, and keep signed credentials out of saved entry identity.
 
-- Open saved Multiview sessions on demand from Settings so app startup goes straight to the normal browsing and resume flow.
+- Open saved Multiview sessions on demand from Settings, with localized guidance for managing active sessions, so app startup goes straight to the normal browsing and resume flow.
 
 - Pass the configured Pleazyng relay and owned Discord application ID into every official release build, including Microsoft Store payloads, enabling optional provider routes without upstream-service fallbacks.
 

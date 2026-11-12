@@ -737,7 +737,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
           focusNode: _focusTracker.get(_kPlaybackReceiver),
           icon: Symbols.speaker_group_rounded,
           title: t.musicDevices.receive,
-          subtitle: t.companionRemote.session.serverStoppedDescription,
+          subtitle: t.musicDevices.receiverHint,
           onTap: () => unawaited(showPlaybackReceiverSettings(context)),
         ),
     ];

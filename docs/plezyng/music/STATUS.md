@@ -6,6 +6,18 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 “Existing” means retained application behavior, not a new reference comparison.
 “Partial” identifies concrete remaining implementation, not just testing.
 
+## Cast receiver queue edits, 2026-11-11
+
+Returning a detached queue now requires the complete acknowledged occurrence
+order, unique native item IDs and original account. Receiver reorders, removals,
+foreign entries and incomplete SDK caches disable return; preparation/freeze
+guards recheck the full shape rather than restoring stale sender order.
+Receiver queue events refresh the action as the cache changes.
+
+Validation: **717 music, ownership and Now Playing tests** pass in the isolated
+qualification checkout, including 57 focused queue tests, with clean targeted
+analysis. Physical receiver qualification remains unperformed.
+
 ## Standalone Cast repeat handoff, 2026-11-11
 
 Bounded standalone queue handoff now supports repeat off/one/all. Repeating

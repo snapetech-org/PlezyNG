@@ -54,6 +54,7 @@ class CastMediaService extends ChangeNotifier {
   StreamSubscription<GoogleCastSession?>? _sessionSubscription;
   StreamSubscription<GoggleCastMediaStatus?>? _statusSubscription;
   StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<List<GoogleCastQueueItem>>? _queueSubscription;
   bool _finishingPlayback = false;
   bool? _lastPausedState;
   final _loads = SerialFutureQueue();
@@ -187,7 +188,10 @@ class CastMediaService extends ChangeNotifier {
         _matchesDetached(detached);
   }
 
-  bool get canReturnDetachedMusicQueue => !_returningDetached && hasDetachedMusicQueue;
+  bool get canReturnDetachedMusicQueue =>
+      !_returningDetached &&
+      hasDetachedMusicQueue &&
+      _detached!.queue.canReturn(_remote.mediaStatus, _remote.queueItems);
 
   bool _matchesDetached(_DetachedMusicQueue detached) =>
       detached.queue.matches(detached.connection, castReceiverKey(_sessions.currentSession), _remote.mediaStatus);
@@ -276,6 +280,7 @@ class CastMediaService extends ChangeNotifier {
     await GoogleCastContext.instance.setSharedInstanceWithOptions(options);
     _sessionSubscription = _sessions.currentSessionStream.listen(_onSessionChanged);
     _statusSubscription = _remote.mediaStatusStream.listen(_onMediaStatusChanged);
+    _queueSubscription = _remote.queueItemsStream.listen((_) => notifyListeners());
     _positionSubscription = _remote.playerPositionStream.listen((_) {
       if (_ownsReceiver() && _remote.mediaStatus?.playerState != CastMediaPlayerState.idle) {
         _lastOwnedPosition = _currentItemPosition();
@@ -481,6 +486,7 @@ class CastMediaService extends ChangeNotifier {
         invalidated: _sessions.currentSessionStream
             .where((value) => castReceiverKey(value) != detached.connection)
             .map<void>((_) {}),
+        receiverItems: () => _remote.queueItems,
         position: () => _remote.playerPosition,
         pause: _remote.pause,
         resume: () async {
@@ -1038,6 +1044,7 @@ class CastMediaService extends ChangeNotifier {
     unawaited(_recoveryConnections?.cancel());
     unawaited(_sessionSubscription?.cancel());
     unawaited(_statusSubscription?.cancel());
+    unawaited(_queueSubscription?.cancel());
     unawaited(_positionSubscription?.cancel());
     super.dispose();
   }

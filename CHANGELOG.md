@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Require the complete acknowledged Cast occurrence order before returning playback locally, and recheck it during preparation and receiver pause so receiver edits cannot be overwritten by a stale queue.
+
 - Support repeat-one and repeat-all for bounded standalone Cast queue transfers, with acknowledged native item rearming, restart recovery and receiver repeat settings preserved on return. Keep local playback intact if preparation or ownership checks fail.
 
 - Manage pending Plex item-sharing invitations from Shared playlists, with explicit whole-invitation confirmation, original-account preflight and single-attempt acceptance or decline. Refresh accepted browsing after decisions and retire stale confirmations with their profile.

@@ -193,6 +193,38 @@ class CastMusicQueue {
   bool isFinalOccurrence(GoggleCastMediaStatus? status) =>
       status?.repeatMode == GoogleCastMediaRepeatMode.off && _occurrence(status) == items.length - 1;
 
+  /// Return requires the full original occurrence order, not just a matching
+  /// current track. Sparse caches and receiver edits cannot restore stale order.
+  bool canReturn(GoggleCastMediaStatus? status, List<GoogleCastQueueItem> received) {
+    final current = _occurrence(status);
+    if (!authorized() ||
+        _mediaSessionId == null ||
+        current == null ||
+        _localRepeat(status) == null ||
+        received.length != items.length ||
+        !const [
+          CastMediaPlayerState.playing,
+          CastMediaPlayerState.buffering,
+          CastMediaPlayerState.paused,
+        ].contains(status?.playerState)) {
+      return false;
+    }
+    final ids = <int>{};
+    for (final (index, item) in received.indexed) {
+      final media = item.mediaInformation;
+      final id = item.itemId;
+      if (id == null ||
+          id <= 0 ||
+          !ids.add(id) ||
+          media.contentId != items[index].mediaInformation.contentId ||
+          media.customData?[ownerKey] != token ||
+          media.customData?[occurrenceKey] != index.toString()) {
+        return false;
+      }
+    }
+    return received[current].itemId == status?.currentItemId;
+  }
+
   bool stopAcknowledged(GoggleCastMediaStatus? status) =>
       _mediaSessionId != null &&
       status?.mediaSessionID == _mediaSessionId &&
@@ -246,6 +278,7 @@ class CastMusicQueue {
     required GoggleCastMediaStatus? Function() status,
     required Stream<GoggleCastMediaStatus?> statuses,
     required Stream<void> invalidated,
+    required List<GoogleCastQueueItem> Function() receiverItems,
     required Duration Function() position,
     required Future<void> Function() pause,
     required Future<void> Function() resume,
@@ -255,12 +288,14 @@ class CastMusicQueue {
     final start = status();
     final index = _occurrence(start);
     final repeat = _localRepeat(start);
-    if (_mediaSessionId == null || index == null || repeat == null || !current() || !authorized()) return false;
+    if (index == null || repeat == null || !current() || !authorized() || !canReturn(start, receiverItems())) {
+      return false;
+    }
     final wasPlaying =
         start?.playerState == CastMediaPlayerState.playing || start?.playerState == CastMediaPlayerState.buffering;
     if (!wasPlaying && start?.playerState != CastMediaPlayerState.paused) return false;
     bool sameOccurrence(GoggleCastMediaStatus? value) => _occurrence(value) == index && _localRepeat(value) == repeat;
-    bool owned() => current() && authorized() && sameOccurrence(status());
+    bool owned() => current() && authorized() && sameOccurrence(status()) && canReturn(status(), receiverItems());
     bool paused() => owned() && status()?.playerState == CastMediaPlayerState.paused;
 
     var frozen = false;

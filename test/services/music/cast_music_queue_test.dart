@@ -64,6 +64,11 @@ GoggleCastMediaStatus _status(
   mediaInformation: queue.items[index].mediaInformation,
 );
 
+List<GoogleCastQueueItem> _receiverItems(CastMusicQueue queue) => [
+  for (final (index, item) in queue.items.indexed)
+    GoogleCastQueueItem(itemId: index + 1, mediaInformation: item.mediaInformation),
+];
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late _Client client;
@@ -129,6 +134,7 @@ void main() {
     var current = status;
     expect(
       await recovered.returnToLocal(
+        receiverItems: () => _receiverItems(original),
         current: () => true,
         status: () => current,
         statuses: events.stream,
@@ -337,6 +343,7 @@ void main() {
       publish(2, CastMediaPlayerState.playing);
       final actions = <String>[];
       final returned = await queue.returnToLocal(
+        receiverItems: () => _receiverItems(queue),
         current: () => true,
         status: () => status,
         statuses: events.stream,
@@ -514,6 +521,7 @@ void main() {
       var prepared = false;
       var paused = false;
       final accepted = await queue.returnToLocal(
+        receiverItems: () => _receiverItems(queue),
         current: () => true,
         status: () => status,
         statuses: events.stream,
@@ -551,6 +559,7 @@ void main() {
     addTearDown(events.close);
     expect(
       await queue.returnToLocal(
+        receiverItems: () => _receiverItems(queue),
         current: () => true,
         status: () => status,
         statuses: events.stream,
@@ -620,5 +629,96 @@ void main() {
     client.scopedServerId = 's/other-user';
     target.complete(const ExternalPlaybackTarget(url: 'https://server/old.flac'));
     await rejected;
+  });
+  for (final change in [
+    'unchanged',
+    'sparse',
+    'extra',
+    'reordered',
+    'duplicate IDs',
+    'invalid ID',
+    'foreign owner',
+    'foreign occurrence',
+    'foreign content',
+    'current ID',
+  ]) {
+    test('return validates full receiver order: $change', () async {
+      final queue = await acknowledgedQueue();
+      var received = _receiverItems(queue);
+      final status = _status(queue, 1, CastMediaPlayerState.paused);
+      if (change == 'sparse') received.removeLast();
+      if (change == 'extra') received.add(received.last);
+      if (change == 'reordered') received = received.reversed.toList();
+      if (change == 'duplicate IDs') {
+        received[0] = GoogleCastQueueItem(itemId: received[1].itemId, mediaInformation: received[0].mediaInformation);
+      }
+      if (change == 'invalid ID') {
+        received[0] = GoogleCastQueueItem(itemId: 0, mediaInformation: received[0].mediaInformation);
+      }
+      if (change == 'current ID') {
+        received[1] = GoogleCastQueueItem(itemId: 99, mediaInformation: received[1].mediaInformation);
+      }
+      if (change.startsWith('foreign')) {
+        final original = received[0].mediaInformation;
+        received[0] = GoogleCastQueueItem(
+          itemId: 1,
+          mediaInformation: GoogleCastMediaInformation(
+            contentId: change == 'foreign content' ? 'foreign' : original.contentId,
+            contentType: 'audio/*',
+            streamType: CastMediaStreamType.buffered,
+            customData: {
+              ...?original.customData,
+              if (change == 'foreign owner') CastMusicQueue.ownerKey: 'foreign',
+              if (change == 'foreign occurrence') CastMusicQueue.occurrenceKey: '2',
+            },
+          ),
+        );
+      }
+      expect(queue.canReturn(status, received), change == 'unchanged');
+    });
+  }
+
+  for (final phase in ['prepare', 'freeze']) {
+    test('receiver edit during $phase cannot adopt a stale order or resume over the edit', () async {
+      final queue = await acknowledgedQueue();
+      var received = _receiverItems(queue);
+      var status = _status(queue, 1, CastMediaPlayerState.playing);
+      var paused = false, adopted = false;
+      final events = StreamController<GoggleCastMediaStatus?>.broadcast(sync: true);
+      addTearDown(events.close);
+      final returned = await queue.returnToLocal(
+        receiverItems: () => received,
+        current: () => true,
+        status: () => status,
+        statuses: events.stream,
+        invalidated: const Stream.empty(),
+        position: () => Duration.zero,
+        pause: () async {
+          paused = true;
+          status = _status(queue, 1, CastMediaPlayerState.paused);
+          events.add(status);
+          if (phase == 'freeze') received = received.reversed.toList();
+        },
+        resume: () async => fail('receiver has a newer edit'),
+        prepare: (_, current) async {
+          if (phase == 'prepare') received = received.reversed.toList();
+          return (_, _) async {
+            adopted = true;
+            return current();
+          };
+        },
+      );
+      expect(returned, isFalse);
+      expect(paused, phase == 'freeze');
+      expect(adopted, isFalse);
+    });
+  }
+  test('queue return requires an active state and the original account', () async {
+    final queue = await acknowledgedQueue();
+    final received = _receiverItems(queue);
+    expect(queue.canReturn(_status(queue, 1, CastMediaPlayerState.idle), received), isFalse);
+    expect(queue.canReturn(_status(queue, 1, CastMediaPlayerState.paused), received), isTrue);
+    client.authenticationSessionId = Object();
+    expect(queue.canReturn(_status(queue, 1, CastMediaPlayerState.paused), received), isFalse);
   });
 }

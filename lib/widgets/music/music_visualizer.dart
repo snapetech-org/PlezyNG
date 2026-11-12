@@ -743,39 +743,46 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(tk.radiusLg),
-            child: _nativePointerSurface(
-              Size(constraints.maxWidth, constraints.maxHeight),
-              Stack(
-                fit: StackFit.expand,
-                children: [
-                  Positioned.fill(
-                    child: RepaintBoundary(
-                      child: CustomPaint(
-                        painter: MusicVisualizerPainter(
-                          frame: _frame,
-                          preset: widget.preset,
-                          palette: palette,
-                          profile: _profile,
+            // Route mouse input only from the visual surface; clicks on the
+            // overlay controls must not become MilkDrop mouse clicks.
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned.fill(
+                  child: _nativePointerSurface(
+                    Size(constraints.maxWidth, constraints.maxHeight),
+                    Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        RepaintBoundary(
+                          child: CustomPaint(
+                            painter: MusicVisualizerPainter(
+                              frame: _frame,
+                              preset: widget.preset,
+                              palette: palette,
+                              profile: _profile,
+                            ),
+                            child: const SizedBox.expand(),
+                          ),
                         ),
-                        child: const SizedBox.expand(),
-                      ),
+                        if (_native.hasFrame && _native.textureId != null && !_fullscreen)
+                          Positioned.fill(
+                            child: Texture(textureId: _native.textureId!, filterQuality: FilterQuality.low),
+                          ),
+                      ],
                     ),
                   ),
-                  if (_native.hasFrame && _native.textureId != null && !_fullscreen)
-                    Positioned.fill(
-                      child: Texture(textureId: _native.textureId!, filterQuality: FilterQuality.low),
-                    ),
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    right: 12,
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: _buildPresetControls(context, status, maxLabelWidth: maxLabelWidth),
-                    ),
+                ),
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  right: 12,
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: _buildPresetControls(context, status, maxLabelWidth: maxLabelWidth),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -1013,57 +1020,58 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                         builder: (context, constraints) {
                           _resizeNative(constraints, MediaQuery.devicePixelRatioOf(context));
                           final tk = tokens(context);
-                          return _nativePointerSurface(
-                            Size(constraints.maxWidth, constraints.maxHeight),
-                            Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                if (_native.hasFrame && _native.textureId != null)
-                                  Texture(textureId: _native.textureId!, filterQuality: FilterQuality.low)
-                                else
-                                  CustomPaint(
-                                    painter: MusicVisualizerPainter(
-                                      frame: _frame,
-                                      preset: widget.preset,
-                                      profile: _profile,
-                                      palette: MusicVisualizerPalette.fromTheme(
-                                        accent: tk.accent,
-                                        background: tk.bg,
-                                        surface: tk.surface,
-                                        outline: tk.outline,
-                                        preset: widget.preset,
-                                      ),
-                                    ),
-                                  ),
-                                SafeArea(
-                                  child: Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Align(
-                                              alignment: Alignment.topLeft,
-                                              child: _buildPresetControls(
-                                                context,
-                                                _native.active ? _native.statusLabel : _presetName(widget.preset),
-                                                maxLabelWidth: (constraints.maxWidth - 244).clamp(72, 190).toDouble(),
-                                              ),
+                          return Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Positioned.fill(
+                                child: _nativePointerSurface(
+                                  Size(constraints.maxWidth, constraints.maxHeight),
+                                  _native.hasFrame && _native.textureId != null
+                                      ? Texture(textureId: _native.textureId!, filterQuality: FilterQuality.low)
+                                      : CustomPaint(
+                                          painter: MusicVisualizerPainter(
+                                            frame: _frame,
+                                            preset: widget.preset,
+                                            profile: _profile,
+                                            palette: MusicVisualizerPalette.fromTheme(
+                                              accent: tk.accent,
+                                              background: tk.bg,
+                                              surface: tk.surface,
+                                              outline: tk.outline,
+                                              preset: widget.preset,
                                             ),
                                           ),
-                                          IconButton(
-                                            tooltip: context.t.common.exitFullscreen,
-                                            onPressed: () => Navigator.pop(dialogContext),
-                                            icon: const AppIcon(Symbols.fullscreen_exit_rounded),
+                                        ),
+                                ),
+                              ),
+                              SafeArea(
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Align(
+                                            alignment: Alignment.topLeft,
+                                            child: _buildPresetControls(
+                                              context,
+                                              _native.active ? _native.statusLabel : _presetName(widget.preset),
+                                              maxLabelWidth: (constraints.maxWidth - 244).clamp(72, 190).toDouble(),
+                                            ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                        IconButton(
+                                          tooltip: context.t.common.exitFullscreen,
+                                          onPressed: () => Navigator.pop(dialogContext),
+                                          icon: const AppIcon(Symbols.fullscreen_exit_rounded),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           );
                         },
                       ),

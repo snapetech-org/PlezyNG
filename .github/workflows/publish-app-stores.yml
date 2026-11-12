@@ -174,7 +174,7 @@ jobs:
           source = json.loads(subprocess.check_output(['gh', 'api',
               f"repos/{os.environ['GITHUB_REPOSITORY']}/contents/pubspec.yaml?ref={tag}"], text=True))
           version, code = parse_pubspec_version(base64.b64decode(source['content']).decode())
-          if tag.lstrip('v') != version.split('+')[0] or int(code) < 188:
+          if tag.lstrip('v') != version.split('+')[0] or int(code) < 189:
               raise ValueError('Expected a fresh release with matching immutable source metadata')
           with open('pleazyng-android-play.aab', 'rb') as bundle:
               digest = hashlib.file_digest(bundle, 'sha256').hexdigest()

@@ -77,15 +77,17 @@ def settings(environment):
         raise ValueError("Automatic Play delivery requires an internal or closed testing track")
     if track != "internal" and environment.get("GOOGLE_PLAY_BOOTSTRAP_COMPLETE") != "true":
         raise ValueError("Closed-track delivery requires completed native/store bootstrap qualification")
-    minimum = int(environment.get("GOOGLE_PLAY_MIN_VERSION_CODE", "188"))
+    minimum = int(environment.get("GOOGLE_PLAY_MIN_VERSION_CODE", "189"))
     if minimum < 188:
         raise ValueError("Automatic delivery must not backfill the superseded v3.0.7 bootstrap")
-    return track, minimum
+    # Version code 188 was rejected as an incompatible phone/AAOS manifest. A
+    # repository variable left at 188 must not make that immutable bundle eligible.
+    return track, max(minimum, 189)
 
 
 def restore_receipt(tag, code, digest, track, destination):
     """Recover only a matching non-secret transaction from this publisher."""
-    if code < 188 or not re.fullmatch(r"[0-9a-f]{64}", digest):
+    if code < 189 or not re.fullmatch(r"[0-9a-f]{64}", digest):
         raise ValueError("Invalid expected release bundle identity")
     runs = pages(f"actions/workflows/{WORKFLOW}/runs?event=workflow_dispatch&per_page=100", "workflow_runs")
     candidates = [run for run in runs if ':channel:google-play:track:' in run.get('display_title', '')

@@ -19,7 +19,7 @@ class FakePlayPublisher < PlayReleasePublisher
   attr_reader :uploads, :updates, :deleted, :commit_attempts, :operations
   attr_accessor :fail_commit, :lose_commit_response
 
-  def initialize(directory, track: {}, bundles: [], recovery: nil, fail_commit: false, lose_commit_response: false, other_pending: false, invalid_other: false, other_expiry: nil, status: 'completed', fraction: '0.1')
+  def initialize(directory, track: {}, bundles: [], recovery: nil, fail_commit: false, lose_commit_response: false, other_pending: false, invalid_other: false, other_expiry: nil, status: 'completed', fraction: '0.1', version_code: 189)
     @committed_track, @committed_bundles = track, bundles
     @edits, @next_edit, @operations = {}, 20, []
     @uploads, @updates, @deleted, @commit_attempts = 0, 0, [], 0
@@ -28,7 +28,7 @@ class FakePlayPublisher < PlayReleasePublisher
     receipt = File.join(directory, 'receipt.json')
     File.write(bundle, BUNDLE)
     if recovery
-      previous = { 'release_tag' => 'v3.0.29', 'version_code' => 188, 'aab_sha256' => DIGEST,
+      previous = { 'release_tag' => 'v3.0.30', 'version_code' => version_code, 'aab_sha256' => DIGEST,
                    'track' => 'internal', 'status' => recovery.fetch(:status, 'completed'),
                    'pending_edit' => { 'id' => '17', 'expiry' => recovery.fetch(:expiry, Time.now.to_i + 600), 'upload_attempted' => true } }
       File.write(receipt, JSON.generate(previous))
@@ -42,7 +42,7 @@ class FakePlayPublisher < PlayReleasePublisher
       @edits['18'] = { track: {}, bundles: [] } unless invalid_other
     end
     values = { 'PLAY_AAB_PATH' => bundle, 'PLAY_DELIVERY_RECEIPT' => receipt,
-               'PLAY_EXPECTED_VERSION_CODE' => '188', 'PLAY_RELEASE_TAG' => 'v3.0.29',
+               'PLAY_EXPECTED_VERSION_CODE' => version_code.to_s, 'PLAY_RELEASE_TAG' => 'v3.0.30',
                'PLAY_TRACK' => 'internal', 'PLAY_RELEASE_STATUS' => status, 'PLAY_ROLLOUT_FRACTION' => fraction, 'SUPPLY_JSON_KEY_DATA' => '{}' }
     before = values.to_h { |key, _| [key, ENV[key]] }
     begin
@@ -90,7 +90,7 @@ class FakePlayPublisher < PlayReleasePublisher
   def upload
     @uploads += 1
     @receipt['pending_edit']['upload_attempted'] = true
-    @edits.fetch(@edit)[:bundles] = [{ 'versionCode' => 188, 'sha256' => @digest }]
+    @edits.fetch(@edit)[:bundles] = [{ 'versionCode' => 189, 'sha256' => @digest }]
     save
   end
 end
@@ -106,8 +106,8 @@ def scenario(root, name)
 end
 
 Dir.mktmpdir('play-delivery-test-') do |root|
-  active = { 'releases' => [{ 'versionCodes' => ['188'], 'status' => 'completed' }] }
-  bundle = [{ 'versionCode' => 188, 'sha256' => FakePlayPublisher::DIGEST }]
+  active = { 'releases' => [{ 'versionCodes' => ['189'], 'status' => 'completed' }] }
+  bundle = [{ 'versionCode' => 189, 'sha256' => FakePlayPublisher::DIGEST }]
   scenario(root, 'fresh') do |directory|
     publisher = FakePlayPublisher.new(directory)
     publisher.run
@@ -120,8 +120,16 @@ Dir.mktmpdir('play-delivery-test-') do |root|
     publisher.run
     assert(publisher.uploads.zero? && publisher.updates.zero?, 'delivered bundle must be a no-op')
   end
+  scenario(root, 'rejects_failed_version_code_188') do |directory|
+    begin
+      FakePlayPublisher.new(directory, version_code: 188)
+      raise 'version code 188 unexpectedly passed'
+    rescue RuntimeError => error
+      raise unless error.message.include?('Unexpected release delivery target')
+    end
+  end
   scenario(root, 'newer_version') do |directory|
-    publisher = FakePlayPublisher.new(directory, track: { 'releases' => [{ 'versionCodes' => ['189'] }] })
+    publisher = FakePlayPublisher.new(directory, track: { 'releases' => [{ 'versionCodes' => ['190'] }] })
     publisher.run
     assert(publisher.uploads.zero? && publisher.updates.zero?, 'old releases must never roll back the track')
   end
@@ -146,13 +154,13 @@ Dir.mktmpdir('play-delivery-test-') do |root|
     assert(receipt['distributed'] && receipt['committed'], 'retry must verify committed state')
   end
   scenario(root, 'draft_to_completed_recovery') do |directory|
-    draft = { 'releases' => [{ 'versionCodes' => ['188'], 'status' => 'draft' }] }
+    draft = { 'releases' => [{ 'versionCodes' => ['189'], 'status' => 'draft' }] }
     publisher = FakePlayPublisher.new(directory, recovery: { status: 'draft', track: draft, bundles: bundle })
     publisher.run
     assert(publisher.uploads.zero? && publisher.commit_attempts == 1, 'target-status change must reuse the exact pending upload')
   end
   scenario(root, 'wrong_digest') do |directory|
-    publisher = FakePlayPublisher.new(directory, bundles: [{ 'versionCode' => 188, 'sha256' => 'b' * 64 }])
+    publisher = FakePlayPublisher.new(directory, bundles: [{ 'versionCode' => 189, 'sha256' => 'b' * 64 }])
     begin
       publisher.run
       raise 'wrong digest unexpectedly passed'
@@ -205,7 +213,7 @@ Dir.mktmpdir('play-delivery-test-') do |root|
     end
   end
   scenario(root, 'manual_staged_rollout_uses_same_safe_publisher') do |directory|
-    partial = { 'releases' => [{ 'versionCodes' => ['188'], 'status' => 'inProgress', 'userFraction' => 0.1 }] }
+    partial = { 'releases' => [{ 'versionCodes' => ['189'], 'status' => 'inProgress', 'userFraction' => 0.1 }] }
     publisher = FakePlayPublisher.new(directory, track: partial, bundles: bundle, status: 'inProgress', fraction: '0.2')
     publisher.run
     assert(publisher.uploads.zero? && publisher.updates == 1, 'staged fraction change must safely reuse its authenticated bundle')
@@ -221,4 +229,4 @@ Dir.mktmpdir('play-delivery-test-') do |root|
     end
   end
 end
-puts 'Passed fourteen independent staged/committed Play delivery scenarios'
+puts 'Passed fifteen independent staged/committed Play delivery scenarios'

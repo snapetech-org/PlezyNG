@@ -1,6 +1,6 @@
 # Google Play first-publication recovery (historical)
 
-Superseded by the owner on 2026-11-10. Use the [automatic release delivery runbook](google-play-release-delivery.md). The v3.0.7 repack/recovery workflows and their store-mutating helpers have been removed. Preserve the original artifacts and evidence, but deliver fresh release builds starting with 3.0.29+188.
+Superseded by the owner on 2026-11-10. Use the [automatic release delivery runbook](google-play-release-delivery.md). The v3.0.7 repack/recovery workflows and their store-mutating helpers have been removed. Automatic delivery initially started with 3.0.29+188; Google Play later rejected the v3.0.33 bundle at code 188 for a phone/AAOS manifest conflict. Current delivery eligibility begins at Android version code 189. Preserve the original artifacts and evidence; do not retry code 188.
 
 The original immutable v3.0.7 AAB uses Android version code 166. Google retained
 its generated APKs after the unpublished Alpha configuration was discarded, but

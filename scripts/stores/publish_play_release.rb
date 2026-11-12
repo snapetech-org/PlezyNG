@@ -39,7 +39,7 @@ class PlayReleasePublisher
     @tag = ENV.fetch('PLAY_RELEASE_TAG')
     @track = ENV.fetch('PLAY_TRACK', 'internal')
     @status = ENV.fetch('PLAY_RELEASE_STATUS', 'completed')
-    raise 'Unexpected release delivery target' unless @code >= 188 && @tag.match?(/\Av\d+\.\d+\.\d+\z/) && %w[internal alpha beta production].include?(@track) && %w[draft completed inProgress].include?(@status)
+    raise 'Unexpected release delivery target' unless @code >= 189 && @tag.match?(/\Av\d+\.\d+\.\d+\z/) && %w[internal alpha beta production].include?(@track) && %w[draft completed inProgress].include?(@status)
     if @status == 'inProgress'
       @fraction = Float(ENV.fetch('PLAY_ROLLOUT_FRACTION', '0.1'))
       raise 'Staged rollout fraction must be greater than zero and less than one' unless @fraction > 0 && @fraction < 1

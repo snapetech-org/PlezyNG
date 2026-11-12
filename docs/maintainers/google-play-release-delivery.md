@@ -1,8 +1,12 @@
 # Automatic Google Play release delivery
 
-Every complete, published stable release from 3.0.29+188 onward is eligible for
-automatic delivery. The owner's 2026-11-10 instruction supersedes the v3.0.7
-first-publication/repack path. Build current application and native code once,
+Every complete, published stable release with Android version code 189 or higher
+is eligible for automatic delivery. Google Play rejected v3.0.33+188 because
+its phone bundle declared both Android Auto projection metadata and the Android
+Automotive hardware feature. Code 188 is immutable and must not be retried; the
+phone manifest now leaves the automotive feature to the separate AAOS manifest.
+The owner's 2026-11-10 instruction supersedes the v3.0.7 first-publication/repack
+path. Build current application and native code once,
 from one frozen source checkpoint; other agents review rather than dispatch
 competing release builds. `build.yml` serializes the core release workflow.
 
@@ -22,7 +26,9 @@ Repository variables:
 - `GOOGLE_PLAY_AUTOMATIC_RELEASES=true` enables delivery; `false` pauses it.
 - `GOOGLE_PLAY_AUTO_TRACK=internal` selects the phone-test track independently of
   the older manual `GOOGLE_PLAY_TRACK` setting.
-- `GOOGLE_PLAY_MIN_VERSION_CODE=188` prevents backfilling the retired bootstrap.
+- `GOOGLE_PLAY_MIN_VERSION_CODE=189` is the minimum eligible Android version
+  code. The controller clamps a stale value of 188 to 189, and both the workflow
+  and publisher reject bundles below 189.
 - `GOOGLE_PLAY_BOOTSTRAP_COMPLETE` remains false until signed-build reviewer
   redemption, purchase/restore and required store qualification pass. Automatic
   alpha/beta selection requires this flag. Internal distribution supports that
@@ -52,6 +58,8 @@ Staged track state never counts as a committed publication. Committing uses
 A lost commit response is detected without uploading the version again. Existing
 newer versions are never rolled back. An expired reserved upload that is not
 assignable fails explicitly rather than silently consuming another build number.
+The Play Console reservation state for the rejected v3.0.33+188 upload is
+unverified; inspect the Console before attempting any manual recovery.
 
 Do not change Console release state while a delivery owns a pending edit.
 Inspect the retained receipt and actual track before retrying. Retry delivery

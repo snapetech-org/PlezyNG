@@ -504,7 +504,9 @@ a build. The generated LG handoff is for manual review, not store publication.
 
 Tizen remains a tester artifact for qualification; Seller Office signing and
 submission are not configured. App Store Connect and Amazon uploads do not
-submit builds for review. Google Play is sent to the internal draft track.
+submit builds for review. Google Play delivery targets the configured internal
+testing track; successful delivery does not establish installation or review
+qualification.
 Microsoft Store, Samsung Seller Office, macOS Developer ID signing, Windows
 Authenticode signing, and vendor-store publication require their configured
 identities, profiles, and credentials. These store channels do not gate the

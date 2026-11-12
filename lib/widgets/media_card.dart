@@ -464,7 +464,9 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
 
     switch (result) {
       case MediaNavigationResult.unsupported:
-        showAppSnackBar(context, t.messages.musicNotSupported);
+        if (item is MediaItem && !item.isCatalogItem) {
+          showAppSnackBar(context, t.messages.unableToDetermineLibrarySection);
+        }
       case MediaNavigationResult.listRefreshNeeded:
         widget.onListRefresh?.call();
       case MediaNavigationResult.navigated:

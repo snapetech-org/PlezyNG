@@ -254,7 +254,7 @@ class FolderTreeViewState extends State<FolderTreeView> {
     if (!mounted) return;
     switch (result) {
       case MediaNavigationResult.unsupported:
-        showAppSnackBar(context, t.messages.musicNotSupported);
+        showAppSnackBar(context, t.messages.unableToDetermineLibrarySection);
       case MediaNavigationResult.listRefreshNeeded:
         _refreshAfterDeletion(parent);
       case MediaNavigationResult.navigated:

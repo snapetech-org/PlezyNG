@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$hi extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'इस खंड के आरंभ के बाद और अंत से पहले का समय चुनें।';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'जोड़ने के लिए गायन भाग, उच्चारण की उपलब्धता और विश्वसनीयता समान होने चाहिए।';
 	@override String get invalidLyricSpanTiming => 'हर खंड के आरंभ और अंत का समय मान्य होना चाहिए।';
+	@override String get listenToGuideTrack => 'गाइड ट्रैक सुनें';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsHi {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'इस खंड के आरंभ के बाद और अंत से पहले का समय चुनें।',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'जोड़ने के लिए गायन भाग, उच्चारण की उपलब्धता और विश्वसनीयता समान होने चाहिए।',
 			'karaokeUi.invalidLyricSpanTiming' => 'हर खंड के आरंभ और अंत का समय मान्य होना चाहिए।',
+			'karaokeUi.listenToGuideTrack' => 'गाइड ट्रैक सुनें',
 			'musicExperience.title' => 'संगीत खोजें',
 			'musicExperience.mix' => 'मिक्स बनाएँ',
 			'musicExperience.adventure' => 'ध्वनि यात्रा',
@@ -9653,9 +9655,9 @@ extension on TranslationsHi {
 			'musicDevices.receiverHint' => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।',
 			'musicDevices.moveFailed' => 'प्लेबैक स्थानांतरित नहीं हुआ। जाँचें कि डिवाइस सक्रिय और पेयर है तथा संगीत सर्वर तक पहुँच सकता है।',
 			'musicDevices.uncertain' => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।',
-			'musicDevices.away' => 'घर से दूर',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'घर से दूर',
 			'musicDevices.relay' => 'संगीत रिले URL',
 			'musicDevices.relayHint' => 'प्राप्त करने वाले डिवाइस पर चालू करें, फिर एक ही नेटवर्क पर एक बार पेयर करें। Pleazyng खुला रखें। रिले एन्क्रिप्टेड संगीत नियंत्रण भेजता है और नेटवर्क पते देखता है। हर प्लेयर अपने मीडिया सर्वर से स्ट्रीम करता है।',
 			'musicDevices.relayInvalid' => 'HTTPS रिले पता दर्ज करें।',

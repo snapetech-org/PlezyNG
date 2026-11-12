@@ -4251,6 +4251,7 @@ class _Translations$karaokeUi$ms extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Pilih masa selepas permulaan dan sebelum penghujung bahagian ini.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Penggabungan memerlukan bahagian vokal, kewujudan sebutan dan keyakinan yang sepadan.';
 	@override String get invalidLyricSpanTiming => 'Setiap bahagian memerlukan masa mula dan tamat yang sah.';
+	@override String get listenToGuideTrack => 'Dengar trek panduan';
 }
 
 // Path: musicExperience
@@ -9506,6 +9507,7 @@ extension on TranslationsMs {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Pilih masa selepas permulaan dan sebelum penghujung bahagian ini.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Penggabungan memerlukan bahagian vokal, kewujudan sebutan dan keyakinan yang sepadan.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Setiap bahagian memerlukan masa mula dan tamat yang sah.',
+			'karaokeUi.listenToGuideTrack' => 'Dengar trek panduan',
 			'musicExperience.title' => 'Terokai muzik',
 			'musicExperience.mix' => 'Pembina campuran',
 			'musicExperience.adventure' => 'Pengembaraan bunyi',
@@ -9628,9 +9630,9 @@ extension on TranslationsMs {
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.',
 			'musicDevices.moveFailed' => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.',
 			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
-			'musicDevices.away' => 'Di luar rumah',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Di luar rumah',
 			'musicDevices.relay' => 'URL geganti muzik',
 			'musicDevices.relayHint' => 'Aktifkan pada peranti penerima, kemudian pasangkan sekali pada rangkaian yang sama. Biarkan Pleazyng terbuka. Geganti menghantar kawalan muzik yang disulitkan dan melihat alamat rangkaian. Setiap pemain menstrim daripada pelayan medianya sendiri.',
 			'musicDevices.relayInvalid' => 'Masukkan alamat geganti HTTPS.',

@@ -4320,6 +4320,7 @@ class _Translations$karaokeUi$ru extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Выберите время между началом и концом этого фрагмента.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Для объединения должны совпадать вокальные партии, наличие произношения и оценка уверенности.';
 	@override String get invalidLyricSpanTiming => 'Каждому фрагменту нужны допустимые времена начала и конца.';
+	@override String get listenToGuideTrack => 'Прослушать направляющую дорожку';
 }
 
 // Path: musicExperience
@@ -9581,6 +9582,7 @@ extension on TranslationsRu {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Выберите время между началом и концом этого фрагмента.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Для объединения должны совпадать вокальные партии, наличие произношения и оценка уверенности.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Каждому фрагменту нужны допустимые времена начала и конца.',
+			'karaokeUi.listenToGuideTrack' => 'Прослушать направляющую дорожку',
 			'musicExperience.title' => 'Открывайте музыку',
 			'musicExperience.mix' => 'Создание микса',
 			'musicExperience.adventure' => 'Звуковое путешествие',
@@ -9703,9 +9705,9 @@ extension on TranslationsRu {
 			'musicDevices.receiverHint' => 'Оставьте Pleazyng открытым для приёма музыки. Один раз выполните сопряжение с этим кодом.',
 			'musicDevices.moveFailed' => 'Не удалось перенести воспроизведение. Проверьте, что устройство активно, сопряжено и имеет доступ к музыкальному серверу.',
 			'musicDevices.uncertain' => 'Соединение прервано. Подключитесь к выбранному устройству снова, чтобы проверить воспроизведение.',
-			'musicDevices.away' => 'Вне дома',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Вне дома',
 			'musicDevices.relay' => 'URL музыкального ретранслятора',
 			'musicDevices.relayHint' => 'Включите на принимающем устройстве и один раз выполните сопряжение в одной сети. Оставьте Pleazyng открытым. Ретранслятор передаёт зашифрованные команды и видит сетевые адреса. Каждый плеер использует свой медиасервер.',
 			'musicDevices.relayInvalid' => 'Введите HTTPS-адрес ретранслятора.',

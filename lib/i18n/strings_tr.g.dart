@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$tr extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Bu aralığın başlangıcı ile sonu arasında bir zaman seçin.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Birleştirme için vokal bölümleri, okunuş bulunma durumu ve güven değerleri eşleşmelidir.';
 	@override String get invalidLyricSpanTiming => 'Her aralığın geçerli başlangıç ve bitiş zamanı olmalıdır.';
+	@override String get listenToGuideTrack => 'Rehber parçasını dinle';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsTr {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Bu aralığın başlangıcı ile sonu arasında bir zaman seçin.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Birleştirme için vokal bölümleri, okunuş bulunma durumu ve güven değerleri eşleşmelidir.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Her aralığın geçerli başlangıç ve bitiş zamanı olmalıdır.',
+			'karaokeUi.listenToGuideTrack' => 'Rehber parçasını dinle',
 			'musicExperience.title' => 'Müzik keşfi',
 			'musicExperience.mix' => 'Miks oluşturucu',
 			'musicExperience.adventure' => 'Ses yolculuğu',
@@ -9653,9 +9655,9 @@ extension on TranslationsTr {
 			'musicDevices.receiverHint' => 'Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.',
 			'musicDevices.moveFailed' => 'Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.',
 			'musicDevices.uncertain' => 'Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.',
-			'musicDevices.away' => 'Ev dışındayken',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Ev dışındayken',
 			'musicDevices.relay' => 'Müzik rölesi URL’si',
 			'musicDevices.relayHint' => 'Alıcı cihazda etkinleştirin, ardından aynı ağda bir kez eşleştirin. Pleazyng açık kalsın. Röle şifreli müzik denetimlerini iletir ve ağ adreslerini görür. Her oynatıcı kendi medya sunucusundan yayın yapar.',
 			'musicDevices.relayInvalid' => 'Bir HTTPS röle adresi girin.',

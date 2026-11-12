@@ -4282,6 +4282,7 @@ class _Translations$karaokeUi$he extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'יש לבחור זמן אחרי תחילת המקטע ולפני סופו.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'מיזוג דורש התאמה בתפקידי השירה, בקיום הגייה וברמת הביטחון.';
 	@override String get invalidLyricSpanTiming => 'כל מקטע דורש זמני התחלה וסיום תקינים.';
+	@override String get listenToGuideTrack => 'האזנה לרצועת ההנחיה';
 }
 
 // Path: musicExperience
@@ -9539,6 +9540,7 @@ extension on TranslationsHe {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'יש לבחור זמן אחרי תחילת המקטע ולפני סופו.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'מיזוג דורש התאמה בתפקידי השירה, בקיום הגייה וברמת הביטחון.',
 			'karaokeUi.invalidLyricSpanTiming' => 'כל מקטע דורש זמני התחלה וסיום תקינים.',
+			'karaokeUi.listenToGuideTrack' => 'האזנה לרצועת ההנחיה',
 			'musicExperience.title' => 'גילוי מוזיקה',
 			'musicExperience.mix' => 'יצירת מיקס',
 			'musicExperience.adventure' => 'מסע קולי',
@@ -9661,9 +9663,9 @@ extension on TranslationsHe {
 			'musicDevices.receiverHint' => 'השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.',
 			'musicDevices.moveFailed' => 'לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.',
 			'musicDevices.uncertain' => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.',
-			'musicDevices.away' => 'מחוץ לבית',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'מחוץ לבית',
 			'musicDevices.relay' => 'כתובת ממסר המוזיקה',
 			'musicDevices.relayHint' => 'יש להפעיל במכשיר המקבל ולצמד פעם אחת באותה רשת. יש להשאיר את Pleazyng פתוח. הממסר מעביר פקודות מוזיקה מוצפנות ורואה כתובות רשת. כל נגן מזרים משרת המדיה שלו.',
 			'musicDevices.relayInvalid' => 'יש להזין כתובת HTTPS של הממסר.',

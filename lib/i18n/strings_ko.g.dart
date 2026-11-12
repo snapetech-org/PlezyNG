@@ -4269,6 +4269,7 @@ class _Translations$karaokeUi$ko extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => '이 구간의 시작 이후부터 끝 이전 사이의 시간을 선택하세요.';
 	@override String get mergeRequiresMatchingSingerAndReadings => '병합하려면 보컬 파트, 발음 유무, 신뢰도가 일치해야 합니다.';
 	@override String get invalidLyricSpanTiming => '각 구간에는 올바른 시작 및 종료 시간이 필요합니다.';
+	@override String get listenToGuideTrack => '가이드 트랙 듣기';
 }
 
 // Path: musicExperience
@@ -9526,6 +9527,7 @@ extension on TranslationsKo {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => '이 구간의 시작 이후부터 끝 이전 사이의 시간을 선택하세요.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => '병합하려면 보컬 파트, 발음 유무, 신뢰도가 일치해야 합니다.',
 			'karaokeUi.invalidLyricSpanTiming' => '각 구간에는 올바른 시작 및 종료 시간이 필요합니다.',
+			'karaokeUi.listenToGuideTrack' => '가이드 트랙 듣기',
 			'musicExperience.title' => '음악 둘러보기',
 			'musicExperience.mix' => '믹스 만들기',
 			'musicExperience.adventure' => '사운드 어드벤처',
@@ -9648,9 +9650,9 @@ extension on TranslationsKo {
 			'musicDevices.receiverHint' => '음악을 받으려면 Pleazyng을 열어 두세요. 이 코드로 한 번 페어링하세요.',
 			'musicDevices.moveFailed' => '재생을 옮기지 못했습니다. 기기가 켜져 있고 페어링되어 있으며 음악 서버에 접근할 수 있는지 확인하세요.',
 			'musicDevices.uncertain' => '연결이 끊겼습니다. 선택한 기기에 다시 연결하여 재생 상태를 확인하세요.',
-			'musicDevices.away' => '집 밖에서',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => '집 밖에서',
 			'musicDevices.relay' => '음악 릴레이 URL',
 			'musicDevices.relayHint' => '수신 기기에서 활성화한 다음 같은 네트워크에서 한 번 페어링하세요. Pleazyng을 열어 두세요. 릴레이는 암호화된 음악 제어를 전달하며 네트워크 주소를 볼 수 있습니다. 각 플레이어는 자체 미디어 서버에서 스트리밍합니다.',
 			'musicDevices.relayInvalid' => 'HTTPS 릴레이 주소를 입력하세요.',

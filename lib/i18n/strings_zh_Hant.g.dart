@@ -4270,6 +4270,7 @@ class _Translations$karaokeUi$zh_Hant extends Translations$karaokeUi$zh {
 	@override String get splitBoundaryMustFallInsideSpan => '請選擇此片段開始之後、結束之前的拆分時間。';
 	@override String get mergeRequiresMatchingSingerAndReadings => '合併要求演唱聲部、是否有注音及信心值一致。';
 	@override String get invalidLyricSpanTiming => '每個片段都需要有效的開始和結束時間。';
+	@override String get listenToGuideTrack => '聆聽引導音軌';
 }
 
 // Path: musicExperience
@@ -9527,6 +9528,7 @@ extension on TranslationsZhHant {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => '請選擇此片段開始之後、結束之前的拆分時間。',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => '合併要求演唱聲部、是否有注音及信心值一致。',
 			'karaokeUi.invalidLyricSpanTiming' => '每個片段都需要有效的開始和結束時間。',
+			'karaokeUi.listenToGuideTrack' => '聆聽引導音軌',
 			'musicExperience.title' => '探索音樂',
 			'musicExperience.mix' => '建立混音',
 			'musicExperience.adventure' => '聲音之旅',
@@ -9649,9 +9651,9 @@ extension on TranslationsZhHant {
 			'musicDevices.receiverHint' => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。',
 			'musicDevices.moveFailed' => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。',
 			'musicDevices.uncertain' => '連線中斷。請重新連線所選裝置以檢查播放狀態。',
-			'musicDevices.away' => '外出時',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => '外出時',
 			'musicDevices.relay' => '音樂中繼 URL',
 			'musicDevices.relayHint' => '在接收裝置上啟用，然後在同一網路中配對一次。保持 Pleazyng 開啟。中繼傳遞加密的音樂控制，並能看到網路位址。每個播放器從自己的媒體伺服器串流。',
 			'musicDevices.relayInvalid' => '請輸入 HTTPS 中繼位址。',

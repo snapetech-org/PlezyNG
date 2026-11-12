@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$nb extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Velg et tidspunkt mellom starten og slutten av dette segmentet.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Sammenslåing krever like sangstemmer, tilstedeværelse av uttale og sikkerhet.';
 	@override String get invalidLyricSpanTiming => 'Hvert segment må ha gyldige start- og sluttider.';
+	@override String get listenToGuideTrack => 'Lytt til guidensporet';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsNb {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Velg et tidspunkt mellom starten og slutten av dette segmentet.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Sammenslåing krever like sangstemmer, tilstedeværelse av uttale og sikkerhet.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Hvert segment må ha gyldige start- og sluttider.',
+			'karaokeUi.listenToGuideTrack' => 'Lytt til guidensporet',
 			'musicExperience.title' => 'Oppdag musikk',
 			'musicExperience.mix' => 'Lag miks',
 			'musicExperience.adventure' => 'Lydeventyr',
@@ -9653,9 +9655,9 @@ extension on TranslationsNb {
 			'musicDevices.receiverHint' => 'Hold Pleazyng åpen for å motta musikk. Koble sammen én gang med denne koden.',
 			'musicDevices.moveFailed' => 'Kunne ikke flytte avspillingen. Kontroller at enheten er våken, paret og har tilgang til musikkserveren.',
 			'musicDevices.uncertain' => 'Tilkoblingen ble brutt. Koble til den valgte enheten igjen for å kontrollere avspillingen.',
-			'musicDevices.away' => 'Borte fra hjemmet',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Borte fra hjemmet',
 			'musicDevices.relay' => 'URL til musikkrelé',
 			'musicDevices.relayHint' => 'Aktiver på mottakeren, og par én gang på samme nettverk. Hold Pleazyng åpen. Reléet overfører krypterte musikkkommandoer og ser nettverksadresser. Hver spiller strømmer fra sin egen medieserver.',
 			'musicDevices.relayInvalid' => 'Skriv inn en HTTPS-adresse til reléet.',

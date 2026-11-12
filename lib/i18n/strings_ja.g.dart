@@ -4269,6 +4269,7 @@ class _Translations$karaokeUi$ja extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'この区間の開始後から終了前までの時刻を選んでください。';
 	@override String get mergeRequiresMatchingSingerAndReadings => '結合には歌唱パート、読みの有無、信頼度の一致が必要です。';
 	@override String get invalidLyricSpanTiming => '各区間に有効な開始時刻と終了時刻が必要です。';
+	@override String get listenToGuideTrack => 'ガイドトラックを聴く';
 }
 
 // Path: musicExperience
@@ -9526,6 +9527,7 @@ extension on TranslationsJa {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'この区間の開始後から終了前までの時刻を選んでください。',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => '結合には歌唱パート、読みの有無、信頼度の一致が必要です。',
 			'karaokeUi.invalidLyricSpanTiming' => '各区間に有効な開始時刻と終了時刻が必要です。',
+			'karaokeUi.listenToGuideTrack' => 'ガイドトラックを聴く',
 			'musicExperience.title' => '音楽を探す',
 			'musicExperience.mix' => 'ミックス作成',
 			'musicExperience.adventure' => 'サウンドアドベンチャー',
@@ -9648,9 +9650,9 @@ extension on TranslationsJa {
 			'musicDevices.receiverHint' => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。',
 			'musicDevices.moveFailed' => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。',
 			'musicDevices.uncertain' => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。',
-			'musicDevices.away' => '外出先から',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => '外出先から',
 			'musicDevices.relay' => '音楽リレーのURL',
 			'musicDevices.relayHint' => '受信デバイスで有効にし、同じネットワークで一度ペアリングしてください。Pleazyngを開いたままにします。リレーは暗号化された音楽操作を転送し、ネットワークアドレスを参照します。各プレーヤーは自身のメディアサーバーから再生します。',
 			'musicDevices.relayInvalid' => 'リレーのHTTPSアドレスを入力してください。',

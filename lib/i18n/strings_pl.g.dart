@@ -4320,6 +4320,7 @@ class _Translations$karaokeUi$pl extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Wybierz czas między początkiem a końcem tego fragmentu.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Łączenie wymaga zgodnych partii wokalnych, obecności wymowy i poziomu pewności.';
 	@override String get invalidLyricSpanTiming => 'Każdy fragment wymaga prawidłowego czasu rozpoczęcia i zakończenia.';
+	@override String get listenToGuideTrack => 'Odsłuchaj ścieżkę przewodnią';
 }
 
 // Path: musicExperience
@@ -9581,6 +9582,7 @@ extension on TranslationsPl {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Wybierz czas między początkiem a końcem tego fragmentu.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Łączenie wymaga zgodnych partii wokalnych, obecności wymowy i poziomu pewności.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Każdy fragment wymaga prawidłowego czasu rozpoczęcia i zakończenia.',
+			'karaokeUi.listenToGuideTrack' => 'Odsłuchaj ścieżkę przewodnią',
 			'musicExperience.title' => 'Odkrywaj muzykę',
 			'musicExperience.mix' => 'Tworzenie miksu',
 			'musicExperience.adventure' => 'Podróż dźwiękowa',
@@ -9703,9 +9705,9 @@ extension on TranslationsPl {
 			'musicDevices.receiverHint' => 'Pozostaw Pleazyng otwarte, aby odbierać muzykę. Sparuj raz przy użyciu tego kodu.',
 			'musicDevices.moveFailed' => 'Nie udało się przenieść odtwarzania. Sprawdź, czy urządzenie jest aktywne, sparowane i ma dostęp do serwera muzyki.',
 			'musicDevices.uncertain' => 'Połączenie przerwane. Połącz się ponownie z wybranym urządzeniem, aby sprawdzić odtwarzanie.',
-			'musicDevices.away' => 'Poza domem',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Poza domem',
 			'musicDevices.relay' => 'URL przekaźnika muzyki',
 			'musicDevices.relayHint' => 'Włącz na urządzeniu odbierającym i sparuj raz w tej samej sieci. Pozostaw Pleazyng otwarty. Przekaźnik przesyła zaszyfrowane polecenia muzyczne i widzi adresy sieciowe. Każdy odtwarzacz korzysta ze swojego serwera multimediów.',
 			'musicDevices.relayInvalid' => 'Wpisz adres HTTPS przekaźnika.',

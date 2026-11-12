@@ -4251,6 +4251,7 @@ class _Translations$karaokeUi$th extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'เลือกเวลาหลังจุดเริ่มและก่อนจุดสิ้นสุดของช่วงนี้';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'การรวมต้องมีส่วนร้อง สถานะการมีคำอ่าน และค่าความเชื่อมั่นที่ตรงกัน';
 	@override String get invalidLyricSpanTiming => 'แต่ละช่วงต้องมีเวลาเริ่มและสิ้นสุดที่ถูกต้อง';
+	@override String get listenToGuideTrack => 'ฟังแทร็กนำทาง';
 }
 
 // Path: musicExperience
@@ -9506,6 +9507,7 @@ extension on TranslationsTh {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'เลือกเวลาหลังจุดเริ่มและก่อนจุดสิ้นสุดของช่วงนี้',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'การรวมต้องมีส่วนร้อง สถานะการมีคำอ่าน และค่าความเชื่อมั่นที่ตรงกัน',
 			'karaokeUi.invalidLyricSpanTiming' => 'แต่ละช่วงต้องมีเวลาเริ่มและสิ้นสุดที่ถูกต้อง',
+			'karaokeUi.listenToGuideTrack' => 'ฟังแทร็กนำทาง',
 			'musicExperience.title' => 'ค้นพบเพลง',
 			'musicExperience.mix' => 'สร้างมิกซ์',
 			'musicExperience.adventure' => 'การเดินทางแห่งเสียง',
@@ -9628,9 +9630,9 @@ extension on TranslationsTh {
 			'musicDevices.receiverHint' => 'เปิด Pleazyng ไว้เพื่อรับเพลง จับคู่ครั้งเดียวด้วยรหัสนี้',
 			'musicDevices.moveFailed' => 'ย้ายการเล่นไม่ได้ ตรวจสอบว่าอุปกรณ์เปิดอยู่ จับคู่แล้ว และเข้าถึงเซิร์ฟเวอร์เพลงได้',
 			'musicDevices.uncertain' => 'การเชื่อมต่อขัดข้อง เชื่อมต่ออุปกรณ์ที่เลือกอีกครั้งเพื่อตรวจสอบการเล่น',
-			'musicDevices.away' => 'นอกบ้าน',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'นอกบ้าน',
 			'musicDevices.relay' => 'URL รีเลย์เพลง',
 			'musicDevices.relayHint' => 'เปิดใช้งานบนอุปกรณ์รับ แล้วจับคู่ครั้งเดียวบนเครือข่ายเดียวกัน เปิด Pleazyng ค้างไว้ รีเลย์ส่งคำสั่งเพลงที่เข้ารหัสและเห็นที่อยู่เครือข่ายได้ เครื่องเล่นแต่ละเครื่องสตรีมจากเซิร์ฟเวอร์สื่อของตนเอง',
 			'musicDevices.relayInvalid' => 'ป้อนที่อยู่รีเลย์ HTTPS',

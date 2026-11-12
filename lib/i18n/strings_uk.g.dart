@@ -4316,6 +4316,7 @@ class _Translations$karaokeUi$uk extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Виберіть час між початком і кінцем цього фрагмента.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Для об’єднання мають збігатися вокальні партії, наявність вимови та оцінка впевненості.';
 	@override String get invalidLyricSpanTiming => 'Кожному фрагменту потрібні припустимі часи початку й кінця.';
+	@override String get listenToGuideTrack => 'Прослухати провідну доріжку';
 }
 
 // Path: musicExperience
@@ -9575,6 +9576,7 @@ extension on TranslationsUk {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Виберіть час між початком і кінцем цього фрагмента.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Для об’єднання мають збігатися вокальні партії, наявність вимови та оцінка впевненості.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Кожному фрагменту потрібні припустимі часи початку й кінця.',
+			'karaokeUi.listenToGuideTrack' => 'Прослухати провідну доріжку',
 			'musicExperience.title' => 'Відкривайте музику',
 			'musicExperience.mix' => 'Створення міксу',
 			'musicExperience.adventure' => 'Звукова подорож',
@@ -9697,9 +9699,9 @@ extension on TranslationsUk {
 			'musicDevices.receiverHint' => 'Залиште Pleazyng відкритим для приймання музики. Один раз створіть пару за допомогою цього коду.',
 			'musicDevices.moveFailed' => 'Не вдалося перенести відтворення. Перевірте, чи пристрій активний, спарений і має доступ до музичного сервера.',
 			'musicDevices.uncertain' => 'З’єднання перервано. Знову підключіться до вибраного пристрою, щоб перевірити відтворення.',
-			'musicDevices.away' => 'Поза домом',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Поза домом',
 			'musicDevices.relay' => 'URL музичного ретранслятора',
 			'musicDevices.relayHint' => 'Увімкніть на приймальному пристрої та один раз створіть пару в одній мережі. Залиште Pleazyng відкритим. Ретранслятор передає зашифровані команди й бачить мережеві адреси. Кожен програвач використовує свій медіасервер.',
 			'musicDevices.relayInvalid' => 'Введіть HTTPS-адресу ретранслятора.',

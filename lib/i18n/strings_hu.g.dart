@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$hu extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Válassz időpontot a szakasz kezdete és vége között.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Az összevonáshoz egyező énekszólamok, kiejtési jelenlét és megbízhatóság szükséges.';
 	@override String get invalidLyricSpanTiming => 'Minden szakasznak érvényes kezdő- és végidő kell.';
+	@override String get listenToGuideTrack => 'Vezérsáv meghallgatása';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsHu {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Válassz időpontot a szakasz kezdete és vége között.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Az összevonáshoz egyező énekszólamok, kiejtési jelenlét és megbízhatóság szükséges.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Minden szakasznak érvényes kezdő- és végidő kell.',
+			'karaokeUi.listenToGuideTrack' => 'Vezérsáv meghallgatása',
 			'musicExperience.title' => 'Zene felfedezése',
 			'musicExperience.mix' => 'Mixkészítő',
 			'musicExperience.adventure' => 'Hangzáskaland',
@@ -9653,9 +9655,9 @@ extension on TranslationsHu {
 			'musicDevices.receiverHint' => 'Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.',
 			'musicDevices.moveFailed' => 'Nem sikerült áthelyezni a lejátszást. Ellenőrizd, hogy az eszköz ébren van, párosítva van, és eléri a zenekiszolgálót.',
 			'musicDevices.uncertain' => 'A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.',
-			'musicDevices.away' => 'Otthontól távol',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Otthontól távol',
 			'musicDevices.relay' => 'Zenei közvetítő URL-címe',
 			'musicDevices.relayHint' => 'Engedélyezze a fogadó eszközön, majd párosítsa egyszer ugyanazon a hálózaton. Tartsa nyitva a Pleazyng alkalmazást. A közvetítő titkosított zenevezérlést továbbít és látja a hálózati címeket. Minden lejátszó a saját médiaszerveréről streamel.',
 			'musicDevices.relayInvalid' => 'Adja meg a közvetítő HTTPS-címét.',

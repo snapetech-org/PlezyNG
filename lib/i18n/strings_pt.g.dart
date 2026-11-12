@@ -4281,6 +4281,7 @@ class Translations$karaokeUi$pt extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Escolha um instante entre o início e o fim deste trecho.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Para unir, devem coincidir as partes vocais, a presença de pronúncia e a confiança.';
 	@override String get invalidLyricSpanTiming => 'Cada trecho precisa de tempos de início e fim válidos.';
+	@override String get listenToGuideTrack => 'Ouvir faixa guia';
 }
 
 // Path: musicExperience
@@ -9538,6 +9539,7 @@ extension on TranslationsPt {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Escolha um instante entre o início e o fim deste trecho.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Para unir, devem coincidir as partes vocais, a presença de pronúncia e a confiança.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Cada trecho precisa de tempos de início e fim válidos.',
+			'karaokeUi.listenToGuideTrack' => 'Ouvir faixa guia',
 			'musicExperience.title' => 'Descoberta musical',
 			'musicExperience.mix' => 'Criador de misturas',
 			'musicExperience.adventure' => 'Aventura sonora',
@@ -9660,9 +9662,9 @@ extension on TranslationsPt {
 			'musicDevices.receiverHint' => 'Mantenha o Pleazyng aberto para receber música. Emparelhe uma vez com este código.',
 			'musicDevices.moveFailed' => 'Não foi possível mover a reprodução. Verifique se o dispositivo está ativo, emparelhado e tem acesso ao servidor de música.',
 			'musicDevices.uncertain' => 'Ligação interrompida. Volte a ligar ao dispositivo selecionado para verificar a reprodução.',
-			'musicDevices.away' => 'Fora de casa',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Fora de casa',
 			'musicDevices.relay' => 'URL do relay de música',
 			'musicDevices.relayHint' => 'Ative no dispositivo recetor e emparelhe uma vez na mesma rede. Mantenha o Pleazyng aberto. O relay transmite comandos de música encriptados e vê os endereços de rede. Cada leitor transmite do seu próprio servidor multimédia.',
 			'musicDevices.relayInvalid' => 'Introduza um endereço HTTPS do relay.',

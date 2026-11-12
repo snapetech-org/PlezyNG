@@ -4314,6 +4314,7 @@ class Translations$karaokeUi$fr extends Translations$karaokeUi$en {
 	@override String get runThePlezyNGKaraokeCompanionOnYourComputerHTTPS => 'Exécutez l’application compagnon de karaoké Pleazyng sur votre ordinateur. HTTPS est obligatoire pour un hôte distant. Le jeton est enregistré dans le coffre d’identifiants du système d’exploitation.';
 	@override String get configureHTTPS => 'Configurer HTTPS';
 	@override String get selectTrustedPEMCertificate => 'Sélectionner un certificat PEM de confiance';
+	@override String get listenToGuideTrack => 'Écouter la piste guide';
 	@override String get hostExitPIN => 'Code PIN de sortie de l’animateur';
 }
 
@@ -9601,6 +9602,7 @@ extension on TranslationsFr {
 			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Exécutez l’application compagnon de karaoké Pleazyng sur votre ordinateur. HTTPS est obligatoire pour un hôte distant. Le jeton est enregistré dans le coffre d’identifiants du système d’exploitation.',
 			'karaokeUi.configureHTTPS' => 'Configurer HTTPS',
 			'karaokeUi.selectTrustedPEMCertificate' => 'Sélectionner un certificat PEM de confiance',
+			'karaokeUi.listenToGuideTrack' => 'Écouter la piste guide',
 			'karaokeUi.hostExitPIN' => 'Code PIN de sortie de l’animateur',
 			'musicExperience.title' => 'Découverte musicale',
 			'musicExperience.mix' => 'Créateur de mix',
@@ -9697,9 +9699,9 @@ extension on TranslationsFr {
 			'musicTools.playlistSharingHint' => 'Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.',
 			'musicTools.playlistSharingFailed' => 'Impossible de demander l’accès à la liste.',
 			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
-			'musicTools.playlistAccessList' => 'Accès actuel',
 			_ => null,
 		} ?? switch (path) {
+			'musicTools.playlistAccessList' => 'Accès actuel',
 			'musicTools.playlistAccessNone' => 'Aucun accès accordé à cette liste',
 			'musicTools.filterType' => 'Type de filtre',
 			'musicTools.peak' => 'Pic',

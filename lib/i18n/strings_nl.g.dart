@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$nl extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Kies een tijdstip tussen het begin en einde van dit segment.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Samenvoegen vereist gelijke zangpartijen, aanwezigheid van uitspraak en betrouwbaarheid.';
 	@override String get invalidLyricSpanTiming => 'Elk segment heeft geldige begin- en eindtijden nodig.';
+	@override String get listenToGuideTrack => 'Gidsspoor beluisteren';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsNl {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Kies een tijdstip tussen het begin en einde van dit segment.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Samenvoegen vereist gelijke zangpartijen, aanwezigheid van uitspraak en betrouwbaarheid.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Elk segment heeft geldige begin- en eindtijden nodig.',
+			'karaokeUi.listenToGuideTrack' => 'Gidsspoor beluisteren',
 			'musicExperience.title' => 'Muziek ontdekken',
 			'musicExperience.mix' => 'Mix maken',
 			'musicExperience.adventure' => 'Klankavontuur',
@@ -9653,9 +9655,9 @@ extension on TranslationsNl {
 			'musicDevices.receiverHint' => 'Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.',
 			'musicDevices.moveFailed' => 'Afspelen kon niet worden verplaatst. Controleer of het apparaat actief en gekoppeld is en je muziekserver kan bereiken.',
 			'musicDevices.uncertain' => 'Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.',
-			'musicDevices.away' => 'Buitenshuis',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Buitenshuis',
 			'musicDevices.relay' => 'URL van muziekrelais',
 			'musicDevices.relayHint' => 'Schakel in op het ontvangende apparaat en koppel eenmaal op hetzelfde netwerk. Houd Pleazyng open. Het relais verstuurt versleutelde muziekbediening en ziet netwerkadressen. Elke speler streamt vanaf zijn eigen mediaserver.',
 			'musicDevices.relayInvalid' => 'Voer een HTTPS-adres voor het relais in.',

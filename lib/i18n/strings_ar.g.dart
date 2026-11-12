@@ -4366,6 +4366,7 @@ class _Translations$karaokeUi$ar extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'اختر وقتًا بعد بداية هذا الجزء وقبل نهايته.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'يتطلب الدمج تطابق الأدوار الغنائية وتوفر النطق ودرجة الثقة.';
 	@override String get invalidLyricSpanTiming => 'يحتاج كل جزء إلى وقتي بدء ونهاية صالحين.';
+	@override String get listenToGuideTrack => 'استمع إلى المسار الإرشادي';
 }
 
 // Path: musicExperience
@@ -9631,6 +9632,7 @@ extension on TranslationsAr {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'اختر وقتًا بعد بداية هذا الجزء وقبل نهايته.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'يتطلب الدمج تطابق الأدوار الغنائية وتوفر النطق ودرجة الثقة.',
 			'karaokeUi.invalidLyricSpanTiming' => 'يحتاج كل جزء إلى وقتي بدء ونهاية صالحين.',
+			'karaokeUi.listenToGuideTrack' => 'استمع إلى المسار الإرشادي',
 			'musicExperience.title' => 'اكتشاف الموسيقى',
 			'musicExperience.mix' => 'إنشاء مزيج',
 			'musicExperience.adventure' => 'رحلة صوتية',
@@ -9753,9 +9755,9 @@ extension on TranslationsAr {
 			'musicDevices.receiverHint' => 'أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.',
 			'musicDevices.moveFailed' => 'تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.',
 			'musicDevices.uncertain' => 'انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل.',
-			'musicDevices.away' => 'خارج المنزل',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'خارج المنزل',
 			'musicDevices.relay' => 'عنوان مرحّل الموسيقى',
 			'musicDevices.relayHint' => 'فعّل هذا على جهاز الاستقبال، ثم أقرن الجهازين مرة واحدة على الشبكة نفسها. أبقِ Pleazyng مفتوحًا. ينقل المرحّل أوامر الموسيقى المشفّرة ويرى عناوين الشبكة. يبث كل مشغّل من خادم الوسائط الخاص به.',
 			'musicDevices.relayInvalid' => 'أدخل عنوان مرحّل يستخدم HTTPS.',

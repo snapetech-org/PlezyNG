@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$bg extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Изберете момент между началото и края на този откъс.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Сливането изисква еднакви вокални партии, наличие на произношение и увереност.';
 	@override String get invalidLyricSpanTiming => 'Всеки откъс изисква валидни времена за начало и край.';
+	@override String get listenToGuideTrack => 'Слушайте водещия запис';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsBg {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Изберете момент между началото и края на този откъс.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Сливането изисква еднакви вокални партии, наличие на произношение и увереност.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Всеки откъс изисква валидни времена за начало и край.',
+			'karaokeUi.listenToGuideTrack' => 'Слушайте водещия запис',
 			'musicExperience.title' => 'Откриване на музика',
 			'musicExperience.mix' => 'Създаване на микс',
 			'musicExperience.adventure' => 'Звуково пътешествие',
@@ -9653,9 +9655,9 @@ extension on TranslationsBg {
 			'musicDevices.receiverHint' => 'Оставете Pleazyng отворен, за да получава музика. Сдвоете веднъж с този код.',
 			'musicDevices.moveFailed' => 'Възпроизвеждането не бе преместено. Проверете дали устройството е будно, сдвоено и има достъп до музикалния сървър.',
 			'musicDevices.uncertain' => 'Връзката прекъсна. Свържете се отново с избраното устройство, за да проверите възпроизвеждането.',
-			'musicDevices.away' => 'Извън дома',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Извън дома',
 			'musicDevices.relay' => 'Адрес на музикалния ретранслатор',
 			'musicDevices.relayHint' => 'Включете на приемащото устройство и сдвоете веднъж в една и съща мрежа. Оставете Pleazyng отворен. Ретранслаторът пренася шифровани музикални команди и вижда мрежовите адреси. Всеки плейър използва своя медиен сървър.',
 			'musicDevices.relayInvalid' => 'Въведете HTTPS адрес на ретранслатор.',

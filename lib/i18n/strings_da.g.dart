@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$da extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Vælg et tidspunkt mellem starten og slutningen af dette segment.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Sammenfletning kræver ens sangstemmer, tilstedeværelse af udtale og sikkerhed.';
 	@override String get invalidLyricSpanTiming => 'Hvert segment skal have gyldige start- og sluttider.';
+	@override String get listenToGuideTrack => 'Lyt til guidesporet';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsDa {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Vælg et tidspunkt mellem starten og slutningen af dette segment.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Sammenfletning kræver ens sangstemmer, tilstedeværelse af udtale og sikkerhed.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Hvert segment skal have gyldige start- og sluttider.',
+			'karaokeUi.listenToGuideTrack' => 'Lyt til guidesporet',
 			'musicExperience.title' => 'Opdag musik',
 			'musicExperience.mix' => 'Lav et mix',
 			'musicExperience.adventure' => 'Lydeventyr',
@@ -9653,9 +9655,9 @@ extension on TranslationsDa {
 			'musicDevices.receiverHint' => 'Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.',
 			'musicDevices.moveFailed' => 'Kunne ikke flytte afspilningen. Kontrollér, at enheden er vågen, parret og har adgang til din musikserver.',
 			'musicDevices.uncertain' => 'Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.',
-			'musicDevices.away' => 'Uden for hjemmet',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Uden for hjemmet',
 			'musicDevices.relay' => 'URL til musikrelæ',
 			'musicDevices.relayHint' => 'Aktivér på modtageren, og par én gang på samme netværk. Hold Pleazyng åben. Relæet sender krypteret musikstyring og ser netværksadresser. Hver afspiller streamer fra sin egen medieserver.',
 			'musicDevices.relayInvalid' => 'Indtast en HTTPS-adresse til relæet.',

@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$uz extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Bu qismning boshlanishi va oxiri orasidagi vaqtni tanlang.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Birlashtirish uchun vokal partiyalari, talaffuz mavjudligi va ishonchlilik mos bo‘lishi kerak.';
 	@override String get invalidLyricSpanTiming => 'Har bir qism uchun to‘g‘ri boshlanish va tugash vaqti kerak.';
+	@override String get listenToGuideTrack => 'Yo‘riqnoma trekini tinglash';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsUz {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Bu qismning boshlanishi va oxiri orasidagi vaqtni tanlang.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Birlashtirish uchun vokal partiyalari, talaffuz mavjudligi va ishonchlilik mos bo‘lishi kerak.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Har bir qism uchun to‘g‘ri boshlanish va tugash vaqti kerak.',
+			'karaokeUi.listenToGuideTrack' => 'Yo‘riqnoma trekini tinglash',
 			'musicExperience.title' => 'Musiqa kashf etish',
 			'musicExperience.mix' => 'Miks yaratish',
 			'musicExperience.adventure' => 'Ovozli sayohat',
@@ -9653,9 +9655,9 @@ extension on TranslationsUz {
 			'musicDevices.receiverHint' => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.',
 			'musicDevices.moveFailed' => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.',
 			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
-			'musicDevices.away' => 'Uydan tashqarida',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Uydan tashqarida',
 			'musicDevices.relay' => 'Musiqa relesi URL manzili',
 			'musicDevices.relayHint' => 'Qabul qiluvchi qurilmada yoqing, so‘ng bir tarmoqda bir marta juftlang. Pleazyng ochiq tursin. Rele shifrlangan musiqa buyruqlarini uzatadi va tarmoq manzillarini ko‘radi. Har bir pleyer o‘z media serveridan uzatadi.',
 			'musicDevices.relayInvalid' => 'HTTPS rele manzilini kiriting.',

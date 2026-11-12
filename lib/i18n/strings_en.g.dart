@@ -14287,6 +14287,9 @@ class Translations$karaokeUi$en {
 	/// en: 'Listen to dry take'
 	String get listenToDryTake => 'Listen to dry take';
 
+	/// en: 'Listen to guide track'
+	String get listenToGuideTrack => 'Listen to guide track';
+
 	/// en: 'Mix / export audio or video'
 	String get mixExportAudioOrVideo => 'Mix / export audio or video';
 
@@ -22738,6 +22741,7 @@ extension on Translations {
 			'karaokeUi.recoverRecording' => 'Recover recording',
 			'karaokeUi.linkThisTakeToTheDuetInvitation' => 'Link this take to the duet invitation',
 			'karaokeUi.listenToDryTake' => 'Listen to dry take',
+			'karaokeUi.listenToGuideTrack' => 'Listen to guide track',
 			'karaokeUi.mixExportAudioOrVideo' => 'Mix / export audio or video',
 			'karaokeUi.exportPortableTake' => 'Export portable take',
 			'karaokeUi.downloadCompletedRender' => 'Download completed render',
@@ -22750,9 +22754,9 @@ extension on Translations {
 			'karaokeUi.instrumentalFiller' => 'Instrumental filler',
 			'karaokeUi.stageBanner' => 'Stage banner',
 			'karaokeUi.stageTextSize' => 'Stage text size',
-			'karaokeUi.displayOffsetMs' => ({required Object value1}) => 'Display offset: ${value1} ms',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.displayOffsetMs' => ({required Object value1}) => 'Display offset: ${value1} ms',
 			'karaokeUi.perSingerPendingRequestLimit' => 'Per-singer pending request limit',
 			'karaokeUi.openRequestKiosk' => 'Open request kiosk',
 			'karaokeUi.theKioskLimitsThisScreenToSongRequestsUse' => 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.',

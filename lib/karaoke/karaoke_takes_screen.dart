@@ -15,6 +15,7 @@ import 'package:path/path.dart' as p;
 import '../mpv/models.dart';
 import '../mpv/player/player.dart';
 import '../services/playback_coordinator.dart';
+import '../services/music/music_playback_service.dart';
 import 'karaoke_preparation.dart';
 import 'karaoke_session.dart';
 import 'karaoke_takes.dart';
@@ -34,7 +35,14 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
   // stopPreview() cancels a detached snapshot before closing playback.
   // ignore: cancel_subscriptions
   StreamSubscription<bool>? _previewCompleted;
+  // ignore: cancel_subscriptions
+  StreamSubscription<Duration>? _musicPreviewPosition;
   bool _busy = false;
+  bool _previewUsesMusic = false;
+  bool _previewMarksListened = false;
+  bool _hadMusicBeforePreview = false;
+  bool _finishingPreview = false;
+  String? _previewMusicGlobalKey;
   String? _error;
   @override
   void initState() {
@@ -73,44 +81,196 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
     final sub = _previewCompleted;
     _previewCompleted = null;
     await sub?.cancel();
+    final musicPosition = _musicPreviewPosition;
+    _musicPreviewPosition = null;
+    await musicPosition?.cancel();
     final player = _preview;
     _preview = null;
-    await player?.dispose();
+    try {
+      await player?.dispose();
+    } catch (_) {}
+    if (_previewUsesMusic) {
+      final music = widget.session.music;
+      if (music is MusicKaraokeControls) {
+        try {
+          await (music as MusicKaraokeControls).resetKaraokeControls();
+        } catch (_) {}
+      }
+      try {
+        await music.pause();
+      } catch (_) {}
+    }
+    _previewUsesMusic = false;
+    _previewMarksListened = false;
+    _finishingPreview = false;
   }
 
   Future<void> stopPreviewAndRestore() async {
-    await stopPreview();
-    await widget.session.restoreMusic();
+    final clearUnclaimedGuide = _previewUsesMusic && !_hadMusicBeforePreview;
+    final guideKey = _previewMusicGlobalKey;
+    try {
+      await stopPreview();
+    } finally {
+      await widget.session.restoreMusic();
+      final music = widget.session.music;
+      if (clearUnclaimedGuide &&
+          guideKey != null &&
+          music.playContext?.title == 'Karaoke' &&
+          music.currentTrack?.globalKey == guideKey) {
+        await music.stop();
+      }
+      _previewMusicGlobalKey = null;
+    }
   }
 
-  Future<void> play(KaraokeTake take) => run(() async {
+  Future<void> _beginPreview({bool registerKaraoke = true}) async {
     await stopPreview();
     await widget.session.stopPlayback();
+    _hadMusicBeforePreview = widget.session.music.currentTrack != null;
     await widget.session.claimPlaybackResources();
-    final player = Player.audio();
-    _preview = player;
-    PlaybackCoordinator.instance.registerKaraoke(stopPreview);
-    _previewCompleted = player.streams.completed.listen((done) {
-      if (done) {
-        unawaited(
-          _library
-              .markListened(take)
-              .then((_) async {
-                if (mounted) {
-                  setState(() {});
-                  await stopPreviewAndRestore();
-                }
-              })
-              .catchError((Object error) {
-                if (mounted) {
-                  setState(() => _error = error.toString());
-                }
-              }),
-        );
+    _previewMusicGlobalKey = null;
+    _finishingPreview = false;
+    if (registerKaraoke) PlaybackCoordinator.instance.registerKaraoke(stopPreview);
+  }
+
+  void _finishPreview(KaraokeTake take) {
+    if (_finishingPreview) return;
+    _finishingPreview = true;
+    unawaited(() async {
+      try {
+        if (_previewMarksListened) await _library.markListened(take);
+        if (mounted) setState(() {});
+      } catch (error) {
+        if (mounted) setState(() => _error = error.toString());
+      } finally {
+        await stopPreviewAndRestore();
       }
-    });
-    await player.open(Media(take.dry.uri.toString()));
+    }());
+  }
+
+  double _takeControl(KaraokeTake take, String name, double fallback) {
+    final value = take.metadata[name];
+    if (value is! num || !value.isFinite) {
+      if (value == null) return fallback;
+      throw FormatException('Invalid take $name');
+    }
+    final result = value.toDouble();
+    if (name == 'key' ? result.abs() > 12 : result < .5 || result > 2) {
+      throw FormatException('Invalid take $name');
+    }
+    return result;
+  }
+
+  int _takeSourceStartMs(KaraokeTake take) {
+    final value = take.metadata['sourceStartMs'];
+    if (value == null) return 0;
+    if (value is! int || value < 0 || value > 24 * 60 * 60 * 1000) {
+      throw const FormatException('Invalid take source position');
+    }
+    return value;
+  }
+
+  Future<void> _applyPreviewControls(Player player, double key, double tempo) async {
+    if (key == 0 && tempo == 1) return;
+    if (player.playerType != 'mpv' || player is! AudioEffectsCapable) {
+      throw UnsupportedError('Matching guide key and tempo require MPV');
+    }
+    await player.setAudioPassthrough(false);
+    await (player as AudioEffectsCapable).setAudioEffects((stereoWidth: 0, spatializer: false, pitchSemitones: key));
+    await player.setRate(tempo);
+  }
+
+  Future<void> play(KaraokeTake take) => run(() => _playTake(take));
+
+  Future<void> _playTake(KaraokeTake take) async {
+    try {
+      await _beginPreview();
+      final player = Player.audio();
+      _preview = player;
+      _previewMarksListened = true;
+      _previewCompleted = player.streams.completed.listen((done) {
+        if (done) _finishPreview(take);
+      });
+      await player.open(Media(take.dry.uri.toString()));
+    } catch (_) {
+      await stopPreviewAndRestore();
+      rethrow;
+    }
+  }
+
+  Future<void> playGuide(KaraokeTake take) => run(() async {
+    try {
+      final track = widget.session.catalog[take.metadata['renditionId']];
+      if (track == null) throw StateError('The original rendition is no longer available');
+      final partValue = take.metadata['part'];
+      final guide = karaokeGuideAssetFor(track, part: partValue is String ? partValue : null);
+      final key = _takeControl(take, 'key', 0);
+      final tempo = _takeControl(take, 'tempo', 1);
+      final sourceStart = _takeSourceStartMs(take);
+      if (track.durationMs > 0 && sourceStart >= track.durationMs) {
+        throw const FormatException('Take source position is beyond the rendition duration');
+      }
+      if (guide == null && track.media == null) {
+        throw StateError('No aligned guide vocal or original audio is available');
+      }
+
+      await _beginPreview(registerKaraoke: guide != null || track.media == null);
+      if (guide != null) {
+        if ((await widget.session.packages.verify(track)).isNotEmpty) {
+          throw StateError('Guide package assets are missing or corrupt');
+        }
+        final file = await widget.session.store.asset(track.id, guide.path);
+        final player = Player.audio();
+        _preview = player;
+        _previewCompleted = player.streams.completed.listen((done) {
+          if (done) _finishPreview(take);
+        });
+        await player.open(Media(file.uri.toString(), start: Duration(milliseconds: sourceStart)), play: false);
+        await _applyPreviewControls(player, key, tempo);
+        await player.play();
+        return;
+      }
+
+      final media = track.media;
+      if (media == null) throw StateError('No aligned guide vocal or original audio is available');
+      final music = widget.session.music;
+      _previewUsesMusic = true;
+      _previewMusicGlobalKey = media.globalKey;
+      music.setRepeatMode(MusicRepeatMode.off);
+      await music.playFromList(
+        tracks: [media],
+        playContext: const MusicPlayContext(title: 'Karaoke', kind: MusicPlayContextKind.tracks),
+        initialPosition: Duration(milliseconds: sourceStart),
+      );
+      if (music.status == MusicPlaybackStatus.error || music.currentTrack?.globalKey != media.globalKey) {
+        throw StateError('Guide playback did not start');
+      }
+      if (key != 0 || tempo != 1) {
+        if (music is! MusicKaraokeControls) {
+          throw UnsupportedError('Matching guide key and tempo are unavailable in this music backend');
+        }
+        await (music as MusicKaraokeControls).setKaraokeControls(semitones: key, tempo: tempo);
+      }
+      final duration = music.duration ?? (media.durationMs == null ? null : Duration(milliseconds: media.durationMs!));
+      if (duration != null && duration > Duration.zero) {
+        _musicPreviewPosition = music.positionStream.listen((position) {
+          if (position >= duration) _finishPreview(take);
+        });
+      }
+      PlaybackCoordinator.instance.registerKaraoke(stopPreview);
+    } catch (_) {
+      await stopPreviewAndRestore();
+      rethrow;
+    }
   });
+
+  bool _hasGuide(KaraokeTake take) {
+    final track = widget.session.catalog[take.metadata['renditionId']];
+    if (track == null) return false;
+    final partValue = take.metadata['part'];
+    return karaokeGuideAssetFor(track, part: partValue is String ? partValue : null) != null || track.media != null;
+  }
+
   Future<void> produce(KaraokeTake take) async {
     var backing = .7, vocal = 1.0, echo = 0.0, gate = 0.0;
     final trim = TextEditingController(text: '0'),
@@ -240,7 +400,7 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
   @override
   void dispose() {
     unawaited(
-      stopPreview().then((_) => widget.session.restoreMusic()).catchError((Object error) {
+      stopPreviewAndRestore().catchError((Object error) {
         widget.session.report(error);
       }),
     );
@@ -353,6 +513,11 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
                         onPressed: _busy || !take.complete ? null : () => play(take),
                         child: Text(l10n.t.karaokeUi.listenToDryTake),
                       ),
+                      if (take.complete && _hasGuide(take))
+                        TextButton(
+                          onPressed: _busy ? null : () => playGuide(take),
+                          child: Text(l10n.t.karaokeUi.listenToGuideTrack),
+                        ),
                       TextButton(
                         onPressed: _busy || !take.complete ? null : () => produce(take),
                         child: Text(l10n.t.karaokeUi.mixExportAudioOrVideo),

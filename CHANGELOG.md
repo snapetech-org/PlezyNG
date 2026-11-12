@@ -4,6 +4,8 @@
 
 - Save karaoke A–B practice loops per rendition and restore them with the profile session.
 
+- Compare a private karaoke take with its matching guide vocal or original audio at the recorded rendition position, key and tempo where supported.
+
 - Add host-stage corrections for preparation key, tempo and chord timeline estimates, and retain them across re-analysis and session restore without treating them as scored note charts.
 
 - Avoid repeated `media-title` expansion in each iOS and tvOS mpv context while preserving macOS window titles. The source is upstream Plezy commit [`847842c3d0`](https://github.com/edde746/plezy/commit/847842c3d075b56d686409850e12fa1cca0b19d9), contributed there by [@edde746](https://github.com/edde746); Pleazyng independently adapted it. See [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md#credited-plezy-commits).

@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$sv extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Välj en tidpunkt mellan segmentets början och slut.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Sammanfogning kräver samma sångstämmor, förekomst av uttal och säkerhetsvärde.';
 	@override String get invalidLyricSpanTiming => 'Varje segment behöver giltiga start- och sluttider.';
+	@override String get listenToGuideTrack => 'Lyssna på guidspåret';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsSv {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Välj en tidpunkt mellan segmentets början och slut.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Sammanfogning kräver samma sångstämmor, förekomst av uttal och säkerhetsvärde.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Varje segment behöver giltiga start- och sluttider.',
+			'karaokeUi.listenToGuideTrack' => 'Lyssna på guidspåret',
 			'musicExperience.title' => 'Upptäck musik',
 			'musicExperience.mix' => 'Skapa mix',
 			'musicExperience.adventure' => 'Ljudäventyr',
@@ -9653,9 +9655,9 @@ extension on TranslationsSv {
 			'musicDevices.receiverHint' => 'Håll Pleazyng öppet för att ta emot musik. Parkoppla en gång med den här koden.',
 			'musicDevices.moveFailed' => 'Det gick inte att flytta uppspelningen. Kontrollera att enheten är vaken, parkopplad och når musikservern.',
 			'musicDevices.uncertain' => 'Anslutningen avbröts. Anslut till den valda enheten igen för att kontrollera uppspelningen.',
-			'musicDevices.away' => 'Utanför hemmet',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Utanför hemmet',
 			'musicDevices.relay' => 'URL till musikrelä',
 			'musicDevices.relayHint' => 'Aktivera på mottagaren och parkoppla en gång på samma nätverk. Håll Pleazyng öppet. Reläet skickar krypterade musikkommandon och ser nätverksadresser. Varje spelare strömmar från sin egen medieserver.',
 			'musicDevices.relayInvalid' => 'Ange en HTTPS-adress till reläet.',

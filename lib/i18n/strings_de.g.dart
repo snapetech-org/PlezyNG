@@ -4274,6 +4274,7 @@ class _Translations$karaokeUi$de extends Translations$karaokeUi$en {
 	@override String get splitBoundaryMustFallInsideSpan => 'Wähle einen Zeitpunkt zwischen Anfang und Ende dieses Abschnitts.';
 	@override String get mergeRequiresMatchingSingerAndReadings => 'Zusammenführen erfordert gleiche Gesangsparts, vorhandene Ausspracheangaben und Konfidenz.';
 	@override String get invalidLyricSpanTiming => 'Jeder Abschnitt benötigt gültige Start- und Endzeiten.';
+	@override String get listenToGuideTrack => 'Guide-Spur anhören';
 }
 
 // Path: musicExperience
@@ -9531,6 +9532,7 @@ extension on TranslationsDe {
 			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Wähle einen Zeitpunkt zwischen Anfang und Ende dieses Abschnitts.',
 			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Zusammenführen erfordert gleiche Gesangsparts, vorhandene Ausspracheangaben und Konfidenz.',
 			'karaokeUi.invalidLyricSpanTiming' => 'Jeder Abschnitt benötigt gültige Start- und Endzeiten.',
+			'karaokeUi.listenToGuideTrack' => 'Guide-Spur anhören',
 			'musicExperience.title' => 'Musik entdecken',
 			'musicExperience.mix' => 'Mix erstellen',
 			'musicExperience.adventure' => 'Klangreise',
@@ -9653,9 +9655,9 @@ extension on TranslationsDe {
 			'musicDevices.receiverHint' => 'Lass Pleazyng geöffnet, um Musik zu empfangen. Kopple einmal mit diesem Code.',
 			'musicDevices.moveFailed' => 'Wiedergabe konnte nicht verschoben werden. Prüfe, ob das Gerät aktiv und gekoppelt ist und deinen Musikserver erreicht.',
 			'musicDevices.uncertain' => 'Verbindung unterbrochen. Verbinde dich erneut mit dem gewählten Gerät, um die Wiedergabe zu prüfen.',
-			'musicDevices.away' => 'Unterwegs',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.away' => 'Unterwegs',
 			'musicDevices.relay' => 'URL des Musik-Relays',
 			'musicDevices.relayHint' => 'Auf dem Empfangsgerät aktivieren und einmal im selben Netzwerk koppeln. Pleazyng geöffnet lassen. Das Relay überträgt verschlüsselte Musikbefehle und sieht Netzwerkadressen. Jeder Player streamt vom eigenen Medienserver.',
 			'musicDevices.relayInvalid' => 'Eine HTTPS-Adresse für das Relay eingeben.',

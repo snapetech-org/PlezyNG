@@ -18,6 +18,33 @@ class KaraokeTake {
   bool get complete => metadata['complete'] == true;
 }
 
+/// Returns a guide source that can be aligned to [track]'s rendition clock.
+/// Separate vocal stems must declare that clock explicitly; full audio assets
+/// are already owned by the rendition package and may omit it.
+KaraokeAsset? karaokeGuideAssetFor(KaraokeTrack track, {String? part}) {
+  final vocals =
+      track.assets
+          .where(
+            (asset) =>
+                {KaraokeAssetKind.leadVocal, KaraokeAssetKind.duetVocal}.contains(asset.kind) &&
+                asset.clockId == track.id &&
+                (part == null || asset.part == null || asset.part == part),
+          )
+          .toList()
+        ..sort((a, b) {
+          final aPart = part != null && a.part == part ? 0 : 1;
+          final bPart = part != null && b.part == part ? 0 : 1;
+          if (aPart != bPart) return aPart.compareTo(bPart);
+          final aKind = a.kind == KaraokeAssetKind.leadVocal ? 0 : 1;
+          final bKind = b.kind == KaraokeAssetKind.leadVocal ? 0 : 1;
+          return aKind.compareTo(bKind);
+        });
+  if (vocals.isNotEmpty) return vocals.first;
+  return track.assets
+      .where((asset) => asset.kind == KaraokeAssetKind.audio && (asset.clockId == null || asset.clockId == track.id))
+      .firstOrNull;
+}
+
 class KaraokeTakes {
   KaraokeTakes(this.session);
   final KaraokeSession session;

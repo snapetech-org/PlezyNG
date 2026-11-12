@@ -4,7 +4,7 @@
 %global _build_id_links none
 
 Name:           pleazyng
-Version:        2.24.1
+Version:        3.0.33
 Release:        4%{?dist}
 Summary:        Plex client with Jellyfin and Emby support, offline downloads, and HDR
 License:        GPL-3.0-only

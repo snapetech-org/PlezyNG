@@ -14,10 +14,11 @@ import '../../i18n/presentation_formats.dart';
 import '../../providers/trackers_provider.dart';
 import '../../sources/dlna_discovery.dart';
 import '../../sources/adapters/bookorbit_source.dart';
+import '../../sources/kavita_opds.dart';
+import '../../sources/publication_shelf.dart';
 import '../../sources/source_controller.dart';
 import '../../sources/source_models.dart';
 import '../../sources/source_transport.dart';
-import '../../sources/publication_shelf.dart';
 import '../../utils/platform_detector.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/focusable_list_tile.dart';
@@ -227,6 +228,18 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
     return null;
   }
 
+  String? _validateOpdsEndpoint(String? value) {
+    final uri = Uri.tryParse(value?.trim() ?? '');
+    if (uri == null || uri.host.isEmpty || uri.toString().length > 8192) return t.fileSources.errorInvalidData;
+    try {
+      final source = secureKavitaOpdsEndpoint(uri, authKey: field('kavitaAuthKey').text);
+      validatePublicSourceUri(source.endpoint, allowHttp: _allowHttp);
+      return null;
+    } on SourceException {
+      return t.fileSources.errorInvalidData;
+    }
+  }
+
   String? _validateOpenSubsonicCredentials(String? _) {
     if (widget.existing?.kind == FileSourceKind.openSubsonic ||
         field('apiKey').text.trim().isNotEmpty ||
@@ -385,14 +398,18 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
       ]) {
         preservedOptions.remove(key);
       }
+      var endpoint = field('endpoint').text.trim();
+      if (_kind == FileSourceKind.opds) {
+        final secured = secureKavitaOpdsEndpoint(Uri.parse(endpoint), authKey: field('kavitaAuthKey').text);
+        endpoint = secured.endpoint.toString();
+        field('kavitaAuthKey').text = secured.authKey;
+      }
       final source = FileSource(
         id: widget.existing?.id ?? const Uuid().v4(),
         profileId: controller.profileId!,
         kind: _kind,
         name: field('name').text.trim().isEmpty ? sourceKindName(_kind) : field('name').text.trim(),
-        endpoint: _kind == FileSourceKind.podcastRss
-            ? sourceOrigin(Uri.parse(field('endpoint').text.trim()))
-            : field('endpoint').text.trim(),
+        endpoint: _kind == FileSourceKind.podcastRss ? sourceOrigin(Uri.parse(endpoint)) : endpoint,
         root: field('root').text.trim(),
         options: {
           ...preservedOptions,
@@ -423,7 +440,8 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
       );
       final credentialKeys = [
         ...switch (_kind) {
-          FileSourceKind.webdav || FileSourceKind.opds || FileSourceKind.podcastRss => const ['username', 'password'],
+          FileSourceKind.webdav || FileSourceKind.podcastRss => const ['username', 'password'],
+          FileSourceKind.opds => const ['username', 'password', kavitaOpdsAuthKeyCredential],
           FileSourceKind.smb || FileSourceKind.ftp => const ['username', 'password'],
           FileSourceKind.sftp => const [
             'username',
@@ -563,6 +581,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                           FileSourceKind.openSubsonic => 'https://music.example.com',
                           FileSourceKind.bookorbit => 'https://books.example.com',
                           FileSourceKind.podcastRss => 'https://podcast.example/feed.xml',
+                          FileSourceKind.opds => 'https://kavita.example.com/api/opds',
                           _ => null,
                         },
                         validator: _kind == FileSourceKind.nfs
@@ -571,10 +590,13 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                             ? _validateSmbEndpoint
                             : _kind == FileSourceKind.podcastRss
                             ? _validatePodcastFeedUrl
+                            : _kind == FileSourceKind.opds
+                            ? _validateOpdsEndpoint
                             : (_kind == FileSourceKind.openSubsonic || _kind == FileSourceKind.bookorbit)
                             ? _validateOpenSubsonicEndpoint
                             : null,
                       ),
+                    if (_kind == FileSourceKind.opds) input('kavitaAuthKey', t.sourceSetup.apiKey, secret: true),
                     if (_kind == FileSourceKind.opds)
                       Align(
                         alignment: AlignmentDirectional.centerStart,

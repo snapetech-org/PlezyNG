@@ -27,6 +27,15 @@ stay in native transport. Downloadable editions fall back to acquisition if the
 page API is unavailable or unsupported; authentication and malformed responses
 remain visible errors. Cached editions retain priority.
 
+Kavita's [OPDS guide](https://wiki.kavitareader.com/guides/features/opds/)
+provides a unique user URL and Auth Key; its [Auth Key guide](https://wiki.kavitareader.com/guides/user-settings/3rdpartycilents/)
+warns that the key grants account access. Pleazyng setup accepts either the
+copied key-bearing URL or a token-free `/api/opds` endpoint with a separate Auth
+Key. The key is kept in encrypted source credentials; the saved endpoint and
+OPDS entry identifiers retain only a marker, and same-origin requests restore
+the key in Kavita's route. This reuses OPDS and OPDS-PSE behavior and does not
+claim direct Kavita API support.
+
 ## Dependencies and reproducibility
 
 `tools/reader-tests` pins Playwright 1.62.1 and its dependency lock. Its runner
@@ -60,8 +69,8 @@ structural validation and Arabic UI tests do not constitute native-speaker revie
 Native Android/iOS WebView, WebKit/Windows, TV reading, live Komga installations
 and live OPDS catalogs still require platform/service qualification. These tests
 do not certify service compatibility or translation fluency. Native CBR/CB7
-extraction, guided-panel recognition/OCR, secure Kavita token-path onboarding,
-server thumbnail APIs and arbitrary OPDS progress writes remain separate work.
+extraction, guided-panel recognition/OCR, server thumbnail APIs and arbitrary
+OPDS progress writes remain separate work.
 The research plan is a roadmap, not a claim of completed industry-wide parity.
 
 Model: GPT-6 (Codex).

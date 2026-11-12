@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Support secure Kavita OPDS onboarding from a copied Auth Key URL or a separate key field, keeping the key out of saved source endpoints and entry identifiers.
+
 - Correct current aerynOS release guidance to reflect the qualified 3.0.33-5 downstream package; retain the v3.0.7 playback failure as historical evidence.
 
 - Compile the Android GameStream/Moonlight integration with the app for arm64, ARMv7, x86 and x86_64.

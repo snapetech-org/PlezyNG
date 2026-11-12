@@ -29,7 +29,7 @@ Confidence: high in documented protocol behavior and the usability needs above; 
 
 ## Integration boundaries
 
-- Kavita/Codex/LANraragi: standard OPDS catalog + PSE; arbitrary OPDS does not promise remote progress writes. Kavita's token-bearing feed URLs need a private credential field, not a token stored in public connection records.
+- Kavita/Codex/LANraragi: standard OPDS catalog + PSE; arbitrary OPDS does not promise remote progress writes. Kavita Auth Keys are extracted from copied token-bearing OPDS URLs or accepted in a separate field, stored in encrypted source credentials, and added only to same-origin requests. Direct Kavita API features remain outside this OPDS integration.
 - CBR/CB7: server-rendered pages can be read through PSE/Komga. Local RAR/7z extraction is separate codec work, not a renamed ZIP decoder. PDF continues through pdfrx; EPUB through Foliate.
 - ComicTagger/Komf/Mylar metadata workflows interoperate through ComicInfo/Komga. Comic Vine and manga trackers require work matching, attribution/rate-limit handling and separate consent before changing an external reading history.
 - Guided panels/OCR/translation require a separate validated engine, correction UI and device performance work. Cropping must not silently cut dialogue. No false claim that a page label is OCR or panel detection.

@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:xml/xml.dart';
 
 import '../../services/book_identifiers.dart';
-import '../source_models.dart';
 import '../comic_document.dart';
+import '../kavita_opds.dart';
+import '../source_models.dart';
 import '../source_transport.dart';
 import 'webdav_source.dart';
 
@@ -14,6 +15,7 @@ class OpdsSourceAdapter extends SourceAdapter {
   final Map<String, Uri> _acquisitions = {};
   final Map<String, Uri> _covers = {};
   final Map<String, ({String template, int count})> _streams = {};
+  String _kavitaAuthKey = '';
   static const _pse = 'http://vaemendis.net/opds-pse/stream';
   static const _pseNamespace = 'http://vaemendis.net/opds-pse/ns';
   static const _sampleRel = 'http://opds-spec.org/acquisition/sample';
@@ -28,7 +30,7 @@ class OpdsSourceAdapter extends SourceAdapter {
         !const {'image/jpeg', 'image/png', 'image/gif'}.contains(type)) {
       return;
     }
-    final uri = catalog.resolve(href);
+    final uri = _catalog(catalog.resolve(href));
     transport.validate(uri);
     _streams[_streamKey(catalog, id)] = (template: uri.toString(), count: pages);
   }
@@ -42,8 +44,14 @@ class OpdsSourceAdapter extends SourceAdapter {
 
   Uri _catalog(Uri uri) {
     validatePublicSourceUri(uri, allowHttp: transport.allowHttp);
-    return uri;
+    return protectKavitaOpdsUri(uri, _kavitaAuthKey, sourceEndpoint: Uri.parse(source.endpoint));
   }
+
+  Uri _requestUri(Uri uri) =>
+      sameSourceOrigin(Uri.parse(source.endpoint), uri) ? authorizeKavitaOpdsUri(uri, _kavitaAuthKey) : uri;
+
+  String _safeEntryId(String value) =>
+      _kavitaAuthKey.isEmpty ? value : value.replaceAll(_kavitaAuthKey, kavitaOpdsAuthKeyMarker);
 
   String _identity(Uri uri) => uri
       .replace(
@@ -94,12 +102,16 @@ class OpdsSourceAdapter extends SourceAdapter {
 
   @override
   Future<SourcePage> browse({String? parent, String? cursor, String? query}) async {
+    _kavitaAuthKey = (await credentials())[kavitaOpdsAuthKeyCredential]?.trim() ?? '';
+    if (_kavitaAuthKey.isNotEmpty) {
+      secureKavitaOpdsEndpoint(Uri.parse(source.endpoint), authKey: _kavitaAuthKey);
+    }
     final uri = _catalog(Uri.parse(cursor ?? parent ?? source.endpoint));
     _acquisitions.removeWhere((key, _) => sourceMap(jsonDecode(key))['catalog'] == uri.toString());
     _streams.removeWhere((key, _) => (jsonDecode(key) as List).first == uri.toString());
     final raw = await transport.text(
       'GET',
-      uri,
+      _requestUri(uri),
       headers: {...await _headers(uri), 'Accept': 'application/opds+json, application/atom+xml'},
       redirects: true,
     );
@@ -234,10 +246,11 @@ class OpdsSourceAdapter extends SourceAdapter {
       final j = sourceMap(value), meta = sourceMap(j['metadata']);
       final links = sourceList(j['links']).map(sourceMap).toList();
       final self = links.where((l) => _rels(l).contains('self')).firstOrNull?['href'];
-      final id =
-          '${meta['identifier'] ?? (self == null ? sourceDigest(jsonEncode([uri.toString(), meta['title'], meta['author'], links.where((l) => _supportedFileAcquisition(_rels(l))).map((l) => _identity(uri.resolve(l['href'] as String))).toList()])) : _identity(uri.resolve(self as String)))}';
+      final id = _safeEntryId(
+        '${meta['identifier'] ?? (self == null ? sourceDigest(jsonEncode([uri.toString(), meta['title'], meta['author'], links.where((l) => _supportedFileAcquisition(_rels(l))).map((l) => _identity(_catalog(uri.resolve(l['href'] as String)))).toList()])) : _identity(_catalog(uri.resolve(self as String))))}',
+      );
       final image = sourceList(j['images']).map(sourceMap).where((i) => i['href'] is String).firstOrNull;
-      if (image != null) _covers[id] = uri.resolve(image['href'] as String);
+      if (image != null) _covers[id] = _catalog(uri.resolve(image['href'] as String));
       final files = <PublicationFile>[];
       for (final link in links.where((l) => _rels(l).contains(_pse))) {
         _stream(
@@ -255,7 +268,7 @@ class OpdsSourceAdapter extends SourceAdapter {
           continue;
         }
         final mime = link['type'] as String? ?? '';
-        final acquisition = uri.resolve(link['href'] as String);
+        final acquisition = _catalog(uri.resolve(link['href'] as String));
         final name = '${_label(meta['title'])}${_extension(mime, acquisition)}';
         final sampleOnly = _sampleAcquisition(rels);
         final ref = _fileRef(uri, id, acquisition, mime, sampleOnly: sampleOnly);
@@ -303,19 +316,21 @@ class OpdsSourceAdapter extends SourceAdapter {
       String text(String tag) => entry.childElements.where((e) => e.name.local == tag).firstOrNull?.innerText ?? '';
       final title = text('title');
       final links = entry.childElements.where((e) => e.name.local == 'link').toList();
-      final id = text('id').isEmpty
-          ? sourceDigest(
-              jsonEncode([
-                uri.toString(),
-                title,
-                text('author'),
-                links
-                    .where((l) => _supportedFileAcquisition([l.getAttribute('rel') ?? '']))
-                    .map((l) => _identity(uri.resolve(l.getAttribute('href') ?? '')))
-                    .toList(),
-              ]),
-            )
-          : text('id');
+      final id = _safeEntryId(
+        text('id').isEmpty
+            ? sourceDigest(
+                jsonEncode([
+                  uri.toString(),
+                  title,
+                  text('author'),
+                  links
+                      .where((l) => _supportedFileAcquisition([l.getAttribute('rel') ?? '']))
+                      .map((l) => _identity(_catalog(uri.resolve(l.getAttribute('href') ?? ''))))
+                      .toList(),
+                ]),
+              )
+            : text('id'),
+      );
       final image = links
           .where(
             (l) => const {
@@ -325,7 +340,7 @@ class OpdsSourceAdapter extends SourceAdapter {
           )
           .firstOrNull
           ?.getAttribute('href');
-      if (image != null) _covers[id] = uri.resolve(image);
+      if (image != null) _covers[id] = _catalog(uri.resolve(image));
       final files = <PublicationFile>[];
       for (final link in links.where((l) => l.getAttribute('rel') == _pse)) {
         _stream(
@@ -342,7 +357,7 @@ class OpdsSourceAdapter extends SourceAdapter {
         final rel = link.getAttribute('rel') ?? '', mime = link.getAttribute('type') ?? '';
         final rels = [rel];
         if (_downloadable(rel)) {
-          final acquisition = uri.resolve(href);
+          final acquisition = _catalog(uri.resolve(href));
           final sampleOnly = _sampleAcquisition(rels);
           final ref = _fileRef(uri, id, acquisition, mime, sampleOnly: sampleOnly);
           _acquisitions[ref] = acquisition;
@@ -422,7 +437,7 @@ class OpdsSourceAdapter extends SourceAdapter {
               .replaceAll(RegExp(r'%7BpageNumber%7D|\{pageNumber\}', caseSensitive: false), '$index')
               .replaceAll(RegExp(r'%7BmaxWidth%7D|\{maxWidth\}', caseSensitive: false), '2560'),
         );
-        return ContentLease(uri, headers: await _headers(uri));
+        return ContentLease(_requestUri(uri), headers: await _headers(uri));
       },
     );
   }
@@ -433,7 +448,7 @@ class OpdsSourceAdapter extends SourceAdapter {
       await browse(parent: entry.parentId);
     }
     final uri = _covers[entry.id];
-    return uri == null ? null : ContentLease(uri, headers: await _headers(uri));
+    return uri == null ? null : ContentLease(_requestUri(uri), headers: await _headers(uri));
   }
 
   String _extension(String type, Uri acquisition) {
@@ -461,6 +476,15 @@ class OpdsSourceAdapter extends SourceAdapter {
     await browse(parent: ref['catalog'] as String);
     final uri = _acquisitions[file.id];
     if (uri == null) throw const SourceException(SourceFailure.unavailable);
-    return ContentLease(uri, headers: await _headers(uri), size: file.size);
+    return ContentLease(_requestUri(uri), headers: await _headers(uri), size: file.size);
+  }
+
+  @override
+  void close() {
+    _kavitaAuthKey = '';
+    _acquisitions.clear();
+    _covers.clear();
+    _streams.clear();
+    super.close();
   }
 }

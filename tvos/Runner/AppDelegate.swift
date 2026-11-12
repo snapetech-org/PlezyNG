@@ -153,6 +153,14 @@ import wakelock_plus
     if let r = pluginRegistry.registrar(forPlugin: "MpvPlayerPlugin") {
       MpvPlayerPlugin.register(with: r)
     }
+    for (slot, pluginName) in [
+      (1, "MpvWorkspacePlayerPlugin"), (2, "MpvWorkspace2PlayerPlugin"),
+      (3, "MpvWorkspace3PlayerPlugin"),
+    ] {
+      if let r = pluginRegistry.registrar(forPlugin: pluginName) {
+        MpvPlayerPlugin.registerWorkspace(with: r, slot: slot)
+      }
+    }
     if let r = pluginRegistry.registrar(forPlugin: "MpvAudioPlayerPlugin") {
       MpvAudioPlayerPlugin.register(with: r)
     }

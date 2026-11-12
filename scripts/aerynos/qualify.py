@@ -559,7 +559,9 @@ class AppQA:
         bookmark_label = 'QA resume ' + str(time.time_ns())
         self.ui('fill-role', 'text', bookmark_label)
         self.ui('click', 'Save')
-        self.wait(bookmark_label)
+        (self.evidence / 'bookmark-after-save-ui.json').write_text(json.dumps(self.ui(), indent=2) + '\n')
+        self.guest.screenshot(self.evidence / 'bookmark-after-save.png')
+        self.wait(bookmark_label, timeout=20)
         self.key('esc')
         self.controls()
         self.ui('click', 'Seek forward 10 seconds')
@@ -623,7 +625,7 @@ def fixture(source, root):
     run([sys.executable, source / 'scripts/maestro/maestro_real_jellyfin.py', 'prepare', '--output-dir', data / 'media'])
     movie = data / 'media/movies/maestro-movie/Maestro Movie.mp4'
     run(['ffmpeg', '-y', '-v', 'error', '-f', 'lavfi', '-i', 'testsrc2=size=640x360:rate=24',
-         '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=44100', '-t', '180',
+         '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=44100', '-t', '600',
          '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '24', '-c:a', 'aac', '-movflags', '+faststart', movie])
     server_port = port()
     name = 'pleazyng-aerynos-ci-' + root.name.lower().replace('_', '-')
@@ -647,7 +649,7 @@ def check_playback_routes(app, fixture_root):
     app.lifecycle()
     movie_dir = fixture_root.resolve() / 'jellyfin/media/movies/maestro-movie'
     (app.evidence / 'open-media-fixture.json').write_text(json.dumps({
-        'sha256': digest(movie_dir / 'Maestro Movie.mp4'), 'duration_seconds': 180,
+        'sha256': digest(movie_dir / 'Maestro Movie.mp4'), 'duration_seconds': 600,
         'video': 'authored H264 testsrc2', 'audio_hz': 440,
         'entry': 'ordinary installed app Open media URI argument and per-stream HTTP consent',
         'host_binding': '127.0.0.1', 'guest_host_alias': '10.0.2.2'}, indent=2) + '\n')

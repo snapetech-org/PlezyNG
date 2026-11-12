@@ -5660,7 +5660,8 @@
     "sharingAcceptConfirm": "Przyjąć całe zaproszenie od ${owner}?",
     "sharingDeclineConfirm": "Odrzucić całe zaproszenie od ${owner}?",
     "pathTracks": "Utwory na ścieżkę",
-    "sonicDistance": "Maksymalna odległość brzmienia"
+    "sonicDistance": "Maksymalna odległość brzmienia",
+    "albumRadio": "Radio albumu"
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

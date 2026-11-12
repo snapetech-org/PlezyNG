@@ -5654,7 +5654,8 @@
     "sharingAcceptConfirm": "Přijmout celou pozvánku od ${owner}?",
     "sharingDeclineConfirm": "Odmítnout celou pozvánku od ${owner}?",
     "pathTracks": "Skladby na cestu",
-    "sonicDistance": "Maximální zvuková vzdálenost"
+    "sonicDistance": "Maximální zvuková vzdálenost",
+    "albumRadio": "Rádio alba"
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

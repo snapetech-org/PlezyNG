@@ -5601,7 +5601,8 @@
     "sharingAcceptConfirm": "接受来自 ${owner} 的整份邀请？",
     "sharingDeclineConfirm": "拒绝来自 ${owner} 的整份邀请？",
     "pathTracks": "每条路径的曲目数",
-    "sonicDistance": "最大声音距离"
+    "sonicDistance": "最大声音距离",
+    "albumRadio": "专辑电台"
   },
   "musicDevices": {
     "playOn": "播放设备",

@@ -14942,6 +14942,9 @@ class Translations$musicTools$en {
 
 	/// en: 'Maximum sonic distance'
 	String get sonicDistance => 'Maximum sonic distance';
+
+	/// en: 'Album Radio'
+	String get albumRadio => 'Album Radio';
 }
 
 // Path: musicDevices
@@ -22938,6 +22941,7 @@ extension on Translations {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Decline the entire invitation from ${owner}?',
 			'musicTools.pathTracks' => 'Tracks per path',
 			'musicTools.sonicDistance' => 'Maximum sonic distance',
+			'musicTools.albumRadio' => 'Album Radio',
 			'musicDevices.playOn' => 'Play on',
 			'musicDevices.thisDevice' => 'This device',
 			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',

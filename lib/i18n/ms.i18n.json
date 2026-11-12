@@ -5579,7 +5579,8 @@
     "sharingAcceptConfirm": "Terima seluruh jemputan daripada ${owner}?",
     "sharingDeclineConfirm": "Tolak seluruh jemputan daripada ${owner}?",
     "pathTracks": "Lagu bagi setiap laluan",
-    "sonicDistance": "Jarak sonik maksimum"
+    "sonicDistance": "Jarak sonik maksimum",
+    "albumRadio": "Radio album"
   },
   "musicDevices": {
     "playOn": "Mainkan pada",

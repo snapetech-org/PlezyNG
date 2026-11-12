@@ -4403,6 +4403,7 @@ class _Translations$musicTools$de extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => 'Gesamte Einladung von ${owner} ablehnen?';
 	@override String get pathTracks => 'Titel pro Pfad';
 	@override String get sonicDistance => 'Maximaler klanglicher Abstand';
+	@override String get albumRadio => 'Albumradio';
 }
 
 // Path: musicDevices
@@ -9641,6 +9642,7 @@ extension on TranslationsDe {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Gesamte Einladung von ${owner} ablehnen?',
 			'musicTools.pathTracks' => 'Titel pro Pfad',
 			'musicTools.sonicDistance' => 'Maximaler klanglicher Abstand',
+			'musicTools.albumRadio' => 'Albumradio',
 			'musicDevices.playOn' => 'Wiedergeben auf',
 			'musicDevices.thisDevice' => 'Dieses Gerät',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wiedergabe auf ${device}',
@@ -9652,9 +9654,9 @@ extension on TranslationsDe {
 			'musicDevices.moveFailed' => 'Wiedergabe konnte nicht verschoben werden. Prüfe, ob das Gerät aktiv und gekoppelt ist und deinen Musikserver erreicht.',
 			'musicDevices.uncertain' => 'Verbindung unterbrochen. Verbinde dich erneut mit dem gewählten Gerät, um die Wiedergabe zu prüfen.',
 			'musicDevices.away' => 'Unterwegs',
-			'musicDevices.relay' => 'URL des Musik-Relays',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'URL des Musik-Relays',
 			'musicDevices.relayHint' => 'Auf dem Empfangsgerät aktivieren und einmal im selben Netzwerk koppeln. Pleazyng geöffnet lassen. Das Relay überträgt verschlüsselte Musikbefehle und sieht Netzwerkadressen. Jeder Player streamt vom eigenen Medienserver.',
 			'musicDevices.relayInvalid' => 'Eine HTTPS-Adresse für das Relay eingeben.',
 			_ => null,

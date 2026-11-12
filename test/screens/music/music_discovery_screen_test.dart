@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/media/media_item.dart';
+import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
 import 'package:plezy/screens/music/music_discovery_screen.dart';
@@ -51,11 +52,29 @@ class _Client extends ExperienceClient {
   }
 }
 
+class _RadioMusic extends ExperienceMusic implements MusicAlbumRadioControls {
+  MusicDiscoveryBatch? played;
+  MediaItem? selected;
+  int starts = 0;
+  @override
+  Future<InstantMixOutcome> playAlbumRadio(
+    MediaItem album, {
+    double maxDistance = .25,
+    MusicDiscoveryBatch? preview,
+    MediaItem? startTrack,
+  }) async {
+    starts++;
+    played = preview;
+    selected = startTrack;
+    return InstantMixOutcome.started;
+  }
+}
+
 void main() {
   late AppDatabase database;
   late _Profile profile;
   late _Client client;
-  late ExperienceMusic music;
+  late _RadioMusic music;
   setUp(() async {
     resetSharedPreferencesForTest();
     await SettingsService.getInstance();
@@ -63,7 +82,7 @@ void main() {
     database = AppDatabase.forTesting(NativeDatabase.memory());
     profile = _Profile();
     client = _Client();
-    music = ExperienceMusic();
+    music = _RadioMusic();
   });
   tearDown(() {
     profile.dispose();
@@ -79,7 +98,7 @@ void main() {
     maxDistance: distance,
   );
 
-  Future<void> pump(WidgetTester tester, {double textScale = 1}) async {
+  Future<void> pump(WidgetTester tester, {double textScale = 1, MusicRecipe? initialRecipe}) async {
     await tester.runAsync(() => database.customSelect('SELECT 1').get());
     final servers = testMultiServer(clients: [client]);
     await tester.pumpWidget(
@@ -96,7 +115,10 @@ void main() {
             data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
             child: child!,
           ),
-          home: MusicDiscoveryScreen(seed: musicTrack('a'), recipe: recipe()),
+          home: MusicDiscoveryScreen(
+            seed: initialRecipe?.seeds.first ?? musicTrack('a'),
+            recipe: initialRecipe ?? recipe(),
+          ),
         ),
       ),
     );
@@ -159,6 +181,54 @@ void main() {
     expect(find.byKey(const ValueKey('maxDistance/Second/0.75')), findsOneWidget);
     await tap(tester, find.text(t.musicExperience.generate));
     expect(client.constraints, [(5, .75)]);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('album radio previews whole albums and plays the exact saved batch', (tester) async {
+    final seed = musicTrack('album-a').copyWith(kind: MediaKind.album);
+    final neighbor = musicTrack('album-b').copyWith(kind: MediaKind.album);
+    client.rows = [neighbor];
+    client.albums['album-a'] = [musicTrack('a1', album: 'album-a'), musicTrack('a2', album: 'album-a', index: 2)];
+    client.albums['album-b'] = [musicTrack('b1', album: 'album-b')];
+    final initial = MusicRecipe(id: 'radio', title: 'Whole albums', kind: MusicRecipeKind.mix, seeds: [seed]);
+    await pump(tester, initialRecipe: initial);
+    await tap(tester, find.text(t.musicTools.albumRadio));
+    await tap(tester, find.text(t.musicExperience.generate));
+    await tap(tester, find.text(t.musicExperience.play));
+    expect(music.starts, 1);
+    expect(music.played!.recipe.kind, MusicRecipeKind.albumRadio);
+    expect(music.played!.tracks.map((track) => track.id), ['a1', 'a2', 'b1']);
+    expect(music.played!.recipe.limit, 500);
+    await tap(tester, find.text(t.musicExperience.saveRecipe));
+    final saved = (await tester.runAsync(() => MusicRecipeStore(database, 'p').load()))!.single;
+    expect(saved.kind, MusicRecipeKind.albumRadio);
+    expect(saved.seeds.single.id, 'album-a');
+    expect(saved.maxDistance, .25);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('saved album radio controls fit 320px with large text', (tester) async {
+    tester.view.physicalSize = const Size(320, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final initial = MusicRecipe(
+      id: 'radio',
+      title: 'Radio',
+      kind: MusicRecipeKind.albumRadio,
+      seeds: [musicTrack('a').copyWith(kind: MediaKind.album)],
+      maxDistance: .4,
+    );
+    await pump(tester, initialRecipe: initial, textScale: 2);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('maxDistance/radio/0.4')),
+      100,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text(t.musicTools.albumRadio), findsOneWidget);
+    expect(find.byKey(const ValueKey('pathTracks/radio/50')), findsNothing);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });

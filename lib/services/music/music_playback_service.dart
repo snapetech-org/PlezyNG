@@ -5,6 +5,7 @@ import '../../media/media_item.dart';
 import '../../media/media_source_info.dart';
 import '../../mpv/player/audio_spectrum.dart';
 import '../playback_launch_observer.dart';
+import 'music_discovery.dart';
 
 /// Repeat behavior of the music queue.
 enum MusicRepeatMode { off, all, one }
@@ -56,6 +57,16 @@ class MusicPlayContext {
   final MusicPlayContextKind kind;
 
   const MusicPlayContext({required this.title, required this.kind});
+}
+
+/// Optional whole-album sonic radio through the authoritative music session.
+abstract interface class MusicAlbumRadioControls {
+  Future<InstantMixOutcome> playAlbumRadio(
+    MediaItem album, {
+    double maxDistance = .25,
+    MusicDiscoveryBatch? preview,
+    MediaItem? startTrack,
+  });
 }
 
 /// Session-owned discovery and album transport, shared by every surface.

@@ -5606,7 +5606,8 @@
     "sharingAcceptConfirm": "همهٔ دعوت ${owner} پذیرفته شود؟",
     "sharingDeclineConfirm": "همهٔ دعوت ${owner} رد شود؟",
     "pathTracks": "قطعه در هر مسیر",
-    "sonicDistance": "بیشترین فاصلهٔ صوتی"
+    "sonicDistance": "بیشترین فاصلهٔ صوتی",
+    "albumRadio": "رادیوی آلبوم"
   },
   "musicDevices": {
     "playOn": "پخش در",

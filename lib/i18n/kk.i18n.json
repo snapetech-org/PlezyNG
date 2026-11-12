@@ -5606,7 +5606,8 @@
     "sharingAcceptConfirm": "${owner} жіберген шақыру толық қабылдансын ба?",
     "sharingDeclineConfirm": "${owner} жіберген шақыру толық қабылданбасын ба?",
     "pathTracks": "Әр жолдағы тректер",
-    "sonicDistance": "Ең үлкен дыбыстық қашықтық"
+    "sonicDistance": "Ең үлкен дыбыстық қашықтық",
+    "albumRadio": "Альбом радиосы"
   },
   "musicDevices": {
     "playOn": "Ойнату құрылғысы",

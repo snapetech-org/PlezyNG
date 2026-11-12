@@ -129,6 +129,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicVisualizationAudioService,
         MusicKaraokeControls,
         MusicDiscoveryControls,
+        MusicAlbumRadioControls,
         MusicAudioControls,
         MusicCacheControls,
         MusicSignalPathService,
@@ -1214,6 +1215,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   MediaItem? _continuationSeed;
   String? _continuationAccount;
+  bool _continuationAlbumRadio = false;
+  double _continuationDistance = .25;
   int _continuationEpoch = 0;
   bool _continuationLoading = false;
   Future<void>? _continuationTask;
@@ -1228,6 +1231,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   void setContinuationEnabled(bool enabled) {
     _continuationEpoch++;
+    _continuationAlbumRadio = false;
+    _continuationDistance = .25;
     _continuationLoading = false;
     _continuationTask = null;
     final seed = enabled ? _currentTrack : null;
@@ -1240,9 +1245,36 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (continuationEnabled) unawaited(_extendStation());
   }
 
-  Future<MusicDiscoveryBatch> _generateInstantMix(MediaItem seed, {bool Function()? current}) => MusicDiscovery(
-    (item) => current?.call() == false ? null : _clientFor(item),
-  ).generate(MusicRecipe(id: 'instant', title: seed.displayTitle, kind: MusicRecipeKind.mix, seeds: [seed]));
+  Future<MusicDiscoveryBatch> _generateInstantMix(
+    MediaItem seed, {
+    bool Function()? current,
+    bool albumRadio = false,
+    double maxDistance = .25,
+    Set<String> excludedAlbumIds = const {},
+    Set<String> excludedTrackKeys = const {},
+  }) => MusicDiscovery((item) => current?.call() == false ? null : _clientFor(item)).generate(
+    MusicRecipe(
+      id: 'instant',
+      title: seed.displayTitle,
+      kind: albumRadio ? MusicRecipeKind.albumRadio : MusicRecipeKind.mix,
+      seeds: [seed],
+      limit: albumRadio ? 500 : 100,
+      maxDistance: maxDistance,
+    ),
+    excludedAlbumIds: excludedAlbumIds,
+    excludedTrackKeys: excludedTrackKeys,
+  );
+
+  MediaItem _radioAlbum(MediaItem track) => MediaItem(
+    id: track.parentId!,
+    backend: track.backend,
+    kind: MediaKind.album,
+    title: track.parentTitle ?? track.displayTitle,
+    serverId: track.serverId,
+    serverName: track.serverName,
+    libraryId: track.libraryId,
+    libraryTitle: track.libraryTitle,
+  );
 
   Future<void> _extendStation() {
     if (_musicGroupFollower) return Future.value();
@@ -1277,14 +1309,38 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<void> _fetchContinuation(MediaItem seed, int epoch, int revision, bool Function() authorized) async {
     bool current() => !_disposed && epoch == _continuationEpoch && revision == _queueSessionRevision;
     try {
-      final batch = await _generateInstantMix(seed, current: () => current() && authorized());
+      final albumRadio = _continuationAlbumRadio;
+      final excludedTracks = {..._queue.queue.map((t) => t.globalKey), ..._continuationExcluded};
+      final excludedAlbums = <String>{
+        if (albumRadio)
+          for (final track in _queue.queue)
+            if (track.serverId == seed.serverId && track.libraryId == seed.libraryId && track.parentId != null)
+              track.parentId!,
+      };
+      final batch = await _generateInstantMix(
+        seed,
+        current: () => current() && authorized(),
+        albumRadio: albumRadio,
+        maxDistance: _continuationDistance,
+        excludedAlbumIds: excludedAlbums,
+        excludedTrackKeys: excludedTracks,
+      );
       if (!current() || _musicGroupFollower) return;
       if (!batch.isCurrent()) throw StateError('Music continuation source changed');
-      final tracks = MusicDiscovery.interleave(
-        [batch.tracks],
-        limit: 100,
-        exclude: {..._queue.queue.map((t) => t.globalKey), ..._continuationExcluded},
-      );
+      final latestExcludedTracks = {..._queue.queue.map((track) => track.globalKey), ..._continuationExcluded};
+      final blockedAlbums = <String>{
+        if (albumRadio) ...{
+          for (final track in _queue.queue)
+            if (track.serverId == seed.serverId && track.libraryId == seed.libraryId && track.parentId != null)
+              track.parentId!,
+          for (final track in batch.tracks)
+            if (latestExcludedTracks.contains(track.globalKey)) track.parentId!,
+        },
+      };
+      final tracks = albumRadio
+          ? batch.tracks.where((track) => !blockedAlbums.contains(track.parentId)).toList()
+          : MusicDiscovery.interleave([batch.tracks], limit: 100, exclude: latestExcludedTracks);
+      if (albumRadio && tracks.isNotEmpty) _continuationSeed = _radioAlbum(tracks.last);
       if (tracks.isNotEmpty) {
         _queue.addToEnd(tracks);
         _afterQueueEdit();
@@ -1303,7 +1359,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     } finally {
       if (!_disposed && epoch == _continuationEpoch) {
         _continuationLoading = false;
-        if (_continuationSeed == null) _persistSessionSnapshot();
+        if (_continuationSeed == null) {
+          _continuationAlbumRadio = false;
+          _continuationDistance = .25;
+          _persistSessionSnapshot();
+        }
         notifyListeners();
       }
     }
@@ -2136,7 +2196,23 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   @override
-  Future<InstantMixOutcome> playInstantMix(MediaItem seed) async {
+  Future<InstantMixOutcome> playInstantMix(MediaItem seed) => _playRadio(seed);
+
+  @override
+  Future<InstantMixOutcome> playAlbumRadio(
+    MediaItem album, {
+    double maxDistance = .25,
+    MusicDiscoveryBatch? preview,
+    MediaItem? startTrack,
+  }) => _playRadio(album, albumRadio: true, maxDistance: maxDistance, preview: preview, startTrack: startTrack);
+
+  Future<InstantMixOutcome> _playRadio(
+    MediaItem seed, {
+    bool albumRadio = false,
+    double maxDistance = .25,
+    MusicDiscoveryBatch? preview,
+    MediaItem? startTrack,
+  }) async {
     final intent = beginPlayIntent();
     final client = _clientFor(seed);
     if (client == null || client.isOfflineMode) {
@@ -2147,8 +2223,23 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
     final account = musicAccountScope(client);
     MusicDiscoveryBatch batch;
+    var generating = true;
     try {
-      batch = await _generateInstantMix(seed);
+      if (preview != null &&
+          (!albumRadio ||
+              preview.recipe.kind != MusicRecipeKind.albumRadio ||
+              preview.recipe.seeds.single.globalKey != seed.globalKey ||
+              preview.recipe.maxDistance != maxDistance)) {
+        throw ArgumentError('Album radio preview does not match the requested recipe');
+      }
+      batch =
+          preview ??
+          await _generateInstantMix(
+            seed,
+            current: () => !generating || isPlayIntentCurrent(intent),
+            albumRadio: albumRadio,
+            maxDistance: maxDistance,
+          );
     } catch (e, st) {
       if (!isPlayIntentCurrent(intent)) {
         return InstantMixOutcome.superseded;
@@ -2156,21 +2247,28 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       appLogger.w('Instant mix fetch failed for ${seed.id}', error: e, stackTrace: st);
       rethrow;
     }
+    generating = false;
     if (!isPlayIntentCurrent(intent) || !batch.isCurrent()) {
       return InstantMixOutcome.superseded;
     }
     if (batch.tracks.isEmpty) {
       return InstantMixOutcome.empty;
     }
+    if (startTrack != null && !batch.tracks.any((track) => track.globalKey == startTrack.globalKey)) {
+      throw ArgumentError('The selected radio track is outside the preview');
+    }
     final expectedRevision = _queueSessionRevision + (_calderaAudioOwner != null ? 2 : 1);
     await _startQueue(
       tracks: batch.tracks,
-      playContext: MusicPlayContext(title: seed.displayTitle, kind: MusicPlayContextKind.mix),
+      startTrack: startTrack,
+      playContext: MusicPlayContext(title: preview?.recipe.title ?? seed.displayTitle, kind: MusicPlayContextKind.mix),
     );
     if (_disposed || _queueSessionRevision != expectedRevision) return InstantMixOutcome.superseded;
     if (batch.isCurrent()) {
-      _continuationSeed = seed;
+      _continuationSeed = albumRadio ? _radioAlbum(batch.tracks.last) : seed;
       _continuationAccount = account;
+      _continuationAlbumRadio = albumRadio;
+      _continuationDistance = maxDistance;
       _persistSessionSnapshot();
       unawaited(_extendStation());
     }
@@ -2229,6 +2327,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _continuationEpoch++;
     _continuationSeed = null;
     _continuationAccount = null;
+    _continuationAlbumRadio = false;
+    _continuationDistance = .25;
     _continuationLoading = false;
     _continuationTask = null;
     _continuationExcluded.clear();
@@ -4560,6 +4660,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _continuationEpoch++;
     _continuationSeed = null;
     _continuationAccount = null;
+    _continuationAlbumRadio = false;
+    _continuationDistance = .25;
     _continuationLoading = false;
     _continuationTask = null;
     beginPlayIntent();
@@ -4788,6 +4890,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _queueSessionRevision++;
     _playContext = snapshot.playContext;
     _continuationAccount = snapshot.continuationAccount;
+    _continuationAlbumRadio = snapshot.continuationAlbumRadio;
+    _continuationDistance = snapshot.continuationDistance;
     _continuationSeed = _continuationAccount == null ? null : snapshot.continuationSeed;
     _continuationExcluded
       ..clear()
@@ -4828,6 +4932,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       position: positionOverride ?? position,
       continuationSeed: _continuationSeed,
       continuationAccount: _continuationAccount,
+      continuationAlbumRadio: _continuationAlbumRadio,
+      continuationDistance: _continuationDistance,
       continuationExcluded: Set.unmodifiable(_continuationExcluded),
     );
     unawaited(

@@ -5606,7 +5606,8 @@
     "sharingAcceptConfirm": "Godta hele invitasjonen fra ${owner}?",
     "sharingDeclineConfirm": "Avslå hele invitasjonen fra ${owner}?",
     "pathTracks": "Spor per sti",
-    "sonicDistance": "Maksimal lydavstand"
+    "sonicDistance": "Maksimal lydavstand",
+    "albumRadio": "Albumradio"
   },
   "musicDevices": {
     "playOn": "Spill av på",

@@ -4445,6 +4445,7 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => 'Odmítnout celou pozvánku od ${owner}?';
 	@override String get pathTracks => 'Skladby na cestu';
 	@override String get sonicDistance => 'Maximální zvuková vzdálenost';
+	@override String get albumRadio => 'Rádio alba';
 }
 
 // Path: musicDevices
@@ -9685,6 +9686,7 @@ extension on TranslationsCs {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Odmítnout celou pozvánku od ${owner}?',
 			'musicTools.pathTracks' => 'Skladby na cestu',
 			'musicTools.sonicDistance' => 'Maximální zvuková vzdálenost',
+			'musicTools.albumRadio' => 'Rádio alba',
 			'musicDevices.playOn' => 'Přehrávat na',
 			'musicDevices.thisDevice' => 'Toto zařízení',
 			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',
@@ -9696,9 +9698,9 @@ extension on TranslationsCs {
 			'musicDevices.moveFailed' => 'Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.',
 			'musicDevices.uncertain' => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.',
 			'musicDevices.away' => 'Mimo domov',
-			'musicDevices.relay' => 'URL hudebního relé',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'URL hudebního relé',
 			'musicDevices.relayHint' => 'Zapněte na přijímajícím zařízení a jednou spárujte ve stejné síti. Nechte Pleazyng otevřený. Relé přenáší šifrované ovládání hudby a vidí síťové adresy. Každý přehrávač streamuje z vlastního mediálního serveru.',
 			'musicDevices.relayInvalid' => 'Zadejte HTTPS adresu relé.',
 			_ => null,

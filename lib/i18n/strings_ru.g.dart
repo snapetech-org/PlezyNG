@@ -4449,6 +4449,7 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => 'Отклонить всё приглашение от ${owner}?';
 	@override String get pathTracks => 'Треков на маршрут';
 	@override String get sonicDistance => 'Максимальное звуковое расстояние';
+	@override String get albumRadio => 'Радио альбома';
 }
 
 // Path: musicDevices
@@ -9691,6 +9692,7 @@ extension on TranslationsRu {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Отклонить всё приглашение от ${owner}?',
 			'musicTools.pathTracks' => 'Треков на маршрут',
 			'musicTools.sonicDistance' => 'Максимальное звуковое расстояние',
+			'musicTools.albumRadio' => 'Радио альбома',
 			'musicDevices.playOn' => 'Воспроизвести на',
 			'musicDevices.thisDevice' => 'Это устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Воспроизводится на ${device}',
@@ -9702,9 +9704,9 @@ extension on TranslationsRu {
 			'musicDevices.moveFailed' => 'Не удалось перенести воспроизведение. Проверьте, что устройство активно, сопряжено и имеет доступ к музыкальному серверу.',
 			'musicDevices.uncertain' => 'Соединение прервано. Подключитесь к выбранному устройству снова, чтобы проверить воспроизведение.',
 			'musicDevices.away' => 'Вне дома',
-			'musicDevices.relay' => 'URL музыкального ретранслятора',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'URL музыкального ретранслятора',
 			'musicDevices.relayHint' => 'Включите на принимающем устройстве и один раз выполните сопряжение в одной сети. Оставьте Pleazyng открытым. Ретранслятор передаёт зашифрованные команды и видит сетевые адреса. Каждый плеер использует свой медиасервер.',
 			'musicDevices.relayInvalid' => 'Введите HTTPS-адрес ретранслятора.',
 			_ => null,

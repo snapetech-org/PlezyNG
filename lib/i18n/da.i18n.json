@@ -5606,7 +5606,8 @@
     "sharingAcceptConfirm": "Acceptér hele invitationen fra ${owner}?",
     "sharingDeclineConfirm": "Afvis hele invitationen fra ${owner}?",
     "pathTracks": "Numre pr. sti",
-    "sonicDistance": "Maksimal lydafstand"
+    "sonicDistance": "Maksimal lydafstand",
+    "albumRadio": "Albumradio"
   },
   "musicDevices": {
     "playOn": "Afspil på",

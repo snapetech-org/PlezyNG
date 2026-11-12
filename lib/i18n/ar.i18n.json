@@ -5714,7 +5714,8 @@
     "sharingAcceptConfirm": "هل تريد قبول دعوة ${owner} بأكملها؟",
     "sharingDeclineConfirm": "هل تريد رفض دعوة ${owner} بأكملها؟",
     "pathTracks": "المقاطع لكل مسار",
-    "sonicDistance": "أقصى مسافة صوتية"
+    "sonicDistance": "أقصى مسافة صوتية",
+    "albumRadio": "راديو الألبوم"
   },
   "musicDevices": {
     "playOn": "التشغيل على",

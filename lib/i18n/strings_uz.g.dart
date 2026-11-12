@@ -4403,6 +4403,7 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => '${owner} yuborgan taklif to‘liq rad etilsinmi?';
 	@override String get pathTracks => 'Har bir yo‘ldagi treklar';
 	@override String get sonicDistance => 'Eng katta tovush masofasi';
+	@override String get albumRadio => 'Albom radiosi';
 }
 
 // Path: musicDevices
@@ -9641,6 +9642,7 @@ extension on TranslationsUz {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner} yuborgan taklif to‘liq rad etilsinmi?',
 			'musicTools.pathTracks' => 'Har bir yo‘ldagi treklar',
 			'musicTools.sonicDistance' => 'Eng katta tovush masofasi',
+			'musicTools.albumRadio' => 'Albom radiosi',
 			'musicDevices.playOn' => 'Shu qurilmada ijro etish',
 			'musicDevices.thisDevice' => 'Bu qurilma',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} qurilmasida ijro etilmoqda',
@@ -9652,9 +9654,9 @@ extension on TranslationsUz {
 			'musicDevices.moveFailed' => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.',
 			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
 			'musicDevices.away' => 'Uydan tashqarida',
-			'musicDevices.relay' => 'Musiqa relesi URL manzili',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'Musiqa relesi URL manzili',
 			'musicDevices.relayHint' => 'Qabul qiluvchi qurilmada yoqing, so‘ng bir tarmoqda bir marta juftlang. Pleazyng ochiq tursin. Rele shifrlangan musiqa buyruqlarini uzatadi va tarmoq manzillarini ko‘radi. Har bir pleyer o‘z media serveridan uzatadi.',
 			'musicDevices.relayInvalid' => 'HTTPS rele manzilini kiriting.',
 			_ => null,

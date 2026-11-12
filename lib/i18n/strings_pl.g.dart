@@ -4449,6 +4449,7 @@ class _Translations$musicTools$pl extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => 'Odrzucić całe zaproszenie od ${owner}?';
 	@override String get pathTracks => 'Utwory na ścieżkę';
 	@override String get sonicDistance => 'Maksymalna odległość brzmienia';
+	@override String get albumRadio => 'Radio albumu';
 }
 
 // Path: musicDevices
@@ -9691,6 +9692,7 @@ extension on TranslationsPl {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Odrzucić całe zaproszenie od ${owner}?',
 			'musicTools.pathTracks' => 'Utwory na ścieżkę',
 			'musicTools.sonicDistance' => 'Maksymalna odległość brzmienia',
+			'musicTools.albumRadio' => 'Radio albumu',
 			'musicDevices.playOn' => 'Odtwarzaj na',
 			'musicDevices.thisDevice' => 'To urządzenie',
 			'musicDevices.playingOn' => ({required Object device}) => 'Odtwarzanie na ${device}',
@@ -9702,9 +9704,9 @@ extension on TranslationsPl {
 			'musicDevices.moveFailed' => 'Nie udało się przenieść odtwarzania. Sprawdź, czy urządzenie jest aktywne, sparowane i ma dostęp do serwera muzyki.',
 			'musicDevices.uncertain' => 'Połączenie przerwane. Połącz się ponownie z wybranym urządzeniem, aby sprawdzić odtwarzanie.',
 			'musicDevices.away' => 'Poza domem',
-			'musicDevices.relay' => 'URL przekaźnika muzyki',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'URL przekaźnika muzyki',
 			'musicDevices.relayHint' => 'Włącz na urządzeniu odbierającym i sparuj raz w tej samej sieci. Pozostaw Pleazyng otwarty. Przekaźnik przesyła zaszyfrowane polecenia muzyczne i widzi adresy sieciowe. Każdy odtwarzacz korzysta ze swojego serwera multimediów.',
 			'musicDevices.relayInvalid' => 'Wpisz adres HTTPS przekaźnika.',
 			_ => null,

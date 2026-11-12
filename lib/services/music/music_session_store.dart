@@ -22,6 +22,8 @@ class MusicSessionSnapshot {
   final Duration position;
   final MediaItem? continuationSeed;
   final String? continuationAccount;
+  final bool continuationAlbumRadio;
+  final double continuationDistance;
   final Set<String> continuationExcluded;
 
   const MusicSessionSnapshot({
@@ -30,6 +32,8 @@ class MusicSessionSnapshot {
     required this.position,
     this.continuationSeed,
     this.continuationAccount,
+    this.continuationAlbumRadio = false,
+    this.continuationDistance = .25,
     this.continuationExcluded = const {},
   });
 }
@@ -65,6 +69,12 @@ class MusicSessionStore {
   Future<void> save(MusicSessionSnapshot snapshot) => _writes.run(() async {
     if (!_active) return;
     final queue = snapshot.queue;
+    if (!snapshot.continuationDistance.isFinite ||
+        snapshot.continuationDistance < 0 ||
+        snapshot.continuationDistance > 1 ||
+        (snapshot.continuationAlbumRadio && snapshot.continuationSeed?.kind != MediaKind.album)) {
+      throw ArgumentError('Invalid music continuation');
+    }
     if (!queue.isValid) {
       throw ArgumentError('Invalid music queue snapshot');
     }
@@ -89,6 +99,8 @@ class MusicSessionStore {
                 ).toJson(),
                 'account': ?snapshot.continuationAccount,
                 'excluded': snapshot.continuationExcluded.toList(),
+                'albumRadio': snapshot.continuationAlbumRadio,
+                'distance': snapshot.continuationDistance,
               },
           }),
           orderJson: '[]',
@@ -204,6 +216,8 @@ class MusicSessionStore {
         final order = <int>[];
         MediaItem? continuationSeed;
         String? continuationAccount;
+        var continuationAlbumRadio = false;
+        var continuationDistance = .25;
         var continuationExcluded = <String>{};
         if (payload is List) {
           // Read v1 rows until their next save; upgrading never loses the old session.
@@ -214,6 +228,15 @@ class MusicSessionStore {
             final seed = MediaItem.fromJson(Map<String, dynamic>.from(continuation['seed'] as Map));
             if (seed.serverId != null &&
                 const [MediaKind.track, MediaKind.album, MediaKind.artist].contains(seed.kind)) {
+              final radio = continuation['albumRadio'];
+              final distance = continuation['distance'];
+              if (radio != null && radio is! bool ||
+                  distance != null && (distance is! num || !distance.isFinite || distance < 0 || distance > 1) ||
+                  radio == true && seed.kind != MediaKind.album) {
+                throw const FormatException('Invalid persisted music continuation');
+              }
+              continuationAlbumRadio = radio == true;
+              continuationDistance = distance == null ? .25 : (distance as num).toDouble();
               continuationSeed = seed;
               final account = continuation['account'];
               if (account is String && account.isNotEmpty && account.length <= 1024) continuationAccount = account;
@@ -268,6 +291,8 @@ class MusicSessionStore {
           queue: queue,
           continuationSeed: continuationSeed,
           continuationAccount: continuationAccount,
+          continuationAlbumRadio: continuationAlbumRadio,
+          continuationDistance: continuationDistance,
           continuationExcluded: Set.unmodifiable(continuationExcluded),
           playContext: row.contextTitle != null && contextKind != null
               ? MusicPlayContext(title: row.contextTitle!, kind: contextKind)

@@ -4403,6 +4403,7 @@ class _Translations$musicTools$az extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => '${owner} tərəfindən göndərilmiş dəvət tam rədd edilsin?';
 	@override String get pathTracks => 'Hər yol üçün trek sayı';
 	@override String get sonicDistance => 'Maksimum səs məsafəsi';
+	@override String get albumRadio => 'Albom radiosu';
 }
 
 // Path: musicDevices
@@ -9641,6 +9642,7 @@ extension on TranslationsAz {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner} tərəfindən göndərilmiş dəvət tam rədd edilsin?',
 			'musicTools.pathTracks' => 'Hər yol üçün trek sayı',
 			'musicTools.sonicDistance' => 'Maksimum səs məsafəsi',
+			'musicTools.albumRadio' => 'Albom radiosu',
 			'musicDevices.playOn' => 'Burada səsləndir',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',
@@ -9652,9 +9654,9 @@ extension on TranslationsAz {
 			'musicDevices.moveFailed' => 'Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.',
 			'musicDevices.uncertain' => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.',
 			'musicDevices.away' => 'Evdən kənarda',
-			'musicDevices.relay' => 'Musiqi rele ünvanı',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'Musiqi rele ünvanı',
 			'musicDevices.relayHint' => 'Qəbul edən cihazda aktivləşdirin, sonra eyni şəbəkədə bir dəfə qoşalaşdırın. Pleazyng açıq qalsın. Rele şifrələnmiş musiqi əmrlərini ötürür və şəbəkə ünvanlarını görür. Hər pleyer öz media serverindən yayımlayır.',
 			'musicDevices.relayInvalid' => 'HTTPS rele ünvanı daxil edin.',
 			_ => null,

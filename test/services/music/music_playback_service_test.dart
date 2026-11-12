@@ -14,6 +14,9 @@ import 'package:flutter/widgets.dart';
 import 'package:os_media_controls/os_media_controls.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/media/ids.dart';
+import 'package:plezy/media/library_query.dart';
+import 'package:plezy/services/music/music_discovery.dart';
+import 'package:plezy/utils/media_server_http_client.dart';
 import 'package:plezy/media/media_backend.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
@@ -524,7 +527,7 @@ class RecordedReport {
 /// (the engine and tracker never touch it in these tests).
 class FakeMediaServerClient extends Fake
     with PlaybackReportRecorder
-    implements MediaServerClient, PlexLoudnessProfileClient {
+    implements MediaServerClient, PlexLoudnessProfileClient, SonicMusicClient {
   final List<RecordedReport> reports = [];
   Object _authenticationSession = Object();
 
@@ -535,6 +538,40 @@ class FakeMediaServerClient extends Fake
   final Map<int, int> loudnessProfileFetchCounts = {};
   final Map<int, Completer<AudioLoudnessProfile?>> pendingLoudnessProfiles = {};
   Completer<List<MediaItem>>? instantMixGate;
+  final radioAlbums = <String, List<MediaItem>>{};
+  final sonicNeighbors = <String, List<MediaItem>>{};
+  final sonicCalls = <String>[];
+  Future<List<MediaItem>> Function(String)? fetchSonic;
+  @override
+  Future<List<MediaItem>> sonicallySimilar(String id, {int limit = 50, double maxDistance = .25}) async {
+    sonicCalls.add(id);
+    return fetchSonic?.call(id) ?? sonicNeighbors[id] ?? [];
+  }
+
+  @override
+  Future<List<MediaItem>> sonicPath({
+    required String libraryId,
+    required String startId,
+    required String endId,
+    int count = 50,
+    double maxDistance = .25,
+  }) async => [];
+  @override
+  Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
+    String id, {
+    required MediaKind kind,
+    int? start,
+    int? size,
+    AbortController? abort,
+  }) async {
+    final tracks = radioAlbums[id] ?? [];
+    final offset = start ?? 0;
+    return LibraryPage(
+      items: tracks.skip(offset).take(size ?? 200).toList(),
+      totalCount: tracks.length,
+      offset: offset,
+    );
+  }
 
   Iterable<RecordedReport> reportsFor(String state) => reports.where((r) => r.state == state);
 
@@ -1963,6 +2000,100 @@ void main() {
     expect(h.service.position, const Duration(seconds: 50));
     expect(h.service.playbackOccurrenceRevision, occurrence);
     expect(h.service.isPlaying, isTrue);
+  });
+
+  MediaItem radioAlbum(String id) => _track(id).copyWith(kind: MediaKind.album, libraryId: 'lib');
+  MediaItem radioTrack(String id, String album, {int number = 1}) =>
+      _track(id).copyWith(parentId: album, libraryId: 'lib', index: number, parentIndex: 1);
+  void prepareRadio([_Harness? harness]) {
+    final client = (harness ?? h).client;
+    client.radioAlbums['a'] = [radioTrack('a1', 'a'), radioTrack('a2', 'a', number: 2)];
+    client.radioAlbums['b'] = [radioTrack('b1', 'b'), radioTrack('b2', 'b', number: 2)];
+    client.radioAlbums['c'] = [radioTrack('c1', 'c'), radioTrack('c2', 'c', number: 2)];
+    client.sonicNeighbors['a'] = [radioAlbum('b')];
+    client.sonicNeighbors['b'] = [radioAlbum('c')];
+  }
+
+  test('album radio shares playback and refills only complete ordered albums', () async {
+    prepareRadio();
+    expect(await h.service.playAlbumRadio(radioAlbum('a'), maxDistance: .4), InstantMixOutcome.started);
+    await pumpEventQueue();
+    expect(h.service.queue.map((t) => t.id), ['a1', 'a2', 'b1', 'b2', 'c1', 'c2']);
+    expect(h.service.currentTrack!.id, 'a1');
+    expect(h.service.continuationEnabled, isTrue);
+    expect(h.client.sonicCalls, ['a', 'b']);
+    await h.service.next();
+    await pumpEventQueue();
+    expect(h.service.queue, hasLength(6));
+    expect(h.service.continuationEnabled, isFalse);
+  });
+  test('album radio adopts an unchanged preview without regenerating its starting batch', () async {
+    prepareRadio();
+    final seed = radioAlbum('a');
+    final recipe = MusicRecipe(
+      id: 'radio',
+      title: 'Saved radio',
+      kind: MusicRecipeKind.albumRadio,
+      seeds: [seed],
+      maxDistance: .4,
+      limit: 4,
+    );
+    final batch = await MusicDiscovery((_) => h.client).generate(recipe);
+    h.client.fetchSonic = (_) async => [];
+    final reads = h.client.sonicCalls.length;
+    expect(
+      await h.service.playAlbumRadio(seed, maxDistance: .4, preview: batch, startTrack: batch.tracks[1]),
+      InstantMixOutcome.started,
+    );
+    await pumpEventQueue();
+    expect(h.service.currentTrack!.id, 'a2');
+    expect(h.service.queue.map((t) => t.id), ['a1', 'a2', 'b1', 'b2']);
+    expect(h.service.playContext!.title, 'Saved radio');
+    expect(h.client.sonicCalls.length, reads + 1, reason: 'only the rolling refill queries neighbors');
+  });
+
+  test('failed album radio preparation preserves the audible queue', () async {
+    await h.playTracks([t3]);
+    prepareRadio();
+    h.client.radioAlbums['b'] = [radioTrack('foreign', 'wrong')];
+    await expectLater(h.service.playAlbumRadio(radioAlbum('a')), throwsStateError);
+    expect(h.service.queue.map((t) => t.id), ['t3']);
+    expect(h.service.currentTrack!.id, 't3');
+    expect(h.service.isPlaying, isTrue);
+  });
+  for (final change in ['account', 'replacement']) {
+    test('album radio initial preparation rejects $change retirement', () async {
+      prepareRadio();
+      final gate = Completer<List<MediaItem>>();
+      h.client.fetchSonic = (_) => gate.future;
+      final pending = h.service.playAlbumRadio(radioAlbum('a'));
+      final result = change == 'account' ? expectLater(pending, throwsStateError) : null;
+      await pumpEventQueue();
+      if (change == 'account') h.client._authenticationSession = Object();
+      if (change == 'replacement') await h.playTracks([t3]);
+      gate.complete([radioAlbum('b')]);
+      if (result != null) {
+        await result;
+        expect(h.service.queue, isEmpty);
+      } else {
+        expect(await pending, InstantMixOutcome.superseded);
+        expect(h.service.queue.map((t) => t.id), ['t3']);
+      }
+    });
+  }
+  test('manual removal during album refill cannot resurrect or fragment that album', () async {
+    prepareRadio();
+    final gate = Completer<List<MediaItem>>();
+    h.client.fetchSonic = (id) async => id == 'a' ? [radioAlbum('b')] : gate.future;
+    expect(await h.service.playAlbumRadio(radioAlbum('a')), InstantMixOutcome.started);
+    await pumpEventQueue();
+    expect(h.service.continuationLoading, isTrue);
+    h.service.addNext([radioTrack('c1', 'c')]);
+    h.service.removeAt(1);
+    gate.complete([radioAlbum('c')]);
+    await pumpEventQueue();
+    expect(h.service.queue.map((t) => t.id), ['a1', 'a2', 'b1', 'b2']);
+    expect(h.service.continuationEnabled, isFalse);
   });
 
   test('continuation cannot append into a replacement session', () async {
@@ -3459,6 +3590,30 @@ void main() {
         ),
       );
     }
+
+    test('exhausted album radio persists a finished continuation and later queue edits', () async {
+      final session = store();
+      final first = _Harness.create(sessionStore: session);
+      addTearDown(first.dispose);
+      await pumpEventQueue();
+      prepareRadio(first);
+      expect(await first.service.playAlbumRadio(radioAlbum('a')), InstantMixOutcome.started);
+      await pumpEventQueue();
+      final active = await session.load();
+      expect(active!.continuationAlbumRadio, isTrue);
+      expect(active.continuationSeed?.id, 'c');
+      await first.service.next();
+      await pumpEventQueue();
+      expect(first.service.continuationEnabled, isFalse);
+      final finished = await session.load();
+      expect(finished!.continuationSeed, isNull);
+      expect(finished.continuationAlbumRadio, isFalse);
+      expect(finished.continuationDistance, .25);
+      first.service.addToEnd([t3]);
+      await pumpEventQueue();
+      final edited = await session.load();
+      expect(edited!.queue.items.map((track) => track.id), ['a1', 'a2', 'b1', 'b2', 'c1', 'c2', 't3']);
+    });
 
     test('a played session restores parked-paused without spinning up the audio core', () async {
       final first = harnessWithStore();

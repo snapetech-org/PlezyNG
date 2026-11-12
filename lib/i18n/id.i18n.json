@@ -5579,7 +5579,8 @@
     "sharingAcceptConfirm": "Terima seluruh undangan dari ${owner}?",
     "sharingDeclineConfirm": "Tolak seluruh undangan dari ${owner}?",
     "pathTracks": "Lagu per jalur",
-    "sonicDistance": "Jarak sonik maksimum"
+    "sonicDistance": "Jarak sonik maksimum",
+    "albumRadio": "Radio album"
   },
   "musicDevices": {
     "playOn": "Putar di",

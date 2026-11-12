@@ -6,6 +6,24 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 “Existing” means retained application behavior, not a new reference comparison.
 “Partial” identifies concrete remaining implementation, not just testing.
 
+## Whole-album sonic radio, 2026-11-11
+
+Album Radio now previews the selected album followed by complete sonically
+related albums. Bounded, source-qualified pages preserve disc/track order;
+oversized neighbors are skipped whole and a seed that exceeds the chosen budget
+is rejected. Shared-session rolling refills retain manual exclusions and
+recheck account/profile/library ownership after reads. Saved recipes preserve
+the sonic distance, and persisted sessions retain radio mode. Explicit downloads
+and enqueue actions use the finite preview. Native saved-recipe playback uses
+the same radio control and refuses album-fragmenting shuffle requests.
+
+Validation: **896 music, ownership and music UI tests** pass with clean
+targeted analysis. A further **145 playback/persistence regressions** pass after
+correcting exhausted-radio persistence. Coverage includes helper, recipe/session,
+native car and large-text UI paths. Native-language review and live
+Plex analyzed-library/listening comparison remain unperformed.
+Reference: [Plex sonic analysis](https://support.plex.tv/articles/sonic-analysis-music/).
+
 ## Sonic Adventure path constraints, 2026-11-11
 
 Saved adventures now include tracks per path and maximum sonic distance, with
@@ -363,7 +381,7 @@ and native-language review remain open.
 | P15 | Formats, multichannel and DSD | Existing player format support retained; full codec/channel/DSD reference matrix remains. | No new native format qualification. |
 | P16 | Signal-path and quality information | Signal-path sheet reads native decoder/output rate, channels, format, engine device and DSP properties. It separately identifies hardware output as unmeasured. | Dart analysis and policy tests pass; physical output evidence pending. |
 | P17 | Background playback and OS controls | Android cold car startup registers engine-only device/restriction handlers and uses normal profile bootstrap. iOS phone and CarPlay share an explicit headless-capable engine. Background dirty builds can settle without a visible phone frame. | Background scheduling and profile lifecycle regressions pass. New Kotlin/Swift sources still require native compilation and device qualification. |
-| D01 | Station/radio families | Saved dynamic stations offer editable shuffle tracks, shuffle albums, least played and oldest releases presets. The editor fetches filters for the selected track or album target and guards reads against account changes. Album blocks with invalid children are skipped in full. Native catalog includes saved stations and server audio playlists. Reference radio algorithms and complete native station-family coverage remain. | Rule and native playlist loader tests pass; live provider comparison pending. |
+| D01 | Station/radio families | Saved dynamic stations offer editable shuffle tracks, shuffle albums, least played and oldest releases presets. The editor fetches filters for the selected track or album target and guards reads against account changes. Album blocks with invalid children are skipped in full. Album Radio adds saved single-album sonic recipes, complete ordered album previews, rolling refills with manual exclusions, persisted continuation settings and native saved-recipe playback. Download/enqueue previews remain finite. Native catalog includes saved stations and server audio playlists. Reference radio algorithms and complete native station-family coverage remain. | Rule and native playlist loader tests pass; live provider comparison pending. |
 | D02 | Autoplay continuation | Session-owned rolling tail retains dedupe, exclusions, EOF waiting and provenance. A refill rechecks the source account and authentication; persisted refills require an account scope, while older queues still restore parked. No independent offline recommendation generator. | Replacement, clear, manual insertion, EOF, pause, exhaustion, authentication rotation and scoped persistence tests pass. |
 | D03 | Sonic similarity | Authorized Plex nearest requests added; exposed from integrated discovery. Independent non-Plex analysis and full reference tuning remain. | Plex request/authorization tests pass; live analyzed library pending. |
 | D04 | Artist/album mix builders | Multi-seed editor, round-robin dedupe, preview, save/edit recipe, play-next, playlist and download added. Generation and subsequent preview actions recheck every source's account and visibility. Reference tuning controls and algorithm equivalence remain. | Recipe/generation, cross-source provenance and account-switch tests pass. |

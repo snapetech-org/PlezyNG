@@ -324,6 +324,69 @@ void main() {
     expect(await store(profileId: 'other').load(), isNull);
   });
 
+  test('album radio mode and distance survive a parked session', () async {
+    final seed = track('album').copyWith(kind: MediaKind.album);
+    await store().save(
+      MusicSessionSnapshot(
+        queue: state(items: [track('a')]),
+        playContext: null,
+        position: Duration.zero,
+        continuationSeed: seed,
+        continuationAccount: 'srv:account',
+        continuationAlbumRadio: true,
+        continuationDistance: .4,
+      ),
+    );
+    final restored = (await store().load())!;
+    expect(restored.continuationAlbumRadio, isTrue);
+    expect(restored.continuationDistance, .4);
+    expect(restored.continuationSeed!.kind, MediaKind.album);
+  });
+
+  test('track continuation retains legacy defaults', () async {
+    await store().save(
+      MusicSessionSnapshot(
+        queue: state(items: [track('a')]),
+        playContext: null,
+        position: Duration.zero,
+        continuationSeed: track('seed'),
+        continuationAccount: 'srv:account',
+      ),
+    );
+    final row = (await db.getMusicSession('p1'))!;
+    final payload = jsonDecode(row.queueJson) as Map<String, dynamic>;
+    final continuation = payload['continuation'] as Map<String, dynamic>;
+    continuation.remove('albumRadio');
+    continuation.remove('distance');
+    await db.upsertMusicSession(row.copyWith(queueJson: jsonEncode(payload)));
+    final restored = (await store().load())!;
+    expect(restored.continuationAlbumRadio, isFalse);
+    expect(restored.continuationDistance, .25);
+  });
+
+  test('invalid album continuation cannot replace a saved queue', () async {
+    await store().save(
+      MusicSessionSnapshot(
+        queue: state(items: [track('a')]),
+        playContext: null,
+        position: Duration.zero,
+      ),
+    );
+    await expectLater(
+      store().save(
+        MusicSessionSnapshot(
+          queue: state(items: [track('b')]),
+          playContext: null,
+          position: Duration.zero,
+          continuationSeed: track('not-an-album'),
+          continuationAlbumRadio: true,
+        ),
+      ),
+      throwsArgumentError,
+    );
+    expect((await store().load())!.queue.items.single.id, 'a');
+  });
+
   test('malformed queue JSON discards the whole snapshot', () async {
     await db.upsertMusicSession(
       MusicSessionRow(

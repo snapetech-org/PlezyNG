@@ -4399,6 +4399,7 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String sharingDeclineConfirm({required Object owner}) => '拒絕來自 ${owner} 的整份邀請？';
 	@override String get pathTracks => '每條路徑的曲目數';
 	@override String get sonicDistance => '最大聲音距離';
+	@override String get albumRadio => '專輯電台';
 }
 
 // Path: musicDevices
@@ -9637,6 +9638,7 @@ extension on TranslationsZhHant {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '拒絕來自 ${owner} 的整份邀請？',
 			'musicTools.pathTracks' => '每條路徑的曲目數',
 			'musicTools.sonicDistance' => '最大聲音距離',
+			'musicTools.albumRadio' => '專輯電台',
 			'musicDevices.playOn' => '播放裝置',
 			'musicDevices.thisDevice' => '此裝置',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
@@ -9648,9 +9650,9 @@ extension on TranslationsZhHant {
 			'musicDevices.moveFailed' => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。',
 			'musicDevices.uncertain' => '連線中斷。請重新連線所選裝置以檢查播放狀態。',
 			'musicDevices.away' => '外出時',
-			'musicDevices.relay' => '音樂中繼 URL',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => '音樂中繼 URL',
 			'musicDevices.relayHint' => '在接收裝置上啟用，然後在同一網路中配對一次。保持 Pleazyng 開啟。中繼傳遞加密的音樂控制，並能看到網路位址。每個播放器從自己的媒體伺服器串流。',
 			'musicDevices.relayInvalid' => '請輸入 HTTPS 中繼位址。',
 			_ => null,

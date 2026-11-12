@@ -79,7 +79,8 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
   bool get _validRecipe =>
       _name.text.trim().isNotEmpty &&
       _seeds.isNotEmpty &&
-      (_kind != MusicRecipeKind.adventure || (_seeds.length >= 2 && _seeds.every((s) => s.kind == MediaKind.track)));
+      (_kind != MusicRecipeKind.adventure || (_seeds.length >= 2 && _seeds.every((s) => s.kind == MediaKind.track))) &&
+      (_kind != MusicRecipeKind.albumRadio || (_seeds.length == 1 && _seeds.single.kind == MediaKind.album));
 
   @override
   void initState() {
@@ -245,6 +246,15 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
     final service = context.read<MusicPlaybackService>();
     if (next) {
       service.addNext(batch.tracks);
+    } else if (batch.recipe.kind == MusicRecipeKind.albumRadio) {
+      if (service is! MusicAlbumRadioControls) throw UnsupportedError('Album radio is unavailable');
+      final outcome = await (service as MusicAlbumRadioControls).playAlbumRadio(
+        batch.recipe.seeds.single,
+        maxDistance: batch.recipe.maxDistance,
+        preview: batch,
+        startTrack: startTrack,
+      );
+      if (outcome == InstantMixOutcome.empty) throw StateError('Album radio is empty');
     } else {
       await service.playFromList(
         tracks: batch.tracks,
@@ -341,6 +351,18 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
                         _preview = null;
                       }),
               ),
+              if (_kind == MusicRecipeKind.albumRadio || (_seeds.length == 1 && _seeds.single.kind == MediaKind.album))
+                ChoiceChip(
+                  label: Text(t.musicTools.albumRadio),
+                  selected: _kind == MusicRecipeKind.albumRadio,
+                  onSelected: _busy
+                      ? null
+                      : (_) => setState(() {
+                          _kind = MusicRecipeKind.albumRadio;
+                          _limit = 500;
+                          _preview = null;
+                        }),
+                ),
               ActionChip(label: Text(strings.related), onPressed: _busy ? null : _related),
             ],
           ),
@@ -379,7 +401,11 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
           ),
           for (final item
               in _resultsCurrent?.call() == true
-                  ? _results.where((item) => _discoveryClient(item) != null)
+                  ? _results.where(
+                      (item) =>
+                          _discoveryClient(item) != null &&
+                          (_kind != MusicRecipeKind.albumRadio || item.kind == MediaKind.album),
+                    )
                   : const <MediaItem>[])
             ListTile(
               title: Text(item.displayTitle),
@@ -390,6 +416,10 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
                   : () {
                       if (_resultsCurrent?.call() != true || _discoveryClient(item) == null) return;
                       setState(() {
+                        if (_kind == MusicRecipeKind.albumRadio) {
+                          if (item.kind != MediaKind.album) return;
+                          _seeds.clear();
+                        }
                         _seeds.add(item);
                         _results = [];
                         _preview = null;
@@ -439,6 +469,8 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
                       _preview = null;
                     }),
             ),
+          ],
+          if (_kind != MusicRecipeKind.mix) ...[
             const SizedBox(height: 16),
             DropdownButtonFormField<double>(
               key: ValueKey('maxDistance/$_recipeId/$_maxDistance'),

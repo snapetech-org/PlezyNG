@@ -5615,7 +5615,8 @@
     "sharingAcceptConfirm": "Accepter toute l’invitation de ${owner} ?",
     "sharingDeclineConfirm": "Refuser toute l’invitation de ${owner} ?",
     "pathTracks": "Titres par parcours",
-    "sonicDistance": "Distance sonore maximale"
+    "sonicDistance": "Distance sonore maximale",
+    "albumRadio": "Radio de l’album"
   },
   "musicDevices": {
     "playOn": "Lire sur",

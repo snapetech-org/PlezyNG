@@ -5615,7 +5615,8 @@
     "sharingAcceptConfirm": "Accettare l’intero invito di ${owner}?",
     "sharingDeclineConfirm": "Rifiutare l’intero invito di ${owner}?",
     "pathTracks": "Brani per percorso",
-    "sonicDistance": "Distanza sonora massima"
+    "sonicDistance": "Distanza sonora massima",
+    "albumRadio": "Radio dell’album"
   },
   "musicDevices": {
     "playOn": "Riproduci su",

@@ -4403,6 +4403,7 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?';
 	@override String get pathTracks => 'প্রতি পথে ট্র্যাক';
 	@override String get sonicDistance => 'সর্বোচ্চ সনিক দূরত্ব';
+	@override String get albumRadio => 'অ্যালবাম রেডিও';
 }
 
 // Path: musicDevices
@@ -9641,6 +9642,7 @@ extension on TranslationsBn {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?',
 			'musicTools.pathTracks' => 'প্রতি পথে ট্র্যাক',
 			'musicTools.sonicDistance' => 'সর্বোচ্চ সনিক দূরত্ব',
+			'musicTools.albumRadio' => 'অ্যালবাম রেডিও',
 			'musicDevices.playOn' => 'এখানে চালান',
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',
@@ -9652,9 +9654,9 @@ extension on TranslationsBn {
 			'musicDevices.moveFailed' => 'প্লেব্যাক সরানো যায়নি। ডিভাইসটি চালু ও জোড়া লাগানো আছে এবং গান সার্ভারে প্রবেশ করতে পারে কিনা দেখুন।',
 			'musicDevices.uncertain' => 'সংযোগ বিচ্ছিন্ন হয়েছে। প্লেব্যাক দেখতে নির্বাচিত ডিভাইসে আবার সংযুক্ত হন।',
 			'musicDevices.away' => 'বাড়ির বাইরে',
-			'musicDevices.relay' => 'মিউজিক রিলে URL',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'মিউজিক রিলে URL',
 			'musicDevices.relayHint' => 'গ্রহণকারী ডিভাইসে চালু করুন, তারপর একই নেটওয়ার্কে একবার পেয়ার করুন। Pleazyng খোলা রাখুন। রিলে এনক্রিপ্ট করা সঙ্গীত নিয়ন্ত্রণ পাঠায় এবং নেটওয়ার্ক ঠিকানা দেখতে পায়। প্রতিটি প্লেয়ার নিজস্ব মিডিয়া সার্ভার থেকে স্ট্রিম করে।',
 			'musicDevices.relayInvalid' => 'একটি HTTPS রিলে ঠিকানা লিখুন।',
 			_ => null,

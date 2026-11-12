@@ -5579,7 +5579,8 @@
     "sharingAcceptConfirm": "ยอมรับคำเชิญทั้งหมดจาก ${owner} หรือไม่?",
     "sharingDeclineConfirm": "ปฏิเสธคำเชิญทั้งหมดจาก ${owner} หรือไม่?",
     "pathTracks": "จำนวนเพลงต่อเส้นทาง",
-    "sonicDistance": "ระยะห่างทางเสียงสูงสุด"
+    "sonicDistance": "ระยะห่างทางเสียงสูงสุด",
+    "albumRadio": "วิทยุอัลบั้ม"
   },
   "musicDevices": {
     "playOn": "เล่นบน",

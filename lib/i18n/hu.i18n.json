@@ -5606,7 +5606,8 @@
     "sharingAcceptConfirm": "Elfogadod ${owner} teljes meghívóját?",
     "sharingDeclineConfirm": "Elutasítod ${owner} teljes meghívóját?",
     "pathTracks": "Számok útvonalanként",
-    "sonicDistance": "Legnagyobb hangzásbeli távolság"
+    "sonicDistance": "Legnagyobb hangzásbeli távolság",
+    "albumRadio": "Albumrádió"
   },
   "musicDevices": {
     "playOn": "Lejátszás itt",

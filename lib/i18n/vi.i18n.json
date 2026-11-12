@@ -5579,7 +5579,8 @@
     "sharingAcceptConfirm": "Chấp nhận toàn bộ lời mời từ ${owner}?",
     "sharingDeclineConfirm": "Từ chối toàn bộ lời mời từ ${owner}?",
     "pathTracks": "Bài hát mỗi đường dẫn",
-    "sonicDistance": "Khoảng cách âm thanh tối đa"
+    "sonicDistance": "Khoảng cách âm thanh tối đa",
+    "albumRadio": "Radio album"
   },
   "musicDevices": {
     "playOn": "Phát trên",

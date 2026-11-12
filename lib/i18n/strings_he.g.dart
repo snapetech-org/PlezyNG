@@ -4411,6 +4411,7 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => 'לדחות את כל ההזמנה מאת ${owner}?';
 	@override String get pathTracks => 'רצועות בכל מסלול';
 	@override String get sonicDistance => 'מרחק צלילי מרבי';
+	@override String get albumRadio => 'רדיו אלבום';
 }
 
 // Path: musicDevices
@@ -9649,6 +9650,7 @@ extension on TranslationsHe {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'לדחות את כל ההזמנה מאת ${owner}?',
 			'musicTools.pathTracks' => 'רצועות בכל מסלול',
 			'musicTools.sonicDistance' => 'מרחק צלילי מרבי',
+			'musicTools.albumRadio' => 'רדיו אלבום',
 			'musicDevices.playOn' => 'ניגון באמצעות',
 			'musicDevices.thisDevice' => 'מכשיר זה',
 			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',
@@ -9660,9 +9662,9 @@ extension on TranslationsHe {
 			'musicDevices.moveFailed' => 'לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.',
 			'musicDevices.uncertain' => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.',
 			'musicDevices.away' => 'מחוץ לבית',
-			'musicDevices.relay' => 'כתובת ממסר המוזיקה',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'כתובת ממסר המוזיקה',
 			'musicDevices.relayHint' => 'יש להפעיל במכשיר המקבל ולצמד פעם אחת באותה רשת. יש להשאיר את Pleazyng פתוח. הממסר מעביר פקודות מוזיקה מוצפנות ורואה כתובות רשת. כל נגן מזרים משרת המדיה שלו.',
 			'musicDevices.relayInvalid' => 'יש להזין כתובת HTTPS של הממסר.',
 			_ => null,

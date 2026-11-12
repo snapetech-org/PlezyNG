@@ -4403,6 +4403,7 @@ class _Translations$musicTools$sv extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => 'Avböj hela inbjudan från ${owner}?';
 	@override String get pathTracks => 'Spår per väg';
 	@override String get sonicDistance => 'Maximalt ljudavstånd';
+	@override String get albumRadio => 'Albumradio';
 }
 
 // Path: musicDevices
@@ -9641,6 +9642,7 @@ extension on TranslationsSv {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Avböj hela inbjudan från ${owner}?',
 			'musicTools.pathTracks' => 'Spår per väg',
 			'musicTools.sonicDistance' => 'Maximalt ljudavstånd',
+			'musicTools.albumRadio' => 'Albumradio',
 			'musicDevices.playOn' => 'Spela på',
 			'musicDevices.thisDevice' => 'Den här enheten',
 			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',
@@ -9652,9 +9654,9 @@ extension on TranslationsSv {
 			'musicDevices.moveFailed' => 'Det gick inte att flytta uppspelningen. Kontrollera att enheten är vaken, parkopplad och når musikservern.',
 			'musicDevices.uncertain' => 'Anslutningen avbröts. Anslut till den valda enheten igen för att kontrollera uppspelningen.',
 			'musicDevices.away' => 'Utanför hemmet',
-			'musicDevices.relay' => 'URL till musikrelä',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'URL till musikrelä',
 			'musicDevices.relayHint' => 'Aktivera på mottagaren och parkoppla en gång på samma nätverk. Håll Pleazyng öppet. Reläet skickar krypterade musikkommandon och ser nätverksadresser. Varje spelare strömmar från sin egen medieserver.',
 			'musicDevices.relayInvalid' => 'Ange en HTTPS-adress till reläet.',
 			_ => null,

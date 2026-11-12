@@ -154,6 +154,28 @@ void main() {
     await expectLater(MusicDiscovery((_) => client).generate(recipe), throwsStateError);
     expect(client.paths, [('a', 'b')]);
   });
+  test('album radio recipes require exactly one album seed', () {
+    for (final seeds in [
+      [track('a')],
+      [track('a').copyWith(kind: MediaKind.album), track('b')],
+    ]) {
+      expect(
+        () => MusicRecipe(id: 'bad', title: 'Bad', kind: MusicRecipeKind.albumRadio, seeds: seeds),
+        throwsArgumentError,
+      );
+    }
+    final original = MusicRecipe(
+      id: 'radio',
+      title: 'Radio',
+      kind: MusicRecipeKind.albumRadio,
+      seeds: [track('a').copyWith(kind: MediaKind.album)],
+      maxDistance: .4,
+    );
+    final restored = MusicRecipe.fromJson(original.toJson());
+    expect(restored.kind, MusicRecipeKind.albumRadio);
+    expect(restored.maxDistance, .4);
+  });
+
   test('multi-seed mix fairly interleaves, deduplicates and qualifies server IDs', () async {
     final client = Client()..mixes['a'] = [track('one'), track('same'), track('same'), track('three')];
     final other = Client(server: 'other')

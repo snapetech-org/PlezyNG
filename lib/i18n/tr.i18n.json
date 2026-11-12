@@ -5606,7 +5606,8 @@
     "sharingAcceptConfirm": "${owner} tarafından gönderilen davetin tamamı kabul edilsin mi?",
     "sharingDeclineConfirm": "${owner} tarafından gönderilen davetin tamamı reddedilsin mi?",
     "pathTracks": "Yol başına parça",
-    "sonicDistance": "En yüksek ses uzaklığı"
+    "sonicDistance": "En yüksek ses uzaklığı",
+    "albumRadio": "Albüm radyosu"
   },
   "musicDevices": {
     "playOn": "Şurada çal",

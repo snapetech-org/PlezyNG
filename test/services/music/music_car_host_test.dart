@@ -19,6 +19,7 @@ import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/providers/download_provider.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/services/music/music_car_host.dart';
+import 'package:plezy/services/music/music_discovery.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_queue_items.dart';
 import 'package:plezy/services/playback_launch_observer.dart';
@@ -104,6 +105,26 @@ class Music extends StubMusicPlaybackService {
   }
 }
 
+class RadioMusic extends Music implements MusicAlbumRadioControls {
+  MusicDiscoveryBatch? radio;
+  bool playing = false;
+  @override
+  bool get isPlaying => playing;
+  @override
+  Future<InstantMixOutcome> playAlbumRadio(
+    MediaItem album, {
+    double maxDistance = .25,
+    MusicDiscoveryBatch? preview,
+    MediaItem? startTrack,
+  }) async {
+    beginPlayIntent();
+    if (preview == null || !preview.isCurrent()) return InstantMixOutcome.superseded;
+    radio = preview;
+    playing = true;
+    return InstantMixOutcome.started;
+  }
+}
+
 class WindowMusic extends Music {
   final controller = MusicQueueController();
   @override
@@ -125,6 +146,8 @@ class CatalogHidden extends ChangeNotifier implements HiddenLibrariesProvider {
   bool isDisposed = false, isInitialized = true;
   @override
   Set<String> hiddenLibraryKeys = {};
+  @override
+  bool isLibraryHidden(String key) => hiddenLibraryKeys.contains(key);
   @override
   Future<void> ensureInitialized() async {}
   @override
@@ -211,6 +234,7 @@ void main() {
     Music music,
     Profiles profiles, {
     CatalogDownloads? downloads,
+    AppDatabase? database,
     MultiServerProvider? servers,
     CatalogHidden? hidden,
     CatalogLibraries? libraries,
@@ -228,6 +252,7 @@ void main() {
           ChangeNotifierProvider<MusicPlaybackService>.value(value: music),
           ChangeNotifierProvider<ActiveProfileProvider>.value(value: profiles),
           if (downloads != null) ChangeNotifierProvider<DownloadProvider>.value(value: downloads),
+          if (database != null) Provider<AppDatabase>.value(value: database),
           if (servers != null) ChangeNotifierProvider<MultiServerProvider>.value(value: servers),
           if (hidden != null) ChangeNotifierProvider<HiddenLibrariesProvider>.value(value: hidden),
           if (libraries != null) ChangeNotifierProvider<LibrariesProvider>.value(value: libraries),
@@ -240,6 +265,67 @@ void main() {
       ),
     );
     await tester.pump();
+  }
+
+  for (final retirement in ['none', 'account', 'profile', 'hidden', 'intent', 'shuffle']) {
+    testWidgets('saved native album radio retains whole albums and original actor ($retirement)', (tester) async {
+      final music = RadioMusic(), profiles = Profiles(), hidden = CatalogHidden();
+      final client = ExperienceClient();
+      final servers = testMultiServer(clients: [client]);
+      final album = musicTrack('a').copyWith(kind: MediaKind.album);
+      client.albums['a'] = [musicTrack('a1', album: 'a'), musicTrack('a2', album: 'a', index: 2)];
+      client.sonic = (_) async {
+        switch (retirement) {
+          case 'account':
+            client.scopedServerId = 's/other';
+          case 'profile':
+            profiles.identityMutationGeneration++;
+          case 'hidden':
+            hidden.hiddenLibraryKeys = {'s:library'};
+          case 'intent':
+            music.beginPlayIntent();
+        }
+        return [];
+      };
+      late AppDatabase database;
+      await tester.runAsync(() async {
+        database = AppDatabase.forTesting(NativeDatabase.memory());
+        await MusicRecipeStore(database, 'one').save(
+          MusicRecipe(
+            id: 'radio',
+            title: 'Whole albums',
+            kind: MusicRecipeKind.albumRadio,
+            seeds: [album],
+            limit: 500,
+            maxDistance: .4,
+          ),
+        );
+      });
+      await mount(tester, music, profiles, database: database, servers: servers.provider, hidden: hidden);
+      final rows = (await tester.runAsync(() => native('browse', {'id': 'recipes'}))) as List;
+      expect((rows.single as Map)['id'], 'recipe:radio');
+      await tester.runAsync(() async {
+        final play = native('playItem', {'id': 'recipe:radio', if (retirement == 'shuffle') 'shuffle': true});
+        if (retirement == 'none') {
+          expect(await play, isTrue);
+        } else {
+          await expectLater(play, throwsA(isA<PlatformException>()));
+        }
+      });
+      if (retirement == 'none') {
+        expect(music.radio?.recipe.kind, MusicRecipeKind.albumRadio);
+        expect(music.radio?.recipe.maxDistance, .4);
+        expect(music.radio?.tracks.map((track) => track.id), ['a1', 'a2']);
+      } else {
+        expect(music.radio, isNull);
+      }
+      expect(music.started, isNull);
+      await tester.pumpWidget(const SizedBox());
+      music.dispose();
+      profiles.dispose();
+      hidden.dispose();
+      await tester.runAsync(database.close);
+    });
   }
 
   for (final revokeDownload in [false, true]) {

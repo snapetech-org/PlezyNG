@@ -5606,7 +5606,8 @@
     "sharingAcceptConfirm": "Приемате ли цялата покана от ${owner}?",
     "sharingDeclineConfirm": "Отказвате ли цялата покана от ${owner}?",
     "pathTracks": "Песни на път",
-    "sonicDistance": "Максимално звуково разстояние"
+    "sonicDistance": "Максимално звуково разстояние",
+    "albumRadio": "Радио на албума"
   },
   "musicDevices": {
     "playOn": "Възпроизвеждане на",

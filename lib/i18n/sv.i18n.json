@@ -5606,7 +5606,8 @@
     "sharingAcceptConfirm": "Acceptera hela inbjudan från ${owner}?",
     "sharingDeclineConfirm": "Avböj hela inbjudan från ${owner}?",
     "pathTracks": "Spår per väg",
-    "sonicDistance": "Maximalt ljudavstånd"
+    "sonicDistance": "Maximalt ljudavstånd",
+    "albumRadio": "Albumradio"
   },
   "musicDevices": {
     "playOn": "Spela på",

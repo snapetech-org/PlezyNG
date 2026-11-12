@@ -7,6 +7,7 @@ import '../../media/media_item.dart';
 import '../../media/media_kind.dart';
 import '../../media/media_server_client.dart';
 import 'music_account_scope.dart';
+import 'sonic_album_radio.dart';
 
 /// Optional protocol capability. A successful empty response means no analysis
 /// matches; authorization and transport errors must remain errors.
@@ -21,7 +22,7 @@ abstract interface class SonicMusicClient {
   });
 }
 
-enum MusicRecipeKind { mix, adventure }
+enum MusicRecipeKind { mix, adventure, albumRadio }
 
 /// Durable, account-neutral description. No URLs, headers or credentials.
 class MusicRecipe {
@@ -52,6 +53,9 @@ class MusicRecipe {
     }
     if (pathTracks < 2 || pathTracks > 500 || !maxDistance.isFinite || maxDistance < 0 || maxDistance > 1) {
       throw ArgumentError('Invalid sonic path constraints');
+    }
+    if (kind == MusicRecipeKind.albumRadio && (seeds.length != 1 || seeds.single.kind != MediaKind.album)) {
+      throw ArgumentError('Album radio requires exactly one album');
     }
     if (kind == MusicRecipeKind.adventure && (seeds.length < 2 || seeds.any((s) => s.kind != MediaKind.track))) {
       throw ArgumentError('An adventure needs at least two track waypoints');
@@ -103,10 +107,11 @@ class MusicRecipe {
 }
 
 class MusicDiscoveryBatch {
-  MusicDiscoveryBatch._(List<MediaItem> tracks, this.isCurrent) : tracks = List.unmodifiable(tracks);
+  MusicDiscoveryBatch._(List<MediaItem> tracks, this.isCurrent, this.recipe) : tracks = List.unmodifiable(tracks);
 
   final List<MediaItem> tracks;
   final bool Function() isCurrent;
+  final MusicRecipe recipe;
 }
 
 /// Uses only authorized clients supplied by the current profile. Every seed is
@@ -118,7 +123,11 @@ class MusicDiscovery {
   bool _matches(MediaItem item, MediaServerClient client) =>
       item.serverId == client.serverId.value && item.backend == client.backend && !client.isOfflineMode;
 
-  Future<MusicDiscoveryBatch> generate(MusicRecipe recipe) async {
+  Future<MusicDiscoveryBatch> generate(
+    MusicRecipe recipe, {
+    Set<String> excludedAlbumIds = const {},
+    Set<String> excludedTrackKeys = const {},
+  }) async {
     final sources = <MediaItem, MediaServerClient>{};
     final sessions = <MediaServerClient, ({Object? authentication, String account})>{};
     for (final seed in recipe.seeds) {
@@ -146,6 +155,19 @@ class MusicDiscovery {
     if (recipe.kind == MusicRecipeKind.adventure) {
       final client = sources[recipe.seeds.first]!;
       tracks = await _adventure(recipe, client, verify, (track) => allowedTrack(track, client));
+    } else if (recipe.kind == MusicRecipeKind.albumRadio) {
+      final seed = recipe.seeds.single, client = sources[recipe.seeds.single]!;
+      tracks = await buildSonicAlbumRadio(
+        client: client,
+        seed: seed,
+        current: sourcesCurrent,
+        acceptsAlbum: (album) => _matches(album, client) && identical(clientFor(album), client),
+        acceptsTrack: (track) => allowedTrack(track, client),
+        limit: recipe.limit,
+        maxDistance: recipe.maxDistance,
+        excludedAlbumIds: excludedAlbumIds,
+        excludedTrackKeys: excludedTrackKeys,
+      );
     } else {
       final pools = <List<MediaItem>>[];
       for (final seed in recipe.seeds) {
@@ -165,7 +187,7 @@ class MusicDiscovery {
           return client != null && allowedTrack(track, client);
         });
     if (!resultCurrent()) throw StateError('Music preview source changed');
-    return MusicDiscoveryBatch._(tracks, resultCurrent);
+    return MusicDiscoveryBatch._(tracks, resultCurrent, recipe);
   }
 
   Future<List<MediaItem>> _adventure(

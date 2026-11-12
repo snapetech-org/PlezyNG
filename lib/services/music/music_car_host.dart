@@ -524,18 +524,21 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
             offline: offline,
           );
         } else if (id.startsWith('recipe:')) {
+          final generation = _profiles.identityMutationGeneration;
+          bool recipeCurrent() => _current && _profiles.identityMutationGeneration == generation;
           final recipes = await MusicRecipeStore(context.read<AppDatabase>(), _profileId).load();
-          if (!mounted || !_current) return false;
+          if (!mounted || !recipeCurrent()) return false;
           final matching = recipes.where((recipe) => recipe.id == id.substring(7)).toList();
           if (matching.length != 1) throw PlatformException(code: 'stale_item');
           final intent = _music.beginPlayIntent();
           final hidden = context.read<HiddenLibrariesProvider?>();
           final servers = context.read<MultiServerProvider>();
           await hidden?.ensureInitialized();
+          var generating = true;
           final batch = await MusicDiscovery((item) {
             final server = serverIdOrNull(item.serverId);
-            if (!_current ||
-                !_music.isPlayIntentCurrent(intent) ||
+            if (!recipeCurrent() ||
+                generating && !_music.isPlayIntentCurrent(intent) ||
                 server == null ||
                 !servers.isServerOnline(server) ||
                 (item.libraryId != null && hidden?.isLibraryHidden('$server:${item.libraryId}') == true)) {
@@ -543,14 +546,27 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
             }
             return servers.getClientForServer(server);
           }).generate(matching.single);
-          if (!batch.isCurrent()) return false;
+          generating = false;
+          if (!_music.isPlayIntentCurrent(intent) || !batch.isCurrent()) return false;
           final tracks = batch.tracks;
           if (_enqueueRequested(tracks, args)) return true;
-          await _music.playFromList(
-            tracks: tracks,
-            playContext: MusicPlayContext(title: matching.single.title, kind: MusicPlayContextKind.mix),
-            shuffle: args['shuffle'] == true,
-          );
+          if (matching.single.kind == MusicRecipeKind.albumRadio) {
+            if (_music is! MusicAlbumRadioControls || args['shuffle'] == true) {
+              throw PlatformException(code: 'unsupported_album_radio');
+            }
+            final outcome = await (_music as MusicAlbumRadioControls).playAlbumRadio(
+              matching.single.seeds.single,
+              maxDistance: matching.single.maxDistance,
+              preview: batch,
+            );
+            if (outcome != InstantMixOutcome.started) return false;
+          } else {
+            await _music.playFromList(
+              tracks: tracks,
+              playContext: MusicPlayContext(title: matching.single.title, kind: MusicPlayContextKind.mix),
+              shuffle: args['shuffle'] == true,
+            );
+          }
         } else {
           final item = _items[id];
           if (item == null) throw PlatformException(code: 'stale_item');

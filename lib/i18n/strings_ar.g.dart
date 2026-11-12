@@ -4495,6 +4495,7 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => 'هل تريد رفض دعوة ${owner} بأكملها؟';
 	@override String get pathTracks => 'المقاطع لكل مسار';
 	@override String get sonicDistance => 'أقصى مسافة صوتية';
+	@override String get albumRadio => 'راديو الألبوم';
 }
 
 // Path: musicDevices
@@ -9741,6 +9742,7 @@ extension on TranslationsAr {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'هل تريد رفض دعوة ${owner} بأكملها؟',
 			'musicTools.pathTracks' => 'المقاطع لكل مسار',
 			'musicTools.sonicDistance' => 'أقصى مسافة صوتية',
+			'musicTools.albumRadio' => 'راديو الألبوم',
 			'musicDevices.playOn' => 'التشغيل على',
 			'musicDevices.thisDevice' => 'هذا الجهاز',
 			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',
@@ -9752,9 +9754,9 @@ extension on TranslationsAr {
 			'musicDevices.moveFailed' => 'تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.',
 			'musicDevices.uncertain' => 'انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل.',
 			'musicDevices.away' => 'خارج المنزل',
-			'musicDevices.relay' => 'عنوان مرحّل الموسيقى',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.relay' => 'عنوان مرحّل الموسيقى',
 			'musicDevices.relayHint' => 'فعّل هذا على جهاز الاستقبال، ثم أقرن الجهازين مرة واحدة على الشبكة نفسها. أبقِ Pleazyng مفتوحًا. ينقل المرحّل أوامر الموسيقى المشفّرة ويرى عناوين الشبكة. يبث كل مشغّل من خادم الوسائط الخاص به.',
 			'musicDevices.relayInvalid' => 'أدخل عنوان مرحّل يستخدم HTTPS.',
 			_ => null,

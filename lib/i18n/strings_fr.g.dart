@@ -4444,6 +4444,7 @@ class Translations$musicTools$fr extends Translations$musicTools$en {
 	@override String sharingDeclineConfirm({required Object owner}) => 'Refuser toute l’invitation de ${owner} ?';
 	@override String get pathTracks => 'Titres par parcours';
 	@override String get sonicDistance => 'Distance sonore maximale';
+	@override String get albumRadio => 'Radio de l’album';
 }
 
 // Path: musicDevices
@@ -9714,6 +9715,7 @@ extension on TranslationsFr {
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Refuser toute l’invitation de ${owner} ?',
 			'musicTools.pathTracks' => 'Titres par parcours',
 			'musicTools.sonicDistance' => 'Distance sonore maximale',
+			'musicTools.albumRadio' => 'Radio de l’album',
 			'musicDevices.playOn' => 'Lire sur',
 			'musicDevices.thisDevice' => 'Cet appareil',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lecture sur ${device}',

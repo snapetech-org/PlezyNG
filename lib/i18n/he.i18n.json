@@ -5616,7 +5616,8 @@
     "sharingAcceptConfirm": "לקבל את כל ההזמנה מאת ${owner}?",
     "sharingDeclineConfirm": "לדחות את כל ההזמנה מאת ${owner}?",
     "pathTracks": "רצועות בכל מסלול",
-    "sonicDistance": "מרחק צלילי מרבי"
+    "sonicDistance": "מרחק צלילי מרבי",
+    "albumRadio": "רדיו אלבום"
   },
   "musicDevices": {
     "playOn": "ניגון באמצעות",

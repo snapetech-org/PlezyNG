@@ -280,6 +280,11 @@ require(
 )
 whisper_arm64_builder = (ROOT / "scripts/prepare_windows_arm64_whisper.py").read_text(encoding="utf-8")
 require(
+    "WHISPER_PLUGIN_CMAKE_SHA256" not in whisper_arm64_builder
+    and "WHISPER_PLUGIN_CMAKE_PATCHED_SHA256" not in whisper_arm64_builder,
+    "Windows ARM64 Whisper preparation must not require per-version CMake hash updates",
+)
+require(
     all(value in whisper_arm64_builder for value in (
         "WHISPER_PATCH_MARKER", "WHISPER_IMPORTED_TARGETS_BODY",
         "ClangCL", "MSVC", "GGML_NATIVE=OFF", "FLUTTER_WHISPER_PREBUILT_ROOT",

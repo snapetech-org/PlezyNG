@@ -6,6 +6,16 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 “Existing” means retained application behavior, not a new reference comparison.
 “Partial” identifies concrete remaining implementation, not just testing.
 
+## Cast Swift SDK compatibility, 2026-11-12
+
+Fresh iOS CI at dc774aeee cleared the earlier request-delegate rename and
+reported one further obsolete Swift name in repeat-item rearming:
+queueUpdateItems must be queueUpdate(_:). The bridge now uses the exact name
+required by the installed SDK compiler, retaining original item ownership,
+paused preflight, acknowledgement and timeout checks. Native formatting and
+the complete repository commit gate are required before publication; the fresh
+iOS rerun provides the platform compile/test result.
+
 ## Native catalog source ownership, 2026-11-12
 
 Car and voice catalogs now reject explicit foreign server, library, backend,

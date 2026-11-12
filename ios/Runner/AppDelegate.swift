@@ -856,7 +856,7 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
       }
       let builder = GCKMediaQueueItemBuilder(mediaQueueItem: item)
       builder.autoplay = true
-      let request = remote.queueUpdateItems([builder.build()])
+      let request = remote.queueUpdate([builder.build()])
       pending = (
         request, result,
         {

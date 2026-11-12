@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Use the current Google Cast Swift queue-update method when rearming repeat playback on iOS.
+
 - Keep native car and voice catalogs bound to their original server, library, backend and album. Carry library constraints through paged Jellyfin/Emby browsing and playback without losing artist credits or accepting foreign rows and stale pages.
 
 - Add reproducible native gapless file-output qualification for WAV, FLAC, MP3 encoder padding and mixed lossless joins, pinned by the tested library checksum.

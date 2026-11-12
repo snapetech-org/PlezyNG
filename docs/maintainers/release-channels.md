@@ -1,5 +1,25 @@
 # Pleazyng release channels
 
+## v3.0.33 delivery snapshot (2026-11-11)
+
+The [complete 37-asset GitHub Release](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.33)
+is published. AUR, Fedora COPR, Ubuntu PPA (jammy and noble), Chocolatey,
+WinGet submission, and GHCR/Docker Hub delivery runs succeeded. The WinGet
+[manifest PR](https://github.com/microsoft/winget-pkgs/pull/478005) still needs
+Microsoft acceptance. The Amazon Fire TV build was submitted in the developer
+console and is under review; do not repeat its API upload while its bootstrap
+flag is false. Snap Store received the arm64 upload but put it in manual review
+for interface permissions; the x64 upload is queued behind an earlier review.
+Do not discard either review or blindly reupload. Google Play automation
+recorded the release as pending because the signed-build purchase/review gate
+has not completed and `GOOGLE_PLAY_BOOTSTRAP_COMPLETE` remains false. Apple
+App Store upload remains gated by the owner's pending tax information.
+Homebrew Cask has no signed/notarized candidate in this release. LG webOS and
+Samsung Tizen artifacts are published for tester handoff, with vendor signing
+and store qualification still pending. aerynOS native qualification and
+publication are tracked separately; GitHub artifact coverage alone is not an
+aerynOS package publication.
+
 See [the current publishing readiness matrix](publishing-readiness.md) for business, technical and review gates and staged automation settings.
 
 For the 2026-11-09 Arch/COPR public audit, fork-specific installation paths,

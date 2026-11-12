@@ -89,6 +89,17 @@ abstract interface class PlexLoudnessProfileClient {
   Future<AudioLoudnessProfile?> fetchAudioLoudnessProfile(int streamId);
 }
 
+/// Optional paged artist-album listing for clients that need to browse a
+/// large discography without loading the complete album catalog first.
+abstract interface class ArtistAlbumPagingClient {
+  Future<LibraryPage<MediaItem>> fetchArtistAlbumsPage(
+    MediaItem artist, {
+    int? start,
+    int? size,
+    AbortController? abort,
+  });
+}
+
 /// Per-leg outcome sink for hub fetches.
 ///
 /// Home rows are best-effort by design: a hub leg that fails degrades to an

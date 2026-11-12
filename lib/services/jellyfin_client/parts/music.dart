@@ -28,6 +28,42 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
     return _mapItems(_itemsArray(response.data));
   }
 
+  @override
+  Future<LibraryPage<MediaItem>> fetchArtistAlbumsPage(
+    MediaItem artist, {
+    int? start,
+    int? size,
+    AbortController? abort,
+  }) async {
+    final offset = start ?? 0, pageSize = size ?? 100;
+    if (offset < 0 || pageSize < 1 || pageSize > 1000) throw ArgumentError('Invalid artist album page bounds');
+    if (isOfflineMode) {
+      final albums = await fetchArtistAlbums(artist);
+      final safeOffset = offset.clamp(0, albums.length).toInt();
+      final end = (safeOffset + pageSize).clamp(0, albums.length).toInt();
+      return LibraryPage(items: albums.sublist(safeOffset, end), totalCount: albums.length, offset: offset);
+    }
+    final response = await _http.get(
+      '/Items',
+      queryParameters: {
+        'userId': connection.userId,
+        'AlbumArtistIds': artist.id,
+        'IncludeItemTypes': 'MusicAlbum',
+        'Recursive': 'true',
+        'SortBy': 'PremiereDate,ProductionYear,SortName',
+        'SortOrder': 'Descending',
+        'Fields': _musicAlbumRowFields,
+        'EnableUserData': 'false',
+        'StartIndex': offset.toString(),
+        'Limit': pageSize.toString(),
+        ...jellyfinImageQueryParameters,
+      },
+      abort: abort,
+    );
+    throwIfHttpError(response);
+    return _pagedItems(response.data, offset: offset, requestedSize: pageSize, map: _mapItems);
+  }
+
   /// MediaBrowser `BaseItemDto`s carry no single/EP/live/compilation
   /// taxonomy, so the discography is a single albums group — the neutral
   /// contract's MediaBrowser-family shape.

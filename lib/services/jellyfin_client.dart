@@ -134,6 +134,12 @@ mixin _JellyfinClientInternals on MediaServerCacheMixin {
 
   MediaItem? _mapItem(Map<String, dynamic> json);
   List<MediaItem> _mapItems(Iterable<Map<String, dynamic>> items);
+  Future<LibraryPage<MediaItem>> fetchArtistAlbumsPage(
+    MediaItem artist, {
+    int? start,
+    int? size,
+    AbortController? abort,
+  });
   String? _absolutizeImagePath(String? path);
 
   /// Per-facet value listing shared by the browse part (library filters) and
@@ -301,7 +307,8 @@ class JellyfinClient
         SeasonEpisodePagingClient,
         MediaDeletionPermissionClient,
         ScopedMediaServerClient,
-        GracefullyCloseable {
+        GracefullyCloseable,
+        ArtistAlbumPagingClient {
   JellyfinClient._({required this._connection, required this._http, FavoriteChannelsRepository? favoritesRepository})
     : _favoritesRepository = favoritesRepository ?? const SharedPreferencesFavoriteChannelsRepository(),
       _paths = MediaBrowserPaths(dialect: _connection.dialect, userId: _connection.userId);

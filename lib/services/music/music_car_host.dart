@@ -822,12 +822,31 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           _nextPage(id, offset + page.items.length),
       ];
     }
-    final children = item.kind == MediaKind.artist
-        ? await client.fetchArtistAlbums(item)
-        : await client.fetchAlbumTracks(item.id);
-    return _catalogItemCurrent(id) && !hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')
-        ? _page(children.where((child) => child.serverId == item.serverId).map(_item), id, offset)
-        : [];
+    final LibraryPage<MediaItem> page;
+    if (item.kind == MediaKind.artist) {
+      if (client is ArtistAlbumPagingClient) {
+        final albumPager = client as ArtistAlbumPagingClient;
+        page = await albumPager.fetchArtistAlbumsPage(item, start: offset, size: _pageSize);
+      } else {
+        final albums = await client.fetchArtistAlbums(item);
+        final safeOffset = offset.clamp(0, albums.length).toInt();
+        final end = (safeOffset + _pageSize).clamp(0, albums.length).toInt();
+        page = LibraryPage(items: albums.sublist(safeOffset, end), totalCount: albums.length, offset: offset);
+      }
+    } else if (item.kind == MediaKind.album) {
+      page = await client.fetchMusicTracksPage(item.id, kind: MediaKind.album, start: offset, size: _pageSize);
+    } else {
+      final children = await client.fetchAlbumTracks(item.id);
+      return _catalogItemCurrent(id) && !hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')
+          ? _page(children.where((child) => child.serverId == item.serverId).map(_item), id, offset)
+          : [];
+    }
+    if (!_catalogItemCurrent(id) || hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')) return [];
+    return [
+      ...page.items.where((child) => child.serverId == item.serverId).map(_item),
+      if (page.items.isNotEmpty && offset + page.items.length < page.totalCount)
+        _nextPage(id, offset + page.items.length),
+    ];
   }
 
   Future<List<MediaItem>> _search(String query) async {

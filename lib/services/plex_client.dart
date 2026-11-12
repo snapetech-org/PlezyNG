@@ -474,7 +474,8 @@ class PlexClient
         PlaylistMetadataClient,
         PlaylistArtworkClient,
         PlexLoudnessProfileClient,
-        SonicMusicClient {
+        SonicMusicClient,
+        ArtistAlbumPagingClient {
   @override
   PlexConfig config;
 
@@ -3952,6 +3953,52 @@ class PlexClient
       parseResponse: (response) => _extractMetadataList(response),
     );
     return (metadata ?? const <PlexMetadataDto>[]).map((item) => PlexMappers.mediaItem(item)).toList();
+  }
+
+  @override
+  Future<LibraryPage<MediaItem>> fetchArtistAlbumsPage(
+    MediaItem artist, {
+    int? start,
+    int? size,
+    AbortController? abort,
+  }) async {
+    final offset = start ?? 0, pageSize = size ?? 100;
+    if (offset < 0 || pageSize < 1 || pageSize > 1000) throw ArgumentError('Invalid artist album page bounds');
+    if (isOfflineMode) {
+      final albums = await fetchArtistAlbums(artist);
+      final safeOffset = offset.clamp(0, albums.length).toInt();
+      final end = (safeOffset + pageSize).clamp(0, albums.length).toInt();
+      return LibraryPage(items: albums.sublist(safeOffset, end), totalCount: albums.length, offset: offset);
+    }
+    final embeddedSectionId = artist.libraryId;
+    final sectionId = embeddedSectionId != null && embeddedSectionId.isNotEmpty
+        ? embeddedSectionId
+        : (await _getMetadataWithImages(artist.id)).metadata?.librarySectionID?.toString();
+    if (sectionId == null || sectionId.isEmpty) {
+      throw StateError('Plex artist ${artist.id} is missing a library section ID');
+    }
+    final response = await _getWithFailover(
+      '/library/sections/$sectionId/all',
+      queryParameters: {
+        'type': PlexMetadataType.album,
+        'artist.id': artist.id,
+        'sort': 'album.year:desc',
+        ..._buildPaginationParams(offset, pageSize),
+      },
+      abort: abort,
+    );
+    throwIfHttpError(response);
+    final result = _extractLibraryContentResult(
+      response,
+      librarySectionID: _librarySectionIdFromString(sectionId),
+      start: offset,
+      requestedSize: pageSize,
+    );
+    return LibraryPage(
+      items: result.items.map(PlexMappers.mediaItem).toList(),
+      totalCount: result.totalSize,
+      offset: offset,
+    );
   }
 
   /// Grouped discography for [artist]: albums, singles & EPs, live, and

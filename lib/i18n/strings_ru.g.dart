@@ -4416,6 +4416,7 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	@override String get peak => 'Пик';
 	@override String get bass => 'Низкие частоты';
 	@override String get treble => 'Высокие частоты';
+	@override String get sharedPlaylists => 'Общие плейлисты';
 }
 
 // Path: musicDevices
@@ -9635,6 +9636,7 @@ extension on TranslationsRu {
 			'musicTools.peak' => 'Пик',
 			'musicTools.bass' => 'Низкие частоты',
 			'musicTools.treble' => 'Высокие частоты',
+			'musicTools.sharedPlaylists' => 'Общие плейлисты',
 			'musicDevices.playOn' => 'Воспроизвести на',
 			'musicDevices.thisDevice' => 'Это устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Воспроизводится на ${device}',

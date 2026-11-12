@@ -5556,7 +5556,8 @@
     "filterType": "Jenis penapis",
     "peak": "Puncak",
     "bass": "Bes",
-    "treble": "Trebel"
+    "treble": "Trebel",
+    "sharedPlaylists": "Senarai main dikongsi"
   },
   "musicDevices": {
     "playOn": "Mainkan pada",

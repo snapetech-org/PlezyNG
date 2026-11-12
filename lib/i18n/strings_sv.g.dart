@@ -4370,6 +4370,7 @@ class _Translations$musicTools$sv extends Translations$musicTools$en {
 	@override String get peak => 'Topp';
 	@override String get bass => 'Bas';
 	@override String get treble => 'Diskant';
+	@override String get sharedPlaylists => 'Delade spellistor';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsSv {
 			'musicTools.peak' => 'Topp',
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Diskant',
+			'musicTools.sharedPlaylists' => 'Delade spellistor',
 			'musicDevices.playOn' => 'Spela på',
 			'musicDevices.thisDevice' => 'Den här enheten',
 			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',

@@ -1067,6 +1067,7 @@ class _Translations$musicTools$es_419 extends Translations$musicTools$es {
 	@override String get playlistSharingAccepted => 'Plex aceptó la solicitud de acceso.';
 	@override String get playlistAccessList => 'Acceso actual';
 	@override String get playlistAccessNone => 'No hay permisos de acceso a la lista';
+	@override String get sharedPlaylists => 'Listas compartidas';
 }
 
 // Path: musicExperience
@@ -1971,6 +1972,7 @@ extension on TranslationsEs419 {
 			'musicTools.playlistSharingAccepted' => 'Plex aceptó la solicitud de acceso.',
 			'musicTools.playlistAccessList' => 'Acceso actual',
 			'musicTools.playlistAccessNone' => 'No hay permisos de acceso a la lista',
+			'musicTools.sharedPlaylists' => 'Listas compartidas',
 			'musicExperience.bluetoothDriving' => 'Salidas Bluetooth para conducir',
 			'musicExperience.bluetoothDrivingHint' => 'Elige las salidas Bluetooth conectadas que abren automáticamente la vista de conducción.',
 			_ => null,

@@ -5631,7 +5631,8 @@
     "filterType": "Typ filtru",
     "peak": "Špička",
     "bass": "Basy",
-    "treble": "Výšky"
+    "treble": "Výšky",
+    "sharedPlaylists": "Sdílené playlisty"
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

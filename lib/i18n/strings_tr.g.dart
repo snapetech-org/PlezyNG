@@ -4370,6 +4370,7 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get peak => 'Tepe';
 	@override String get bass => 'Bas';
 	@override String get treble => 'Tiz';
+	@override String get sharedPlaylists => 'Paylaşılan çalma listeleri';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsTr {
 			'musicTools.peak' => 'Tepe',
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Tiz',
+			'musicTools.sharedPlaylists' => 'Paylaşılan çalma listeleri',
 			'musicDevices.playOn' => 'Şurada çal',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} üzerinde çalınıyor',

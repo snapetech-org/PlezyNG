@@ -4347,6 +4347,7 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	@override String get peak => 'Puncak';
 	@override String get bass => 'Bas';
 	@override String get treble => 'Trebel';
+	@override String get sharedPlaylists => 'Daftar putar bersama';
 }
 
 // Path: musicDevices
@@ -9560,6 +9561,7 @@ extension on TranslationsId {
 			'musicTools.peak' => 'Puncak',
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Trebel',
+			'musicTools.sharedPlaylists' => 'Daftar putar bersama',
 			'musicDevices.playOn' => 'Putar di',
 			'musicDevices.thisDevice' => 'Perangkat ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',

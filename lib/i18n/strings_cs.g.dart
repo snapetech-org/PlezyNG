@@ -4412,6 +4412,7 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get peak => 'Špička';
 	@override String get bass => 'Basy';
 	@override String get treble => 'Výšky';
+	@override String get sharedPlaylists => 'Sdílené playlisty';
 }
 
 // Path: musicDevices
@@ -9629,6 +9630,7 @@ extension on TranslationsCs {
 			'musicTools.peak' => 'Špička',
 			'musicTools.bass' => 'Basy',
 			'musicTools.treble' => 'Výšky',
+			'musicTools.sharedPlaylists' => 'Sdílené playlisty',
 			'musicDevices.playOn' => 'Přehrávat na',
 			'musicDevices.thisDevice' => 'Toto zařízení',
 			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',

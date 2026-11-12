@@ -5578,7 +5578,8 @@
     "filterType": "濾波器類型",
     "peak": "峰值",
     "bass": "低音",
-    "treble": "高音"
+    "treble": "高音",
+    "sharedPlaylists": "共享播放清單"
   },
   "musicDevices": {
     "playOn": "播放裝置",

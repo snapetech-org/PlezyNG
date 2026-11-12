@@ -5556,7 +5556,8 @@
     "filterType": "Loại bộ lọc",
     "peak": "Đỉnh",
     "bass": "Âm trầm",
-    "treble": "Âm cao"
+    "treble": "Âm cao",
+    "sharedPlaylists": "Danh sách phát được chia sẻ"
   },
   "musicDevices": {
     "playOn": "Phát trên",

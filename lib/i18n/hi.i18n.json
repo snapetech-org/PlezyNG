@@ -5583,7 +5583,8 @@
     "filterType": "फ़िल्टर का प्रकार",
     "peak": "शिखर",
     "bass": "बास",
-    "treble": "ट्रेबल"
+    "treble": "ट्रेबल",
+    "sharedPlaylists": "शेयर की गई प्लेलिस्ट"
   },
   "musicDevices": {
     "playOn": "इस पर चलाएँ",

@@ -4370,6 +4370,7 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get peak => 'Шың';
 	@override String get bass => 'Бас';
 	@override String get treble => 'Жоғары жиіліктер';
+	@override String get sharedPlaylists => 'Ортақ ойнату тізімдері';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsKk {
 			'musicTools.peak' => 'Шың',
 			'musicTools.bass' => 'Бас',
 			'musicTools.treble' => 'Жоғары жиіліктер',
+			'musicTools.sharedPlaylists' => 'Ортақ ойнату тізімдері',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',

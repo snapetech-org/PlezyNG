@@ -4370,6 +4370,7 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get peak => 'اوج';
 	@override String get bass => 'بیس';
 	@override String get treble => 'زیر';
+	@override String get sharedPlaylists => 'فهرست‌های پخش اشتراکی';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsFa {
 			'musicTools.peak' => 'اوج',
 			'musicTools.bass' => 'بیس',
 			'musicTools.treble' => 'زیر',
+			'musicTools.sharedPlaylists' => 'فهرست‌های پخش اشتراکی',
 			'musicDevices.playOn' => 'پخش در',
 			'musicDevices.thisDevice' => 'این دستگاه',
 			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',

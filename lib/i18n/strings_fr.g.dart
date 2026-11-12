@@ -4421,6 +4421,7 @@ class Translations$musicTools$fr extends Translations$musicTools$en {
 	@override String get peak => 'Pic';
 	@override String get bass => 'Graves';
 	@override String get treble => 'Aigus';
+	@override String get sharedPlaylists => 'Listes partagées';
 }
 
 // Path: musicDevices
@@ -9666,6 +9667,7 @@ extension on TranslationsFr {
 			'musicTools.peak' => 'Pic',
 			'musicTools.bass' => 'Graves',
 			'musicTools.treble' => 'Aigus',
+			'musicTools.sharedPlaylists' => 'Listes partagées',
 			'musicDevices.playOn' => 'Lire sur',
 			'musicDevices.thisDevice' => 'Cet appareil',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lecture sur ${device}',
@@ -9673,9 +9675,9 @@ extension on TranslationsFr {
 			'musicDevices.forget' => 'Oublier cet appareil',
 			'musicDevices.receive' => 'Autoriser la lecture sur cet appareil',
 			'musicDevices.nearbyHint' => 'Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.',
-			'musicDevices.receiverHint' => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.receiverHint' => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.',
 			'musicDevices.moveFailed' => 'Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.',
 			'musicDevices.uncertain' => 'Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.',
 			'musicDevices.away' => 'Hors de chez soi',

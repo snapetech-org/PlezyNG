@@ -150,20 +150,24 @@ Future<void> playFetchedTracks(
   VoidCallback? onEmpty,
   MediaItem? startTrack,
   bool shuffle = false,
+  bool Function()? sourceCurrent,
 }) async {
   final service = context.read<MusicPlaybackService>();
+  bool current() =>
+      context.mounted && (sourceCurrent?.call() ?? true) && identical(context.read<MusicPlaybackService>(), service);
+  if (!current()) return;
   final intent = service.beginPlayIntent();
   final List<MediaItem> tracks;
   try {
     tracks = await fetch();
   } catch (error, stackTrace) {
-    if (!service.isPlayIntentCurrent(intent)) return;
+    if (!context.mounted || !current() || !service.isPlayIntentCurrent(intent)) return;
     if (onError == null) rethrow;
     if (!context.mounted) return;
     onError(error, stackTrace);
     return;
   }
-  if (!context.mounted || !service.isPlayIntentCurrent(intent)) return;
+  if (!context.mounted || !current() || !service.isPlayIntentCurrent(intent)) return;
   if (tracks.isEmpty && onEmpty != null) {
     onEmpty();
     return;
@@ -185,6 +189,7 @@ Future<void> playAudioPlaylist(
   List<MediaItem>? preloadedItems,
   void Function(Object error, StackTrace stackTrace)? onError,
   VoidCallback? onEmpty,
+  bool Function()? sourceCurrent,
 }) {
   return playFetchedTracks(
     context,
@@ -194,6 +199,7 @@ Future<void> playAudioPlaylist(
     onEmpty: onEmpty,
     startTrack: startTrack,
     shuffle: shuffle,
+    sourceCurrent: sourceCurrent,
   );
 }
 

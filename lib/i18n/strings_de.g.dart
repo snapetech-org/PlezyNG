@@ -4370,6 +4370,7 @@ class _Translations$musicTools$de extends Translations$musicTools$en {
 	@override String get peak => 'Spitze';
 	@override String get bass => 'Bass';
 	@override String get treble => 'Höhen';
+	@override String get sharedPlaylists => 'Geteilte Playlists';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsDe {
 			'musicTools.peak' => 'Spitze',
 			'musicTools.bass' => 'Bass',
 			'musicTools.treble' => 'Höhen',
+			'musicTools.sharedPlaylists' => 'Geteilte Playlists',
 			'musicDevices.playOn' => 'Wiedergeben auf',
 			'musicDevices.thisDevice' => 'Dieses Gerät',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wiedergabe auf ${device}',

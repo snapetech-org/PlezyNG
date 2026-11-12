@@ -5583,7 +5583,8 @@
     "filterType": "نوع فیلتر",
     "peak": "اوج",
     "bass": "بیس",
-    "treble": "زیر"
+    "treble": "زیر",
+    "sharedPlaylists": "فهرست‌های پخش اشتراکی"
   },
   "musicDevices": {
     "playOn": "پخش در",

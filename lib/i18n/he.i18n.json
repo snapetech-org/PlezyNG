@@ -5593,7 +5593,8 @@
     "filterType": "סוג מסנן",
     "peak": "שיא",
     "bass": "בס",
-    "treble": "גבוהים"
+    "treble": "גבוהים",
+    "sharedPlaylists": "רשימות השמעה משותפות"
   },
   "musicDevices": {
     "playOn": "ניגון באמצעות",

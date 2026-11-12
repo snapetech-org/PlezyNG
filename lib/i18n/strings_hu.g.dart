@@ -4370,6 +4370,7 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get peak => 'Csúcs';
 	@override String get bass => 'Mély';
 	@override String get treble => 'Magas';
+	@override String get sharedPlaylists => 'Megosztott lejátszási listák';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsHu {
 			'musicTools.peak' => 'Csúcs',
 			'musicTools.bass' => 'Mély',
 			'musicTools.treble' => 'Magas',
+			'musicTools.sharedPlaylists' => 'Megosztott lejátszási listák',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',

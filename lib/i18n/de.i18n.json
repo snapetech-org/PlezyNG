@@ -5583,7 +5583,8 @@
     "filterType": "Filtertyp",
     "peak": "Spitze",
     "bass": "Bass",
-    "treble": "Höhen"
+    "treble": "Höhen",
+    "sharedPlaylists": "Geteilte Playlists"
   },
   "musicDevices": {
     "playOn": "Wiedergeben auf",

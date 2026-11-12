@@ -5662,7 +5662,8 @@
     "filterType": "Filter type",
     "peak": "Peak",
     "bass": "Bass",
-    "treble": "Treble"
+    "treble": "Treble",
+    "sharedPlaylists": "Shared playlists"
   },
   "musicDevices": {
     "playOn": "Play on",

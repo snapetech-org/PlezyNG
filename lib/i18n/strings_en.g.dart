@@ -14873,6 +14873,9 @@ class Translations$musicTools$en {
 
 	/// en: 'Treble'
 	String get treble => 'Treble';
+
+	/// en: 'Shared playlists'
+	String get sharedPlaylists => 'Shared playlists';
 }
 
 // Path: musicDevices
@@ -22846,6 +22849,7 @@ extension on Translations {
 			'musicTools.peak' => 'Peak',
 			'musicTools.bass' => 'Bass',
 			'musicTools.treble' => 'Treble',
+			'musicTools.sharedPlaylists' => 'Shared playlists',
 			'musicDevices.playOn' => 'Play on',
 			'musicDevices.thisDevice' => 'This device',
 			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',

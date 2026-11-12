@@ -925,7 +925,8 @@
     "playlistSharingFailed": "No se pudo solicitar acceso a la lista.",
     "playlistSharingAccepted": "Plex aceptó la solicitud de acceso.",
     "playlistAccessList": "Acceso actual",
-    "playlistAccessNone": "No hay permisos de acceso a la lista"
+    "playlistAccessNone": "No hay permisos de acceso a la lista",
+    "sharedPlaylists": "Listas compartidas"
   },
   "musicExperience": {
     "bluetoothDriving": "Salidas Bluetooth para conducir",

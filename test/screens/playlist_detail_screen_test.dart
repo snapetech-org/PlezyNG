@@ -55,6 +55,32 @@ import '../test_helpers/prefs.dart';
 import '../test_helpers/profile_stack.dart';
 
 void main() {
+  testWidgets('received playlist detail keeps transport and hides owner mutations', (tester) async {
+    final client = _ArtworkPlaylistClient(_mediaItems(2));
+    final harness = await _createHarness(client.items, client: client);
+    await tester.pumpWidget(harness.wrap(const PlaylistDetailScreen(playlist: _audioPlaylist, readOnly: true)));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip(t.metadataEdit.editMetadata), findsNothing);
+    expect(find.byTooltip(t.metadataEdit.artwork), findsNothing);
+    expect(find.byTooltip(t.playlists.delete), findsNothing);
+    expect(find.byTooltip(t.libraries.selection.selectItems), findsNothing);
+    expect(find.byTooltip(t.common.play), findsOneWidget);
+    expect(find.byType(SliverReorderableList), findsNothing);
+    expect(client.moveRequests, isEmpty);
+    expect(client.removeRequests, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a retired received source cannot begin another playlist read', (tester) async {
+    final harness = await _createHarness(_mediaItems(2));
+    await tester.pumpWidget(
+      harness.wrap(PlaylistDetailScreen(playlist: _audioPlaylist, readOnly: true, isSourceCurrent: () => false)),
+    );
+    await tester.pumpAndSettle();
+    expect(harness.client.requestedStarts, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('accepted artwork from the detail action refreshes its browse caller', (tester) async {
     final client = _ArtworkPlaylistClient(_mediaItems(1));
     final harness = await _createHarness(client.items, client: client);

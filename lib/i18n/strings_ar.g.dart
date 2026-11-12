@@ -4462,6 +4462,7 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String get peak => 'ذروة';
 	@override String get bass => 'جهير';
 	@override String get treble => 'صوت حاد';
+	@override String get sharedPlaylists => 'قوائم التشغيل المشتركة';
 }
 
 // Path: musicDevices
@@ -9685,6 +9686,7 @@ extension on TranslationsAr {
 			'musicTools.peak' => 'ذروة',
 			'musicTools.bass' => 'جهير',
 			'musicTools.treble' => 'صوت حاد',
+			'musicTools.sharedPlaylists' => 'قوائم التشغيل المشتركة',
 			'musicDevices.playOn' => 'التشغيل على',
 			'musicDevices.thisDevice' => 'هذا الجهاز',
 			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',

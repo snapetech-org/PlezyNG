@@ -4370,6 +4370,7 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	@override String get peak => 'Choʻqqi';
 	@override String get bass => 'Bas';
 	@override String get treble => 'Yuqori tovushlar';
+	@override String get sharedPlaylists => 'Ulashilgan pleylistlar';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsUz {
 			'musicTools.peak' => 'Choʻqqi',
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Yuqori tovushlar',
+			'musicTools.sharedPlaylists' => 'Ulashilgan pleylistlar',
 			'musicDevices.playOn' => 'Shu qurilmada ijro etish',
 			'musicDevices.thisDevice' => 'Bu qurilma',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} qurilmasida ijro etilmoqda',

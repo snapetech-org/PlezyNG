@@ -5578,7 +5578,8 @@
     "filterType": "필터 유형",
     "peak": "피크",
     "bass": "저음",
-    "treble": "고음"
+    "treble": "고음",
+    "sharedPlaylists": "공유 재생목록"
   },
   "musicDevices": {
     "playOn": "재생 기기",

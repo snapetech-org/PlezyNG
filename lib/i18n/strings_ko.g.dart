@@ -4365,6 +4365,7 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get peak => '피크';
 	@override String get bass => '저음';
 	@override String get treble => '고음';
+	@override String get sharedPlaylists => '공유 재생목록';
 }
 
 // Path: musicDevices
@@ -9580,6 +9581,7 @@ extension on TranslationsKo {
 			'musicTools.peak' => '피크',
 			'musicTools.bass' => '저음',
 			'musicTools.treble' => '고음',
+			'musicTools.sharedPlaylists' => '공유 재생목록',
 			'musicDevices.playOn' => '재생 기기',
 			'musicDevices.thisDevice' => '이 기기',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',

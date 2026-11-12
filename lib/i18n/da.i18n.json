@@ -5583,7 +5583,8 @@
     "filterType": "Filtertype",
     "peak": "Spids",
     "bass": "Bas",
-    "treble": "Diskant"
+    "treble": "Diskant",
+    "sharedPlaylists": "Delte afspilningslister"
   },
   "musicDevices": {
     "playOn": "Afspil på",

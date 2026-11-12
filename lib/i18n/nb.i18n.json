@@ -5583,7 +5583,8 @@
     "filterType": "Filtertype",
     "peak": "Topp",
     "bass": "Bass",
-    "treble": "Diskant"
+    "treble": "Diskant",
+    "sharedPlaylists": "Delte spillelister"
   },
   "musicDevices": {
     "playOn": "Spill av på",

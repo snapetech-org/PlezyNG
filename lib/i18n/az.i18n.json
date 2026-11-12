@@ -5583,7 +5583,8 @@
     "filterType": "Filtr növü",
     "peak": "Zirvə",
     "bass": "Bas",
-    "treble": "Tiz səslər"
+    "treble": "Tiz səslər",
+    "sharedPlaylists": "Paylaşılan pleylistlər"
   },
   "musicDevices": {
     "playOn": "Burada səsləndir",

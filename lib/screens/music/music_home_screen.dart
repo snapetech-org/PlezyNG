@@ -32,6 +32,7 @@ import 'music_audio_screen.dart';
 import 'music_history_screen.dart';
 import 'music_smart_playlist_screen.dart';
 import 'music_reconciliation_screen.dart';
+import 'music_shared_playlists_screen.dart';
 
 Future<void> openMusicHome(BuildContext context) =>
     Navigator.of(context).push<void>(MaterialPageRoute(builder: (_) => const MusicHomeScreen()));
@@ -410,6 +411,12 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
                               label: Text(t.musicTools.nfcRead),
                             )
                           : const SizedBox.shrink(),
+                    ),
+                    FilledButton.tonal(
+                      onPressed: () => Navigator.of(
+                        context,
+                      ).push<void>(MaterialPageRoute(builder: (_) => const MusicSharedPlaylistsScreen())),
+                      child: Text(t.musicTools.sharedPlaylists),
                     ),
                     FilledButton.tonal(
                       onPressed: () => Navigator.of(

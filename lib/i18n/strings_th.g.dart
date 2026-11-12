@@ -4347,6 +4347,7 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get peak => 'พีค';
 	@override String get bass => 'เสียงเบส';
 	@override String get treble => 'เสียงแหลม';
+	@override String get sharedPlaylists => 'เพลย์ลิสต์ที่แชร์';
 }
 
 // Path: musicDevices
@@ -9560,6 +9561,7 @@ extension on TranslationsTh {
 			'musicTools.peak' => 'พีค',
 			'musicTools.bass' => 'เสียงเบส',
 			'musicTools.treble' => 'เสียงแหลม',
+			'musicTools.sharedPlaylists' => 'เพลย์ลิสต์ที่แชร์',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',

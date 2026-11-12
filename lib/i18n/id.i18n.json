@@ -5556,7 +5556,8 @@
     "filterType": "Jenis filter",
     "peak": "Puncak",
     "bass": "Bas",
-    "treble": "Trebel"
+    "treble": "Trebel",
+    "sharedPlaylists": "Daftar putar bersama"
   },
   "musicDevices": {
     "playOn": "Putar di",

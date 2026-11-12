@@ -4370,6 +4370,7 @@ class _Translations$musicTools$az extends Translations$musicTools$en {
 	@override String get peak => 'Zirvə';
 	@override String get bass => 'Bas';
 	@override String get treble => 'Tiz səslər';
+	@override String get sharedPlaylists => 'Paylaşılan pleylistlər';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsAz {
 			'musicTools.peak' => 'Zirvə',
 			'musicTools.bass' => 'Bas',
 			'musicTools.treble' => 'Tiz səslər',
+			'musicTools.sharedPlaylists' => 'Paylaşılan pleylistlər',
 			'musicDevices.playOn' => 'Burada səsləndir',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',

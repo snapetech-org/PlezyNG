@@ -5583,7 +5583,8 @@
     "filterType": "Filtr turi",
     "peak": "Choʻqqi",
     "bass": "Bas",
-    "treble": "Yuqori tovushlar"
+    "treble": "Yuqori tovushlar",
+    "sharedPlaylists": "Ulashilgan pleylistlar"
   },
   "musicDevices": {
     "playOn": "Shu qurilmada ijro etish",

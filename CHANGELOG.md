@@ -27,6 +27,8 @@
 
 - Read actual owned and accepted received Plex playlist grants; revalidate recipient, source and item identity before revoking one item grant, without canceling unrelated sharing. Show the current recipients in the playlist access dialog with explicit revocation confirmation and account-bound decisions. Remove the unused Stretch label after retiring that video fit mode.
 
+- Page accepted incoming Plex audio playlists through the authorized server, bound metadata reads, retire stale account/catalog results and recheck exact access before opening. Browse shared playlists from Music home with paging and read-only detail, retain shared-session playback, and bind one-time downloads to their original source across dialogs.
+
 - Assemble the complete frozen release from independently signed iOS and tvOS sibling runs, verifying both IPA attestations and original platform artifact identities before publication.
 - Keep shared libraries read-only for collection changes and bind collection confirmations to their original authorized account.
 

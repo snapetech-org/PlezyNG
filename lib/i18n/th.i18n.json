@@ -5556,7 +5556,8 @@
     "filterType": "ประเภทตัวกรอง",
     "peak": "พีค",
     "bass": "เสียงเบส",
-    "treble": "เสียงแหลม"
+    "treble": "เสียงแหลม",
+    "sharedPlaylists": "เพลย์ลิสต์ที่แชร์"
   },
   "musicDevices": {
     "playOn": "เล่นบน",

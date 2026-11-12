@@ -5637,7 +5637,8 @@
     "filterType": "Typ filtra",
     "peak": "Szczyt",
     "bass": "Basy",
-    "treble": "Wysokie tony"
+    "treble": "Wysokie tony",
+    "sharedPlaylists": "Udostępnione playlisty"
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

@@ -4412,6 +4412,7 @@ class _Translations$musicTools$uk extends Translations$musicTools$en {
 	@override String get peak => 'Пік';
 	@override String get bass => 'Низькі частоти';
 	@override String get treble => 'Високі частоти';
+	@override String get sharedPlaylists => 'Спільні списки відтворення';
 }
 
 // Path: musicDevices
@@ -9629,6 +9630,7 @@ extension on TranslationsUk {
 			'musicTools.peak' => 'Пік',
 			'musicTools.bass' => 'Низькі частоти',
 			'musicTools.treble' => 'Високі частоти',
+			'musicTools.sharedPlaylists' => 'Спільні списки відтворення',
 			'musicDevices.playOn' => 'Відтворити на',
 			'musicDevices.thisDevice' => 'Цей пристрій',
 			'musicDevices.playingOn' => ({required Object device}) => 'Відтворюється на ${device}',

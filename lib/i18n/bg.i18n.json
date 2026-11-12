@@ -5583,7 +5583,8 @@
     "filterType": "Тип филтър",
     "peak": "Пик",
     "bass": "Баси",
-    "treble": "Високи честоти"
+    "treble": "Високи честоти",
+    "sharedPlaylists": "Споделени плейлисти"
   },
   "musicDevices": {
     "playOn": "Възпроизвеждане на",

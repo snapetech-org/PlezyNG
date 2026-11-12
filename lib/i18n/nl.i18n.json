@@ -5583,7 +5583,8 @@
     "filterType": "Filtertype",
     "peak": "Piek",
     "bass": "Bas",
-    "treble": "Hoge tonen"
+    "treble": "Hoge tonen",
+    "sharedPlaylists": "Gedeelde afspeellijsten"
   },
   "musicDevices": {
     "playOn": "Afspelen op",

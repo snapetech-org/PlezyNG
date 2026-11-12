@@ -5583,7 +5583,8 @@
     "filterType": "ফিল্টারের ধরন",
     "peak": "পিক",
     "bass": "বেস",
-    "treble": "ট্রেবল"
+    "treble": "ট্রেবল",
+    "sharedPlaylists": "শেয়ার করা প্লেলিস্ট"
   },
   "musicDevices": {
     "playOn": "এখানে চালান",

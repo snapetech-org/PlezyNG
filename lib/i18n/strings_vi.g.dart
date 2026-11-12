@@ -4347,6 +4347,7 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get peak => 'Đỉnh';
 	@override String get bass => 'Âm trầm';
 	@override String get treble => 'Âm cao';
+	@override String get sharedPlaylists => 'Danh sách phát được chia sẻ';
 }
 
 // Path: musicDevices
@@ -9560,6 +9561,7 @@ extension on TranslationsVi {
 			'musicTools.peak' => 'Đỉnh',
 			'musicTools.bass' => 'Âm trầm',
 			'musicTools.treble' => 'Âm cao',
+			'musicTools.sharedPlaylists' => 'Danh sách phát được chia sẻ',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',

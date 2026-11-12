@@ -57,8 +57,16 @@ import '../../widgets/system_bottom_inset.dart';
 class PlaylistDetailScreen extends StatefulWidget {
   final MediaPlaylist playlist;
   final VoidCallback? onChanged;
+  final bool readOnly;
+  final bool Function()? isSourceCurrent;
 
-  const PlaylistDetailScreen({super.key, required this.playlist, this.onChanged});
+  const PlaylistDetailScreen({
+    super.key,
+    required this.playlist,
+    this.onChanged,
+    this.readOnly = false,
+    this.isSourceCurrent,
+  });
 
   @override
   State<PlaylistDetailScreen> createState() => _PlaylistDetailScreenState();
@@ -197,9 +205,11 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     );
   }
 
+  bool get _sourceCurrent => mounted && (widget.isSourceCurrent?.call() ?? true);
+
   bool _metadataSourceCurrent() {
     final owner = _metadataOwner;
-    return mounted &&
+    return _sourceCurrent &&
         owner != null &&
         !owner.client.isOfflineMode &&
         owner.profile == context.read<ActiveProfileProvider>().activeId &&
@@ -212,7 +222,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   /// A later profile bind must never resolve this into a replacement owner.
   bool Function()? _sharingAuthorization() {
     final owner = _metadataOwner;
-    if (!_isAudioPlaylist || owner == null || owner.client is! PlexClient) return null;
+    if (widget.readOnly || !_isAudioPlaylist || owner == null || owner.client is! PlexClient) return null;
     final client = owner.client as PlexClient;
     final token = client.plexAccountToken;
     if (token?.isNotEmpty != true) return null;
@@ -349,7 +359,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   /// True when the playlist can't be reordered or have items removed.
   /// Currently only Plex smart playlists (server-side rule-based; managed via
   /// filter rules, not direct edits). Jellyfin has no equivalent concept.
-  bool get _isReadOnly => _playlist.smart;
+  bool get _isReadOnly => widget.readOnly || _playlist.smart;
 
   String get _normalizedPlaylistType => _playlist.playlistType.trim().toLowerCase();
 
@@ -377,6 +387,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   /// otherwise fetches the full item list (one loader round-trip) so the
   /// queue isn't truncated to the first page.
   Future<void> _playAudioPlaylist({required bool shuffle, MediaItem? startTrack}) async {
+    if (!_sourceCurrent) return;
     if (items.isEmpty) {
       showAppSnackBar(context, emptyMessage);
       return;
@@ -388,6 +399,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
       shuffle: shuffle,
       startTrack: startTrack,
       preloadedItems: _isPlaylistFullyLoaded ? items : null,
+      sourceCurrent: () => _sourceCurrent,
       onError: (e, stackTrace) =>
           showErrorSnackBar(context, localizedLoadErrorMessage(e, stackTrace, context: _playlist.title)),
     );
@@ -482,14 +494,14 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
             _focusedColumn = 0;
           }),
         ),
-      if (_metadataOwner?.client is PlaylistMetadataClient && _metadataSourceCurrent())
+      if (!widget.readOnly && _metadataOwner?.client is PlaylistMetadataClient && _metadataSourceCurrent())
         FocusableAction(
           debugLabel: 'playlist_edit_metadata',
           icon: Symbols.edit_note_rounded,
           tooltip: t.metadataEdit.editMetadata,
           onPressed: _editingMetadata || _isPlaylistMutationPending || _selectingEntries ? null : _editMetadata,
         ),
-      if (_metadataOwner?.client is PlaylistArtworkClient && _metadataSourceCurrent())
+      if (!widget.readOnly && _metadataOwner?.client is PlaylistArtworkClient && _metadataSourceCurrent())
         FocusableAction(
           debugLabel: 'playlist_edit_artwork',
           icon: Symbols.image_rounded,
@@ -503,7 +515,7 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
           tooltip: t.musicTools.playlistSharing,
           onPressed: _editingMetadata || _isPlaylistMutationPending || _selectingEntries ? null : _sharePlaylist,
         ),
-      if (_isAudioPlaylist && _playlist.smart)
+      if (!widget.readOnly && _isAudioPlaylist && _playlist.smart)
         FocusableAction(
           icon: Symbols.edit_rounded,
           tooltip: t.musicTools.rules,
@@ -536,19 +548,26 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
             iconColor: repeatEnabled ? Theme.of(context).colorScheme.primary : null,
           ),
       ],
-      ...buildSyncRuleActions(
-        context,
-        ruleKey: ruleKey,
-        displayTitle: _playlist.title,
-        hasRule: hasRule,
-        showDownload: isDownloadablePlaylist && (items.isNotEmpty || hasRule),
-        onDownload: _downloadPlaylist,
-      ),
+      if (widget.readOnly && isDownloadablePlaylist && items.isNotEmpty)
+        FocusableAction(
+          icon: Symbols.download_rounded,
+          tooltip: t.downloads.downloadNow,
+          onPressed: _sourceCurrent ? _downloadPlaylist : null,
+        ),
+      if (!widget.readOnly)
+        ...buildSyncRuleActions(
+          context,
+          ruleKey: ruleKey,
+          displayTitle: _playlist.title,
+          hasRule: hasRule,
+          showDownload: isDownloadablePlaylist && (items.isNotEmpty || hasRule),
+          onDownload: _downloadPlaylist,
+        ),
       // Delete works on both backends now (Jellyfin uses /Items/{id} DELETE,
       // wrapped in the neutral [MediaServerClient.deletePlaylist]). Smart
       // playlists are still skipped — they're a Plex concept and are
       // managed server-side via filter rules, not via DELETE.
-      if (!_playlist.smart)
+      if (!widget.readOnly && !_playlist.smart)
         FocusableAction(
           icon: Symbols.delete_rounded,
           tooltip: t.playlists.delete,
@@ -616,8 +635,21 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     super.dispose();
   }
 
+  void _showRetiredSource() {
+    if (!mounted) return;
+    setState(() {
+      items = [];
+      isLoading = false;
+      errorMessage = t.musicExperience.error;
+    });
+  }
+
   @override
   Future<void> loadItems() async {
+    if (!_sourceCurrent) {
+      _showRetiredSource();
+      return;
+    }
     _bindMetadataOwner();
     if (mounted) {
       setState(() {
@@ -639,7 +671,11 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
       final applied = await _continuation.runNewGeneration(() async {
         firstPage = await mediaClient.fetchPlaylistPage(_playlist.id, start: 0, size: _pageSize);
       });
-      if (!mounted || !applied) return;
+      if (!_sourceCurrent) {
+        _showRetiredSource();
+        return;
+      }
+      if (!applied) return;
       final page = firstPage!;
 
       _continuation.setContinuation(startIndex: page.items.length, totalCount: page.totalCount);
@@ -664,12 +700,13 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
   }
 
   Future<ContinuationPage<MediaItem>> _fetchPlaylistContinuationPage(int startIndex) async {
+    if (!_sourceCurrent) throw StateError("Playlist source changed");
     final page = await mediaClient.fetchPlaylistPage(_playlist.id, start: startIndex, size: _pageSize);
     return ContinuationPage(items: page.items, totalCount: page.totalCount, consumedCount: page.items.length);
   }
 
   void _applyPlaylistContinuationPage(ContinuationPage<MediaItem> page) {
-    if (!mounted) return;
+    if (!_sourceCurrent) return;
     setState(() {
       items = List.of(items)..addAll(page.items);
     });
@@ -726,6 +763,8 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
     client: mediaClient,
     downloadProvider: Provider.of<DownloadProvider>(context, listen: false),
     playlist: _playlist,
+    sourceCurrent: () => _sourceCurrent,
+    allowSync: !widget.readOnly,
   );
 
   Future<void> _deletePlaylist() => deletePlaylistWithConfirm(

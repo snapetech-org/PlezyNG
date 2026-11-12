@@ -4370,6 +4370,7 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	@override String get peak => 'Пик';
 	@override String get bass => 'Баси';
 	@override String get treble => 'Високи честоти';
+	@override String get sharedPlaylists => 'Споделени плейлисти';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsBg {
 			'musicTools.peak' => 'Пик',
 			'musicTools.bass' => 'Баси',
 			'musicTools.treble' => 'Високи честоти',
+			'musicTools.sharedPlaylists' => 'Споделени плейлисти',
 			'musicDevices.playOn' => 'Възпроизвеждане на',
 			'musicDevices.thisDevice' => 'Това устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',

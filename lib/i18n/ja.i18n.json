@@ -5578,7 +5578,8 @@
     "filterType": "フィルターの種類",
     "peak": "ピーク",
     "bass": "低音",
-    "treble": "高音"
+    "treble": "高音",
+    "sharedPlaylists": "共有プレイリスト"
   },
   "musicDevices": {
     "playOn": "再生先",

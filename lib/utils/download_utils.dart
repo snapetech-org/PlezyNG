@@ -301,10 +301,14 @@ Future<DownloadResult?> showListDownloadOptionsAndQueue(
   required List<MediaItem> items,
   required MediaServerClient client,
   required DownloadProvider downloadProvider,
+  bool Function()? sourceCurrent,
+  bool allowSync = true,
 }) async {
+  bool current() => context.mounted && (sourceCurrent?.call() ?? true);
+  if (!context.mounted || !current()) return null;
   assert(targetType == ContentTypes.collection || targetType == ContentTypes.playlist);
 
-  if (!await confirmBackgroundDownloadRestrictions(context) || !context.mounted) return null;
+  if (!await confirmBackgroundDownloadRestrictions(context) || !context.mounted || !current()) return null;
 
   final selectedFilter = await showOptionPickerDialog<DownloadFilter>(
     context,
@@ -312,10 +316,10 @@ Future<DownloadResult?> showListDownloadOptionsAndQueue(
     options: _filterOptions(DownloadFilter.all, DownloadFilter.unwatched),
   );
 
-  if (selectedFilter == null || !context.mounted) return null;
+  if (selectedFilter == null || !context.mounted || !current()) return null;
 
-  final syncChoice = await _showSyncChoiceDialog(context);
-  if (syncChoice == null || !context.mounted) return null;
+  final syncChoice = allowSync ? await _showSyncChoiceDialog(context) : _SyncChoice.downloadOnce;
+  if (syncChoice == null || !context.mounted || !current()) return null;
 
   final serverId = rootMetadata.serverId ?? client.serverId;
   final filterString = selectedFilter == DownloadFilter.unwatched ? SyncRuleFilter.unwatched : SyncRuleFilter.all;
@@ -328,6 +332,7 @@ Future<DownloadResult?> showListDownloadOptionsAndQueue(
     final ruleKey = downloadProvider.syncRuleKeyFor(ServerId(serverId), rootMetadata.id);
     if (downloadProvider.hasSyncRule(ruleKey)) {
       await downloadProvider.updateSyncRuleOptions(ruleKey, downloadFilter: filterString);
+      if (!context.mounted || !current()) return null;
       syncRuleUpdated = true;
     } else {
       await downloadProvider.createSyncRule(
@@ -339,12 +344,21 @@ Future<DownloadResult?> showListDownloadOptionsAndQueue(
         downloadFilter: filterString,
         targetMetadata: rootMetadata,
       );
+      if (!context.mounted || !current()) return null;
       syncRuleCreated = true;
     }
     syncRule = downloadProvider.getSyncRule(ruleKey);
   }
 
-  final count = await downloadProvider.queueListDownload(items, client, filter: selectedFilter, syncRule: syncRule);
+  if (!context.mounted || !current()) return null;
+  final count = await downloadProvider.queueListDownload(
+    items,
+    client,
+    filter: selectedFilter,
+    syncRule: syncRule,
+    sourceCurrent: current,
+  );
+  if (!context.mounted || !current()) return null;
 
   return DownloadResult(
     count: count,
@@ -366,10 +380,14 @@ Future<void> fetchAndQueueListDownload(
   required Future<List<MediaItem>> Function() fetchItems,
   required MediaItem rootMetadata,
   required String targetType,
+  bool Function()? sourceCurrent,
+  bool allowSync = true,
 }) async {
+  bool current() => context.mounted && (sourceCurrent?.call() ?? true);
+  if (!context.mounted || !current()) return;
   try {
     final items = await fetchItems();
-    if (!context.mounted) return;
+    if (!context.mounted || !current()) return;
 
     final result = await showListDownloadOptionsAndQueue(
       context,
@@ -378,17 +396,19 @@ Future<void> fetchAndQueueListDownload(
       items: items,
       client: client,
       downloadProvider: downloadProvider,
+      sourceCurrent: current,
+      allowSync: allowSync,
     );
-    if (result == null || !context.mounted) return;
+    if (result == null || !context.mounted || !current()) return;
 
     showSuccessSnackBar(context, result.toSnackBarMessage());
   } on CellularDownloadBlockedException {
-    if (context.mounted) {
+    if (context.mounted && current()) {
       showErrorSnackBar(context, t.settings.cellularDownloadBlocked);
     }
   } catch (e) {
     appLogger.e('Failed to queue $targetType download', error: e);
-    if (context.mounted) {
+    if (context.mounted && current()) {
       showErrorSnackBar(context, t.messages.errorLoading(error: localizedErrorReason(e)));
     }
   }
@@ -403,6 +423,8 @@ Future<void> downloadPlaylist(
   required MediaServerClient client,
   required DownloadProvider downloadProvider,
   required MediaPlaylist playlist,
+  bool Function()? sourceCurrent,
+  bool allowSync = true,
 }) => fetchAndQueueListDownload(
   context,
   client: client,
@@ -418,6 +440,8 @@ Future<void> downloadPlaylist(
     serverName: playlist.serverName,
   ),
   targetType: ContentTypes.playlist,
+  sourceCurrent: sourceCurrent,
+  allowSync: allowSync,
 );
 
 /// The all/unwatched option rows, shared by the pickers that differ only in

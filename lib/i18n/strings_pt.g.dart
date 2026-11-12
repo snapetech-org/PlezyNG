@@ -4377,6 +4377,7 @@ class Translations$musicTools$pt extends Translations$musicTools$en {
 	@override String get peak => 'Pico';
 	@override String get bass => 'Graves';
 	@override String get treble => 'Agudos';
+	@override String get sharedPlaylists => 'Listas partilhadas';
 }
 
 // Path: musicDevices
@@ -9592,6 +9593,7 @@ extension on TranslationsPt {
 			'musicTools.peak' => 'Pico',
 			'musicTools.bass' => 'Graves',
 			'musicTools.treble' => 'Agudos',
+			'musicTools.sharedPlaylists' => 'Listas partilhadas',
 			'musicDevices.playOn' => 'Reproduzir em',
 			'musicDevices.thisDevice' => 'Este dispositivo',
 			'musicDevices.playingOn' => ({required Object device}) => 'A reproduzir em ${device}',

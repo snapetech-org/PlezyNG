@@ -4370,6 +4370,7 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get peak => 'शिखर';
 	@override String get bass => 'बास';
 	@override String get treble => 'ट्रेबल';
+	@override String get sharedPlaylists => 'शेयर की गई प्लेलिस्ट';
 }
 
 // Path: musicDevices
@@ -9585,6 +9586,7 @@ extension on TranslationsHi {
 			'musicTools.peak' => 'शिखर',
 			'musicTools.bass' => 'बास',
 			'musicTools.treble' => 'ट्रेबल',
+			'musicTools.sharedPlaylists' => 'शेयर की गई प्लेलिस्ट',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',

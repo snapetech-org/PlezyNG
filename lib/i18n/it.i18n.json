@@ -5592,7 +5592,8 @@
     "filterType": "Tipo di filtro",
     "peak": "Picco",
     "bass": "Bassi",
-    "treble": "Alti"
+    "treble": "Alti",
+    "sharedPlaylists": "Playlist condivise"
   },
   "musicDevices": {
     "playOn": "Riproduci su",

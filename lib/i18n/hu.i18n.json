@@ -5583,7 +5583,8 @@
     "filterType": "Szűrő típusa",
     "peak": "Csúcs",
     "bass": "Mély",
-    "treble": "Magas"
+    "treble": "Magas",
+    "sharedPlaylists": "Megosztott lejátszási listák"
   },
   "musicDevices": {
     "playOn": "Lejátszás itt",

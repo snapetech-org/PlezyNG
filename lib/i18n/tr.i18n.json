@@ -5583,7 +5583,8 @@
     "filterType": "Filtre türü",
     "peak": "Tepe",
     "bass": "Bas",
-    "treble": "Tiz"
+    "treble": "Tiz",
+    "sharedPlaylists": "Paylaşılan çalma listeleri"
   },
   "musicDevices": {
     "playOn": "Şurada çal",

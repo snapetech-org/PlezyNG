@@ -5691,7 +5691,8 @@
     "filterType": "نوع المرشح",
     "peak": "ذروة",
     "bass": "جهير",
-    "treble": "صوت حاد"
+    "treble": "صوت حاد",
+    "sharedPlaylists": "قوائم التشغيل المشتركة"
   },
   "musicDevices": {
     "playOn": "التشغيل على",

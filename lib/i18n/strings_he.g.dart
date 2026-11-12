@@ -4378,6 +4378,7 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String get peak => 'שיא';
 	@override String get bass => 'בס';
 	@override String get treble => 'גבוהים';
+	@override String get sharedPlaylists => 'רשימות השמעה משותפות';
 }
 
 // Path: musicDevices
@@ -9593,6 +9594,7 @@ extension on TranslationsHe {
 			'musicTools.peak' => 'שיא',
 			'musicTools.bass' => 'בס',
 			'musicTools.treble' => 'גבוהים',
+			'musicTools.sharedPlaylists' => 'רשימות השמעה משותפות',
 			'musicDevices.playOn' => 'ניגון באמצעות',
 			'musicDevices.thisDevice' => 'מכשיר זה',
 			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',

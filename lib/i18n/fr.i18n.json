@@ -5592,7 +5592,8 @@
     "filterType": "Type de filtre",
     "peak": "Pic",
     "bass": "Graves",
-    "treble": "Aigus"
+    "treble": "Aigus",
+    "sharedPlaylists": "Listes partagées"
   },
   "musicDevices": {
     "playOn": "Lire sur",

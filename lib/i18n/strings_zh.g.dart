@@ -4365,6 +4365,7 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	@override String get peak => '峰值';
 	@override String get bass => '低音';
 	@override String get treble => '高音';
+	@override String get sharedPlaylists => '共享播放列表';
 }
 
 // Path: musicDevices
@@ -9580,6 +9581,7 @@ extension on TranslationsZh {
 			'musicTools.peak' => '峰值',
 			'musicTools.bass' => '低音',
 			'musicTools.treble' => '高音',
+			'musicTools.sharedPlaylists' => '共享播放列表',
 			'musicDevices.playOn' => '播放设备',
 			'musicDevices.thisDevice' => '此设备',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

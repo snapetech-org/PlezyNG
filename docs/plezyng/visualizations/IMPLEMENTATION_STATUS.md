@@ -955,6 +955,10 @@ gates remain unrun/unfulfilled as listed in SOURCE_COMPLETION.md.
 
 MilkRust PR #20 now includes commit 467adacec200d0fd5551cf5b5c9dee9d0621f750 (ABI v2). Fully initialized function-body or shader-body opaque arrays of 1–15 entries normalize to matching global resource/sampler bindings when every use has a literal index. Computed/partial initialization, dynamic indices, writes, shadowing and nested-scope declarations remain unsupported. PlezyNG pins this revision. No compiler, build, test, render or device run was performed for this checkpoint.
 
+## 2026-11-11 Windows release bundle gate
+
+The Windows x64 and arm64 build workflow now requires the MilkRust DLL, visualizer helper, offline starter pack, notices, source archive and source receipt in each final bundle. It compares the bundled libmpv DLL with the checksum-pinned DLL extracted for the build and checks the MilkRust receipt against the application source lock. This is a packaging gate; installed Windows playback and renderer qualification remain pending.
+
 ## 2026-10-30 final code integration
 
 The final MilkRust source pin is `16490403726ba0240249b41903855583f4f9292d` (ABI v2), including lexical sampler

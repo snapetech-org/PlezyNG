@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Verify that Windows release bundles contain the MilkRust renderer, visualizer helper, starter presets and corresponding source, and that their libmpv matches the checksum-pinned build input.
 - Choose peak, bass or treble filter types for each native music group equalizer band.
 
 - Reject Linux visualizer packages whose bundled libmpv lacks the required music PCM tap or whose MilkRust runtime, helper, notices, source, or offline sample pack is missing.

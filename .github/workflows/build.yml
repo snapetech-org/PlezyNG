@@ -2521,9 +2521,16 @@ jobs:
             "flutter_windows.dll"
             "sqlite3.dll"
             "libmpv-2.dll"
+            "milkrust_native.dll"
+            "plezy_visualizer_helper.exe"
             "data/app.so"
             "data/icudtl.dat"
             "data/flutter_assets/NativeAssetsManifest.json"
+            "data/flutter_assets/assets/visualizer/milkrust-sample-pack-0.1.0.rmpack"
+            "data/visualizer-notices/MILKRUST-NOTICES.txt"
+            "data/visualizer-notices/milkrust-build.json"
+            "data/visualizer-notices/source/milkrust-source.tar.gz"
+            "data/visualizer-notices/sources.lock.json"
             # MSVC runtime bundled by InstallRequiredSystemLibraries in
             # windows/CMakeLists.txt; without it the app crashes at startup on
             # machines whose system-wide redist is older than the CI toolset.
@@ -2541,6 +2548,21 @@ jobs:
             if ($foundFiles -notcontains $file) {
               Write-Output "::error::Required Windows bundle file is missing: $file"
               $bundleErrors += "missing $file"
+            }
+          }
+          $pinnedMpv = "build/windows/${{ matrix.arch }}/_deps/mpv_dev-src/libmpv-2.dll"
+          if (-not (Test-Path -LiteralPath $pinnedMpv -PathType Leaf)) {
+            $bundleErrors += "missing pinned libmpv source DLL"
+          } elseif ((Get-FileHash -Algorithm SHA256 -LiteralPath $pinnedMpv).Hash -ne
+                    (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $bundlePath 'libmpv-2.dll')).Hash) {
+            $bundleErrors += "bundled libmpv differs from the checksum-pinned build input"
+          }
+          $sourceLock = Get-Content -LiteralPath 'native/visualizer/sources.lock.json' -Raw | ConvertFrom-Json
+          $receiptPath = Join-Path $bundlePath 'data/visualizer-notices/milkrust-build.json'
+          if (Test-Path -LiteralPath $receiptPath -PathType Leaf) {
+            $receipt = Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json
+            if ($receipt.sourceRevision -cne $sourceLock.milkrust.commit) {
+              $bundleErrors += "bundled MilkRust runtime differs from the application source pin"
             }
           }
           foreach ($file in $forbiddenFiles) {

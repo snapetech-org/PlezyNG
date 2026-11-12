@@ -268,13 +268,7 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
     }
     final lines = _track.lyrics.lines.toList(), at = widget.session.positionMs.value;
     final old = lines[_tap];
-    lines[_tap] = LyricLine(
-      text: old.text,
-      startMs: at,
-      part: old.part,
-      translation: old.translation,
-      pronunciation: old.pronunciation,
-    );
+    lines[_tap] = LyricLine.fromJson(old.toJson()..['startMs'] = at);
     if (_tap > 0 && lines[_tap - 1].startMs != null && lines[_tap - 1].startMs! < at) {
       lines[_tap - 1] = LyricLine.fromJson(lines[_tap - 1].toJson()..['endMs'] = at);
     }

@@ -155,9 +155,10 @@ identical. It never overwrites an existing signed output or guesses a TV target.
 `.github/workflows/tizen.yml` is manual (`workflow_dispatch`) with no release
 publication. It defaults to compatible hosted Ubuntu and offers the private
 profile for tasks that require private network, storage, or provisioned SDK
-resources. The versioned 3.0.0 release uses the same hybrid route: Tizen builds
-run on hosted Ubuntu while Apple and storage-constrained WebOS jobs use private
-JIT. Both profiles preserve the ARM toolchain and signing gates.
+resources. The versioned release uses the hybrid route: Tizen builds run on
+hosted Ubuntu, iOS/tvOS packages use private-first capacity routing, and
+storage-constrained WebOS jobs use private JIT. Both profiles preserve the ARM
+toolchain and signing gates.
 `build_package` defaults to false; packaging runs only on `main`. `tester_build`
 defaults to true. With no provisioned paths/profile, the ARM job checks out the
 pinned Flutter toolchain, bootstraps its isolated SDK and creates a disposable

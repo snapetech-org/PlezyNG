@@ -22,9 +22,37 @@ from release_all_platforms import (  # noqa: E402
     ensure_candidate_build,
     ensure_ci,
     ensure_tag,
+    select_apple_runner_pool,
     release_ci_source,
     run_has_successful_step,
 )
+
+
+class AppleRunnerRoutingTests(unittest.TestCase):
+    @patch("release_all_platforms.hosted_apple_queue_busy")
+    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=False)
+    def test_private_is_selected_first_when_available(self, _private_busy, hosted_busy) -> None:
+        self.assertEqual(select_apple_runner_pool("auto"), "private")
+        hosted_busy.assert_not_called()
+
+    @patch("release_all_platforms.hosted_apple_queue_busy", return_value=False)
+    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=True)
+    def test_hosted_is_fallback_when_private_busy_and_hosted_queue_clear(
+        self, _private_busy, _hosted_busy
+    ) -> None:
+        self.assertEqual(select_apple_runner_pool("auto"), "hosted")
+
+    @patch("release_all_platforms.hosted_apple_queue_busy", return_value=True)
+    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=True)
+    def test_private_is_retried_when_hosted_apple_is_queued(
+        self, _private_busy, _hosted_busy
+    ) -> None:
+        self.assertEqual(select_apple_runner_pool("auto"), "private")
+
+    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner")
+    def test_explicit_route_override_skips_capacity_probe(self, private_busy) -> None:
+        self.assertEqual(select_apple_runner_pool("hosted"), "hosted")
+        private_busy.assert_not_called()
 
 
 class ReleaseCIGateManifestTests(unittest.TestCase):
@@ -155,6 +183,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
                 "include_webos_release": "true",
                 "include_tizen_build": "true",
                 "include_apple_store_build": "false",
+                "tvos_runner_pool": "private",
                 "subtitle_gpu_backend": "cpu",
                 "prepare_homebrew_cask": "false",
             },

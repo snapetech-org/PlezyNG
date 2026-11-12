@@ -20,6 +20,7 @@ class SigningOptionsTests(unittest.TestCase):
                 args = release.parse_args()
                 self.assertEqual(args.include_apple_store_build, expected)
                 self.assertEqual(args.prepare_homebrew_cask, expected)
+                self.assertEqual(args.apple_arm_runner_pool, "auto")
                 self.assertFalse(args.publish)
 
     def test_dispatch_and_reuse_require_every_requested_step(self):

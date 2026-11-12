@@ -1,10 +1,30 @@
 # Pleazyng Apple JIT runner
 
-Compatible Apple jobs default to GitHub-hosted runners. Select the existing
-`private-apple-builds` ARM lane when a job requires its hardware or hosted ARM
-capacity cannot meet qualification and tvOS AOT requirements. This lane has one
-private Mac slot, so only one selected job can run at a time. Other compatible
-platform jobs remain eligible to run concurrently on their hosted runners.
+Full iOS and tvOS package routing is private-first. Before dispatch, the
+release controller checks whether the on-demand private-apple-builds ARM lane
+is occupied. If it is, the controller checks active hosted Apple jobs: it uses
+hosted when no Apple package is queued, and selects private again when hosted
+Apple work is already waiting. The private queue controller waits for the
+single Mac slot and launches each selected job as soon as it is free.
+
+This policy responds to the v3.0.33 hosted release, which waited 7h18 for its
+Apple jobs, then the signed iOS job reached its six-hour limit while archiving.
+A verified private Apple recovery completed iOS in 1h43 and tvOS in 26 minutes
+([hosted release](https://github.com/snapetech-org/pleazyng/actions/runs/42992562384),
+[iOS recovery](https://github.com/snapetech-org/pleazyng/actions/runs/43120491761),
+[tvOS recovery](https://github.com/snapetech-org/pleazyng/actions/runs/43115287017)).
+The release controller starts the runner on demand and serializes Apple jobs
+because the lane has one Mac slot. Direct workflow dispatches default to the
+private lane; the release controller can select either lane from live queue
+state, and `--apple-arm-runner-pool hosted|private` remains available as an
+explicit override. GitHub does not expose global hosted macOS capacity, so the
+controller treats an already queued hosted Apple job in this repository as a
+busy signal and prefers private when it observes one.
+
+Apple native reliability checks in Release CI remain on GitHub-hosted runners;
+they completed within 43 minutes in the same release. Linux, Android,
+Windows, macOS desktop, and other compatible lanes also keep their hosted
+routes.
 
 ## Pinned tvOS host tools on Apple silicon
 

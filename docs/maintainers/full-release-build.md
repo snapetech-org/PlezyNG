@@ -80,17 +80,19 @@ equivalence checks; do not dispatch another complete build for a delivery error.
 
 ## Apple native qualification
 
-Apple native CI and tvOS release AOT default to the hosted `macos-26` ARM
-image with explicit Xcode 26.5. This matches the release compiler and supplies
-the host asset-rendering frameworks and Swift overlays used by the layered
-icons and pinned native libraries. Every native CI leg and tvOS AOT job verifies
-an ARM64 host before setup. Simulator selection derives the matching installed
-runtime from the selected SDK; keep icon assets, native features and all test
-coverage intact. Select
-`--apple-arm-runner-pool private` only when hosted ARM capacity cannot meet the
-requirement. This uses the existing private ARM lane for native CI and tvOS;
-other compatible jobs retain their hosted routes. Check live architecture,
-Xcode, simulator runtimes, free APFS/NFS space and active consumers first.
+Apple native reliability CI remains on hosted `macos-26` ARM with explicit
+Xcode 26.5. Full iOS and tvOS package jobs use the release controller's
+private-first capacity route: it selects private when the Mac JIT slot is free,
+falls back to hosted when private is occupied and no hosted Apple package is
+queued, and returns to private when hosted Apple work is already queued. The
+private queue controller starts the runner on demand and serializes jobs on
+the single Mac slot. GitHub does not expose global hosted macOS capacity, so an
+already queued hosted Apple package in this repository is the busy signal.
+Use `--apple-arm-runner-pool hosted|private` only to override the automatic
+choice. Run the release through `scripts/release_all_platforms.py` so it can
+probe capacity and launch the private JIT controller. Every Apple build still
+checks ARM64, Xcode, simulator runtimes, and free APFS/NFS space; native tests
+retain their full coverage.
 Private images use their installed compatible toolchain and must qualify it.
 The test selector creates a fresh job-owned simulator using an available device
 type and runtime matching the selected SDK's major/minor version. It never
@@ -156,12 +158,12 @@ required platform outputs before assembling the draft. The steps inside each
 job still run in order.
 
 Capacity determines which eligible jobs start. The hybrid Linux, Android,
-Tizen, and Windows jobs can occupy separate hosted runners concurrently. iOS,
-tvOS, and macOS use compatible GitHub-hosted macOS runners in the hybrid
-profile. Explicit private Apple runs share the single private Apple JIT slot
-and run one at a time. WebOS uses its own private Linux route and can remain queued
-until that compatible capacity is available; it has no dependency on an Apple
-job. The stage-by-stage waits in `release_all_platforms.py` protect the exact
+Tizen, and Windows jobs can occupy separate hosted runners concurrently.
+Apple native reliability checks use hosted macOS, while iOS and tvOS package
+jobs follow the private-first capacity route described above. WebOS uses its
+own private Linux route and can remain queued until that compatible capacity is
+available; it has no dependency on an Apple job. The stage-by-stage waits in
+`release_all_platforms.py` protect the exact
 native-manifest, CI, tag, and release checks; they do not serialize
 independent platform jobs inside the dispatched release workflow.
 
@@ -504,8 +506,9 @@ complete GitHub release.
 
 The orchestrator uses the current machine's GitHub CLI authentication only for
 workflow dispatch, repository commits, and the version tag. Its default hybrid
-profile sends compatible jobs to GitHub-hosted runners and uses private JIT for
-Apple, storage-heavy WebOS, and other private-resource work. The script does not
+profile sends compatible jobs to GitHub-hosted runners, routes iOS/tvOS packages
+private-first with capacity fallback, and uses private JIT for storage-heavy
+WebOS and other private-resource work. The script does not
 accept custom runner labels or store or print credentials.
 It stops on a failed native group, FFmpeg signature, CI run,
 tag conflict, or release build. Re-running it reuses successful native,

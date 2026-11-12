@@ -2,8 +2,9 @@
 """Orchestrate a native dependency refresh and the complete Pleazyng release.
 
 This is a local control-plane command. Pleazyng 3.0.0 uses compatible
-GitHub-hosted runners by default and private JIT for Apple, WebOS storage, or
-other private-resource requirements. It uses the operator's authenticated
+GitHub-hosted runners for ordinary hybrid jobs, private-first capacity routing
+for iOS/tvOS packages, and private JIT for WebOS storage or other private
+resource requirements. It uses the operator's authenticated
 `gh` CLI session and never copies credentials into the repos.
 With --publish, it promotes the verified draft and runs every configured
 package/store publication workflow from main, sequentially and idempotently.
@@ -395,6 +396,74 @@ def active_run(repo: str, workflow: str, *, ref: str) -> dict | None:
         if run.get("status") in active_states:
             return run
     return None
+
+
+def hosted_apple_queue_busy() -> bool:
+    """Return true when a hosted Apple package job is already waiting for a runner."""
+    active_states = {"queued", "in_progress", "waiting", "requested", "pending"}
+    for run in workflow_runs(PLEZY_REPO, RELEASE_WORKFLOW):
+        if run.get("status") not in active_states:
+            continue
+        run_id = run.get("databaseId")
+        if not isinstance(run_id, int):
+            continue
+        inventory = gh_json(
+            "api", f"repos/{PLEZY_REPO}/actions/runs/{run_id}/jobs?per_page=100"
+        )
+        jobs = inventory.get("jobs")
+        if not isinstance(jobs, list) or any(not isinstance(job, dict) for job in jobs):
+            raise ReleaseError(f"Cannot read Apple queue state for workflow run {run_id}.")
+        if inventory.get("total_count", len(jobs)) > len(jobs):
+            raise ReleaseError(f"Apple queue state for workflow run {run_id} is truncated.")
+        if any(
+            job.get("status") == "queued"
+            and isinstance(job.get("labels"), list)
+            and any(
+                isinstance(label, str) and label.startswith("macos-")
+                for label in job["labels"]
+            )
+            for job in jobs
+        ):
+            print(
+                f"Hosted Apple capacity is busy: workflow run {run_id} already has a queued Apple job.",
+                flush=True,
+            )
+            return True
+    return False
+
+
+def select_apple_runner_pool(requested: str) -> str:
+    """Prefer private Apple JIT, using observed queue state for a fast fallback."""
+    if requested != "auto":
+        return requested
+    try:
+        private_busy = apple_queue.active_run_scoped_apple_runner()
+    except apple_queue.QueueError as error:
+        # Private is the first choice. If telemetry is unavailable, keep that
+        # choice and let the existing JIT controller report any real blocker.
+        print(
+            f"Could not read private Apple capacity ({error}); keeping the private-first route.",
+            flush=True,
+        )
+        return "private"
+    if not private_busy:
+        print("Apple route: private Mac is available; selecting private first.", flush=True)
+        return "private"
+
+    print("Apple route: private Mac is occupied; checking the hosted Apple queue.", flush=True)
+    try:
+        public_busy = hosted_apple_queue_busy()
+    except ReleaseError as error:
+        print(
+            f"Could not confirm hosted Apple capacity ({error}); retrying private after its current job.",
+            flush=True,
+        )
+        return "private"
+    if public_busy:
+        print("Apple route: hosted Apple is also busy; queueing private for its next free slot.", flush=True)
+        return "private"
+    print("Apple route: hosted Apple has no queued package job; selecting hosted fallback.", flush=True)
+    return "hosted"
 
 
 def run_has_successful_job(repo: str, run: dict, job_name: str) -> bool:
@@ -962,8 +1031,10 @@ def ensure_candidate_build(
     include_apple_store_build: bool = False,
     prepare_homebrew_cask: bool = False,
     include_webos_build: bool = True,
+    tvos_runner_pool: str = "private",
 ) -> dict:
     """Require a complete nonpublishing release-mode build before creating the immutable tag."""
+    tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
     run_title = candidate_build_title(version)
     existing = matching_run(
         PLEZY_REPO,
@@ -981,7 +1052,10 @@ def ensure_candidate_build(
         if existing.get("status") != "completed":
             existing = wait_for_run(
                 PLEZY_REPO, existing, f"Pleazyng {version} all-platform release-mode candidate",
-                private_apple=execution_profile != "hybrid",
+                # The stable candidate title does not encode its Apple pool;
+                # watch for private-labeled jobs even if current capacity has
+                # changed since this run was first dispatched.
+                private_apple=True,
             )
         complete = execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
@@ -1031,6 +1105,7 @@ def ensure_candidate_build(
             "include_webos_release": "true",
             "include_tizen_build": "true",
             "include_apple_store_build": "true" if include_apple_store_build else "false",
+            "tvos_runner_pool": tvos_runner_pool,
             "subtitle_gpu_backend": "cpu",
             "prepare_homebrew_cask": "true" if prepare_homebrew_cask else "false",
         },
@@ -1198,10 +1273,11 @@ def ensure_release(
     reuse_webos_run_id: int | None = None,
     candidate_ref: str | None = None,
     start_only: bool = False,
-    tvos_runner_pool: str = "hosted",
+    tvos_runner_pool: str = "private",
     packaging_source_sha: str | None = None,
     workflow_source_sha: str | None = None,
 ) -> dict:
+    tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
     if not include_webos_release or not include_webos_build:
@@ -1280,7 +1356,10 @@ def ensure_release(
             if start_only:
                 return existing
             existing = wait_for_run(PLEZY_REPO, existing, f"Pleazyng {tag} all-platform release build",
-                                    private_apple=execution_profile != "hybrid" or tvos_runner_pool == "private")
+                                    # Reused run titles do not encode the Apple
+                                    # route. The controller only launches jobs
+                                    # whose labels target the private Mac.
+                                    private_apple=True)
         complete = bool(reuse_platform_run_id) or execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
         )
@@ -1330,8 +1409,7 @@ def ensure_release(
     if repair:
         fields["recovery_source_sha"] = packaging_source_sha
         fields["recovery_product_sha"] = proof["product_source_sha"]
-    if tvos_runner_pool == "private":
-        fields["tvos_runner_pool"] = "private"
+    fields["tvos_runner_pool"] = tvos_runner_pool
     if rebuild_linux:
         fields["rebuild_linux"] = "true"
     if rebuild_macos:
@@ -2023,8 +2101,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--freeze-release", action=argparse.BooleanOptionalAction, default=True,
                         help="Capture one main source for reusable CI and builds; create its stable tag only after qualification.")
     parser.add_argument("--source-commit", help="Resume a selected 40-character canonical-main ancestor without incorporating later development.")
-    parser.add_argument("--apple-arm-runner-pool", choices=("hosted", "private"), default="hosted",
-                        help="Select private ARM hardware only when hosted ARM capacity cannot meet qualification and tvOS build requirements.")
+    parser.add_argument(
+        "--apple-arm-runner-pool", choices=("auto", "hosted", "private"), default="auto",
+        help=("Auto prefers private Apple JIT, uses hosted when private is occupied and no hosted Apple job is queued, "
+              "and returns to private when hosted Apple jobs are queued. Explicitly select hosted or private to override."),
+    )
     parser.add_argument(
         "--reuse-platform-run", type=int,
         help="Rebuild Android/WebOS and reuse other verified platform outputs after infrastructure-only fixes.",
@@ -2290,8 +2371,9 @@ def main() -> int:
         stage = "Pleazyng CI"
         progress["stage"] = stage
         save_progress()
-        apple_pool = getattr(args, "apple_arm_runner_pool", "hosted")
+        apple_pool = getattr(args, "apple_arm_runner_pool", "auto")
         if frozen:
+            apple_pool = select_apple_runner_pool(apple_pool)
             # One main workflow captures the source for reusable CI and every
             # platform. Existing main-only private runner authorization remains
             # unchanged; the stable tag is created inside only after CI passes.
@@ -2332,6 +2414,10 @@ def main() -> int:
         stage = "all-platform release build"
         progress["stage"] = stage
         save_progress()
+        if apple_pool == "auto":
+            apple_pool = select_apple_runner_pool(apple_pool)
+        progress["apple_arm_runner_pool"] = apple_pool
+        save_progress()
         release = ensure_release(
             tag,
             pin_sha,
@@ -2340,7 +2426,7 @@ def main() -> int:
             include_apple_store_build=include_apple_store_build,
             prepare_homebrew_cask=args.prepare_homebrew_cask,
             **({"candidate_ref": candidate_ref} if frozen else {}),
-            **({"tvos_runner_pool": apple_pool} if frozen or packaging_repair else {}),
+            tvos_runner_pool=apple_pool,
             **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"rebuild_macos": True} if args.rebuild_macos else {}),
             **({"rebuild_tvos": True} if args.rebuild_tvos else {}),

@@ -1,5 +1,5 @@
 # ng-runner-policy: hosted-first-v1
-# The trusted-main hybrid profile uses standard hosted runners for compatible Linux, Android, Windows, Apple, and pinned Tizen builds; storage-heavy WebOS remains private JIT.
+# The trusted-main hybrid profile uses hosted runners for compatible lanes; full iOS/tvOS packages use the release controller's private-first capacity routing.
 # packer-windows-jit-v1
 name: Pleazyng Release
 run-name: ${{ inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
@@ -48,11 +48,11 @@ on:
         required: false
         type: string
       tvos_runner_pool:
-        description: Use private Apple Silicon hardware for targeted iOS or tvOS recovery when hosted capacity or time cannot meet the build requirement
+        description: Release controller prefers private Apple; it uses hosted if private is occupied and returns to private when hosted Apple jobs are queued
         required: false
         type: choice
         options: [hosted, private]
-        default: hosted
+        default: private
       macos_compilation_job_id:
         description: Recover a verified same-product Mac compilation for signing-only macos-validation
         required: false
@@ -238,7 +238,9 @@ jobs:
       runner_pool: private
       execution_profile: hybrid
       build_linux_packages: true
-      apple_runner_pool: ${{ inputs.tvos_runner_pool }}
+      # Keep the fast native reliability checks on hosted macOS; this input
+      # controls only the full iOS/tvOS package jobs below.
+      apple_runner_pool: hosted
 
   freeze-qualified-source:
     name: Freeze qualified source
@@ -523,10 +525,12 @@ jobs:
       - name: Summarize runner execution profile
         env:
           EXECUTION_PROFILE: ${{ steps.request.outputs.execution_profile }}
+          TVOS_RUNNER_POOL: ${{ inputs.tvos_runner_pool }}
         run: |
           echo "Execution profile: **$EXECUTION_PROFILE** (broker pool: private)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Full iOS/tvOS package runner: **$TVOS_RUNNER_POOL**." >> "$GITHUB_STEP_SUMMARY"
           if [[ "$EXECUTION_PROFILE" == "hybrid" ]]; then
-            echo "Compatible Linux, Android, Tizen, Windows, and Apple jobs use standard GitHub-hosted runners; storage-heavy WebOS uses private JIT." >> "$GITHUB_STEP_SUMMARY"
+            echo "Compatible Linux, Android, Tizen, Windows, and Apple reliability jobs use standard GitHub-hosted runners; full iOS/tvOS packages use private-first capacity routing; storage-heavy WebOS uses private JIT." >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Require the main branch for builds
@@ -1242,6 +1246,7 @@ jobs:
   build-ios:
     if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_ios) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
+    timeout-minutes: 240
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
     permissions:
       id-token: write
@@ -1565,6 +1570,7 @@ jobs:
   build-tvos:
     if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
+    timeout-minutes: 180
     name: Build tvOS developer package (arm64)
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
     permissions:

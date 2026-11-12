@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Guard the architecture matrices and release contract in build.yml."""
 
+import ast
 import json
 from pathlib import Path
 import re
@@ -11,6 +12,7 @@ from workflow_yaml import iter_uses_references, job_block
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_WORKFLOW = ROOT / ".github/workflows/build.yml"
+RELEASE_DRIVER = ROOT / "scripts/release_all_platforms.py"
 SDK_PIN = json.loads((ROOT / "scripts/flutter/sdk-pin.json").read_text())
 FLUTTER_VERSION = SDK_PIN["version"]
 FLUTTER_COMMIT = SDK_PIN["frameworkRevision"]
@@ -49,6 +51,7 @@ RELEASE_CHECKSUMS = ROOT / "scripts/create_release_checksums.py"
 text = WORKFLOW.read_text(encoding="utf-8")
 CI_WORKFLOW = ROOT / ".github/workflows/ci.yml"
 ci_text = CI_WORKFLOW.read_text(encoding="utf-8") if CI_WORKFLOW.is_file() else ""
+release_driver_text = RELEASE_DRIVER.read_text(encoding="utf-8")
 errors: list[str] = []
 
 
@@ -70,6 +73,47 @@ def named_step(block: str, name: str) -> str:
     )
     require(match is not None, f"missing '{name}' step")
     return match.group(0) if match else ""
+
+
+tvos_pool_input = re.search(
+    r"(?ms)^      tvos_runner_pool:\n(?P<body>.*?)(?=^      [a-z_]+:|\Z)",
+    text,
+)
+require(
+    tvos_pool_input is not None
+    and "options: [hosted, private]" in tvos_pool_input.group("body")
+    and "default: private" in tvos_pool_input.group("body"),
+    "full iOS/tvOS release builds must default to the proven on-demand Apple lane",
+)
+require(
+    "apple_runner_pool: hosted" in job("release-ci"),
+    "Release CI native reliability checks must remain on hosted Apple runners",
+)
+require(
+    "timeout-minutes: 240" in job("build-ios")
+    and "timeout-minutes: 180" in job("build-tvos"),
+    "iOS and tvOS package jobs must have explicit bounded timeouts",
+)
+release_driver_ast = ast.parse(release_driver_text)
+apple_pool_argument = next((
+    node for node in ast.walk(release_driver_ast)
+    if isinstance(node, ast.Call)
+    and isinstance(node.func, ast.Attribute)
+    and node.func.attr == "add_argument"
+    and node.args
+    and isinstance(node.args[0], ast.Constant)
+    and node.args[0].value == "--apple-arm-runner-pool"
+), None)
+apple_pool_default = next((keyword.value for keyword in apple_pool_argument.keywords
+                           if keyword.arg == "default"), None) if apple_pool_argument else None
+require(
+    isinstance(apple_pool_default, ast.Constant)
+    and apple_pool_default.value == "auto"
+    and "def select_apple_runner_pool(requested: str) -> str:" in release_driver_text
+    and "apple_queue.active_run_scoped_apple_runner()" in release_driver_text
+    and 'print("Apple route: hosted Apple is also busy; queueing private for its next free slot."' in release_driver_text,
+    "release driver must prefer private Apple, fall back on capacity, and return to private when hosted Apple is queued",
+)
 
 
 def validate_windows_jni_jdk(block: str, context: str) -> None:

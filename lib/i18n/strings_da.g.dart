@@ -115,6 +115,7 @@ class TranslationsDa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$da podcasts = _Translations$podcasts$da._(_root);
 	@override late final _Translations$romm$da romm = _Translations$romm$da._(_root);
 	@override late final _Translations$subtitleCapture$da subtitleCapture = _Translations$subtitleCapture$da._(_root);
+	@override late final _Translations$karaokeUi$da karaokeUi = _Translations$karaokeUi$da._(_root);
 	@override late final _Translations$musicExperience$da musicExperience = _Translations$musicExperience$da._(_root);
 	@override late final _Translations$musicTools$da musicTools = _Translations$musicTools$da._(_root);
 	@override late final _Translations$musicDevices$da musicDevices = _Translations$musicDevices$da._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$da extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Behandler lyd lokalt…';
 	@override String processingAudioProgress({required Object percent}) => 'Behandler lyd lokalt (${percent}%)…';
 	@override String get cpuFallback => 'Talebehandling på GPU mislykkedes. Prøver igen på CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$da extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$da._(TranslationsDa root) : this._root = root, super.internal(root);
+
+	final TranslationsDa _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Rediger ord-/stavelsestider';
+	@override String get timeTheLineBeforeEditingSyllables => 'Angiv en starttid for denne tekstlinje, før du redigerer stavelserne.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Opdeling rydder segmentets udtale og sikkerhed. Sammenfletning kræver ens sangstemmer, udtale og sikkerhed.';
+	@override String get syllableText => 'Ord- eller stavelsestekst';
+	@override String get splitSpan => 'Opdel segment';
+	@override String get mergeWithNext => 'Flet med næste';
+	@override String get firstSyllable => 'Første segments tekst';
+	@override String get secondSyllable => 'Andet segments tekst';
+	@override String get splitBoundaryMs => 'Opdelingstid (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'Segmenterne skal gengive teksten nøjagtigt, inklusive mellemrum.';
+	@override String get syllableSplitMustPreserveLyricText => 'De to segmenter skal bevare den oprindelige tekst nøjagtigt.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Vælg et tidspunkt mellem starten og slutningen af dette segment.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Sammenfletning kræver ens sangstemmer, tilstedeværelse af udtale og sikkerhed.';
+	@override String get invalidLyricSpanTiming => 'Hvert segment skal have gyldige start- og sluttider.';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsDa {
 			'subtitleCapture.processingAudio' => 'Behandler lyd lokalt…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Behandler lyd lokalt (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Talebehandling på GPU mislykkedes. Prøver igen på CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'Rediger ord-/stavelsestider',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Angiv en starttid for denne tekstlinje, før du redigerer stavelserne.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Opdeling rydder segmentets udtale og sikkerhed. Sammenfletning kræver ens sangstemmer, udtale og sikkerhed.',
+			'karaokeUi.syllableText' => 'Ord- eller stavelsestekst',
+			'karaokeUi.splitSpan' => 'Opdel segment',
+			'karaokeUi.mergeWithNext' => 'Flet med næste',
+			'karaokeUi.firstSyllable' => 'Første segments tekst',
+			'karaokeUi.secondSyllable' => 'Andet segments tekst',
+			'karaokeUi.splitBoundaryMs' => 'Opdelingstid (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Segmenterne skal gengive teksten nøjagtigt, inklusive mellemrum.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'De to segmenter skal bevare den oprindelige tekst nøjagtigt.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Vælg et tidspunkt mellem starten og slutningen af dette segment.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Sammenfletning kræver ens sangstemmer, tilstedeværelse af udtale og sikkerhed.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Hvert segment skal have gyldige start- og sluttider.',
 			'musicExperience.title' => 'Opdag musik',
 			'musicExperience.mix' => 'Lav et mix',
 			'musicExperience.adventure' => 'Lydeventyr',

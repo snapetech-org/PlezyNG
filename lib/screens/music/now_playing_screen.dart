@@ -855,7 +855,6 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   ) =>
       !companion.musicGroupActive &&
       output.remoteOutputName == null &&
-      session.repeatMode == MusicRepeatMode.off &&
       session.queue.length <= CastMusicQueue.maxTracks &&
       (session is! MusicDiscoveryControls || !(session as MusicDiscoveryControls).continuationEnabled) &&
       (session is! MusicSignalPathService || (session as MusicSignalPathService).signalPath?.offline != true);

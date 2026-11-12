@@ -30,6 +30,7 @@ class MusicBrowserService : MediaBrowserServiceCompat() {
     // PIN/account gates still decide whether Dart publishes a catalog.
     val engine = FlutterEngine(applicationContext)
     engine.plugins.add(MusicBackgroundPlatformPlugin())
+    engine.plugins.add(com.edde746.plezy.music.CastMusicQueuePlugin())
     engine.plugins.add(MpvAudioPlayerPlugin())
     engine.plugins.add(MpvAudioOverlapPlugin())
     engine.plugins.add(MpvAudioGroupOutputPlugin())

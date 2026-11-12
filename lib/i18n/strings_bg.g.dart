@@ -115,6 +115,7 @@ class TranslationsBg extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$bg podcasts = _Translations$podcasts$bg._(_root);
 	@override late final _Translations$romm$bg romm = _Translations$romm$bg._(_root);
 	@override late final _Translations$subtitleCapture$bg subtitleCapture = _Translations$subtitleCapture$bg._(_root);
+	@override late final _Translations$karaokeUi$bg karaokeUi = _Translations$karaokeUi$bg._(_root);
 	@override late final _Translations$musicExperience$bg musicExperience = _Translations$musicExperience$bg._(_root);
 	@override late final _Translations$musicTools$bg musicTools = _Translations$musicTools$bg._(_root);
 	@override late final _Translations$musicDevices$bg musicDevices = _Translations$musicDevices$bg._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$bg extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Локална обработка на аудиото…';
 	@override String processingAudioProgress({required Object percent}) => 'Локална обработка на аудиото (${percent}%)…';
 	@override String get cpuFallback => 'Обработката на речта чрез GPU е неуспешна. Повторен опит чрез CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$bg extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$bg._(TranslationsBg root) : this._root = root, super.internal(root);
+
+	final TranslationsBg _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Редактиране на времето на думи/срички';
+	@override String get timeTheLineBeforeEditingSyllables => 'Задайте начало на този ред, преди да редактирате сричките.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Разделянето изтрива произношението и увереността на откъса. Сливането изисква еднакви вокални партии, произношение и увереност.';
+	@override String get syllableText => 'Текст на дума или сричка';
+	@override String get splitSpan => 'Разделяне на откъс';
+	@override String get mergeWithNext => 'Сливане със следващия';
+	@override String get firstSyllable => 'Текст на първия сегмент';
+	@override String get secondSyllable => 'Текст на втория сегмент';
+	@override String get splitBoundaryMs => 'Момент на разделяне (мс)';
+	@override String get syllableTextMustMatchLyricExactly => 'Сегментите трябва да възпроизвеждат точно текста, включително интервалите.';
+	@override String get syllableSplitMustPreserveLyricText => 'Двата сегмента трябва да запазват точно оригиналния текст.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Изберете момент между началото и края на този откъс.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Сливането изисква еднакви вокални партии, наличие на произношение и увереност.';
+	@override String get invalidLyricSpanTiming => 'Всеки откъс изисква валидни времена за начало и край.';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsBg {
 			'subtitleCapture.processingAudio' => 'Локална обработка на аудиото…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Локална обработка на аудиото (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Обработката на речта чрез GPU е неуспешна. Повторен опит чрез CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'Редактиране на времето на думи/срички',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Задайте начало на този ред, преди да редактирате сричките.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Разделянето изтрива произношението и увереността на откъса. Сливането изисква еднакви вокални партии, произношение и увереност.',
+			'karaokeUi.syllableText' => 'Текст на дума или сричка',
+			'karaokeUi.splitSpan' => 'Разделяне на откъс',
+			'karaokeUi.mergeWithNext' => 'Сливане със следващия',
+			'karaokeUi.firstSyllable' => 'Текст на първия сегмент',
+			'karaokeUi.secondSyllable' => 'Текст на втория сегмент',
+			'karaokeUi.splitBoundaryMs' => 'Момент на разделяне (мс)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Сегментите трябва да възпроизвеждат точно текста, включително интервалите.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Двата сегмента трябва да запазват точно оригиналния текст.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Изберете момент между началото и края на този откъс.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Сливането изисква еднакви вокални партии, наличие на произношение и увереност.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Всеки откъс изисква валидни времена за начало и край.',
 			'musicExperience.title' => 'Откриване на музика',
 			'musicExperience.mix' => 'Създаване на микс',
 			'musicExperience.adventure' => 'Звуково пътешествие',

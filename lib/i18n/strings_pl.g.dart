@@ -115,6 +115,7 @@ class TranslationsPl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$pl podcasts = _Translations$podcasts$pl._(_root);
 	@override late final _Translations$romm$pl romm = _Translations$romm$pl._(_root);
 	@override late final _Translations$subtitleCapture$pl subtitleCapture = _Translations$subtitleCapture$pl._(_root);
+	@override late final _Translations$karaokeUi$pl karaokeUi = _Translations$karaokeUi$pl._(_root);
 	@override late final _Translations$musicExperience$pl musicExperience = _Translations$musicExperience$pl._(_root);
 	@override late final _Translations$musicTools$pl musicTools = _Translations$musicTools$pl._(_root);
 	@override late final _Translations$musicDevices$pl musicDevices = _Translations$musicDevices$pl._(_root);
@@ -4296,6 +4297,29 @@ class _Translations$subtitleCapture$pl extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Lokalne przetwarzanie dźwięku…';
 	@override String processingAudioProgress({required Object percent}) => 'Lokalne przetwarzanie dźwięku (${percent}%)…';
 	@override String get cpuFallback => 'Przetwarzanie mowy na GPU nie powiodło się. Ponowna próba na CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$pl extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$pl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Edytuj czas słów/sylab';
+	@override String get timeTheLineBeforeEditingSyllables => 'Przed edycją sylab ustaw czas rozpoczęcia tego wiersza tekstu.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Podział usuwa wymowę i poziom pewności fragmentu. Łączenie wymaga zgodnych partii wokalnych, wymowy i poziomu pewności.';
+	@override String get syllableText => 'Tekst słowa lub sylaby';
+	@override String get splitSpan => 'Podziel fragment';
+	@override String get mergeWithNext => 'Połącz z następnym';
+	@override String get firstSyllable => 'Tekst pierwszego segmentu';
+	@override String get secondSyllable => 'Tekst drugiego segmentu';
+	@override String get splitBoundaryMs => 'Punkt podziału (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'Segmenty muszą dokładnie odtwarzać tekst, łącznie ze spacjami.';
+	@override String get syllableSplitMustPreserveLyricText => 'Oba segmenty muszą dokładnie zachować oryginalny tekst.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Wybierz czas między początkiem a końcem tego fragmentu.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Łączenie wymaga zgodnych partii wokalnych, obecności wymowy i poziomu pewności.';
+	@override String get invalidLyricSpanTiming => 'Każdy fragment wymaga prawidłowego czasu rozpoczęcia i zakończenia.';
 }
 
 // Path: musicExperience
@@ -9533,6 +9557,20 @@ extension on TranslationsPl {
 			'subtitleCapture.processingAudio' => 'Lokalne przetwarzanie dźwięku…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Lokalne przetwarzanie dźwięku (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Przetwarzanie mowy na GPU nie powiodło się. Ponowna próba na CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'Edytuj czas słów/sylab',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Przed edycją sylab ustaw czas rozpoczęcia tego wiersza tekstu.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Podział usuwa wymowę i poziom pewności fragmentu. Łączenie wymaga zgodnych partii wokalnych, wymowy i poziomu pewności.',
+			'karaokeUi.syllableText' => 'Tekst słowa lub sylaby',
+			'karaokeUi.splitSpan' => 'Podziel fragment',
+			'karaokeUi.mergeWithNext' => 'Połącz z następnym',
+			'karaokeUi.firstSyllable' => 'Tekst pierwszego segmentu',
+			'karaokeUi.secondSyllable' => 'Tekst drugiego segmentu',
+			'karaokeUi.splitBoundaryMs' => 'Punkt podziału (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Segmenty muszą dokładnie odtwarzać tekst, łącznie ze spacjami.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Oba segmenty muszą dokładnie zachować oryginalny tekst.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Wybierz czas między początkiem a końcem tego fragmentu.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Łączenie wymaga zgodnych partii wokalnych, obecności wymowy i poziomu pewności.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Każdy fragment wymaga prawidłowego czasu rozpoczęcia i zakończenia.',
 			'musicExperience.title' => 'Odkrywaj muzykę',
 			'musicExperience.mix' => 'Tworzenie miksu',
 			'musicExperience.adventure' => 'Podróż dźwiękowa',

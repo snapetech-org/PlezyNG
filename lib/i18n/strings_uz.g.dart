@@ -115,6 +115,7 @@ class TranslationsUz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$uz podcasts = _Translations$podcasts$uz._(_root);
 	@override late final _Translations$romm$uz romm = _Translations$romm$uz._(_root);
 	@override late final _Translations$subtitleCapture$uz subtitleCapture = _Translations$subtitleCapture$uz._(_root);
+	@override late final _Translations$karaokeUi$uz karaokeUi = _Translations$karaokeUi$uz._(_root);
 	@override late final _Translations$musicExperience$uz musicExperience = _Translations$musicExperience$uz._(_root);
 	@override late final _Translations$musicTools$uz musicTools = _Translations$musicTools$uz._(_root);
 	@override late final _Translations$musicDevices$uz musicDevices = _Translations$musicDevices$uz._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$uz extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Audio qurilmada qayta ishlanmoqda…';
 	@override String processingAudioProgress({required Object percent}) => 'Audio qurilmada qayta ishlanmoqda (${percent}%)…';
 	@override String get cpuFallback => 'GPU yordamida nutqni qayta ishlash bajarilmadi. CPU yordamida qayta urinilmoqda…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$uz extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$uz._(TranslationsUz root) : this._root = root, super.internal(root);
+
+	final TranslationsUz _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'So‘z/bo‘g‘in vaqtini tahrirlash';
+	@override String get timeTheLineBeforeEditingSyllables => 'Bo‘g‘inlarni tahrirlashdan oldin bu matn qatorining boshlanish vaqtini belgilang.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Bo‘lish qismning talaffuzi va ishonchlilik qiymatini o‘chiradi. Birlashtirish uchun vokal partiyalari, talaffuz va ishonchlilik mos bo‘lishi kerak.';
+	@override String get syllableText => 'So‘z yoki bo‘g‘in matni';
+	@override String get splitSpan => 'Qismni bo‘lish';
+	@override String get mergeWithNext => 'Keyingisi bilan birlashtirish';
+	@override String get firstSyllable => 'Birinchi segment matni';
+	@override String get secondSyllable => 'Ikkinchi segment matni';
+	@override String get splitBoundaryMs => 'Bo‘lish nuqtasi (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'Segmentlar bo‘shliqlar bilan birga qo‘shiq matnini aynan takrorlashi kerak.';
+	@override String get syllableSplitMustPreserveLyricText => 'Ikki segment asl matnni aynan saqlashi kerak.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Bu qismning boshlanishi va oxiri orasidagi vaqtni tanlang.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Birlashtirish uchun vokal partiyalari, talaffuz mavjudligi va ishonchlilik mos bo‘lishi kerak.';
+	@override String get invalidLyricSpanTiming => 'Har bir qism uchun to‘g‘ri boshlanish va tugash vaqti kerak.';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsUz {
 			'subtitleCapture.processingAudio' => 'Audio qurilmada qayta ishlanmoqda…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Audio qurilmada qayta ishlanmoqda (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU yordamida nutqni qayta ishlash bajarilmadi. CPU yordamida qayta urinilmoqda…',
+			'karaokeUi.editWordSyllableTiming' => 'So‘z/bo‘g‘in vaqtini tahrirlash',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Bo‘g‘inlarni tahrirlashdan oldin bu matn qatorining boshlanish vaqtini belgilang.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Bo‘lish qismning talaffuzi va ishonchlilik qiymatini o‘chiradi. Birlashtirish uchun vokal partiyalari, talaffuz va ishonchlilik mos bo‘lishi kerak.',
+			'karaokeUi.syllableText' => 'So‘z yoki bo‘g‘in matni',
+			'karaokeUi.splitSpan' => 'Qismni bo‘lish',
+			'karaokeUi.mergeWithNext' => 'Keyingisi bilan birlashtirish',
+			'karaokeUi.firstSyllable' => 'Birinchi segment matni',
+			'karaokeUi.secondSyllable' => 'Ikkinchi segment matni',
+			'karaokeUi.splitBoundaryMs' => 'Bo‘lish nuqtasi (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Segmentlar bo‘shliqlar bilan birga qo‘shiq matnini aynan takrorlashi kerak.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Ikki segment asl matnni aynan saqlashi kerak.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Bu qismning boshlanishi va oxiri orasidagi vaqtni tanlang.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Birlashtirish uchun vokal partiyalari, talaffuz mavjudligi va ishonchlilik mos bo‘lishi kerak.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Har bir qism uchun to‘g‘ri boshlanish va tugash vaqti kerak.',
 			'musicExperience.title' => 'Musiqa kashf etish',
 			'musicExperience.mix' => 'Miks yaratish',
 			'musicExperience.adventure' => 'Ovozli sayohat',

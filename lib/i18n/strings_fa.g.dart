@@ -115,6 +115,7 @@ class TranslationsFa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$fa podcasts = _Translations$podcasts$fa._(_root);
 	@override late final _Translations$romm$fa romm = _Translations$romm$fa._(_root);
 	@override late final _Translations$subtitleCapture$fa subtitleCapture = _Translations$subtitleCapture$fa._(_root);
+	@override late final _Translations$karaokeUi$fa karaokeUi = _Translations$karaokeUi$fa._(_root);
 	@override late final _Translations$musicExperience$fa musicExperience = _Translations$musicExperience$fa._(_root);
 	@override late final _Translations$musicTools$fa musicTools = _Translations$musicTools$fa._(_root);
 	@override late final _Translations$musicDevices$fa musicDevices = _Translations$musicDevices$fa._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$fa extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'در حال پردازش صدا به‌صورت محلی…';
 	@override String processingAudioProgress({required Object percent}) => 'در حال پردازش صدا به‌صورت محلی (${percent}%)…';
 	@override String get cpuFallback => 'پردازش گفتار با GPU ناموفق بود. تلاش دوباره با CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$fa extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$fa._(TranslationsFa root) : this._root = root, super.internal(root);
+
+	final TranslationsFa _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'ویرایش زمان‌بندی واژه‌ها و هجاها';
+	@override String get timeTheLineBeforeEditingSyllables => 'پیش از ویرایش هجاها، زمان شروع این خط ترانه را تعیین کنید.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'تقسیم، تلفظ و میزان اطمینان بخش را پاک می‌کند. ادغام نیازمند یکسان بودن نقش‌های خوانندگی، تلفظ و میزان اطمینان است.';
+	@override String get syllableText => 'متن واژه یا هجا';
+	@override String get splitSpan => 'تقسیم بخش';
+	@override String get mergeWithNext => 'ادغام با بخش بعدی';
+	@override String get firstSyllable => 'متن قطعهٔ اول';
+	@override String get secondSyllable => 'متن قطعهٔ دوم';
+	@override String get splitBoundaryMs => 'نقطهٔ تقسیم (میلی‌ثانیه)';
+	@override String get syllableTextMustMatchLyricExactly => 'قطعه‌ها باید متن ترانه را دقیقاً، با فاصله‌ها، بازسازی کنند.';
+	@override String get syllableSplitMustPreserveLyricText => 'دو قطعه باید متن اصلی ترانه را دقیقاً حفظ کنند.';
+	@override String get splitBoundaryMustFallInsideSpan => 'زمانی پس از شروع و پیش از پایان این بخش انتخاب کنید.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'ادغام نیازمند یکسان بودن نقش‌های خوانندگی، وجود تلفظ و میزان اطمینان است.';
+	@override String get invalidLyricSpanTiming => 'هر بخش به زمان شروع و پایان معتبر نیاز دارد.';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsFa {
 			'subtitleCapture.processingAudio' => 'در حال پردازش صدا به‌صورت محلی…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'در حال پردازش صدا به‌صورت محلی (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'پردازش گفتار با GPU ناموفق بود. تلاش دوباره با CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'ویرایش زمان‌بندی واژه‌ها و هجاها',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'پیش از ویرایش هجاها، زمان شروع این خط ترانه را تعیین کنید.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'تقسیم، تلفظ و میزان اطمینان بخش را پاک می‌کند. ادغام نیازمند یکسان بودن نقش‌های خوانندگی، تلفظ و میزان اطمینان است.',
+			'karaokeUi.syllableText' => 'متن واژه یا هجا',
+			'karaokeUi.splitSpan' => 'تقسیم بخش',
+			'karaokeUi.mergeWithNext' => 'ادغام با بخش بعدی',
+			'karaokeUi.firstSyllable' => 'متن قطعهٔ اول',
+			'karaokeUi.secondSyllable' => 'متن قطعهٔ دوم',
+			'karaokeUi.splitBoundaryMs' => 'نقطهٔ تقسیم (میلی‌ثانیه)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'قطعه‌ها باید متن ترانه را دقیقاً، با فاصله‌ها، بازسازی کنند.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'دو قطعه باید متن اصلی ترانه را دقیقاً حفظ کنند.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'زمانی پس از شروع و پیش از پایان این بخش انتخاب کنید.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'ادغام نیازمند یکسان بودن نقش‌های خوانندگی، وجود تلفظ و میزان اطمینان است.',
+			'karaokeUi.invalidLyricSpanTiming' => 'هر بخش به زمان شروع و پایان معتبر نیاز دارد.',
 			'musicExperience.title' => 'کشف موسیقی',
 			'musicExperience.mix' => 'ساخت میکس',
 			'musicExperience.adventure' => 'ماجراجویی صوتی',

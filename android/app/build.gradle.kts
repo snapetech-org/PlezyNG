@@ -1325,6 +1325,8 @@ tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }.con
 }
 
 dependencies {
+  // Match flutter_chrome_cast: update the acknowledged item without loading a new queue.
+  implementation("com.google.android.gms:play-services-cast-framework:21.5.0")
   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
   // mpv-build's mpv-android library: libmpv, FFmpeg and the JNI glue with

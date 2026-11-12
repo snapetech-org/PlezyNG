@@ -424,6 +424,7 @@ class CastMediaService extends ChangeNotifier {
               .map<void>((_) {}),
           load: (items, options) => dispatchCastMusicQueue(items, options, android: Platform.isAndroid),
           play: _remote.play,
+          armRepeat: (status) => queue.armRepeat(connection, status),
           finish: session.finishTransfer,
         );
         if (!admitted || prepared.retiredAt != null || !queue.authorized() || !_matchesDetached(prepared)) {

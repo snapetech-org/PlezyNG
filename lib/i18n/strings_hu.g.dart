@@ -115,6 +115,7 @@ class TranslationsHu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$hu podcasts = _Translations$podcasts$hu._(_root);
 	@override late final _Translations$romm$hu romm = _Translations$romm$hu._(_root);
 	@override late final _Translations$subtitleCapture$hu subtitleCapture = _Translations$subtitleCapture$hu._(_root);
+	@override late final _Translations$karaokeUi$hu karaokeUi = _Translations$karaokeUi$hu._(_root);
 	@override late final _Translations$musicExperience$hu musicExperience = _Translations$musicExperience$hu._(_root);
 	@override late final _Translations$musicTools$hu musicTools = _Translations$musicTools$hu._(_root);
 	@override late final _Translations$musicDevices$hu musicDevices = _Translations$musicDevices$hu._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$hu extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'A hang helyi feldolgozása…';
 	@override String processingAudioProgress({required Object percent}) => 'A hang helyi feldolgozása (${percent}%)…';
 	@override String get cpuFallback => 'A GPU-s beszédfeldolgozás sikertelen. Újrapróbálkozás CPU-val…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$hu extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$hu._(TranslationsHu root) : this._root = root, super.internal(root);
+
+	final TranslationsHu _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Szó-/szótagidőzítés szerkesztése';
+	@override String get timeTheLineBeforeEditingSyllables => 'A szótagok szerkesztése előtt állítsd be a dalsor kezdőidejét.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'A felosztás törli a szakasz kiejtését és megbízhatósági értékét. Az összevonáshoz egyező énekszólamok, kiejtés és megbízhatóság szükséges.';
+	@override String get syllableText => 'Szó vagy szótag szövege';
+	@override String get splitSpan => 'Szakasz felosztása';
+	@override String get mergeWithNext => 'Összevonás a következővel';
+	@override String get firstSyllable => 'Első szegmens szövege';
+	@override String get secondSyllable => 'Második szegmens szövege';
+	@override String get splitBoundaryMs => 'Felosztási időpont (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'A szegmenseknek pontosan vissza kell adniuk a dalszöveget, a szóközökkel együtt.';
+	@override String get syllableSplitMustPreserveLyricText => 'A két szegmensnek pontosan meg kell őriznie az eredeti dalszöveget.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Válassz időpontot a szakasz kezdete és vége között.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Az összevonáshoz egyező énekszólamok, kiejtési jelenlét és megbízhatóság szükséges.';
+	@override String get invalidLyricSpanTiming => 'Minden szakasznak érvényes kezdő- és végidő kell.';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsHu {
 			'subtitleCapture.processingAudio' => 'A hang helyi feldolgozása…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'A hang helyi feldolgozása (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'A GPU-s beszédfeldolgozás sikertelen. Újrapróbálkozás CPU-val…',
+			'karaokeUi.editWordSyllableTiming' => 'Szó-/szótagidőzítés szerkesztése',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'A szótagok szerkesztése előtt állítsd be a dalsor kezdőidejét.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'A felosztás törli a szakasz kiejtését és megbízhatósági értékét. Az összevonáshoz egyező énekszólamok, kiejtés és megbízhatóság szükséges.',
+			'karaokeUi.syllableText' => 'Szó vagy szótag szövege',
+			'karaokeUi.splitSpan' => 'Szakasz felosztása',
+			'karaokeUi.mergeWithNext' => 'Összevonás a következővel',
+			'karaokeUi.firstSyllable' => 'Első szegmens szövege',
+			'karaokeUi.secondSyllable' => 'Második szegmens szövege',
+			'karaokeUi.splitBoundaryMs' => 'Felosztási időpont (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'A szegmenseknek pontosan vissza kell adniuk a dalszöveget, a szóközökkel együtt.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'A két szegmensnek pontosan meg kell őriznie az eredeti dalszöveget.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Válassz időpontot a szakasz kezdete és vége között.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Az összevonáshoz egyező énekszólamok, kiejtési jelenlét és megbízhatóság szükséges.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Minden szakasznak érvényes kezdő- és végidő kell.',
 			'musicExperience.title' => 'Zene felfedezése',
 			'musicExperience.mix' => 'Mixkészítő',
 			'musicExperience.adventure' => 'Hangzáskaland',

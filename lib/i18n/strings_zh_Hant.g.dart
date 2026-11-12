@@ -116,6 +116,7 @@ class TranslationsZhHant extends TranslationsZh with BaseTranslations<AppLocale,
 	@override late final _Translations$podcasts$zh_Hant podcasts = _Translations$podcasts$zh_Hant._(_root);
 	@override late final _Translations$romm$zh_Hant romm = _Translations$romm$zh_Hant._(_root);
 	@override late final _Translations$subtitleCapture$zh_Hant subtitleCapture = _Translations$subtitleCapture$zh_Hant._(_root);
+	@override late final _Translations$karaokeUi$zh_Hant karaokeUi = _Translations$karaokeUi$zh_Hant._(_root);
 	@override late final _Translations$musicExperience$zh_Hant musicExperience = _Translations$musicExperience$zh_Hant._(_root);
 	@override late final _Translations$musicTools$zh_Hant musicTools = _Translations$musicTools$zh_Hant._(_root);
 	@override late final _Translations$musicDevices$zh_Hant musicDevices = _Translations$musicDevices$zh_Hant._(_root);
@@ -4246,6 +4247,29 @@ class _Translations$subtitleCapture$zh_Hant extends Translations$subtitleCapture
 	@override String get processingAudio => '正在本機處理音訊…';
 	@override String processingAudioProgress({required Object percent}) => '正在本機處理音訊（${percent}%）…';
 	@override String get cpuFallback => 'GPU 語音處理失敗。正在透過 CPU 重試…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$zh_Hant extends Translations$karaokeUi$zh {
+	_Translations$karaokeUi$zh_Hant._(TranslationsZhHant root) : this._root = root, super.internal(root);
+
+	final TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => '編輯字詞/音節時間';
+	@override String get timeTheLineBeforeEditingSyllables => '編輯音節前，請先設定此行歌詞的開始時間。';
+	@override String get splitClearsSpanPronunciationAndConfidence => '拆分會清除片段的注音和信心值。合併要求演唱聲部、注音和信心值一致。';
+	@override String get syllableText => '字詞或音節文字';
+	@override String get splitSpan => '拆分片段';
+	@override String get mergeWithNext => '與下一片段合併';
+	@override String get firstSyllable => '第一段文字';
+	@override String get secondSyllable => '第二段文字';
+	@override String get splitBoundaryMs => '拆分時間（毫秒）';
+	@override String get syllableTextMustMatchLyricExactly => '各段組合後必須與歌詞完全一致，包括空格。';
+	@override String get syllableSplitMustPreserveLyricText => '兩段必須完整保留原始歌詞文字。';
+	@override String get splitBoundaryMustFallInsideSpan => '請選擇此片段開始之後、結束之前的拆分時間。';
+	@override String get mergeRequiresMatchingSingerAndReadings => '合併要求演唱聲部、是否有注音及信心值一致。';
+	@override String get invalidLyricSpanTiming => '每個片段都需要有效的開始和結束時間。';
 }
 
 // Path: musicExperience
@@ -9479,6 +9503,20 @@ extension on TranslationsZhHant {
 			'subtitleCapture.processingAudio' => '正在本機處理音訊…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '正在本機處理音訊（${percent}%）…',
 			'subtitleCapture.cpuFallback' => 'GPU 語音處理失敗。正在透過 CPU 重試…',
+			'karaokeUi.editWordSyllableTiming' => '編輯字詞/音節時間',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => '編輯音節前，請先設定此行歌詞的開始時間。',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => '拆分會清除片段的注音和信心值。合併要求演唱聲部、注音和信心值一致。',
+			'karaokeUi.syllableText' => '字詞或音節文字',
+			'karaokeUi.splitSpan' => '拆分片段',
+			'karaokeUi.mergeWithNext' => '與下一片段合併',
+			'karaokeUi.firstSyllable' => '第一段文字',
+			'karaokeUi.secondSyllable' => '第二段文字',
+			'karaokeUi.splitBoundaryMs' => '拆分時間（毫秒）',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => '各段組合後必須與歌詞完全一致，包括空格。',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => '兩段必須完整保留原始歌詞文字。',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => '請選擇此片段開始之後、結束之前的拆分時間。',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => '合併要求演唱聲部、是否有注音及信心值一致。',
+			'karaokeUi.invalidLyricSpanTiming' => '每個片段都需要有效的開始和結束時間。',
 			'musicExperience.title' => '探索音樂',
 			'musicExperience.mix' => '建立混音',
 			'musicExperience.adventure' => '聲音之旅',

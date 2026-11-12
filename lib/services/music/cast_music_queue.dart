@@ -72,9 +72,7 @@ class CastMusicQueue {
         return null;
       }
       final snapshot = MusicTransferSnapshot.tryParse(document['snapshot'], itemLimit: maxTracks);
-      if (snapshot == null ||
-          snapshot.queue.items.length > maxTracks ||
-          snapshot.queue.repeatMode != MusicRepeatMode.off) {
+      if (snapshot == null || snapshot.queue.items.length > maxTracks) {
         return null;
       }
       final accounts = Map<String, String>.from(document['accounts'] as Map);
@@ -127,8 +125,44 @@ class CastMusicQueue {
     }
   }
 
+  GoogleCastMediaRepeatMode get _repeat => switch (_snapshot.queue.repeatMode) {
+    MusicRepeatMode.off => GoogleCastMediaRepeatMode.off,
+    MusicRepeatMode.one => GoogleCastMediaRepeatMode.single,
+    MusicRepeatMode.all => GoogleCastMediaRepeatMode.all,
+  };
+
+  static MusicRepeatMode? _localRepeat(GoggleCastMediaStatus? status) => switch (status?.repeatMode) {
+    GoogleCastMediaRepeatMode.off => MusicRepeatMode.off,
+    GoogleCastMediaRepeatMode.single => MusicRepeatMode.one,
+    GoogleCastMediaRepeatMode.all => MusicRepeatMode.all,
+    _ => null,
+  };
+
   GoogleCastQueueLoadOptions options(Duration position) =>
-      GoogleCastQueueLoadOptions(startIndex: cursor, playPosition: position);
+      GoogleCastQueueLoadOptions(startIndex: cursor, playPosition: position, repeatMode: _repeat);
+
+  /// The native SDK clones only the acknowledged current queue item. No media
+  /// URLs cross this channel and the receiver must remain paused throughout.
+  Future<bool> armRepeat(CastReceiverKey connection, GoggleCastMediaStatus status) async {
+    if (_repeat == GoogleCastMediaRepeatMode.off ||
+        !authorized() ||
+        !acknowledges(status, CastMediaPlayerState.paused)) {
+      return false;
+    }
+    return await const MethodChannel('com.pleazyng/cast_music_queue')
+            .invokeMethod<bool>('armRepeat', {
+              'session': connection.session,
+              'device': connection.device,
+              'mediaSession': status.mediaSessionID,
+              'item': status.currentItemId,
+              'token': token,
+              'occurrence': cursor.toString(),
+              'contentId': items[cursor].mediaInformation.contentId,
+              'repeat': _repeat.value,
+            })
+            .timeout(const Duration(seconds: 10)) ==
+        true;
+  }
 
   bool matches(CastReceiverKey connection, CastReceiverKey? current, GoggleCastMediaStatus? status) =>
       connection == current && matchesMedia(status);
@@ -154,9 +188,10 @@ class CastMusicQueue {
   }
 
   bool acknowledges(GoggleCastMediaStatus? status, CastMediaPlayerState state) =>
-      _occurrence(status) == cursor && status?.playerState == state;
+      _occurrence(status) == cursor && status?.playerState == state && status?.repeatMode == _repeat;
 
-  bool isFinalOccurrence(GoggleCastMediaStatus? status) => _occurrence(status) == items.length - 1;
+  bool isFinalOccurrence(GoggleCastMediaStatus? status) =>
+      status?.repeatMode == GoogleCastMediaRepeatMode.off && _occurrence(status) == items.length - 1;
 
   bool stopAcknowledged(GoggleCastMediaStatus? status) =>
       _mediaSessionId != null &&
@@ -172,6 +207,7 @@ class CastMusicQueue {
     required Stream<void> invalidated,
     required Future<void> Function(List<GoogleCastQueueItem>, GoogleCastQueueLoadOptions) load,
     required Future<void> Function() play,
+    Future<bool> Function(GoggleCastMediaStatus)? armRepeat,
     required Future<bool> Function(MusicTransferOffer) finish,
   }) async {
     bool valid() => current() && authorized();
@@ -185,6 +221,14 @@ class CastMusicQueue {
     final loaded = status();
     if (!valid() || !acknowledges(loaded, CastMediaPlayerState.paused)) return false;
     _mediaSessionId = loaded!.mediaSessionID;
+    if (_repeat != GoogleCastMediaRepeatMode.off) {
+      if (armRepeat == null ||
+          !await armRepeat(loaded) ||
+          !valid() ||
+          !acknowledges(status(), CastMediaPlayerState.paused)) {
+        return false;
+      }
+    }
     if (offer.snapshot.playing) {
       await loadAcknowledgedCastMedia(
         statuses: statuses,
@@ -210,11 +254,12 @@ class CastMusicQueue {
   }) async {
     final start = status();
     final index = _occurrence(start);
-    if (_mediaSessionId == null || index == null || !current() || !authorized()) return false;
+    final repeat = _localRepeat(start);
+    if (_mediaSessionId == null || index == null || repeat == null || !current() || !authorized()) return false;
     final wasPlaying =
         start?.playerState == CastMediaPlayerState.playing || start?.playerState == CastMediaPlayerState.buffering;
     if (!wasPlaying && start?.playerState != CastMediaPlayerState.paused) return false;
-    bool sameOccurrence(GoggleCastMediaStatus? value) => _occurrence(value) == index;
+    bool sameOccurrence(GoggleCastMediaStatus? value) => _occurrence(value) == index && _localRepeat(value) == repeat;
     bool owned() => current() && authorized() && sameOccurrence(status());
     bool paused() => owned() && status()?.playerState == CastMediaPlayerState.paused;
 
@@ -228,7 +273,7 @@ class CastMusicQueue {
           order: queue.order,
           cursor: index,
           shuffled: queue.shuffled,
-          repeatMode: queue.repeatMode,
+          repeatMode: repeat,
         ),
         position: Duration.zero,
         playing: false,
@@ -270,22 +315,26 @@ class CastMusicQueue {
   }) async {
     snapshot.toJson(itemLimit: maxTracks);
     final queue = snapshot.queue;
-    if (queue.repeatMode != MusicRepeatMode.off) throw StateError('Receiver queue requires repeat off');
     final tracks = [for (final index in queue.order) queue.items[index]];
-    final sources = <ServerId, ({MediaServerClient client, Object? authentication})>{};
+    final sources = <ServerId, ({MediaServerClient client, Object? authentication, String account})>{};
     for (final track in tracks) {
       final id = ServerId(track.serverId!);
       final client = manager.getClient(id);
       if (client == null || client.backend != track.backend || client.isOfflineMode || !manager.isServerVisible(id)) {
         throw StateError('Receiver queue contains an unavailable music source');
       }
-      sources[id] = (client: client, authentication: client.authenticationSessionId);
+      sources[id] = (
+        client: client,
+        authentication: client.authenticationSessionId,
+        account: musicAccountScope(client),
+      );
     }
 
     bool authorized() => sources.entries.every((entry) {
       final client = entry.value.client;
       return identical(manager.getClient(entry.key), client) &&
           identical(client.authenticationSessionId, entry.value.authentication) &&
+          musicAccountScope(client) == entry.value.account &&
           manager.isServerVisible(entry.key) &&
           !client.isOfflineMode;
     });
@@ -316,7 +365,7 @@ class CastMusicQueue {
       );
     }
     final prepared = CastMusicQueue._(List.unmodifiable(items), snapshot, token, authorized, {
-      for (final source in sources.entries) source.key.value: musicAccountScope(source.value.client),
+      for (final source in sources.entries) source.key.value: source.value.account,
     });
     final size = utf8
         .encode(

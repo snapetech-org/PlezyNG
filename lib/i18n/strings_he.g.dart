@@ -115,6 +115,7 @@ class TranslationsHe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$he podcasts = _Translations$podcasts$he._(_root);
 	@override late final _Translations$romm$he romm = _Translations$romm$he._(_root);
 	@override late final _Translations$subtitleCapture$he subtitleCapture = _Translations$subtitleCapture$he._(_root);
+	@override late final _Translations$karaokeUi$he karaokeUi = _Translations$karaokeUi$he._(_root);
 	@override late final _Translations$musicExperience$he musicExperience = _Translations$musicExperience$he._(_root);
 	@override late final _Translations$musicTools$he musicTools = _Translations$musicTools$he._(_root);
 	@override late final _Translations$musicDevices$he musicDevices = _Translations$musicDevices$he._(_root);
@@ -4258,6 +4259,29 @@ class _Translations$subtitleCapture$he extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'מעבד שמע באופן מקומי…';
 	@override String processingAudioProgress({required Object percent}) => 'מעבד שמע באופן מקומי (${percent}%)…';
 	@override String get cpuFallback => 'עיבוד הדיבור באמצעות GPU נכשל. מנסה שוב באמצעות CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$he extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$he._(TranslationsHe root) : this._root = root, super.internal(root);
+
+	final TranslationsHe _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'עריכת תזמון מילים והברות';
+	@override String get timeTheLineBeforeEditingSyllables => 'יש להגדיר זמן התחלה לשורת המילים לפני עריכת ההברות שלה.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'פיצול מוחק את ההגייה ואת רמת הביטחון של המקטע. מיזוג דורש התאמה בתפקידי השירה, בהגייה וברמת הביטחון.';
+	@override String get syllableText => 'טקסט המילה או ההברה';
+	@override String get splitSpan => 'פיצול מקטע';
+	@override String get mergeWithNext => 'מיזוג עם הבא';
+	@override String get firstSyllable => 'טקסט המקטע הראשון';
+	@override String get secondSyllable => 'טקסט המקטע השני';
+	@override String get splitBoundaryMs => 'נקודת פיצול (אלפיות שנייה)';
+	@override String get syllableTextMustMatchLyricExactly => 'המקטעים חייבים לשחזר את המילים במדויק, כולל רווחים.';
+	@override String get syllableSplitMustPreserveLyricText => 'שני המקטעים חייבים לשמור במדויק על טקסט המילים המקורי.';
+	@override String get splitBoundaryMustFallInsideSpan => 'יש לבחור זמן אחרי תחילת המקטע ולפני סופו.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'מיזוג דורש התאמה בתפקידי השירה, בקיום הגייה וברמת הביטחון.';
+	@override String get invalidLyricSpanTiming => 'כל מקטע דורש זמני התחלה וסיום תקינים.';
 }
 
 // Path: musicExperience
@@ -9491,6 +9515,20 @@ extension on TranslationsHe {
 			'subtitleCapture.processingAudio' => 'מעבד שמע באופן מקומי…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'מעבד שמע באופן מקומי (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'עיבוד הדיבור באמצעות GPU נכשל. מנסה שוב באמצעות CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'עריכת תזמון מילים והברות',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'יש להגדיר זמן התחלה לשורת המילים לפני עריכת ההברות שלה.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'פיצול מוחק את ההגייה ואת רמת הביטחון של המקטע. מיזוג דורש התאמה בתפקידי השירה, בהגייה וברמת הביטחון.',
+			'karaokeUi.syllableText' => 'טקסט המילה או ההברה',
+			'karaokeUi.splitSpan' => 'פיצול מקטע',
+			'karaokeUi.mergeWithNext' => 'מיזוג עם הבא',
+			'karaokeUi.firstSyllable' => 'טקסט המקטע הראשון',
+			'karaokeUi.secondSyllable' => 'טקסט המקטע השני',
+			'karaokeUi.splitBoundaryMs' => 'נקודת פיצול (אלפיות שנייה)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'המקטעים חייבים לשחזר את המילים במדויק, כולל רווחים.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'שני המקטעים חייבים לשמור במדויק על טקסט המילים המקורי.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'יש לבחור זמן אחרי תחילת המקטע ולפני סופו.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'מיזוג דורש התאמה בתפקידי השירה, בקיום הגייה וברמת הביטחון.',
+			'karaokeUi.invalidLyricSpanTiming' => 'כל מקטע דורש זמני התחלה וסיום תקינים.',
 			'musicExperience.title' => 'גילוי מוזיקה',
 			'musicExperience.mix' => 'יצירת מיקס',
 			'musicExperience.adventure' => 'מסע קולי',

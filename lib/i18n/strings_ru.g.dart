@@ -115,6 +115,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$ru podcasts = _Translations$podcasts$ru._(_root);
 	@override late final _Translations$romm$ru romm = _Translations$romm$ru._(_root);
 	@override late final _Translations$subtitleCapture$ru subtitleCapture = _Translations$subtitleCapture$ru._(_root);
+	@override late final _Translations$karaokeUi$ru karaokeUi = _Translations$karaokeUi$ru._(_root);
 	@override late final _Translations$musicExperience$ru musicExperience = _Translations$musicExperience$ru._(_root);
 	@override late final _Translations$musicTools$ru musicTools = _Translations$musicTools$ru._(_root);
 	@override late final _Translations$musicDevices$ru musicDevices = _Translations$musicDevices$ru._(_root);
@@ -4296,6 +4297,29 @@ class _Translations$subtitleCapture$ru extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Локальная обработка аудио…';
 	@override String processingAudioProgress({required Object percent}) => 'Локальная обработка аудио (${percent}%)…';
 	@override String get cpuFallback => 'Обработка речи на GPU не удалась. Повторная попытка на CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$ru extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Изменить время слов и слогов';
+	@override String get timeTheLineBeforeEditingSyllables => 'Перед изменением слогов задайте время начала этой строки.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Разделение удаляет произношение и оценку уверенности фрагмента. Для объединения должны совпадать вокальные партии, произношение и уверенность.';
+	@override String get syllableText => 'Текст слова или слога';
+	@override String get splitSpan => 'Разделить фрагмент';
+	@override String get mergeWithNext => 'Объединить со следующим';
+	@override String get firstSyllable => 'Текст первого сегмента';
+	@override String get secondSyllable => 'Текст второго сегмента';
+	@override String get splitBoundaryMs => 'Точка разделения (мс)';
+	@override String get syllableTextMustMatchLyricExactly => 'Сегменты должны точно воспроизводить текст, включая пробелы.';
+	@override String get syllableSplitMustPreserveLyricText => 'Два сегмента должны точно сохранять исходный текст.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Выберите время между началом и концом этого фрагмента.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Для объединения должны совпадать вокальные партии, наличие произношения и оценка уверенности.';
+	@override String get invalidLyricSpanTiming => 'Каждому фрагменту нужны допустимые времена начала и конца.';
 }
 
 // Path: musicExperience
@@ -9533,6 +9557,20 @@ extension on TranslationsRu {
 			'subtitleCapture.processingAudio' => 'Локальная обработка аудио…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Локальная обработка аудио (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Обработка речи на GPU не удалась. Повторная попытка на CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'Изменить время слов и слогов',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Перед изменением слогов задайте время начала этой строки.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Разделение удаляет произношение и оценку уверенности фрагмента. Для объединения должны совпадать вокальные партии, произношение и уверенность.',
+			'karaokeUi.syllableText' => 'Текст слова или слога',
+			'karaokeUi.splitSpan' => 'Разделить фрагмент',
+			'karaokeUi.mergeWithNext' => 'Объединить со следующим',
+			'karaokeUi.firstSyllable' => 'Текст первого сегмента',
+			'karaokeUi.secondSyllable' => 'Текст второго сегмента',
+			'karaokeUi.splitBoundaryMs' => 'Точка разделения (мс)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Сегменты должны точно воспроизводить текст, включая пробелы.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Два сегмента должны точно сохранять исходный текст.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Выберите время между началом и концом этого фрагмента.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Для объединения должны совпадать вокальные партии, наличие произношения и оценка уверенности.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Каждому фрагменту нужны допустимые времена начала и конца.',
 			'musicExperience.title' => 'Открывайте музыку',
 			'musicExperience.mix' => 'Создание микса',
 			'musicExperience.adventure' => 'Звуковое путешествие',

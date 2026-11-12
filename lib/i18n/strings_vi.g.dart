@@ -115,6 +115,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$vi podcasts = _Translations$podcasts$vi._(_root);
 	@override late final _Translations$romm$vi romm = _Translations$romm$vi._(_root);
 	@override late final _Translations$subtitleCapture$vi subtitleCapture = _Translations$subtitleCapture$vi._(_root);
+	@override late final _Translations$karaokeUi$vi karaokeUi = _Translations$karaokeUi$vi._(_root);
 	@override late final _Translations$musicExperience$vi musicExperience = _Translations$musicExperience$vi._(_root);
 	@override late final _Translations$musicTools$vi musicTools = _Translations$musicTools$vi._(_root);
 	@override late final _Translations$musicDevices$vi musicDevices = _Translations$musicDevices$vi._(_root);
@@ -4227,6 +4228,29 @@ class _Translations$subtitleCapture$vi extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Đang xử lý âm thanh trên thiết bị…';
 	@override String processingAudioProgress({required Object percent}) => 'Đang xử lý âm thanh trên thiết bị (${percent}%)…';
 	@override String get cpuFallback => 'Xử lý giọng nói bằng GPU thất bại. Đang thử lại bằng CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$vi extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$vi._(TranslationsVi root) : this._root = root, super.internal(root);
+
+	final TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Sửa thời gian từ/âm tiết';
+	@override String get timeTheLineBeforeEditingSyllables => 'Đặt thời điểm bắt đầu cho dòng lời này trước khi sửa âm tiết.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Việc tách sẽ xóa cách đọc và độ tin cậy của đoạn. Khi gộp, phần hát, cách đọc và độ tin cậy phải khớp nhau.';
+	@override String get syllableText => 'Nội dung từ hoặc âm tiết';
+	@override String get splitSpan => 'Tách đoạn';
+	@override String get mergeWithNext => 'Gộp với đoạn tiếp theo';
+	@override String get firstSyllable => 'Nội dung đoạn thứ nhất';
+	@override String get secondSyllable => 'Nội dung đoạn thứ hai';
+	@override String get splitBoundaryMs => 'Điểm tách (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'Các đoạn phải tái tạo chính xác lời bài hát, kể cả khoảng trắng.';
+	@override String get syllableSplitMustPreserveLyricText => 'Hai đoạn phải giữ nguyên chính xác nội dung lời ban đầu.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Chọn thời điểm sau lúc bắt đầu và trước lúc kết thúc đoạn này.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Khi gộp, phần hát, trạng thái có cách đọc và độ tin cậy phải khớp nhau.';
+	@override String get invalidLyricSpanTiming => 'Mỗi đoạn cần thời điểm bắt đầu và kết thúc hợp lệ.';
 }
 
 // Path: musicExperience
@@ -9458,6 +9482,20 @@ extension on TranslationsVi {
 			'subtitleCapture.processingAudio' => 'Đang xử lý âm thanh trên thiết bị…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Đang xử lý âm thanh trên thiết bị (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Xử lý giọng nói bằng GPU thất bại. Đang thử lại bằng CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'Sửa thời gian từ/âm tiết',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Đặt thời điểm bắt đầu cho dòng lời này trước khi sửa âm tiết.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Việc tách sẽ xóa cách đọc và độ tin cậy của đoạn. Khi gộp, phần hát, cách đọc và độ tin cậy phải khớp nhau.',
+			'karaokeUi.syllableText' => 'Nội dung từ hoặc âm tiết',
+			'karaokeUi.splitSpan' => 'Tách đoạn',
+			'karaokeUi.mergeWithNext' => 'Gộp với đoạn tiếp theo',
+			'karaokeUi.firstSyllable' => 'Nội dung đoạn thứ nhất',
+			'karaokeUi.secondSyllable' => 'Nội dung đoạn thứ hai',
+			'karaokeUi.splitBoundaryMs' => 'Điểm tách (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Các đoạn phải tái tạo chính xác lời bài hát, kể cả khoảng trắng.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Hai đoạn phải giữ nguyên chính xác nội dung lời ban đầu.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Chọn thời điểm sau lúc bắt đầu và trước lúc kết thúc đoạn này.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Khi gộp, phần hát, trạng thái có cách đọc và độ tin cậy phải khớp nhau.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Mỗi đoạn cần thời điểm bắt đầu và kết thúc hợp lệ.',
 			'musicExperience.title' => 'Khám phá âm nhạc',
 			'musicExperience.mix' => 'Tạo bản phối',
 			'musicExperience.adventure' => 'Hành trình âm thanh',

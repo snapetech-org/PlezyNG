@@ -115,6 +115,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$bn podcasts = _Translations$podcasts$bn._(_root);
 	@override late final _Translations$romm$bn romm = _Translations$romm$bn._(_root);
 	@override late final _Translations$subtitleCapture$bn subtitleCapture = _Translations$subtitleCapture$bn._(_root);
+	@override late final _Translations$karaokeUi$bn karaokeUi = _Translations$karaokeUi$bn._(_root);
 	@override late final _Translations$musicExperience$bn musicExperience = _Translations$musicExperience$bn._(_root);
 	@override late final _Translations$musicTools$bn musicTools = _Translations$musicTools$bn._(_root);
 	@override late final _Translations$musicDevices$bn musicDevices = _Translations$musicDevices$bn._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$bn extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে…';
 	@override String processingAudioProgress({required Object percent}) => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে (${percent}%)…';
 	@override String get cpuFallback => 'GPU-তে বাক্‌ প্রক্রিয়াকরণ ব্যর্থ হয়েছে। CPU-তে আবার চেষ্টা করা হচ্ছে…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$bn extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$bn._(TranslationsBn root) : this._root = root, super.internal(root);
+
+	final TranslationsBn _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'শব্দ/অক্ষরাংশের সময় সম্পাদনা করুন';
+	@override String get timeTheLineBeforeEditingSyllables => 'অক্ষরাংশ সম্পাদনার আগে এই গানের লাইনের শুরুর সময় নির্ধারণ করুন।';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'বিভক্ত করলে অংশের উচ্চারণ ও নির্ভরযোগ্যতার মান মুছে যায়। যুক্ত করতে গায়কের অংশ, উচ্চারণ ও নির্ভরযোগ্যতা একই হতে হবে।';
+	@override String get syllableText => 'শব্দ বা অক্ষরাংশের পাঠ';
+	@override String get splitSpan => 'অংশ বিভক্ত করুন';
+	@override String get mergeWithNext => 'পরেরটির সঙ্গে যুক্ত করুন';
+	@override String get firstSyllable => 'প্রথম অংশের পাঠ';
+	@override String get secondSyllable => 'দ্বিতীয় অংশের পাঠ';
+	@override String get splitBoundaryMs => 'বিভাজনের সময় (মিলিসেকেন্ড)';
+	@override String get syllableTextMustMatchLyricExactly => 'অংশগুলোতে ফাঁকা স্থানসহ গানের পাঠ হুবহু থাকতে হবে।';
+	@override String get syllableSplitMustPreserveLyricText => 'দুটি অংশে মূল গানের পাঠ হুবহু বজায় থাকতে হবে।';
+	@override String get splitBoundaryMustFallInsideSpan => 'এই অংশের শুরু ও শেষের মাঝের একটি সময় বাছুন।';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'যুক্ত করতে গায়কের অংশ, উচ্চারণের উপস্থিতি ও নির্ভরযোগ্যতা একই হতে হবে।';
+	@override String get invalidLyricSpanTiming => 'প্রতিটি অংশের বৈধ শুরু ও শেষের সময় প্রয়োজন।';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsBn {
 			'subtitleCapture.processingAudio' => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU-তে বাক্‌ প্রক্রিয়াকরণ ব্যর্থ হয়েছে। CPU-তে আবার চেষ্টা করা হচ্ছে…',
+			'karaokeUi.editWordSyllableTiming' => 'শব্দ/অক্ষরাংশের সময় সম্পাদনা করুন',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'অক্ষরাংশ সম্পাদনার আগে এই গানের লাইনের শুরুর সময় নির্ধারণ করুন।',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'বিভক্ত করলে অংশের উচ্চারণ ও নির্ভরযোগ্যতার মান মুছে যায়। যুক্ত করতে গায়কের অংশ, উচ্চারণ ও নির্ভরযোগ্যতা একই হতে হবে।',
+			'karaokeUi.syllableText' => 'শব্দ বা অক্ষরাংশের পাঠ',
+			'karaokeUi.splitSpan' => 'অংশ বিভক্ত করুন',
+			'karaokeUi.mergeWithNext' => 'পরেরটির সঙ্গে যুক্ত করুন',
+			'karaokeUi.firstSyllable' => 'প্রথম অংশের পাঠ',
+			'karaokeUi.secondSyllable' => 'দ্বিতীয় অংশের পাঠ',
+			'karaokeUi.splitBoundaryMs' => 'বিভাজনের সময় (মিলিসেকেন্ড)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'অংশগুলোতে ফাঁকা স্থানসহ গানের পাঠ হুবহু থাকতে হবে।',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'দুটি অংশে মূল গানের পাঠ হুবহু বজায় থাকতে হবে।',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'এই অংশের শুরু ও শেষের মাঝের একটি সময় বাছুন।',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'যুক্ত করতে গায়কের অংশ, উচ্চারণের উপস্থিতি ও নির্ভরযোগ্যতা একই হতে হবে।',
+			'karaokeUi.invalidLyricSpanTiming' => 'প্রতিটি অংশের বৈধ শুরু ও শেষের সময় প্রয়োজন।',
 			'musicExperience.title' => 'সংগীত আবিষ্কার',
 			'musicExperience.mix' => 'মিক্স তৈরি',
 			'musicExperience.adventure' => 'ধ্বনি যাত্রা',

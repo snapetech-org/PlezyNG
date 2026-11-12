@@ -6,6 +6,9 @@ import MediaPlayer
 import MusicKit
 import CarPlay
 import Intents
+#if canImport(GoogleCast)
+  import GoogleCast
+#endif
 
 /// Re-downloadable media is not user-created document data. Keep the policy
 /// confined to our two managed roots, including their legacy support paths.
@@ -177,6 +180,12 @@ enum DownloadBackupPolicy {
     if let registrar = registry.registrar(forPlugin: "DeepLinkPlugin") {
       DeepLinkPlugin.register(with: registrar)
     }
+
+    #if canImport(GoogleCast)
+      if let registrar = registry.registrar(forPlugin: "CastMusicQueuePlugin") {
+        CastMusicQueuePlugin.register(with: registrar)
+      }
+    #endif
 
     if #available(iOS 15.0, *),
       let registrar = registry.registrar(forPlugin: "AppleMusicKitPlugin")
@@ -791,3 +800,103 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
     }
   }
 }
+
+#if canImport(GoogleCast)
+  /// Clones the receiver's acknowledged item, preserving its ID and media metadata.
+  private final class CastMusicQueuePlugin: NSObject, FlutterPlugin, GCKRequestDelegate {
+    private var pending: (request: GCKRequest, result: FlutterResult, owned: () -> Bool)?
+    private var timeout: DispatchWorkItem?
+
+    static func register(with registrar: FlutterPluginRegistrar) {
+      let channel = FlutterMethodChannel(name: "com.pleazyng/cast_music_queue", binaryMessenger: registrar.messenger())
+      registrar.addMethodCallDelegate(CastMusicQueuePlugin(), channel: channel)
+    }
+
+    func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+      guard call.method == "armRepeat" else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      guard pending == nil, GCKCastContext.isSharedInstanceInitialized(),
+        let args = call.arguments as? [String: Any],
+        let sessionID = args["session"] as? String, !sessionID.isEmpty,
+        let device = args["device"] as? String, !device.isEmpty,
+        let mediaSession = args["mediaSession"] as? Int, mediaSession > 0,
+        let itemID = args["item"] as? UInt, itemID > 0,
+        let token = args["token"] as? String, !token.isEmpty, token.count <= 128,
+        let occurrence = args["occurrence"] as? String, !occurrence.isEmpty,
+        let contentID = args["contentId"] as? String, contentID == "pleazyng:\(token):\(occurrence)",
+        let repeatName = args["repeat"] as? String, ["SINGLE", "ALL"].contains(repeatName),
+        let session = GCKCastContext.sharedInstance().sessionManager.currentCastSession,
+        let remote = session.remoteMediaClient
+      else {
+        result(false)
+        return
+      }
+      let repeatMode: GCKMediaRepeatMode = repeatName == "SINGLE" ? .single : .all
+      func mediaMatches(_ media: GCKMediaInformation?) -> Bool {
+        let custom = media?.customData as? [String: Any]
+        return media?.contentID == contentID && custom?["pleazyngOwner"] as? String == token
+          && custom?["pleazyngOccurrence"] as? String == occurrence
+      }
+      func owned() -> Bool {
+        guard GCKCastContext.sharedInstance().sessionManager.currentCastSession === session,
+          session.connectionState == .connected, session.sessionID == sessionID,
+          session.device.deviceID == device, let status = remote.mediaStatus
+        else { return false }
+        return status.mediaSessionID == mediaSession && status.currentItemID == itemID
+          && status.playerState == .paused && status.queueRepeatMode == repeatMode
+          && mediaMatches(status.mediaInformation)
+      }
+      guard owned(), let item = remote.mediaStatus?.queueItem(withItemID: itemID),
+        mediaMatches(item.mediaInformation)
+      else {
+        result(false)
+        return
+      }
+      let builder = GCKMediaQueueItemBuilder(mediaQueueItem: item)
+      builder.autoplay = true
+      let request = remote.queueUpdateItems([builder.build()])
+      pending = (
+        request, result,
+        {
+          owned() && remote.mediaStatus?.queueItem(withItemID: itemID)?.autoplay == true
+        }
+      )
+      request.delegate = self
+      let deadline = DispatchWorkItem { [weak self, weak request] in
+        guard let request else { return }
+        self?.finish(request, success: false)
+      }
+      timeout = deadline
+      DispatchQueue.main.asyncAfter(deadline: .now() + 8, execute: deadline)
+    }
+
+    private func finish(_ request: GCKRequest, success: Bool) {
+      guard let operation = pending, operation.request === request else { return }
+      pending = nil
+      timeout?.cancel()
+      timeout = nil
+      request.delegate = nil
+      operation.result(success && operation.owned())
+    }
+
+    func requestDidComplete(_ request: GCKRequest) {
+      finish(request, success: true)
+    }
+
+    func request(_ request: GCKRequest, didFailWithError error: GCKError) {
+      finish(request, success: false)
+    }
+
+    func request(_ request: GCKRequest, didAbortWithReason abortReason: GCKRequestAbortReason) {
+      finish(request, success: false)
+    }
+
+    deinit {
+      timeout?.cancel()
+      pending?.request.delegate = nil
+      pending?.result(false)
+    }
+  }
+#endif

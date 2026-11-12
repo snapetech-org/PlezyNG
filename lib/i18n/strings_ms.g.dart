@@ -115,6 +115,7 @@ class TranslationsMs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$ms podcasts = _Translations$podcasts$ms._(_root);
 	@override late final _Translations$romm$ms romm = _Translations$romm$ms._(_root);
 	@override late final _Translations$subtitleCapture$ms subtitleCapture = _Translations$subtitleCapture$ms._(_root);
+	@override late final _Translations$karaokeUi$ms karaokeUi = _Translations$karaokeUi$ms._(_root);
 	@override late final _Translations$musicExperience$ms musicExperience = _Translations$musicExperience$ms._(_root);
 	@override late final _Translations$musicTools$ms musicTools = _Translations$musicTools$ms._(_root);
 	@override late final _Translations$musicDevices$ms musicDevices = _Translations$musicDevices$ms._(_root);
@@ -4227,6 +4228,29 @@ class _Translations$subtitleCapture$ms extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Memproses audio secara setempat…';
 	@override String processingAudioProgress({required Object percent}) => 'Memproses audio secara setempat (${percent}%)…';
 	@override String get cpuFallback => 'Pemprosesan pertuturan pada GPU gagal. Mencuba semula pada CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$ms extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$ms._(TranslationsMs root) : this._root = root, super.internal(root);
+
+	final TranslationsMs _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Edit masa perkataan/suku kata';
+	@override String get timeTheLineBeforeEditingSyllables => 'Tetapkan masa mula baris lirik ini sebelum mengedit suku katanya.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Pemisahan memadam sebutan dan tahap keyakinan bahagian. Penggabungan memerlukan bahagian vokal, sebutan dan keyakinan yang sepadan.';
+	@override String get syllableText => 'Teks perkataan atau suku kata';
+	@override String get splitSpan => 'Pisahkan bahagian';
+	@override String get mergeWithNext => 'Gabung dengan yang seterusnya';
+	@override String get firstSyllable => 'Teks segmen pertama';
+	@override String get secondSyllable => 'Teks segmen kedua';
+	@override String get splitBoundaryMs => 'Titik pemisahan (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'Segmen mesti menghasilkan lirik dengan tepat, termasuk ruang.';
+	@override String get syllableSplitMustPreserveLyricText => 'Kedua-dua segmen mesti mengekalkan teks lirik asal dengan tepat.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Pilih masa selepas permulaan dan sebelum penghujung bahagian ini.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Penggabungan memerlukan bahagian vokal, kewujudan sebutan dan keyakinan yang sepadan.';
+	@override String get invalidLyricSpanTiming => 'Setiap bahagian memerlukan masa mula dan tamat yang sah.';
 }
 
 // Path: musicExperience
@@ -9458,6 +9482,20 @@ extension on TranslationsMs {
 			'subtitleCapture.processingAudio' => 'Memproses audio secara setempat…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Memproses audio secara setempat (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Pemprosesan pertuturan pada GPU gagal. Mencuba semula pada CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'Edit masa perkataan/suku kata',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Tetapkan masa mula baris lirik ini sebelum mengedit suku katanya.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Pemisahan memadam sebutan dan tahap keyakinan bahagian. Penggabungan memerlukan bahagian vokal, sebutan dan keyakinan yang sepadan.',
+			'karaokeUi.syllableText' => 'Teks perkataan atau suku kata',
+			'karaokeUi.splitSpan' => 'Pisahkan bahagian',
+			'karaokeUi.mergeWithNext' => 'Gabung dengan yang seterusnya',
+			'karaokeUi.firstSyllable' => 'Teks segmen pertama',
+			'karaokeUi.secondSyllable' => 'Teks segmen kedua',
+			'karaokeUi.splitBoundaryMs' => 'Titik pemisahan (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Segmen mesti menghasilkan lirik dengan tepat, termasuk ruang.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Kedua-dua segmen mesti mengekalkan teks lirik asal dengan tepat.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Pilih masa selepas permulaan dan sebelum penghujung bahagian ini.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Penggabungan memerlukan bahagian vokal, kewujudan sebutan dan keyakinan yang sepadan.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Setiap bahagian memerlukan masa mula dan tamat yang sah.',
 			'musicExperience.title' => 'Terokai muzik',
 			'musicExperience.mix' => 'Pembina campuran',
 			'musicExperience.adventure' => 'Pengembaraan bunyi',

@@ -115,6 +115,7 @@ class TranslationsNl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$nl podcasts = _Translations$podcasts$nl._(_root);
 	@override late final _Translations$romm$nl romm = _Translations$romm$nl._(_root);
 	@override late final _Translations$subtitleCapture$nl subtitleCapture = _Translations$subtitleCapture$nl._(_root);
+	@override late final _Translations$karaokeUi$nl karaokeUi = _Translations$karaokeUi$nl._(_root);
 	@override late final _Translations$musicExperience$nl musicExperience = _Translations$musicExperience$nl._(_root);
 	@override late final _Translations$musicTools$nl musicTools = _Translations$musicTools$nl._(_root);
 	@override late final _Translations$musicDevices$nl musicDevices = _Translations$musicDevices$nl._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$nl extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Audio lokaal verwerken…';
 	@override String processingAudioProgress({required Object percent}) => 'Audio lokaal verwerken (${percent}%)…';
 	@override String get cpuFallback => 'Spraakverwerking op de GPU is mislukt. Opnieuw proberen via de CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$nl extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$nl._(TranslationsNl root) : this._root = root, super.internal(root);
+
+	final TranslationsNl _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Woord-/lettergreeptiming bewerken';
+	@override String get timeTheLineBeforeEditingSyllables => 'Stel een begintijd voor deze tekstregel in voordat je de lettergrepen bewerkt.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Splitsen wist uitspraak en betrouwbaarheid van het segment. Samenvoegen vereist gelijke zangpartijen, uitspraak en betrouwbaarheid.';
+	@override String get syllableText => 'Woord- of lettergreeptekst';
+	@override String get splitSpan => 'Segment splitsen';
+	@override String get mergeWithNext => 'Met volgend segment samenvoegen';
+	@override String get firstSyllable => 'Tekst eerste segment';
+	@override String get secondSyllable => 'Tekst tweede segment';
+	@override String get splitBoundaryMs => 'Splitstijd (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'De segmenten moeten de tekst exact weergeven, inclusief spaties.';
+	@override String get syllableSplitMustPreserveLyricText => 'De twee segmenten moeten de oorspronkelijke tekst exact behouden.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Kies een tijdstip tussen het begin en einde van dit segment.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Samenvoegen vereist gelijke zangpartijen, aanwezigheid van uitspraak en betrouwbaarheid.';
+	@override String get invalidLyricSpanTiming => 'Elk segment heeft geldige begin- en eindtijden nodig.';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsNl {
 			'subtitleCapture.processingAudio' => 'Audio lokaal verwerken…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Audio lokaal verwerken (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Spraakverwerking op de GPU is mislukt. Opnieuw proberen via de CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'Woord-/lettergreeptiming bewerken',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Stel een begintijd voor deze tekstregel in voordat je de lettergrepen bewerkt.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Splitsen wist uitspraak en betrouwbaarheid van het segment. Samenvoegen vereist gelijke zangpartijen, uitspraak en betrouwbaarheid.',
+			'karaokeUi.syllableText' => 'Woord- of lettergreeptekst',
+			'karaokeUi.splitSpan' => 'Segment splitsen',
+			'karaokeUi.mergeWithNext' => 'Met volgend segment samenvoegen',
+			'karaokeUi.firstSyllable' => 'Tekst eerste segment',
+			'karaokeUi.secondSyllable' => 'Tekst tweede segment',
+			'karaokeUi.splitBoundaryMs' => 'Splitstijd (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'De segmenten moeten de tekst exact weergeven, inclusief spaties.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'De twee segmenten moeten de oorspronkelijke tekst exact behouden.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Kies een tijdstip tussen het begin en einde van dit segment.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Samenvoegen vereist gelijke zangpartijen, aanwezigheid van uitspraak en betrouwbaarheid.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Elk segment heeft geldige begin- en eindtijden nodig.',
 			'musicExperience.title' => 'Muziek ontdekken',
 			'musicExperience.mix' => 'Mix maken',
 			'musicExperience.adventure' => 'Klankavontuur',

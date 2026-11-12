@@ -115,6 +115,7 @@ class TranslationsCs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$cs podcasts = _Translations$podcasts$cs._(_root);
 	@override late final _Translations$romm$cs romm = _Translations$romm$cs._(_root);
 	@override late final _Translations$subtitleCapture$cs subtitleCapture = _Translations$subtitleCapture$cs._(_root);
+	@override late final _Translations$karaokeUi$cs karaokeUi = _Translations$karaokeUi$cs._(_root);
 	@override late final _Translations$musicExperience$cs musicExperience = _Translations$musicExperience$cs._(_root);
 	@override late final _Translations$musicTools$cs musicTools = _Translations$musicTools$cs._(_root);
 	@override late final _Translations$musicDevices$cs musicDevices = _Translations$musicDevices$cs._(_root);
@@ -4292,6 +4293,29 @@ class _Translations$subtitleCapture$cs extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Místní zpracování zvuku…';
 	@override String processingAudioProgress({required Object percent}) => 'Místní zpracování zvuku (${percent}%)…';
 	@override String get cpuFallback => 'Zpracování řeči na GPU selhalo. Nový pokus na CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$cs extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$cs._(TranslationsCs root) : this._root = root, super.internal(root);
+
+	final TranslationsCs _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Upravit časování slov/slabik';
+	@override String get timeTheLineBeforeEditingSyllables => 'Před úpravou slabik nastavte začátek tohoto řádku textu.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Rozdělení vymaže výslovnost a míru jistoty úseku. Sloučení vyžaduje shodné pěvecké party, výslovnost a míru jistoty.';
+	@override String get syllableText => 'Text slova nebo slabiky';
+	@override String get splitSpan => 'Rozdělit úsek';
+	@override String get mergeWithNext => 'Sloučit s následujícím';
+	@override String get firstSyllable => 'Text prvního segmentu';
+	@override String get secondSyllable => 'Text druhého segmentu';
+	@override String get splitBoundaryMs => 'Čas rozdělení (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'Segmenty musí přesně reprodukovat text včetně mezer.';
+	@override String get syllableSplitMustPreserveLyricText => 'Oba segmenty musí přesně zachovat původní text.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Vyberte čas mezi začátkem a koncem tohoto úseku.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Sloučení vyžaduje shodné pěvecké party, přítomnost výslovnosti a míru jistoty.';
+	@override String get invalidLyricSpanTiming => 'Každý úsek potřebuje platný začátek a konec.';
 }
 
 // Path: musicExperience
@@ -9527,6 +9551,20 @@ extension on TranslationsCs {
 			'subtitleCapture.processingAudio' => 'Místní zpracování zvuku…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Místní zpracování zvuku (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Zpracování řeči na GPU selhalo. Nový pokus na CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'Upravit časování slov/slabik',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Před úpravou slabik nastavte začátek tohoto řádku textu.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Rozdělení vymaže výslovnost a míru jistoty úseku. Sloučení vyžaduje shodné pěvecké party, výslovnost a míru jistoty.',
+			'karaokeUi.syllableText' => 'Text slova nebo slabiky',
+			'karaokeUi.splitSpan' => 'Rozdělit úsek',
+			'karaokeUi.mergeWithNext' => 'Sloučit s následujícím',
+			'karaokeUi.firstSyllable' => 'Text prvního segmentu',
+			'karaokeUi.secondSyllable' => 'Text druhého segmentu',
+			'karaokeUi.splitBoundaryMs' => 'Čas rozdělení (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Segmenty musí přesně reprodukovat text včetně mezer.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Oba segmenty musí přesně zachovat původní text.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Vyberte čas mezi začátkem a koncem tohoto úseku.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Sloučení vyžaduje shodné pěvecké party, přítomnost výslovnosti a míru jistoty.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Každý úsek potřebuje platný začátek a konec.',
 			'musicExperience.title' => 'Objevování hudby',
 			'musicExperience.mix' => 'Tvorba mixu',
 			'musicExperience.adventure' => 'Zvukové dobrodružství',

@@ -115,6 +115,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$id podcasts = _Translations$podcasts$id._(_root);
 	@override late final _Translations$romm$id romm = _Translations$romm$id._(_root);
 	@override late final _Translations$subtitleCapture$id subtitleCapture = _Translations$subtitleCapture$id._(_root);
+	@override late final _Translations$karaokeUi$id karaokeUi = _Translations$karaokeUi$id._(_root);
 	@override late final _Translations$musicExperience$id musicExperience = _Translations$musicExperience$id._(_root);
 	@override late final _Translations$musicTools$id musicTools = _Translations$musicTools$id._(_root);
 	@override late final _Translations$musicDevices$id musicDevices = _Translations$musicDevices$id._(_root);
@@ -4227,6 +4228,29 @@ class _Translations$subtitleCapture$id extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Memproses audio secara lokal…';
 	@override String processingAudioProgress({required Object percent}) => 'Memproses audio secara lokal (${percent}%)…';
 	@override String get cpuFallback => 'Pemrosesan ucapan dengan GPU gagal. Mencoba lagi dengan CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$id extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$id._(TranslationsId root) : this._root = root, super.internal(root);
+
+	final TranslationsId _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Edit waktu kata/suku kata';
+	@override String get timeTheLineBeforeEditingSyllables => 'Atur waktu mulai baris lirik ini sebelum mengedit suku katanya.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Pemisahan menghapus pelafalan dan tingkat keyakinan rentang. Penggabungan memerlukan bagian vokal, pelafalan, dan keyakinan yang sama.';
+	@override String get syllableText => 'Teks kata atau suku kata';
+	@override String get splitSpan => 'Pisahkan rentang';
+	@override String get mergeWithNext => 'Gabungkan dengan berikutnya';
+	@override String get firstSyllable => 'Teks segmen pertama';
+	@override String get secondSyllable => 'Teks segmen kedua';
+	@override String get splitBoundaryMs => 'Titik pemisahan (md)';
+	@override String get syllableTextMustMatchLyricExactly => 'Segmen harus mereproduksi lirik secara persis, termasuk spasi.';
+	@override String get syllableSplitMustPreserveLyricText => 'Kedua segmen harus mempertahankan teks lirik asli secara persis.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Pilih waktu setelah awal dan sebelum akhir rentang ini.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Penggabungan memerlukan bagian vokal, keberadaan pelafalan, dan keyakinan yang sama.';
+	@override String get invalidLyricSpanTiming => 'Setiap rentang memerlukan waktu mulai dan akhir yang valid.';
 }
 
 // Path: musicExperience
@@ -9458,6 +9482,20 @@ extension on TranslationsId {
 			'subtitleCapture.processingAudio' => 'Memproses audio secara lokal…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Memproses audio secara lokal (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Pemrosesan ucapan dengan GPU gagal. Mencoba lagi dengan CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'Edit waktu kata/suku kata',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Atur waktu mulai baris lirik ini sebelum mengedit suku katanya.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Pemisahan menghapus pelafalan dan tingkat keyakinan rentang. Penggabungan memerlukan bagian vokal, pelafalan, dan keyakinan yang sama.',
+			'karaokeUi.syllableText' => 'Teks kata atau suku kata',
+			'karaokeUi.splitSpan' => 'Pisahkan rentang',
+			'karaokeUi.mergeWithNext' => 'Gabungkan dengan berikutnya',
+			'karaokeUi.firstSyllable' => 'Teks segmen pertama',
+			'karaokeUi.secondSyllable' => 'Teks segmen kedua',
+			'karaokeUi.splitBoundaryMs' => 'Titik pemisahan (md)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Segmen harus mereproduksi lirik secara persis, termasuk spasi.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Kedua segmen harus mempertahankan teks lirik asli secara persis.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Pilih waktu setelah awal dan sebelum akhir rentang ini.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Penggabungan memerlukan bagian vokal, keberadaan pelafalan, dan keyakinan yang sama.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Setiap rentang memerlukan waktu mulai dan akhir yang valid.',
 			'musicExperience.title' => 'Jelajahi musik',
 			'musicExperience.mix' => 'Pembuat mix',
 			'musicExperience.adventure' => 'Petualangan suara',

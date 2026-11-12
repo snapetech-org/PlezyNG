@@ -115,6 +115,7 @@ class TranslationsTh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$th podcasts = _Translations$podcasts$th._(_root);
 	@override late final _Translations$romm$th romm = _Translations$romm$th._(_root);
 	@override late final _Translations$subtitleCapture$th subtitleCapture = _Translations$subtitleCapture$th._(_root);
+	@override late final _Translations$karaokeUi$th karaokeUi = _Translations$karaokeUi$th._(_root);
 	@override late final _Translations$musicExperience$th musicExperience = _Translations$musicExperience$th._(_root);
 	@override late final _Translations$musicTools$th musicTools = _Translations$musicTools$th._(_root);
 	@override late final _Translations$musicDevices$th musicDevices = _Translations$musicDevices$th._(_root);
@@ -4227,6 +4228,29 @@ class _Translations$subtitleCapture$th extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'กำลังประมวลผลเสียงภายในเครื่อง…';
 	@override String processingAudioProgress({required Object percent}) => 'กำลังประมวลผลเสียงภายในเครื่อง (${percent}%)…';
 	@override String get cpuFallback => 'การประมวลผลเสียงพูดด้วย GPU ล้มเหลว กำลังลองอีกครั้งด้วย CPU…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$th extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$th._(TranslationsTh root) : this._root = root, super.internal(root);
+
+	final TranslationsTh _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'แก้ไขเวลาของคำ/พยางค์';
+	@override String get timeTheLineBeforeEditingSyllables => 'ตั้งเวลาเริ่มของเนื้อเพลงบรรทัดนี้ก่อนแก้ไขพยางค์';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'การแบ่งจะล้างการออกเสียงและค่าความเชื่อมั่นของช่วง การรวมต้องมีส่วนร้อง การออกเสียง และค่าความเชื่อมั่นที่ตรงกัน';
+	@override String get syllableText => 'ข้อความของคำหรือพยางค์';
+	@override String get splitSpan => 'แบ่งช่วง';
+	@override String get mergeWithNext => 'รวมกับช่วงถัดไป';
+	@override String get firstSyllable => 'ข้อความส่วนแรก';
+	@override String get secondSyllable => 'ข้อความส่วนที่สอง';
+	@override String get splitBoundaryMs => 'จุดแบ่ง (มิลลิวินาที)';
+	@override String get syllableTextMustMatchLyricExactly => 'ข้อความของส่วนต่าง ๆ รวมกันต้องตรงกับเนื้อเพลงทุกตัว รวมทั้งช่องว่าง';
+	@override String get syllableSplitMustPreserveLyricText => 'สองส่วนต้องคงข้อความเนื้อเพลงเดิมไว้ทุกตัว';
+	@override String get splitBoundaryMustFallInsideSpan => 'เลือกเวลาหลังจุดเริ่มและก่อนจุดสิ้นสุดของช่วงนี้';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'การรวมต้องมีส่วนร้อง สถานะการมีคำอ่าน และค่าความเชื่อมั่นที่ตรงกัน';
+	@override String get invalidLyricSpanTiming => 'แต่ละช่วงต้องมีเวลาเริ่มและสิ้นสุดที่ถูกต้อง';
 }
 
 // Path: musicExperience
@@ -9458,6 +9482,20 @@ extension on TranslationsTh {
 			'subtitleCapture.processingAudio' => 'กำลังประมวลผลเสียงภายในเครื่อง…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'กำลังประมวลผลเสียงภายในเครื่อง (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'การประมวลผลเสียงพูดด้วย GPU ล้มเหลว กำลังลองอีกครั้งด้วย CPU…',
+			'karaokeUi.editWordSyllableTiming' => 'แก้ไขเวลาของคำ/พยางค์',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'ตั้งเวลาเริ่มของเนื้อเพลงบรรทัดนี้ก่อนแก้ไขพยางค์',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'การแบ่งจะล้างการออกเสียงและค่าความเชื่อมั่นของช่วง การรวมต้องมีส่วนร้อง การออกเสียง และค่าความเชื่อมั่นที่ตรงกัน',
+			'karaokeUi.syllableText' => 'ข้อความของคำหรือพยางค์',
+			'karaokeUi.splitSpan' => 'แบ่งช่วง',
+			'karaokeUi.mergeWithNext' => 'รวมกับช่วงถัดไป',
+			'karaokeUi.firstSyllable' => 'ข้อความส่วนแรก',
+			'karaokeUi.secondSyllable' => 'ข้อความส่วนที่สอง',
+			'karaokeUi.splitBoundaryMs' => 'จุดแบ่ง (มิลลิวินาที)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'ข้อความของส่วนต่าง ๆ รวมกันต้องตรงกับเนื้อเพลงทุกตัว รวมทั้งช่องว่าง',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'สองส่วนต้องคงข้อความเนื้อเพลงเดิมไว้ทุกตัว',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'เลือกเวลาหลังจุดเริ่มและก่อนจุดสิ้นสุดของช่วงนี้',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'การรวมต้องมีส่วนร้อง สถานะการมีคำอ่าน และค่าความเชื่อมั่นที่ตรงกัน',
+			'karaokeUi.invalidLyricSpanTiming' => 'แต่ละช่วงต้องมีเวลาเริ่มและสิ้นสุดที่ถูกต้อง',
 			'musicExperience.title' => 'ค้นพบเพลง',
 			'musicExperience.mix' => 'สร้างมิกซ์',
 			'musicExperience.adventure' => 'การเดินทางแห่งเสียง',

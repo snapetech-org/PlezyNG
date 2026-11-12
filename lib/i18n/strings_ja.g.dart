@@ -115,6 +115,7 @@ class TranslationsJa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$ja podcasts = _Translations$podcasts$ja._(_root);
 	@override late final _Translations$romm$ja romm = _Translations$romm$ja._(_root);
 	@override late final _Translations$subtitleCapture$ja subtitleCapture = _Translations$subtitleCapture$ja._(_root);
+	@override late final _Translations$karaokeUi$ja karaokeUi = _Translations$karaokeUi$ja._(_root);
 	@override late final _Translations$musicExperience$ja musicExperience = _Translations$musicExperience$ja._(_root);
 	@override late final _Translations$musicTools$ja musicTools = _Translations$musicTools$ja._(_root);
 	@override late final _Translations$musicDevices$ja musicDevices = _Translations$musicDevices$ja._(_root);
@@ -4245,6 +4246,29 @@ class _Translations$subtitleCapture$ja extends Translations$subtitleCapture$en {
 	@override String get processingAudio => '音声をローカルで処理しています…';
 	@override String processingAudioProgress({required Object percent}) => '音声をローカルで処理しています（${percent}%）…';
 	@override String get cpuFallback => 'GPUでの音声処理に失敗しました。CPUで再試行しています…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$ja extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$ja._(TranslationsJa root) : this._root = root, super.internal(root);
+
+	final TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => '単語・音節のタイミングを編集';
+	@override String get timeTheLineBeforeEditingSyllables => '音節を編集する前に、この歌詞行の開始時刻を設定してください。';
+	@override String get splitClearsSpanPronunciationAndConfidence => '分割すると区間の読みと信頼度が消去されます。結合には歌唱パート、読み、信頼度の一致が必要です。';
+	@override String get syllableText => '単語または音節のテキスト';
+	@override String get splitSpan => '区間を分割';
+	@override String get mergeWithNext => '次と結合';
+	@override String get firstSyllable => '最初の区間のテキスト';
+	@override String get secondSyllable => '2番目の区間のテキスト';
+	@override String get splitBoundaryMs => '分割位置（ミリ秒）';
+	@override String get syllableTextMustMatchLyricExactly => '空白を含め、各区間を合わせたテキストが歌詞と完全に一致する必要があります。';
+	@override String get syllableSplitMustPreserveLyricText => '2つの区間で元の歌詞を完全に保持する必要があります。';
+	@override String get splitBoundaryMustFallInsideSpan => 'この区間の開始後から終了前までの時刻を選んでください。';
+	@override String get mergeRequiresMatchingSingerAndReadings => '結合には歌唱パート、読みの有無、信頼度の一致が必要です。';
+	@override String get invalidLyricSpanTiming => '各区間に有効な開始時刻と終了時刻が必要です。';
 }
 
 // Path: musicExperience
@@ -9478,6 +9502,20 @@ extension on TranslationsJa {
 			'subtitleCapture.processingAudio' => '音声をローカルで処理しています…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '音声をローカルで処理しています（${percent}%）…',
 			'subtitleCapture.cpuFallback' => 'GPUでの音声処理に失敗しました。CPUで再試行しています…',
+			'karaokeUi.editWordSyllableTiming' => '単語・音節のタイミングを編集',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => '音節を編集する前に、この歌詞行の開始時刻を設定してください。',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => '分割すると区間の読みと信頼度が消去されます。結合には歌唱パート、読み、信頼度の一致が必要です。',
+			'karaokeUi.syllableText' => '単語または音節のテキスト',
+			'karaokeUi.splitSpan' => '区間を分割',
+			'karaokeUi.mergeWithNext' => '次と結合',
+			'karaokeUi.firstSyllable' => '最初の区間のテキスト',
+			'karaokeUi.secondSyllable' => '2番目の区間のテキスト',
+			'karaokeUi.splitBoundaryMs' => '分割位置（ミリ秒）',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => '空白を含め、各区間を合わせたテキストが歌詞と完全に一致する必要があります。',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => '2つの区間で元の歌詞を完全に保持する必要があります。',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'この区間の開始後から終了前までの時刻を選んでください。',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => '結合には歌唱パート、読みの有無、信頼度の一致が必要です。',
+			'karaokeUi.invalidLyricSpanTiming' => '各区間に有効な開始時刻と終了時刻が必要です。',
 			'musicExperience.title' => '音楽を探す',
 			'musicExperience.mix' => 'ミックス作成',
 			'musicExperience.adventure' => 'サウンドアドベンチャー',

@@ -115,6 +115,7 @@ class TranslationsHi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$hi podcasts = _Translations$podcasts$hi._(_root);
 	@override late final _Translations$romm$hi romm = _Translations$romm$hi._(_root);
 	@override late final _Translations$subtitleCapture$hi subtitleCapture = _Translations$subtitleCapture$hi._(_root);
+	@override late final _Translations$karaokeUi$hi karaokeUi = _Translations$karaokeUi$hi._(_root);
 	@override late final _Translations$musicExperience$hi musicExperience = _Translations$musicExperience$hi._(_root);
 	@override late final _Translations$musicTools$hi musicTools = _Translations$musicTools$hi._(_root);
 	@override late final _Translations$musicDevices$hi musicDevices = _Translations$musicDevices$hi._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$hi extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है…';
 	@override String processingAudioProgress({required Object percent}) => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है (${percent}%)…';
 	@override String get cpuFallback => 'GPU पर वाक् प्रसंस्करण विफल हुआ। CPU पर फिर कोशिश हो रही है…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$hi extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$hi._(TranslationsHi root) : this._root = root, super.internal(root);
+
+	final TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'शब्द/अक्षरांश का समय संपादित करें';
+	@override String get timeTheLineBeforeEditingSyllables => 'अक्षरांश संपादित करने से पहले इस गीत-पंक्ति का आरंभ समय तय करें।';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'बाँटने से खंड का उच्चारण और विश्वसनीयता मान मिट जाता है। जोड़ने के लिए गायन भाग, उच्चारण और विश्वसनीयता समान होने चाहिए।';
+	@override String get syllableText => 'शब्द या अक्षरांश का पाठ';
+	@override String get splitSpan => 'खंड बाँटें';
+	@override String get mergeWithNext => 'अगले से जोड़ें';
+	@override String get firstSyllable => 'पहले खंड का पाठ';
+	@override String get secondSyllable => 'दूसरे खंड का पाठ';
+	@override String get splitBoundaryMs => 'विभाजन बिंदु (मिलीसेकंड)';
+	@override String get syllableTextMustMatchLyricExactly => 'खंडों में रिक्त स्थान सहित गीत का पाठ बिल्कुल समान रहना चाहिए।';
+	@override String get syllableSplitMustPreserveLyricText => 'दोनों खंडों को मूल गीत-पाठ बिल्कुल वैसा ही रखना चाहिए।';
+	@override String get splitBoundaryMustFallInsideSpan => 'इस खंड के आरंभ के बाद और अंत से पहले का समय चुनें।';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'जोड़ने के लिए गायन भाग, उच्चारण की उपलब्धता और विश्वसनीयता समान होने चाहिए।';
+	@override String get invalidLyricSpanTiming => 'हर खंड के आरंभ और अंत का समय मान्य होना चाहिए।';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsHi {
 			'subtitleCapture.processingAudio' => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU पर वाक् प्रसंस्करण विफल हुआ। CPU पर फिर कोशिश हो रही है…',
+			'karaokeUi.editWordSyllableTiming' => 'शब्द/अक्षरांश का समय संपादित करें',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'अक्षरांश संपादित करने से पहले इस गीत-पंक्ति का आरंभ समय तय करें।',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'बाँटने से खंड का उच्चारण और विश्वसनीयता मान मिट जाता है। जोड़ने के लिए गायन भाग, उच्चारण और विश्वसनीयता समान होने चाहिए।',
+			'karaokeUi.syllableText' => 'शब्द या अक्षरांश का पाठ',
+			'karaokeUi.splitSpan' => 'खंड बाँटें',
+			'karaokeUi.mergeWithNext' => 'अगले से जोड़ें',
+			'karaokeUi.firstSyllable' => 'पहले खंड का पाठ',
+			'karaokeUi.secondSyllable' => 'दूसरे खंड का पाठ',
+			'karaokeUi.splitBoundaryMs' => 'विभाजन बिंदु (मिलीसेकंड)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'खंडों में रिक्त स्थान सहित गीत का पाठ बिल्कुल समान रहना चाहिए।',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'दोनों खंडों को मूल गीत-पाठ बिल्कुल वैसा ही रखना चाहिए।',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'इस खंड के आरंभ के बाद और अंत से पहले का समय चुनें।',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'जोड़ने के लिए गायन भाग, उच्चारण की उपलब्धता और विश्वसनीयता समान होने चाहिए।',
+			'karaokeUi.invalidLyricSpanTiming' => 'हर खंड के आरंभ और अंत का समय मान्य होना चाहिए।',
 			'musicExperience.title' => 'संगीत खोजें',
 			'musicExperience.mix' => 'मिक्स बनाएँ',
 			'musicExperience.adventure' => 'ध्वनि यात्रा',

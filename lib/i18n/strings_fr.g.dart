@@ -4297,6 +4297,20 @@ class Translations$karaokeUi$fr extends Translations$karaokeUi$en {
 	@override String get chooseAMicrophone => 'Choisir un microphone';
 	@override String get microphoneAndPrivateTake => 'Microphone et prise privée';
 	@override String get pitchFeedbackAndDryRecordingUseYourSelectedMicrophone => 'L’indication de justesse et l’enregistrement sans effets utilisent le microphone sélectionné. Utilisez une table de mixage externe pour l’amplification.';
+	@override String get editWordSyllableTiming => 'Modifier le minutage des mots/syllabes';
+	@override String get timeTheLineBeforeEditingSyllables => 'Définissez le début de cette ligne avant de modifier ses syllabes.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'La division efface la prononciation et la confiance du segment. La fusion exige des parties vocales, prononciations et confiances identiques.';
+	@override String get syllableText => 'Texte du mot ou de la syllabe';
+	@override String get splitSpan => 'Diviser le segment';
+	@override String get mergeWithNext => 'Fusionner avec le suivant';
+	@override String get firstSyllable => 'Texte du premier segment';
+	@override String get secondSyllable => 'Texte du second segment';
+	@override String get splitBoundaryMs => 'Point de division (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'Les segments doivent reproduire exactement les paroles, espaces compris.';
+	@override String get syllableSplitMustPreserveLyricText => 'Les deux segments doivent préserver exactement les paroles d’origine.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Choisissez un instant entre le début et la fin de ce segment.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'La fusion exige des parties vocales, une présence de prononciation et une confiance identiques.';
+	@override String get invalidLyricSpanTiming => 'Chaque segment nécessite des heures de début et de fin valides.';
 	@override String get runThePlezyNGKaraokeCompanionOnYourComputerHTTPS => 'Exécutez l’application compagnon de karaoké Pleazyng sur votre ordinateur. HTTPS est obligatoire pour un hôte distant. Le jeton est enregistré dans le coffre d’identifiants du système d’exploitation.';
 	@override String get configureHTTPS => 'Configurer HTTPS';
 	@override String get selectTrustedPEMCertificate => 'Sélectionner un certificat PEM de confiance';
@@ -9560,6 +9574,20 @@ extension on TranslationsFr {
 			'karaokeUi.chooseAMicrophone' => 'Choisir un microphone',
 			'karaokeUi.microphoneAndPrivateTake' => 'Microphone et prise privée',
 			'karaokeUi.pitchFeedbackAndDryRecordingUseYourSelectedMicrophone' => 'L’indication de justesse et l’enregistrement sans effets utilisent le microphone sélectionné. Utilisez une table de mixage externe pour l’amplification.',
+			'karaokeUi.editWordSyllableTiming' => 'Modifier le minutage des mots/syllabes',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Définissez le début de cette ligne avant de modifier ses syllabes.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'La division efface la prononciation et la confiance du segment. La fusion exige des parties vocales, prononciations et confiances identiques.',
+			'karaokeUi.syllableText' => 'Texte du mot ou de la syllabe',
+			'karaokeUi.splitSpan' => 'Diviser le segment',
+			'karaokeUi.mergeWithNext' => 'Fusionner avec le suivant',
+			'karaokeUi.firstSyllable' => 'Texte du premier segment',
+			'karaokeUi.secondSyllable' => 'Texte du second segment',
+			'karaokeUi.splitBoundaryMs' => 'Point de division (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Les segments doivent reproduire exactement les paroles, espaces compris.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Les deux segments doivent préserver exactement les paroles d’origine.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Choisissez un instant entre le début et la fin de ce segment.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'La fusion exige des parties vocales, une présence de prononciation et une confiance identiques.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Chaque segment nécessite des heures de début et de fin valides.',
 			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Exécutez l’application compagnon de karaoké Pleazyng sur votre ordinateur. HTTPS est obligatoire pour un hôte distant. Le jeton est enregistré dans le coffre d’identifiants du système d’exploitation.',
 			'karaokeUi.configureHTTPS' => 'Configurer HTTPS',
 			'karaokeUi.selectTrustedPEMCertificate' => 'Sélectionner un certificat PEM de confiance',
@@ -9660,6 +9688,8 @@ extension on TranslationsFr {
 			'musicTools.playlistSharingFailed' => 'Impossible de demander l’accès à la liste.',
 			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
 			'musicTools.playlistAccessList' => 'Accès actuel',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistAccessNone' => 'Aucun accès accordé à cette liste',
 			'musicTools.filterType' => 'Type de filtre',
 			'musicTools.peak' => 'Pic',
@@ -9674,8 +9704,6 @@ extension on TranslationsFr {
 			'musicDevices.receive' => 'Autoriser la lecture sur cet appareil',
 			'musicDevices.nearbyHint' => 'Ouvrez le sélecteur d’appareils sur l’autre appareil et autorisez-y la lecture.',
 			'musicDevices.receiverHint' => 'Gardez Pleazyng ouvert pour recevoir la musique. Associez une fois avec ce code.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.moveFailed' => 'Impossible de déplacer la lecture. Vérifiez que l’appareil est actif, associé et peut accéder à votre serveur musical.',
 			'musicDevices.uncertain' => 'Connexion interrompue. Reconnectez-vous à l’appareil choisi pour vérifier la lecture.',
 			'musicDevices.away' => 'Hors de chez soi',

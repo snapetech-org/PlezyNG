@@ -115,6 +115,7 @@ class TranslationsTr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$tr podcasts = _Translations$podcasts$tr._(_root);
 	@override late final _Translations$romm$tr romm = _Translations$romm$tr._(_root);
 	@override late final _Translations$subtitleCapture$tr subtitleCapture = _Translations$subtitleCapture$tr._(_root);
+	@override late final _Translations$karaokeUi$tr karaokeUi = _Translations$karaokeUi$tr._(_root);
 	@override late final _Translations$musicExperience$tr musicExperience = _Translations$musicExperience$tr._(_root);
 	@override late final _Translations$musicTools$tr musicTools = _Translations$musicTools$tr._(_root);
 	@override late final _Translations$musicDevices$tr musicDevices = _Translations$musicDevices$tr._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$tr extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Ses yerel olarak işleniyor…';
 	@override String processingAudioProgress({required Object percent}) => 'Ses yerel olarak işleniyor (${percent}%)…';
 	@override String get cpuFallback => 'GPU ile konuşma işleme başarısız oldu. CPU ile yeniden deneniyor…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$tr extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$tr._(TranslationsTr root) : this._root = root, super.internal(root);
+
+	final TranslationsTr _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Sözcük/hece zamanlamasını düzenle';
+	@override String get timeTheLineBeforeEditingSyllables => 'Heceleri düzenlemeden önce bu söz satırının başlangıç zamanını ayarlayın.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Bölme, aralığın okunuşunu ve güven değerini temizler. Birleştirme için vokal bölümleri, okunuşlar ve güven değerleri eşleşmelidir.';
+	@override String get syllableText => 'Sözcük veya hece metni';
+	@override String get splitSpan => 'Aralığı böl';
+	@override String get mergeWithNext => 'Sonrakiyle birleştir';
+	@override String get firstSyllable => 'İlk bölümün metni';
+	@override String get secondSyllable => 'İkinci bölümün metni';
+	@override String get splitBoundaryMs => 'Bölme noktası (ms)';
+	@override String get syllableTextMustMatchLyricExactly => 'Bölümler, boşluklar dahil sözleri aynen yeniden oluşturmalıdır.';
+	@override String get syllableSplitMustPreserveLyricText => 'İki bölüm özgün söz metnini aynen korumalıdır.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Bu aralığın başlangıcı ile sonu arasında bir zaman seçin.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Birleştirme için vokal bölümleri, okunuş bulunma durumu ve güven değerleri eşleşmelidir.';
+	@override String get invalidLyricSpanTiming => 'Her aralığın geçerli başlangıç ve bitiş zamanı olmalıdır.';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsTr {
 			'subtitleCapture.processingAudio' => 'Ses yerel olarak işleniyor…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Ses yerel olarak işleniyor (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU ile konuşma işleme başarısız oldu. CPU ile yeniden deneniyor…',
+			'karaokeUi.editWordSyllableTiming' => 'Sözcük/hece zamanlamasını düzenle',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Heceleri düzenlemeden önce bu söz satırının başlangıç zamanını ayarlayın.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Bölme, aralığın okunuşunu ve güven değerini temizler. Birleştirme için vokal bölümleri, okunuşlar ve güven değerleri eşleşmelidir.',
+			'karaokeUi.syllableText' => 'Sözcük veya hece metni',
+			'karaokeUi.splitSpan' => 'Aralığı böl',
+			'karaokeUi.mergeWithNext' => 'Sonrakiyle birleştir',
+			'karaokeUi.firstSyllable' => 'İlk bölümün metni',
+			'karaokeUi.secondSyllable' => 'İkinci bölümün metni',
+			'karaokeUi.splitBoundaryMs' => 'Bölme noktası (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Bölümler, boşluklar dahil sözleri aynen yeniden oluşturmalıdır.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'İki bölüm özgün söz metnini aynen korumalıdır.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Bu aralığın başlangıcı ile sonu arasında bir zaman seçin.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Birleştirme için vokal bölümleri, okunuş bulunma durumu ve güven değerleri eşleşmelidir.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Her aralığın geçerli başlangıç ve bitiş zamanı olmalıdır.',
 			'musicExperience.title' => 'Müzik keşfi',
 			'musicExperience.mix' => 'Miks oluşturucu',
 			'musicExperience.adventure' => 'Ses yolculuğu',

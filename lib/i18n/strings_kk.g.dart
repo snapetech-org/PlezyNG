@@ -115,6 +115,7 @@ class TranslationsKk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$kk podcasts = _Translations$podcasts$kk._(_root);
 	@override late final _Translations$romm$kk romm = _Translations$romm$kk._(_root);
 	@override late final _Translations$subtitleCapture$kk subtitleCapture = _Translations$subtitleCapture$kk._(_root);
+	@override late final _Translations$karaokeUi$kk karaokeUi = _Translations$karaokeUi$kk._(_root);
 	@override late final _Translations$musicExperience$kk musicExperience = _Translations$musicExperience$kk._(_root);
 	@override late final _Translations$musicTools$kk musicTools = _Translations$musicTools$kk._(_root);
 	@override late final _Translations$musicDevices$kk musicDevices = _Translations$musicDevices$kk._(_root);
@@ -4250,6 +4251,29 @@ class _Translations$subtitleCapture$kk extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Дыбыс жергілікті түрде өңделуде…';
 	@override String processingAudioProgress({required Object percent}) => 'Дыбыс жергілікті түрде өңделуде (${percent}%)…';
 	@override String get cpuFallback => 'GPU арқылы сөйлеуді өңдеу сәтсіз аяқталды. CPU арқылы қайта әрекет жасалуда…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$kk extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$kk._(TranslationsKk root) : this._root = root, super.internal(root);
+
+	final TranslationsKk _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'Сөз/буын уақытын өңдеу';
+	@override String get timeTheLineBeforeEditingSyllables => 'Буындарды өңдемес бұрын осы мәтін жолының басталу уақытын орнатыңыз.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'Бөлу бөліктің айтылымы мен сенімділік мәнін өшіреді. Біріктіру үшін вокал партиялары, айтылым және сенімділік сәйкес болуы керек.';
+	@override String get syllableText => 'Сөз немесе буын мәтіні';
+	@override String get splitSpan => 'Бөлікті бөлу';
+	@override String get mergeWithNext => 'Келесімен біріктіру';
+	@override String get firstSyllable => 'Бірінші сегмент мәтіні';
+	@override String get secondSyllable => 'Екінші сегмент мәтіні';
+	@override String get splitBoundaryMs => 'Бөлу нүктесі (мс)';
+	@override String get syllableTextMustMatchLyricExactly => 'Сегменттер бос орындарды қоса ән мәтінін дәл қайталауы керек.';
+	@override String get syllableSplitMustPreserveLyricText => 'Екі сегмент бастапқы ән мәтінін дәл сақтауы керек.';
+	@override String get splitBoundaryMustFallInsideSpan => 'Осы бөліктің басталуы мен аяқталуы арасындағы уақытты таңдаңыз.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'Біріктіру үшін вокал партиялары, айтылымның болуы және сенімділік сәйкес болуы керек.';
+	@override String get invalidLyricSpanTiming => 'Әр бөліктің басталу және аяқталу уақыты жарамды болуы керек.';
 }
 
 // Path: musicExperience
@@ -9483,6 +9507,20 @@ extension on TranslationsKk {
 			'subtitleCapture.processingAudio' => 'Дыбыс жергілікті түрде өңделуде…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Дыбыс жергілікті түрде өңделуде (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU арқылы сөйлеуді өңдеу сәтсіз аяқталды. CPU арқылы қайта әрекет жасалуда…',
+			'karaokeUi.editWordSyllableTiming' => 'Сөз/буын уақытын өңдеу',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Буындарды өңдемес бұрын осы мәтін жолының басталу уақытын орнатыңыз.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Бөлу бөліктің айтылымы мен сенімділік мәнін өшіреді. Біріктіру үшін вокал партиялары, айтылым және сенімділік сәйкес болуы керек.',
+			'karaokeUi.syllableText' => 'Сөз немесе буын мәтіні',
+			'karaokeUi.splitSpan' => 'Бөлікті бөлу',
+			'karaokeUi.mergeWithNext' => 'Келесімен біріктіру',
+			'karaokeUi.firstSyllable' => 'Бірінші сегмент мәтіні',
+			'karaokeUi.secondSyllable' => 'Екінші сегмент мәтіні',
+			'karaokeUi.splitBoundaryMs' => 'Бөлу нүктесі (мс)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'Сегменттер бос орындарды қоса ән мәтінін дәл қайталауы керек.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'Екі сегмент бастапқы ән мәтінін дәл сақтауы керек.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Осы бөліктің басталуы мен аяқталуы арасындағы уақытты таңдаңыз.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Біріктіру үшін вокал партиялары, айтылымның болуы және сенімділік сәйкес болуы керек.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Әр бөліктің басталу және аяқталу уақыты жарамды болуы керек.',
 			'musicExperience.title' => 'Музыка іздеу',
 			'musicExperience.mix' => 'Микс жасау',
 			'musicExperience.adventure' => 'Дыбыстық саяхат',

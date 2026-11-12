@@ -115,6 +115,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$ar podcasts = _Translations$podcasts$ar._(_root);
 	@override late final _Translations$romm$ar romm = _Translations$romm$ar._(_root);
 	@override late final _Translations$subtitleCapture$ar subtitleCapture = _Translations$subtitleCapture$ar._(_root);
+	@override late final _Translations$karaokeUi$ar karaokeUi = _Translations$karaokeUi$ar._(_root);
 	@override late final _Translations$musicExperience$ar musicExperience = _Translations$musicExperience$ar._(_root);
 	@override late final _Translations$musicTools$ar musicTools = _Translations$musicTools$ar._(_root);
 	@override late final _Translations$musicDevices$ar musicDevices = _Translations$musicDevices$ar._(_root);
@@ -4342,6 +4343,29 @@ class _Translations$subtitleCapture$ar extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'جارٍ معالجة الصوت محليًا…';
 	@override String processingAudioProgress({required Object percent}) => 'جارٍ معالجة الصوت محليًا (${percent}٪)…';
 	@override String get cpuFallback => 'فشلت معالجة الكلام باستخدام معالج الرسومات. تجري إعادة المحاولة باستخدام المعالج المركزي…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$ar extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => 'تعديل توقيت الكلمات والمقاطع';
+	@override String get timeTheLineBeforeEditingSyllables => 'حدد وقت بدء سطر الكلمات هذا قبل تعديل مقاطعه.';
+	@override String get splitClearsSpanPronunciationAndConfidence => 'يؤدي التقسيم إلى مسح النطق ودرجة الثقة للجزء. يتطلب الدمج تطابق الأدوار الغنائية والنطق ودرجة الثقة.';
+	@override String get syllableText => 'نص الكلمة أو المقطع';
+	@override String get splitSpan => 'تقسيم الجزء';
+	@override String get mergeWithNext => 'دمج مع التالي';
+	@override String get firstSyllable => 'نص المقطع الأول';
+	@override String get secondSyllable => 'نص المقطع الثاني';
+	@override String get splitBoundaryMs => 'نقطة التقسيم (مللي ثانية)';
+	@override String get syllableTextMustMatchLyricExactly => 'يجب أن تعيد المقاطع إنتاج الكلمات بدقة، بما في ذلك المسافات.';
+	@override String get syllableSplitMustPreserveLyricText => 'يجب أن يحافظ المقطعان على النص الأصلي للكلمات كما هو تمامًا.';
+	@override String get splitBoundaryMustFallInsideSpan => 'اختر وقتًا بعد بداية هذا الجزء وقبل نهايته.';
+	@override String get mergeRequiresMatchingSingerAndReadings => 'يتطلب الدمج تطابق الأدوار الغنائية وتوفر النطق ودرجة الثقة.';
+	@override String get invalidLyricSpanTiming => 'يحتاج كل جزء إلى وقتي بدء ونهاية صالحين.';
 }
 
 // Path: musicExperience
@@ -9583,6 +9607,20 @@ extension on TranslationsAr {
 			'subtitleCapture.processingAudio' => 'جارٍ معالجة الصوت محليًا…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'جارٍ معالجة الصوت محليًا (${percent}٪)…',
 			'subtitleCapture.cpuFallback' => 'فشلت معالجة الكلام باستخدام معالج الرسومات. تجري إعادة المحاولة باستخدام المعالج المركزي…',
+			'karaokeUi.editWordSyllableTiming' => 'تعديل توقيت الكلمات والمقاطع',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'حدد وقت بدء سطر الكلمات هذا قبل تعديل مقاطعه.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'يؤدي التقسيم إلى مسح النطق ودرجة الثقة للجزء. يتطلب الدمج تطابق الأدوار الغنائية والنطق ودرجة الثقة.',
+			'karaokeUi.syllableText' => 'نص الكلمة أو المقطع',
+			'karaokeUi.splitSpan' => 'تقسيم الجزء',
+			'karaokeUi.mergeWithNext' => 'دمج مع التالي',
+			'karaokeUi.firstSyllable' => 'نص المقطع الأول',
+			'karaokeUi.secondSyllable' => 'نص المقطع الثاني',
+			'karaokeUi.splitBoundaryMs' => 'نقطة التقسيم (مللي ثانية)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'يجب أن تعيد المقاطع إنتاج الكلمات بدقة، بما في ذلك المسافات.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'يجب أن يحافظ المقطعان على النص الأصلي للكلمات كما هو تمامًا.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'اختر وقتًا بعد بداية هذا الجزء وقبل نهايته.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'يتطلب الدمج تطابق الأدوار الغنائية وتوفر النطق ودرجة الثقة.',
+			'karaokeUi.invalidLyricSpanTiming' => 'يحتاج كل جزء إلى وقتي بدء ونهاية صالحين.',
 			'musicExperience.title' => 'اكتشاف الموسيقى',
 			'musicExperience.mix' => 'إنشاء مزيج',
 			'musicExperience.adventure' => 'رحلة صوتية',

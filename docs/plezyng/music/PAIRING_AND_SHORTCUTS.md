@@ -194,16 +194,21 @@ are reported absent. The ordinary Cast output needs the sender to advance the
 queue.
 
 **Transfer queue to Chromecast** is a separate Now Playing action. It prepares
-up to 32 online tracks with repeat and rolling continuation off on an idle
-receiver, subject to the Cast request size limit. Shuffle order, duplicates and
+up to 32 online tracks with repeat off, one or all and rolling continuation off
+on an idle receiver, subject to the Cast request size limit. Shuffle order, duplicates and
 the current position in whole seconds are carried over. The receiver loads
 paused, and for a playing queue the phone waits for matching receiver playback
-before pausing its own queue. Unavailable sources or oversized requests fail as
-a whole. The [Cast receiver owns the resulting queue](https://developers.google.com/cast/docs/android_sender/queueing)
+before pausing its own queue. Repeating queues additionally await a native SDK
+update of the exact paused entry, preserving its receiver-assigned ID and media
+while enabling autoplay on later loops. The receiver must acknowledge the
+requested repeat mode; an unsupported update keeps local playback intact.
+Unavailable sources or oversized requests fail as a whole. The [Cast receiver owns the resulting queue](https://developers.google.com/cast/docs/android_sender/queueing)
 and can advance it without the sender as long as the stream URLs remain valid.
 Use the Cast controls in Now Playing to pause, resume or stop the owned queue.
 **Return playback to this device** opens the receiver's current occurrence at
-its acknowledged paused position and preserves the queue's playback order. If
+its acknowledged paused position and preserves the queue's playback order and
+the receiver's current repeat-off/one/all setting. Receiver reshuffle-on-repeat
+and unknown modes cannot be returned as a different local order. If
 the local open fails, only the same still-owned receiver can resume.
 Detached playback does not produce local listening history. After restart,
 controls return when the same profile reconnects to the exact acknowledged

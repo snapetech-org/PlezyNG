@@ -115,6 +115,7 @@ class TranslationsKo extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$podcasts$ko podcasts = _Translations$podcasts$ko._(_root);
 	@override late final _Translations$romm$ko romm = _Translations$romm$ko._(_root);
 	@override late final _Translations$subtitleCapture$ko subtitleCapture = _Translations$subtitleCapture$ko._(_root);
+	@override late final _Translations$karaokeUi$ko karaokeUi = _Translations$karaokeUi$ko._(_root);
 	@override late final _Translations$musicExperience$ko musicExperience = _Translations$musicExperience$ko._(_root);
 	@override late final _Translations$musicTools$ko musicTools = _Translations$musicTools$ko._(_root);
 	@override late final _Translations$musicDevices$ko musicDevices = _Translations$musicDevices$ko._(_root);
@@ -4245,6 +4246,29 @@ class _Translations$subtitleCapture$ko extends Translations$subtitleCapture$en {
 	@override String get processingAudio => '로컬에서 오디오 처리 중…';
 	@override String processingAudioProgress({required Object percent}) => '로컬에서 오디오 처리 중 (${percent}%)…';
 	@override String get cpuFallback => 'GPU 음성 처리에 실패했습니다. CPU로 다시 시도하는 중…';
+}
+
+// Path: karaokeUi
+class _Translations$karaokeUi$ko extends Translations$karaokeUi$en {
+	_Translations$karaokeUi$ko._(TranslationsKo root) : this._root = root, super.internal(root);
+
+	final TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get editWordSyllableTiming => '단어/음절 타이밍 편집';
+	@override String get timeTheLineBeforeEditingSyllables => '음절을 편집하기 전에 이 가사 줄의 시작 시간을 설정하세요.';
+	@override String get splitClearsSpanPronunciationAndConfidence => '분할하면 구간의 발음과 신뢰도가 지워집니다. 병합하려면 보컬 파트, 발음, 신뢰도가 일치해야 합니다.';
+	@override String get syllableText => '단어 또는 음절 텍스트';
+	@override String get splitSpan => '구간 분할';
+	@override String get mergeWithNext => '다음 구간과 병합';
+	@override String get firstSyllable => '첫 번째 구간 텍스트';
+	@override String get secondSyllable => '두 번째 구간 텍스트';
+	@override String get splitBoundaryMs => '분할 지점(ms)';
+	@override String get syllableTextMustMatchLyricExactly => '구간을 합친 텍스트는 공백을 포함하여 가사와 정확히 일치해야 합니다.';
+	@override String get syllableSplitMustPreserveLyricText => '두 구간은 원래 가사 텍스트를 정확히 유지해야 합니다.';
+	@override String get splitBoundaryMustFallInsideSpan => '이 구간의 시작 이후부터 끝 이전 사이의 시간을 선택하세요.';
+	@override String get mergeRequiresMatchingSingerAndReadings => '병합하려면 보컬 파트, 발음 유무, 신뢰도가 일치해야 합니다.';
+	@override String get invalidLyricSpanTiming => '각 구간에는 올바른 시작 및 종료 시간이 필요합니다.';
 }
 
 // Path: musicExperience
@@ -9478,6 +9502,20 @@ extension on TranslationsKo {
 			'subtitleCapture.processingAudio' => '로컬에서 오디오 처리 중…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '로컬에서 오디오 처리 중 (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU 음성 처리에 실패했습니다. CPU로 다시 시도하는 중…',
+			'karaokeUi.editWordSyllableTiming' => '단어/음절 타이밍 편집',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => '음절을 편집하기 전에 이 가사 줄의 시작 시간을 설정하세요.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => '분할하면 구간의 발음과 신뢰도가 지워집니다. 병합하려면 보컬 파트, 발음, 신뢰도가 일치해야 합니다.',
+			'karaokeUi.syllableText' => '단어 또는 음절 텍스트',
+			'karaokeUi.splitSpan' => '구간 분할',
+			'karaokeUi.mergeWithNext' => '다음 구간과 병합',
+			'karaokeUi.firstSyllable' => '첫 번째 구간 텍스트',
+			'karaokeUi.secondSyllable' => '두 번째 구간 텍스트',
+			'karaokeUi.splitBoundaryMs' => '분할 지점(ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => '구간을 합친 텍스트는 공백을 포함하여 가사와 정확히 일치해야 합니다.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => '두 구간은 원래 가사 텍스트를 정확히 유지해야 합니다.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => '이 구간의 시작 이후부터 끝 이전 사이의 시간을 선택하세요.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => '병합하려면 보컬 파트, 발음 유무, 신뢰도가 일치해야 합니다.',
+			'karaokeUi.invalidLyricSpanTiming' => '각 구간에는 올바른 시작 및 종료 시간이 필요합니다.',
 			'musicExperience.title' => '음악 둘러보기',
 			'musicExperience.mix' => '믹스 만들기',
 			'musicExperience.adventure' => '사운드 어드벤처',

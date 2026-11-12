@@ -17,6 +17,9 @@ override_dh_auto_install:
 	esac; \
 	install -d "$$dest/opt/pleazyng"; \
 	tar -xzf "$$archive" -C "$$dest/opt/pleazyng"; \
+	: "Launchpad rejects debs containing pre-1980 mtimes; the reproducible"; \
+	: "DV runtime ships epoch-0 files, so pin everything to SOURCE_DATE_EPOCH."; \
+	find "$$dest/opt/pleazyng" -exec touch -h -d "@$${SOURCE_DATE_EPOCH:?}" {} +; \
 	install -Dm755 pleazyng.sh "$$dest/usr/bin/pleazyng"; \
 	install -Dm644 org.snapetech.pleazyng.desktop "$$dest/usr/share/applications/org.snapetech.pleazyng.desktop"; \
 	install -Dm644 pleazyng.png "$$dest/usr/share/icons/hicolor/512x512/apps/pleazyng.png"; \

@@ -19,6 +19,11 @@ on:
         description: Published Pleazyng release tag
         required: true
         type: string
+      ppa_revision:
+        description: PPA upload revision; increment to re-upload a release Launchpad already has
+        required: false
+        default: '1'
+        type: string
 
 # Several publication gates run before checkout in fresh private guests.
 env:
@@ -168,6 +173,7 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           UBUNTU_SERIES: ${{ matrix.ubuntu_series }}
           GPG_FINGERPRINT: ${{ steps.signing.outputs.fingerprint }}
+          PPA_REVISION: ${{ inputs.ppa_revision || '1' }}
         run: |
           set -euo pipefail
           version="$RELEASE_VERSION"
@@ -179,7 +185,8 @@ jobs:
           cp "$RUNNER_TEMP/pleazyng-ppa/assets/pleazyng-linux-arm64.tar.gz" "$source_dir/"
           cp linux/packaging/pleazyng.sh linux/packaging/org.snapetech.pleazyng.desktop assets/pleazyng.png LICENSE "$source_dir/"
           cp -a linux/packaging/ppa/debian/. "$source_dir/debian/"
-          ppa_version="${version}-1ppa1~${UBUNTU_SERIES}1"
+          [[ "$PPA_REVISION" =~ ^[1-9][0-9]*$ ]] || { echo "Invalid PPA revision: $PPA_REVISION" >&2; exit 1; }
+          ppa_version="${version}-1ppa${PPA_REVISION}~${UBUNTU_SERIES}1"
           cat > "$source_dir/debian/changelog" <<EOF
           pleazyng (${ppa_version}) ${UBUNTU_SERIES}; urgency=medium
 

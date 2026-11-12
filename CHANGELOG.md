@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix Launchpad PPA binary uploads rejected for 1970 timestamps on bundled Dolby Vision tools, and allow re-uploading an existing release with a new PPA revision.
+
 - Keep paged local folder listings in a deterministic order when filenames differ only by letter case.
 
 - Read local CBR and CB7 comics through bounded RAR and 7z extraction, including source classification, BookOrbit/OPDS file metadata and codec notices in the app's Licenses screen.

@@ -5613,7 +5613,9 @@
     "sharingInvitationReject": "Recusar convite",
     "sharingInvitationHint": "A decisão aplica-se a todos os itens deste convite, incluindo conteúdos fora desta biblioteca de música.",
     "sharingAcceptConfirm": "Aceitar todo o convite de ${owner}?",
-    "sharingDeclineConfirm": "Recusar todo o convite de ${owner}?"
+    "sharingDeclineConfirm": "Recusar todo o convite de ${owner}?",
+    "pathTracks": "Faixas por percurso",
+    "sonicDistance": "Distância sonora máxima"
   },
   "musicDevices": {
     "playOn": "Reproduzir em",

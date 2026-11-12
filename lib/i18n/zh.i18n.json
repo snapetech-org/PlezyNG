@@ -5599,7 +5599,9 @@
     "sharingInvitationReject": "拒绝邀请",
     "sharingInvitationHint": "此决定适用于邀请中的所有项目，包括此音乐库以外的媒体。",
     "sharingAcceptConfirm": "接受来自 ${owner} 的整份邀请？",
-    "sharingDeclineConfirm": "拒绝来自 ${owner} 的整份邀请？"
+    "sharingDeclineConfirm": "拒绝来自 ${owner} 的整份邀请？",
+    "pathTracks": "每条路径的曲目数",
+    "sonicDistance": "最大声音距离"
   },
   "musicDevices": {
     "playOn": "播放设备",

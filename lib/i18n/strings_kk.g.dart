@@ -4401,6 +4401,8 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'Шешіміңіз шақырудағы барлық элементке, осы музыка кітапханасынан тыс медиаға да қолданылады.';
 	@override String sharingAcceptConfirm({required Object owner}) => '${owner} жіберген шақыру толық қабылдансын ба?';
 	@override String sharingDeclineConfirm({required Object owner}) => '${owner} жіберген шақыру толық қабылданбасын ба?';
+	@override String get pathTracks => 'Әр жолдағы тректер';
+	@override String get sonicDistance => 'Ең үлкен дыбыстық қашықтық';
 }
 
 // Path: musicDevices
@@ -9637,6 +9639,8 @@ extension on TranslationsKk {
 			'musicTools.sharingInvitationHint' => 'Шешіміңіз шақырудағы барлық элементке, осы музыка кітапханасынан тыс медиаға да қолданылады.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner} жіберген шақыру толық қабылдансын ба?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner} жіберген шақыру толық қабылданбасын ба?',
+			'musicTools.pathTracks' => 'Әр жолдағы тректер',
+			'musicTools.sonicDistance' => 'Ең үлкен дыбыстық қашықтық',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',
@@ -9649,6 +9653,8 @@ extension on TranslationsKk {
 			'musicDevices.uncertain' => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.',
 			'musicDevices.away' => 'Үйден тыс жерде',
 			'musicDevices.relay' => 'Музыка релесінің URL мекенжайы',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Қабылдаушы құрылғыда қосып, бір желіде бір рет жұптастырыңыз. Pleazyng ашық тұрсын. Реле шифрланған музыка пәрмендерін тасымалдайды және желі мекенжайларын көреді. Әр ойнатқыш өз медиа серверінен ағын алады.',
 			'musicDevices.relayInvalid' => 'Реленің HTTPS мекенжайын енгізіңіз.',
 			_ => null,

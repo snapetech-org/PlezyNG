@@ -18,6 +18,7 @@ import '../../providers/download_provider.dart';
 import '../../providers/hidden_libraries_provider.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../services/music/music_discovery.dart';
+import '../../services/music/music_account_scope.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../utils/provider_extensions.dart';
 import '../../utils/snackbar_helper.dart';
@@ -45,14 +46,23 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
   MusicDiscoveryBatch? _preview;
   List<MusicRecipe> _saved = [];
   MusicRecipeKind _kind = MusicRecipeKind.mix;
-  int _limit = 100, _generation = 0;
+  int _limit = 100, _pathTracks = 50, _generation = 0;
+  double _maxDistance = .25;
   String? _recipeId;
   bool _busy = false;
   bool _recipesLoaded = false;
   String? _error;
-  late final String? _profileId = context.read<ActiveProfileProvider>().activeId;
+  late final ActiveProfileProvider _profile;
+  late final String? _profileId;
+  late final int _profileGeneration;
   MusicRecipeStore? get _store => _profileId == null ? null : MusicRecipeStore(context.read<AppDatabase>(), _profileId);
-  bool get _currentProfile => mounted && context.read<ActiveProfileProvider>().activeId == _profileId;
+  bool get _currentProfile =>
+      mounted &&
+      identical(context.read<ActiveProfileProvider>(), _profile) &&
+      _profile.activeId == _profileId &&
+      _profile.identityMutationGeneration == _profileGeneration &&
+      !_profile.isBinding &&
+      _profile.lastBindingSucceeded;
   MediaServerClient? _discoveryClient(MediaItem item) {
     final id = serverIdOrNull(item.serverId);
     if (!_currentProfile || id == null) return null;
@@ -74,10 +84,15 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
   @override
   void initState() {
     super.initState();
+    _profile = context.read<ActiveProfileProvider>();
+    _profileId = _profile.activeId;
+    _profileGeneration = _profile.identityMutationGeneration;
     final recipe = widget.recipe;
     _name.text = recipe?.title ?? widget.seed.displayTitle;
     _kind = recipe?.kind ?? MusicRecipeKind.mix;
     _limit = recipe?.limit ?? 100;
+    _pathTracks = recipe?.pathTracks ?? 50;
+    _maxDistance = recipe?.maxDistance ?? .25;
     _recipeId = recipe?.id;
   }
 
@@ -104,6 +119,7 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
   }
 
   Future<void> _run(Future<void> Function(int generation) action) async {
+    if (!_currentProfile) return;
     final generation = ++_generation;
     setState(() {
       _busy = true;
@@ -128,6 +144,8 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
     kind: _kind,
     seeds: _seeds,
     limit: _limit,
+    pathTracks: _pathTracks,
+    maxDistance: _maxDistance,
   );
 
   Future<void> _search() => _run((generation) async {
@@ -165,8 +183,11 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
     final client = _discoveryClient(widget.seed);
     if (client == null) throw StateError('No server');
     final authentication = client.authenticationSessionId;
+    final account = musicAccountScope(client);
     bool current() =>
-        identical(client.authenticationSessionId, authentication) && identical(_discoveryClient(widget.seed), client);
+        musicAccountScope(client) == account &&
+        identical(client.authenticationSessionId, authentication) &&
+        identical(_discoveryClient(widget.seed), client);
     final rows = await fetch(client);
     if (generation != _generation || !current()) return;
     final results = rows
@@ -239,6 +260,12 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
     context.watch<ActiveProfileProvider>();
     context.watch<MultiServerProvider?>();
     context.watch<HiddenLibrariesProvider?>();
+    if (!_currentProfile) {
+      return Scaffold(
+        appBar: AppBar(title: Text(strings.title)),
+        body: Center(child: Text(strings.error)),
+      );
+    }
     final service = context.watch<MusicPlaybackService>();
     final discovery = service is MusicDiscoveryControls ? service as MusicDiscoveryControls : null;
     final preview = _preview?.isCurrent() == true ? _preview!.tracks : const <MediaItem>[];
@@ -370,6 +397,7 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
                     },
             ),
           DropdownButtonFormField<int>(
+            key: ValueKey('limit/$_recipeId/$_limit'),
             initialValue: _limit,
             decoration: InputDecoration(labelText: strings.trackLimit),
             items: ({
@@ -387,6 +415,56 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
                     _preview = null;
                   }),
           ),
+          if (_kind == MusicRecipeKind.adventure) ...[
+            const SizedBox(height: 16),
+            DropdownButtonFormField<int>(
+              key: ValueKey('pathTracks/$_recipeId/$_pathTracks'),
+              initialValue: _pathTracks,
+              decoration: InputDecoration(labelText: t.musicTools.pathTracks),
+              items: ({
+                2,
+                5,
+                10,
+                25,
+                50,
+                100,
+                200,
+                500,
+                _pathTracks,
+              }.toList()..sort()).map((n) => DropdownMenuItem(value: n, child: Text('$n'))).toList(),
+              onChanged: _busy
+                  ? null
+                  : (n) => setState(() {
+                      _pathTracks = n!;
+                      _preview = null;
+                    }),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<double>(
+              key: ValueKey('maxDistance/$_recipeId/$_maxDistance'),
+              initialValue: _maxDistance,
+              decoration: InputDecoration(labelText: t.musicTools.sonicDistance),
+              items: ({
+                0.0,
+                .05,
+                .1,
+                .15,
+                .2,
+                .25,
+                .4,
+                .5,
+                .75,
+                1.0,
+                _maxDistance,
+              }.toList()..sort()).map((n) => DropdownMenuItem(value: n, child: Text(n.toStringAsFixed(2)))).toList(),
+              onChanged: _busy
+                  ? null
+                  : (n) => setState(() {
+                      _maxDistance = n!;
+                      _preview = null;
+                    }),
+            ),
+          ],
           const SizedBox(height: 16),
           Wrap(
             spacing: 8,
@@ -435,6 +513,8 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
                           ..addAll(recipe.seeds);
                         _kind = recipe.kind;
                         _limit = recipe.limit;
+                        _pathTracks = recipe.pathTracks;
+                        _maxDistance = recipe.maxDistance;
                         _preview = null;
                       }),
                 trailing: IconButton(

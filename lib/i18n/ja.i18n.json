@@ -5599,7 +5599,9 @@
     "sharingInvitationReject": "招待を辞退",
     "sharingInvitationHint": "この操作は、この音楽ライブラリ以外のメディアも含め、招待内のすべての項目に適用されます。",
     "sharingAcceptConfirm": "${owner}からの招待全体を承認しますか？",
-    "sharingDeclineConfirm": "${owner}からの招待全体を辞退しますか？"
+    "sharingDeclineConfirm": "${owner}からの招待全体を辞退しますか？",
+    "pathTracks": "経路ごとの曲数",
+    "sonicDistance": "音響的距離の上限"
   },
   "musicDevices": {
     "playOn": "再生先",

@@ -5614,7 +5614,9 @@
     "sharingInvitationReject": "דחיית ההזמנה",
     "sharingInvitationHint": "ההחלטה חלה על כל הפריטים בהזמנה, כולל מדיה מחוץ לספריית המוזיקה הזו.",
     "sharingAcceptConfirm": "לקבל את כל ההזמנה מאת ${owner}?",
-    "sharingDeclineConfirm": "לדחות את כל ההזמנה מאת ${owner}?"
+    "sharingDeclineConfirm": "לדחות את כל ההזמנה מאת ${owner}?",
+    "pathTracks": "רצועות בכל מסלול",
+    "sonicDistance": "מרחק צלילי מרבי"
   },
   "musicDevices": {
     "playOn": "ניגון באמצעות",

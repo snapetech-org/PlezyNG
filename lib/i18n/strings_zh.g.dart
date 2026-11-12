@@ -4396,6 +4396,8 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => '此决定适用于邀请中的所有项目，包括此音乐库以外的媒体。';
 	@override String sharingAcceptConfirm({required Object owner}) => '接受来自 ${owner} 的整份邀请？';
 	@override String sharingDeclineConfirm({required Object owner}) => '拒绝来自 ${owner} 的整份邀请？';
+	@override String get pathTracks => '每条路径的曲目数';
+	@override String get sonicDistance => '最大声音距离';
 }
 
 // Path: musicDevices
@@ -9632,6 +9634,8 @@ extension on TranslationsZh {
 			'musicTools.sharingInvitationHint' => '此决定适用于邀请中的所有项目，包括此音乐库以外的媒体。',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '接受来自 ${owner} 的整份邀请？',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '拒绝来自 ${owner} 的整份邀请？',
+			'musicTools.pathTracks' => '每条路径的曲目数',
+			'musicTools.sonicDistance' => '最大声音距离',
 			'musicDevices.playOn' => '播放设备',
 			'musicDevices.thisDevice' => '此设备',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
@@ -9644,6 +9648,8 @@ extension on TranslationsZh {
 			'musicDevices.uncertain' => '连接中断。请重新连接所选设备以检查播放状态。',
 			'musicDevices.away' => '外出时',
 			'musicDevices.relay' => '音乐中继 URL',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => '在接收设备上启用，然后在同一网络中配对一次。保持 Pleazyng 打开。中继传递加密的音乐控制，并能看到网络地址。每个播放器从自己的媒体服务器串流。',
 			'musicDevices.relayInvalid' => '请输入 HTTPS 中继地址。',
 			_ => null,

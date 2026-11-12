@@ -6,6 +6,21 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 “Existing” means retained application behavior, not a new reference comparison.
 “Partial” identifies concrete remaining implementation, not just testing.
 
+## Sonic Adventure path constraints, 2026-11-11
+
+Saved adventures now include tracks per path and maximum sonic distance, with
+the documented Plex defaults for legacy recipes. Every waypoint leg forwards
+both parameters and validates endpoints, source and per-path/total budgets.
+Preview, editing and saved-recipe selection share those controls. Discovery
+editors retire on profile identity changes and pending/retained related results
+also retain the original music account, even when authentication is unchanged.
+
+Validation: **769 music, ownership and music UI tests** pass in the isolated
+qualification checkout, with clean targeted analysis. New controls fit
+320px/200% text. All base locales contain the new labels; human language review
+and live analyzed-library comparison remain unperformed.
+API: [Plex computePath](https://developer.plex.tv/pms/).
+
 ## Cast receiver queue edits, 2026-11-11
 
 Returning a detached queue now requires the complete acknowledged occurrence
@@ -353,7 +368,7 @@ and native-language review remain open.
 | D03 | Sonic similarity | Authorized Plex nearest requests added; exposed from integrated discovery. Independent non-Plex analysis and full reference tuning remain. | Plex request/authorization tests pass; live analyzed library pending. |
 | D04 | Artist/album mix builders | Multi-seed editor, round-robin dedupe, preview, save/edit recipe, play-next, playlist and download added. Generation and subsequent preview actions recheck every source's account and visibility. Reference tuning controls and algorithm equivalence remain. | Recipe/generation, cross-source provenance and account-switch tests pass. |
 | D05 | Personalized mixes | Music home now consumes bounded server-authored music recommendation families alongside device-local recent, rediscovery and period charts. Exact family identities/titles are preserved; provider failures remain distinct from empty results. Foreign libraries, backends and non-music rows are excluded. Account or visibility revocation invalidates completed previews and retained actions. Complete personalized/reference family equivalence remains. | Recommendation loader/widget, account/profile, shared album queue, budget/fairness and large-text regressions pass, alongside history/profile/layout tests. |
-| D06 | Sonic Adventure | Ordered track waypoints, reorder controls and server computePath composition added. Shared endpoints are joined once; track-budget overflow fails instead of dropping destination. Full path constraints/equivalence remain. | Path and bounds tests pass; live server pending. |
+| D06 | Sonic Adventure | Ordered track waypoints, reorder controls and server computePath composition added. Shared endpoints are joined once; track-budget overflow fails instead of dropping destination. Saved per-path track count and maximum sonic distance reach every Plex request; returned endpoints, sources and both budgets are validated. Legacy recipes retain documented defaults. Reference algorithm equivalence remains. | Recipe persistence, request bounds, ordered endpoints, account retirement and 320px/200% text regressions pass; live server pending. |
 | D07 | Guest DJ modes | Session-owned Stretch, Gemini, Freeze, Twofer, Groupie, Contempo and Friendgänger generation added. Friendgänger interleaves bounded pools from active visible shared libraries and rechecks every source after fetching. Exact reference tuning remains. | Mode, disabled/edited/replaced queue, shared-library revocation and account/session tests pass. |
 | D08 | Sonic Sage / prompt playlists | Opt-in configurable HTTPS Chat Completions provider, protected credential storage, prompt-only disclosure, strict bounded response parser, authorized exact title/artist resolution, ambiguity selection, reorder/remove, playback and playlist saving added. | Consent, redirect/size rejection, ambiguity, source-revocation and large-text tests pass; live provider interoperability pending. |
 | D09 | Aural Fixations / charts | Profile track/album/artist charts use qualified listening occurrences. Explicit paired import merges original occurrence IDs and cumulative maxima. A separate paged Plex server-history view reads track events for a visible music library under verified owner, managed or shared user credentials. Owner pages filter owner events; non-owner pages pin the personal server account returned under the user token. Provider events lack local occurrence IDs and duration, so they are not merged into local charts or scrobbled. Reference chart equivalence remains. | Occurrence/replay, account and library filtering, pagination, stale-source rejection, chart grouping and time-window tests pass. Live Plex history qualification remains. |

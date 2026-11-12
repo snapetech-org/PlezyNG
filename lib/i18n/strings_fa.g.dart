@@ -4401,6 +4401,8 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'تصمیم شما دربارهٔ همهٔ موارد این دعوت است، از جمله رسانه‌های خارج از این کتابخانهٔ موسیقی.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'همهٔ دعوت ${owner} پذیرفته شود؟';
 	@override String sharingDeclineConfirm({required Object owner}) => 'همهٔ دعوت ${owner} رد شود؟';
+	@override String get pathTracks => 'قطعه در هر مسیر';
+	@override String get sonicDistance => 'بیشترین فاصلهٔ صوتی';
 }
 
 // Path: musicDevices
@@ -9637,6 +9639,8 @@ extension on TranslationsFa {
 			'musicTools.sharingInvitationHint' => 'تصمیم شما دربارهٔ همهٔ موارد این دعوت است، از جمله رسانه‌های خارج از این کتابخانهٔ موسیقی.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'همهٔ دعوت ${owner} پذیرفته شود؟',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'همهٔ دعوت ${owner} رد شود؟',
+			'musicTools.pathTracks' => 'قطعه در هر مسیر',
+			'musicTools.sonicDistance' => 'بیشترین فاصلهٔ صوتی',
 			'musicDevices.playOn' => 'پخش در',
 			'musicDevices.thisDevice' => 'این دستگاه',
 			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',
@@ -9649,6 +9653,8 @@ extension on TranslationsFa {
 			'musicDevices.uncertain' => 'ارتباط قطع شد. برای بررسی پخش دوباره به دستگاه انتخاب‌شده وصل شوید.',
 			'musicDevices.away' => 'بیرون از خانه',
 			'musicDevices.relay' => 'نشانی رلهٔ موسیقی',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'در دستگاه گیرنده فعال کنید و یک بار در همان شبکه جفت کنید. Pleazyng را باز نگه دارید. رله فرمان‌های رمزگذاری‌شدهٔ موسیقی را منتقل می‌کند و نشانی‌های شبکه را می‌بیند. هر پخش‌کننده از سرور رسانهٔ خودش پخش می‌کند.',
 			'musicDevices.relayInvalid' => 'نشانی HTTPS رله را وارد کنید.',
 			_ => null,

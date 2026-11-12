@@ -5712,7 +5712,9 @@
     "sharingInvitationReject": "رفض الدعوة",
     "sharingInvitationHint": "ينطبق قرارك على كل عناصر هذه الدعوة، بما في ذلك الوسائط خارج مكتبة الموسيقى هذه.",
     "sharingAcceptConfirm": "هل تريد قبول دعوة ${owner} بأكملها؟",
-    "sharingDeclineConfirm": "هل تريد رفض دعوة ${owner} بأكملها؟"
+    "sharingDeclineConfirm": "هل تريد رفض دعوة ${owner} بأكملها؟",
+    "pathTracks": "المقاطع لكل مسار",
+    "sonicDistance": "أقصى مسافة صوتية"
   },
   "musicDevices": {
     "playOn": "التشغيل على",

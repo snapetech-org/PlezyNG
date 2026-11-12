@@ -117,8 +117,13 @@ class ExperienceClient implements MediaServerClient, SonicMusicClient, ScopedMed
   Future<List<MediaItem>> sonicallySimilar(String id, {int limit = 100, double maxDistance = 0.25}) =>
       sonic?.call(id) ?? Future.value(rows);
   @override
-  Future<List<MediaItem>> sonicPath({required String libraryId, required String startId, required String endId}) =>
-      sonic?.call(startId) ?? Future.value(rows);
+  Future<List<MediaItem>> sonicPath({
+    required String libraryId,
+    required String startId,
+    required String endId,
+    int count = 50,
+    double maxDistance = .25,
+  }) => sonic?.call(startId) ?? Future.value(rows);
   @override
   Future<List<MediaItem>> fetchPlayableDescendants(String id) async => rows;
   @override

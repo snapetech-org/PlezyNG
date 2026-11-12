@@ -4401,6 +4401,8 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'Kararınız, bu müzik kitaplığının dışındaki medya dahil davetteki tüm öğeler için geçerlidir.';
 	@override String sharingAcceptConfirm({required Object owner}) => '${owner} tarafından gönderilen davetin tamamı kabul edilsin mi?';
 	@override String sharingDeclineConfirm({required Object owner}) => '${owner} tarafından gönderilen davetin tamamı reddedilsin mi?';
+	@override String get pathTracks => 'Yol başına parça';
+	@override String get sonicDistance => 'En yüksek ses uzaklığı';
 }
 
 // Path: musicDevices
@@ -9637,6 +9639,8 @@ extension on TranslationsTr {
 			'musicTools.sharingInvitationHint' => 'Kararınız, bu müzik kitaplığının dışındaki medya dahil davetteki tüm öğeler için geçerlidir.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner} tarafından gönderilen davetin tamamı kabul edilsin mi?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner} tarafından gönderilen davetin tamamı reddedilsin mi?',
+			'musicTools.pathTracks' => 'Yol başına parça',
+			'musicTools.sonicDistance' => 'En yüksek ses uzaklığı',
 			'musicDevices.playOn' => 'Şurada çal',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} üzerinde çalınıyor',
@@ -9649,6 +9653,8 @@ extension on TranslationsTr {
 			'musicDevices.uncertain' => 'Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.',
 			'musicDevices.away' => 'Ev dışındayken',
 			'musicDevices.relay' => 'Müzik rölesi URL’si',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Alıcı cihazda etkinleştirin, ardından aynı ağda bir kez eşleştirin. Pleazyng açık kalsın. Röle şifreli müzik denetimlerini iletir ve ağ adreslerini görür. Her oynatıcı kendi medya sunucusundan yayın yapar.',
 			'musicDevices.relayInvalid' => 'Bir HTTPS röle adresi girin.',
 			_ => null,

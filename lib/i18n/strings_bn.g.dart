@@ -4401,6 +4401,8 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'আপনার সিদ্ধান্ত এই আমন্ত্রণের সব আইটেমে প্রযোজ্য, এই সংগীত লাইব্রেরির বাইরের মিডিয়াতেও।';
 	@override String sharingAcceptConfirm({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ গ্রহণ করবেন?';
 	@override String sharingDeclineConfirm({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?';
+	@override String get pathTracks => 'প্রতি পথে ট্র্যাক';
+	@override String get sonicDistance => 'সর্বোচ্চ সনিক দূরত্ব';
 }
 
 // Path: musicDevices
@@ -9637,6 +9639,8 @@ extension on TranslationsBn {
 			'musicTools.sharingInvitationHint' => 'আপনার সিদ্ধান্ত এই আমন্ত্রণের সব আইটেমে প্রযোজ্য, এই সংগীত লাইব্রেরির বাইরের মিডিয়াতেও।',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ গ্রহণ করবেন?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?',
+			'musicTools.pathTracks' => 'প্রতি পথে ট্র্যাক',
+			'musicTools.sonicDistance' => 'সর্বোচ্চ সনিক দূরত্ব',
 			'musicDevices.playOn' => 'এখানে চালান',
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',
@@ -9649,6 +9653,8 @@ extension on TranslationsBn {
 			'musicDevices.uncertain' => 'সংযোগ বিচ্ছিন্ন হয়েছে। প্লেব্যাক দেখতে নির্বাচিত ডিভাইসে আবার সংযুক্ত হন।',
 			'musicDevices.away' => 'বাড়ির বাইরে',
 			'musicDevices.relay' => 'মিউজিক রিলে URL',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'গ্রহণকারী ডিভাইসে চালু করুন, তারপর একই নেটওয়ার্কে একবার পেয়ার করুন। Pleazyng খোলা রাখুন। রিলে এনক্রিপ্ট করা সঙ্গীত নিয়ন্ত্রণ পাঠায় এবং নেটওয়ার্ক ঠিকানা দেখতে পায়। প্রতিটি প্লেয়ার নিজস্ব মিডিয়া সার্ভার থেকে স্ট্রিম করে।',
 			'musicDevices.relayInvalid' => 'একটি HTTPS রিলে ঠিকানা লিখুন।',
 			_ => null,

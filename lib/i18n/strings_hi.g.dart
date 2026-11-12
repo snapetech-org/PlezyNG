@@ -4401,6 +4401,8 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'आपका निर्णय इस आमंत्रण की सभी वस्तुओं पर लागू होगा, इस संगीत लाइब्रेरी के बाहर के मीडिया पर भी।';
 	@override String sharingAcceptConfirm({required Object owner}) => '${owner} का पूरा आमंत्रण स्वीकार करें?';
 	@override String sharingDeclineConfirm({required Object owner}) => '${owner} का पूरा आमंत्रण अस्वीकार करें?';
+	@override String get pathTracks => 'हर पथ में ट्रैक';
+	@override String get sonicDistance => 'अधिकतम ध्वनि दूरी';
 }
 
 // Path: musicDevices
@@ -9637,6 +9639,8 @@ extension on TranslationsHi {
 			'musicTools.sharingInvitationHint' => 'आपका निर्णय इस आमंत्रण की सभी वस्तुओं पर लागू होगा, इस संगीत लाइब्रेरी के बाहर के मीडिया पर भी।',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner} का पूरा आमंत्रण स्वीकार करें?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner} का पूरा आमंत्रण अस्वीकार करें?',
+			'musicTools.pathTracks' => 'हर पथ में ट्रैक',
+			'musicTools.sonicDistance' => 'अधिकतम ध्वनि दूरी',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',
@@ -9649,6 +9653,8 @@ extension on TranslationsHi {
 			'musicDevices.uncertain' => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।',
 			'musicDevices.away' => 'घर से दूर',
 			'musicDevices.relay' => 'संगीत रिले URL',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'प्राप्त करने वाले डिवाइस पर चालू करें, फिर एक ही नेटवर्क पर एक बार पेयर करें। Pleazyng खुला रखें। रिले एन्क्रिप्टेड संगीत नियंत्रण भेजता है और नेटवर्क पते देखता है। हर प्लेयर अपने मीडिया सर्वर से स्ट्रीम करता है।',
 			'musicDevices.relayInvalid' => 'HTTPS रिले पता दर्ज करें।',
 			_ => null,

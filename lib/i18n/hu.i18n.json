@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "Meghívó elutasítása",
     "sharingInvitationHint": "Döntésed a meghívó minden elemére vonatkozik, az ezen zenei könyvtáron kívüli médiára is.",
     "sharingAcceptConfirm": "Elfogadod ${owner} teljes meghívóját?",
-    "sharingDeclineConfirm": "Elutasítod ${owner} teljes meghívóját?"
+    "sharingDeclineConfirm": "Elutasítod ${owner} teljes meghívóját?",
+    "pathTracks": "Számok útvonalanként",
+    "sonicDistance": "Legnagyobb hangzásbeli távolság"
   },
   "musicDevices": {
     "playOn": "Lejátszás itt",

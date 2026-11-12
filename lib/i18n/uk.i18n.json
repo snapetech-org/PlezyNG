@@ -5652,7 +5652,9 @@
     "sharingInvitationReject": "Відхилити запрошення",
     "sharingInvitationHint": "Рішення стосується всіх елементів запрошення, зокрема медіа поза цією музичною бібліотекою.",
     "sharingAcceptConfirm": "Прийняти все запрошення від ${owner}?",
-    "sharingDeclineConfirm": "Відхилити все запрошення від ${owner}?"
+    "sharingDeclineConfirm": "Відхилити все запрошення від ${owner}?",
+    "pathTracks": "Треків на маршрут",
+    "sonicDistance": "Максимальна звукова відстань"
   },
   "musicDevices": {
     "playOn": "Відтворити на",

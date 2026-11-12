@@ -4106,10 +4106,26 @@ class PlexClient
   }
 
   @override
-  Future<List<MediaItem>> sonicPath({required String libraryId, required String startId, required String endId}) async {
+  Future<List<MediaItem>> sonicPath({
+    required String libraryId,
+    required String startId,
+    required String endId,
+    int count = 50,
+    double maxDistance = .25,
+  }) async {
+    if (count < 2 ||
+        count > 500 ||
+        !maxDistance.isFinite ||
+        maxDistance < 0 ||
+        maxDistance > 1 ||
+        libraryId.isEmpty ||
+        startId.isEmpty ||
+        endId.isEmpty) {
+      throw ArgumentError('Invalid sonic path bounds');
+    }
     final response = await _getWithFailover(
       '/library/sections/${Uri.encodeComponent(libraryId)}/computePath',
-      queryParameters: {'startID': startId, 'endID': endId},
+      queryParameters: {'startID': startId, 'endID': endId, 'count': count, 'maxDistance': maxDistance},
     );
     throwIfHttpError(response);
     return _extractMetadataListWithLibrary(

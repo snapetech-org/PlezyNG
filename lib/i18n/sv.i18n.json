@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "Avböj inbjudan",
     "sharingInvitationHint": "Ditt beslut gäller alla objekt i inbjudan, även medier utanför detta musikbibliotek.",
     "sharingAcceptConfirm": "Acceptera hela inbjudan från ${owner}?",
-    "sharingDeclineConfirm": "Avböj hela inbjudan från ${owner}?"
+    "sharingDeclineConfirm": "Avböj hela inbjudan från ${owner}?",
+    "pathTracks": "Spår per väg",
+    "sonicDistance": "Maximalt ljudavstånd"
   },
   "musicDevices": {
     "playOn": "Spela på",

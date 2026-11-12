@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "Dəvəti rədd et",
     "sharingInvitationHint": "Qərarınız bu musiqi kitabxanasından kənar media daxil olmaqla dəvətdəki bütün elementlərə aiddir.",
     "sharingAcceptConfirm": "${owner} tərəfindən göndərilmiş dəvət tam qəbul edilsin?",
-    "sharingDeclineConfirm": "${owner} tərəfindən göndərilmiş dəvət tam rədd edilsin?"
+    "sharingDeclineConfirm": "${owner} tərəfindən göndərilmiş dəvət tam rədd edilsin?",
+    "pathTracks": "Hər yol üçün trek sayı",
+    "sonicDistance": "Maksimum səs məsafəsi"
   },
   "musicDevices": {
     "playOn": "Burada səsləndir",

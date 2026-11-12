@@ -5577,7 +5577,9 @@
     "sharingInvitationReject": "Tolak jemputan",
     "sharingInvitationHint": "Keputusan anda terpakai pada semua item dalam jemputan ini, termasuk media di luar pustaka muzik ini.",
     "sharingAcceptConfirm": "Terima seluruh jemputan daripada ${owner}?",
-    "sharingDeclineConfirm": "Tolak seluruh jemputan daripada ${owner}?"
+    "sharingDeclineConfirm": "Tolak seluruh jemputan daripada ${owner}?",
+    "pathTracks": "Lagu bagi setiap laluan",
+    "sonicDistance": "Jarak sonik maksimum"
   },
   "musicDevices": {
     "playOn": "Mainkan pada",

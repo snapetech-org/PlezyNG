@@ -5599,7 +5599,9 @@
     "sharingInvitationReject": "초대 거절",
     "sharingInvitationHint": "결정은 이 음악 라이브러리 외부의 미디어를 포함하여 초대의 모든 항목에 적용됩니다.",
     "sharingAcceptConfirm": "${owner}의 초대 전체를 수락할까요?",
-    "sharingDeclineConfirm": "${owner}의 초대 전체를 거절할까요?"
+    "sharingDeclineConfirm": "${owner}의 초대 전체를 거절할까요?",
+    "pathTracks": "경로당 곡 수",
+    "sonicDistance": "최대 음향 거리"
   },
   "musicDevices": {
     "playOn": "재생 기기",

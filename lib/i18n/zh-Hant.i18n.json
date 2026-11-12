@@ -5599,7 +5599,9 @@
     "sharingInvitationReject": "拒絕邀請",
     "sharingInvitationHint": "此決定適用於邀請中的所有項目，包括此音樂庫以外的媒體。",
     "sharingAcceptConfirm": "接受來自 ${owner} 的整份邀請？",
-    "sharingDeclineConfirm": "拒絕來自 ${owner} 的整份邀請？"
+    "sharingDeclineConfirm": "拒絕來自 ${owner} 的整份邀請？",
+    "pathTracks": "每條路徑的曲目數",
+    "sonicDistance": "最大聲音距離"
   },
   "musicDevices": {
     "playOn": "播放裝置",

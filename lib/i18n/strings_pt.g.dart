@@ -4408,6 +4408,8 @@ class Translations$musicTools$pt extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'A decisão aplica-se a todos os itens deste convite, incluindo conteúdos fora desta biblioteca de música.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'Aceitar todo o convite de ${owner}?';
 	@override String sharingDeclineConfirm({required Object owner}) => 'Recusar todo o convite de ${owner}?';
+	@override String get pathTracks => 'Faixas por percurso';
+	@override String get sonicDistance => 'Distância sonora máxima';
 }
 
 // Path: musicDevices
@@ -9644,6 +9646,8 @@ extension on TranslationsPt {
 			'musicTools.sharingInvitationHint' => 'A decisão aplica-se a todos os itens deste convite, incluindo conteúdos fora desta biblioteca de música.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Aceitar todo o convite de ${owner}?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Recusar todo o convite de ${owner}?',
+			'musicTools.pathTracks' => 'Faixas por percurso',
+			'musicTools.sonicDistance' => 'Distância sonora máxima',
 			'musicDevices.playOn' => 'Reproduzir em',
 			'musicDevices.thisDevice' => 'Este dispositivo',
 			'musicDevices.playingOn' => ({required Object device}) => 'A reproduzir em ${device}',
@@ -9656,6 +9660,8 @@ extension on TranslationsPt {
 			'musicDevices.uncertain' => 'Ligação interrompida. Volte a ligar ao dispositivo selecionado para verificar a reprodução.',
 			'musicDevices.away' => 'Fora de casa',
 			'musicDevices.relay' => 'URL do relay de música',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Ative no dispositivo recetor e emparelhe uma vez na mesma rede. Mantenha o Pleazyng aberto. O relay transmite comandos de música encriptados e vê os endereços de rede. Cada leitor transmite do seu próprio servidor multimédia.',
 			'musicDevices.relayInvalid' => 'Introduza um endereço HTTPS do relay.',
 			_ => null,

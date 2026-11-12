@@ -4401,6 +4401,8 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'Döntésed a meghívó minden elemére vonatkozik, az ezen zenei könyvtáron kívüli médiára is.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'Elfogadod ${owner} teljes meghívóját?';
 	@override String sharingDeclineConfirm({required Object owner}) => 'Elutasítod ${owner} teljes meghívóját?';
+	@override String get pathTracks => 'Számok útvonalanként';
+	@override String get sonicDistance => 'Legnagyobb hangzásbeli távolság';
 }
 
 // Path: musicDevices
@@ -9637,6 +9639,8 @@ extension on TranslationsHu {
 			'musicTools.sharingInvitationHint' => 'Döntésed a meghívó minden elemére vonatkozik, az ezen zenei könyvtáron kívüli médiára is.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Elfogadod ${owner} teljes meghívóját?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Elutasítod ${owner} teljes meghívóját?',
+			'musicTools.pathTracks' => 'Számok útvonalanként',
+			'musicTools.sonicDistance' => 'Legnagyobb hangzásbeli távolság',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',
@@ -9649,6 +9653,8 @@ extension on TranslationsHu {
 			'musicDevices.uncertain' => 'A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.',
 			'musicDevices.away' => 'Otthontól távol',
 			'musicDevices.relay' => 'Zenei közvetítő URL-címe',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Engedélyezze a fogadó eszközön, majd párosítsa egyszer ugyanazon a hálózaton. Tartsa nyitva a Pleazyng alkalmazást. A közvetítő titkosított zenevezérlést továbbít és látja a hálózati címeket. Minden lejátszó a saját médiaszerveréről streamel.',
 			'musicDevices.relayInvalid' => 'Adja meg a közvetítő HTTPS-címét.',
 			_ => null,

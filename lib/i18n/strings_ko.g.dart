@@ -4396,6 +4396,8 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => '결정은 이 음악 라이브러리 외부의 미디어를 포함하여 초대의 모든 항목에 적용됩니다.';
 	@override String sharingAcceptConfirm({required Object owner}) => '${owner}의 초대 전체를 수락할까요?';
 	@override String sharingDeclineConfirm({required Object owner}) => '${owner}의 초대 전체를 거절할까요?';
+	@override String get pathTracks => '경로당 곡 수';
+	@override String get sonicDistance => '최대 음향 거리';
 }
 
 // Path: musicDevices
@@ -9632,6 +9634,8 @@ extension on TranslationsKo {
 			'musicTools.sharingInvitationHint' => '결정은 이 음악 라이브러리 외부의 미디어를 포함하여 초대의 모든 항목에 적용됩니다.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner}의 초대 전체를 수락할까요?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner}의 초대 전체를 거절할까요?',
+			'musicTools.pathTracks' => '경로당 곡 수',
+			'musicTools.sonicDistance' => '최대 음향 거리',
 			'musicDevices.playOn' => '재생 기기',
 			'musicDevices.thisDevice' => '이 기기',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',
@@ -9644,6 +9648,8 @@ extension on TranslationsKo {
 			'musicDevices.uncertain' => '연결이 끊겼습니다. 선택한 기기에 다시 연결하여 재생 상태를 확인하세요.',
 			'musicDevices.away' => '집 밖에서',
 			'musicDevices.relay' => '음악 릴레이 URL',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => '수신 기기에서 활성화한 다음 같은 네트워크에서 한 번 페어링하세요. Pleazyng을 열어 두세요. 릴레이는 암호화된 음악 제어를 전달하며 네트워크 주소를 볼 수 있습니다. 각 플레이어는 자체 미디어 서버에서 스트리밍합니다.',
 			'musicDevices.relayInvalid' => 'HTTPS 릴레이 주소를 입력하세요.',
 			_ => null,

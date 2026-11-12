@@ -5652,7 +5652,9 @@
     "sharingInvitationReject": "Odmítnout pozvánku",
     "sharingInvitationHint": "Rozhodnutí platí pro všechny položky pozvánky včetně médií mimo tuto hudební knihovnu.",
     "sharingAcceptConfirm": "Přijmout celou pozvánku od ${owner}?",
-    "sharingDeclineConfirm": "Odmítnout celou pozvánku od ${owner}?"
+    "sharingDeclineConfirm": "Odmítnout celou pozvánku od ${owner}?",
+    "pathTracks": "Skladby na cestu",
+    "sonicDistance": "Maximální zvuková vzdálenost"
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

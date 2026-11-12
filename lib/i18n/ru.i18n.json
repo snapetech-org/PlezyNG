@@ -5658,7 +5658,9 @@
     "sharingInvitationReject": "Отклонить приглашение",
     "sharingInvitationHint": "Решение относится ко всем элементам приглашения, включая материалы за пределами этой музыкальной библиотеки.",
     "sharingAcceptConfirm": "Принять всё приглашение от ${owner}?",
-    "sharingDeclineConfirm": "Отклонить всё приглашение от ${owner}?"
+    "sharingDeclineConfirm": "Отклонить всё приглашение от ${owner}?",
+    "pathTracks": "Треков на маршрут",
+    "sonicDistance": "Максимальное звуковое расстояние"
   },
   "musicDevices": {
     "playOn": "Воспроизвести на",

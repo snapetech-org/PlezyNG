@@ -4396,6 +4396,8 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'この操作は、この音楽ライブラリ以外のメディアも含め、招待内のすべての項目に適用されます。';
 	@override String sharingAcceptConfirm({required Object owner}) => '${owner}からの招待全体を承認しますか？';
 	@override String sharingDeclineConfirm({required Object owner}) => '${owner}からの招待全体を辞退しますか？';
+	@override String get pathTracks => '経路ごとの曲数';
+	@override String get sonicDistance => '音響的距離の上限';
 }
 
 // Path: musicDevices
@@ -9632,6 +9634,8 @@ extension on TranslationsJa {
 			'musicTools.sharingInvitationHint' => 'この操作は、この音楽ライブラリ以外のメディアも含め、招待内のすべての項目に適用されます。',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => '${owner}からの招待全体を承認しますか？',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => '${owner}からの招待全体を辞退しますか？',
+			'musicTools.pathTracks' => '経路ごとの曲数',
+			'musicTools.sonicDistance' => '音響的距離の上限',
 			'musicDevices.playOn' => '再生先',
 			'musicDevices.thisDevice' => 'このデバイス',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} で再生中',
@@ -9644,6 +9648,8 @@ extension on TranslationsJa {
 			'musicDevices.uncertain' => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。',
 			'musicDevices.away' => '外出先から',
 			'musicDevices.relay' => '音楽リレーのURL',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => '受信デバイスで有効にし、同じネットワークで一度ペアリングしてください。Pleazyngを開いたままにします。リレーは暗号化された音楽操作を転送し、ネットワークアドレスを参照します。各プレーヤーは自身のメディアサーバーから再生します。',
 			'musicDevices.relayInvalid' => 'リレーのHTTPSアドレスを入力してください。',
 			_ => null,

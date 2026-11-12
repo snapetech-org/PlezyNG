@@ -5577,7 +5577,9 @@
     "sharingInvitationReject": "Từ chối lời mời",
     "sharingInvitationHint": "Quyết định áp dụng cho mọi mục trong lời mời, kể cả nội dung ngoài thư viện nhạc này.",
     "sharingAcceptConfirm": "Chấp nhận toàn bộ lời mời từ ${owner}?",
-    "sharingDeclineConfirm": "Từ chối toàn bộ lời mời từ ${owner}?"
+    "sharingDeclineConfirm": "Từ chối toàn bộ lời mời từ ${owner}?",
+    "pathTracks": "Bài hát mỗi đường dẫn",
+    "sonicDistance": "Khoảng cách âm thanh tối đa"
   },
   "musicDevices": {
     "playOn": "Phát trên",

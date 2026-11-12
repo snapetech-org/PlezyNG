@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "Einladung ablehnen",
     "sharingInvitationHint": "Deine Entscheidung gilt für alle Elemente dieser Einladung, auch für Medien außerhalb dieser Musikbibliothek.",
     "sharingAcceptConfirm": "Gesamte Einladung von ${owner} annehmen?",
-    "sharingDeclineConfirm": "Gesamte Einladung von ${owner} ablehnen?"
+    "sharingDeclineConfirm": "Gesamte Einladung von ${owner} ablehnen?",
+    "pathTracks": "Titel pro Pfad",
+    "sonicDistance": "Maximaler klanglicher Abstand"
   },
   "musicDevices": {
     "playOn": "Wiedergeben auf",

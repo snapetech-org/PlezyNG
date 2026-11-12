@@ -4447,6 +4447,8 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'Решение относится ко всем элементам приглашения, включая материалы за пределами этой музыкальной библиотеки.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'Принять всё приглашение от ${owner}?';
 	@override String sharingDeclineConfirm({required Object owner}) => 'Отклонить всё приглашение от ${owner}?';
+	@override String get pathTracks => 'Треков на маршрут';
+	@override String get sonicDistance => 'Максимальное звуковое расстояние';
 }
 
 // Path: musicDevices
@@ -9687,6 +9689,8 @@ extension on TranslationsRu {
 			'musicTools.sharingInvitationHint' => 'Решение относится ко всем элементам приглашения, включая материалы за пределами этой музыкальной библиотеки.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Принять всё приглашение от ${owner}?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Отклонить всё приглашение от ${owner}?',
+			'musicTools.pathTracks' => 'Треков на маршрут',
+			'musicTools.sonicDistance' => 'Максимальное звуковое расстояние',
 			'musicDevices.playOn' => 'Воспроизвести на',
 			'musicDevices.thisDevice' => 'Это устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Воспроизводится на ${device}',
@@ -9699,6 +9703,8 @@ extension on TranslationsRu {
 			'musicDevices.uncertain' => 'Соединение прервано. Подключитесь к выбранному устройству снова, чтобы проверить воспроизведение.',
 			'musicDevices.away' => 'Вне дома',
 			'musicDevices.relay' => 'URL музыкального ретранслятора',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Включите на принимающем устройстве и один раз выполните сопряжение в одной сети. Оставьте Pleazyng открытым. Ретранслятор передаёт зашифрованные команды и видит сетевые адреса. Каждый плеер использует свой медиасервер.',
 			'musicDevices.relayInvalid' => 'Введите HTTPS-адрес ретранслятора.',
 			_ => null,

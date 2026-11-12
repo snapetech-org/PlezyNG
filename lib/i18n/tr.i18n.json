@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "Daveti reddet",
     "sharingInvitationHint": "Kararınız, bu müzik kitaplığının dışındaki medya dahil davetteki tüm öğeler için geçerlidir.",
     "sharingAcceptConfirm": "${owner} tarafından gönderilen davetin tamamı kabul edilsin mi?",
-    "sharingDeclineConfirm": "${owner} tarafından gönderilen davetin tamamı reddedilsin mi?"
+    "sharingDeclineConfirm": "${owner} tarafından gönderilen davetin tamamı reddedilsin mi?",
+    "pathTracks": "Yol başına parça",
+    "sonicDistance": "En yüksek ses uzaklığı"
   },
   "musicDevices": {
     "playOn": "Şurada çal",

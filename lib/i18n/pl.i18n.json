@@ -5658,7 +5658,9 @@
     "sharingInvitationReject": "Odrzuć zaproszenie",
     "sharingInvitationHint": "Decyzja dotyczy wszystkich elementów zaproszenia, także multimediów spoza tej biblioteki muzycznej.",
     "sharingAcceptConfirm": "Przyjąć całe zaproszenie od ${owner}?",
-    "sharingDeclineConfirm": "Odrzucić całe zaproszenie od ${owner}?"
+    "sharingDeclineConfirm": "Odrzucić całe zaproszenie od ${owner}?",
+    "pathTracks": "Utwory na ścieżkę",
+    "sonicDistance": "Maksymalna odległość brzmienia"
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

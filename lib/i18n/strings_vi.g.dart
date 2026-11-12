@@ -4378,6 +4378,8 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'Quyết định áp dụng cho mọi mục trong lời mời, kể cả nội dung ngoài thư viện nhạc này.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'Chấp nhận toàn bộ lời mời từ ${owner}?';
 	@override String sharingDeclineConfirm({required Object owner}) => 'Từ chối toàn bộ lời mời từ ${owner}?';
+	@override String get pathTracks => 'Bài hát mỗi đường dẫn';
+	@override String get sonicDistance => 'Khoảng cách âm thanh tối đa';
 }
 
 // Path: musicDevices
@@ -9612,6 +9614,8 @@ extension on TranslationsVi {
 			'musicTools.sharingInvitationHint' => 'Quyết định áp dụng cho mọi mục trong lời mời, kể cả nội dung ngoài thư viện nhạc này.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Chấp nhận toàn bộ lời mời từ ${owner}?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Từ chối toàn bộ lời mời từ ${owner}?',
+			'musicTools.pathTracks' => 'Bài hát mỗi đường dẫn',
+			'musicTools.sonicDistance' => 'Khoảng cách âm thanh tối đa',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',
@@ -9624,6 +9628,8 @@ extension on TranslationsVi {
 			'musicDevices.uncertain' => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.',
 			'musicDevices.away' => 'Khi xa nhà',
 			'musicDevices.relay' => 'URL chuyển tiếp nhạc',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Bật trên thiết bị nhận rồi ghép đôi một lần trên cùng mạng. Giữ Pleazyng mở. Máy chuyển tiếp truyền lệnh nhạc được mã hóa và thấy địa chỉ mạng. Mỗi trình phát truyền từ máy chủ phương tiện riêng.',
 			'musicDevices.relayInvalid' => 'Nhập địa chỉ chuyển tiếp HTTPS.',
 			_ => null,

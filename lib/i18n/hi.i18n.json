@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "आमंत्रण अस्वीकार करें",
     "sharingInvitationHint": "आपका निर्णय इस आमंत्रण की सभी वस्तुओं पर लागू होगा, इस संगीत लाइब्रेरी के बाहर के मीडिया पर भी।",
     "sharingAcceptConfirm": "${owner} का पूरा आमंत्रण स्वीकार करें?",
-    "sharingDeclineConfirm": "${owner} का पूरा आमंत्रण अस्वीकार करें?"
+    "sharingDeclineConfirm": "${owner} का पूरा आमंत्रण अस्वीकार करें?",
+    "pathTracks": "हर पथ में ट्रैक",
+    "sonicDistance": "अधिकतम ध्वनि दूरी"
   },
   "musicDevices": {
     "playOn": "इस पर चलाएँ",

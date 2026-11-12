@@ -5577,7 +5577,9 @@
     "sharingInvitationReject": "ปฏิเสธคำเชิญ",
     "sharingInvitationHint": "การตัดสินใจของคุณมีผลกับทุกรายการในคำเชิญนี้ รวมถึงสื่อนอกคลังเพลงนี้",
     "sharingAcceptConfirm": "ยอมรับคำเชิญทั้งหมดจาก ${owner} หรือไม่?",
-    "sharingDeclineConfirm": "ปฏิเสธคำเชิญทั้งหมดจาก ${owner} หรือไม่?"
+    "sharingDeclineConfirm": "ปฏิเสธคำเชิญทั้งหมดจาก ${owner} หรือไม่?",
+    "pathTracks": "จำนวนเพลงต่อเส้นทาง",
+    "sonicDistance": "ระยะห่างทางเสียงสูงสุด"
   },
   "musicDevices": {
     "playOn": "เล่นบน",

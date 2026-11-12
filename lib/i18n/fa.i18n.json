@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "رد کردن دعوت",
     "sharingInvitationHint": "تصمیم شما دربارهٔ همهٔ موارد این دعوت است، از جمله رسانه‌های خارج از این کتابخانهٔ موسیقی.",
     "sharingAcceptConfirm": "همهٔ دعوت ${owner} پذیرفته شود؟",
-    "sharingDeclineConfirm": "همهٔ دعوت ${owner} رد شود؟"
+    "sharingDeclineConfirm": "همهٔ دعوت ${owner} رد شود؟",
+    "pathTracks": "قطعه در هر مسیر",
+    "sonicDistance": "بیشترین فاصلهٔ صوتی"
   },
   "musicDevices": {
     "playOn": "پخش در",

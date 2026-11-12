@@ -4442,6 +4442,8 @@ class Translations$musicTools$fr extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'Votre décision concerne tous les éléments de cette invitation, y compris les médias hors de cette bibliothèque musicale.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'Accepter toute l’invitation de ${owner} ?';
 	@override String sharingDeclineConfirm({required Object owner}) => 'Refuser toute l’invitation de ${owner} ?';
+	@override String get pathTracks => 'Titres par parcours';
+	@override String get sonicDistance => 'Distance sonore maximale';
 }
 
 // Path: musicDevices
@@ -9710,6 +9712,8 @@ extension on TranslationsFr {
 			'musicTools.sharingInvitationHint' => 'Votre décision concerne tous les éléments de cette invitation, y compris les médias hors de cette bibliothèque musicale.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Accepter toute l’invitation de ${owner} ?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Refuser toute l’invitation de ${owner} ?',
+			'musicTools.pathTracks' => 'Titres par parcours',
+			'musicTools.sonicDistance' => 'Distance sonore maximale',
 			'musicDevices.playOn' => 'Lire sur',
 			'musicDevices.thisDevice' => 'Cet appareil',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lecture sur ${device}',

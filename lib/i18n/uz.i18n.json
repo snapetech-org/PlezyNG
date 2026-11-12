@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "Taklifni rad etish",
     "sharingInvitationHint": "Qaroringiz taklifdagi barcha elementlarga, shu musiqa kutubxonasidan tashqaridagi mediaga ham tegishli.",
     "sharingAcceptConfirm": "${owner} yuborgan taklif to‘liq qabul qilinsinmi?",
-    "sharingDeclineConfirm": "${owner} yuborgan taklif to‘liq rad etilsinmi?"
+    "sharingDeclineConfirm": "${owner} yuborgan taklif to‘liq rad etilsinmi?",
+    "pathTracks": "Har bir yo‘ldagi treklar",
+    "sonicDistance": "Eng katta tovush masofasi"
   },
   "musicDevices": {
     "playOn": "Shu qurilmada ijro etish",

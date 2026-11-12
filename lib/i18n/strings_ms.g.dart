@@ -4378,6 +4378,8 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'Keputusan anda terpakai pada semua item dalam jemputan ini, termasuk media di luar pustaka muzik ini.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'Terima seluruh jemputan daripada ${owner}?';
 	@override String sharingDeclineConfirm({required Object owner}) => 'Tolak seluruh jemputan daripada ${owner}?';
+	@override String get pathTracks => 'Lagu bagi setiap laluan';
+	@override String get sonicDistance => 'Jarak sonik maksimum';
 }
 
 // Path: musicDevices
@@ -9612,6 +9614,8 @@ extension on TranslationsMs {
 			'musicTools.sharingInvitationHint' => 'Keputusan anda terpakai pada semua item dalam jemputan ini, termasuk media di luar pustaka muzik ini.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Terima seluruh jemputan daripada ${owner}?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Tolak seluruh jemputan daripada ${owner}?',
+			'musicTools.pathTracks' => 'Lagu bagi setiap laluan',
+			'musicTools.sonicDistance' => 'Jarak sonik maksimum',
 			'musicDevices.playOn' => 'Mainkan pada',
 			'musicDevices.thisDevice' => 'Peranti ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',
@@ -9624,6 +9628,8 @@ extension on TranslationsMs {
 			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
 			'musicDevices.away' => 'Di luar rumah',
 			'musicDevices.relay' => 'URL geganti muzik',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Aktifkan pada peranti penerima, kemudian pasangkan sekali pada rangkaian yang sama. Biarkan Pleazyng terbuka. Geganti menghantar kawalan muzik yang disulitkan dan melihat alamat rangkaian. Setiap pemain menstrim daripada pelayan medianya sendiri.',
 			'musicDevices.relayInvalid' => 'Masukkan alamat geganti HTTPS.',
 			_ => null,

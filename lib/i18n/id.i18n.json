@@ -5577,7 +5577,9 @@
     "sharingInvitationReject": "Tolak undangan",
     "sharingInvitationHint": "Keputusan Anda berlaku untuk semua item dalam undangan ini, termasuk media di luar pustaka musik ini.",
     "sharingAcceptConfirm": "Terima seluruh undangan dari ${owner}?",
-    "sharingDeclineConfirm": "Tolak seluruh undangan dari ${owner}?"
+    "sharingDeclineConfirm": "Tolak seluruh undangan dari ${owner}?",
+    "pathTracks": "Lagu per jalur",
+    "sonicDistance": "Jarak sonik maksimum"
   },
   "musicDevices": {
     "playOn": "Putar di",

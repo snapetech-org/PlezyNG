@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "Uitnodiging afwijzen",
     "sharingInvitationHint": "Je beslissing geldt voor alle items in deze uitnodiging, ook media buiten deze muziekbibliotheek.",
     "sharingAcceptConfirm": "De volledige uitnodiging van ${owner} accepteren?",
-    "sharingDeclineConfirm": "De volledige uitnodiging van ${owner} afwijzen?"
+    "sharingDeclineConfirm": "De volledige uitnodiging van ${owner} afwijzen?",
+    "pathTracks": "Nummers per pad",
+    "sonicDistance": "Maximale klankafstand"
   },
   "musicDevices": {
     "playOn": "Afspelen op",

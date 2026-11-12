@@ -12,7 +12,13 @@ import 'music_account_scope.dart';
 /// matches; authorization and transport errors must remain errors.
 abstract interface class SonicMusicClient {
   Future<List<MediaItem>> sonicallySimilar(String itemId, {int limit = 50, double maxDistance = .25});
-  Future<List<MediaItem>> sonicPath({required String libraryId, required String startId, required String endId});
+  Future<List<MediaItem>> sonicPath({
+    required String libraryId,
+    required String startId,
+    required String endId,
+    int count = 50,
+    double maxDistance = .25,
+  });
 }
 
 enum MusicRecipeKind { mix, adventure }
@@ -24,6 +30,8 @@ class MusicRecipe {
   final MusicRecipeKind kind;
   final List<MediaItem> seeds;
   final int limit;
+  final int pathTracks;
+  final double maxDistance;
 
   MusicRecipe({
     required this.id,
@@ -31,6 +39,8 @@ class MusicRecipe {
     required this.kind,
     required List<MediaItem> seeds,
     this.limit = 100,
+    this.pathTracks = 50,
+    this.maxDistance = .25,
   }) : seeds = List.unmodifiable(seeds) {
     if (id.isEmpty || title.trim().isEmpty || seeds.isEmpty || seeds.length > 20 || limit < 1 || limit > 500) {
       throw ArgumentError('A music recipe needs 1–20 seeds and 1–500 tracks');
@@ -39,6 +49,9 @@ class MusicRecipe {
       (s) => s.serverId == null || !const [MediaKind.track, MediaKind.artist, MediaKind.album].contains(s.kind),
     )) {
       throw ArgumentError('Seeds must identify playable music on a server');
+    }
+    if (pathTracks < 2 || pathTracks > 500 || !maxDistance.isFinite || maxDistance < 0 || maxDistance > 1) {
+      throw ArgumentError('Invalid sonic path constraints');
     }
     if (kind == MusicRecipeKind.adventure && (seeds.length < 2 || seeds.any((s) => s.kind != MediaKind.track))) {
       throw ArgumentError('An adventure needs at least two track waypoints');
@@ -69,6 +82,8 @@ class MusicRecipe {
         )
         .toList(),
     'limit': limit,
+    'pathTracks': pathTracks,
+    'maxDistance': maxDistance,
   };
 
   factory MusicRecipe.fromJson(Map<String, dynamic> json) {
@@ -81,6 +96,8 @@ class MusicRecipe {
       kind: MusicRecipeKind.values.byName(json['kind'] as String),
       seeds: (json['seeds'] as List).map((s) => MediaItem.fromJson(Map<String, dynamic>.from(s as Map))).toList(),
       limit: json['limit'] as int,
+      pathTracks: json['pathTracks'] as int? ?? 50,
+      maxDistance: (json['maxDistance'] as num?)?.toDouble() ?? .25,
     );
   }
 }
@@ -173,9 +190,16 @@ class MusicDiscovery {
         libraryId: library,
         startId: recipe.seeds[i - 1].id,
         endId: recipe.seeds[i].id,
+        count: recipe.pathTracks,
+        maxDistance: recipe.maxDistance,
       );
       verify();
       if (segment.isEmpty) return [];
+      if (segment.length > recipe.pathTracks ||
+          segment.first.globalKey != recipe.seeds[i - 1].globalKey ||
+          segment.last.globalKey != recipe.seeds[i].globalKey) {
+        throw StateError('Sonic path did not preserve its endpoints or requested bounds');
+      }
       for (final track in segment) {
         if (track.libraryId != library || !allowedTrack(track)) throw StateError('Invalid sonic path source');
         if (result.isEmpty || result.last.globalKey != track.globalKey) {

@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "Avslå invitasjon",
     "sharingInvitationHint": "Valget gjelder alle elementene i invitasjonen, også medier utenfor dette musikkbiblioteket.",
     "sharingAcceptConfirm": "Godta hele invitasjonen fra ${owner}?",
-    "sharingDeclineConfirm": "Avslå hele invitasjonen fra ${owner}?"
+    "sharingDeclineConfirm": "Avslå hele invitasjonen fra ${owner}?",
+    "pathTracks": "Spor per sti",
+    "sonicDistance": "Maksimal lydavstand"
   },
   "musicDevices": {
     "playOn": "Spill av på",

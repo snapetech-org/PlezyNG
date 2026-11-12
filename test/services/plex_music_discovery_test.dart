@@ -44,6 +44,11 @@ void main() {
     expect(requests.last.path, '/library/sections/3/computePath');
     expect(requests.last.queryParameters['startID'], '41');
     expect(requests.last.queryParameters['endID'], '42');
+    expect(requests.last.queryParameters['count'], '50');
+    expect(requests.last.queryParameters['maxDistance'], '0.25');
+    await client.sonicPath(libraryId: '3', startId: '41', endId: '42', count: 25, maxDistance: .4);
+    expect(requests.last.queryParameters['count'], '25');
+    expect(requests.last.queryParameters['maxDistance'], '0.4');
   });
 
   test('invalid bounds do not make requests; forbidden analysis is not an empty success', () async {
@@ -57,6 +62,21 @@ void main() {
     );
     addTearDown(client.close);
     await expectLater(client.sonicallySimilar('a', maxDistance: double.nan), throwsArgumentError);
+    for (final count in [1, 501]) {
+      await expectLater(
+        client.sonicPath(libraryId: '3', startId: '41', endId: '42', count: count),
+        throwsArgumentError,
+      );
+    }
+    for (final distance in [-.1, 1.1, double.nan, double.infinity]) {
+      await expectLater(
+        client.sonicPath(libraryId: '3', startId: '41', endId: '42', maxDistance: distance),
+        throwsArgumentError,
+      );
+    }
+    await expectLater(client.sonicPath(libraryId: '', startId: '41', endId: '42'), throwsArgumentError);
+    await expectLater(client.sonicPath(libraryId: '3', startId: '', endId: '42'), throwsArgumentError);
+    await expectLater(client.sonicPath(libraryId: '3', startId: '41', endId: ''), throwsArgumentError);
     expect(calls, 0);
     await expectLater(client.sonicallySimilar('a'), throwsA(isA<Exception>()));
   });

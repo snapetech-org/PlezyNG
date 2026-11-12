@@ -5,7 +5,7 @@ import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/media_backend.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
-import 'package:plezy/media/media_server_client.dart';
+import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/media/server_capabilities.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
 import 'package:plezy/screens/music/album_detail_screen.dart';
@@ -20,6 +20,7 @@ import '../../test_helpers/prefs.dart';
 import '../../test_helpers/media_items.dart';
 import '../../test_helpers/multi_server_fixtures.dart';
 import '../../test_helpers/stub_music_playback_service.dart';
+import '../../test_helpers/music_experience_fakes.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -113,6 +114,7 @@ class _AlbumHarness {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider<MultiServerProvider>.value(value: multiServerProvider),
+          ChangeNotifierProvider<ActiveProfileProvider>(create: (_) => _Profile()),
           ChangeNotifierProvider<MusicPlaybackService>(create: (_) => StubMusicPlaybackService()),
         ],
         child: MaterialApp(
@@ -124,7 +126,7 @@ class _AlbumHarness {
   }
 }
 
-class _FakeMusicClient implements MediaServerClient {
+class _FakeMusicClient extends ExperienceClient {
   final List<MediaItem> tracks;
   final List<String> fetchedAlbumIds = [];
 
@@ -134,7 +136,7 @@ class _FakeMusicClient implements MediaServerClient {
   ServerId get serverId => ServerId('server_1');
 
   @override
-  String? get serverName => 'Server';
+  String get serverName => 'Server';
 
   @override
   MediaBackend get backend => MediaBackend.plex;
@@ -153,7 +155,17 @@ class _FakeMusicClient implements MediaServerClient {
 
   @override
   void close() {}
+}
 
+class _Profile extends ChangeNotifier implements ActiveProfileProvider {
+  @override
+  String get activeId => 'p';
+  @override
+  int get identityMutationGeneration => 1;
+  @override
+  bool get isBinding => false;
+  @override
+  bool get lastBindingSucceeded => true;
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

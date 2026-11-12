@@ -14936,6 +14936,12 @@ class Translations$musicTools$en {
 
 	/// en: 'Decline the entire invitation from ${owner}?'
 	String sharingDeclineConfirm({required Object owner}) => 'Decline the entire invitation from ${owner}?';
+
+	/// en: 'Tracks per path'
+	String get pathTracks => 'Tracks per path';
+
+	/// en: 'Maximum sonic distance'
+	String get sonicDistance => 'Maximum sonic distance';
 }
 
 // Path: musicDevices
@@ -22930,6 +22936,8 @@ extension on Translations {
 			'musicTools.sharingInvitationHint' => 'Your decision applies to every item in this invitation, including media outside this music library.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Accept the entire invitation from ${owner}?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Decline the entire invitation from ${owner}?',
+			'musicTools.pathTracks' => 'Tracks per path',
+			'musicTools.sonicDistance' => 'Maximum sonic distance',
 			'musicDevices.playOn' => 'Play on',
 			'musicDevices.thisDevice' => 'This device',
 			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',

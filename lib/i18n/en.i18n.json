@@ -5683,7 +5683,9 @@
     "sharingInvitationReject": "Decline invitation",
     "sharingInvitationHint": "Your decision applies to every item in this invitation, including media outside this music library.",
     "sharingAcceptConfirm": "Accept the entire invitation from ${owner}?",
-    "sharingDeclineConfirm": "Decline the entire invitation from ${owner}?"
+    "sharingDeclineConfirm": "Decline the entire invitation from ${owner}?",
+    "pathTracks": "Tracks per path",
+    "sonicDistance": "Maximum sonic distance"
   },
   "musicDevices": {
     "playOn": "Play on",

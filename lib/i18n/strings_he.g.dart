@@ -4409,6 +4409,8 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'ההחלטה חלה על כל הפריטים בהזמנה, כולל מדיה מחוץ לספריית המוזיקה הזו.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'לקבל את כל ההזמנה מאת ${owner}?';
 	@override String sharingDeclineConfirm({required Object owner}) => 'לדחות את כל ההזמנה מאת ${owner}?';
+	@override String get pathTracks => 'רצועות בכל מסלול';
+	@override String get sonicDistance => 'מרחק צלילי מרבי';
 }
 
 // Path: musicDevices
@@ -9645,6 +9647,8 @@ extension on TranslationsHe {
 			'musicTools.sharingInvitationHint' => 'ההחלטה חלה על כל הפריטים בהזמנה, כולל מדיה מחוץ לספריית המוזיקה הזו.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'לקבל את כל ההזמנה מאת ${owner}?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'לדחות את כל ההזמנה מאת ${owner}?',
+			'musicTools.pathTracks' => 'רצועות בכל מסלול',
+			'musicTools.sonicDistance' => 'מרחק צלילי מרבי',
 			'musicDevices.playOn' => 'ניגון באמצעות',
 			'musicDevices.thisDevice' => 'מכשיר זה',
 			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',
@@ -9657,6 +9661,8 @@ extension on TranslationsHe {
 			'musicDevices.uncertain' => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.',
 			'musicDevices.away' => 'מחוץ לבית',
 			'musicDevices.relay' => 'כתובת ממסר המוזיקה',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'יש להפעיל במכשיר המקבל ולצמד פעם אחת באותה רשת. יש להשאיר את Pleazyng פתוח. הממסר מעביר פקודות מוזיקה מוצפנות ורואה כתובות רשת. כל נגן מזרים משרת המדיה שלו.',
 			'musicDevices.relayInvalid' => 'יש להזין כתובת HTTPS של הממסר.',
 			_ => null,

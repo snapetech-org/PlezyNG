@@ -5604,7 +5604,9 @@
     "sharingInvitationReject": "আমন্ত্রণ প্রত্যাখ্যান করুন",
     "sharingInvitationHint": "আপনার সিদ্ধান্ত এই আমন্ত্রণের সব আইটেমে প্রযোজ্য, এই সংগীত লাইব্রেরির বাইরের মিডিয়াতেও।",
     "sharingAcceptConfirm": "${owner}-এর সম্পূর্ণ আমন্ত্রণ গ্রহণ করবেন?",
-    "sharingDeclineConfirm": "${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?"
+    "sharingDeclineConfirm": "${owner}-এর সম্পূর্ণ আমন্ত্রণ প্রত্যাখ্যান করবেন?",
+    "pathTracks": "প্রতি পথে ট্র্যাক",
+    "sonicDistance": "সর্বোচ্চ সনিক দূরত্ব"
   },
   "musicDevices": {
     "playOn": "এখানে চালান",

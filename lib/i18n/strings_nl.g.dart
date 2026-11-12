@@ -4401,6 +4401,8 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'Je beslissing geldt voor alle items in deze uitnodiging, ook media buiten deze muziekbibliotheek.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'De volledige uitnodiging van ${owner} accepteren?';
 	@override String sharingDeclineConfirm({required Object owner}) => 'De volledige uitnodiging van ${owner} afwijzen?';
+	@override String get pathTracks => 'Nummers per pad';
+	@override String get sonicDistance => 'Maximale klankafstand';
 }
 
 // Path: musicDevices
@@ -9637,6 +9639,8 @@ extension on TranslationsNl {
 			'musicTools.sharingInvitationHint' => 'Je beslissing geldt voor alle items in deze uitnodiging, ook media buiten deze muziekbibliotheek.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'De volledige uitnodiging van ${owner} accepteren?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'De volledige uitnodiging van ${owner} afwijzen?',
+			'musicTools.pathTracks' => 'Nummers per pad',
+			'musicTools.sonicDistance' => 'Maximale klankafstand',
 			'musicDevices.playOn' => 'Afspelen op',
 			'musicDevices.thisDevice' => 'Dit apparaat',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',
@@ -9649,6 +9653,8 @@ extension on TranslationsNl {
 			'musicDevices.uncertain' => 'Verbinding verbroken. Verbind opnieuw met het gekozen apparaat om het afspelen te controleren.',
 			'musicDevices.away' => 'Buitenshuis',
 			'musicDevices.relay' => 'URL van muziekrelais',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Schakel in op het ontvangende apparaat en koppel eenmaal op hetzelfde netwerk. Houd Pleazyng open. Het relais verstuurt versleutelde muziekbediening en ziet netwerkadressen. Elke speler streamt vanaf zijn eigen mediaserver.',
 			'musicDevices.relayInvalid' => 'Voer een HTTPS-adres voor het relais in.',
 			_ => null,

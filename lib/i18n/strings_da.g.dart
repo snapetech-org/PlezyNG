@@ -4401,6 +4401,8 @@ class _Translations$musicTools$da extends Translations$musicTools$en {
 	@override String get sharingInvitationHint => 'Din beslutning gælder alle elementer i invitationen, også medier uden for dette musikbibliotek.';
 	@override String sharingAcceptConfirm({required Object owner}) => 'Acceptér hele invitationen fra ${owner}?';
 	@override String sharingDeclineConfirm({required Object owner}) => 'Afvis hele invitationen fra ${owner}?';
+	@override String get pathTracks => 'Numre pr. sti';
+	@override String get sonicDistance => 'Maksimal lydafstand';
 }
 
 // Path: musicDevices
@@ -9637,6 +9639,8 @@ extension on TranslationsDa {
 			'musicTools.sharingInvitationHint' => 'Din beslutning gælder alle elementer i invitationen, også medier uden for dette musikbibliotek.',
 			'musicTools.sharingAcceptConfirm' => ({required Object owner}) => 'Acceptér hele invitationen fra ${owner}?',
 			'musicTools.sharingDeclineConfirm' => ({required Object owner}) => 'Afvis hele invitationen fra ${owner}?',
+			'musicTools.pathTracks' => 'Numre pr. sti',
+			'musicTools.sonicDistance' => 'Maksimal lydafstand',
 			'musicDevices.playOn' => 'Afspil på',
 			'musicDevices.thisDevice' => 'Denne enhed',
 			'musicDevices.playingOn' => ({required Object device}) => 'Afspiller på ${device}',
@@ -9649,6 +9653,8 @@ extension on TranslationsDa {
 			'musicDevices.uncertain' => 'Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.',
 			'musicDevices.away' => 'Uden for hjemmet',
 			'musicDevices.relay' => 'URL til musikrelæ',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.relayHint' => 'Aktivér på modtageren, og par én gang på samme netværk. Hold Pleazyng åben. Relæet sender krypteret musikstyring og ser netværksadresser. Hver afspiller streamer fra sin egen medieserver.',
 			'musicDevices.relayInvalid' => 'Indtast en HTTPS-adresse til relæet.',
 			_ => null,

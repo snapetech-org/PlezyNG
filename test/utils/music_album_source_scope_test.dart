@@ -6,6 +6,7 @@ import 'package:plezy/media/library_query.dart';
 import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/media/media_playlist.dart';
 import 'package:plezy/utils/music_read_scope.dart';
+import 'package:plezy/services/music/music_queue_items.dart';
 import 'package:plezy/utils/media_server_http_client.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
@@ -59,9 +60,21 @@ class _Files extends ChangeNotifier implements DownloadProvider {
   @override
   bool isDisposed = false;
   @override
-  List<MediaItem> downloadedTracks = [];
+  List<MediaItem> get downloadedTracks => _tracks;
+  List<MediaItem> _tracks = [];
+  Set<String> _keys = {};
+  int ownershipReads = 0;
+  set downloadedTracks(List<MediaItem> tracks) {
+    _tracks = List.unmodifiable(tracks);
+    _keys = tracks.map((track) => track.globalKey).toSet();
+  }
+
   @override
-  bool isDownloaded(String key) => downloadedTracks.any((item) => item.globalKey == key);
+  bool isDownloaded(String key) {
+    ownershipReads++;
+    return _keys.contains(key);
+  }
+
   @override
   dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
 }
@@ -285,6 +298,15 @@ void main() {
     serverId: 's',
   );
 
+  testWidgets('an unreachable explicit playlist client cannot fall back to owned downloads', (tester) async {
+    final h = await pump(tester);
+    h.files.downloadedTracks = [musicTrack('first')];
+    h.servers.serverManager.debugRegisterClientForTesting(h.client, online: false);
+    await playAudioPlaylist(h.context, client: h.client, playlist: playlist, preloadedItems: h.files.downloadedTracks);
+    expect(h.music.started, isNull);
+    expect(h.client.playlistReads, 0);
+  });
+
   testWidgets('playlist paging preserves duplicate occurrences and selected entry', (tester) async {
     final h = await pump(tester);
     final first = musicTrack('first');
@@ -434,5 +456,41 @@ void main() {
     expect(scope?.ownsTrack(musicTrack('foreign', album: 'elsewhere')), isFalse);
     h.hidden.hiddenLibraryKeys.add('s:library');
     expect(scope?.current, isFalse);
+  });
+  testWidgets('large playlist admission returns a metadata window rather than a full decoded list', (tester) async {
+    final h = await pump(tester);
+    h.client.playlistPage = (start, size) async => LibraryPage(
+      items: [for (var i = start; i < (start + size).clamp(0, 10000); i++) musicTrack('$i')],
+      totalCount: 10000,
+    );
+    await playAudioPlaylist(h.context, client: h.client, playlist: playlist);
+    expect(h.client.playlistReads, 50);
+    expect(h.music.started, isA<MusicQueueItemsSnapshot>());
+    expect(h.music.started?.length, 10000);
+    expect(h.music.started?.first.id, '0');
+    expect(h.music.started?.last.id, '9999');
+  });
+
+  testWidgets('invalid playlist page stops admission before more requests', (tester) async {
+    final h = await pump(tester);
+    h.client.playlistPage = (_, _) async =>
+        LibraryPage(items: [musicTrack('foreign', server: 'other')], totalCount: 10000);
+    var errors = 0;
+    await playAudioPlaylist(h.context, client: h.client, playlist: playlist, onError: (_, _) => errors++);
+    expect(h.client.playlistReads, 1);
+    expect(h.music.started, isNull);
+    expect(errors, 1);
+  });
+
+  testWidgets('large owned offline playlist retains occurrence order through one batch check', (tester) async {
+    final h = await pump(tester);
+    final tracks = [for (var i = 0; i < 10000; i++) musicTrack('$i')];
+    h.files.downloadedTracks = tracks;
+    await playAudioPlaylist(h.context, client: h.client, playlist: playlist, isOffline: true, preloadedItems: tracks);
+    expect(h.music.started?.length, 10000);
+    expect(h.music.started?.last.id, '9999');
+    expect(h.files.ownershipReads, lessThan(100000));
+    expect(h.client.playlistReads, 0);
+    expect(h.music.offlineStart, isTrue);
   });
 }

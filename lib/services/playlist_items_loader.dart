@@ -2,6 +2,7 @@ import '../media/library_query.dart';
 import '../media/media_item.dart';
 import '../media/media_server_client.dart';
 import '../utils/media_server_http_client.dart';
+import 'music/music_queue_items.dart';
 
 const int playlistItemsPageSize = 200;
 
@@ -12,16 +13,30 @@ Future<List<MediaItem>> fetchAllPlaylistItems(
   int pageSize = playlistItemsPageSize,
   AbortController? abort,
   bool Function()? sourceCurrent,
-}) => drainPages<MediaItem>(
-  (start, size) async {
-    if (sourceCurrent?.call() == false) throw StateError('Playlist source retired');
-    final page = await client.fetchPlaylistPage(playlistId, start: start, size: size, abort: abort);
-    if (sourceCurrent?.call() == false) throw StateError('Playlist source retired');
-    return page;
-  },
-  pageSize: pageSize,
-  abort: abort,
-);
+  bool Function(MediaItem)? acceptsItem,
+  bool spoolMetadata = false,
+}) async {
+  final buffer = spoolMetadata ? MusicQueueItems(spill: true) : null;
+  try {
+    final items = await drainPages<MediaItem>(
+      (start, size) async {
+        if (sourceCurrent?.call() == false) throw StateError('Playlist source retired');
+        final page = await client.fetchPlaylistPage(playlistId, start: start, size: size, abort: abort);
+        if (sourceCurrent?.call() == false) throw StateError('Playlist source retired');
+        if (acceptsItem != null && page.items.any((item) => !acceptsItem(item))) {
+          throw StateError('Playlist page contains an unauthorized item');
+        }
+        return page;
+      },
+      pageSize: pageSize,
+      abort: abort,
+      accumulator: buffer,
+    );
+    return buffer?.snapshot() ?? items;
+  } finally {
+    buffer?.clear();
+  }
+}
 
 /// Page through every item in a collection via the backend-neutral client API.
 Future<List<MediaItem>> fetchAllCollectionItemsPaged(

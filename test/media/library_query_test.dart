@@ -25,6 +25,37 @@ void main() {
       };
     }
 
+    test('streams pages into the caller accumulator without copying it', () async {
+      final buffer = <int>[];
+      final all = await drainPages<int>(
+        source([
+          [1, 2],
+          [3],
+        ], total: 3),
+        pageSize: 2,
+        accumulator: buffer,
+        onPage: (items) => expect(identical(items, buffer), isTrue),
+      );
+      expect(identical(all, buffer), isTrue);
+      expect(buffer, [1, 2, 3]);
+    });
+
+    test('rejects a populated accumulator before reading the source', () async {
+      var reads = 0;
+      await expectLater(
+        drainPages<int>(
+          (_, _) async {
+            reads++;
+            return const LibraryPage(items: <int>[], totalCount: 0);
+          },
+          pageSize: 2,
+          accumulator: [1],
+        ),
+        throwsArgumentError,
+      );
+      expect(reads, 0);
+    });
+
     test('fires after each intermediate page, never after the final page', () async {
       final seen = <List<int>>[];
       final all = await drainPages<int>(

@@ -437,3 +437,23 @@ output; it does not qualify physical speakers.
 Sources: [Plex client loudness field contract](https://pub.dev/documentation/dart_plex/latest/topics/Streaming-topic.html#loudness),
 [MPV ReplayGain behavior](https://mpv.io/manual/stable/#options-replaygain-fallback),
 [MPV file-local load options](https://mpv.io/manual/stable/#command-interface-loadfile).
+
+
+### Paged playlist admission and safe replacement
+
+Playlist playback now validates each fetched page against the captured source
+and appends it directly to the bounded metadata window. Invalid pages and retired
+accounts stop further requests. Immutable queue snapshots transfer to playback
+without decoding the entire list. Offline ownership is checked once per batch,
+with duplicate occurrences retained; an unreachable explicit live source cannot
+silently become a downloaded-source action.
+
+Replacement queue metadata is prepared before retiring the audible session.
+Serialization or scratch-storage failure leaves its queue, output and listening
+reporter intact. Coverage includes 10,000-track online and owned offline
+playlists, early invalid-page rejection and replacement preparation failure.
+Other browse admission and compact index storage remain separate work.
+
+Validation: the canonical admission, shared music player, native-group, Cast,
+Now Playing, car-host, playlist, artist and library-page suites passed **749
+tests** with clean targeted analysis. This is automated code validation.

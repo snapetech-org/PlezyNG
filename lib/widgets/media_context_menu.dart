@@ -1532,7 +1532,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       _ => [item],
     };
     if (!scope.current) return [];
-    if (tracks.any((track) => !scope.ownsTrack(track))) {
+    if (!scope.ownsTracks(tracks)) {
       throw StateError('Music descendants do not belong to the selected source');
     }
     return tracks;

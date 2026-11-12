@@ -173,14 +173,18 @@ int fallbackPageTotal({required int offset, required int itemCount, int? request
 /// page; the returned list covers those.
 ///
 /// [abort] is checked before and after every request. Errors propagate.
+/// An optional empty [accumulator] lets large listings spool metadata instead
+/// of retaining every decoded item; its owner controls lifetime and snapshots.
 Future<List<T>> drainPages<T>(
   Future<LibraryPage<T>> Function(int start, int size) fetchPage, {
   required int pageSize,
   AbortController? abort,
   bool stopOnShortPage = false,
   void Function(List<T> accumulated)? onPage,
+  List<T>? accumulator,
 }) async {
-  final all = <T>[];
+  final all = accumulator ?? <T>[];
+  if (all.isNotEmpty) throw ArgumentError('A page accumulator must start empty');
   var start = 0;
   while (true) {
     abort?.throwIfAborted();

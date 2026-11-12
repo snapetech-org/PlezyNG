@@ -105,7 +105,7 @@ class _ArtistDetailScreenState extends BaseMediaListDetailScreen<ArtistDetailScr
         if (scope!.offline) return scope!.offlineTracks;
         final tracks = await client.fetchPlayableDescendants(widget.artist.id);
         if (!current()) return [];
-        if (tracks.any((track) => !scope!.ownsTrack(track))) {
+        if (!scope!.ownsTracks(tracks)) {
           throw StateError('Artist tracks do not belong to the selected source');
         }
         return tracks;

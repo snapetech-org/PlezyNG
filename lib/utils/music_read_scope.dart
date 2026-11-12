@@ -87,8 +87,13 @@ class MusicReadScope {
       _visible(item);
 
   /// Validate descendants without changing the captured server or account.
-  bool ownsTrack(MediaItem item) =>
-      current &&
+  bool ownsTrack(MediaItem item) => current && _matchesTrack(item);
+
+  /// A synchronous batch needs one live ownership check. In particular,
+  /// offline ownership must not re-scan the entire file list for each row.
+  bool ownsTracks(Iterable<MediaItem> items) => current && items.every(_matchesTrack);
+
+  bool _matchesTrack(MediaItem item) =>
       item.kind == MediaKind.track &&
       item.backend == seed.backend &&
       item.serverId == seed.serverId &&
@@ -137,6 +142,7 @@ class MusicReadScope {
             servers.serverManager.isClientOnline(server)
         ? candidate
         : null;
+    if (selectedClient != null && !offline && !selectedClient.isOfflineMode && client == null) return null;
     final scope = MusicReadScope._(context, item, profiles!, servers, downloads, hidden, client);
     if (!scope._actorCurrent) return null;
     try {
@@ -173,7 +179,8 @@ class MusicReadScope {
                 track.kind != MediaKind.track ||
                 track.backend != item.backend ||
                 track.serverId != item.serverId ||
-                !owned.containsKey(track.globalKey),
+                !owned.containsKey(track.globalKey) ||
+                !scope._matchesTrack(track),
           )) {
         return null;
       }

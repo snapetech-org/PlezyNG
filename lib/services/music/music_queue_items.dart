@@ -68,6 +68,16 @@ class MusicQueueItems extends ListBase<MediaItem> {
     }
   }
 
+  MusicQueueItemsSnapshot prepareSnapshot(Iterable<MediaItem> items) {
+    final staged = MusicQueueItems(spill: spill, scratchRoot: scratchRoot, threshold: threshold);
+    try {
+      staged.replaceWith(items);
+      return staged.snapshot();
+    } finally {
+      staged.clear();
+    }
+  }
+
   void replaceWith(Iterable<MediaItem> items) {
     if (items is MusicQueueItemsSnapshot && (items._spool != null || !spill || items.length <= threshold)) {
       // Hand a locally staged/persisted window to the player without another

@@ -2199,6 +2199,26 @@ void main() {
     expect(writer.inFlight, 0);
   });
 
+  test('failed metadata admission preserves the audible queue and progress owner', () async {
+    await h.playTracks([t1, t2]);
+    final queue = h.service.queue, session = h.service.queueSessionRevision;
+    final opened = List.of(h.player.openedUris);
+    final failures = <Object>[];
+    final subscription = h.service.errors.listen(failures.add);
+    await h.playTracks([
+      for (var index = 0; index < 513; index++) _track('$index'),
+      _track('invalid').copyWith(raw: {'notJson': Object()}),
+    ]);
+    expect(h.service.queue, same(queue));
+    expect(h.service.queueSessionRevision, session);
+    expect(h.service.currentTrack?.id, t1.id);
+    expect(h.service.status, MusicPlaybackStatus.playing);
+    expect(h.player.openedUris, opened);
+    expect(h.client.reportsFor('stopped'), isEmpty);
+    expect(failures, hasLength(1));
+    await subscription.cancel();
+  });
+
   test('playFromList opens the first track and arms the second', () async {
     await h.playTracks([t1, t2, t3]);
 

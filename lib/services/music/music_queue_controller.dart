@@ -161,6 +161,8 @@ class MusicQueueController {
     }
   }
 
+  MusicQueueItemsSnapshot prepareItems(Iterable<MediaItem> items) => _items.prepareSnapshot(items);
+
   void trimDecodedMetadata() => _items.trimDecodedMetadata();
 
   void clear() {

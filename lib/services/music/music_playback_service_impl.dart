@@ -2196,6 +2196,27 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
     beginPlayIntent();
+    // Finish scratch/serialization work before retiring the audible session.
+    // A full disk must leave the old queue, progress tracker and output intact.
+    try {
+      if (restoredQueue != null && !restoredQueue.isValid) {
+        throw const FormatException('Invalid prepared music queue');
+      }
+      tracks = _queue.prepareItems(restoredQueue?.items ?? tracks);
+      if (restoredQueue != null) {
+        restoredQueue = MusicQueueState(
+          items: tracks,
+          order: restoredQueue.order,
+          cursor: restoredQueue.cursor,
+          shuffled: restoredQueue.shuffled,
+          repeatMode: restoredQueue.repeatMode,
+        );
+      }
+    } catch (error, stackTrace) {
+      appLogger.w('Cannot prepare music queue', error: error, stackTrace: stackTrace);
+      _errorsController.add(error);
+      return;
+    }
     final nativeOwner = _calderaAudioOwner;
     if (nativeOwner != null) {
       final ending = closeCalderaAudio(nativeOwner);

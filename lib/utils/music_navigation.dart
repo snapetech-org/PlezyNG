@@ -11,6 +11,7 @@ import '../screens/music/artist_detail_screen.dart';
 import '../screens/music/now_playing_screen.dart';
 import '../services/device_performance.dart';
 import '../services/music/music_playback_service.dart';
+import '../services/music/music_queue_items.dart';
 import '../services/playlist_items_loader.dart';
 import '../services/playback_initialization_types.dart';
 import '../theme/mono_motion.dart';
@@ -206,7 +207,11 @@ Future<void> playAudioPlaylist(
 }) {
   MusicReadScope? scope;
   var preparing = true;
-  final saved = preloadedItems == null ? null : List<MediaItem>.unmodifiable(preloadedItems);
+  final saved = preloadedItems == null
+      ? null
+      : preloadedItems is MusicQueueItemsSnapshot
+      ? preloadedItems
+      : List<MediaItem>.unmodifiable(preloadedItems);
   bool current() => (sourceCurrent?.call() ?? true) && (preparing || scope?.current == true);
   return playFetchedTracks(
     context,
@@ -226,9 +231,16 @@ Future<void> playAudioPlaylist(
       if (!requestCurrent()) return [];
       final tracks = scope!.offline
           ? scope!.offlineTracks
-          : saved ?? await fetchAllPlaylistItems(client, playlist.id, sourceCurrent: requestCurrent);
+          : saved ??
+                await fetchAllPlaylistItems(
+                  client,
+                  playlist.id,
+                  sourceCurrent: requestCurrent,
+                  acceptsItem: scope!.ownsTrack,
+                  spoolMetadata: true,
+                );
       if (!current()) return [];
-      if (tracks.any((track) => !scope!.ownsTrack(track))) {
+      if ((saved != null || scope!.offline) && !scope!.ownsTracks(tracks)) {
         throw StateError('Playlist contains tracks outside its authorized source');
       }
       return tracks;

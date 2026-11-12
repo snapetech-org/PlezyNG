@@ -338,6 +338,13 @@ next version; never move a tag or replace published assets. Explicit legacy
 main/recovery mode remains available with `--no-freeze-release` and preserves
 its unchanged-product source and CI checks.
 
+When organization policy rejects stable-tag creation by `GITHUB_TOKEN`, use
+`--no-freeze-release --source-commit <main-sha>`. The controller requires that
+SHA to be the current `main` head, runs exact-source CI first, creates the
+immutable stable tag with the operator's authenticated `gh` session, and then
+dispatches the complete platform build. It does not reuse a candidate run or
+skip required platform checks.
+
 If the control-plane host cannot reach `ffmpeg.org`, pass
 `--ffmpeg-source-cache <directory>` with retained files named
 `ffmpeg-<pinned-version>.tar.xz`, `ffmpeg-<pinned-version>.tar.xz.asc`, and

@@ -27,6 +27,24 @@ class CorePublicationTests(unittest.TestCase):
         embedded.start()
         self.addCleanup(embedded.stop)
 
+    def test_pinned_non_frozen_release_uses_current_main_and_exact_ancestry(self):
+        commit = "a" * 40
+        with patch.object(release, "ensure_remote_main_sha") as remote_main, \
+                patch.object(release, "ensure_main_ancestor") as ancestor:
+            release.validate_selected_source(commit, frozen=False, frozen_commit=None,
+                                             packaging_repair=False)
+        remote_main.assert_called_once_with(commit, "starting a pinned-source release")
+        ancestor.assert_called_once_with(commit)
+
+    def test_pinned_source_cannot_disagree_with_an_existing_release_tag(self):
+        with patch.object(release, "ensure_remote_main_sha") as remote_main, \
+                patch.object(release, "ensure_main_ancestor"):
+            with self.assertRaisesRegex(release.ReleaseError, "existing immutable version tag"):
+                release.validate_selected_source("a" * 40, frozen=False,
+                                                 frozen_commit="b" * 40,
+                                                 packaging_repair=False)
+        remote_main.assert_not_called()
+
     def test_only_channel_metadata_is_optional_and_collected_when_present(self):
         workflow = yaml.safe_load((Path(__file__).resolve().parents[2] / ".github/workflows/build.yml").read_text())
         jobs = workflow["jobs"]

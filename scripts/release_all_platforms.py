@@ -1897,6 +1897,16 @@ def ensure_main_ancestor(expected_sha: str) -> None:
         raise ReleaseError(f"Release source {expected_sha} is not an ancestor of canonical main.")
 
 
+def validate_selected_source(selected_commit: str, *, frozen: bool,
+                             frozen_commit: str | None, packaging_repair: bool) -> None:
+    """Keep explicit non-frozen releases pinned to the current main head."""
+    if frozen_commit is not None and frozen_commit != selected_commit:
+        raise ReleaseError("Selected source must match the existing immutable version tag.")
+    if not frozen and not packaging_repair:
+        ensure_remote_main_sha(selected_commit, "starting a pinned-source release")
+    ensure_main_ancestor(selected_commit)
+
+
 def embedded_ci_proof(run_id: int, source_sha: str) -> dict:
     from verify_embedded_release_ci import verify_jobs
     run = gh_json("api", f"repos/{PLEZY_REPO}/actions/runs/{run_id}")
@@ -2505,9 +2515,9 @@ def main() -> int:
         frozen_commit = existing_release_tag_commit(ROOT, tag) if frozen else None
         selected_commit = getattr(args, "source_commit", None)
         if selected_commit:
-            if (not frozen and not packaging_repair) or (frozen_commit is not None and frozen_commit != selected_commit):
-                raise ReleaseError("Selected source requires a normal frozen release and must match any existing version tag.")
-            ensure_main_ancestor(selected_commit)
+            validate_selected_source(selected_commit, frozen=frozen,
+                                     frozen_commit=frozen_commit,
+                                     packaging_repair=packaging_repair)
         if frozen_commit or selected_commit:
             worktree = create_plezy_worktree(scratch,
                 source_ref=f"refs/tags/{tag}" if frozen_commit else selected_commit)

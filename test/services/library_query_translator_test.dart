@@ -27,9 +27,9 @@ void main() {
       expect(params['type'], '1,2');
     });
 
-    test('collection kind has no Plex type number (filtered separately)', () {
+    test('collection kind maps to type=18', () {
       final params = translator.toQueryParameters(const LibraryQuery(kind: MediaKind.collection));
-      expect(params, isNot(contains('type')));
+      expect(params['type'], '18');
     });
 
     test('ascending sort appends :asc suffix', () {

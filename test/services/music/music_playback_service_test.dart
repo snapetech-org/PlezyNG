@@ -1,3 +1,4 @@
+import 'package:plezy/services/music/server_music_radio.dart';
 import '../../test_helpers/native_music_socket_lease.dart';
 import 'dart:async';
 import 'dart:io';
@@ -531,7 +532,27 @@ class RecordedReport {
 /// (the engine and tracker never touch it in these tests).
 class FakeMediaServerClient extends Fake
     with PlaybackReportRecorder
-    implements MediaServerClient, PlexLoudnessProfileClient, SonicMusicClient {
+    implements MediaServerClient, PlexLoudnessProfileClient, SonicMusicClient, ServerMusicRadioClient {
+  List<ServerMusicRadio> serverRadios = [];
+  final serverRadioWindows = <List<MediaItem>>[];
+  Future<List<MediaItem>> Function()? serverRadioFetch;
+  int serverCatalogReads = 0, serverRadioReads = 0, instantMixReads = 0;
+  @override
+  Future<List<ServerMusicRadio>> serverMusicRadios(String libraryId) async {
+    serverCatalogReads++;
+    return serverRadios.where((row) => row.libraryId == libraryId).toList();
+  }
+
+  @override
+  bool serverMusicRadioCurrent(ServerMusicRadio radio) => serverRadios.any((row) => identical(row, radio));
+  @override
+  Future<List<MediaItem>> serverMusicRadioTracks(ServerMusicRadio radio, {int limit = 100}) async {
+    if (!serverMusicRadioCurrent(radio)) throw StateError('Unissued radio');
+    serverRadioReads++;
+    if (serverRadioFetch != null) return serverRadioFetch!();
+    return serverRadioWindows.isEmpty ? [] : serverRadioWindows.removeAt(0);
+  }
+
   final List<RecordedReport> reports = [];
   Object _authenticationSession = Object();
 
@@ -618,6 +639,7 @@ class FakeMediaServerClient extends Fake
 
   @override
   Future<List<MediaItem>> fetchInstantMix(String itemId, {int limit = 100}) {
+    instantMixReads++;
     return instantMixGate?.future ?? Future.value(const []);
   }
 
@@ -2049,6 +2071,99 @@ void main() {
     trackLimit: limit,
     albums: albums,
   );
+
+  const serverRadio = ServerMusicRadio(
+    serverId: 'srv',
+    libraryId: 'lib',
+    key: '/library/metadata/1/station/one?type=10',
+    title: 'Server Radio',
+  );
+  test('server radio uses its issued queue, refills with exclusions, and terminates without generic mix', () async {
+    h.client.serverRadios = [serverRadio];
+    h.client.serverRadioWindows.addAll([
+      [radioTrack('r1', 'a'), radioTrack('r2', 'a')],
+      [radioTrack('r2', 'a'), radioTrack('r3', 'a')],
+    ]);
+    expect(await h.service.playServerRadio(serverRadio), InstantMixOutcome.started);
+    await pumpEventQueue();
+    expect(h.service.queue.map((track) => track.id), ['r1', 'r2', 'r3']);
+    expect(h.service.playContext?.title, 'Server Radio');
+    expect(h.client.serverCatalogReads, 1);
+    expect(h.client.serverRadioReads, 2);
+    await h.service.next();
+    await pumpEventQueue();
+    expect(h.service.continuationEnabled, isFalse);
+    expect(h.client.instantMixReads, 0);
+  });
+
+  test('foreign server radio tracks cannot replace the audible queue', () async {
+    await h.playTracks([t3]);
+    h.client.serverRadios = [serverRadio];
+    h.client.serverRadioWindows.add([radioTrack('r1', 'a').copyWith(libraryId: 'foreign')]);
+    await expectLater(h.service.playServerRadio(serverRadio), throwsFormatException);
+    expect(h.service.queue.map((track) => track.id), ['t3']);
+  });
+
+  test('unissued server radio rows do not read or replace playback', () async {
+    await h.playTracks([t3]);
+    expect(await h.service.playServerRadio(serverRadio), InstantMixOutcome.superseded);
+    expect(h.client.serverRadioReads, 0);
+    expect(h.service.currentTrack?.id, 't3');
+  });
+
+  for (final retirement in ['account', 'replacement']) {
+    test('server radio initial fetch retires on $retirement', () async {
+      await h.playTracks([t3]);
+      h.client.serverRadios = [serverRadio];
+      final gate = Completer<List<MediaItem>>();
+      h.client.serverRadioFetch = () => gate.future;
+      final pending = h.service.playServerRadio(serverRadio);
+      await pumpEventQueue();
+      if (retirement == 'account') h.client._authenticationSession = Object();
+      if (retirement == 'replacement') await h.playTracks([t2]);
+      gate.complete([radioTrack('r1', 'a')]);
+      expect(await pending, InstantMixOutcome.superseded);
+      expect(h.service.currentTrack?.id, retirement == 'replacement' ? 't2' : 't3');
+    });
+  }
+
+  test('manual removals while server radio refills remain excluded', () async {
+    h.client.serverRadios = [serverRadio];
+    final gate = Completer<List<MediaItem>>();
+    h.client.serverRadioFetch = () async {
+      if (h.client.serverRadioReads == 1) return [radioTrack('r1', 'a'), radioTrack('r2', 'a')];
+      return gate.future;
+    };
+    expect(await h.service.playServerRadio(serverRadio), InstantMixOutcome.started);
+    await pumpEventQueue();
+    h.service.addNext([radioTrack('r3', 'a')]);
+    h.service.removeAt(1);
+    gate.complete([radioTrack('r3', 'a'), radioTrack('r4', 'a')]);
+    await pumpEventQueue();
+    expect(h.service.queue.map((track) => track.id), ['r1', 'r2', 'r4']);
+  });
+
+  test('server radio rechecks its account after retiring a native audio sink', () async {
+    h.client.serverRadios = [serverRadio];
+    h.client.serverRadioWindows.add([radioTrack('r1', 'a')]);
+    final owner = Object();
+    expect(
+      await h.service.openCalderaAudio(
+        owner,
+        Uri.parse('http://127.0.0.1:12345/pcm.wav'),
+        'Native fixture',
+        () => true,
+      ),
+      isTrue,
+    );
+    final gate = h.player.disposalWait = Completer<void>();
+    final pending = h.service.playServerRadio(serverRadio);
+    await pumpEventQueue();
+    h.client._authenticationSession = Object();
+    gate.complete();
+    expect(await pending, InstantMixOutcome.superseded);
+    expect(h.service.queue, isEmpty);
+  });
 
   for (final albumRadio in [false, true]) {
     test('radio adoption rechecks account after retiring a native sink (albums=$albumRadio)', () async {
@@ -3716,6 +3831,59 @@ void main() {
         ),
       );
     }
+
+    test('server radio restores its recipe but reacquires the live library grant before refilling', () async {
+      final session = store();
+      final first = _Harness.create(sessionStore: session);
+      addTearDown(first.dispose);
+      await pumpEventQueue();
+      first.client.serverRadios = [serverRadio];
+      first.client.serverRadioWindows.addAll([
+        [radioTrack('r1', 'a')],
+        [radioTrack('r2', 'a')],
+      ]);
+      expect(await first.service.playServerRadio(serverRadio), InstantMixOutcome.started);
+      await pumpEventQueue();
+      expect((await session.load())!.continuationServerRadio!.toJson(), serverRadio.toJson());
+      first.service.dispose();
+      final second = harnessWithStore();
+      await pumpEventQueue();
+      expect(second.players, isEmpty);
+      expect(second.client.serverCatalogReads, 0);
+      // A serialized descriptor is not an issued capability.
+      second.client.serverRadios = [ServerMusicRadio.fromJson(serverRadio.toJson())];
+      second.client.serverRadioWindows.add([radioTrack('r3', 'a')]);
+      await second.service.play();
+      await pumpEventQueue();
+      expect(second.client.serverCatalogReads, 1);
+      expect(second.service.queue.map((track) => track.id), ['r1', 'r2', 'r3']);
+      expect(second.client.instantMixReads, 0);
+    });
+
+    test('a removed restored server radio preserves finite playback and retires its recipe', () async {
+      final session = store();
+      final first = _Harness.create(sessionStore: session);
+      addTearDown(first.dispose);
+      await pumpEventQueue();
+      first.client.serverRadios = [serverRadio];
+      first.client.serverRadioWindows.addAll([
+        [radioTrack('r1', 'a')],
+        [radioTrack('r2', 'a')],
+      ]);
+      await first.service.playServerRadio(serverRadio);
+      await pumpEventQueue();
+      first.service.dispose();
+      final second = harnessWithStore();
+      await pumpEventQueue();
+      await second.service.play();
+      await pumpEventQueue();
+      expect(second.service.queue.map((track) => track.id), ['r1', 'r2']);
+      expect(second.service.isPlaying, isTrue);
+      expect(second.service.continuationEnabled, isFalse);
+      expect(second.client.serverRadioReads, 0);
+      expect(second.client.instantMixReads, 0);
+      expect((await session.load())!.continuationServerRadio, isNull);
+    });
 
     test('rule radio restores its original filters and exhausts without reverting to instant mix', () async {
       final session = store();

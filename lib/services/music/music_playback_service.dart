@@ -1,3 +1,4 @@
+import 'server_music_radio.dart';
 import 'music_station.dart';
 import 'package:flutter/foundation.dart';
 
@@ -58,6 +59,11 @@ class MusicPlayContext {
   final MusicPlayContextKind kind;
 
   const MusicPlayContext({required this.title, required this.kind});
+}
+
+/// Server-authored radio is owned by the same queue and player as all music.
+abstract interface class MusicServerRadioControls {
+  Future<InstantMixOutcome> playServerRadio(ServerMusicRadio radio);
 }
 
 /// Optional whole-album sonic radio through the authoritative music session.

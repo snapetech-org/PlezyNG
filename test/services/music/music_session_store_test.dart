@@ -1,3 +1,4 @@
+import 'package:plezy/services/music/server_music_radio.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -350,6 +351,43 @@ void main() {
     expect((await store().load())!.continuationStation!.toJson(), rule.toJson());
     await expectLater(store().save(snapshot(seed.copyWith(libraryId: 'other'))), throwsArgumentError);
     expect((await store().load())!.continuationSeed!.libraryId, 'lib');
+  });
+
+  test('server radio recipes round-trip identities and reject mixed or foreign continuation sources', () async {
+    final session = store();
+    final seed = track('a').copyWith(libraryId: 'lib');
+    const radio = ServerMusicRadio(
+      serverId: 'srv',
+      libraryId: 'lib',
+      key: '/library/metadata/1/station/one?type=10',
+      title: 'Library Radio',
+    );
+    MusicSessionSnapshot snapshot({ServerMusicRadio remote = radio, bool albumRadio = false}) => MusicSessionSnapshot(
+      queue: state(items: [seed]),
+      playContext: null,
+      position: Duration.zero,
+      continuationSeed: seed,
+      continuationAccount: 'account',
+      continuationServerRadio: remote,
+      continuationAlbumRadio: albumRadio,
+    );
+    await session.save(snapshot());
+    expect((await session.load())!.continuationServerRadio!.toJson(), radio.toJson());
+    await expectLater(session.save(snapshot(albumRadio: true)), throwsArgumentError);
+    await expectLater(
+      session.save(
+        snapshot(
+          remote: const ServerMusicRadio(
+            serverId: 'srv',
+            libraryId: 'other',
+            key: '/library/metadata/1/station/one?type=10',
+            title: 'Foreign',
+          ),
+        ),
+      ),
+      throwsArgumentError,
+    );
+    expect((await session.load())!.continuationServerRadio!.libraryId, 'lib');
   });
 
   test('album radio mode and distance survive a parked session', () async {

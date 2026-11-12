@@ -5,6 +5,37 @@ import '../../media/media_item.dart';
 class ServerMusicRadio {
   const ServerMusicRadio({required this.serverId, required this.libraryId, required this.key, required this.title});
   final String serverId, libraryId, key, title;
+
+  bool get valid =>
+      serverId.isNotEmpty &&
+      serverId.length <= 256 &&
+      libraryId.isNotEmpty &&
+      libraryId.length <= 128 &&
+      title.trim().isNotEmpty &&
+      title.length <= 1024 &&
+      validServerMusicRadioKey(key, libraryId);
+
+  Map<String, Object> toJson() {
+    if (!valid) throw ArgumentError('Invalid music radio recipe');
+    return {'serverId': serverId, 'libraryId': libraryId, 'key': key, 'title': title};
+  }
+
+  factory ServerMusicRadio.fromJson(Map<String, dynamic> json) {
+    if (json['serverId'] is! String ||
+        json['libraryId'] is! String ||
+        json['key'] is! String ||
+        json['title'] is! String) {
+      throw const FormatException('Invalid music radio recipe');
+    }
+    final radio = ServerMusicRadio(
+      serverId: json['serverId'],
+      libraryId: json['libraryId'],
+      key: json['key'],
+      title: json['title'],
+    );
+    if (!radio.valid) throw const FormatException('Invalid music radio recipe');
+    return radio;
+  }
 }
 
 abstract interface class ServerMusicRadioClient {

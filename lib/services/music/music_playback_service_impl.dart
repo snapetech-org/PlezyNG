@@ -1,3 +1,4 @@
+import 'server_music_radio.dart';
 import 'music_station.dart';
 import 'music_audio_output_inspection.dart';
 import 'package:uuid/uuid.dart';
@@ -132,6 +133,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicDiscoveryControls,
         MusicAlbumRadioControls,
         MusicStationRadioControls,
+        MusicServerRadioControls,
         MusicAudioControls,
         MusicCacheControls,
         MusicSignalPathService,
@@ -1218,6 +1220,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   MediaItem? _continuationSeed;
   String? _continuationAccount;
   MusicStation? _continuationStation;
+  ServerMusicRadio? _continuationServerRadio;
   bool _continuationAlbumRadio = false;
   double _continuationDistance = .25;
   int _continuationEpoch = 0;
@@ -1235,6 +1238,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   void setContinuationEnabled(bool enabled) {
     _continuationEpoch++;
     _continuationStation = null;
+    _continuationServerRadio = null;
     _continuationAlbumRadio = false;
     _continuationDistance = .25;
     _continuationLoading = false;
@@ -1315,6 +1319,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     try {
       final albumRadio = _continuationAlbumRadio;
       final station = _continuationStation;
+      final serverRadio = _continuationServerRadio;
       final wholeAlbums = albumRadio || station?.albums == true;
       final excludedTracks = {..._queue.queue.map((t) => t.globalKey), ..._continuationExcluded};
       final excludedAlbums = <String>{
@@ -1325,7 +1330,36 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       };
       final List<MediaItem> candidates;
       final bool Function() batchCurrent;
-      if (station != null) {
+      if (serverRadio != null) {
+        final client = _clientFor(seed);
+        if (client is! ServerMusicRadioClient) throw StateError('Server radio is unavailable');
+        final radioClient = client as ServerMusicRadioClient;
+        // Persisted keys are recipes, not grants. Ask the original live
+        // library to issue the row again before every refill.
+        final catalog = await radioClient.serverMusicRadios(serverRadio.libraryId);
+        if (!current() || !authorized()) return;
+        final issued = catalog
+            .where(
+              (row) =>
+                  row.serverId == serverRadio.serverId &&
+                  row.libraryId == serverRadio.libraryId &&
+                  row.key == serverRadio.key,
+            )
+            .firstOrNull;
+        if (issued == null) throw StateError('Server radio is no longer available');
+        candidates = await radioClient.serverMusicRadioTracks(issued);
+        batchCurrent = () => authorized() && radioClient.serverMusicRadioCurrent(issued);
+        if (candidates.any(
+          (track) =>
+              track.kind != MediaKind.track ||
+              track.id.isEmpty ||
+              track.backend != client!.backend ||
+              track.serverId != seed.serverId ||
+              track.libraryId != seed.libraryId,
+        )) {
+          throw const FormatException('Foreign server radio track');
+        }
+      } else if (station != null) {
         final client = _clientFor(seed);
         if (client == null) throw StateError('Station source is unavailable');
         final batch = await station.preview(
@@ -1384,6 +1418,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         _continuationLoading = false;
         if (_continuationSeed == null) {
           _continuationStation = null;
+          _continuationServerRadio = null;
           _continuationAlbumRadio = false;
           _continuationDistance = .25;
           _persistSessionSnapshot();
@@ -2346,6 +2381,60 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     return InstantMixOutcome.started;
   }
 
+  @override
+  Future<InstantMixOutcome> playServerRadio(ServerMusicRadio radio) async {
+    if (!radio.valid) throw ArgumentError('Invalid server radio');
+    final intent = beginPlayIntent();
+    final source = MediaItem(
+      id: radio.key,
+      backend: MediaBackend.plex,
+      kind: MediaKind.artist,
+      title: radio.title,
+      serverId: radio.serverId,
+      libraryId: radio.libraryId,
+    );
+    final client = _clientFor(source);
+    if (client == null || client.isOfflineMode || client is! ServerMusicRadioClient) {
+      return InstantMixOutcome.superseded;
+    }
+    final radioClient = client as ServerMusicRadioClient;
+    final authentication = client.authenticationSessionId;
+    final account = musicAccountScope(client);
+    bool current() =>
+        !_disposed &&
+        identical(_clientFor(source), client) &&
+        identical(client.authenticationSessionId, authentication) &&
+        musicAccountScope(client) == account &&
+        radioClient.serverMusicRadioCurrent(radio);
+    if (!current()) return InstantMixOutcome.superseded;
+    final tracks = await radioClient.serverMusicRadioTracks(radio);
+    if (!current() || !isPlayIntentCurrent(intent)) return InstantMixOutcome.superseded;
+    if (tracks.any(
+      (track) =>
+          track.kind != MediaKind.track ||
+          track.id.isEmpty ||
+          track.backend != client.backend ||
+          track.serverId != radio.serverId ||
+          track.libraryId != radio.libraryId,
+    )) {
+      throw const FormatException('Foreign server radio track');
+    }
+    if (tracks.isEmpty) return InstantMixOutcome.empty;
+    final expectedRevision = _queueSessionRevision + (_calderaAudioOwner != null ? 2 : 1);
+    await _startQueue(
+      tracks: tracks,
+      sourceCurrent: current,
+      playContext: MusicPlayContext(title: radio.title, kind: MusicPlayContextKind.mix),
+    );
+    if (_disposed || _queueSessionRevision != expectedRevision || !current()) return InstantMixOutcome.superseded;
+    _continuationSeed = tracks.first;
+    _continuationAccount = account;
+    _continuationServerRadio = radio;
+    _persistSessionSnapshot();
+    unawaited(_extendStation());
+    return InstantMixOutcome.started;
+  }
+
   Future<void> _startQueue({
     required List<MediaItem> tracks,
     MediaItem? startTrack,
@@ -2400,6 +2489,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _continuationSeed = null;
     _continuationAccount = null;
     _continuationStation = null;
+    _continuationServerRadio = null;
     _continuationAlbumRadio = false;
     _continuationDistance = .25;
     _continuationLoading = false;
@@ -4734,6 +4824,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _continuationSeed = null;
     _continuationAccount = null;
     _continuationStation = null;
+    _continuationServerRadio = null;
     _continuationAlbumRadio = false;
     _continuationDistance = .25;
     _continuationLoading = false;
@@ -4965,6 +5056,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _playContext = snapshot.playContext;
     _continuationAccount = snapshot.continuationAccount;
     _continuationStation = snapshot.continuationStation;
+    _continuationServerRadio = snapshot.continuationServerRadio;
     _continuationAlbumRadio = snapshot.continuationAlbumRadio;
     _continuationDistance = snapshot.continuationDistance;
     _continuationSeed = _continuationAccount == null ? null : snapshot.continuationSeed;
@@ -5008,6 +5100,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       continuationSeed: _continuationSeed,
       continuationAccount: _continuationAccount,
       continuationStation: _continuationStation,
+      continuationServerRadio: _continuationServerRadio,
       continuationAlbumRadio: _continuationAlbumRadio,
       continuationDistance: _continuationDistance,
       continuationExcluded: Set.unmodifiable(_continuationExcluded),

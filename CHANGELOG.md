@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Play Plex server radio through the shared music session, retain manual exclusions during rolling refills, and persist credential-free recipes that require fresh library authorization after restart.
+
 - Read Plex server-authored radio catalogs and open only account-authorized station keys through the audio PlayQueue API; reject foreign or malformed catalog and queue windows.
 
 - Preserve incremental music queue saves with bounded order storage: write only moved positions, changed metadata and new or retired occurrences.

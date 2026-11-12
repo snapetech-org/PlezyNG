@@ -1,3 +1,4 @@
+import 'server_music_radio.dart';
 import 'music_station.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -25,6 +26,7 @@ class MusicSessionSnapshot {
   final MediaItem? continuationSeed;
   final String? continuationAccount;
   final MusicStation? continuationStation;
+  final ServerMusicRadio? continuationServerRadio;
   final bool continuationAlbumRadio;
   final double continuationDistance;
   final Set<String> continuationExcluded;
@@ -36,6 +38,7 @@ class MusicSessionSnapshot {
     this.continuationSeed,
     this.continuationAccount,
     this.continuationStation,
+    this.continuationServerRadio,
     this.continuationAlbumRadio = false,
     this.continuationDistance = .25,
     this.continuationExcluded = const {},
@@ -73,6 +76,15 @@ class MusicSessionStore {
   Future<void> save(MusicSessionSnapshot snapshot) => _writes.run(() async {
     if (!_active) return;
     final queue = snapshot.queue;
+    final serverRadio = snapshot.continuationServerRadio;
+    if (serverRadio != null &&
+        (!serverRadio.valid ||
+            snapshot.continuationAlbumRadio ||
+            snapshot.continuationStation != null ||
+            snapshot.continuationSeed?.serverId != serverRadio.serverId ||
+            snapshot.continuationSeed?.libraryId != serverRadio.libraryId)) {
+      throw ArgumentError('Invalid persisted server radio');
+    }
     final station = snapshot.continuationStation;
     if (station != null &&
         (snapshot.continuationAlbumRadio ||
@@ -112,6 +124,7 @@ class MusicSessionStore {
                 'account': ?snapshot.continuationAccount,
                 'excluded': snapshot.continuationExcluded.toList(),
                 'station': ?snapshot.continuationStation?.toJson(),
+                'serverRadio': ?serverRadio?.toJson(),
                 'albumRadio': snapshot.continuationAlbumRadio,
                 'distance': snapshot.continuationDistance,
               },
@@ -255,6 +268,7 @@ class MusicSessionStore {
         MediaItem? continuationSeed;
         String? continuationAccount;
         MusicStation? continuationStation;
+        ServerMusicRadio? continuationServerRadio;
         var continuationAlbumRadio = false;
         var continuationDistance = .25;
         var continuationExcluded = <String>{};
@@ -273,6 +287,16 @@ class MusicSessionStore {
                   distance != null && (distance is! num || !distance.isFinite || distance < 0 || distance > 1) ||
                   radio == true && seed.kind != MediaKind.album) {
                 throw const FormatException('Invalid persisted music continuation');
+              }
+              final remote = continuation['serverRadio'];
+              if (remote != null) {
+                continuationServerRadio = ServerMusicRadio.fromJson(Map<String, dynamic>.from(remote as Map));
+                if (radio == true ||
+                    continuation['station'] != null ||
+                    seed.serverId != continuationServerRadio.serverId ||
+                    seed.libraryId != continuationServerRadio.libraryId) {
+                  throw const FormatException('Invalid persisted server radio');
+                }
               }
               final rule = continuation['station'];
               if (rule != null) {
@@ -359,6 +383,7 @@ class MusicSessionStore {
           continuationSeed: continuationSeed,
           continuationAccount: continuationAccount,
           continuationStation: continuationStation,
+          continuationServerRadio: continuationServerRadio,
           continuationAlbumRadio: continuationAlbumRadio,
           continuationDistance: continuationDistance,
           continuationExcluded: Set.unmodifiable(continuationExcluded),

@@ -219,7 +219,18 @@ class _StageLine extends StatelessWidget {
   final double font;
   @override
   Widget build(BuildContext context) {
-    final color = line.part == '2' ? Colors.cyanAccent : Colors.amberAccent;
+    Color colorForPart(String? part) {
+      if (part == null || part == '1') return Colors.amberAccent;
+      if (part == '2') return Colors.cyanAccent;
+      const additional = [Colors.lightGreenAccent, Colors.purpleAccent, Colors.orangeAccent, Colors.pinkAccent];
+      var hash = 0;
+      for (final unit in part.codeUnits) {
+        hash = (hash * 31 + unit) & 0x7fffffff;
+      }
+      return additional[hash % additional.length];
+    }
+
+    final color = colorForPart(line.part);
     final style = TextStyle(fontSize: font, fontWeight: FontWeight.w700, color: Colors.white, height: 1.3);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -227,6 +238,9 @@ class _StageLine extends StatelessWidget {
         label: [
           line.part,
           line.text,
+          ...line.spans
+              .where((span) => span.part != null && span.part != line.part)
+              .map((span) => '${span.part} ${span.text}'),
           ...line.spans.map((span) => span.pronunciation).whereType<String>(),
         ].where((value) => value?.trim().isNotEmpty ?? false).join(' '),
         child: ExcludeSemantics(
@@ -254,9 +268,11 @@ class _StageLine extends StatelessWidget {
                           : ((time - span.startMs) / math.max(1, end - span.startMs)).clamp(0.0, 1.0);
                       // Whole source spans preserve grapheme clusters, whitespace and bidi
                       // shaping. Opacity expresses within-span progress without splitting.
-                      final lyricStyle = style.copyWith(color: Color.lerp(Colors.white54, color, progress));
+                      final spanColor = colorForPart(span.part ?? line.part);
+                      final lyricStyle = style.copyWith(color: Color.lerp(Colors.white54, spanColor, progress));
                       final reading = span.pronunciation;
-                      if (reading == null || reading.trim().isEmpty) {
+                      final partLabel = span.part != null && span.part != line.part;
+                      if ((reading == null || reading.trim().isEmpty) && !partLabel) {
                         return TextSpan(text: span.text, style: lyricStyle);
                       }
                       return WidgetSpan(
@@ -265,10 +281,16 @@ class _StageLine extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              reading,
-                              style: style.copyWith(fontSize: font * .32, color: Colors.white70, height: 1),
-                            ),
+                            if (partLabel)
+                              Text(
+                                span.part!,
+                                style: style.copyWith(fontSize: font * .36, color: spanColor, height: 1),
+                              ),
+                            if (reading != null && reading.trim().isNotEmpty)
+                              Text(
+                                reading,
+                                style: style.copyWith(fontSize: font * .32, color: Colors.white70, height: 1),
+                              ),
                             Text(span.text, style: lyricStyle),
                           ],
                         ),

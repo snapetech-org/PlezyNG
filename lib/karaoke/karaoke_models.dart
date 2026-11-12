@@ -172,7 +172,12 @@ class KaraokeTrack {
   bool get singAlongOnly => media != null && !hasBacking;
   bool get hasLocalAudio =>
       assets.any((a) => a.kind == KaraokeAssetKind.audio || a.kind == KaraokeAssetKind.instrumental);
-  Set<String> get parts => {...notes.map((n) => n.part), ...lyrics.lines.map((l) => l.part).whereType<String>()};
+  Set<String> get parts => {
+    ...notes.map((n) => n.part),
+    ...lyrics.lines.expand(
+      (line) => [if (line.part != null) line.part!, ...line.spans.map((span) => span.part).whereType<String>()],
+    ),
+  };
   Map<String, dynamic> toJson() => {
     'schema': 1,
     'id': id,

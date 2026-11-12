@@ -11,6 +11,7 @@ Future<List<MediaItem>> fetchMusicTracks(
   MediaServerClient client,
   String parentId, {
   required MediaKind kind,
+  String? libraryId,
   required bool Function() current,
   required bool Function(MediaItem) acceptsItem,
   int pageSize = 200,
@@ -24,7 +25,14 @@ Future<List<MediaItem>> fetchMusicTracks(
     await drainPages<MediaItem>(
       (start, size) async {
         if (!current()) throw StateError('Music source retired');
-        final page = await client.fetchMusicTracksPage(parentId, kind: kind, start: start, size: size, abort: abort);
+        final page = await client.fetchMusicTracksPage(
+          parentId,
+          kind: kind,
+          libraryId: libraryId,
+          start: start,
+          size: size,
+          abort: abort,
+        );
         if (!current()) throw StateError('Music source retired');
         if (page.offset != start ||
             page.items.length > size ||

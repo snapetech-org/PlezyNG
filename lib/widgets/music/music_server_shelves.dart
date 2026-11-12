@@ -154,6 +154,7 @@ class _MusicServerShelvesState extends State<MusicServerShelves> {
               shelf.source.client,
               id,
               kind: MediaKind.album,
+              libraryId: shelf.source.libraryId,
               current: current,
               acceptsItem: (row) => row.kind == MediaKind.track && shelf.source.owns(row) && row.parentId == id,
               abort: abort,

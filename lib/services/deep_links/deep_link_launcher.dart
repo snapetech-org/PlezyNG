@@ -449,6 +449,7 @@ class PlayLinkResolver {
             client,
             item.id,
             kind: item.kind,
+            libraryId: item.libraryId,
             current: current,
             acceptsItem: (track) =>
                 track.kind == MediaKind.track &&

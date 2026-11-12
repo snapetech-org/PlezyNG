@@ -143,7 +143,52 @@ const _testIdentity = DeviceIdentity(platform: 'Test');
 void main() {
   for (final emby in [false, true]) {
     for (final kind in [MediaKind.album, MediaKind.artist]) {
-      test('music page preserves $kind credits and bounds (emby=$emby)', () async {
+      for (final scoped in [false, true]) {
+        test('music page preserves $kind credits, library and bounds (emby=$emby, scoped=$scoped)', () async {
+          final requests = <Uri>[];
+          final client = JellyfinClient.forTesting(
+            connection: emby ? testEmbyConnection() : _conn(),
+            httpClient: MockClient((request) async {
+              requests.add(request.url);
+              return jsonResponse({
+                'Items': [
+                  {'Id': 't', 'Name': 'Track', 'Type': 'Audio', 'AlbumId': 'parent'},
+                ],
+                'TotalRecordCount': 10000,
+              });
+            }),
+          );
+          addTearDown(client.close);
+          for (final offset in [200, 400]) {
+            final page = await client.fetchMusicTracksPage(
+              'parent',
+              kind: kind,
+              libraryId: scoped ? 'music-library' : null,
+              start: offset,
+              size: 200,
+            );
+            final query = requests.last.queryParameters;
+            expect(query['IncludeItemTypes'], 'Audio');
+            expect(query[kind == MediaKind.album ? 'AlbumIds' : 'AlbumArtistIds'], 'parent');
+            expect(query['ParentId'], scoped ? 'music-library' : null);
+            expect(query['Recursive'], 'true');
+            expect(query['StartIndex'], '$offset');
+            expect(query['Limit'], '200');
+            expect(query['SortBy'], contains('ParentIndexNumber,IndexNumber'));
+            expect(page.offset, offset);
+            expect(page.totalCount, 10000);
+            expect(page.items.single.kind, MediaKind.track);
+            expect(page.items.single.parentId, 'parent');
+            expect(page.items.single.libraryId, scoped ? 'music-library' : null);
+          }
+        });
+      }
+    }
+  }
+
+  for (final emby in [false, true]) {
+    for (final scoped in [false, true]) {
+      test('artist album pages retain explicit library context (emby=$emby, scoped=$scoped)', () async {
         final requests = <Uri>[];
         final client = JellyfinClient.forTesting(
           connection: emby ? testEmbyConnection() : _conn(),
@@ -151,24 +196,37 @@ void main() {
             requests.add(request.url);
             return jsonResponse({
               'Items': [
-                {'Id': 't', 'Name': 'Track', 'Type': 'Audio'},
+                {'Id': 'album', 'Name': 'Album', 'Type': 'MusicAlbum'},
               ],
-              'TotalRecordCount': 10000,
+              'TotalRecordCount': 200,
             });
           }),
         );
         addTearDown(client.close);
-        final page = await client.fetchMusicTracksPage('parent', kind: kind, start: 200, size: 200);
-        final query = requests.single.queryParameters;
-        expect(query['IncludeItemTypes'], 'Audio');
-        expect(query[kind == MediaKind.album ? 'AlbumIds' : 'AlbumArtistIds'], 'parent');
-        expect(query.containsKey('ParentId'), isFalse);
-        expect(query['StartIndex'], '200');
-        expect(query['Limit'], '200');
-        expect(query['SortBy'], contains('ParentIndexNumber,IndexNumber'));
-        expect(page.offset, 200);
-        expect(page.totalCount, 10000);
-        expect(page.items.single.kind, MediaKind.track);
+        final artist = testMediaItem(
+          id: 'artist',
+          backend: emby ? MediaBackend.emby : MediaBackend.jellyfin,
+          kind: MediaKind.artist,
+          libraryId: scoped ? 'music-library' : null,
+          libraryTitle: scoped ? 'Music' : null,
+        );
+        for (final offset in [0, 100]) {
+          final page = await client.fetchArtistAlbumsPage(artist, start: offset, size: 100);
+          expect(page.offset, offset);
+          expect(page.items.single.libraryId, scoped ? 'music-library' : null);
+          expect(page.items.single.libraryTitle, scoped ? 'Music' : null);
+        }
+        client.setOfflineMode(true);
+        final offlinePage = await client.fetchArtistAlbumsPage(artist, start: 0, size: 100);
+        expect(offlinePage.items.single.libraryId, scoped ? 'music-library' : null);
+        expect(offlinePage.items.single.libraryTitle, scoped ? 'Music' : null);
+        expect(requests, hasLength(3));
+        for (final request in requests) {
+          expect(request.path, '/Items');
+          expect(request.queryParameters['AlbumArtistIds'], 'artist');
+          expect(request.queryParameters['Recursive'], 'true');
+          expect(request.queryParameters['ParentId'], scoped ? 'music-library' : null);
+        }
       });
     }
   }

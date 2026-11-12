@@ -69,7 +69,13 @@ Future<List<MediaItem>> buildSonicAlbumRadio({
       verify();
       final remaining = limit - result.length;
       final size = remaining.clamp(1, 200);
-      final page = await client.fetchMusicTracksPage(album.id, kind: MediaKind.album, start: start, size: size);
+      final page = await client.fetchMusicTracksPage(
+        album.id,
+        kind: MediaKind.album,
+        libraryId: album.libraryId,
+        start: start,
+        size: size,
+      );
       verify();
       if (!validAlbum(album) ||
           page.offset != start ||

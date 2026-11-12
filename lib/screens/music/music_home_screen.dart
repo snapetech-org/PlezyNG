@@ -206,6 +206,7 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
           online,
           parentId,
           kind: kind,
+          libraryId: seed.libraryId,
           current: current,
           acceptsItem: (item) =>
               scope.ownsTrack(item) &&

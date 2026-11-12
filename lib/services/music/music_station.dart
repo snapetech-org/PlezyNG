@@ -224,6 +224,7 @@ class MusicStation {
             ? await _fetchStationAlbumTracks(
                 client,
                 item.id,
+                libraryId: libraryId,
                 maxTracks: trackLimit - result.length,
                 abort: abort,
                 checkCurrent: checkCurrent,
@@ -306,6 +307,7 @@ class MusicStationBatch {
 Future<List<MediaItem>?> _fetchStationAlbumTracks(
   MediaServerClient client,
   String albumId, {
+  required String libraryId,
   required int maxTracks,
   required AbortController? abort,
   required void Function() checkCurrent,
@@ -319,6 +321,7 @@ Future<List<MediaItem>?> _fetchStationAlbumTracks(
     final page = await client.fetchMusicTracksPage(
       albumId,
       kind: MediaKind.album,
+      libraryId: libraryId,
       start: offset,
       size: pageSize,
       abort: abort,

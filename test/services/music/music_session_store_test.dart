@@ -547,7 +547,11 @@ void main() {
     expect(loaded.queue.items, hasLength(10000));
     expect(
       scratch.listSync().map((entry) => entry.path.split('/').last),
-      unorderedEquals([startsWith('pleazyng-music-queue-'), startsWith('pleazyng-music-order-')]),
+      unorderedEquals([
+        startsWith('pleazyng-music-queue-'),
+        startsWith('pleazyng-music-index-'),
+        startsWith('pleazyng-music-order-'),
+      ]),
     );
     expect(loaded.queue.order, order);
     expect(loaded.queue.cursor, 700);

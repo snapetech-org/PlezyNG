@@ -585,6 +585,7 @@ class FakeMediaServerClient extends Fake
   Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
     String id, {
     required MediaKind kind,
+    String? libraryId,
     int? start,
     int? size,
     AbortController? abort,

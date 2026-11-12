@@ -282,6 +282,7 @@ Future<void> playTrackWithAlbumContext(BuildContext context, MediaItem track, {b
         client,
         albumId,
         kind: MediaKind.album,
+        libraryId: track.libraryId,
         current: current,
         acceptsItem: (item) => scope.ownsAlbumTrack(item, albumId),
       );

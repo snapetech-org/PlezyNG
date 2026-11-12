@@ -193,15 +193,52 @@ class CatalogClient extends ExperienceClient {
   int reads = 0;
   Future<LibraryPage<MediaItem>> Function(int start, int size)? tracksPage;
   @override
+  Future<List<MediaItem>> fetchArtistAlbums(MediaItem artist) async => albums[artist.id] ?? [];
+  @override
   Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
     String id, {
     required MediaKind kind,
+    String? libraryId,
     int? start,
     int? size,
     AbortController? abort,
   }) async {
     reads++;
     return tracksPage!(start ?? 0, size ?? 200);
+  }
+}
+
+class MediaBrowserCatalogClient extends CatalogClient {
+  MediaBrowserCatalogClient(this.backend);
+  @override
+  final MediaBackend backend;
+  String? trackLibrary;
+  @override
+  Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
+    String id, {
+    required MediaKind kind,
+    String? libraryId,
+    int? start,
+    int? size,
+    AbortController? abort,
+  }) async {
+    trackLibrary = libraryId;
+    final page = await super.fetchMusicTracksPage(
+      id,
+      kind: kind,
+      libraryId: libraryId,
+      start: start,
+      size: size,
+      abort: abort,
+    );
+    return LibraryPage(
+      items: [
+        for (final item in page.items)
+          item.libraryId == null && libraryId != null ? item.copyWith(libraryId: libraryId) : item,
+      ],
+      totalCount: page.totalCount,
+      offset: page.offset,
+    );
   }
 }
 
@@ -831,6 +868,154 @@ void main() {
       music.dispose();
       profiles.dispose();
       downloads.dispose();
+      hidden.dispose();
+      libraries.dispose();
+    });
+  }
+
+  testWidgets('native artist pages reject foreign identities and keep the raw pagination cursor', (tester) async {
+    final music = Music(), profiles = Profiles(), client = CatalogClient();
+    final hidden = CatalogHidden(), libraries = CatalogLibraries();
+    final servers = testMultiServer(clients: [client]);
+    final artist = musicTrack('artist').copyWith(kind: MediaKind.artist);
+    client.page = (_) async => LibraryPage(
+      items: [
+        artist,
+        artist.copyWith(id: 'foreign-server', serverId: 'other'),
+        artist.copyWith(id: 'foreign-library', libraryId: 'other'),
+        MediaItem.fromJson({...artist.toJson(), 'id': 'unqualified', 'libraryId': null}),
+        MediaItem.fromJson({...artist.toJson(), 'id': 'foreign-backend', 'backend': 'jellyfin'}),
+        artist.copyWith(id: 'wrong-kind', kind: MediaKind.movie),
+        artist.copyWith(id: ''),
+      ],
+      totalCount: 1000,
+    );
+    await mount(tester, music, profiles, servers: servers.provider, hidden: hidden, libraries: libraries);
+    final rows = await native('browse', {'id': 'library:s:library'}) as List;
+    expect(rows, hasLength(2));
+    expect(rows.first['title'], artist.displayTitle);
+    expect(rows.last['id'], startsWith('page:7:'));
+    await tester.pumpWidget(const SizedBox());
+    music.dispose();
+    profiles.dispose();
+    hidden.dispose();
+    libraries.dispose();
+  });
+
+  testWidgets('native artist pagination rejects a mismatched server offset', (tester) async {
+    final music = Music(), profiles = Profiles(), client = CatalogClient();
+    final hidden = CatalogHidden(), libraries = CatalogLibraries();
+    final servers = testMultiServer(clients: [client]);
+    client.page = (_) async =>
+        LibraryPage(items: [musicTrack('artist').copyWith(kind: MediaKind.artist)], offset: 2, totalCount: 3);
+    await mount(tester, music, profiles, servers: servers.provider, hidden: hidden, libraries: libraries);
+    await expectLater(native('browse', {'id': 'library:s:library'}), throwsA(isA<PlatformException>()));
+    await tester.pumpWidget(const SizedBox());
+    music.dispose();
+    profiles.dispose();
+    hidden.dispose();
+    libraries.dispose();
+  });
+
+  testWidgets('native artist pages retire when their library disappears during the read', (tester) async {
+    final music = Music(), profiles = Profiles(), client = CatalogClient();
+    final hidden = CatalogHidden(), libraries = CatalogLibraries();
+    final servers = testMultiServer(clients: [client]);
+    client.page = (_) async {
+      libraries.libraries.clear();
+      return LibraryPage(items: [musicTrack('artist').copyWith(kind: MediaKind.artist)], totalCount: 1);
+    };
+    await mount(tester, music, profiles, servers: servers.provider, hidden: hidden, libraries: libraries);
+    expect(await native('browse', {'id': 'library:s:library'}), isEmpty);
+    await tester.pumpWidget(const SizedBox());
+    music.dispose();
+    profiles.dispose();
+    hidden.dispose();
+    libraries.dispose();
+  });
+
+  testWidgets('native descendants retain the original library, backend, kind and album parent', (tester) async {
+    final music = Music(), profiles = Profiles(), client = CatalogClient();
+    final hidden = CatalogHidden(), libraries = CatalogLibraries();
+    final servers = testMultiServer(clients: [client]);
+    client.rows = [musicTrack('artist').copyWith(kind: MediaKind.artist)];
+    final album = musicTrack('album').copyWith(kind: MediaKind.album);
+    client.albums['artist'] = [
+      album,
+      album.copyWith(id: 'foreign-album', libraryId: 'other'),
+      album.copyWith(id: 'wrong-kind', kind: MediaKind.movie),
+    ];
+    final track = musicTrack('track', album: 'album');
+    client.tracksPage = (_, _) async => LibraryPage(
+      items: [
+        track,
+        track.copyWith(id: 'foreign-track', libraryId: 'other'),
+        MediaItem.fromJson({...track.toJson(), 'id': 'foreign-backend', 'backend': 'jellyfin'}),
+        track.copyWith(id: 'wrong-album', parentId: 'other'),
+      ],
+      totalCount: 4,
+    );
+    await mount(tester, music, profiles, servers: servers.provider, hidden: hidden, libraries: libraries);
+    final artists = await native('browse', {'id': 'library:s:library'}) as List;
+    final albums = await native('browse', {'id': artists.single['id']}) as List;
+    expect(albums, hasLength(1));
+    expect(albums.single['title'], album.displayTitle);
+    final tracks = await native('browse', {'id': albums.single['id']}) as List;
+    expect(tracks, hasLength(1));
+    expect(tracks.single['title'], track.displayTitle);
+    await tester.pumpWidget(const SizedBox());
+    music.dispose();
+    profiles.dispose();
+    hidden.dispose();
+    libraries.dispose();
+  });
+
+  for (final backend in [MediaBackend.jellyfin, MediaBackend.emby]) {
+    testWidgets('native $backend browsing retains scoped artist and album context', (tester) async {
+      final music = Music(), profiles = Profiles(), client = MediaBrowserCatalogClient(backend);
+      final hidden = CatalogHidden(), libraries = CatalogLibraries();
+      libraries.libraries
+        ..clear()
+        ..add(MediaLibrary(id: 'library', title: 'Music', backend: backend, kind: MediaKind.artist, serverId: 's'));
+      final servers = testMultiServer(clients: [client]);
+      MediaItem row(String id, MediaKind kind, {String? library, String? parent}) => MediaItem.fromJson({
+        ...musicTrack(id).toJson(),
+        'backend': backend.id,
+        'kind': kind.name,
+        'libraryId': library,
+        'parentId': parent,
+      });
+      client.rows = [row('artist', MediaKind.artist)];
+      // The artist-album client retains its explicit ParentId library request.
+      client.albums['artist'] = [row('album', MediaKind.album, library: 'library')];
+      client.tracksPage = (_, _) async => LibraryPage(
+        items: [
+          row('track', MediaKind.track, parent: 'album'),
+          row('wrong-album', MediaKind.track, parent: 'other'),
+          row('foreign-track', MediaKind.track, parent: 'album', library: 'other'),
+        ],
+        totalCount: 3,
+      );
+      await mount(tester, music, profiles, servers: servers.provider, hidden: hidden, libraries: libraries);
+      final artists = await native('browse', {'id': 'library:s:library'}) as List;
+      expect(artists, hasLength(1));
+      final albums = await native('browse', {'id': artists.single['id']}) as List;
+      expect(albums, hasLength(1));
+      final tracks = await native('browse', {'id': albums.single['id']}) as List;
+      expect(tracks, hasLength(1));
+      expect(tracks.single['title'], 'track');
+      expect(client.trackLibrary, 'library');
+      client.tracksPage = (_, _) async =>
+          LibraryPage(items: [row('track', MediaKind.track, parent: 'album')], totalCount: 1);
+      await native('playItem', {'id': albums.single['id']});
+      expect(music.started?.single.id, 'track');
+      expect(music.started?.single.libraryId, 'library');
+      libraries.libraries.clear();
+      expect(await native('browse', {'id': albums.single['id']}), isEmpty);
+      expect(await native('playItem', {'id': albums.single['id']}), isFalse);
+      await tester.pumpWidget(const SizedBox());
+      music.dispose();
+      profiles.dispose();
       hidden.dispose();
       libraries.dispose();
     });

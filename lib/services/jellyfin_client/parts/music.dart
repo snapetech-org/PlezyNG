@@ -7,7 +7,8 @@ part of '../../jellyfin_client.dart';
 mixin _JellyfinMusicMethods on _JellyfinClientInternals {
   /// Albums credited to [artist], newest first. Queries `AlbumArtistIds`
   /// rather than `ParentId` because Jellyfin links albums to artists via
-  /// tags — an artist's albums are usually not its folder children.
+  /// tags — an artist's albums are usually not its folder children. A known
+  /// library remains an independent ParentId constraint, including on refills.
   @override
   Future<List<MediaItem>> fetchArtistAlbums(MediaItem artist) {
     if (isOfflineMode) return _fetchArtistAlbumsUnpaged(artist);
@@ -23,6 +24,7 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
       queryParameters: {
         'userId': connection.userId,
         'AlbumArtistIds': artist.id,
+        if (artist.libraryId != null) 'ParentId': artist.libraryId,
         'IncludeItemTypes': 'MusicAlbum',
         'Recursive': 'true',
         'SortBy': 'PremiereDate,ProductionYear,SortName',
@@ -33,7 +35,15 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
       },
     );
     throwIfHttpError(response);
-    return _mapItems(_itemsArray(response.data));
+    return _artistAlbumsInLibrary(_itemsArray(response.data), artist);
+  }
+
+  List<MediaItem> _artistAlbumsInLibrary(Iterable<Map<String, dynamic>> rows, MediaItem artist) {
+    final albums = _mapItems(rows);
+    if (artist.libraryId == null) return albums;
+    // Item DTOs have no CollectionFolder field. Only the explicit ParentId
+    // request above authorizes this stamp; unscoped artist reads stay unscoped.
+    return [for (final album in albums) album.copyWith(libraryId: artist.libraryId, libraryTitle: artist.libraryTitle)];
   }
 
   @override
@@ -56,6 +66,7 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
       queryParameters: {
         'userId': connection.userId,
         'AlbumArtistIds': artist.id,
+        if (artist.libraryId != null) 'ParentId': artist.libraryId,
         'IncludeItemTypes': 'MusicAlbum',
         'Recursive': 'true',
         'SortBy': 'PremiereDate,ProductionYear,SortName',
@@ -69,7 +80,12 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
       abort: abort,
     );
     throwIfHttpError(response);
-    return _pagedItems(response.data, offset: offset, requestedSize: pageSize, map: _mapItems);
+    return _pagedItems(
+      response.data,
+      offset: offset,
+      requestedSize: pageSize,
+      map: (rows) => _artistAlbumsInLibrary(rows, artist),
+    );
   }
 
   /// MediaBrowser `BaseItemDto`s carry no single/EP/live/compilation
@@ -108,6 +124,7 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
   Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
     String parentId, {
     required MediaKind kind,
+    String? libraryId,
     int? start,
     int? size,
     AbortController? abort,
@@ -116,10 +133,14 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
       throw ArgumentError.value(kind, 'kind', 'Expected an album or artist');
     }
     final offset = start ?? 0, pageSize = size ?? 200;
+    if (offset < 0 || pageSize < 1 || pageSize > 1000 || libraryId != null && libraryId.isEmpty) {
+      throw ArgumentError('Invalid music track page bounds or library');
+    }
     final response = await _http.get(
       '/Items',
       queryParameters: {
         'userId': connection.userId,
+        'ParentId': ?libraryId,
         if (kind == MediaKind.album) 'AlbumIds': parentId else 'AlbumArtistIds': parentId,
         'IncludeItemTypes': 'Audio',
         'Recursive': 'true',
@@ -136,7 +157,14 @@ mixin _JellyfinMusicMethods on _JellyfinClientInternals {
       abort: abort,
     );
     throwIfHttpError(response);
-    return _pagedItems(response.data, offset: offset, requestedSize: pageSize, map: _mapItems);
+    return _pagedItems(
+      response.data,
+      offset: offset,
+      requestedSize: pageSize,
+      map: (rows) => [
+        for (final item in _mapItems(rows)) libraryId == null ? item : item.copyWith(libraryId: libraryId),
+      ],
+    );
   }
 
   /// Server-built radio seeded from a track/album/artist/playlist id.

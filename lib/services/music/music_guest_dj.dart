@@ -223,6 +223,7 @@ class MusicGuestDj extends ChangeNotifier {
             final page = await client.fetchMusicTracksPage(
               seed.grandparentId!,
               kind: MediaKind.artist,
+              libraryId: seed.libraryId,
               start: offset,
               size: pageSize,
             );

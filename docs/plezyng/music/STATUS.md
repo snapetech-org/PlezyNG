@@ -6,6 +6,27 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 “Existing” means retained application behavior, not a new reference comparison.
 “Partial” identifies concrete remaining implementation, not just testing.
 
+## Native catalog source ownership, 2026-11-12
+
+Car and voice catalogs now reject explicit foreign server, library, backend,
+kind and album-parent identities before issuing native references. Removed or
+hidden libraries retire pending pages and retained descendants; raw pagination
+cursors remain correct when invalid rows are filtered. MediaBrowser artists
+retain the explicitly requested library. Artist album pages independently
+constrain that library while preserving AlbumArtistIds credit semantics, and
+album tracks retain library context only after exact-parent validation.
+All paged album/artist playback, discovery, station, navigation and link entry
+points now pass their known library to MediaBrowser track requests. Credit
+filters remain intact and returned rows still undergo ordinary source checks.
+Unscoped artist reads remain unscoped.
+
+Validation: **1,428 music, car, transport, link and profile tests** pass with clean
+strict targeted analysis. This includes Plex missing/foreign identities,
+malformed cursors, retained-library retirement, actual browse-to-play flows and
+Jellyfin/Emby scoped, unscoped and offline mapping. The large-queue persistence
+fixture also recognizes the concurrent bounded scratch index. Physical vehicle and live provider qualification remain separate.
+API: [Jellyfin GetItems request](https://typescript-sdk.jellyfin.org/interfaces/generated-client.LibraryApiGetItemsRequest.html).
+
 ## Rolling filtered stations, 2026-11-12
 
 Saved library stations now offer explicit continuous online playback. Refills

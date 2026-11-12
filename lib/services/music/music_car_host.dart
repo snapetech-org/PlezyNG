@@ -371,7 +371,21 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   bool _catalogItemCurrent(String id) {
     final owner = _authorizations[id];
     if (!_current || owner == null || owner.generation != _profiles.identityMutationGeneration) return false;
-    final client = owner.client;
+    final client = owner.client, item = _items[id];
+    if (client != null && !client.isOfflineMode && item?.libraryId != null && item!.kind != MediaKind.playlist) {
+      final libraries = context.read<LibrariesProvider?>();
+      if (libraries != null &&
+          (libraries.isDisposed ||
+              !libraries.libraries.any(
+                (library) =>
+                    library.serverId == item.serverId &&
+                    library.id == item.libraryId &&
+                    library.backend == item.backend &&
+                    !library.hidden,
+              ))) {
+        return false;
+      }
+    }
     return client == null ||
         _clientCurrent(client, owner.authentication!) && owner.account == musicAccountScope(client);
   }
@@ -656,6 +670,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
                   client!,
                   item.id,
                   kind: item.kind,
+                  libraryId: item.libraryId,
                   current: current,
                   acceptsItem: scope.ownsTrack,
                 )
@@ -889,7 +904,13 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       if (!current()) return [];
       return [
         ...page.items
-            .where((p) => p.playlistType == 'audio' && (p.serverId == null || p.serverId == client.serverId.value))
+            .where(
+              (p) =>
+                  p.playlistType == 'audio' &&
+                  p.backend == client.backend &&
+                  p.id.isNotEmpty &&
+                  (p.serverId == null || p.serverId == client.serverId.value),
+            )
             .map(
               (p) => _item(
                 MediaItem.fromJson({
@@ -934,8 +955,13 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     final hidden = context.read<HiddenLibrariesProvider>();
     await hidden.ensureInitialized();
     if (!mounted || !_current) return [];
-    final libraries = context.read<LibrariesProvider>().libraries.where(
-      (library) => library.kind == MediaKind.artist && !hidden.hiddenLibraryKeys.contains(library.globalKey),
+    final libraryProvider = context.read<LibrariesProvider>();
+    final libraries = libraryProvider.libraries.where(
+      (library) =>
+          library.kind == MediaKind.artist &&
+          library.serverId != null &&
+          !library.hidden &&
+          !hidden.hiddenLibraryKeys.contains(library.globalKey),
     );
     if (id == 'serverRadio') {
       final manager = context.read<MultiServerProvider>().serverManager;
@@ -965,8 +991,17 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       if (found.isEmpty) return [];
       final library = found.first;
       final client = context.read<MultiServerProvider>().getClientForServer(ServerId(library.serverId!));
-      if (client == null) return [];
-      final current = _readClient(client);
+      if (client == null || client.backend != library.backend || client.isOfflineMode) return [];
+      final ownerCurrent = _readClient(client);
+      bool current() =>
+          ownerCurrent() &&
+          !libraryProvider.isDisposed &&
+          !hidden.isDisposed &&
+          !hidden.hiddenLibraryKeys.contains(library.globalKey) &&
+          libraryProvider.libraries.any(
+            (row) => row.globalKey == library.globalKey && row.backend == client.backend && !row.hidden,
+          );
+      if (!current()) return [];
       final page = await client.fetchLibraryPagedContent(
         library.id,
         query: LibraryQuery(
@@ -976,11 +1011,26 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           sort: const LibrarySort(field: 'title', direction: LibrarySortDirection.ascending),
         ),
       );
-      if (!current() || hidden.hiddenLibraryKeys.contains(library.globalKey)) {
-        return [];
+      if (!current()) return [];
+      if (page.offset != offset ||
+          page.items.length > _pageSize ||
+          page.totalCount < offset + page.items.length ||
+          page.items.isEmpty && page.totalCount > offset) {
+        throw const FormatException('Invalid music car artist page');
       }
       return [
-        ...page.items.map(_item),
+        ...page.items
+            .where(
+              (row) =>
+                  row.kind == MediaKind.artist &&
+                  row.id.isNotEmpty &&
+                  row.backend == client.backend &&
+                  row.serverId == library.serverId &&
+                  (row.libraryId == library.id || row.libraryId == null && client.backend.usesMediaBrowserApi),
+            )
+            // MediaBrowser artist DTOs omit library identity. This request
+            // explicitly selected the visible library, so retain that context.
+            .map((row) => _item(row.libraryId == null ? row.copyWith(libraryId: library.id) : row)),
         if (page.items.isNotEmpty && offset + page.items.length < page.totalCount)
           _nextPage(id, offset + page.items.length),
       ];
@@ -993,11 +1043,34 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')) {
       return [];
     }
+    bool itemCurrent() =>
+        _catalogItemCurrent(id) &&
+        !hidden.isDisposed &&
+        !hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}') &&
+        (item.kind == MediaKind.playlist ||
+            !libraryProvider.isDisposed &&
+                libraryProvider.libraries.any(
+                  (library) =>
+                      library.serverId == item.serverId &&
+                      library.id == item.libraryId &&
+                      library.backend == item.backend &&
+                      !library.hidden,
+                ));
     bool visibleChild(MediaItem child) =>
-        child.serverId == item.serverId && !hidden.hiddenLibraryKeys.contains('${child.serverId}:${child.libraryId}');
+        child.id.isNotEmpty &&
+        child.backend == client.backend &&
+        child.serverId == item.serverId &&
+        (item.kind == MediaKind.playlist ||
+            child.libraryId == item.libraryId ||
+            item.kind == MediaKind.album &&
+                child.libraryId == null &&
+                client.backend.usesMediaBrowserApi &&
+                child.parentId == item.id) &&
+        !hidden.hiddenLibraryKeys.contains('${child.serverId}:${child.libraryId}');
+    if (!itemCurrent()) return [];
     if (item.kind == MediaKind.playlist) {
       final page = await client.fetchPlaylistPage(item.id, start: offset, size: _pageSize - 1);
-      if (!_catalogItemCurrent(id)) return [];
+      if (!itemCurrent()) return [];
       if (page.offset != offset ||
           page.items.length > _pageSize - 1 ||
           page.totalCount < offset + page.items.length ||
@@ -1023,11 +1096,17 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         page = LibraryPage(items: albums.sublist(safeOffset, end), totalCount: albums.length, offset: offset);
       }
     } else if (item.kind == MediaKind.album) {
-      page = await client.fetchMusicTracksPage(item.id, kind: MediaKind.album, start: offset, size: _pageSize);
+      page = await client.fetchMusicTracksPage(
+        item.id,
+        kind: MediaKind.album,
+        libraryId: item.libraryId,
+        start: offset,
+        size: _pageSize,
+      );
     } else {
       return [];
     }
-    if (!_catalogItemCurrent(id)) return [];
+    if (!itemCurrent()) return [];
     if (page.offset != offset ||
         page.items.length > _pageSize ||
         page.totalCount < offset + page.items.length ||
@@ -1035,7 +1114,17 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       throw const FormatException('Invalid music car catalog page');
     }
     return [
-      ...page.items.where(visibleChild).map(_item),
+      ...page.items
+          .where(
+            (child) =>
+                visibleChild(child) &&
+                (item.kind == MediaKind.artist
+                    ? child.kind == MediaKind.album
+                    : child.kind == MediaKind.track && child.parentId == item.id),
+          )
+          // AlbumIds scopes MediaBrowser tracks to this authorized album.
+          // Preserve its library after checking the exact parent above.
+          .map((child) => _item(child.libraryId == null ? child.copyWith(libraryId: item.libraryId) : child)),
       if (page.items.isNotEmpty && offset + page.items.length < page.totalCount)
         _nextPage(id, offset + page.items.length),
     ];

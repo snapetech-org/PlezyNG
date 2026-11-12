@@ -106,6 +106,7 @@ class _AlbumDetailScreenState extends BaseMediaListDetailScreen<AlbumDetailScree
       client,
       widget.album.id,
       kind: MediaKind.album,
+      libraryId: widget.album.libraryId,
       current: () => scope.current,
       acceptsItem: scope.ownsTrack,
     );

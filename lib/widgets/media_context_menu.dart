@@ -1532,7 +1532,14 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       if (!scope.ownsTrack(item)) throw StateError('Music track source retired');
       return [item];
     }
-    return fetchMusicTracks(client, item.id, kind: item.kind, current: currentSource, acceptsItem: scope.ownsTrack);
+    return fetchMusicTracks(
+      client,
+      item.id,
+      kind: item.kind,
+      libraryId: item.libraryId,
+      current: currentSource,
+      acceptsItem: scope.ownsTrack,
+    );
   }
 
   Future<void> _handleMusicPlay(BuildContext context) async {

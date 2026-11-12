@@ -4072,6 +4072,7 @@ class PlexClient
   Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
     String parentId, {
     required MediaKind kind,
+    String? libraryId,
     int? start,
     int? size,
     AbortController? abort,

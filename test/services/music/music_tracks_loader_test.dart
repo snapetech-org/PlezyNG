@@ -10,16 +10,19 @@ import '../../test_helpers/music_experience_fakes.dart';
 
 class _Pages extends ExperienceClient {
   int reads = 0;
+  final libraries = <String?>[];
   late Future<LibraryPage<MediaItem>> Function(int start, int size) pageSource;
   @override
   Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
     String id, {
     required MediaKind kind,
+    String? libraryId,
     int? start,
     int? size,
     AbortController? abort,
   }) {
     reads++;
+    libraries.add(libraryId);
     return pageSource(start ?? 0, size ?? 200);
   }
 }
@@ -35,10 +38,18 @@ void main() {
         totalCount: 10000,
         offset: start,
       );
-      final items = await fetchMusicTracks(client, 'container', kind: kind, current: () => true, acceptsItem: accepts);
+      final items = await fetchMusicTracks(
+        client,
+        'container',
+        kind: kind,
+        libraryId: 'library',
+        current: () => true,
+        acceptsItem: accepts,
+      );
       expect(items, isA<MusicQueueItemsSnapshot>());
       expect(items.length, 10000);
       expect(client.reads, 50);
+      expect(client.libraries, List.filled(50, 'library'));
       expect(items.first.id, 't0-0');
       expect(items.last.id, 't9800-9');
       expect((items as MusicQueueItemsSnapshot).occurrenceAt(0), isNot(same(items.occurrenceAt(10))));

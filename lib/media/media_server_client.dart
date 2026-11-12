@@ -354,9 +354,12 @@ abstract class MediaServerClient {
 
   /// Bounded track admission for an album or artist. Results keep the backend's
   /// album/disc ordering and music-credit semantics; never video descendants.
+  /// [libraryId] additionally constrains MediaBrowser credit queries and stamps
+  /// their otherwise libraryless DTOs. Callers still validate every returned row.
   Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
     String parentId, {
     required MediaKind kind,
+    String? libraryId,
     int? start,
     int? size,
     AbortController? abort,

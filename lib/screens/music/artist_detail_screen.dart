@@ -109,6 +109,7 @@ class _ArtistDetailScreenState extends BaseMediaListDetailScreen<ArtistDetailScr
           client,
           widget.artist.id,
           kind: MediaKind.artist,
+          libraryId: widget.artist.libraryId,
           current: current,
           acceptsItem: scope!.ownsTrack,
         );

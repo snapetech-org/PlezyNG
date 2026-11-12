@@ -1,3 +1,4 @@
+import '../../test_helpers/native_music_socket_lease.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -133,6 +134,7 @@ Future<void> until(bool Function() predicate) async {
 }
 
 Future<void> main() async {
+  useNativeMusicSocketLease();
   final addresses = (await NetworkInterface.list(type: InternetAddressType.IPv4))
       .expand((interface) => interface.addresses)
       .where(CalderaNode.privateAddress)

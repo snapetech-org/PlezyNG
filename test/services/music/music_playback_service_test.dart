@@ -1,3 +1,4 @@
+import '../../test_helpers/native_music_socket_lease.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
@@ -1004,6 +1005,7 @@ class _AgentLaunchHarness {
 }
 
 void main() {
+  useNativeMusicSocketLease();
   // The impl registers a HardwareKeyboard handler for foreground media keys
   // (#1948), which needs the services binding.
   TestWidgetsFlutterBinding.ensureInitialized();

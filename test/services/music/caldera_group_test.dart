@@ -1,3 +1,4 @@
+import '../../test_helpers/native_music_socket_lease.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -26,6 +27,7 @@ Map<String, dynamic> _beacon(String address, {int version = 1}) => {
 };
 
 void main() {
+  useNativeMusicSocketLease();
   test('native mesh frames handle concatenated objects and escaped delimiters with bounds', () {
     expect(CalderaGroupClient.meshMessages('{"data":"{a}"}{"data":"ping"}'), [
       {'data': '{a}'},

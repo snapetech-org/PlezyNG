@@ -1,3 +1,4 @@
+import '../../test_helpers/native_music_socket_lease.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -51,6 +52,7 @@ Future<void> until(bool Function() predicate) async {
 }
 
 void main() {
+  useNativeMusicSocketLease();
   test('membership validates bounded unique UUIDs and canonicalizes only equality', () {
     expect(CalderaMembership(first, [own, first]).key, CalderaMembership(first, [first, own]).key);
     expect(

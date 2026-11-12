@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Isolate native music socket fixtures across parallel test processes and inject the independent source-speaker decoder in output EQ tests.
+
 - Hold the music play/pause control to stop the shared session from Now Playing, the mini-player or driving view. Keep taps and keyboard selection on play/pause, suppress accidental card actions, and announce the hold action to screen readers.
 
 - Serialize native music group joins, replacements and departures so a new source waits for the retiring speaker, capture lease and Companion listener. Rejoining during a slow output close no longer collides with the old port or disables the replacement capture.

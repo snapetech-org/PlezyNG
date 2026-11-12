@@ -1,3 +1,4 @@
+import '../../test_helpers/native_music_socket_lease.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -207,6 +208,7 @@ class _LocalOutput implements CalderaAudioOutput {
 }
 
 void main() {
+  useNativeMusicSocketLease();
   for (final width in [2, 6, 8]) {
     test('source speaker renders the same gain-qualified PCM beside $width-channel peers', () async {
       final f = _Fixture()..channels = width;

@@ -1,3 +1,4 @@
+import '../../test_helpers/native_music_socket_lease.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
@@ -60,11 +61,13 @@ class EqPlayer extends FakePlayer implements AudioEqualizerCapable, MusicPcmCapt
 }
 
 void main() {
+  useNativeMusicSocketLease();
   TestWidgetsFlutterBinding.ensureInitialized();
   late AppDatabase database;
   late MusicLibraryStore store;
   late MusicPlaybackServiceImpl music;
   late EqPlayer player;
+  late EqPlayer groupOutput;
   late MultiServerManager servers;
   late FakeMediaControlsManager controls;
   setUp(() async {
@@ -74,6 +77,7 @@ void main() {
     database = AppDatabase.forTesting(NativeDatabase.memory());
     store = MusicLibraryStore(database, 'p');
     player = EqPlayer();
+    groupOutput = EqPlayer();
     final client = FakeMediaServerClient();
     servers = MultiServerManager()..debugRegisterClientForTesting(client);
     controls = FakeMediaControlsManager();
@@ -82,6 +86,7 @@ void main() {
       libraryStore: store,
       resolver: FakeMusicSourceResolver(client: client),
       audioPlayerFactory: () => player,
+      nativeGroupOutputFactory: () => groupOutput,
       mediaControlsFactory: () => controls,
       volumePersistenceWriter: (_) async {},
     );
@@ -92,6 +97,7 @@ void main() {
     music.dispose();
     await pumpEventQueue();
     player.closeControllers();
+    groupOutput.closeControllers();
     controls.closeControllers();
     servers.dispose();
     await database.close();

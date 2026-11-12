@@ -1,3 +1,4 @@
+import '../../test_helpers/native_music_socket_lease.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -102,6 +103,7 @@ class _ClockOutput extends _Output implements CalderaAudioClockOutput {
 }
 
 void main() {
+  useNativeMusicSocketLease();
   test('jitter window reorders PCM, conceals exact gaps and drops replays/overlap', () {
     final buffer = XitaJitterBuffer(descriptor());
     expect(buffer.add(audio(0), 0), isTrue);

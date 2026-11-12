@@ -205,7 +205,31 @@ class MusicGuestDj extends ChangeNotifier {
       case MusicDjMode.twofer:
       case MusicDjMode.groupie:
         if (seed.grandparentId == null) throw UnsupportedError('Artist identity unavailable');
-        return client.fetchPlayableDescendants(seed.grandparentId!);
+        final epoch = _epoch;
+        const candidateLimit = 100;
+        final page = await client
+            .fetchMusicTracksPage(
+              seed.grandparentId!,
+              kind: MediaKind.artist,
+              start: 0,
+              size: candidateLimit,
+            )
+            .timeout(const Duration(seconds: 15));
+        if (_disposed || epoch != _epoch) return [];
+        if (page.offset != 0 ||
+            page.items.length > candidateLimit ||
+            page.totalCount < page.items.length ||
+            page.items.isEmpty && page.totalCount > 0) {
+          throw const FormatException('Invalid Guest DJ artist page');
+        }
+        return page.items
+            .where(
+              (item) =>
+                  item.kind == MediaKind.track &&
+                  item.serverId == seed.serverId &&
+                  (seed.libraryId == null || item.libraryId == null || item.libraryId == seed.libraryId),
+            )
+            .toList();
       case MusicDjMode.contempo:
         if (seed.libraryId == null || seed.year == null) throw UnsupportedError('Track era unavailable');
         final page = await client.fetchLibraryPagedContent(

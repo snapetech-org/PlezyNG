@@ -1,5 +1,4 @@
 import '../../widgets/music/music_server_shelves.dart';
-import '../../widgets/music/music_device_picker.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -393,7 +392,6 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
       appBar: AppBar(
         title: Text(t.musicTools.home),
         actions: [
-          const MusicDeviceButton(),
           IconButton(
             tooltip: t.homeLayout.sync,
             icon: const AppIcon(Symbols.sync_rounded),

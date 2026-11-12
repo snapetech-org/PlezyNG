@@ -19,6 +19,7 @@ import '../downloads/downloads_screen.dart';
 import '../../mixins/mounted_set_state_mixin.dart';
 import '../../mixins/refreshable.dart';
 import '../../multiview/workspace_controller.dart';
+import '../../providers/companion_remote_provider.dart';
 import '../../providers/account_preferences_controller.dart';
 import '../../providers/hidden_libraries_provider.dart';
 import '../../providers/download_provider.dart';
@@ -50,6 +51,7 @@ import '../../widgets/desktop_app_bar.dart';
 import '../../widgets/dialog_action_button.dart';
 import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/library_management_sheet.dart';
+import '../../widgets/music/music_device_picker.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/setting_tile.dart';
 import '../../widgets/settings_builder.dart';
@@ -127,6 +129,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
   static const _kVideoPlayerControls = 'video_player_controls';
   static const _kVideoPlayerNavigation = 'video_player_navigation';
   static const _kCompanionRemoteServer = 'companion_remote_server';
+  static const _kPlaybackReceiver = 'playback_receiver';
   static const _kCrashReporting = 'crash_reporting';
   static const _kDebugLogging = 'debug_logging';
   static const _kAutoHidePerformanceOverlay = 'auto_hide_performance_overlay';
@@ -333,8 +336,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
 
                   if (!PlatformDetector.isAppleTV()) _buildDownloadsSection(),
 
-                  if (_keyboardShortcutsSupported || PlatformDetector.shouldActAsRemoteHost(sheetContext))
-                    _buildControlsSection(sheetContext),
+                  _buildControlsSection(sheetContext),
 
                   _buildAdvancedSection(),
 
@@ -728,6 +730,13 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
           icon: Symbols.phone_android_rounded,
           title: t.settings.companionRemoteServer,
           subtitle: t.settings.companionRemoteServerDescription,
+        ),
+      if (context.read<CompanionRemoteProvider?>() != null)
+        SettingNavigationTile(
+          focusNode: _focusTracker.get(_kPlaybackReceiver),
+          icon: Symbols.speaker_group_rounded,
+          title: t.musicDevices.receive,
+          onTap: () => unawaited(showPlaybackReceiverSettings(context)),
         ),
     ];
     // Keyboard platforms render nothing until the shortcuts service loads; an

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Show music output selection in Now Playing and the mini-player during an open session. Configure receivers in Settings.
+
 - Open saved Multiview sessions on demand from Settings so app startup goes straight to the normal browsing and resume flow.
 
 - Pass the configured Pleazyng relay and owned Discord application ID into every official release build, including Microsoft Store payloads, enabling optional provider routes without upstream-service fallbacks.

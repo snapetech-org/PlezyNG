@@ -1,26 +1,25 @@
 # Play music on another device
 
-Open **Play on** from Music home, Now Playing or the mini-player. The speaker
-button shows the selected output in its accessible label.
+Open **Play on** from Now Playing or the mini-player while a music session is
+open. The speaker button shows the selected output in its accessible label.
 
 ## Pair and play
 
 1. Open Pleazyng on the receiving phone, computer, TV or Linux endpoint.
    Configure its media-server connection and select the intended profile.
-2. Open **Play on → Allow playback on this device**, start the receiving server,
-   and display its pairing code.
+2. Open **Settings → Allow playback on this device → Companion Remote**,
+   start the receiving server, and display its pairing code.
 3. On the controlling device, open **Play on**, select the nearby player, and
    enter that code once. Manual host-and-port entry is also available.
 4. Select the player to move the current music session. The receiver checks its
    own access, then takes over the queue and playhead. A rejected preparation
    leaves the source playing.
-5. Use the ordinary player controls, queue editor and volume control. Choose
-   **This device** to bring the receiver's current session back, or select
-   another player to move it again.
+5. Use the player controls, queue editor and volume control on either device.
+   Choose **This device** to bring the receiver's current session back, or
+   select another player to move it again.
 
-An idle controller can select a player that is already playing and immediately
-control its current session. Receivers keep playing after a controller closes
-or disconnects. Keep the receiving app running and its media server reachable.
+Receivers keep playing after a controller closes or disconnects. Keep the
+receiving app running and its media server reachable.
 The Linux endpoint package provides an unattended receiver after normal
 profile setup.
 
@@ -31,7 +30,7 @@ after a reset.
 
 ## Away from home
 
-1. On the receiver, expand **Play on → Away from home**.
+1. On the receiver, expand **Settings → Allow playback on this device → Away from home**.
 2. Use the configured music relay address or enter your deployment's HTTPS
    address, then enable **Away from home**.
 3. Pair and select the receiver once on the same network so the controller can

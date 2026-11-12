@@ -28,6 +28,10 @@ Future<void> showMusicDevicePicker(BuildContext context) async {
   await showScopedDialog<void>(context: context, builder: (_) => const MusicDevicePicker());
 }
 
+Future<void> showPlaybackReceiverSettings(BuildContext context) async {
+  await showScopedDialog<void>(context: context, builder: (_) => const MusicDevicePicker._receiverSettings());
+}
+
 class MusicDeviceButton extends StatelessWidget {
   const MusicDeviceButton({super.key});
 
@@ -36,6 +40,7 @@ class MusicDeviceButton extends StatelessWidget {
     final companion = context.watch<CompanionRemoteProvider?>();
     if (companion == null) return const SizedBox.shrink();
     final music = context.watch<MusicPlaybackService>();
+    if (music.currentTrack == null) return const SizedBox.shrink();
     final output = music is MusicOutputControls ? music as MusicOutputControls : null;
     final name = companion.musicDevices?.active?.name ?? output?.remoteOutputName;
     final label = name == null ? t.musicDevices.playOn : t.musicDevices.playingOn(device: name);
@@ -56,7 +61,10 @@ class MusicDeviceButton extends StatelessWidget {
 }
 
 class MusicDevicePicker extends StatefulWidget {
-  const MusicDevicePicker({super.key});
+  const MusicDevicePicker({super.key}) : receiverSettings = false;
+  const MusicDevicePicker._receiverSettings() : receiverSettings = true;
+
+  final bool receiverSettings;
 
   @override
   State<MusicDevicePicker> createState() => _MusicDevicePickerState();
@@ -83,9 +91,13 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
   Future<void> _initialize() async {
     try {
       if (!_companion.isCryptoReady) await ensureCompanionRemoteCryptoFromContext(context);
-      await _companion.loadMusicRelayConfiguration();
-      if (!mounted) return;
-      _relay.text = _companion.musicRelayUrl;
+      if (widget.receiverSettings) {
+        await _companion.loadMusicRelayConfiguration();
+        if (!mounted) return;
+        _relay.text = _companion.musicRelayUrl;
+        setState(() => _loading = false);
+        return;
+      }
       final remembered = await _companion.rememberedMusicDevices();
       if (!mounted) return;
       _discovery = _companion.discoverMusicDevices()?.listen((devices) {
@@ -123,6 +135,7 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
 
   Future<void> _move(MusicDeviceLink? target) async {
     final music = context.read<MusicPlaybackService>();
+    if (music.currentTrack == null) return;
     if (target == null && music is MusicOutputControls && _companion.musicDevices?.active == null) {
       final outputs = music as MusicOutputControls;
       if (outputs.remoteOutputName != null && !await outputs.selectOutput(null)) {
@@ -175,13 +188,14 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
 
   Future<void> _cast() => _run(() async {
     final music = context.read<MusicPlaybackService>();
-    if (music is! MusicOutputControls) return;
+    if (music is! MusicOutputControls || music.currentTrack == null) return;
     final receiver = await CastMediaService.instance.connectMusicOutput(
       context,
       context.read<MultiServerProvider>().serverManager,
     );
     if (receiver == null) return;
     if (!mounted ||
+        music.currentTrack == null ||
         (_companion.musicDevices?.active != null &&
             await _companion.playMusicOn(null) != MusicDeviceMoveResult.completed)) {
       await receiver.player.dispose();
@@ -196,7 +210,7 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
   @override
   void dispose() {
     _discovery?.cancel();
-    _companion.stopMusicDiscovery();
+    if (!widget.receiverSettings) _companion.stopMusicDiscovery();
     _address.dispose();
     _relay.dispose();
     super.dispose();
@@ -205,7 +219,7 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
   @override
   Widget build(BuildContext context) {
     final companion = context.watch<CompanionRemoteProvider>();
-    final music = context.watch<MusicPlaybackService>();
+    final music = widget.receiverSettings ? null : context.watch<MusicPlaybackService>();
     final active = companion.musicDevices?.active;
     final outputs = music is MusicOutputControls ? music as MusicOutputControls : null;
     final activeName = active?.name ?? outputs?.remoteOutputName;
@@ -214,7 +228,7 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
     final remembered = _remembered.where((host) => !ids.contains('${host.authContextId}:${host.clientId}'));
     final paired = companion.pairedMusicDevice;
     return AlertDialog(
-      title: Text(t.musicDevices.playOn),
+      title: Text(widget.receiverSettings ? t.musicDevices.receive : t.musicDevices.playOn),
       content: SizedBox(
         width: 520,
         child: ConstrainedBox(
@@ -225,124 +239,129 @@ class _MusicDevicePickerState extends State<MusicDevicePicker> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (busy || _loading) const LinearProgressIndicator(),
-                if (activeName != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Text(t.musicDevices.playingOn(device: activeName)),
-                  ),
-                if (active != null && !active.connected)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Semantics(liveRegion: true, child: Text(t.companionRemote.remote.reconnecting)),
-                  ),
-                FocusableListTile(
-                  autofocus: true,
-                  selected: activeName == null,
-                  enabled: !busy,
-                  leading: const AppIcon(Symbols.devices_rounded),
-                  title: Text(t.musicDevices.thisDevice),
-                  trailing: activeName == null ? const AppIcon(Symbols.check_rounded) : null,
-                  onTap: () => unawaited(_run(() => _move(null))),
-                ),
-                if (paired != null && paired.connected)
-                  FocusableListTile(
-                    enabled: !busy,
-                    selected: identical(active, paired),
-                    leading: const AppIcon(Symbols.speaker_rounded),
-                    title: Text(paired.name),
-                    onTap: () => unawaited(_run(() => _move(paired))),
-                  ),
-                if (_nearby.isNotEmpty) _heading(t.companionRemote.pairing.availableDevices),
-                for (final host in _nearby) _device(host, busy),
-                if (remembered.isNotEmpty) _heading(t.musicDevices.remembered),
-                for (final host in remembered) _device(host, busy),
-                if (!_loading && _nearby.isEmpty)
-                  Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(t.musicDevices.nearbyHint)),
-                if (CastMediaService.isSupportedPlatform && outputs != null)
-                  FocusableListTile(
-                    enabled: !busy,
-                    leading: const AppIcon(Symbols.cast_rounded),
-                    title: Text(t.cast.chooseDevice),
-                    onTap: _cast,
-                  ),
-                ExpansionTile(
-                  title: Text(t.companionRemote.pairing.manualConnection),
-                  children: [
-                    FocusableTextField(
-                      controller: _address,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      decoration: InputDecoration(
-                        labelText: t.companionRemote.session.hostAddress,
-                        hintText: t.companionRemote.pairing.hostAddressHint,
-                      ),
-                      onSubmitted: (_) {
-                        if (!busy) {
-                          unawaited(
-                            _run(
-                              () => _connect(
-                                (code) => companion.connectMusicAddress(_address.text.trim(), pairingCode: code),
-                              ),
-                            ),
-                          );
-                        }
-                      },
+                if (!widget.receiverSettings) ...[
+                  if (activeName != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(t.musicDevices.playingOn(device: activeName)),
                     ),
-                    TextButton(
-                      onPressed: busy
-                          ? null
-                          : () => unawaited(
+                  if (active != null && !active.connected)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Semantics(liveRegion: true, child: Text(t.companionRemote.remote.reconnecting)),
+                    ),
+                  FocusableListTile(
+                    autofocus: true,
+                    selected: activeName == null,
+                    enabled: !busy,
+                    leading: const AppIcon(Symbols.devices_rounded),
+                    title: Text(t.musicDevices.thisDevice),
+                    trailing: activeName == null ? const AppIcon(Symbols.check_rounded) : null,
+                    onTap: () => unawaited(_run(() => _move(null))),
+                  ),
+                  if (paired != null && paired.connected)
+                    FocusableListTile(
+                      enabled: !busy,
+                      selected: identical(active, paired),
+                      leading: const AppIcon(Symbols.speaker_rounded),
+                      title: Text(paired.name),
+                      onTap: () => unawaited(_run(() => _move(paired))),
+                    ),
+                  if (_nearby.isNotEmpty) _heading(t.companionRemote.pairing.availableDevices),
+                  for (final host in _nearby) _device(host, busy),
+                  if (remembered.isNotEmpty) _heading(t.musicDevices.remembered),
+                  for (final host in remembered) _device(host, busy),
+                  if (!_loading && _nearby.isEmpty && remembered.isEmpty && paired?.connected != true)
+                    ListTile(
+                      title: Text(t.companionRemote.pairing.noDevicesFound),
+                      subtitle: Text('${t.settings.title} → ${t.musicDevices.receive}'),
+                    ),
+                  if (CastMediaService.isSupportedPlatform && outputs != null)
+                    FocusableListTile(
+                      enabled: !busy,
+                      leading: const AppIcon(Symbols.cast_rounded),
+                      title: Text(t.cast.chooseDevice),
+                      onTap: _cast,
+                    ),
+                  ExpansionTile(
+                    title: Text(t.companionRemote.pairing.manualConnection),
+                    children: [
+                      FocusableTextField(
+                        controller: _address,
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        decoration: InputDecoration(
+                          labelText: t.companionRemote.session.hostAddress,
+                          hintText: t.companionRemote.pairing.hostAddressHint,
+                        ),
+                        onSubmitted: (_) {
+                          if (!busy) {
+                            unawaited(
                               _run(
                                 () => _connect(
                                   (code) => companion.connectMusicAddress(_address.text.trim(), pairingCode: code),
                                 ),
                               ),
-                            ),
-                      child: Text(t.common.connect),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                FocusableListTile(
-                  enabled: !busy,
-                  leading: const AppIcon(Symbols.devices_rounded),
-                  title: Text(t.musicDevices.receive),
-                  subtitle: Text(t.musicDevices.receiverHint),
-                  onTap: () => unawaited(RemoteSessionDialog.show(context)),
-                ),
-                ExpansionTile(
-                  title: Text(t.musicDevices.away),
-                  children: [
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(t.musicDevices.relayHint)),
-                    FocusableTextField(
-                      controller: _relay,
-                      keyboardType: TextInputType.url,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      decoration: InputDecoration(labelText: t.musicDevices.relay, hintText: 'https://music.example'),
-                    ),
-                    FocusableListTile(
-                      enabled: !busy,
-                      title: Text(t.musicDevices.away),
-                      subtitle: companion.musicRelayEnabled
-                          ? Text(
-                              companion.musicRelayConnected
-                                  ? t.companionRemote.session.connected
-                                  : t.companionRemote.remote.reconnecting,
-                            )
-                          : null,
-                      trailing: Switch(
-                        value: companion.musicRelayEnabled,
-                        onChanged: busy ? null : (enabled) => unawaited(_configureRelay(enabled)),
+                            );
+                          }
+                        },
                       ),
-                      onTap: () => unawaited(_configureRelay(!companion.musicRelayEnabled)),
-                    ),
-                    TextButton(
-                      onPressed: busy ? null : () => unawaited(_configureRelay(companion.musicRelayEnabled)),
-                      child: Text(t.common.save),
-                    ),
-                  ],
-                ),
+                      TextButton(
+                        onPressed: busy
+                            ? null
+                            : () => unawaited(
+                                _run(
+                                  () => _connect(
+                                    (code) => companion.connectMusicAddress(_address.text.trim(), pairingCode: code),
+                                  ),
+                                ),
+                              ),
+                        child: Text(t.common.connect),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  FocusableListTile(
+                    enabled: !busy,
+                    leading: const AppIcon(Symbols.devices_rounded),
+                    title: Text(t.companionRemote.title),
+                    subtitle: Text(t.musicDevices.receiverHint),
+                    onTap: () => unawaited(RemoteSessionDialog.show(context)),
+                  ),
+                  ExpansionTile(
+                    title: Text(t.musicDevices.away),
+                    children: [
+                      Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(t.musicDevices.relayHint)),
+                      FocusableTextField(
+                        controller: _relay,
+                        keyboardType: TextInputType.url,
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        decoration: InputDecoration(labelText: t.musicDevices.relay, hintText: 'https://music.example'),
+                      ),
+                      FocusableListTile(
+                        enabled: !busy,
+                        title: Text(t.musicDevices.away),
+                        subtitle: companion.musicRelayEnabled
+                            ? Text(
+                                companion.musicRelayConnected
+                                    ? t.companionRemote.session.connected
+                                    : t.companionRemote.remote.reconnecting,
+                              )
+                            : null,
+                        trailing: Switch(
+                          value: companion.musicRelayEnabled,
+                          onChanged: busy ? null : (enabled) => unawaited(_configureRelay(enabled)),
+                        ),
+                        onTap: () => unawaited(_configureRelay(!companion.musicRelayEnabled)),
+                      ),
+                      TextButton(
+                        onPressed: busy ? null : () => unawaited(_configureRelay(companion.musicRelayEnabled)),
+                        child: Text(t.common.save),
+                      ),
+                    ],
+                  ),
+                ],
                 if (_error != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),

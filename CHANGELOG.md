@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Clarify future Chocolatey package metadata: link the Pleazyng website separately from its source code and identify the Chocolatey maintainer account separately from the software author.
+
 - Preserve video aspect ratio on window resize. Retire Stretch fit and interpret saved Stretch choices as Contain; the player now cycles between Contain and Cover.
 - Added an owner-authorized Plex music playlist access dialog with explicit recipient confirmation, fresh playlist preflight and account retirement guards.
 - Edit the native music group equalizer from its group screen, with saved enable, gain and per-band controls scoped to the active profile. Correct the native availability switch description.

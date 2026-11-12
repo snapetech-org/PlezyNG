@@ -82,6 +82,14 @@ Changing the install IDs means an install signed under upstream's identity canno
 | Launchpad PPA | Pleazyng archive registered; first source upload pending | `publish-ppa.yml` signs and uploads source packages for Jammy and Noble after a published release. `LAUNCHPAD_PPA` is `ppa:keefshape/pleazyng`, enabled for amd64 and arm64, using the existing Launchpad-registered `GPG_PRIVATE_KEY`. Deletion of the empty old archive was confirmed by Launchpad on 2026-11-05. |
 | Flathub | Not submitted | The attached Flatpak bundles use the prebuilt Linux bundle. Flathub requires its own source-built manifest submission and reviewer approval; it is not an automatic upload channel. |
 
+For future Chocolatey releases, keep the nuspec `projectUrl` on the Pleazyng
+website and `projectSourceUrl` on the application source repository. Set `owners`
+to the Chocolatey maintainer account (`slskdn`) and `authors` to the software
+author (`SnapeTech`). `packageSourceUrl` points to the Chocolatey recipe. Check
+these fields in the generated `.nupkg` before publishing. The 3.0.33 submission
+passed automated validation and was pending further review when these metadata
+guidelines were received; a successful push alone does not establish approval.
+
 The app-store workflow does not build packages or submit store reviews. Run it from `main`, select a release tag, and choose a channel. It accepts a draft GitHub Release for Google Play internal/closed testing tracks, Amazon binary updates after its first console submission, and iOS/tvOS App Store Connect build uploads. Production Play uploads still require a published stable GitHub Release. The workflow sends binaries only, with no listing metadata or screenshots. Samsung and LG TV handoff bundles use separate build outputs and must be uploaded through Seller Office or Seller Lounge manually; neither workflow claims an automated vendor-store submission. TV screenshots must be captured from the target device.
 
 For Google Play testing, select `alpha` and release status `completed` only after

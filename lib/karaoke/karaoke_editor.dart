@@ -184,6 +184,278 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
     }
   }
 
+  Future<void> _editSyllables(int index) async {
+    final line = _track.lyrics.lines[index];
+    if (line.startMs == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.t.karaokeUi.timeTheLineBeforeEditingSyllables)));
+      return;
+    }
+    final spans = line.spans.isEmpty
+        ? [_LyricSpanDraft(text: line.text, startMs: '${line.startMs}', endMs: line.endMs?.toString() ?? '')]
+        : line.spans.map(_LyricSpanDraft.fromSpan).toList();
+    final retired = <_LyricSpanDraft>[];
+    String? validationError;
+    try {
+      final save = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (context, update) => AlertDialog(
+            title: Text(l10n.t.karaokeUi.editWordSyllableTiming),
+            content: SizedBox(
+              width: 680,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l10n.t.karaokeUi.splitClearsSpanPronunciationAndConfidence),
+                    for (var i = 0; i < spans.length; i++)
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            children: [
+                              TextField(
+                                controller: spans[i].text,
+                                minLines: 1,
+                                maxLines: 3,
+                                decoration: InputDecoration(labelText: l10n.t.karaokeUi.syllableText),
+                              ),
+                              Wrap(
+                                spacing: 12,
+                                runSpacing: 4,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 150,
+                                    child: TextField(
+                                      controller: spans[i].startMs,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(labelText: l10n.t.subtitleAiUi.startMs),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 150,
+                                    child: TextField(
+                                      controller: spans[i].endMs,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(labelText: l10n.t.subtitleAiUi.endMs),
+                                    ),
+                                  ),
+                                  DropdownButton<LyricUnit>(
+                                    value: spans[i].unit,
+                                    onChanged: (value) => update(() => spans[i].unit = value ?? spans[i].unit),
+                                    items: [
+                                      for (final unit in LyricUnit.values)
+                                        DropdownMenuItem(value: unit, child: Text(unit.name)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Wrap(
+                                spacing: 8,
+                                children: [
+                                  TextButton(
+                                    onPressed: spans[i].text.text.length < 2
+                                        ? null
+                                        : () async {
+                                            final split = await _splitSyllableSpan(spans[i]);
+                                            if (split != null) {
+                                              update(() {
+                                                retired.add(spans.removeAt(i));
+                                                spans.insertAll(i, split);
+                                                validationError = null;
+                                              });
+                                            }
+                                          },
+                                    child: Text(l10n.t.karaokeUi.splitSpan),
+                                  ),
+                                  if (i + 1 < spans.length)
+                                    TextButton(
+                                      onPressed: () {
+                                        final merged = _mergeSyllableSpans(spans[i], spans[i + 1]);
+                                        if (merged == null) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(l10n.t.karaokeUi.mergeRequiresMatchingSingerAndReadings),
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        update(() {
+                                          retired.addAll([spans.removeAt(i), spans.removeAt(i)]);
+                                          spans.insert(i, merged);
+                                          validationError = null;
+                                        });
+                                      },
+                                      child: Text(l10n.t.karaokeUi.mergeWithNext),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (validationError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(validationError!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(l10n.t.auth.quickConnectCancel),
+              ),
+              FilledButton(
+                onPressed: () {
+                  try {
+                    final values = spans.map((span) => span.toLyricSpan()).toList();
+                    if (values.map((span) => span.text).join() != line.text) {
+                      throw FormatException(l10n.t.karaokeUi.syllableTextMustMatchLyricExactly);
+                    }
+                    Navigator.pop(dialogContext, true);
+                  } on FormatException catch (error) {
+                    update(() => validationError = error.message);
+                  }
+                },
+                child: Text(l10n.t.common.save),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (save != true || !mounted) return;
+      final updatedSpans = spans.map((span) => span.toLyricSpan()).toList();
+      final lines = _track.lyrics.lines.toList();
+      lines[index] = LyricLine(
+        text: line.text,
+        startMs: line.startMs,
+        endMs: line.endMs,
+        part: line.part,
+        translation: line.translation,
+        pronunciation: line.pronunciation,
+        spans: updatedSpans,
+      );
+      _edit(_track.withLyrics(Lyrics(synced: _track.lyrics.synced, lines: lines), reviewed: false));
+    } finally {
+      for (final span in [...spans, ...retired]) {
+        span.dispose();
+      }
+    }
+  }
+
+  Future<List<_LyricSpanDraft>?> _splitSyllableSpan(_LyricSpanDraft original) async {
+    final first = TextEditingController(text: original.text.text), second = TextEditingController();
+    final start = int.tryParse(original.startMs.text) ?? 0;
+    final end = int.tryParse(original.endMs.text);
+    final playhead = widget.session.positionMs.value;
+    final playheadIsInside = playhead > start && (end == null || playhead < end);
+    final boundary = TextEditingController(text: playheadIsInside ? '$playhead' : '');
+    String? error;
+    try {
+      final save = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (context, update) => AlertDialog(
+            title: Text(l10n.t.karaokeUi.splitSpan),
+            content: SizedBox(
+              width: 480,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: first,
+                    decoration: InputDecoration(labelText: l10n.t.karaokeUi.firstSyllable),
+                  ),
+                  TextField(
+                    controller: second,
+                    decoration: InputDecoration(labelText: l10n.t.karaokeUi.secondSyllable),
+                  ),
+                  TextField(
+                    controller: boundary,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(labelText: l10n.t.karaokeUi.splitBoundaryMs),
+                  ),
+                  if (error != null) Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(l10n.t.auth.quickConnectCancel),
+              ),
+              FilledButton(
+                onPressed: () {
+                  final at = int.tryParse(boundary.text);
+                  if (first.text.isEmpty ||
+                      second.text.isEmpty ||
+                      '${first.text}${second.text}' != original.text.text) {
+                    update(() => error = l10n.t.karaokeUi.syllableSplitMustPreserveLyricText);
+                    return;
+                  }
+                  if (at == null || at <= start || (end != null && at >= end)) {
+                    update(() => error = l10n.t.karaokeUi.splitBoundaryMustFallInsideSpan);
+                    return;
+                  }
+                  Navigator.pop(dialogContext, true);
+                },
+                child: Text(l10n.t.common.save),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (save != true || !mounted) return null;
+      final at = int.parse(boundary.text);
+      return [
+        original.copy(
+          text: first.text,
+          endMs: '$at',
+          unit: LyricUnit.syllable,
+          clearPronunciation: true,
+          clearConfidence: true,
+        ),
+        original.copy(
+          text: second.text,
+          startMs: '$at',
+          unit: LyricUnit.syllable,
+          clearPronunciation: true,
+          clearConfidence: true,
+        ),
+      ];
+    } finally {
+      first.dispose();
+      second.dispose();
+      boundary.dispose();
+    }
+  }
+
+  _LyricSpanDraft? _mergeSyllableSpans(_LyricSpanDraft first, _LyricSpanDraft second) {
+    if (first.part != second.part ||
+        (first.pronunciation == null) != (second.pronunciation == null) ||
+        first.confidence != second.confidence) {
+      return null;
+    }
+    final firstStart = int.tryParse(first.startMs.text), secondStart = int.tryParse(second.startMs.text);
+    if (firstStart == null || secondStart == null) return null;
+    final firstEnd = int.tryParse(first.endMs.text), secondEnd = int.tryParse(second.endMs.text);
+    return _LyricSpanDraft(
+      text: '${first.text.text}${second.text.text}',
+      startMs: '${math.min(firstStart, secondStart)}',
+      endMs: firstEnd == null || secondEnd == null ? '' : '${math.max(firstEnd, secondEnd)}',
+      unit: first.unit == second.unit ? first.unit : LyricUnit.word,
+      part: first.part,
+      pronunciation: first.pronunciation == null ? null : '${first.pronunciation}${second.pronunciation}',
+      confidence: first.confidence,
+    );
+  }
+
   Future<void> _note(int? index) async {
     final n = index == null ? null : _track.notes[index];
     final start = TextEditingController(text: '${n?.startMs ?? widget.session.positionMs.value}');
@@ -577,13 +849,22 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
               '${_track.lyrics.lines[i].startMs ?? 'untimed'} – ${_track.lyrics.lines[i].endMs ?? '?'} ms · ${_track.lyrics.lines[i].part ?? 'all'}',
             ),
             onTap: () => _run(() => _line(i)),
-            trailing: IconButton(
-              tooltip: l10n.t.karaokeUi.deleteLine,
-              onPressed: () {
-                final lines = _track.lyrics.lines.toList()..removeAt(i);
-                _edit(_track.withLyrics(Lyrics(synced: _track.lyrics.synced, lines: lines), reviewed: false));
-              },
-              icon: const AppIcon(Symbols.delete_outline_rounded),
+            trailing: Wrap(
+              children: [
+                IconButton(
+                  tooltip: l10n.t.karaokeUi.editWordSyllableTiming,
+                  onPressed: _track.lyrics.lines[i].startMs == null ? null : () => _editSyllables(i),
+                  icon: const AppIcon(Symbols.splitscreen_rounded),
+                ),
+                IconButton(
+                  tooltip: l10n.t.karaokeUi.deleteLine,
+                  onPressed: () {
+                    final lines = _track.lyrics.lines.toList()..removeAt(i);
+                    _edit(_track.withLyrics(Lyrics(synced: _track.lyrics.synced, lines: lines), reviewed: false));
+                  },
+                  icon: const AppIcon(Symbols.delete_outline_rounded),
+                ),
+              ],
             ),
           ),
         Text(l10n.t.karaokeUi.referenceNotes, style: Theme.of(context).textTheme.titleLarge),
@@ -610,6 +891,75 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
       ],
     ),
   );
+}
+
+class _LyricSpanDraft {
+  _LyricSpanDraft({
+    required String text,
+    required String startMs,
+    required String endMs,
+    this.unit = LyricUnit.syllable,
+    this.part,
+    this.pronunciation,
+    this.confidence,
+  }) : text = TextEditingController(text: text),
+       startMs = TextEditingController(text: startMs),
+       endMs = TextEditingController(text: endMs);
+
+  factory _LyricSpanDraft.fromSpan(LyricSpan span) => _LyricSpanDraft(
+    text: span.text,
+    startMs: '${span.startMs}',
+    endMs: span.endMs?.toString() ?? '',
+    unit: span.unit,
+    part: span.part,
+    pronunciation: span.pronunciation,
+    confidence: span.confidence,
+  );
+
+  final TextEditingController text, startMs, endMs;
+  LyricUnit unit;
+  final String? part, pronunciation;
+  final double? confidence;
+
+  LyricSpan toLyricSpan() {
+    final start = int.tryParse(startMs.text);
+    final end = endMs.text.trim().isEmpty ? null : int.tryParse(endMs.text);
+    if (start == null || start < 0 || (endMs.text.trim().isNotEmpty && (end == null || end <= start))) {
+      throw FormatException(l10n.t.karaokeUi.invalidLyricSpanTiming);
+    }
+    return LyricSpan(
+      text: text.text,
+      startMs: start,
+      endMs: end,
+      unit: unit,
+      part: part,
+      pronunciation: pronunciation,
+      confidence: confidence,
+    );
+  }
+
+  _LyricSpanDraft copy({
+    required String text,
+    String? startMs,
+    String? endMs,
+    LyricUnit? unit,
+    bool clearPronunciation = false,
+    bool clearConfidence = false,
+  }) => _LyricSpanDraft(
+    text: text,
+    startMs: startMs ?? this.startMs.text,
+    endMs: endMs ?? this.endMs.text,
+    unit: unit ?? this.unit,
+    part: part,
+    pronunciation: clearPronunciation ? null : pronunciation,
+    confidence: clearConfidence ? null : confidence,
+  );
+
+  void dispose() {
+    text.dispose();
+    startMs.dispose();
+    endMs.dispose();
+  }
 }
 
 class _NoteLane extends CustomPainter {

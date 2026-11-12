@@ -13867,6 +13867,48 @@ class Translations$karaokeUi$en {
 	/// en: 'Lyric timing'
 	String get lyricTiming => 'Lyric timing';
 
+	/// en: 'Edit word/syllable timing'
+	String get editWordSyllableTiming => 'Edit word/syllable timing';
+
+	/// en: 'Set a start time for this lyric line before editing its syllables.'
+	String get timeTheLineBeforeEditingSyllables => 'Set a start time for this lyric line before editing its syllables.';
+
+	/// en: 'Splitting clears the span reading and confidence. Merging requires matching singer parts, readings, and confidence.'
+	String get splitClearsSpanPronunciationAndConfidence => 'Splitting clears the span reading and confidence. Merging requires matching singer parts, readings, and confidence.';
+
+	/// en: 'Word or syllable text'
+	String get syllableText => 'Word or syllable text';
+
+	/// en: 'Split span'
+	String get splitSpan => 'Split span';
+
+	/// en: 'Merge with next'
+	String get mergeWithNext => 'Merge with next';
+
+	/// en: 'First segment text'
+	String get firstSyllable => 'First segment text';
+
+	/// en: 'Second segment text'
+	String get secondSyllable => 'Second segment text';
+
+	/// en: 'Split boundary (ms)'
+	String get splitBoundaryMs => 'Split boundary (ms)';
+
+	/// en: 'The segments must reproduce the lyric exactly, including spaces.'
+	String get syllableTextMustMatchLyricExactly => 'The segments must reproduce the lyric exactly, including spaces.';
+
+	/// en: 'The two segments must preserve the original lyric text exactly.'
+	String get syllableSplitMustPreserveLyricText => 'The two segments must preserve the original lyric text exactly.';
+
+	/// en: 'Choose a split time after the start and before the end of this span.'
+	String get splitBoundaryMustFallInsideSpan => 'Choose a split time after the start and before the end of this span.';
+
+	/// en: 'Merging requires matching singer parts, pronunciation presence, and confidence.'
+	String get mergeRequiresMatchingSingerAndReadings => 'Merging requires matching singer parts, pronunciation presence, and confidence.';
+
+	/// en: 'Each span needs valid start and end times.'
+	String get invalidLyricSpanTiming => 'Each span needs valid start and end times.';
+
 	/// en: 'Reference note'
 	String get referenceNote => 'Reference note';
 
@@ -22508,6 +22550,20 @@ extension on Translations {
 			'karaokeUi.comfortableRangeSavedMIDISuggestedKey' => ({required Object value1, required Object value2, required Object value3}) => 'Comfortable range saved: ${value1}–${value2} MIDI. Suggested key: ${value3}.',
 			'karaokeUi.saveMyComfortableRange' => 'Save my comfortable range',
 			'karaokeUi.lyricTiming' => 'Lyric timing',
+			'karaokeUi.editWordSyllableTiming' => 'Edit word/syllable timing',
+			'karaokeUi.timeTheLineBeforeEditingSyllables' => 'Set a start time for this lyric line before editing its syllables.',
+			'karaokeUi.splitClearsSpanPronunciationAndConfidence' => 'Splitting clears the span reading and confidence. Merging requires matching singer parts, readings, and confidence.',
+			'karaokeUi.syllableText' => 'Word or syllable text',
+			'karaokeUi.splitSpan' => 'Split span',
+			'karaokeUi.mergeWithNext' => 'Merge with next',
+			'karaokeUi.firstSyllable' => 'First segment text',
+			'karaokeUi.secondSyllable' => 'Second segment text',
+			'karaokeUi.splitBoundaryMs' => 'Split boundary (ms)',
+			'karaokeUi.syllableTextMustMatchLyricExactly' => 'The segments must reproduce the lyric exactly, including spaces.',
+			'karaokeUi.syllableSplitMustPreserveLyricText' => 'The two segments must preserve the original lyric text exactly.',
+			'karaokeUi.splitBoundaryMustFallInsideSpan' => 'Choose a split time after the start and before the end of this span.',
+			'karaokeUi.mergeRequiresMatchingSingerAndReadings' => 'Merging requires matching singer parts, pronunciation presence, and confidence.',
+			'karaokeUi.invalidLyricSpanTiming' => 'Each span needs valid start and end times.',
 			'karaokeUi.referenceNote' => 'Reference note',
 			'karaokeUi.freestyleNotScored' => 'Freestyle / not scored',
 			'karaokeUi.goldenNote' => 'Golden note',
@@ -22647,6 +22703,8 @@ extension on Translations {
 			'karaokeUi.savedSets' => 'Saved sets',
 			'karaokeUi.createASetlist' => 'Create a setlist',
 			'karaokeUi.songs' => ({required Object value1}) => '${value1} songs',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.queueThisSetlist' => 'Queue this setlist',
 			'karaokeUi.auditCompleteOfflineAssets' => 'Audit complete offline assets',
 			'karaokeUi.removeSetlist' => 'Remove setlist',
@@ -22661,8 +22719,6 @@ extension on Translations {
 			'karaokeUi.thisBuild' => 'This build',
 			'karaokeUi.packageImportLyricStageCDGHostingQuizzesEditing' => 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.',
 			'karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire' => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.hostExitPIN' => 'Host exit PIN',
 			'karaokeUi.unlock' => 'Unlock',
 			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',

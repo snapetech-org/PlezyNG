@@ -1,6 +1,6 @@
 # webOS TV port status
 
-**Status: experimental native ARMv7 IPK published with [Pleazyng 3.0.4](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.4). The exact released package was installed and its four production binary hashes verified on the rooted LG C6 on 2026-11-08. The owner confirmed audible playback of the 4K HEVC test source. Plex recorded six-channel AAC at 768 kbps after DTS-HD MA compatibility conversion; receiver input channels, final HDR signalling after fallback, and physical 1080p playback remain unverified. The device is an `OLED77C6HUP` on webOS 26 / firmware `43.21.79`; other models and firmware remain unqualified. Earlier candidate hashes and observations below are historical evidence.**
+**Status: experimental native ARMv7 IPK published with [Pleazyng 3.0.33](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.33). The exact released package was installed in place and launched on the rooted LG C6 on 2026-11-11; all 15 installed production binaries checked matched the published IPK. The owner observed soft playback compared with the desktop. Plex recorded direct play of the same original 1920×1080 MKV to both clients, so server video transcoding did not explain this comparison. The actual C6 output pixels and scaler path remain unmeasured. The device is an `OLED77C6HUP` on webOS 26 / firmware `43.21.79`; other models and firmware remain unqualified. Earlier candidate hashes and observations below are historical evidence.**
 
 ## Compatibility matrix
 
@@ -250,6 +250,27 @@ make a build appear device-qualified.
 Do not claim broad model support or publish this candidate until LG runtime redistribution terms are reviewed, this exact package passes captured visible-frame and media smoke tests on the C6 through a reproducible install path, and additional supported model/firmware combinations are exercised.
 
 ## C6 playback diagnostics and availability
+
+### Released 3.0.33 installation and 1080p comparison
+
+The published `org.snapetech.pleazyng_3.0.33_arm.ipk` has SHA-256
+`499827a399b3fb40c09da5d3e300131f28b148068df29ffcaa637958c78203ab`.
+An in-place update from 3.0.5 completed with `update:true`; `listApps` then
+reported 3.0.33 and launch returned success. All 15 installed production
+binaries checked matched the published IPK. The temporary upload was removed
+from the TV after installation; app data was preserved.
+
+For the owner's same-file visual comparison at 20:00–20:02 CST on 2026-11-11,
+Plex Media Server on `kspls0` approved `Direct play OK` for the C6 at
+`192.168.50.87` and desktop at `192.168.50.148`. Both decisions named the same
+media and part IDs, with video width 1920 and height 1080. The C6 fetched the
+original `/library/parts/.../file.mkv` and Plex recorded no video transcode
+for that session. This rules out server downscaling in this comparison. It does
+not measure the TV's decoded frame, displayed resolution, picture processing,
+or the subjective softness. Pleazyng's webOS video widget currently maps the
+native video window to its full Flutter viewport; confirm the actual source
+and destination rectangles and TV output with captured device diagnostics
+before attributing the blur to a particular scaler.
 
 See [C6 lossless audio and client-rendered PGS research](webos-lossless-audio-and-pgs.md)
 for the eARC/native-app distinction, the C6's measured firmware fingerprints,

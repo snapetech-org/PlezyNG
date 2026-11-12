@@ -89,7 +89,7 @@ class MusicGuestDj extends ChangeNotifier {
     _failure = null;
     notifyListeners();
     try {
-      final candidates = await _candidates(client, seed, next);
+      final candidates = await _candidates(client, seed, next, exclude: before.map((item) => item.globalKey).toSet());
       if (_disposed ||
           epoch != _epoch ||
           session != music.queueSessionRevision ||
@@ -143,7 +143,12 @@ class MusicGuestDj extends ChangeNotifier {
     }
   }
 
-  Future<List<MediaItem>> _candidates(MediaServerClient client, MediaItem seed, MediaItem? next) async {
+  Future<List<MediaItem>> _candidates(
+    MediaServerClient client,
+    MediaItem seed,
+    MediaItem? next, {
+    required Set<String> exclude,
+  }) async {
     switch (_mode) {
       case MusicDjMode.friendganger:
         final epoch = _epoch;
@@ -206,25 +211,46 @@ class MusicGuestDj extends ChangeNotifier {
       case MusicDjMode.groupie:
         if (seed.grandparentId == null) throw UnsupportedError('Artist identity unavailable');
         final epoch = _epoch;
-        const candidateLimit = 100;
-        final page = await client
-            .fetchMusicTracksPage(seed.grandparentId!, kind: MediaKind.artist, start: 0, size: candidateLimit)
-            .timeout(const Duration(seconds: 15));
-        if (_disposed || epoch != _epoch) return [];
-        if (page.offset != 0 ||
-            page.items.length > candidateLimit ||
-            page.totalCount < page.items.length ||
-            page.items.isEmpty && page.totalCount > 0) {
-          throw const FormatException('Invalid Guest DJ artist page');
-        }
-        return page.items
-            .where(
-              (item) =>
-                  item.kind == MediaKind.track &&
+        const pageSize = 100, maxPages = 20;
+        final needed = _mode == MusicDjMode.twofer ? 1 : 5;
+        final results = <MediaItem>[];
+        final seen = {...exclude};
+        var offset = 0;
+        int? totalCount;
+        Future<void> loadPages() async {
+          for (var pageIndex = 0; pageIndex < maxPages; pageIndex++) {
+            if (_disposed || epoch != _epoch) return;
+            final page = await client.fetchMusicTracksPage(
+              seed.grandparentId!,
+              kind: MediaKind.artist,
+              start: offset,
+              size: pageSize,
+            );
+            if (_disposed || epoch != _epoch) return;
+            if (page.offset != offset ||
+                page.items.length > pageSize ||
+                page.totalCount < offset + page.items.length ||
+                totalCount != null && page.totalCount != totalCount ||
+                page.items.isEmpty && page.totalCount > offset) {
+              throw const FormatException('Invalid Guest DJ artist page');
+            }
+            final pageTotal = totalCount = page.totalCount;
+            for (final item in page.items) {
+              if (item.kind == MediaKind.track &&
                   item.serverId == seed.serverId &&
-                  (seed.libraryId == null || item.libraryId == null || item.libraryId == seed.libraryId),
-            )
-            .toList();
+                  (seed.libraryId == null || item.libraryId == null || item.libraryId == seed.libraryId) &&
+                  seen.add(item.globalKey)) {
+                results.add(item);
+                if (results.length == needed) break;
+              }
+            }
+            offset += page.items.length;
+            if (results.length >= needed || offset >= pageTotal || page.items.isEmpty) return;
+          }
+        }
+
+        await loadPages().timeout(const Duration(seconds: 15));
+        return results;
       case MusicDjMode.contempo:
         if (seed.libraryId == null || seed.year == null) throw UnsupportedError('Track era unavailable');
         final page = await client.fetchLibraryPagedContent(

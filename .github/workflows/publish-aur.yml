@@ -150,7 +150,7 @@ jobs:
           recipe = Path(sys.argv[1])
           tag = sys.argv[2]
           text, count = re.subn(
-            r"(/releases/download/)(?:v)?\$pkgver(/)",
+              r"(/releases/download/)(?:v)?\$pkgver(/)",
               lambda match: f"{match.group(1)}{tag}{match.group(2)}",
               recipe.read_text(encoding="utf-8"),
           )

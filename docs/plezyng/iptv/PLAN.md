@@ -407,7 +407,7 @@ Use new `lib/iptv/` packages for adapters, catalog/import, guide storage, playba
 
 Tunerr changes belong in its own repository and must carry a pinned API/version compatibility test. A PlezyNG release cannot assume a matching unreleased server has reached the user. Standard M3U/XMLTV operation remains available when the extended API is missing.
 
-Dependencies are explicit in `implementation-slices.json`. `requirements.json` maps all 240 requirements to exactly one lead slice. Reuse files and interfaces identified in the baseline; proposed filenames may change after M0, but ownership and acceptance conditions should remain stable.
+Use the dependency order and numbered acceptance conditions in this plan's delivery sequence and requirement inventory. The old handoff JSON files are not maintained in this repository; `DELIVERY.md` records current source and qualification evidence. Reuse files and interfaces identified in the baseline; proposed filenames may change after M0, but ownership and acceptance conditions should remain stable.
 
 ### Hard release gates
 
@@ -892,8 +892,8 @@ Implement IPTV as an extension of PlezyNG's existing Live TV and media experienc
 
 1. Current repository `AGENTS.md`, `DESIGN.md` and `UX-CONTRACT.md`.
 2. [02-product-and-architecture.md](#plezyng-iptv-product-and-architecture-plan), particularly the source registry, typed live launch and time/identity invariants.
-3. [04-delivery-and-validation.md](#delivery-sequence-and-release-validation) and `implementation-slices.json` for the work sequence.
-4. Relevant rows in [03-requirements.md](#numbered-iptv-feature-and-acceptance-inventory) or `requirements.json` for each slice.
+3. [04-delivery-and-validation.md](#delivery-sequence-and-release-validation) for the work sequence.
+4. Relevant rows in [03-requirements.md](#numbered-iptv-feature-and-acceptance-inventory) for each work package.
 5. [01-research.md](#iptv-market-research-and-product-decisions) and [06-sources.md](#sources-and-repository-baseline) when a product decision or protocol assumption needs evidence.
 
 ### Start with PR00 and PR01

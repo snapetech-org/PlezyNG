@@ -1,22 +1,47 @@
 # IPTV implementation delivery
 
-This tracker accompanies [PLAN.md](PLAN.md). The plan was prepared against repository revision `0d0626cc375b8fa95124775365a6b37e2a03c9be`; implementation is being reconciled against the current `main` before the feature is considered ready.
+Reconciled 2026-11-11 against the current `main` source tree. This tracker
+supersedes the initial-branch status below in the original handoff. It records
+source presence separately from automated results, provider acceptance and
+device qualification.
 
-## Requested scope
+## Current source on main
 
-Implement the plan through the point where a provider-issued API key, partner credential, or other external account access is required. Implement generic authentication and secure credential handling for credentials an end user supplies. Leave live partner credentials, proprietary SDK access, external account enrollment, and any provider-specific secret values for the separate handoff. Never commit real keys or sample values that could be mistaken for working credentials.
+- Profile-scoped sources are stored through `IptvSourceRepository`; provider
+  configuration is protected by `CredentialVault` before it enters SQLite.
+- Source setup and management are present in `add_iptv_source_screen.dart` and
+  `iptv_sources_settings_screen.dart`. The source model includes M3U, Xtream,
+  Tunerr, Dispatcharr and Stalker inputs; Stalker has a native portal adapter.
+- Playlist and XMLTV parsers, channel/guide persistence, channel overrides,
+  favorites, parental access and channel selection are implemented in the
+  `lib/iptv/` services and `lib/screens/iptv/` screens.
+- Live playback uses `IptvLiveTvPlaybackSession`. HLS archive handling,
+  recording scheduling and scheduled stream capture have source implementations.
+  Dispatcharr DVR and Xtream VOD also have dedicated clients and UI routes.
+- VOD progress synchronization has a profile-scoped service.
 
-## Delivery status
+This is a static source inventory. It does not claim that every one of the 240
+requirements in `PLAN.md` is implemented, that every backend is compatible, or
+that a platform has passed device qualification.
 
-| Area | Status |
-| --- | --- |
-| Existing code branch | `codex/iptv-integration-20261028` has an initial implementation commit; the full plan had not yet been committed with it or opened as a pull request. |
-| Plan and requirements | Committed here as `PLAN.md`; this tracker records the API-key boundary. |
-| Current-main reconciliation | Pending before further implementation is treated as complete. |
-| Generic sources and direct playback | Initial implementation exists; acceptance coverage and platform behavior still need reconciliation against the plan. |
-| Provider-key-dependent adapters | Handoff boundary; ship typed interfaces, settings, secure storage and explicit unavailable states without fabricated credentials. |
-| Verification | No IPTV-specific tests were present in the implementation branch at handoff. Validation status will be recorded as code work proceeds. |
+## Verification inventory
 
-## Handoff checklist
+The repository currently contains 26 Live TV/IPTV-related test files under
+`test/`, including parser/model, guide, playback-session, HLS archive,
+recording recovery, scheduled recording, VOD/server support and screen coverage.
+Their presence is not a result for the current `main`; this audit did not run
+them.
 
-The follow-on owner should provide the provider's approved API/client key, endpoint and redirect allowlists, test account or sandbox, partner documentation, rate limits, and permitted playback/advertising terms. These values belong in the approved secret-management path and live configuration, never in source, tests, fixtures, screenshots, diagnostics or this repository.
+## Delivery boundaries
+
+- User-supplied credentials and generic source adapters are application scope.
+  Live partner credentials, proprietary SDK access, provider enrollment and
+  provider-specific secrets remain in the separate handoff boundary.
+- Device-specific stream behavior, unattended recording, platform packaging,
+  and live-provider interoperability require their own evidence. Do not infer
+  them from source presence or from another platform's results.
+- `PLAN.md` is the requirements and research baseline. Its baseline commit and
+  historical handoff statements describe the planning snapshot, not current
+  branch state. Requirement-by-requirement implementation, automated-test,
+  device-qualification and release status must be recorded only when supported
+  by current evidence.

@@ -85,8 +85,8 @@
 - Manage pending Plex item-sharing invitations from Shared playlists, with explicit whole-invitation confirmation, original-account preflight and single-attempt acceptance or decline. Refresh accepted browsing after decisions and retire stale confirmations with their profile.
 
 - Keep native car/voice and music-link queue admission paged and account-bound. Preserve duplicate playlist entries, reject foreign/incomplete batches, and prevent metadata fetched before an account change from becoming a catalog entry owned by the replacement account.
-- Route iOS and tvOS packages private-first with capacity fallbacks; keep nonpublishing builds from blocking versioned releases.
-- Read live private Mac capacity before selecting the Apple release route, and count queued Apple jobs in both build and CI workflows before falling back to hosted.
+- Route iOS and tvOS packages through compatible GitHub-hosted macOS by default, with a verified private-JIT retry when hosted tvOS is canceled before runner assignment; keep nonpublishing builds from blocking versioned releases.
+- Gate verified private Apple retries on run-scoped Mac availability and live APFS/NFS capacity, and keep Apple release checks on the same runner route as iOS/tvOS packaging.
 
 - Admit album and artist playback in bounded metadata pages, preserving Plex child/grandchild routes and MediaBrowser music credits. Recheck the original account and play intent between pages and reject malformed or unauthorized pages before replacing the queue.
 - Start the bundled offline MilkRust sample automatically for a new music visualizer profile when native audio is available; keep saved engine and original-scene choices.

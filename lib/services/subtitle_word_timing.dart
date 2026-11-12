@@ -2,10 +2,11 @@ import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
 
 import 'subtitle_retimer.dart';
 
-enum SubtitleWordTimingUnit { word, token }
+enum SubtitleWordTimingUnit { word, syllable, token }
 
-/// A token-derived lexical timing. [confidence] is Whisper's mean token
-/// probability, not a calibrated probability that the word is correct.
+/// A source-timed lexical unit. Whisper-derived [confidence] is its mean token
+/// probability, not a calibrated probability that the word is correct. A null
+/// value means the source did not provide confidence metadata.
 final class SubtitleWordTiming {
   const SubtitleWordTiming({
     required this.startMs,
@@ -19,7 +20,7 @@ final class SubtitleWordTiming {
   final int startMs;
   final int endMs;
   final String text;
-  final double confidence;
+  final double? confidence;
   final SubtitleWordTimingUnit unit;
 
   /// One-based SRT cue index, assigned only when the timed span overlaps a cue.

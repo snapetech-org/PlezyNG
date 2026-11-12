@@ -47,7 +47,7 @@ final class SubtitleRevision {
   final List<SubtitleWordTiming> wordTimings;
 
   Map<String, Object?> toJson() => {
-    'schema': 'plezyng.subtitle-revision.v1',
+    'schema': 'plezyng.subtitle-revision.v2',
     'id': id,
     'createdAt': createdAt.toUtc().toIso8601String(),
     'operation': operation,
@@ -61,7 +61,7 @@ final class SubtitleRevision {
             'startMs': timing.startMs,
             'endMs': timing.endMs,
             'text': timing.text,
-            'confidence': timing.confidence,
+            if (timing.confidence != null) 'confidence': timing.confidence,
             'unit': timing.unit.name,
             'cueIndex': timing.cueIndex,
           },
@@ -70,9 +70,11 @@ final class SubtitleRevision {
   };
 
   static SubtitleRevision fromJson(Object? value) {
-    if (value is! Map<String, dynamic> || value['schema'] != 'plezyng.subtitle-revision.v1') {
+    if (value is! Map<String, dynamic> ||
+        !{'plezyng.subtitle-revision.v1', 'plezyng.subtitle-revision.v2'}.contains(value['schema'])) {
       throw const FormatException('Unsupported subtitle revision record.');
     }
+    final acceptsUnknownConfidence = value['schema'] == 'plezyng.subtitle-revision.v2';
     final id = value['id'];
     final createdAt = DateTime.tryParse(value['createdAt'] as String? ?? '');
     final operation = value['operation'];
@@ -130,26 +132,28 @@ final class SubtitleRevision {
       if (start is! int ||
           end is! int ||
           text is! String ||
-          confidence is! num ||
+          (confidence is! num && !(acceptsUnknownConfidence && confidence == null)) ||
           unitName is! String ||
           (cueIndex != null && cueIndex is! int) ||
           start < 0 ||
           end <= start ||
           end > SubtitleRetimer.maximumTimeMs ||
           text.length > 4096 ||
-          confidence < 0 ||
-          confidence > 1 ||
+          (confidence is num && (confidence < 0 || confidence > 1)) ||
           (cueIndex != null && ((cueIndex as int) < 1 || cueIndex > cues.length))) {
         throw const FormatException('Subtitle revision word timing fields are invalid.');
       }
       final unit = SubtitleWordTimingUnit.values.where((candidate) => candidate.name == unitName);
       if (unit.isEmpty) throw const FormatException('Subtitle revision timing unit is invalid.');
+      if (!acceptsUnknownConfidence && unit.first == SubtitleWordTimingUnit.syllable) {
+        throw const FormatException('Subtitle revision timing unit is invalid.');
+      }
       wordTimings.add(
         SubtitleWordTiming(
           startMs: start,
           endMs: end,
           text: text,
-          confidence: confidence.toDouble(),
+          confidence: (confidence as num?)?.toDouble(),
           unit: unit.first,
           cueIndex: cueIndex as int?,
         ),
@@ -240,13 +244,12 @@ abstract final class SubtitleRevisionService {
         }
       }
       for (final timing in wordTimings) {
+        final confidence = timing.confidence;
         if (timing.startMs < 0 ||
             timing.endMs <= timing.startMs ||
             timing.endMs > SubtitleRetimer.maximumTimeMs ||
             timing.text.length > 4096 ||
-            !timing.confidence.isFinite ||
-            timing.confidence < 0 ||
-            timing.confidence > 1 ||
+            (confidence != null && (!confidence.isFinite || confidence < 0 || confidence > 1)) ||
             (timing.cueIndex != null && (timing.cueIndex! < 1 || timing.cueIndex! > cues.length))) {
           throw const FormatException('Subtitle revision contains an invalid word timing.');
         }

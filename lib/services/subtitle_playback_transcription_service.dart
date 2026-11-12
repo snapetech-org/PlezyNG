@@ -658,7 +658,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       if (overlap / shorterDuration < 0.45 || _normalize(previous.text) != normalized) {
         continue;
       }
-      if (timing.confidence > previous.confidence) {
+      final confidence = timing.confidence, previousConfidence = previous.confidence;
+      if (confidence != null && (previousConfidence == null || confidence > previousConfidence)) {
         _wordTimings[index] = timing;
       }
       return;

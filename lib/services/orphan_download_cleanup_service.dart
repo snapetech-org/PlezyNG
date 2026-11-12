@@ -7,7 +7,12 @@ enum OrphanDownloadScanFailure { unsafeRoot, tooManyEntries, scanFailed }
 /// A file in Pleazyng's recognized, app-managed download layout that no stored
 /// download row or native download task currently owns.
 class OrphanDownloadFile {
-  const OrphanDownloadFile({required this.relativePath, required this.itemTag, required this.sizeBytes, required this.modified});
+  const OrphanDownloadFile({
+    required this.relativePath,
+    required this.itemTag,
+    required this.sizeBytes,
+    required this.modified,
+  });
 
   final String relativePath;
   final String itemTag;

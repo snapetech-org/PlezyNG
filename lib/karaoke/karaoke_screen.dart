@@ -123,12 +123,17 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
   Future<void> _initialize() async {
     await s.ready;
     try {
+      await s.ensureProfileSinger();
+    } catch (error) {
+      s.report(error);
+    }
+    try {
       await _preparation.restore();
     } on Object {
       // A broken companion setting must not block the karaoke screen.
     }
     if (mounted) {
-      setState(() => _singer = s.singers.firstOrNull?.id);
+      setState(() => _singer = s.profileSinger?.id ?? s.singers.firstOrNull?.id);
       _syncPreparationAvailability();
     }
   }

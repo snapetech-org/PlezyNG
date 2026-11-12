@@ -8,6 +8,8 @@
 
 - Add a TV-first karaoke layout with a scaled D-pad navigation rail, couch-readable song rows, stage-first performance view, queue routing after requests, and no file-picker actions on TV.
 
+- Create and select a persistent singer identity from the active Pleazyng profile; keep paired LAN guest singers separate.
+
 - Save karaoke A–B practice loops per rendition and restore them with the profile session.
 
 - Compare a private karaoke take with its matching guide vocal or original audio at the recorded rendition position, key and tempo where supported.

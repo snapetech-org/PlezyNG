@@ -45,7 +45,7 @@ Duration karaokePracticeCountInBeatDuration(int bpm) => Duration(microseconds: (
 /// restored automatically. Commands are serialized and acknowledged only after
 /// the resulting snapshot and idempotency receipt have reached durable storage.
 class KaraokeSession extends ChangeNotifier {
-  KaraokeSession({required this.music, required String profileId, KaraokeStore? store})
+  KaraokeSession({required this.music, required String profileId, this.profileDisplayName, KaraokeStore? store})
     : store = store ?? KaraokeStore(profileId) {
     packages = KaraokePackages(this.store);
     ready = _restore();
@@ -54,6 +54,7 @@ class KaraokeSession extends ChangeNotifier {
   }
   final MusicPlaybackService music;
   final KaraokeStore store;
+  final String? profileDisplayName;
   late final KaraokePackages packages;
   late final Future<void> ready;
   final Map<String, KaraokeTrack> catalog = {};
@@ -65,6 +66,7 @@ class KaraokeSession extends ChangeNotifier {
   String? _loopRenditionId;
   final Map<String, int> _turns = {}, _lastTurn = {};
   final Map<String, Map<String, dynamic>> _receipts = {};
+  String? _profileSingerId;
   final List<StreamSubscription<dynamic>> _subscriptions = [];
   final ValueNotifier<int> positionMs = ValueNotifier(0);
   late final Timer _clock;
@@ -117,6 +119,8 @@ class KaraokeSession extends ChangeNotifier {
   Player? get videoPlayer => _videoLease == null ? null : _player;
   Player? get localPlayer => _player;
   KaraokeTrack? get track => current == null ? null : catalog[current!.trackId];
+  KaraokeSinger? get profileSinger =>
+      _profileSingerId == null ? null : singers.where((singer) => singer.id == _profileSingerId).firstOrNull;
   bool get playing => _usingFiller
       ? (_player?.state.playing == true)
       : _started && (_usingMusic ? music.isPlaying : _player?.state.playing == true);
@@ -150,6 +154,10 @@ class KaraokeSession extends ChangeNotifier {
       singers.addAll(
         (j['singers'] as List? ?? const []).map((s) => KaraokeSinger.fromJson(Map<String, dynamic>.from(s as Map))),
       );
+      final profileSingerId = j['profileSingerId'];
+      if (profileSingerId is String && singers.any((singer) => singer.id == profileSingerId)) {
+        _profileSingerId = profileSingerId;
+      }
       requests.addAll(
         (j['requests'] as List? ?? const []).map((r) => KaraokeRequest.fromJson(Map<String, dynamic>.from(r as Map))),
       );
@@ -219,6 +227,7 @@ class KaraokeSession extends ChangeNotifier {
     'positionMs': positionMs.value,
     'catalog': catalog.values.map((t) => t.toJson()).toList(),
     'singers': singers.map((s) => s.toJson()).toList(),
+    'profileSingerId': _profileSingerId,
     'requests': requests.map((r) => r.toJson()).toList(),
     'missingSongs': missingSongs.map((s) => s.toJson()).toList(),
     'turns': _turns,
@@ -250,6 +259,24 @@ class KaraokeSession extends ChangeNotifier {
     'displayOffsetMs': displayOffsetMs,
   };
   Future<void> save() => store.write('session', _snapshot());
+
+  /// Creates the durable singer identity for this isolated app profile once.
+  /// LAN guests are still created separately and never inherit profile identity.
+  Future<void> ensureProfileSinger() async {
+    final name = profileDisplayName?.trim();
+    if (_disposed || error != null || name == null || name.isEmpty || profileSinger != null) return;
+    final singer = KaraokeSinger(id: const Uuid().v4(), name: name);
+    singers.insert(0, singer);
+    _profileSingerId = singer.id;
+    try {
+      await save();
+    } catch (_) {
+      _profileSingerId = null;
+      singers.remove(singer);
+      rethrow;
+    }
+    _notify();
+  }
 
   KaraokePracticeMarkers? practiceMarkersFor(String renditionId) => _practiceMarkers[renditionId];
 

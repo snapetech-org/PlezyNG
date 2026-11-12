@@ -379,8 +379,11 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                 },
               ),
               ChangeNotifierProvider(
-                create: (context) =>
-                    KaraokeSession(music: context.read<MusicPlaybackService>(), profileId: activeId ?? 'local'),
+                create: (context) => KaraokeSession(
+                  music: context.read<MusicPlaybackService>(),
+                  profileId: activeId ?? 'local',
+                  profileDisplayName: context.read<ActiveProfileProvider>().active?.displayName,
+                ),
               ),
               if (activeId != null)
                 ChangeNotifierProvider<MusicExperience>(

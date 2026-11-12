@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Assemble the complete frozen release from the independently signed iOS and tvOS sibling runs, checking each IPA's attestation and the original platform artifact identities before publication.
+
+- Bind the iOS-only recovery to the signed tvOS artifact from a stopped tvOS-only assembly, with strict proof that publication was skipped.
+
+- Recover the signed iOS package on the private Apple Silicon runner after the hosted archive reached its job limit, reusing the same qualified product and successful platform outputs.
+
 - Pin Apple authentication dependency metadata to its immutable official specification and normalized sandbox checksum, preserving the same code and dependency versions when CocoaPods CDN metadata changes.
 
 - Provision and verify the Tizen Rust launcher before native compilation, keeping the pinned MilkRust compiler isolated without modifying the host launcher.

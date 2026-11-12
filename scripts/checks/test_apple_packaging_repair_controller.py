@@ -405,6 +405,8 @@ class WorkerSigningTests(unittest.TestCase):
 
     def profile(self, bundle, platform='ios', group=False):
         entitlements = {'application-identifier': self.team + '.' + bundle}
+        if bundle == self.worker and platform == 'ios':
+            entitlements.update(apple.worker_security_requirements()[0])
         if group:
             entitlements['com.apple.security.application-groups'] = [apple.GROUP]
         return {'Entitlements': entitlements, 'TeamIdentifier': [self.team],

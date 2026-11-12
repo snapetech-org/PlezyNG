@@ -756,6 +756,14 @@ webOS and other successful jobs from the original release run. Do not dispatch a
 second all-platform build. Native-fork HEAD movement does not invalidate unchanged
 pins in an explicitly approved frozen repair.
 
+For the `v3.0.33` Apple recovery, validate the RommWorker App Store profile
+against every checked-in Enhanced Security entitlement before archiving. A
+stale active profile is not sufficient merely because its bundle, team and
+certificate match. If hosted macOS ARM capacity cancels tvOS before it starts,
+select the private Apple ARM lane only after checking its live Xcode, NFS and
+local scratch capacity. Rebuild only the Apple jobs that failed; preserve the
+successful source run's platform artifacts and immutable product tag.
+
 The assembly publishes a schema-2 `platform-reuse-provenance.json` bound by the
 attested SHA256SUMS manifest. It identifies product, packaging and workflow SHAs,
 original and assembly run IDs, exact reused artifact IDs/digests and Linux archive
@@ -783,11 +791,26 @@ If a signed tvOS repair succeeds while iOS fails, retain its compiler run and us
 previous packaging revision must independently qualify as an approved sibling of
 the same frozen product. The prior run must contain the actual successful signed
 TV build, both package attestations and upload, with no publication attempt.
+For a tvOS-only sibling, the iOS job is skipped; accept its failed release
+assembly only when artifact recovery failed and the Create Release step was
+skipped. The later iOS-only repair checks the exact TV artifact ID, digest,
+source and workflow identities before reuse.
+For `v3.0.33`, the original hosted iOS archive reached GitHub's six-hour limit
+after the unsigned checkpoint. Route its focused signed rebuild to the private
+Apple Silicon runner after the tvOS job finishes; keep the source version and
+successful platform artifacts unchanged.
 The producer pins the exact TV artifact ID and digest, verifies both IPA
 certificates against their original workflow/run, and publishes a distinct
 `tvos_source` proof. Ordinary Linux/Mac repair reuse keeps its existing meaning.
 The existing workflow `reuse_repaired_run_id` slot is interpreted as TV reuse only
 for this explicit frozen Apple mode; no additional dispatch input is required.
+After both signed Apple siblings are complete, an approved assembly-only repair
+can use `--reuse-tvos-run` and `--reuse-ios-run` together. The existing workflow
+slot then carries `tvos:RUN,ios:RUN`. Verify each sibling's signed build,
+attestations, unpublished assembly and exact artifact ID/digest. Original
+platform artifacts remain bound to the frozen product source SHA, while Apple
+sibling artifacts remain bound to their own workflow source SHA. No platform
+jobs rebuild for this assembly-only repair.
 
 
 Before iOS compilation, signed releases validate the Runner App Store profile and

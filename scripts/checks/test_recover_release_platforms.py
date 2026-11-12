@@ -322,6 +322,22 @@ class SourceProofTests(unittest.TestCase):
         self.assertIn('Build tvOS developer package (arm64)', proof['reused_jobs'])
         reused.assert_called_once()
 
+    def test_two_signed_apple_siblings_replace_both_failed_original_jobs(self):
+        tv = {'source_run_id': 84, 'source_sha': 'd' * 40}
+        ios = {'source_run_id': 85, 'source_sha': 'e' * 40}
+        with patch('verify_frozen_packaging_repair.verify_frozen_packaging_repair', return_value={'approved': True}), \
+                patch.object(recovery, 'verify_frozen_tvos_run', return_value=tv), \
+                patch.object(recovery, 'verify_frozen_ios_run', return_value=ios):
+            proof = self.frozen(tvos_run=84, ios_run=85)
+        self.assertEqual(proof['tvos_source'], tv)
+        self.assertEqual(proof['ios_source'], ios)
+        self.assertFalse(proof['rebuild_ios'])
+        self.assertFalse(proof['rebuild_tvos'])
+        self.assertNotIn('build-ios', proof['rebuilt_jobs'])
+        self.assertNotIn('Build tvOS developer package (arm64)', proof['rebuilt_jobs'])
+        with self.assertRaisesRegex(recovery.RecoveryError, 'Dual signed Apple'):
+            self.frozen(tvos_run=84, ios_run=84)
+
 
 class FrozenTvosReuseTests(unittest.TestCase):
     def setUp(self):
@@ -363,6 +379,18 @@ class FrozenTvosReuseTests(unittest.TestCase):
         self.assertEqual(result['artifact_id'], 7)
         self.assertEqual(result['artifact_digest'], self.artifact['digest'])
         self.assertEqual(result['packaging_approval'], self.prior['packaging_approval'])
+
+    def test_tvos_only_sibling_can_fail_assembly_before_publication(self):
+        self.jobs[2]['conclusion'] = 'skipped'
+        self.jobs[3]['conclusion'] = 'failure'
+        self.jobs[3]['steps'] = [
+            {'name': 'Recover verified platform artifacts', 'status': 'completed', 'conclusion': 'failure'},
+            {'name': 'Create Release', 'status': 'completed', 'conclusion': 'skipped'},
+        ]
+        self.prove()
+        self.jobs[3]['steps'][1]['conclusion'] = 'success'
+        with self.assertRaisesRegex(recovery.RecoveryError, 'before publication'):
+            self.prove()
 
     def test_untrusted_wrong_product_unsigned_and_publication_attempt_sources_are_rejected(self):
         original = {key: copy.deepcopy(getattr(self, key)) for key in ('run', 'jobs', 'artifact', 'prior')}
@@ -559,6 +587,22 @@ class ArtifactTests(unittest.TestCase):
                 with self.assertRaisesRegex(recovery.RecoveryError, 'ID/digest changed'):
                     recovery.download_platforms({**proof, 'tvos_source': {**source, **change}}, self.root)
                 download.assert_not_called()
+
+    def test_original_artifact_uses_product_head_even_with_later_workflow(self):
+        archive = self.archive()
+        item = {'id': 7, 'name': 'pleazyng-tizen-arm-experimental', 'expired': False,
+                'digest': 'sha256:' + hashlib.sha256(archive).hexdigest(),
+                'workflow_run': {'id': 42, 'head_sha': 'a' * 40}}
+        proof = {'source_run_id': 42, 'source_sha': 'a' * 40,
+                 'workflow_source_sha': 'c' * 40}
+        def download(_args, stdout):
+            stdout.write(archive)
+            return SimpleNamespace(returncode=0)
+        with patch.object(recovery, 'ARTIFACTS', {item['name']: 'tizen'}), \
+                patch.object(recovery, 'collection', return_value=[item]), \
+                patch.object(recovery.subprocess, 'run', side_effect=download):
+            result = recovery.download_platforms(proof, self.root)
+        self.assertEqual(result['artifacts'][0]['source_sha'], 'a' * 40)
 
     def test_frozen_assembly_binds_actual_checkout_workflow_run_and_linux_hash(self):
         proof = {'source_run_id': 42, 'source_sha': 'a' * 40,

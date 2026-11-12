@@ -4,6 +4,7 @@ import 'dart:io';
 
 import '../../media/media_item.dart';
 import 'music_playback_service.dart';
+import 'music_album_shuffle.dart';
 import 'music_queue_items.dart';
 import 'music_queue_order.dart';
 
@@ -284,6 +285,20 @@ class MusicQueueController {
     if (_items.isEmpty) return;
     _queueSnapshot = null;
     final currentItem = _order[_cursor];
+    if (_order.spill && _items.length > 4096) {
+      _order.replaceWith(
+        buildShuffledAlbumOrder(
+          items: _items,
+          currentCanonicalIndex: currentItem,
+          random: _random,
+          scratchRoot: _order.scratchRoot,
+        ),
+      );
+      _cursor = _order.indexOf(currentItem);
+      _shuffled = true;
+      return;
+    }
+
     final blocks = <String, List<int>>{};
     String key(int i) => _items[i].parentId == null ? 'entry:$i' : '${_items[i].serverId}:${_items[i].parentId}';
     for (var i = 0; i < _items.length; i++) {

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Use the current Swift Cast request-abort callback so acknowledged queue rearming compiles against the iOS SDK.
+
 - Play Plex server radio through the shared music session, retain manual exclusions during rolling refills, and persist credential-free recipes that require fresh library authorization after restart.
 
 - Read Plex server-authored radio catalogs and open only account-authorized station keys through the audio PlayQueue API; reject foreign or malformed catalog and queue windows.

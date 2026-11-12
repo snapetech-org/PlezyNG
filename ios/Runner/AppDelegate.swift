@@ -889,7 +889,7 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
       finish(request, success: false)
     }
 
-    func request(_ request: GCKRequest, didAbortWithReason abortReason: GCKRequestAbortReason) {
+    func request(_ request: GCKRequest, didAbortWith abortReason: GCKRequestAbortReason) {
       finish(request, success: false)
     }
 

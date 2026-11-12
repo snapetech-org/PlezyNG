@@ -1344,7 +1344,6 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     for (final descriptor in snapshot.sessions) {
       if (descriptor.resume != null) _pendingRecovery[descriptor.id] = descriptor;
     }
-    if (recoverableSessions.isNotEmpty) _sessionTrayVisible = true;
     _layoutMode = snapshot.layoutMode;
     _placements.addAll(snapshot.placements);
     _prunePlacements();

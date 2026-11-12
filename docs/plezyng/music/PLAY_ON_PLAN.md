@@ -5,6 +5,20 @@ reachable paired player. The receiving app resumes the same track and queue,
 streams from its authorized media server, and reports playback back to the
 controller. Choose **This device** to bring the current session back.
 
+## Player entry points, 2026-11-12
+
+Playback moves only when the user selects an output from an open player. The
+receiver plays from the current position and both devices can control the
+session. Preserve a pause when moving an open session. Keep the regular Play
+and Resume actions for starting playback after browsing or opening the app.
+
+- [x] Keep saved Multiview sessions accessible from Settings and open the
+  recovery tray only on request.
+- [ ] Put the music output chooser on the player and mini-player. Keep setup
+  available in Settings.
+- [ ] Move video output selection into the active player. Keep the sender's
+  controls connected to the receiving session after the move.
+
 ## Implementation
 
 - [x] Surface one device picker across phone, desktop and TV. Reuse Companion

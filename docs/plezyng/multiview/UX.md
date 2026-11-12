@@ -137,6 +137,6 @@ Copy above is a functional English source draft. Localize and fit it using exist
 
 ## Settings
 
-Use the existing Playback settings group for Multiview: default layout (Automatic initially), keep playing while browsing, background-audio choice, follow-main audio (off), allow audio mixing (off), caption keep-clear (on), remember layout (on), restore previous workspace (Ask initially), device resource mode (Automatic), and show tips/help. Advanced settings may expose a lower visible-pane limit, animation/visualizer quality and diagnostic capability details. They must never force unsupported decoder counts or unlock unimplemented backends.
+Use the existing Playback settings group for Multiview: default layout (Automatic initially), keep playing while browsing, background-audio choice, follow-main audio (off), allow audio mixing (off), caption keep-clear (on), remember layout (on), device resource mode (Automatic), and show tips/help. Advanced settings may expose a lower visible-pane limit, animation/visualizer quality and diagnostic capability details. They must never force unsupported decoder counts or unlock unimplemented backends.
 
-Restoring a workspace never auto-launches a host game, renews a loan, starts downloads, pairs a host, or resumes several audible streams. Offer **Restore layout** with sessions paused; resuming a particular item remains explicit.
+Saved sessions are available through **Settings → Manage media sessions** after restart. The tray opens on request. Restoring a workspace never auto-launches a host game, renews a loan, starts downloads, pairs a host, or resumes several audible streams. Resuming a particular item remains explicit.

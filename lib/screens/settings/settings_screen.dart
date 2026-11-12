@@ -18,6 +18,7 @@ import '../main_screen.dart';
 import '../downloads/downloads_screen.dart';
 import '../../mixins/mounted_set_state_mixin.dart';
 import '../../mixins/refreshable.dart';
+import '../../multiview/workspace_controller.dart';
 import '../../providers/account_preferences_controller.dart';
 import '../../providers/hidden_libraries_provider.dart';
 import '../../providers/download_provider.dart';
@@ -112,6 +113,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
   static const _kGeneral = 'general';
   static const _kAppearance = 'appearance';
   static const _kPlayback = 'playback';
+  static const _kMediaSessions = 'media_sessions';
   static const _kManageLibraries = 'manage_libraries';
   static const _kServices = 'services';
   static const _kDownloadLocation = 'download_location';
@@ -279,6 +281,9 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
   }
 
   Widget _buildContent(BuildContext sheetContext, {required bool hasLibraries, required String? profileId}) {
+    final hasSavedSessions = sheetContext.select<MultiviewWorkspaceController?, bool>(
+      (workspace) => workspace?.recoverableSessions.isNotEmpty ?? false,
+    );
     return Scaffold(
       body: Focus(
         onKeyEvent: _handleKeyEvent,
@@ -303,6 +308,13 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
                       _buildGeneralTile(),
                       _buildAppearanceTile(),
                       _buildPlaybackTile(),
+                      if (hasSavedSessions)
+                        SettingNavigationTile(
+                          focusNode: _focusTracker.get(_kMediaSessions),
+                          icon: Symbols.dashboard_customize_rounded,
+                          title: t.common.manageMediaSessions,
+                          onTap: () => sheetContext.read<MultiviewWorkspaceController>().setSessionTrayVisible(true),
+                        ),
                       if (hasLibraries) _buildManageLibrariesTile(sheetContext),
                       _buildServicesTile(),
                       if (profileId != null && !PlatformDetector.isDesktopOS() && !PlatformDetector.isAppleTV())

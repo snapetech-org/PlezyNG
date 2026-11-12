@@ -45,6 +45,9 @@ void main() {
     await workspace.hydrate();
     expect(workspace.sessions, isEmpty);
     expect(workspace.recoverableSessions.single.resume!.positionMs, 12000);
+    expect(workspace.sessionTrayVisible, isFalse);
+    expect(workspace.hasVisibleSessions, isFalse);
+    workspace.setSessionTrayVisible(true);
     expect(workspace.sessionTrayVisible, isTrue);
     workspace.setLayoutMode(MultiviewLayoutMode.sideBySide);
     final encoded = jsonEncode(workspace.snapshot().toJson());

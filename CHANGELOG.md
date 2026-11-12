@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Open saved Multiview sessions on demand from Settings so app startup goes straight to the normal browsing and resume flow.
+
 - Pass the configured Pleazyng relay and owned Discord application ID into every official release build, including Microsoft Store payloads, enabling optional provider routes without upstream-service fallbacks.
 
 - Make `plezyctl --open` use the registered `pleazyng://open-media` scheme so selected results open in Pleazyng.

@@ -3044,6 +3044,10 @@ jobs:
           cp -a libmpv-prefix/lib/libshaderc_shared.so* "$BUNDLE_LIB/"
           cp -a libmpv-prefix/lib/libvulkan.so* "$BUNDLE_LIB/"
 
+      - name: Verify native visualizer and music PCM in Linux bundle
+        shell: bash
+        run: python3 scripts/visualizer/check_linux_bundle.py "$BUNDLE_DIR"
+
       - name: Bundle shared libraries
         shell: bash
         run: bash linux/packaging/bundle-libs.sh "$BUNDLE_DIR"

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Reject Linux visualizer packages whose bundled libmpv lacks the required music PCM tap or whose MilkRust runtime, helper, notices, source, or offline sample pack is missing.
+
 - Skip an orphaned download file during cleanup if its size or modification time changed after the review scan.
 
 - Clarify future Chocolatey package metadata: link the Pleazyng website separately from its source code and identify the Chocolatey maintainer account separately from the software author.

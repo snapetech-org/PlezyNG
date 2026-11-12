@@ -13,6 +13,8 @@ From the current source lock, a local x64 MilkRust runtime build completed. Its 
 
 The first local app build linked the host's unpatched libmpv. The locked mpv-build artifact contains the required audio-tap symbols and was copied into the bundle using the release workflow's steps, but this Arch workstation lacks three of that artifact's Linux dependencies (`libmujs.so.3`, `liblua5.2.so.0`, `libdisplay-info.so.1`). The Debian package dependency guard also cannot qualify packages on this Arch host. This is build and rendering evidence, not an end-to-end app playback or release qualification. CI installs those dependencies; its produced artifact and live playback still need validation.
 
+The Linux release and package-smoke workflows now check the final bundle for the pinned MilkRust runtime, helper, corresponding source, notices, offline starter pack and all four ordered music PCM tap exports in the bundled libmpv. This prevents a package from silently using an unpatched host libmpv while showing the native preset UI. The check passed against the local bundle after the locked mpv artifact was staged; its remaining host-library dependencies and actual music playback still require CI and installed-app qualification.
+
 Updated 2026-10-30. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/pleazyng/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
 pins the current MilkRust PR #20 source revision in `native/visualizer/sources.lock.json`; the exact dependency

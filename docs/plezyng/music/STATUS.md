@@ -1,10 +1,32 @@
 # Music integration status
 
 This is the implementation record for [PLAN.md](PLAN.md), not a completed
-Plexamp-parity claim. Main contains working Dart integration and native
-car adapters, but full 1:1 parity and native qualification remain incomplete.
+Plexamp-parity claim. Main contains shared-session music integration, native
+group audio and car adapters. Full reference equivalence and platform/device
+qualification remain incomplete.
 “Existing” means retained application behavior, not a new reference comparison.
 “Partial” identifies concrete remaining implementation, not just testing.
+
+## Integrated automated qualification, 2026-11-12
+
+The combined Dart source at 1b4547c59, including the concurrent bounded transfer
+queue and scratch-index changes, passes **11,268 unit tests with 22 skipped**.
+Strict analysis and the complete repository commit gate pass. The focused
+music, catalog, transport, link and profile run passes **1,428 tests**.
+
+The reproducible checksum-bound Linux native gapless probe now passes seven
+generated joins: WAV, FLAC, ALAC, MP3, AAC, Opus and FLAC-to-WAV. Every join
+retains 48,000 frames; lossless join windows are sample-exact, with lossy RMS
+within the recorded 0.02 tolerance. The receipt ending is corrected to valid
+JSON and includes the actual encoder version and per-case tolerances.
+These are file-output observations, not hardware or full application lifecycle
+qualification. DSD and the complete channel/platform/physical matrix remain open.
+
+Fresh CI at dc774aeee passed unit, analysis, browser, dependency, native format,
+server, Linux address/thread sanitizer, Windows x64/ARM64, Android JVM/native,
+macOS and tvOS jobs. Its iOS compiler identified the Cast queue-update rename
+fixed in e501c4649. [The fresh platform rerun](https://github.com/snapetech-org/pleazyng/actions/runs/43178253058)
+starts at that correction; no result is claimed here before it completes.
 
 ## Cast Swift SDK compatibility, 2026-11-12
 
@@ -34,7 +56,8 @@ Validation: **1,428 music, car, transport, link and profile tests** pass with cl
 strict targeted analysis. This includes Plex missing/foreign identities,
 malformed cursors, retained-library retirement, actual browse-to-play flows and
 Jellyfin/Emby scoped, unscoped and offline mapping. The large-queue persistence
-fixture also recognizes the concurrent bounded scratch index. Physical vehicle and live provider qualification remain separate.
+fixture also recognizes the concurrent bounded scratch index. Physical vehicle
+and live provider qualification remain separate.
 API: [Jellyfin GetItems request](https://typescript-sdk.jellyfin.org/interfaces/generated-client.LibraryApiGetItemsRequest.html).
 
 ## Rolling filtered stations, 2026-11-12
@@ -427,7 +450,7 @@ and native-language review remain open.
 | B08 | Collections, sharing and artwork | Collection destinations, member removal and deletion require the current owner/admin and a stable profile, authentication session, account, server and library visibility. Shared users retain personal playlists and browsing. Collection detail and context menus now edit title, sort title, summary, poster and background through the existing metadata editor, with collection type 18 and square Plex artist/album artwork. Text/image picker decisions and late acknowledgements retain the original authorization scope; shared menus also hide collection deletion. Authorized Plex artist and album menus can create or add to music collections with explicit member types. Target preflight rejects smart, mismatched, foreign or unqualified music collections; source/library ownership is rechecked after URI discovery, with immutable member snapshots. Collections continue to inherit the server library sharing policy. | 133 collection/menu, metadata/artwork and authorization regressions pass, including replaced accounts during removal/deletion confirmations and stale text/image decisions; device/live-server behavior is not newly qualified. Music membership/API/menu checks also pass 167 focused regressions, including creation, incompatible targets and account retirement during preparation. |
 | B09 | Customizable music home | Music home is linked from Discover and Now Playing, with ordered/hidden server recommendations, recent, Favorites, rediscovery, anniversaries, charts, recipes, stations and download shelves. A bounded, account-owned pinned-music shelf supports artists, albums and tracks, with fresh authorization on save/open and removal/order controls. Server recommendation previews retain the server-authored family/title, read only visible online music libraries, and bound parallel sources, shelves and rows. Retained results and actions retire with profile binding, library visibility, authentication or account changes. Additional reference shelf comparison remains. | Profile persistence, Favorites source guards, pin storage/isolation and live shelf/editing tests pass, including 320px/200% text layouts. Recommendation regressions cover provenance, fairness and budgets, degraded providers, profile/PIN retirement and account changes during album expansion. |
 | B10 | Anniversaries and rediscovery | Listening-based rediscovery and full-library album anniversaries are integrated into Music home. Anniversary scans reject incomplete/invalid dates, preserve calendar dates across timezones, page with bounded work, and cache by day/account/library revision. | History, precise-date/leap-year, pagination, cache, authorization-revocation and corrupt-pagination tests pass. |
-| P01 | Gapless playback | Existing arming/transition engine retained. A reproducible checksum-bound native probe now renders two generated stereo files through the actual decoder and checks total frames plus both channels around the join. WAV, FLAC, MP3 encoder delay/padding and FLAC-to-WAV joins retain the expected 48,000 output frames. | Real pinned Linux file output is sample-exact for lossless join windows; the MP3 join has 0.007113 RMS source error within its lossy tolerance. Shared-player arming/transition regressions pass. Physical output and full platform/application lifecycle qualification remain. |
+| P01 | Gapless playback | Existing arming/transition engine retained. A reproducible checksum-bound native probe now renders two generated stereo files through the actual decoder and checks total frames plus both channels around the join. WAV, FLAC, ALAC, MP3/AAC/Opus encoder delay/padding and FLAC-to-WAV joins retain the expected 48,000 output frames. | Real pinned Linux file output is sample-exact for lossless join windows; MP3/AAC/Opus joins have 0.007113/0.002399/0.002237 RMS source error within their recorded lossy tolerance. Shared-player arming/transition regressions pass. Physical output and full platform/application lifecycle qualification remain. |
 | P02 | Sweet Fades behavior | Two independent native decoders overlap with equal-power envelopes and session-owned handoff. Saved revision-checked analysis supports offline overlap. Unshuffled queues that match ordered album metadata retain gapless playback, including when launched from a playlist. Queue edits re-evaluate the rule. Reference timing/equivalence is not established. | Session handoff/cancellation/offline, album-order and queue-edit tests and real Linux null-output dual-core regression pass; acoustic/platform comparisons remain. |
 | P03 | Loudness leveling | Track/album/automatic ReplayGain now carries explicit Plex server gain and linear peaks into file-local options for offline, cached, gapless and overlapping playback. Native tags take precedence; bounded analysis fallback prevents peak clipping, unknown peaks cannot amplify, and missing analysis stays at zero. Mode/shuffle changes update current and armed entries. EQ/preamp headroom and disabled video compression remain. | Policy, parser, native bridge and shared-player suites pass. Six real pinned Linux decoder entries verify file-output gains and tag precedence; physical acoustic/reference equivalence remains unmeasured. |
 | P04 | Advanced pre-caching | Complete DirectPlay files can be prefetched into a separate profile cache, with a 0–2048 MiB quota, Wi-Fi policy, total request deadline, atomic promotion, hashed credential-qualified keys and LRU eviction. Current account visibility is rechecked before promotion/use; pinned downloads are separate. Transcodes and playlists retain streaming. | Quota/LRU, malformed/partial/oversized responses, network policy, authorization revocation and clear tests pass. |
@@ -441,7 +464,7 @@ and native-language review remain open.
 | P12 | Ten-band EQ | Dedicated music ten-band EQ, preamp, saved presets and GraphicEQ text import are connected to the real player. Imports are explicitly ten-band approximations. | Validation, headroom and import tests pass; native response measurement pending. |
 | P13 | Headphone/output EQ presets | Profile-owned presets, GraphicEQ import and 6,029 searchable bundled AutoEq profiles are integrated. Output assignments apply bands/preamp when an engine route is selected and restore general EQ on other routes. Curves are explicitly ten-band approximations; physical devices hidden behind the OS auto route are not independently identified. | Output-change, removal, profile-isolation and transport-preservation tests pass; pinned dataset reproduces deterministically. Hardware response measurement remains. |
 | P14 | Sample-rate matching and DAC output | Explicit engine sample-rate, exclusive-output and device preferences added, with absent-device fallback to automatic output. Actual DAC matching and bit-perfect qualification remain; iOS retains nonmixing media-session behavior. | Engine policy and unplugged-output tests pass; hardware format remains unmeasured. |
-| P15 | Formats, multichannel and DSD | Existing player format support retained; full codec/channel/DSD reference matrix remains. | No new native format qualification. |
+| P15 | Formats, multichannel and DSD | Existing player format support retained. Actual pinned Linux file output decodes and joins generated WAV, FLAC, ALAC, MP3, AAC and Opus stereo sources at 48 kHz. The full channel/platform/DSD reference matrix remains. | No new native format qualification. |
 | P16 | Signal-path and quality information | Signal-path sheet reads native decoder/output rate, channels, format, engine device and DSP properties. It separately identifies hardware output as unmeasured. | Dart analysis and policy tests pass; physical output evidence pending. |
 | P17 | Background playback and OS controls | Android cold car startup registers engine-only device/restriction handlers and uses normal profile bootstrap. iOS phone and CarPlay share an explicit headless-capable engine. Background dirty builds can settle without a visible phone frame. | Background scheduling and profile lifecycle regressions pass. New Kotlin/Swift sources still require native compilation and device qualification. |
 | D01 | Station/radio families | Saved dynamic stations offer editable shuffle tracks, shuffle albums, least played and oldest releases presets. The editor fetches filters for the selected track or album target and guards reads against account changes. Album blocks with invalid children are skipped in full. Saved rule stations also offer explicit online rolling playback under their original filters, sort and bounded budgets, with persisted rules and exact-preview adoption; offline and download snapshots stay finite. Album Radio adds saved single-album sonic recipes, complete ordered album previews, rolling refills with manual exclusions, persisted continuation settings and native saved-recipe playback. Download/enqueue previews remain finite. Native catalog includes saved stations, server audio playlists and authorized server radio families under Recommended. Plex station and personalized radio playlists retain original keys/titles and optional family labels; includeMyMixes also requests personalized ordinary music hubs. Server radio uses the shared session, reauthorizes the catalog before refills, persists credential-free recipes and preserves manual exclusions. Native voice resolves station titles and supports explicit shuffle/repeat; next/later requests enqueue finite authorized batches. Reference algorithm and live family completeness comparison remains. | Rule and native playlist loader tests pass; live provider comparison pending. |

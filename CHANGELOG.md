@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Extend reproducible native gapless qualification to ALAC, AAC and Opus, and fix JSON receipts while recording encoder versions and measured error tolerances.
+
 - Use the current Google Cast Swift queue-update method when rearming repeat playback on iOS.
 
 - Keep native car and voice catalogs bound to their original server, library, backend and album. Carry library constraints through paged Jellyfin/Emby browsing and playback without losing artist credits or accepting foreign rows and stale pages.

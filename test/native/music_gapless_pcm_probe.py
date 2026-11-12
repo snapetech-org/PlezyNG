@@ -48,7 +48,7 @@ for index in (0, 1):
         stream.setsampwidth(2)
         stream.setframerate(rate)
         stream.writeframes(b''.join(struct.pack('<hh', value, -value) for value in samples[index * frames:(index + 1) * frames]))
-    for extension, codec in [('flac', 'flac'), ('mp3', 'libmp3lame')]:
+    for extension, codec in [('flac', 'flac'), ('mp3', 'libmp3lame'), ('alac.m4a', 'alac'), ('aac.m4a', 'aac'), ('opus.ogg', 'libopus')]:
         subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-nostdin', '-y',
                         '-i', str(path), '-c:a', codec, str(path.with_suffix('.' + extension))], check=True, timeout=30)
 
@@ -73,7 +73,7 @@ def pcm(path):
     return struct.unpack('<' + 'f' * (len(payload) // 4), payload)
 
 results = []
-for first, second in [('wav', 'wav'), ('flac', 'flac'), ('mp3', 'mp3'), ('flac', 'wav')]:
+for first, second in [('wav', 'wav'), ('flac', 'flac'), ('mp3', 'mp3'), ('flac', 'wav'), ('alac.m4a', 'alac.m4a'), ('aac.m4a', 'aac.m4a'), ('opus.ogg', 'opus.ogg')]:
     target = out / f'{first}-{second}.wav'
     ctx = lib.mpv_create()
     if not ctx:
@@ -106,10 +106,12 @@ for first, second in [('wav', 'wav'), ('flac', 'flac'), ('mp3', 'mp3'), ('flac',
               for i in range(before, after) for channel in (0, 1)]
     rms = math.sqrt(sum(value * value for value in errors) / len(errors))
     maximum = max(abs(value) for value in errors)
-    assert rms < (.02 if 'mp3' in (first, second) else 1e-6), (first, second, rms)
+    tolerance = .02 if any(value in ('mp3', 'aac.m4a', 'opus.ogg') for value in (first, second)) else 1e-6
+    assert rms < tolerance, (first, second, rms)
     results.append({'first': first, 'second': second, 'frames': len(rendered) // 2, 'rate': rate,
-                    'joinWindowFrames': after - before, 'joinRmsError': rms, 'joinMaxError': maximum})
+                    'joinWindowFrames': after - before, 'joinRmsError': rms, 'joinMaxError': maximum, 'joinRmsTolerance': tolerance})
 receipt = {'version': 1, 'platform': platform.platform(), 'librarySha256': library_sha,
+           'encoderVersion': subprocess.check_output(['ffmpeg', '-version'], text=True, timeout=5).splitlines()[0],
            'generatedFixture': '48 kHz stereo chirp, opposite channels, two 24000-frame tracks',
            'outputDirectory': str(out.resolve()), 'fixtures': results}
 report = json.dumps(receipt, indent=2) + '\n'

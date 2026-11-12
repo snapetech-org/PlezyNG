@@ -404,14 +404,16 @@ expected library SHA-256, prepare its runtime library path normally, and run:
 It writes each run to a fresh directory, retaining generated inputs, rendered
 outputs and receipt.json. Each input is a 24,000-frame, 48 kHz stereo chirp with
 opposite channels. Nonrepeating phase exposes boundary displacement; a track
-length not divisible by the MPEG audio frame also exercises encoder padding.
+length not divisible by MPEG/AAC audio frames also exercises encoder padding.
 The probe checks both output channels, total frames and a 2,048-frame join
-window. Lossless joins require RMS error below 0.000001; lossy MP3 permits
-0.02 RMS error against the original quantized chirp.
+window. Lossless joins require RMS error below 0.000001; lossy MP3, AAC and Opus
+permit 0.02 RMS error against the original quantized chirp. Receipts record the
+actual FFmpeg encoder version and each applied tolerance; their JSON ending is
+also corrected to an ordinary newline.
 
 The actual prepared Linux x64 library
 c15082fe79b3a6f31332b016c7cb03c0bd87dec00c13cf5345bb680de35afcb0
-passed all four joins, each with exactly 48,000 rendered frames:
+passed all seven joins, each with exactly 48,000 rendered frames:
 
 | Join | Both-channel join RMS error |
 | --- | --- |
@@ -419,6 +421,9 @@ passed all four joins, each with exactly 48,000 rendered frames:
 | FLAC to FLAC | 0 |
 | MP3 to MP3 | 0.007113033 |
 | FLAC to WAV | 0 |
+| ALAC to ALAC (M4A) | 0 |
+| AAC to AAC (M4A) | 0.002399416 |
+| Opus to Opus (Ogg) | 0.002237042 |
 
 These are decoder/file-output results. They do not qualify physical speakers,
 OS interruption handling or every application/platform path. Existing

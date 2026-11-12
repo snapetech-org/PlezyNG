@@ -156,7 +156,16 @@ ensure_ktlint() {
 
   mkdir -p "$(dirname "$KTLINT_BIN")"
   KTLINT_TMP="$(mktemp "$(dirname "$KTLINT_BIN")/.ktlint-$KTLINT_VERSION.XXXXXX")"
-  if ! curl -fsSL "$KTLINT_URL" -o "$KTLINT_TMP"; then
+  # GitHub release assets can have brief connection failures on hosted runners.
+  # Retry transient fetch errors; the pinned digest below still authenticates it.
+  if ! curl -fsSL \
+    --connect-timeout 20 \
+    --max-time 180 \
+    --retry 5 \
+    --retry-connrefused \
+    --retry-delay 2 \
+    --retry-max-time 120 \
+    "$KTLINT_URL" -o "$KTLINT_TMP"; then
     echo "Failed to download ktlint $KTLINT_VERSION." >&2
     return 1
   fi

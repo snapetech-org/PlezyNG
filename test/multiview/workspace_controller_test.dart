@@ -182,12 +182,12 @@ void main() {
         isFalse,
       );
       expect(controller.register(_registration(second, videoPlayerSlot: VideoPlayerSlot.companion)), isTrue);
-      expect(PlaybackCoordinator.instance.nextVideoPlayerSlot, isNull);
+      expect(PlaybackCoordinator.instance.nextVideoPlayerSlot, VideoPlayerSlot.tertiary);
       expect(
         controller.updateDescriptor(second.copyWith(title: 'Companion film', subtitle: 'Updated metadata')),
         isTrue,
       );
-      expect(PlaybackCoordinator.instance.nextVideoPlayerSlot, isNull);
+      expect(PlaybackCoordinator.instance.nextVideoPlayerSlot, VideoPlayerSlot.tertiary);
 
       controller.unregister('primary');
       expect(PlaybackCoordinator.instance.nextVideoPlayerSlot, VideoPlayerSlot.primary);

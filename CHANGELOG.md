@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Expand Multiview's isolated native video capacity to four sessions, keep platform player instances and event streams separate, and reject opens after the device limit is reached.
+
 - Let users set Stremio add-on priority, persist it per profile, and preserve local order and enabled state when importing the account again.
 
 - Preserve the selected duplicate playlist occurrence when starting playback on a transferred device, including cloned rows and shuffled queues.

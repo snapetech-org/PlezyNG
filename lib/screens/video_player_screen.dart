@@ -2322,7 +2322,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       final currentPlayer = Player(
         useExoPlayer: useExoPlayer,
         hardwareDecoding: enableHardwareDecoding,
-        companionSession: videoSlot == VideoPlayerSlot.companion,
+        videoPlayerSlot: videoSlot.index,
       );
       attemptPlayer = currentPlayer;
       await currentPlayer.setWorkspaceAudioFocusEnabled(allowInitialWorkspaceAudio);

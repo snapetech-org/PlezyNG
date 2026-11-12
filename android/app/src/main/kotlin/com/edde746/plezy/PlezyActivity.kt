@@ -33,11 +33,15 @@ import com.edde746.plezy.car.MusicBackgroundPlatformPlugin
 import com.edde746.plezy.car.MusicBrowserService
 import com.edde746.plezy.deeplink.DeepLinkPlugin
 import com.edde746.plezy.exoplayer.ExoPlayerPlugin
+import com.edde746.plezy.exoplayer.ExoWorkspace2PlayerPlugin
+import com.edde746.plezy.exoplayer.ExoWorkspace3PlayerPlugin
 import com.edde746.plezy.exoplayer.ExoWorkspacePlayerPlugin
 import com.edde746.plezy.mpv.MpvAudioGroupOutputPlugin
 import com.edde746.plezy.mpv.MpvAudioOverlapPlugin
 import com.edde746.plezy.mpv.MpvAudioPlayerPlugin
 import com.edde746.plezy.mpv.MpvPlayerPlugin
+import com.edde746.plezy.mpv.MpvWorkspace2PlayerPlugin
+import com.edde746.plezy.mpv.MpvWorkspace3PlayerPlugin
 import com.edde746.plezy.mpv.MpvWorkspacePlayerPlugin
 import com.edde746.plezy.shared.AssistiveTechnologyMonitor
 import com.edde746.plezy.shared.DeviceQuirks
@@ -956,8 +960,12 @@ class PlezyActivity : FlutterActivity() {
     (flutterEngine.plugins.get(MusicBackgroundPlatformPlugin::class.java) as? MusicBackgroundPlatformPlugin)?.suspendForActivity()
     if (!flutterEngine.plugins.has(MpvPlayerPlugin::class.java)) flutterEngine.plugins.add(MpvPlayerPlugin())
     if (!flutterEngine.plugins.has(MpvWorkspacePlayerPlugin::class.java)) flutterEngine.plugins.add(MpvWorkspacePlayerPlugin())
+    if (!flutterEngine.plugins.has(MpvWorkspace2PlayerPlugin::class.java)) flutterEngine.plugins.add(MpvWorkspace2PlayerPlugin())
+    if (!flutterEngine.plugins.has(MpvWorkspace3PlayerPlugin::class.java)) flutterEngine.plugins.add(MpvWorkspace3PlayerPlugin())
     if (!flutterEngine.plugins.has(ExoPlayerPlugin::class.java)) flutterEngine.plugins.add(ExoPlayerPlugin())
     if (!flutterEngine.plugins.has(ExoWorkspacePlayerPlugin::class.java)) flutterEngine.plugins.add(ExoWorkspacePlayerPlugin())
+    if (!flutterEngine.plugins.has(ExoWorkspace2PlayerPlugin::class.java)) flutterEngine.plugins.add(ExoWorkspace2PlayerPlugin())
+    if (!flutterEngine.plugins.has(ExoWorkspace3PlayerPlugin::class.java)) flutterEngine.plugins.add(ExoWorkspace3PlayerPlugin())
     if (!flutterEngine.plugins.has(MpvAudioPlayerPlugin::class.java)) flutterEngine.plugins.add(MpvAudioPlayerPlugin())
     if (!flutterEngine.plugins.has(MpvAudioOverlapPlugin::class.java)) flutterEngine.plugins.add(MpvAudioOverlapPlugin())
     if (!flutterEngine.plugins.has(MpvAudioGroupOutputPlugin::class.java)) flutterEngine.plugins.add(MpvAudioGroupOutputPlugin())

@@ -5,6 +5,7 @@ import '../../media/playback_rate.dart';
 import '../models.dart';
 import 'audio_rendering_mode.dart';
 import 'platform/player_android.dart';
+import 'video_player_channel.dart';
 import 'player_native.dart';
 import 'player_state.dart';
 import 'player_streams.dart';
@@ -427,7 +428,18 @@ abstract class Player {
   /// vo=mediacodec (with gpu behind it) for hardware sessions, gpu-next for
   /// software ones, where DV reshaping can actually happen (see
   /// MpvPlayerCore.initialVideoOutput; #2010).
-  factory Player({bool? useExoPlayer, bool hardwareDecoding = true, bool companionSession = false}) {
+  static const int videoPlayerSlotCapacity = nativeVideoPlayerSlotCount;
+
+  factory Player({
+    bool? useExoPlayer,
+    bool hardwareDecoding = true,
+    int videoPlayerSlot = 0,
+    bool companionSession = false,
+  }) {
+    final slot = companionSession ? 1 : videoPlayerSlot;
+    if (slot < 0 || slot >= videoPlayerSlotCapacity) {
+      throw UnsupportedError('This platform does not provide native video slot $slot');
+    }
     if (PlatformDetector.isTizenBuild()) return PlayerTizen();
     if (PlatformDetector.isWebOSBuild()) {
       return PlayerWebOS();
@@ -437,18 +449,18 @@ abstract class Player {
       // The caller should pass useExoPlayer based on SettingsService.useExoPlayer.
       final useExo = useExoPlayer ?? false;
       if (useExo) {
-        return PlayerAndroid(companionSession: companionSession); // ExoPlayer (opt-in)
+        return PlayerAndroid(videoPlayerSlot: slot); // ExoPlayer (opt-in)
       }
-      return PlayerNative(hardwareDecoding: hardwareDecoding, companionSession: companionSession); // MPV (default)
+      return PlayerNative(hardwareDecoding: hardwareDecoding, videoPlayerSlot: slot); // MPV (default)
     }
     if (Platform.isMacOS || Platform.isIOS) {
-      return PlayerNative(companionSession: companionSession);
+      return PlayerNative(videoPlayerSlot: slot);
     }
     if (Platform.isWindows) {
-      return PlayerWindows(companionSession: companionSession);
+      return PlayerWindows(videoPlayerSlot: slot);
     }
     if (Platform.isLinux) {
-      return PlayerLinux(companionSession: companionSession);
+      return PlayerLinux(videoPlayerSlot: slot);
     }
     throw UnsupportedError('Player is not supported on this platform');
   }

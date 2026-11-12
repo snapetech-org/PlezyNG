@@ -25,6 +25,7 @@
 // instances.
 void MpvPlayerPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar);
 void MpvWorkspacePlayerPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar);
+void MpvWorkspaceVideoPlayerPluginRegisterForSlot(FlutterDesktopPluginRegistrarRef registrar, int slot);
 void MpvAudioPlayerPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar);
 void MpvAudioOverlapPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar);
 void MpvAudioGroupOutputPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar);

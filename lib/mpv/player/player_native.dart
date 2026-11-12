@@ -15,6 +15,7 @@ import '../mpv_path_list.dart';
 import 'audio_rendering_mode.dart';
 import 'audio_spectrum.dart';
 import 'player_base.dart';
+import 'video_player_channel.dart';
 import 'video_decoder_hold.dart';
 import 'video_rect_support.dart';
 import 'subtitle_pcm_capture_source.dart';
@@ -218,9 +219,9 @@ class PlayerNative extends PlayerBase
   static Future<T> runWithChannelNameBaseForTesting<T>(String channelNameBase, Future<T> Function() body) =>
       runZoned(body, zoneValues: {_channelNameBaseZoneKey: channelNameBase});
 
-  static String _channelBase(bool companionSession) {
+  static String _channelBase(int videoPlayerSlot) {
     final testBase = Zone.current[_channelNameBaseZoneKey] as String?;
-    return '${testBase ?? 'com.plezy/mpv_player'}${companionSession ? '/workspace' : ''}';
+    return videoPlayerChannelBase(testBase ?? 'com.plezy/mpv_player', videoPlayerSlot);
   }
 
   /// Video player on the default mpv channels/core.
@@ -230,11 +231,15 @@ class PlayerNative extends PlayerBase
   /// initializes: the fork's vo=mediacodec (with gpu behind it) for hardware
   /// sessions, gpu-next for software ones (see
   /// MpvPlayerCore.initialVideoOutput; #2010). Other platforms ignore it.
-  PlayerNative({this._hardwareDecoding = true, bool companionSession = false, super.listenToNativeEvents = true})
-    : methodChannel = MethodChannel(_channelBase(companionSession)),
-      eventChannel = EventChannel('${_channelBase(companionSession)}/events'),
-      audioOnly = false,
-      _exclusiveAudio = true;
+  PlayerNative({
+    this._hardwareDecoding = true,
+    int videoPlayerSlot = 0,
+    bool companionSession = false,
+    super.listenToNativeEvents = true,
+  }) : methodChannel = MethodChannel(_channelBase(companionSession ? 1 : videoPlayerSlot)),
+       eventChannel = EventChannel('${_channelBase(companionSession ? 1 : videoPlayerSlot)}/events'),
+       audioOnly = false,
+       _exclusiveAudio = true;
 
   /// Audio-only player on the dedicated music channels/core (see
   /// [Player.audio]). Skips every video concern: no render layer

@@ -2023,3 +2023,7 @@ class MpvAudioGroupOutputPlugin : MpvPlayerPlugin(channelBase = "com.plezy/mpv_a
 
 /** Independent MPV channel and core for the second retained workspace video. */
 class MpvWorkspacePlayerPlugin : MpvPlayerPlugin(channelBase = "com.plezy/mpv_player/workspace")
+
+/** Independent MPV channels and cores for additional retained workspace videos. */
+class MpvWorkspace2PlayerPlugin : MpvPlayerPlugin(channelBase = "com.plezy/mpv_player/workspace/2")
+class MpvWorkspace3PlayerPlugin : MpvPlayerPlugin(channelBase = "com.plezy/mpv_player/workspace/3")

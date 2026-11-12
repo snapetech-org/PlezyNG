@@ -86,15 +86,15 @@ void main() {
     expect(coordinator.hasVideoSession, isTrue);
   });
 
-  test('two retained workspace videos reject a third native video session', () async {
+  test('four retained workspace videos reject a fifth native video session', () async {
     final coordinator = PlaybackCoordinator.instance;
-    coordinator.setWorkspaceVideoSessionCount(2);
+    coordinator.setWorkspaceVideoSessionCount(4);
     addTearDown(() => coordinator.setWorkspaceVideoSessionCount(0));
 
     await expectLater(coordinator.claimVideo(), throwsA(isA<WorkspaceVideoCapacityException>()));
   });
 
-  test('concurrent native video opens reserve primary and companion before awaiting teardown', () async {
+  test('concurrent native video opens reserve four isolated slots before awaiting teardown', () async {
     final coordinator = PlaybackCoordinator.instance;
     coordinator.setWorkspaceVideoSessionCount(0);
     coordinator.setWorkspaceVideoPlayerSlots(const []);
@@ -109,17 +109,25 @@ void main() {
 
     final primaryFuture = coordinator.claimVideoSlot();
     final companionFuture = coordinator.claimVideoSlot();
+    final tertiaryFuture = coordinator.claimVideoSlot();
+    final quaternaryFuture = coordinator.claimVideoSlot();
 
     expect(coordinator.nextVideoPlayerSlot, isNull);
     teardown.complete();
     final primary = await primaryFuture;
     final companion = await companionFuture;
+    final tertiary = await tertiaryFuture;
+    final quaternary = await quaternaryFuture;
     expect(primary.slot, VideoPlayerSlot.primary);
     expect(companion.slot, VideoPlayerSlot.companion);
+    expect(tertiary.slot, VideoPlayerSlot.tertiary);
+    expect(quaternary.slot, VideoPlayerSlot.quaternary);
 
     primary.release();
     expect(coordinator.nextVideoPlayerSlot, VideoPlayerSlot.primary);
     companion.release();
+    tertiary.release();
+    quaternary.release();
     expect(coordinator.nextVideoPlayerSlot, VideoPlayerSlot.primary);
   });
 

@@ -153,6 +153,11 @@ enum DownloadBackupPolicy {
     if let registrar = registry.registrar(forPlugin: "MpvWorkspacePlayerPlugin") {
       MpvPlayerPlugin.registerWorkspace(with: registrar)
     }
+    for (slot, pluginName) in [(2, "MpvWorkspace2PlayerPlugin"), (3, "MpvWorkspace3PlayerPlugin")] {
+      if let registrar = registry.registrar(forPlugin: pluginName) {
+        MpvPlayerPlugin.registerWorkspace(with: registrar, slot: slot)
+      }
+    }
 
     if let registrar = registry.registrar(forPlugin: "MpvAudioPlayerPlugin") {
       MpvAudioPlayerPlugin.register(with: registrar)

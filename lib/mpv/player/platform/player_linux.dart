@@ -9,5 +9,5 @@ import '../video_rect_support.dart';
 /// A session that cannot host the plane fails `initialize` outright rather than
 /// degrading, so the user sees the reason instead of a black rectangle.
 class PlayerLinux extends PlayerNative {
-  PlayerLinux({super.companionSession});
+  PlayerLinux({super.videoPlayerSlot, super.companionSession});
 }

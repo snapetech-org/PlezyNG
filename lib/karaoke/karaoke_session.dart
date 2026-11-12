@@ -983,7 +983,7 @@ class KaraokeSession extends ChangeNotifier {
             checkActive();
           }
           _videoLease = lease;
-          _player = Player(companionSession: _videoLease!.slot == VideoPlayerSlot.companion);
+          _player = Player(videoPlayerSlot: _videoLease!.slot.index);
         } else {
           _player = Player.audio();
         }

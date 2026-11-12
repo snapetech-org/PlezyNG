@@ -438,7 +438,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
         unawaited(_enqueueAudioReconcile());
       } else if (_requestedAudibleSessionId == null &&
           !_hasExplicitAudioSelection &&
-          registration.videoPlayerSlot != VideoPlayerSlot.companion) {
+          (registration.videoPlayerSlot == null || registration.videoPlayerSlot == VideoPlayerSlot.primary)) {
         _requestedAudibleSessionId = descriptor.id;
         unawaited(_enqueueAudioReconcile());
       } else {

@@ -1781,3 +1781,7 @@ open class ExoPlayerPlugin(
 
 /** Independent ExoPlayer/fallback-MPV channel and core for the second workspace video. */
 class ExoWorkspacePlayerPlugin : ExoPlayerPlugin("com.plezy/exo_player/workspace")
+
+/** Independent ExoPlayer/fallback-MPV channels and cores for additional workspace videos. */
+class ExoWorkspace2PlayerPlugin : ExoPlayerPlugin("com.plezy/exo_player/workspace/2")
+class ExoWorkspace3PlayerPlugin : ExoPlayerPlugin("com.plezy/exo_player/workspace/3")

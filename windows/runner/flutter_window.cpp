@@ -185,6 +185,11 @@ bool FlutterWindow::OnCreate() {
   MpvPlayerPluginRegisterWithRegistrar(flutter_controller_->engine()->GetRegistrarForPlugin("MpvPlayerPlugin"));
   MpvWorkspacePlayerPluginRegisterWithRegistrar(
       flutter_controller_->engine()->GetRegistrarForPlugin("MpvWorkspacePlayerPlugin"));
+  for (int slot = 2; slot <= 3; ++slot) {
+    const std::string plugin_name = "MpvWorkspace" + std::to_string(slot) + "PlayerPlugin";
+    MpvWorkspaceVideoPlayerPluginRegisterForSlot(
+        flutter_controller_->engine()->GetRegistrarForPlugin(plugin_name.c_str()), slot);
+  }
   MpvAudioPlayerPluginRegisterWithRegistrar(
       flutter_controller_->engine()->GetRegistrarForPlugin("MpvAudioPlayerPlugin"));
   MpvAudioOverlapPluginRegisterWithRegistrar(

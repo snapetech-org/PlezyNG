@@ -1352,7 +1352,7 @@ MpvPlugin* mpv_plugin_new(FlPluginRegistrar* registrar, const gchar* channel_nam
 
 // Static references to keep the plugin instances alive.
 [[maybe_unused]] static MpvPlugin* g_mpv_plugin = nullptr;
-[[maybe_unused]] static MpvPlugin* g_mpv_workspace_plugin = nullptr;
+[[maybe_unused]] static MpvPlugin* g_mpv_workspace_plugins[4] = {};
 [[maybe_unused]] static MpvPlugin* g_mpv_audio_plugin = nullptr;
 [[maybe_unused]] static MpvPlugin* g_mpv_audio_overlap_plugin = nullptr;
 [[maybe_unused]] static MpvPlugin* g_mpv_audio_group_output_plugin = nullptr;
@@ -1362,7 +1362,14 @@ void mpv_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
 }
 
 void mpv_workspace_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
-  g_mpv_workspace_plugin = mpv_plugin_new(registrar, "com.plezy/mpv_player/workspace", FALSE);
+  mpv_workspace_video_plugin_register_for_slot(registrar, 1);
+}
+
+void mpv_workspace_video_plugin_register_for_slot(FlPluginRegistrar* registrar, int slot) {
+  if (slot < 1 || slot > 3) return;
+  g_autofree gchar* channel_name = slot == 1 ? g_strdup("com.plezy/mpv_player/workspace")
+                                             : g_strdup_printf("com.plezy/mpv_player/workspace/%d", slot);
+  g_mpv_workspace_plugins[slot] = mpv_plugin_new(registrar, channel_name, FALSE);
 }
 
 void mpv_audio_plugin_register_with_registrar(FlPluginRegistrar* registrar) {

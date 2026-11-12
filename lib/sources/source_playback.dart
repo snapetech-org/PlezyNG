@@ -770,7 +770,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
         // This SourcePlayback is itself the registered file owner. Asking the
         // coordinator to stop that callback while this serialized start is
         // running would wait on this same operation. _stop() above retires its
-        // previous item; claimVideoSlot reserves one of the two native video slots.
+        // previous item; claimVideoSlot reserves a native video slot.
         final lease = await coordinator.claimVideoSlot(stopFileSession: false);
         _videoPlayerLease = lease;
         videoPlayerSlot = lease.slot;
@@ -883,7 +883,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       _gateway = SourceStreamGateway(valid: () => _valid && entry == item);
       final native =
           _playerFactory?.call(video) ??
-          (video ? Player(companionSession: videoPlayerSlot == VideoPlayerSlot.companion) : Player.audio());
+          (video ? Player(videoPlayerSlot: videoPlayerSlot?.index ?? 0) : Player.audio());
       player = native;
       await native.setWorkspaceAudioFocusEnabled(_workspaceAudioEnabled);
       await native.setVolume(_workspaceAudioEnabled ? 100 : 0);

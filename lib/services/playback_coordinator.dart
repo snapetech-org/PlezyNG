@@ -7,7 +7,7 @@ import '../utils/app_logger.dart';
 
 enum VideoAutomationCommand { play, pause, toggle }
 
-enum VideoPlayerSlot { primary, companion }
+enum VideoPlayerSlot { primary, companion, tertiary, quaternary }
 
 /// A reservation for one native video plugin instance. The slot stays held
 /// until its owner has disposed the native player, including failed starts.
@@ -27,13 +27,12 @@ class VideoPlayerLease {
   }
 }
 
-/// The app registers one primary and one companion native video channel.
-/// Refuse an additional open rather than replacing the companion's core.
+/// Refuse an additional open rather than replacing an occupied native core.
 class WorkspaceVideoCapacityException implements Exception {
   const WorkspaceVideoCapacityException();
 
   @override
-  String toString() => 'The workspace already has two video sessions. Close one before opening another video.';
+  String toString() => 'The workspace supports up to four simultaneous video sessions.';
 }
 
 /// Stops a playing music session before the video player builds its core.
@@ -79,18 +78,20 @@ class PlaybackCoordinator {
   bool get workspaceRetainsVideo => _workspaceVideoSessionCount > 0;
   Set<VideoPlayerSlot> _workspaceVideoPlayerSlots = <VideoPlayerSlot>{};
   final Set<VideoPlayerLease> _videoPlayerLeases = <VideoPlayerLease>{};
+  int get videoPlayerSlotCapacity => Player.videoPlayerSlotCapacity;
   VideoPlayerSlot? get nextVideoPlayerSlot {
     final occupied = <VideoPlayerSlot>{..._workspaceVideoPlayerSlots, ..._videoPlayerLeases.map((lease) => lease.slot)};
-    if (_workspaceVideoSessionCount > occupied.length && !occupied.contains(VideoPlayerSlot.primary)) {
-      // Older adapters may report an occupied session before they publish a
-      // slot. Conservatively treat that one as primary while upgrading.
-      occupied.add(VideoPlayerSlot.primary);
+    final knownWorkspaceSlots = _workspaceVideoPlayerSlots.length;
+    var unreportedWorkspaceSlots = (_workspaceVideoSessionCount - knownWorkspaceSlots).clamp(
+      0,
+      videoPlayerSlotCapacity,
+    );
+    for (final slot in VideoPlayerSlot.values.take(videoPlayerSlotCapacity)) {
+      if (unreportedWorkspaceSlots == 0) break;
+      if (occupied.add(slot)) unreportedWorkspaceSlots--;
     }
-    if (!occupied.contains(VideoPlayerSlot.primary)) {
-      return VideoPlayerSlot.primary;
-    }
-    if (!occupied.contains(VideoPlayerSlot.companion)) {
-      return VideoPlayerSlot.companion;
+    for (final slot in VideoPlayerSlot.values.take(videoPlayerSlotCapacity)) {
+      if (!occupied.contains(slot)) return slot;
     }
     return null;
   }
@@ -103,7 +104,7 @@ class PlaybackCoordinator {
   }
 
   void setWorkspaceVideoSessionCount(int count) {
-    _workspaceVideoSessionCount = count.clamp(0, 2).toInt();
+    _workspaceVideoSessionCount = count.clamp(0, videoPlayerSlotCapacity).toInt();
   }
 
   void setWorkspaceVideoPlayerSlots(Iterable<VideoPlayerSlot> slots) {
@@ -277,16 +278,16 @@ class PlaybackCoordinator {
   /// Video playback is about to construct its native core: stop and dispose
   /// any live music session first. Completes once the audio core is gone.
   Future<void> claimVideo({bool stopFileSession = true}) async {
-    if (_workspaceVideoSessionCount >= 2) {
+    if (_workspaceVideoSessionCount >= videoPlayerSlotCapacity) {
       throw const WorkspaceVideoCapacityException();
     }
     await _claimVideoPlayback(stopFileSession: stopFileSession);
   }
 
   /// Reserve the native channel first, before awaiting other session teardown.
-  /// Two simultaneous opens therefore cannot both select the primary core.
+  /// Concurrent opens therefore cannot select the same native core.
   Future<VideoPlayerLease> claimVideoSlot({bool stopFileSession = true}) {
-    if (_workspaceVideoSessionCount >= 2) {
+    if (_workspaceVideoSessionCount >= videoPlayerSlotCapacity) {
       throw const WorkspaceVideoCapacityException();
     }
     final slot = nextVideoPlayerSlot;

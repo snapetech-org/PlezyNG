@@ -67,6 +67,10 @@ class MainFlutterWindow: NSWindow {
 
     MpvPlayerPlugin.registerWorkspace(
       with: flutterViewController.registrar(forPlugin: "MpvWorkspacePlayerPlugin"))
+    for (slot, pluginName) in [(2, "MpvWorkspace2PlayerPlugin"), (3, "MpvWorkspace3PlayerPlugin")] {
+      MpvPlayerPlugin.registerWorkspace(
+        with: flutterViewController.registrar(forPlugin: pluginName), slot: slot)
+    }
 
     MpvAudioPlayerPlugin.register(
       with: flutterViewController.registrar(forPlugin: "MpvAudioPlayerPlugin"))

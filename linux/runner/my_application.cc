@@ -120,6 +120,13 @@ static void my_application_activate(GApplication* application) {
   FlPluginRegistrar* workspace_registrar =
       fl_plugin_registry_get_registrar_for_plugin(FL_PLUGIN_REGISTRY(self->flutter_view), "MpvWorkspacePlugin");
   mpv_workspace_plugin_register_with_registrar(workspace_registrar);
+  for (int slot = 2; slot <= 3; ++slot) {
+    gchar* plugin_name = g_strdup_printf("MpvWorkspace%dPlugin", slot);
+    FlPluginRegistrar* slot_registrar =
+        fl_plugin_registry_get_registrar_for_plugin(FL_PLUGIN_REGISTRY(self->flutter_view), plugin_name);
+    mpv_workspace_video_plugin_register_for_slot(slot_registrar, slot);
+    g_free(plugin_name);
+  }
 
   // Register the dedicated audio-only MPV core for music playback (no
   // video or GL work at all).

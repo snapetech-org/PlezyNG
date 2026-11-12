@@ -6,6 +6,7 @@ import '../../../services/device_performance.dart';
 import '../../../services/settings_service.dart';
 import '../../models.dart';
 import '../player_base.dart';
+import '../video_player_channel.dart';
 import '../subtitle_pcm_capture_source.dart';
 import '../video_rect_support.dart';
 
@@ -13,9 +14,13 @@ import '../video_rect_support.dart';
 class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioFocusControl, SubtitlePcmCaptureSource {
   static const _channelBase = 'com.plezy/exo_player';
 
-  PlayerAndroid({bool companionSession = false, super.listenToNativeEvents = true})
-    : methodChannel = MethodChannel('$_channelBase${companionSession ? '/workspace' : ''}'),
-      eventChannel = EventChannel('$_channelBase${companionSession ? '/workspace' : ''}/events');
+  PlayerAndroid({int videoPlayerSlot = 0, bool companionSession = false, super.listenToNativeEvents = true})
+    : methodChannel = MethodChannel(_channelName(companionSession ? 1 : videoPlayerSlot)),
+      eventChannel = EventChannel('${_channelName(companionSession ? 1 : videoPlayerSlot)}/events');
+
+  static String _channelName(int videoPlayerSlot) {
+    return videoPlayerChannelBase(_channelBase, videoPlayerSlot);
+  }
 
   @override
   final MethodChannel methodChannel;

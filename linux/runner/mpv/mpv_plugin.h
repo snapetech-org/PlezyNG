@@ -32,6 +32,7 @@ void mpv_plugin_register_with_registrar(FlPluginRegistrar* registrar);
 
 /// Registers the independent second video plugin used by Multiview.
 void mpv_workspace_plugin_register_with_registrar(FlPluginRegistrar* registrar);
+void mpv_workspace_video_plugin_register_for_slot(FlPluginRegistrar* registrar, int slot);
 
 /// Registers the audio-only (music) plugin with Flutter.
 void mpv_audio_plugin_register_with_registrar(FlPluginRegistrar* registrar);

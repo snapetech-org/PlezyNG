@@ -22,9 +22,17 @@ void MpvPlayerPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef regis
 }
 
 void MpvWorkspacePlayerPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar) {
+  MpvWorkspaceVideoPlayerPluginRegisterForSlot(registrar, 1);
+}
+
+void MpvWorkspaceVideoPlayerPluginRegisterForSlot(FlutterDesktopPluginRegistrarRef registrar, int slot) {
+  if (slot < 1 || slot > 3) return;
+  const std::string channel_name =
+      slot == 1 ? "com.plezy/mpv_player/workspace" : "com.plezy/mpv_player/workspace/" + std::to_string(slot);
+  const UINT task_message = slot == 1 ? WM_APP + 0x04D2 : (slot == 2 ? WM_APP + 0x04D5 : WM_APP + 0x04D6);
   mpv::MpvPlayerPlugin::RegisterWithRegistrar(
       flutter::PluginRegistrarManager::GetInstance()->GetRegistrar<flutter::PluginRegistrarWindows>(registrar),
-      "com.plezy/mpv_player/workspace", /*audio_only=*/false, WM_APP + 0x04D2);
+      channel_name, /*audio_only=*/false, task_message);
 }
 
 void MpvAudioPlayerPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar) {

@@ -74,7 +74,7 @@ See [RESEARCH.md](RESEARCH.md) for immutable code references, platform evidence,
 
 ## Implementation boundary
 
-Current main includes profile-scoped workspace state and persistence, shared pane controls, session adapters for current video/music/source/reader surfaces, two isolated native video channels, and an Android Steam retained surface. Capability checks keep unsupported engine/platform combinations out of the embedded path. Retained desktop video windows and supported non-video Flutter views are implemented for macOS, Windows and Linux/Wayland. More than two native video slots and the remaining engine/device composition work are open; see DELIVERY.md for exact boundaries. An implemented adapter is not device-qualified until the validation matrix passes.
+Current main includes profile-scoped workspace state and persistence, shared pane controls, session adapters for current video/music/source/reader surfaces, four independently admitted video sessions, and an Android Steam retained surface. MPV and Android ExoPlayer have per-slot native channels; Tizen and webOS controllers receive independent native player IDs. Capability checks keep unsupported engine/platform combinations out of the embedded path. Retained desktop video windows and supported non-video Flutter views are implemented for macOS, Windows and Linux/Wayland. Device resource limits and platform acceptance remain tracked in DELIVERY.md and VALIDATION.md; source integration alone is not device qualification.
 
 ## Handoff boundaries
 
@@ -82,4 +82,4 @@ The integrated source includes the Games library and Android native modules. And
 
 The comic renderer is implemented as described in [its delivery record](../comics/DELIVERY.md); native device, live-service and TV-reader qualification remain open. Preserve the existing comic, localization, audiobook-sync and Dolby Vision implementations and integrate at their adapter boundaries; do not replace them with parallel implementations.
 
-The latest continuation adds focused Dart and JVM regression tests and CI coverage for the Android adapter and app build. Those checks are authored but have not run in this workspace. Record their results and device qualification per backend and scenario as defined in VALIDATION.md before release.
+The current source includes focused Dart and JVM regression coverage and CI jobs for the Android adapter and app build. Run those checks on the release revision and record device qualification per backend and scenario as defined in VALIDATION.md before release.

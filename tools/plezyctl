@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""A small, data-only CLI for PlezyNG search extensions.
+"""A small, data-only CLI for Pleazyng search extensions.
 
 The command accepts the same manifest format as Open media → Media tools.
 It only performs bounded HTTPS GET requests and can hand a credential-free
-result to PlezyNG's existing Open media form. It never evaluates extension code.
+result to Pleazyng's existing Open media form. It never evaluates extension code.
 """
 
 from __future__ import annotations
@@ -153,7 +153,7 @@ def search(manifest: dict[str, object], query: str) -> list[dict[str, str]]:
 
     request = Request(
         request_url(manifest, normalized),
-        headers={"Accept": "application/json", "User-Agent": "PlezyNG-CLI/1"},
+        headers={"Accept": "application/json", "User-Agent": "Pleazyng-CLI/1"},
         method="GET",
     )
     opener = build_opener(NoRedirect(), HTTPSHandler(context=ssl.create_default_context()))
@@ -226,7 +226,7 @@ def safe_open_link(url: str, profile: str | None = None) -> str:
         if len(profile) > 128 or any(ord(character) < 32 for character in profile):
             raise CliError("Invalid profile name.")
         pairs.append(("profile", profile))
-    return "plezy://open-media?" + urlencode(pairs, quote_via=quote)
+    return "pleazyng://open-media?" + urlencode(pairs, quote_via=quote)
 
 
 def open_link(link: str) -> None:
@@ -239,13 +239,13 @@ def open_link(link: str) -> None:
         else:
             result = subprocess.run(["xdg-open", link], check=False)
     except (OSError, AttributeError) as error:
-        raise CliError("Could not open the PlezyNG app link. Check that the plezy: URL handler is registered.") from error
+        raise CliError("Could not open the Pleazyng app link. Check that the pleazyng: URL handler is registered.") from error
     if result is not None and result.returncode != 0:
-        raise CliError("Could not open the PlezyNG app link. Check that the plezy: URL handler is registered.")
+        raise CliError("Could not open the Pleazyng app link. Check that the pleazyng: URL handler is registered.")
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Search safe, data-only PlezyNG media extensions.")
+    parser = argparse.ArgumentParser(description="Search safe, data-only Pleazyng media extensions.")
     subparsers = parser.add_subparsers(dest="command", required=True)
     validate_parser = subparsers.add_parser("validate", help="validate a search extension manifest")
     validate_parser.add_argument("--manifest", type=Path, required=True)
@@ -253,9 +253,9 @@ def build_parser() -> argparse.ArgumentParser:
     search_parser.add_argument("--manifest", type=Path, required=True)
     search_parser.add_argument("query")
     search_parser.add_argument("--yes", action="store_true", help="confirm that the endpoint receives the search text")
-    search_parser.add_argument("--open", action="store_true", help="open a selected result in PlezyNG Open media")
+    search_parser.add_argument("--open", action="store_true", help="open a selected result in Pleazyng Open media")
     search_parser.add_argument("--result", type=int, help="1-based result number to open with --open")
-    search_parser.add_argument("--profile", help="optional PlezyNG profile name to target")
+    search_parser.add_argument("--profile", help="optional Pleazyng profile name to target")
     return parser
 
 
@@ -291,7 +291,7 @@ def main() -> int:
             raise CliError("The selected result number is outside the result list.")
         link = safe_open_link(results[selected - 1]["url"], args.profile)
         open_link(link)
-        print("Opened the result in PlezyNG. Choose Play now to start playback.")
+        print("Opened the result in Pleazyng. Choose Play now to start playback.")
         return 0
     except CliError as error:
         print(f"plezyctl: {error}", file=sys.stderr)

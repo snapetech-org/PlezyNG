@@ -30,7 +30,7 @@ class PlezyCtlTests(unittest.TestCase):
 
     def test_app_link_accepts_safe_urls_and_rejects_credentials_or_signatures(self):
         link = plezyctl.safe_open_link("https://media.example/live.m3u8?quality=high", "Kids")
-        self.assertEqual(urlsplit(link).scheme, "plezy")
+        self.assertEqual(urlsplit(link).scheme, "pleazyng")
         self.assertEqual(parse_qs(urlsplit(link).query)["profile"], ["Kids"])
 
         for url in [

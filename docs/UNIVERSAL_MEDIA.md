@@ -94,7 +94,7 @@ The schema accepts only `schema_version` (currently `1`), `id`, `name`, optional
 
 Extensions are data-only: the manifest cannot execute code, add request headers, access files, follow redirects, invoke a shell, or define arbitrary actions. Responses are limited to 1 MiB, searches to 200 characters, and results to 20. Only safe HTTPS media URLs are returned. Extension definitions are saved in the current profile and can be removed there.
 
-The companion `tools/plezyctl` command (Python 3.10+) validates the same manifest format, searches with the same HTTPS/response bounds, and can open a selected credential-free result in PlezyNG. Review the endpoint before every search; in noninteractive use, `--yes` confirms that the endpoint receives the search text. Signed result URLs cannot be sent through app links, because operating systems may retain them; paste those into Open media for the current session.
+The companion `tools/plezyctl` command (Python 3.10+) validates the same manifest format, searches with the same HTTPS/response bounds, and can open a selected credential-free result in Pleazyng through its `pleazyng://open-media` link. Review the endpoint before every search; in noninteractive use, `--yes` confirms that the endpoint receives the search text. Signed result URLs cannot be sent through app links, because operating systems may retain them; paste those into Open media for the current session.
 
 ```sh
 python3 tools/plezyctl validate --manifest examples/extensions/search.example.json
@@ -148,7 +148,7 @@ The new interface strings use the repository’s documented machine-translation 
 | Live capture preview | Desktop MPV builds with the matching libavdevice backend and OS permission; preview is video-only and session-bound. |
 | Private-network HLS sharing | Windows, macOS, and Linux desktop with FFmpeg, a local file, and a private IPv4 address; foreground only, 60-minute maximum. |
 | Search extensions | Non-TV builds; HTTPS JSON endpoint only, profile-local, with bounded responses and no executable code. |
-| `plezyctl` | Python 3.10+ on desktop; opening results depends on the installed PlezyNG URL handler. |
+| `plezyctl` | Python 3.10+ on desktop; opening results depends on the installed Pleazyng URL handler. |
 
 ## Scope boundaries
 

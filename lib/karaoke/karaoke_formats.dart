@@ -299,7 +299,81 @@ class KaraokeFormats {
   static String _stamp(int ms) =>
       '${(ms ~/ 3600000).toString().padLeft(2, '0')}:${(ms ~/ 60000 % 60).toString().padLeft(2, '0')}:${(ms ~/ 1000 % 60).toString().padLeft(2, '0')}.${(ms % 1000).toString().padLeft(3, '0')}';
   static String _escape(String s) => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+  static void _requireRepresentable(
+    Lyrics lyrics,
+    String format, {
+    required bool supportsLineParts,
+    required bool supportsExplicitLineEnds,
+    required bool supportsCueEndForLastSpan,
+  }) {
+    final losses = <String>{};
+    for (var i = 0; i < lyrics.lines.length; i++) {
+      final line = lyrics.lines[i];
+      final nextLineStart = i + 1 < lyrics.lines.length ? lyrics.lines[i + 1].startMs : null;
+      final cueEnd = line.endMs ?? nextLineStart;
+      if (line.translation != null) {
+        losses.add('line translations');
+      }
+      if (line.pronunciation != null) {
+        losses.add('line pronunciations');
+      }
+      if (line.part != null && !supportsLineParts) {
+        losses.add('duet part labels');
+      }
+      if (!supportsExplicitLineEnds && line.endMs != null && line.endMs != nextLineStart) {
+        losses.add('explicit line end times');
+      }
+      if (line.spans.isNotEmpty && line.spans.map((span) => span.text).join() != line.text) {
+        losses.add('lyric text outside timed spans');
+      }
+      if (line.startMs == null && line.spans.isNotEmpty) {
+        losses.add('timed spans on untimed lines');
+      }
+
+      for (var j = 0; j < line.spans.length; j++) {
+        final span = line.spans[j];
+        if (span.pronunciation?.trim().isNotEmpty ?? false) {
+          losses.add('per-span pronunciation readings');
+        }
+        if (span.unit != LyricUnit.word) {
+          losses.add('syllable or token units');
+        }
+        if (span.confidence != null) {
+          losses.add('span confidence values');
+        }
+        if (span.part != null && span.part != line.part) {
+          losses.add('per-span duet part labels');
+        }
+        if (line.startMs != null && span.startMs < line.startMs!) {
+          losses.add('span starts before their cue');
+        }
+        final impliedEnd = j + 1 < line.spans.length
+            ? line.spans[j + 1].startMs
+            : (supportsCueEndForLastSpan ? cueEnd : null);
+        if (span.endMs != null && span.endMs != impliedEnd) {
+          losses.add('explicit span end times');
+        }
+        if (format == 'WebVTT' && cueEnd != null && span.startMs >= cueEnd) {
+          losses.add('span starts at or after their cue end');
+        }
+      }
+    }
+    if (losses.isNotEmpty) {
+      throw FormatException(
+        '$format cannot preserve ${losses.join(', ')}. Export a native karaoke package to keep them.',
+      );
+    }
+  }
+
   static String exportVtt(Lyrics lyrics) {
+    _requireRepresentable(
+      lyrics,
+      'WebVTT',
+      supportsLineParts: true,
+      supportsExplicitLineEnds: true,
+      supportsCueEndForLastSpan: true,
+    );
     final out = StringBuffer('WEBVTT\n\n');
     for (var i = 0; i < lyrics.lines.length; i++) {
       final line = lyrics.lines[i];
@@ -315,7 +389,7 @@ class KaraokeFormats {
         out.write('<v ${_escape(line.part!)}>');
       }
       if (line.spans.isEmpty) {
-        out.writeln(_escape(line.text));
+        out.write(_escape(line.text));
       } else {
         for (final s in line.spans) {
           if (s.startMs > line.startMs! && s.startMs < end) {
@@ -323,20 +397,32 @@ class KaraokeFormats {
           }
           out.write(_escape(s.text));
         }
-        out.writeln();
       }
+      if (line.part != null) {
+        out.write('</v>');
+      }
+      out.writeln();
       out.writeln();
     }
     return out.toString();
   }
 
-  static String exportLrc(Lyrics lyrics) => lyrics.lines
-      .map((l) {
-        String stamp(int ms) =>
-            '${(ms ~/ 60000).toString().padLeft(2, '0')}:${(ms ~/ 1000 % 60).toString().padLeft(2, '0')}.${(ms % 1000).toString().padLeft(3, '0')}';
-        return l.startMs == null
-            ? l.text
-            : '[${stamp(l.startMs!)}]${l.spans.isEmpty ? l.text : l.spans.map((s) => '<${stamp(s.startMs)}>${s.text}').join()}';
-      })
-      .join('\n');
+  static String exportLrc(Lyrics lyrics) {
+    _requireRepresentable(
+      lyrics,
+      'LRC',
+      supportsLineParts: false,
+      supportsExplicitLineEnds: false,
+      supportsCueEndForLastSpan: false,
+    );
+    return lyrics.lines
+        .map((l) {
+          String stamp(int ms) =>
+              '${(ms ~/ 60000).toString().padLeft(2, '0')}:${(ms ~/ 1000 % 60).toString().padLeft(2, '0')}.${(ms % 1000).toString().padLeft(3, '0')}';
+          return l.startMs == null
+              ? l.text
+              : '[${stamp(l.startMs!)}]${l.spans.isEmpty ? l.text : l.spans.map((s) => '<${stamp(s.startMs)}>${s.text}').join()}';
+        })
+        .join('\n');
+  }
 }

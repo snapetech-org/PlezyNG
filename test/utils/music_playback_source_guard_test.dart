@@ -48,7 +48,7 @@ void main() {
       final pending = Completer<List<MediaItem>>();
       final result = playFetchedTracks(
         context,
-        fetch: () {
+        fetch: (_) {
           fetches++;
           return pending.future;
         },

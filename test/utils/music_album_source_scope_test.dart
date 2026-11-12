@@ -2,6 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/media_backend.dart';
+import 'package:plezy/media/library_query.dart';
+import 'package:plezy/media/media_kind.dart';
+import 'package:plezy/media/media_playlist.dart';
+import 'package:plezy/utils/music_read_scope.dart';
+import 'package:plezy/utils/media_server_http_client.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/profiles/profile.dart';
@@ -62,7 +67,14 @@ class _Files extends ChangeNotifier implements DownloadProvider {
 }
 
 class _Client extends ExperienceClient {
-  int reads = 0;
+  int reads = 0, playlistReads = 0;
+  Future<LibraryPage<MediaItem>> Function(int start, int size)? playlistPage;
+  @override
+  Future<LibraryPage<MediaItem>> fetchPlaylistPage(String id, {int? start, int? size, AbortController? abort}) async {
+    playlistReads++;
+    return playlistPage?.call(start ?? 0, size ?? 200) ?? LibraryPage(items: [musicTrack('first')], totalCount: 1);
+  }
+
   Future<List<MediaItem>> Function()? album;
   @override
   Future<List<MediaItem>> fetchAlbumTracks(String id) async {
@@ -264,5 +276,163 @@ void main() {
     expect(h.music.started, [seed]);
     expect(h.music.offlineStart, isTrue);
     expect(h.client.reads, 0);
+  });
+  const playlist = MediaPlaylist(
+    id: 'list',
+    backend: MediaBackend.plex,
+    title: 'Music',
+    playlistType: 'audio',
+    serverId: 's',
+  );
+
+  testWidgets('playlist paging preserves duplicate occurrences and selected entry', (tester) async {
+    final h = await pump(tester);
+    final first = musicTrack('first');
+    final second = musicTrack('first');
+    h.client.playlistPage = (start, size) async => LibraryPage(items: start == 0 ? [first] : [second], totalCount: 2);
+    await playAudioPlaylist(h.context, client: h.client, playlist: playlist, startTrack: second);
+    expect(h.client.playlistReads, 2);
+    expect(h.music.started, [first, second]);
+    expect(h.music.start, same(second));
+  });
+
+  for (final change in ['authentication', 'profile', 'binding', 'account', 'client', 'hidden', 'caller', 'intent']) {
+    testWidgets('playlist $change retirement stops before the next page', (tester) async {
+      final h = await pump(tester);
+      var callerCurrent = true;
+      h.client.playlistPage = (start, size) async {
+        switch (change) {
+          case 'authentication':
+            h.client.authenticationSessionId = Object();
+          case 'profile':
+            h.profile.identityMutationGeneration++;
+          case 'binding':
+            h.profile.isBinding = true;
+          case 'account':
+            h.client.scopedServerId = 's/other';
+          case 'client':
+            h.servers.serverManager.debugRegisterClientForTesting(_Client());
+          case 'hidden':
+            h.hidden.hiddenLibraryKeys.add('s:library');
+          case 'caller':
+            callerCurrent = false;
+          case 'intent':
+            h.music.beginPlayIntent();
+        }
+        // Hide a track, not the library-less playlist record.
+        return LibraryPage(items: [musicTrack('first')], totalCount: 2);
+      };
+      await playAudioPlaylist(h.context, client: h.client, playlist: playlist, sourceCurrent: () => callerCurrent);
+      expect(h.client.playlistReads, 1);
+      expect(h.music.started, isNull);
+    });
+  }
+
+  for (final bad in ['backend', 'server', 'kind']) {
+    testWidgets('playlist rejects a foreign $bad row', (tester) async {
+      final h = await pump(tester);
+      final invalid = switch (bad) {
+        'backend' => MediaItem(id: 'bad', backend: MediaBackend.jellyfin, kind: MediaKind.track, serverId: 's'),
+        'server' => musicTrack('bad', server: 'other'),
+        _ => MediaItem(id: 'bad', backend: MediaBackend.plex, kind: MediaKind.movie, serverId: 's'),
+      };
+      h.client.playlistPage = (_, _) async => LibraryPage(items: [invalid], totalCount: 1);
+      var errors = 0;
+      await playAudioPlaylist(h.context, client: h.client, playlist: playlist, onError: (_, _) => errors++);
+      expect(h.music.started, isNull);
+      expect(errors, 1);
+    });
+  }
+
+  testWidgets('offline playlist keeps owned duplicate occurrences and performs no network read', (tester) async {
+    final h = await pump(tester);
+    final duplicate = musicTrack(seed.id);
+    h.files.downloadedTracks = [seed];
+    await playAudioPlaylist(
+      h.context,
+      client: h.client,
+      playlist: playlist,
+      isOffline: true,
+      preloadedItems: [seed, duplicate],
+      startTrack: duplicate,
+    );
+    expect(h.music.started, [seed, duplicate]);
+    expect(h.music.start, same(duplicate));
+    expect(h.music.offlineStart, isTrue);
+    expect(h.client.playlistReads, 0);
+  });
+
+  testWidgets('offline playlist cannot include an unowned file', (tester) async {
+    final h = await pump(tester);
+    h.files.downloadedTracks = [seed];
+    await playAudioPlaylist(
+      h.context,
+      client: h.client,
+      playlist: playlist,
+      isOffline: true,
+      preloadedItems: [seed, musicTrack('missing')],
+    );
+    expect(h.music.started, isNull);
+    expect(h.client.playlistReads, 0);
+  });
+
+  testWidgets('profile change while preparing a playlist suppresses all reads', (tester) async {
+    final h = await pump(tester), pending = Completer<void>();
+    h.hidden.ready = () => pending.future;
+    final result = playAudioPlaylist(h.context, client: h.client, playlist: playlist);
+    h.profile.identityMutationGeneration++;
+    pending.complete();
+    await result;
+    expect(h.music.started, isNull);
+    expect(h.client.playlistReads, 0);
+  });
+
+  testWidgets('newer play intent wins while playlist source initializes', (tester) async {
+    final h = await pump(tester), pending = Completer<void>();
+    h.hidden.ready = () => pending.future;
+    final result = playAudioPlaylist(h.context, client: h.client, playlist: playlist);
+    h.music.beginPlayIntent();
+    pending.complete();
+    await result;
+    expect(h.music.started, isNull);
+    expect(h.client.playlistReads, 0);
+  });
+
+  testWidgets('offline album menu scope uses only owned children in disc order', (tester) async {
+    final h = await pump(tester);
+    h.files.downloadedTracks = [
+      musicTrack('third', disc: 2),
+      seed,
+      musicTrack('first'),
+      musicTrack('foreign', album: 'elsewhere'),
+    ];
+    final album = MediaItem(
+      id: 'album',
+      backend: MediaBackend.plex,
+      kind: MediaKind.album,
+      serverId: 's',
+      libraryId: 'library',
+    );
+    final scope = await MusicReadScope.forItem(h.context, album, offline: true);
+    expect(scope?.offlineTracks.map((item) => item.id), [seed.id, 'first', 'third']);
+    expect(h.client.reads, 0);
+    h.files.activeProfileId = 'other';
+    expect(scope?.current, isFalse);
+  });
+
+  testWidgets('live container expansion rejects another album and hidden library rows', (tester) async {
+    final h = await pump(tester);
+    final album = MediaItem(
+      id: 'album',
+      backend: MediaBackend.plex,
+      kind: MediaKind.album,
+      serverId: 's',
+      libraryId: 'library',
+    );
+    final scope = await MusicReadScope.forItem(h.context, album);
+    expect(scope?.ownsTrack(seed), isTrue);
+    expect(scope?.ownsTrack(musicTrack('foreign', album: 'elsewhere')), isFalse);
+    h.hidden.hiddenLibraryKeys.add('s:library');
+    expect(scope?.current, isFalse);
   });
 }

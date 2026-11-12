@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../media/media_item.dart';
+import '../media/media_kind.dart';
 import '../media/media_playlist.dart';
 import '../media/media_server_client.dart';
 import '../navigation/profile_navigation_scope.dart';
@@ -146,22 +147,24 @@ Future<void> playTracks(
 /// [playTracks] unchanged.
 Future<void> playFetchedTracks(
   BuildContext context, {
-  required Future<List<MediaItem>> Function() fetch,
+  required Future<List<MediaItem>> Function(bool Function() current) fetch,
   required MusicPlayContext playContext,
   void Function(Object error, StackTrace stackTrace)? onError,
   VoidCallback? onEmpty,
   MediaItem? startTrack,
   bool shuffle = false,
   bool Function()? sourceCurrent,
+  bool offline = false,
 }) async {
   final service = context.read<MusicPlaybackService>();
   bool current() =>
       context.mounted && (sourceCurrent?.call() ?? true) && identical(context.read<MusicPlaybackService>(), service);
   if (!current()) return;
   final intent = service.beginPlayIntent();
+  bool requestCurrent() => current() && service.isPlayIntentCurrent(intent);
   final List<MediaItem> tracks;
   try {
-    tracks = await fetch();
+    tracks = await fetch(requestCurrent);
   } catch (error, stackTrace) {
     if (!context.mounted || !current() || !service.isPlayIntentCurrent(intent)) return;
     if (onError == null) rethrow;
@@ -174,7 +177,14 @@ Future<void> playFetchedTracks(
     onEmpty();
     return;
   }
-  await playTracks(context, tracks: tracks, startTrack: startTrack, playContext: playContext, shuffle: shuffle);
+  await playTracks(
+    context,
+    tracks: tracks,
+    startTrack: startTrack,
+    playContext: playContext,
+    shuffle: shuffle,
+    offline: offline,
+  );
 }
 
 /// Play an audio [playlist] through the music session: hand its tracks to
@@ -187,21 +197,49 @@ Future<void> playAudioPlaylist(
   required MediaServerClient client,
   required MediaPlaylist playlist,
   bool shuffle = false,
+  bool isOffline = false,
   MediaItem? startTrack,
   List<MediaItem>? preloadedItems,
   void Function(Object error, StackTrace stackTrace)? onError,
   VoidCallback? onEmpty,
   bool Function()? sourceCurrent,
 }) {
+  MusicReadScope? scope;
+  var preparing = true;
+  final saved = preloadedItems == null ? null : List<MediaItem>.unmodifiable(preloadedItems);
+  bool current() => (sourceCurrent?.call() ?? true) && (preparing || scope?.current == true);
   return playFetchedTracks(
     context,
-    fetch: () async => preloadedItems ?? await fetchAllPlaylistItems(client, playlist.id),
+    fetch: (requestCurrent) async {
+      if (playlist.playlistType != 'audio') {
+        preparing = false;
+        return [];
+      }
+      scope = await MusicReadScope.forItem(
+        context,
+        MediaItem(id: playlist.id, backend: playlist.backend, kind: MediaKind.playlist, serverId: playlist.serverId),
+        selectedClient: client,
+        offline: isOffline,
+        offlinePlaylistTracks: saved,
+      );
+      preparing = false;
+      if (!requestCurrent()) return [];
+      final tracks = scope!.offline
+          ? scope!.offlineTracks
+          : saved ?? await fetchAllPlaylistItems(client, playlist.id, sourceCurrent: requestCurrent);
+      if (!current()) return [];
+      if (tracks.any((track) => !scope!.ownsTrack(track))) {
+        throw StateError('Playlist contains tracks outside its authorized source');
+      }
+      return tracks;
+    },
     playContext: MusicPlayContext(title: playlist.title, kind: MusicPlayContextKind.playlist),
     onError: onError,
     onEmpty: onEmpty,
     startTrack: startTrack,
     shuffle: shuffle,
-    sourceCurrent: sourceCurrent,
+    offline: isOffline || client.isOfflineMode,
+    sourceCurrent: current,
   );
 }
 

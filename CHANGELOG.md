@@ -34,6 +34,8 @@
 
 - Bind track-to-album playback to the original profile, account, server and visible library. Preserve owned offline playback from Downloads without fetching a live album, and reject stale or foreign album rows.
 
+- Stop playlist pagination and artist/album expansion when their account, profile, library visibility or play request changes. Validate queue rows against the original source and keep offline playlist occurrences limited to owned files.
+
 - Assemble the complete frozen release from independently signed iOS and tvOS sibling runs, verifying both IPA attestations and original platform artifact identities before publication.
 - Keep shared libraries read-only for collection changes and bind collection confirmations to their original authorized account.
 

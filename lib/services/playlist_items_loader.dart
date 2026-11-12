@@ -11,8 +11,14 @@ Future<List<MediaItem>> fetchAllPlaylistItems(
   String playlistId, {
   int pageSize = playlistItemsPageSize,
   AbortController? abort,
+  bool Function()? sourceCurrent,
 }) => drainPages<MediaItem>(
-  (start, size) => client.fetchPlaylistPage(playlistId, start: start, size: size, abort: abort),
+  (start, size) async {
+    if (sourceCurrent?.call() == false) throw StateError('Playlist source retired');
+    final page = await client.fetchPlaylistPage(playlistId, start: start, size: size, abort: abort);
+    if (sourceCurrent?.call() == false) throw StateError('Playlist source retired');
+    return page;
+  },
   pageSize: pageSize,
   abort: abort,
 );

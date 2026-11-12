@@ -17,6 +17,7 @@ import '../../utils/formatters.dart';
 import '../../utils/error_message_utils.dart';
 import '../../utils/media_image_helper.dart';
 import '../../utils/music_navigation.dart';
+import '../../utils/music_read_scope.dart';
 import '../../utils/platform_detector.dart';
 import '../../utils/provider_extensions.dart';
 import '../../utils/snackbar_helper.dart';
@@ -92,9 +93,25 @@ class _ArtistDetailScreenState extends BaseMediaListDetailScreen<ArtistDetailScr
   /// Plays the artist's full track list. The tracks aren't part of the album
   /// listing this screen loads, so this costs one extra server round-trip.
   Future<void> _playAll({bool shuffle = false}) async {
+    final client = mediaClient;
+    MusicReadScope? scope;
+    var preparing = true;
     await playFetchedTracks(
       context,
-      fetch: () => mediaClient.fetchPlayableDescendants(widget.artist.id),
+      fetch: (current) async {
+        scope = await MusicReadScope.forItem(context, widget.artist, selectedClient: client);
+        preparing = false;
+        if (!current()) return [];
+        if (scope!.offline) return scope!.offlineTracks;
+        final tracks = await client.fetchPlayableDescendants(widget.artist.id);
+        if (!current()) return [];
+        if (tracks.any((track) => !scope!.ownsTrack(track))) {
+          throw StateError('Artist tracks do not belong to the selected source');
+        }
+        return tracks;
+      },
+      sourceCurrent: () => preparing || scope?.current == true,
+      offline: client.isOfflineMode,
       playContext: MusicPlayContext(title: widget.artist.displayTitle, kind: MusicPlayContextKind.artist),
       onError: (e, stackTrace) =>
           showErrorSnackBar(context, localizedLoadErrorMessage(e, stackTrace, context: widget.artist.displayTitle)),

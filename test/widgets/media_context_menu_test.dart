@@ -996,7 +996,14 @@ void main() {
       final music = _RecordingMusicPlaybackService();
       final manager = MultiServerManager()..debugRegisterClientForTesting(client);
       final multiServerProvider = testMultiServerProvider(manager);
-      final stack = await ProfileStack.create(withStorage: false);
+      resetSharedPreferencesForTest();
+      final stack = (await tester.runAsync(() async {
+        final stack = await ProfileStack.create();
+        final actor = Profile.local(id: 'listener', displayName: 'Listener', createdAt: DateTime.utc(2024));
+        await stack.profiles.upsert(actor);
+        expect(await stack.active.activate(actor), isTrue);
+        return stack;
+      }))!;
       addTearDown(() async {
         await stack.dispose();
         music.dispose();
@@ -2157,6 +2164,10 @@ Future<void> _openPlaylistPicker(WidgetTester tester, GlobalKey<MediaContextMenu
 }
 
 class _AudioPlaylistClient implements MediaServerClient {
+  @override
+  final Object authenticationSessionId = Object();
+  @override
+  bool get isOfflineMode => false;
   final List<MediaItem> tracks;
   Completer<void>? fetchGate;
   bool blockWithAbort = false;

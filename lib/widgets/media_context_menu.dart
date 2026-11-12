@@ -44,6 +44,7 @@ import '../utils/app_logger.dart';
 import '../utils/library_refresh_notifier.dart';
 import '../utils/media_navigation_helper.dart';
 import '../utils/music_navigation.dart';
+import '../utils/music_read_scope.dart';
 import '../utils/platform_detector.dart';
 import '../utils/snackbar_helper.dart';
 import '../utils/dialogs.dart';
@@ -1521,13 +1522,20 @@ class MediaContextMenuState extends State<MediaContextMenu> {
   /// The track list music playback should operate on for [item]: the item
   /// itself for a track, an album's tracks, or an artist's playable
   /// descendants (one server round-trip for the container kinds).
-  Future<List<MediaItem>> _musicTracksForItem(MediaItem item) async {
-    final client = _getMediaClientForItem();
-    return switch (item.kind) {
+  Future<List<MediaItem>> _musicTracksForItem(MediaItem item, MusicReadScope scope) async {
+    if (!scope.current) return [];
+    if (scope.offline) return scope.offlineTracks;
+    final client = scope.client!;
+    final tracks = switch (item.kind) {
       MediaKind.album => await client.fetchAlbumTracks(item.id),
       MediaKind.artist => await client.fetchPlayableDescendants(item.id),
       _ => [item],
     };
+    if (!scope.current) return [];
+    if (tracks.any((track) => !scope.ownsTrack(track))) {
+      throw StateError('Music descendants do not belong to the selected source');
+    }
+    return tracks;
   }
 
   Future<void> _handleMusicPlay(BuildContext context) async {
@@ -1536,11 +1544,18 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       await playTrackWithAlbumContext(context, item, isOffline: widget.isOffline);
       return;
     }
-    // No onError: a failed container fetch falls through to this menu's own
-    // error boundary, which logs it and shows the snackbar.
+    MusicReadScope? scope;
+    var preparing = true;
     await playFetchedTracks(
       context,
-      fetch: () => _musicTracksForItem(item),
+      fetch: (current) async {
+        scope = await MusicReadScope.forItem(context, item, offline: widget.isOffline);
+        preparing = false;
+        if (!context.mounted || !current()) return [];
+        return _musicTracksForItem(item, scope!);
+      },
+      sourceCurrent: () => preparing || scope?.current == true,
+      offline: widget.isOffline,
       playContext: MusicPlayContext(
         title: item.displayTitle,
         kind: item.kind == MediaKind.artist ? MusicPlayContextKind.artist : MusicPlayContextKind.album,
@@ -1550,17 +1565,24 @@ class MediaContextMenuState extends State<MediaContextMenu> {
 
   Future<void> _handleMusicEnqueue(BuildContext context, {required bool playNext}) async {
     final service = context.read<MusicPlaybackService?>();
-    // Menu entries are hidden without a session; defensive re-check.
     if (service == null) return;
     final queueSessionRevision = service.queueSessionRevision;
+    final item = _mediaItem!;
+    final scope = await MusicReadScope.forItem(context, item, offline: widget.isOffline);
+    bool current() =>
+        context.mounted &&
+        scope?.current == true &&
+        identical(context.read<MusicPlaybackService?>(), service) &&
+        service.queueSessionRevision == queueSessionRevision;
+    if (!current()) return;
     List<MediaItem> tracks;
     try {
-      tracks = await _musicTracksForItem(_mediaItem!);
+      tracks = await _musicTracksForItem(item, scope!);
     } catch (_) {
-      if (!context.mounted || service.queueSessionRevision != queueSessionRevision) return;
+      if (!current()) return;
       rethrow;
     }
-    if (!context.mounted || service.queueSessionRevision != queueSessionRevision || tracks.isEmpty) return;
+    if (!current() || tracks.isEmpty) return;
     if (playNext) {
       service.addNext(tracks);
     } else {
@@ -1910,6 +1932,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         client: _getMediaClientForItem(),
         playlist: playlist,
         shuffle: shuffle,
+        isOffline: widget.isOffline,
         onError: (e, st) {
           appLogger.w('Failed to fetch audio playlist ${playlist.id}', error: e, stackTrace: st);
           showErrorSnackBar(context, t.messages.errorLoading(error: localizedErrorReason(e)));

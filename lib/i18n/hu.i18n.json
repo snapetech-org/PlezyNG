@@ -5571,7 +5571,12 @@
     "serverAnalysis": "Szerverelemzés",
     "sonicAnalysis": "Hangelemzés",
     "serverAnalysisScope": "A szerver összes alkalmas zenei könyvtára. Az elemzési beállításaik nem változnak.",
-    "serverActivities": "Szervertevékenységek"
+    "serverActivities": "Szervertevékenységek",
+    "playlistSharing": "Lejátszási lista elérése",
+    "playlistRecipient": "Plex-felhasználónév vagy e-mail",
+    "playlistSharingHint": "Adjon hozzáférést ehhez a listához és számaihoz. A címzettnek esetleg el kell fogadnia egy meghívást.",
+    "playlistSharingFailed": "Nem sikerült hozzáférést kérni a listához.",
+    "playlistSharingAccepted": "A Plex elfogadta a hozzáférési kérést."
   },
   "musicDevices": {
     "playOn": "Lejátszás itt",

@@ -5571,7 +5571,12 @@
     "serverAnalysis": "تحلیل سرور",
     "sonicAnalysis": "تحلیل صوتی",
     "serverAnalysisScope": "همهٔ کتابخانه‌های موسیقی واجد شرایط در این سرور. تنظیمات تحلیل آن‌ها تغییر نمی‌کند.",
-    "serverActivities": "فعالیت‌های سرور"
+    "serverActivities": "فعالیت‌های سرور",
+    "playlistSharing": "دسترسی به فهرست پخش",
+    "playlistRecipient": "نام کاربری Plex یا ایمیل",
+    "playlistSharingHint": "به این فهرست پخش و آهنگ‌های آن دسترسی بدهید. گیرنده ممکن است لازم باشد دعوتی را بپذیرد.",
+    "playlistSharingFailed": "درخواست دسترسی به فهرست پخش ممکن نشد.",
+    "playlistSharingAccepted": "Plex درخواست دسترسی را پذیرفت."
   },
   "musicDevices": {
     "playOn": "پخش در",

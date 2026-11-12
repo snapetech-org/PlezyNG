@@ -5571,7 +5571,12 @@
     "serverAnalysis": "सर्वर विश्लेषण",
     "sonicAnalysis": "ध्वनि विश्लेषण",
     "serverAnalysisScope": "इस सर्वर की सभी पात्र संगीत लाइब्रेरी। इससे उनकी विश्लेषण सेटिंग नहीं बदलती।",
-    "serverActivities": "सर्वर गतिविधियाँ"
+    "serverActivities": "सर्वर गतिविधियाँ",
+    "playlistSharing": "प्लेलिस्ट का ऐक्सेस",
+    "playlistRecipient": "Plex उपयोगकर्ता नाम या ईमेल",
+    "playlistSharingHint": "इस प्लेलिस्ट और इसके ट्रैक का ऐक्सेस दें। प्राप्तकर्ता को निमंत्रण स्वीकार करना पड़ सकता है।",
+    "playlistSharingFailed": "प्लेलिस्ट के ऐक्सेस का अनुरोध नहीं किया जा सका।",
+    "playlistSharingAccepted": "Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।"
   },
   "musicDevices": {
     "playOn": "इस पर चलाएँ",

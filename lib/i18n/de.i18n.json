@@ -5571,7 +5571,12 @@
     "serverAnalysis": "Serveranalyse",
     "sonicAnalysis": "Klanganalyse",
     "serverAnalysisScope": "Alle geeigneten Musikbibliotheken auf diesem Server. Ihre Analyseeinstellungen werden nicht geändert.",
-    "serverActivities": "Serveraktivitäten"
+    "serverActivities": "Serveraktivitäten",
+    "playlistSharing": "Playlist-Zugriff",
+    "playlistRecipient": "Plex-Benutzername oder E-Mail",
+    "playlistSharingHint": "Zugriff auf diese Playlist und ihre Titel gewähren. Der Empfänger muss eventuell eine Einladung annehmen.",
+    "playlistSharingFailed": "Playlist-Zugriff konnte nicht angefordert werden.",
+    "playlistSharingAccepted": "Plex hat die Zugriffsanfrage angenommen."
   },
   "musicDevices": {
     "playOn": "Wiedergeben auf",

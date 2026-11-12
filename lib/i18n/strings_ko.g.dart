@@ -4343,6 +4343,11 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get sonicAnalysis => '음향 분석';
 	@override String get serverAnalysisScope => '이 서버에서 분석 가능한 모든 음악 라이브러리에 적용됩니다. 분석 설정은 변경되지 않습니다.';
 	@override String get serverActivities => '서버 작업';
+	@override String get playlistSharing => '재생목록 접근';
+	@override String get playlistRecipient => 'Plex 사용자 이름 또는 이메일';
+	@override String get playlistSharingHint => '이 재생목록과 트랙에 대한 접근을 허용합니다. 수신자가 초대를 수락해야 할 수 있습니다.';
+	@override String get playlistSharingFailed => '재생목록 접근을 요청할 수 없습니다.';
+	@override String get playlistSharingAccepted => 'Plex가 접근 요청을 접수했습니다.';
 }
 
 // Path: musicDevices
@@ -9546,6 +9551,11 @@ extension on TranslationsKo {
 			'musicTools.sonicAnalysis' => '음향 분석',
 			'musicTools.serverAnalysisScope' => '이 서버에서 분석 가능한 모든 음악 라이브러리에 적용됩니다. 분석 설정은 변경되지 않습니다.',
 			'musicTools.serverActivities' => '서버 작업',
+			'musicTools.playlistSharing' => '재생목록 접근',
+			'musicTools.playlistRecipient' => 'Plex 사용자 이름 또는 이메일',
+			'musicTools.playlistSharingHint' => '이 재생목록과 트랙에 대한 접근을 허용합니다. 수신자가 초대를 수락해야 할 수 있습니다.',
+			'musicTools.playlistSharingFailed' => '재생목록 접근을 요청할 수 없습니다.',
+			'musicTools.playlistSharingAccepted' => 'Plex가 접근 요청을 접수했습니다.',
 			'musicDevices.playOn' => '재생 기기',
 			'musicDevices.thisDevice' => '이 기기',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',

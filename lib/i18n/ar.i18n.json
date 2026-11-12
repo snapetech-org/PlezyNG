@@ -5679,7 +5679,12 @@
     "serverAnalysis": "تحليل الخادم",
     "sonicAnalysis": "التحليل الصوتي",
     "serverAnalysisScope": "كل مكتبات الموسيقى المؤهلة على هذا الخادم. لا يغيّر هذا إعدادات التحليل الخاصة بها.",
-    "serverActivities": "أنشطة الخادم"
+    "serverActivities": "أنشطة الخادم",
+    "playlistSharing": "الوصول إلى قائمة التشغيل",
+    "playlistRecipient": "اسم مستخدم Plex أو البريد الإلكتروني",
+    "playlistSharingHint": "امنح الوصول إلى قائمة التشغيل هذه ومقاطعها. قد يحتاج المستلم إلى قبول دعوة.",
+    "playlistSharingFailed": "تعذر طلب الوصول إلى قائمة التشغيل.",
+    "playlistSharingAccepted": "قبل Plex طلب الوصول."
   },
   "musicDevices": {
     "playOn": "التشغيل على",

@@ -5580,7 +5580,12 @@
     "serverAnalysis": "Analyse du serveur",
     "sonicAnalysis": "Analyse sonore",
     "serverAnalysisScope": "Toutes les bibliothèques musicales éligibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.",
-    "serverActivities": "Activités du serveur"
+    "serverActivities": "Activités du serveur",
+    "playlistSharing": "Accès à la liste",
+    "playlistRecipient": "Nom d’utilisateur Plex ou e-mail",
+    "playlistSharingHint": "Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.",
+    "playlistSharingFailed": "Impossible de demander l’accès à la liste.",
+    "playlistSharingAccepted": "Plex a accepté la demande d’accès."
   },
   "musicDevices": {
     "playOn": "Lire sur",

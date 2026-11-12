@@ -928,7 +928,12 @@
     "serverAnalysis": "Análise do servidor",
     "sonicAnalysis": "Análise sonora",
     "serverAnalysisScope": "Todas as bibliotecas de música elegíveis neste servidor. As configurações de análise não são alteradas.",
-    "serverActivities": "Atividades do servidor"
+    "serverActivities": "Atividades do servidor",
+    "playlistSharing": "Acesso à playlist",
+    "playlistRecipient": "Nome de usuário Plex ou e-mail",
+    "playlistSharingHint": "Conceda acesso a esta playlist e às suas faixas. O destinatário pode precisar aceitar um convite.",
+    "playlistSharingFailed": "Não foi possível solicitar acesso à playlist.",
+    "playlistSharingAccepted": "O Plex aceitou a solicitação de acesso."
   },
   "musicExperience": {
     "bluetoothDriving": "Saídas Bluetooth para dirigir",

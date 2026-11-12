@@ -5566,7 +5566,12 @@
     "serverAnalysis": "服务器分析",
     "sonicAnalysis": "音频特征分析",
     "serverAnalysisScope": "此服务器上所有符合条件的音乐资料库。不会更改其分析设置。",
-    "serverActivities": "服务器任务"
+    "serverActivities": "服务器任务",
+    "playlistSharing": "播放列表访问权限",
+    "playlistRecipient": "Plex 用户名或电子邮件",
+    "playlistSharingHint": "授予对此播放列表及其曲目的访问权限。接收者可能需要接受邀请。",
+    "playlistSharingFailed": "无法请求播放列表访问权限。",
+    "playlistSharingAccepted": "Plex 已接受访问请求。"
   },
   "musicDevices": {
     "playOn": "播放设备",

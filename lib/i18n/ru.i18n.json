@@ -5625,7 +5625,12 @@
     "serverAnalysis": "Анализ сервера",
     "sonicAnalysis": "Звуковой анализ",
     "serverAnalysisScope": "Все подходящие музыкальные библиотеки на этом сервере. Их настройки анализа не изменяются.",
-    "serverActivities": "Задачи сервера"
+    "serverActivities": "Задачи сервера",
+    "playlistSharing": "Доступ к плейлисту",
+    "playlistRecipient": "Имя пользователя Plex или эл. почта",
+    "playlistSharingHint": "Предоставьте доступ к этому плейлисту и его трекам. Получателю может потребоваться принять приглашение.",
+    "playlistSharingFailed": "Не удалось запросить доступ к плейлисту.",
+    "playlistSharingAccepted": "Plex принял запрос на доступ."
   },
   "musicDevices": {
     "playOn": "Воспроизвести на",

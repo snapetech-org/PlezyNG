@@ -4325,6 +4325,11 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Phân tích âm thanh';
 	@override String get serverAnalysisScope => 'Tất cả thư viện nhạc đủ điều kiện trên máy chủ này. Không thay đổi cài đặt phân tích của chúng.';
 	@override String get serverActivities => 'Hoạt động máy chủ';
+	@override String get playlistSharing => 'Quyền truy cập danh sách phát';
+	@override String get playlistRecipient => 'Tên người dùng Plex hoặc email';
+	@override String get playlistSharingHint => 'Cấp quyền truy cập danh sách phát này và các bản nhạc. Người nhận có thể cần chấp nhận lời mời.';
+	@override String get playlistSharingFailed => 'Không thể yêu cầu truy cập danh sách phát.';
+	@override String get playlistSharingAccepted => 'Plex đã tiếp nhận yêu cầu truy cập.';
 }
 
 // Path: musicDevices
@@ -9526,6 +9531,11 @@ extension on TranslationsVi {
 			'musicTools.sonicAnalysis' => 'Phân tích âm thanh',
 			'musicTools.serverAnalysisScope' => 'Tất cả thư viện nhạc đủ điều kiện trên máy chủ này. Không thay đổi cài đặt phân tích của chúng.',
 			'musicTools.serverActivities' => 'Hoạt động máy chủ',
+			'musicTools.playlistSharing' => 'Quyền truy cập danh sách phát',
+			'musicTools.playlistRecipient' => 'Tên người dùng Plex hoặc email',
+			'musicTools.playlistSharingHint' => 'Cấp quyền truy cập danh sách phát này và các bản nhạc. Người nhận có thể cần chấp nhận lời mời.',
+			'musicTools.playlistSharingFailed' => 'Không thể yêu cầu truy cập danh sách phát.',
+			'musicTools.playlistSharingAccepted' => 'Plex đã tiếp nhận yêu cầu truy cập.',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',

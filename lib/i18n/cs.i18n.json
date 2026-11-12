@@ -5619,7 +5619,12 @@
     "serverAnalysis": "Analýza serveru",
     "sonicAnalysis": "Zvuková analýza",
     "serverAnalysisScope": "Všechny způsobilé hudební knihovny na tomto serveru. Jejich nastavení analýzy se nezmění.",
-    "serverActivities": "Aktivity serveru"
+    "serverActivities": "Aktivity serveru",
+    "playlistSharing": "Přístup k playlistu",
+    "playlistRecipient": "Uživatelské jméno Plex nebo e-mail",
+    "playlistSharingHint": "Udělte přístup k tomuto playlistu a jeho skladbám. Příjemce možná bude muset přijmout pozvánku.",
+    "playlistSharingFailed": "Nepodařilo se požádat o přístup k playlistu.",
+    "playlistSharingAccepted": "Plex přijal žádost o přístup."
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

@@ -4348,6 +4348,11 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'ध्वनि विश्लेषण';
 	@override String get serverAnalysisScope => 'इस सर्वर की सभी पात्र संगीत लाइब्रेरी। इससे उनकी विश्लेषण सेटिंग नहीं बदलती।';
 	@override String get serverActivities => 'सर्वर गतिविधियाँ';
+	@override String get playlistSharing => 'प्लेलिस्ट का ऐक्सेस';
+	@override String get playlistRecipient => 'Plex उपयोगकर्ता नाम या ईमेल';
+	@override String get playlistSharingHint => 'इस प्लेलिस्ट और इसके ट्रैक का ऐक्सेस दें। प्राप्तकर्ता को निमंत्रण स्वीकार करना पड़ सकता है।';
+	@override String get playlistSharingFailed => 'प्लेलिस्ट के ऐक्सेस का अनुरोध नहीं किया जा सका।';
+	@override String get playlistSharingAccepted => 'Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsHi {
 			'musicTools.sonicAnalysis' => 'ध्वनि विश्लेषण',
 			'musicTools.serverAnalysisScope' => 'इस सर्वर की सभी पात्र संगीत लाइब्रेरी। इससे उनकी विश्लेषण सेटिंग नहीं बदलती।',
 			'musicTools.serverActivities' => 'सर्वर गतिविधियाँ',
+			'musicTools.playlistSharing' => 'प्लेलिस्ट का ऐक्सेस',
+			'musicTools.playlistRecipient' => 'Plex उपयोगकर्ता नाम या ईमेल',
+			'musicTools.playlistSharingHint' => 'इस प्लेलिस्ट और इसके ट्रैक का ऐक्सेस दें। प्राप्तकर्ता को निमंत्रण स्वीकार करना पड़ सकता है।',
+			'musicTools.playlistSharingFailed' => 'प्लेलिस्ट के ऐक्सेस का अनुरोध नहीं किया जा सका।',
+			'musicTools.playlistSharingAccepted' => 'Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',

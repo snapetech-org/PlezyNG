@@ -4343,6 +4343,11 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	@override String get sonicAnalysis => '音频特征分析';
 	@override String get serverAnalysisScope => '此服务器上所有符合条件的音乐资料库。不会更改其分析设置。';
 	@override String get serverActivities => '服务器任务';
+	@override String get playlistSharing => '播放列表访问权限';
+	@override String get playlistRecipient => 'Plex 用户名或电子邮件';
+	@override String get playlistSharingHint => '授予对此播放列表及其曲目的访问权限。接收者可能需要接受邀请。';
+	@override String get playlistSharingFailed => '无法请求播放列表访问权限。';
+	@override String get playlistSharingAccepted => 'Plex 已接受访问请求。';
 }
 
 // Path: musicDevices
@@ -9546,6 +9551,11 @@ extension on TranslationsZh {
 			'musicTools.sonicAnalysis' => '音频特征分析',
 			'musicTools.serverAnalysisScope' => '此服务器上所有符合条件的音乐资料库。不会更改其分析设置。',
 			'musicTools.serverActivities' => '服务器任务',
+			'musicTools.playlistSharing' => '播放列表访问权限',
+			'musicTools.playlistRecipient' => 'Plex 用户名或电子邮件',
+			'musicTools.playlistSharingHint' => '授予对此播放列表及其曲目的访问权限。接收者可能需要接受邀请。',
+			'musicTools.playlistSharingFailed' => '无法请求播放列表访问权限。',
+			'musicTools.playlistSharingAccepted' => 'Plex 已接受访问请求。',
 			'musicDevices.playOn' => '播放设备',
 			'musicDevices.thisDevice' => '此设备',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

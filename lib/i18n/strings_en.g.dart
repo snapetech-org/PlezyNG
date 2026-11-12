@@ -14837,6 +14837,21 @@ class Translations$musicTools$en {
 
 	/// en: 'Server activities'
 	String get serverActivities => 'Server activities';
+
+	/// en: 'Playlist access'
+	String get playlistSharing => 'Playlist access';
+
+	/// en: 'Plex username or email'
+	String get playlistRecipient => 'Plex username or email';
+
+	/// en: 'Grant access to this playlist and its tracks. The recipient may need to accept an invitation.'
+	String get playlistSharingHint => 'Grant access to this playlist and its tracks. The recipient may need to accept an invitation.';
+
+	/// en: 'Could not request playlist access.'
+	String get playlistSharingFailed => 'Could not request playlist access.';
+
+	/// en: 'Plex accepted the access request.'
+	String get playlistSharingAccepted => 'Plex accepted the access request.';
 }
 
 // Path: musicDevices
@@ -22798,6 +22813,11 @@ extension on Translations {
 			'musicTools.sonicAnalysis' => 'Sonic analysis',
 			'musicTools.serverAnalysisScope' => 'All eligible music libraries on this server. This does not change their analysis settings.',
 			'musicTools.serverActivities' => 'Server activities',
+			'musicTools.playlistSharing' => 'Playlist access',
+			'musicTools.playlistRecipient' => 'Plex username or email',
+			'musicTools.playlistSharingHint' => 'Grant access to this playlist and its tracks. The recipient may need to accept an invitation.',
+			'musicTools.playlistSharingFailed' => 'Could not request playlist access.',
+			'musicTools.playlistSharingAccepted' => 'Plex accepted the access request.',
 			'musicDevices.playOn' => 'Play on',
 			'musicDevices.thisDevice' => 'This device',
 			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',

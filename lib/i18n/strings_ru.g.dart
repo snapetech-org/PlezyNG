@@ -4394,6 +4394,11 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Звуковой анализ';
 	@override String get serverAnalysisScope => 'Все подходящие музыкальные библиотеки на этом сервере. Их настройки анализа не изменяются.';
 	@override String get serverActivities => 'Задачи сервера';
+	@override String get playlistSharing => 'Доступ к плейлисту';
+	@override String get playlistRecipient => 'Имя пользователя Plex или эл. почта';
+	@override String get playlistSharingHint => 'Предоставьте доступ к этому плейлисту и его трекам. Получателю может потребоваться принять приглашение.';
+	@override String get playlistSharingFailed => 'Не удалось запросить доступ к плейлисту.';
+	@override String get playlistSharingAccepted => 'Plex принял запрос на доступ.';
 }
 
 // Path: musicDevices
@@ -9601,6 +9606,11 @@ extension on TranslationsRu {
 			'musicTools.sonicAnalysis' => 'Звуковой анализ',
 			'musicTools.serverAnalysisScope' => 'Все подходящие музыкальные библиотеки на этом сервере. Их настройки анализа не изменяются.',
 			'musicTools.serverActivities' => 'Задачи сервера',
+			'musicTools.playlistSharing' => 'Доступ к плейлисту',
+			'musicTools.playlistRecipient' => 'Имя пользователя Plex или эл. почта',
+			'musicTools.playlistSharingHint' => 'Предоставьте доступ к этому плейлисту и его трекам. Получателю может потребоваться принять приглашение.',
+			'musicTools.playlistSharingFailed' => 'Не удалось запросить доступ к плейлисту.',
+			'musicTools.playlistSharingAccepted' => 'Plex принял запрос на доступ.',
 			'musicDevices.playOn' => 'Воспроизвести на',
 			'musicDevices.thisDevice' => 'Это устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Воспроизводится на ${device}',

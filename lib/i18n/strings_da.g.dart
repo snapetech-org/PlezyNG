@@ -4348,6 +4348,11 @@ class _Translations$musicTools$da extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Lydanalyse';
 	@override String get serverAnalysisScope => 'Alle egnede musikbiblioteker på denne server. Deres analyseindstillinger ændres ikke.';
 	@override String get serverActivities => 'Serveraktiviteter';
+	@override String get playlistSharing => 'Adgang til afspilningsliste';
+	@override String get playlistRecipient => 'Plex-brugernavn eller e-mail';
+	@override String get playlistSharingHint => 'Giv adgang til denne afspilningsliste og dens numre. Modtageren skal muligvis acceptere en invitation.';
+	@override String get playlistSharingFailed => 'Kunne ikke anmode om adgang til afspilningslisten.';
+	@override String get playlistSharingAccepted => 'Plex accepterede adgangsanmodningen.';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsDa {
 			'musicTools.sonicAnalysis' => 'Lydanalyse',
 			'musicTools.serverAnalysisScope' => 'Alle egnede musikbiblioteker på denne server. Deres analyseindstillinger ændres ikke.',
 			'musicTools.serverActivities' => 'Serveraktiviteter',
+			'musicTools.playlistSharing' => 'Adgang til afspilningsliste',
+			'musicTools.playlistRecipient' => 'Plex-brugernavn eller e-mail',
+			'musicTools.playlistSharingHint' => 'Giv adgang til denne afspilningsliste og dens numre. Modtageren skal muligvis acceptere en invitation.',
+			'musicTools.playlistSharingFailed' => 'Kunne ikke anmode om adgang til afspilningslisten.',
+			'musicTools.playlistSharingAccepted' => 'Plex accepterede adgangsanmodningen.',
 			'musicDevices.playOn' => 'Afspil på',
 			'musicDevices.thisDevice' => 'Denne enhed',
 			'musicDevices.playingOn' => ({required Object device}) => 'Afspiller på ${device}',

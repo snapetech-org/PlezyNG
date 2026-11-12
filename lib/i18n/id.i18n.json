@@ -5544,7 +5544,12 @@
     "serverAnalysis": "Analisis server",
     "sonicAnalysis": "Analisis sonik",
     "serverAnalysisScope": "Semua pustaka musik yang memenuhi syarat di server ini. Pengaturan analisisnya tidak diubah.",
-    "serverActivities": "Aktivitas server"
+    "serverActivities": "Aktivitas server",
+    "playlistSharing": "Akses daftar putar",
+    "playlistRecipient": "Nama pengguna Plex atau email",
+    "playlistSharingHint": "Berikan akses ke daftar putar ini dan lagunya. Penerima mungkin perlu menerima undangan.",
+    "playlistSharingFailed": "Tidak dapat meminta akses daftar putar.",
+    "playlistSharingAccepted": "Plex menerima permintaan akses."
   },
   "musicDevices": {
     "playOn": "Putar di",

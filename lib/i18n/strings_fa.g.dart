@@ -4348,6 +4348,11 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'تحلیل صوتی';
 	@override String get serverAnalysisScope => 'همهٔ کتابخانه‌های موسیقی واجد شرایط در این سرور. تنظیمات تحلیل آن‌ها تغییر نمی‌کند.';
 	@override String get serverActivities => 'فعالیت‌های سرور';
+	@override String get playlistSharing => 'دسترسی به فهرست پخش';
+	@override String get playlistRecipient => 'نام کاربری Plex یا ایمیل';
+	@override String get playlistSharingHint => 'به این فهرست پخش و آهنگ‌های آن دسترسی بدهید. گیرنده ممکن است لازم باشد دعوتی را بپذیرد.';
+	@override String get playlistSharingFailed => 'درخواست دسترسی به فهرست پخش ممکن نشد.';
+	@override String get playlistSharingAccepted => 'Plex درخواست دسترسی را پذیرفت.';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsFa {
 			'musicTools.sonicAnalysis' => 'تحلیل صوتی',
 			'musicTools.serverAnalysisScope' => 'همهٔ کتابخانه‌های موسیقی واجد شرایط در این سرور. تنظیمات تحلیل آن‌ها تغییر نمی‌کند.',
 			'musicTools.serverActivities' => 'فعالیت‌های سرور',
+			'musicTools.playlistSharing' => 'دسترسی به فهرست پخش',
+			'musicTools.playlistRecipient' => 'نام کاربری Plex یا ایمیل',
+			'musicTools.playlistSharingHint' => 'به این فهرست پخش و آهنگ‌های آن دسترسی بدهید. گیرنده ممکن است لازم باشد دعوتی را بپذیرد.',
+			'musicTools.playlistSharingFailed' => 'درخواست دسترسی به فهرست پخش ممکن نشد.',
+			'musicTools.playlistSharingAccepted' => 'Plex درخواست دسترسی را پذیرفت.',
 			'musicDevices.playOn' => 'پخش در',
 			'musicDevices.thisDevice' => 'این دستگاه',
 			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',

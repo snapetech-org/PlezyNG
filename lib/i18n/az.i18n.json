@@ -5571,7 +5571,12 @@
     "serverAnalysis": "Server analizi",
     "sonicAnalysis": "Səs analizi",
     "serverAnalysisScope": "Bu serverdəki bütün uyğun musiqi kitabxanaları. Onların analiz parametrləri dəyişmir.",
-    "serverActivities": "Server fəaliyyətləri"
+    "serverActivities": "Server fəaliyyətləri",
+    "playlistSharing": "Pleylistə giriş",
+    "playlistRecipient": "Plex istifadəçi adı və ya e-poçt",
+    "playlistSharingHint": "Bu pleylistə və treklərinə giriş verin. Alıcı dəvəti qəbul etməli ola bilər.",
+    "playlistSharingFailed": "Pleylistə giriş istənilə bilmədi.",
+    "playlistSharingAccepted": "Plex giriş sorğusunu qəbul etdi."
   },
   "musicDevices": {
     "playOn": "Burada səsləndir",

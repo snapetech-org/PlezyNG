@@ -5625,7 +5625,12 @@
     "serverAnalysis": "Analiza serwera",
     "sonicAnalysis": "Analiza dźwięku",
     "serverAnalysisScope": "Wszystkie kwalifikujące się biblioteki muzyczne na tym serwerze. Ich ustawienia analizy nie zostaną zmienione.",
-    "serverActivities": "Aktywność serwera"
+    "serverActivities": "Aktywność serwera",
+    "playlistSharing": "Dostęp do playlisty",
+    "playlistRecipient": "Nazwa użytkownika Plex lub e-mail",
+    "playlistSharingHint": "Przyznaj dostęp do tej playlisty i jej utworów. Odbiorca może musieć zaakceptować zaproszenie.",
+    "playlistSharingFailed": "Nie udało się wysłać prośby o dostęp do playlisty.",
+    "playlistSharingAccepted": "Plex przyjął prośbę o dostęp."
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

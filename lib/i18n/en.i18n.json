@@ -5650,7 +5650,12 @@
     "serverAnalysis": "Server analysis",
     "sonicAnalysis": "Sonic analysis",
     "serverAnalysisScope": "All eligible music libraries on this server. This does not change their analysis settings.",
-    "serverActivities": "Server activities"
+    "serverActivities": "Server activities",
+    "playlistSharing": "Playlist access",
+    "playlistRecipient": "Plex username or email",
+    "playlistSharingHint": "Grant access to this playlist and its tracks. The recipient may need to accept an invitation.",
+    "playlistSharingFailed": "Could not request playlist access.",
+    "playlistSharingAccepted": "Plex accepted the access request."
   },
   "musicDevices": {
     "playOn": "Play on",

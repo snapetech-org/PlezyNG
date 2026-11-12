@@ -5571,7 +5571,12 @@
     "serverAnalysis": "Sunucu analizi",
     "sonicAnalysis": "Ses analizi",
     "serverAnalysisScope": "Bu sunucudaki uygun tüm müzik kitaplıkları. Analiz ayarları değiştirilmez.",
-    "serverActivities": "Sunucu etkinlikleri"
+    "serverActivities": "Sunucu etkinlikleri",
+    "playlistSharing": "Çalma listesi erişimi",
+    "playlistRecipient": "Plex kullanıcı adı veya e-posta",
+    "playlistSharingHint": "Bu çalma listesine ve parçalarına erişim verin. Alıcının bir daveti kabul etmesi gerekebilir.",
+    "playlistSharingFailed": "Çalma listesi erişimi istenemedi.",
+    "playlistSharingAccepted": "Plex erişim isteğini kabul etti."
   },
   "musicDevices": {
     "playOn": "Şurada çal",

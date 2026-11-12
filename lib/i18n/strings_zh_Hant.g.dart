@@ -4344,6 +4344,11 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String get sonicAnalysis => '音訊特徵分析';
 	@override String get serverAnalysisScope => '此伺服器上所有符合條件的音樂資料庫。不會更改其分析設定。';
 	@override String get serverActivities => '伺服器工作';
+	@override String get playlistSharing => '播放清單存取權';
+	@override String get playlistRecipient => 'Plex 使用者名稱或電子郵件';
+	@override String get playlistSharingHint => '授予此播放清單及其曲目的存取權。收件者可能需要接受邀請。';
+	@override String get playlistSharingFailed => '無法請求播放清單存取權。';
+	@override String get playlistSharingAccepted => 'Plex 已接受存取請求。';
 }
 
 // Path: musicDevices
@@ -9547,6 +9552,11 @@ extension on TranslationsZhHant {
 			'musicTools.sonicAnalysis' => '音訊特徵分析',
 			'musicTools.serverAnalysisScope' => '此伺服器上所有符合條件的音樂資料庫。不會更改其分析設定。',
 			'musicTools.serverActivities' => '伺服器工作',
+			'musicTools.playlistSharing' => '播放清單存取權',
+			'musicTools.playlistRecipient' => 'Plex 使用者名稱或電子郵件',
+			'musicTools.playlistSharingHint' => '授予此播放清單及其曲目的存取權。收件者可能需要接受邀請。',
+			'musicTools.playlistSharingFailed' => '無法請求播放清單存取權。',
+			'musicTools.playlistSharingAccepted' => 'Plex 已接受存取請求。',
 			'musicDevices.playOn' => '播放裝置',
 			'musicDevices.thisDevice' => '此裝置',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

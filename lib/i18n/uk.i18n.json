@@ -5619,7 +5619,12 @@
     "serverAnalysis": "Аналіз сервера",
     "sonicAnalysis": "Звуковий аналіз",
     "serverAnalysisScope": "Усі відповідні музичні бібліотеки на цьому сервері. Їхні налаштування аналізу не змінюються.",
-    "serverActivities": "Завдання сервера"
+    "serverActivities": "Завдання сервера",
+    "playlistSharing": "Доступ до списку відтворення",
+    "playlistRecipient": "Ім’я користувача Plex або ел. пошта",
+    "playlistSharingHint": "Надайте доступ до цього списку та його композицій. Одержувачу може знадобитися прийняти запрошення.",
+    "playlistSharingFailed": "Не вдалося запросити доступ до списку.",
+    "playlistSharingAccepted": "Plex прийняв запит на доступ."
   },
   "musicDevices": {
     "playOn": "Відтворити на",

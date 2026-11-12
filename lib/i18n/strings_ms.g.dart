@@ -4325,6 +4325,11 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Analisis sonik';
 	@override String get serverAnalysisScope => 'Semua pustaka muzik yang layak pada pelayan ini. Tetapan analisisnya tidak diubah.';
 	@override String get serverActivities => 'Aktiviti pelayan';
+	@override String get playlistSharing => 'Akses senarai main';
+	@override String get playlistRecipient => 'Nama pengguna Plex atau e-mel';
+	@override String get playlistSharingHint => 'Berikan akses kepada senarai main ini dan lagunya. Penerima mungkin perlu menerima jemputan.';
+	@override String get playlistSharingFailed => 'Tidak dapat meminta akses senarai main.';
+	@override String get playlistSharingAccepted => 'Plex menerima permintaan akses.';
 }
 
 // Path: musicDevices
@@ -9526,6 +9531,11 @@ extension on TranslationsMs {
 			'musicTools.sonicAnalysis' => 'Analisis sonik',
 			'musicTools.serverAnalysisScope' => 'Semua pustaka muzik yang layak pada pelayan ini. Tetapan analisisnya tidak diubah.',
 			'musicTools.serverActivities' => 'Aktiviti pelayan',
+			'musicTools.playlistSharing' => 'Akses senarai main',
+			'musicTools.playlistRecipient' => 'Nama pengguna Plex atau e-mel',
+			'musicTools.playlistSharingHint' => 'Berikan akses kepada senarai main ini dan lagunya. Penerima mungkin perlu menerima jemputan.',
+			'musicTools.playlistSharingFailed' => 'Tidak dapat meminta akses senarai main.',
+			'musicTools.playlistSharingAccepted' => 'Plex menerima permintaan akses.',
 			'musicDevices.playOn' => 'Mainkan pada',
 			'musicDevices.thisDevice' => 'Peranti ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',

@@ -5544,7 +5544,12 @@
     "serverAnalysis": "Analisis pelayan",
     "sonicAnalysis": "Analisis sonik",
     "serverAnalysisScope": "Semua pustaka muzik yang layak pada pelayan ini. Tetapan analisisnya tidak diubah.",
-    "serverActivities": "Aktiviti pelayan"
+    "serverActivities": "Aktiviti pelayan",
+    "playlistSharing": "Akses senarai main",
+    "playlistRecipient": "Nama pengguna Plex atau e-mel",
+    "playlistSharingHint": "Berikan akses kepada senarai main ini dan lagunya. Penerima mungkin perlu menerima jemputan.",
+    "playlistSharingFailed": "Tidak dapat meminta akses senarai main.",
+    "playlistSharingAccepted": "Plex menerima permintaan akses."
   },
   "musicDevices": {
     "playOn": "Mainkan pada",

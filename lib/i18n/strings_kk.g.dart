@@ -4348,6 +4348,11 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Дыбыстық талдау';
 	@override String get serverAnalysisScope => 'Осы сервердегі барлық жарамды музыка кітапханалары. Олардың талдау параметрлері өзгермейді.';
 	@override String get serverActivities => 'Сервер әрекеттері';
+	@override String get playlistSharing => 'Ойнату тізіміне қатынау';
+	@override String get playlistRecipient => 'Plex пайдаланушы аты немесе электрондық пошта';
+	@override String get playlistSharingHint => 'Осы тізімге және оның тректеріне қатынау беріңіз. Алушы шақыруды қабылдауы қажет болуы мүмкін.';
+	@override String get playlistSharingFailed => 'Тізімге қатынау сұрауын жіберу мүмкін болмады.';
+	@override String get playlistSharingAccepted => 'Plex қатынау сұрауын қабылдады.';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsKk {
 			'musicTools.sonicAnalysis' => 'Дыбыстық талдау',
 			'musicTools.serverAnalysisScope' => 'Осы сервердегі барлық жарамды музыка кітапханалары. Олардың талдау параметрлері өзгермейді.',
 			'musicTools.serverActivities' => 'Сервер әрекеттері',
+			'musicTools.playlistSharing' => 'Ойнату тізіміне қатынау',
+			'musicTools.playlistRecipient' => 'Plex пайдаланушы аты немесе электрондық пошта',
+			'musicTools.playlistSharingHint' => 'Осы тізімге және оның тректеріне қатынау беріңіз. Алушы шақыруды қабылдауы қажет болуы мүмкін.',
+			'musicTools.playlistSharingFailed' => 'Тізімге қатынау сұрауын жіберу мүмкін болмады.',
+			'musicTools.playlistSharingAccepted' => 'Plex қатынау сұрауын қабылдады.',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',

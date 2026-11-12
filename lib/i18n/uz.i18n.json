@@ -5571,7 +5571,12 @@
     "serverAnalysis": "Server tahlili",
     "sonicAnalysis": "Ovoz tahlili",
     "serverAnalysisScope": "Ushbu serverdagi barcha mos musiqa kutubxonalari. Ularning tahlil sozlamalari o‘zgarmaydi.",
-    "serverActivities": "Server faoliyati"
+    "serverActivities": "Server faoliyati",
+    "playlistSharing": "Pleylistga kirish",
+    "playlistRecipient": "Plex foydalanuvchi nomi yoki email",
+    "playlistSharingHint": "Bu pleylist va uning treklariga kirishga ruxsat bering. Qabul qiluvchi taklifni qabul qilishi kerak bo‘lishi mumkin.",
+    "playlistSharingFailed": "Pleylistga kirish so‘rovini yuborib bo‘lmadi.",
+    "playlistSharingAccepted": "Plex kirish so‘rovini qabul qildi."
   },
   "musicDevices": {
     "playOn": "Shu qurilmada ijro etish",

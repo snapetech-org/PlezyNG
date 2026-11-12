@@ -5566,7 +5566,12 @@
     "serverAnalysis": "サーバー解析",
     "sonicAnalysis": "音響解析",
     "serverAnalysisScope": "このサーバー上の対象となるすべての音楽ライブラリ。解析設定は変更されません。",
-    "serverActivities": "サーバーの処理状況"
+    "serverActivities": "サーバーの処理状況",
+    "playlistSharing": "プレイリストへのアクセス",
+    "playlistRecipient": "Plexユーザー名またはメール",
+    "playlistSharingHint": "このプレイリストと曲へのアクセスを許可します。受信者による招待の承諾が必要な場合があります。",
+    "playlistSharingFailed": "プレイリストへのアクセスをリクエストできませんでした。",
+    "playlistSharingAccepted": "Plexがアクセスのリクエストを受け付けました。"
   },
   "musicDevices": {
     "playOn": "再生先",

@@ -4440,6 +4440,11 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'التحليل الصوتي';
 	@override String get serverAnalysisScope => 'كل مكتبات الموسيقى المؤهلة على هذا الخادم. لا يغيّر هذا إعدادات التحليل الخاصة بها.';
 	@override String get serverActivities => 'أنشطة الخادم';
+	@override String get playlistSharing => 'الوصول إلى قائمة التشغيل';
+	@override String get playlistRecipient => 'اسم مستخدم Plex أو البريد الإلكتروني';
+	@override String get playlistSharingHint => 'امنح الوصول إلى قائمة التشغيل هذه ومقاطعها. قد يحتاج المستلم إلى قبول دعوة.';
+	@override String get playlistSharingFailed => 'تعذر طلب الوصول إلى قائمة التشغيل.';
+	@override String get playlistSharingAccepted => 'قبل Plex طلب الوصول.';
 }
 
 // Path: musicDevices
@@ -9651,6 +9656,11 @@ extension on TranslationsAr {
 			'musicTools.sonicAnalysis' => 'التحليل الصوتي',
 			'musicTools.serverAnalysisScope' => 'كل مكتبات الموسيقى المؤهلة على هذا الخادم. لا يغيّر هذا إعدادات التحليل الخاصة بها.',
 			'musicTools.serverActivities' => 'أنشطة الخادم',
+			'musicTools.playlistSharing' => 'الوصول إلى قائمة التشغيل',
+			'musicTools.playlistRecipient' => 'اسم مستخدم Plex أو البريد الإلكتروني',
+			'musicTools.playlistSharingHint' => 'امنح الوصول إلى قائمة التشغيل هذه ومقاطعها. قد يحتاج المستلم إلى قبول دعوة.',
+			'musicTools.playlistSharingFailed' => 'تعذر طلب الوصول إلى قائمة التشغيل.',
+			'musicTools.playlistSharingAccepted' => 'قبل Plex طلب الوصول.',
 			'musicDevices.playOn' => 'التشغيل على',
 			'musicDevices.thisDevice' => 'هذا الجهاز',
 			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',

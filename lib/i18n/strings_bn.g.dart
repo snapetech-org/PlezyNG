@@ -4348,6 +4348,11 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'সোনিক বিশ্লেষণ';
 	@override String get serverAnalysisScope => 'এই সার্ভারের সব উপযুক্ত সঙ্গীত লাইব্রেরি। এতে তাদের বিশ্লেষণ সেটিংস বদলাবে না।';
 	@override String get serverActivities => 'সার্ভারের কার্যকলাপ';
+	@override String get playlistSharing => 'প্লেলিস্টে প্রবেশাধিকার';
+	@override String get playlistRecipient => 'Plex ব্যবহারকারীর নাম বা ইমেইল';
+	@override String get playlistSharingHint => 'এই প্লেলিস্ট ও এর ট্র্যাকগুলোতে প্রবেশাধিকার দিন। প্রাপককে আমন্ত্রণ গ্রহণ করতে হতে পারে।';
+	@override String get playlistSharingFailed => 'প্লেলিস্টে প্রবেশাধিকারের অনুরোধ করা যায়নি।';
+	@override String get playlistSharingAccepted => 'Plex প্রবেশাধিকারের অনুরোধ গ্রহণ করেছে।';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsBn {
 			'musicTools.sonicAnalysis' => 'সোনিক বিশ্লেষণ',
 			'musicTools.serverAnalysisScope' => 'এই সার্ভারের সব উপযুক্ত সঙ্গীত লাইব্রেরি। এতে তাদের বিশ্লেষণ সেটিংস বদলাবে না।',
 			'musicTools.serverActivities' => 'সার্ভারের কার্যকলাপ',
+			'musicTools.playlistSharing' => 'প্লেলিস্টে প্রবেশাধিকার',
+			'musicTools.playlistRecipient' => 'Plex ব্যবহারকারীর নাম বা ইমেইল',
+			'musicTools.playlistSharingHint' => 'এই প্লেলিস্ট ও এর ট্র্যাকগুলোতে প্রবেশাধিকার দিন। প্রাপককে আমন্ত্রণ গ্রহণ করতে হতে পারে।',
+			'musicTools.playlistSharingFailed' => 'প্লেলিস্টে প্রবেশাধিকারের অনুরোধ করা যায়নি।',
+			'musicTools.playlistSharingAccepted' => 'Plex প্রবেশাধিকারের অনুরোধ গ্রহণ করেছে।',
 			'musicDevices.playOn' => 'এখানে চালান',
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',

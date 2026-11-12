@@ -9,6 +9,11 @@ import '../../media/media_item.dart';
 import '../../media/media_playlist.dart';
 import '../../media/media_kind.dart';
 import '../../services/playlist_batch_removal.dart';
+import '../../services/plex_auth_service.dart';
+import '../../services/plex_client.dart';
+import '../../services/plex_playlist_sharing.dart';
+import '../../utils/media_collection_actions.dart';
+import 'playlist_share_dialog.dart';
 import '../../media/media_server_client.dart';
 import '../../media/ids.dart';
 import '../../services/music/music_account_scope.dart';
@@ -201,6 +206,75 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
         identical(owner.client, context.tryGetMediaClientForServer(serverIdOrNull(_playlist.serverId))) &&
         identical(owner.authentication, owner.client.authenticationSessionId) &&
         owner.scope == musicAccountScope(owner.client);
+  }
+
+  /// Capture the actor whose playlist and recipient decision are visible.
+  /// A later profile bind must never resolve this into a replacement owner.
+  bool Function()? _sharingAuthorization() {
+    final owner = _metadataOwner;
+    if (!_isAudioPlaylist || owner == null || owner.client is! PlexClient) return null;
+    final client = owner.client as PlexClient;
+    final token = client.plexAccountToken;
+    if (token?.isNotEmpty != true) return null;
+    final servers = context.read<MultiServerProvider>();
+    final profiles = context.read<ActiveProfileProvider>();
+    final profileId = profiles.activeId;
+    final generation = profiles.identityMutationGeneration;
+    final server = serverIdOrNull(_playlist.serverId);
+    if (profileId == null || server == null) return null;
+    bool current() {
+      if (!mounted ||
+          client.plexAccountToken != token ||
+          _metadataOwner != owner ||
+          !_metadataSourceCurrent() ||
+          servers.isDisposed ||
+          !identical(context.read<MultiServerProvider>(), servers) ||
+          !identical(context.read<ActiveProfileProvider>(), profiles) ||
+          profiles.activeId != profileId ||
+          profiles.identityMutationGeneration != generation ||
+          profiles.isBinding ||
+          !profiles.lastBindingSucceeded) {
+        return false;
+      }
+      final manager = servers.serverManager;
+      return manager.isServerVisible(server) &&
+          manager.isClientOnline(server) &&
+          identical(manager.getClient(server), client) &&
+          isAdminActionAllowedForMediaItem(
+            isOwnerOrAdmin: manager.isOwnerOrAdmin(server),
+            itemBackend: _playlist.backend,
+            activeProfile: profiles.active,
+          );
+    }
+
+    return current() ? current : null;
+  }
+
+  Future<void> _sharePlaylist() async {
+    if (_editingMetadata || _isPlaylistMutationPending || _selectingEntries) return;
+    final authorized = _sharingAuthorization();
+    if (authorized == null) return;
+    final client = _metadataOwner!.client as PlexClient;
+    setState(() => _editingMetadata = true);
+    PlexAuthService? auth;
+    try {
+      auth = await PlexAuthService.create();
+      if (!mounted || !authorized()) return;
+      final sharing = PlexPlaylistSharing(client: client, auth: auth, playlist: _playlist, isCurrent: authorized);
+      final draft = await sharing.prepare();
+      if (!mounted || !sharing.current) return;
+      final accepted = await showDialog<bool>(
+        context: context,
+        builder: (_) => PlaylistShareDialog(draft: draft, sharing: sharing),
+      );
+      if (!mounted || !sharing.current || accepted != true) return;
+      showAppSnackBar(context, t.musicTools.playlistSharingAccepted);
+    } catch (_) {
+      if (mounted && authorized()) showErrorSnackBar(context, t.musicTools.playlistSharingFailed);
+    } finally {
+      auth?.dispose();
+      if (mounted) setState(() => _editingMetadata = false);
+    }
   }
 
   Future<void> _editMetadata() async {
@@ -421,6 +495,13 @@ class _PlaylistDetailScreenState extends BaseMediaListDetailScreen<PlaylistDetai
           icon: Symbols.image_rounded,
           tooltip: t.metadataEdit.artwork,
           onPressed: _editingMetadata || _isPlaylistMutationPending || _selectingEntries ? null : _editArtwork,
+        ),
+      if (_sharingAuthorization() != null)
+        FocusableAction(
+          debugLabel: 'playlist_share',
+          icon: Symbols.person_add_rounded,
+          tooltip: t.musicTools.playlistSharing,
+          onPressed: _editingMetadata || _isPlaylistMutationPending || _selectingEntries ? null : _sharePlaylist,
         ),
       if (_isAudioPlaylist && _playlist.smart)
         FocusableAction(

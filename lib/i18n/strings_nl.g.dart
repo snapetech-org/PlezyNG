@@ -4348,6 +4348,11 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Geluidsanalyse';
 	@override String get serverAnalysisScope => 'Alle geschikte muziekbibliotheken op deze server. Hun analyse-instellingen worden niet gewijzigd.';
 	@override String get serverActivities => 'Serveractiviteiten';
+	@override String get playlistSharing => 'Toegang tot afspeellijst';
+	@override String get playlistRecipient => 'Plex-gebruikersnaam of e-mail';
+	@override String get playlistSharingHint => 'Geef toegang tot deze afspeellijst en de nummers. De ontvanger moet mogelijk een uitnodiging accepteren.';
+	@override String get playlistSharingFailed => 'Kon geen toegang tot de afspeellijst aanvragen.';
+	@override String get playlistSharingAccepted => 'Plex heeft het toegangsverzoek geaccepteerd.';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsNl {
 			'musicTools.sonicAnalysis' => 'Geluidsanalyse',
 			'musicTools.serverAnalysisScope' => 'Alle geschikte muziekbibliotheken op deze server. Hun analyse-instellingen worden niet gewijzigd.',
 			'musicTools.serverActivities' => 'Serveractiviteiten',
+			'musicTools.playlistSharing' => 'Toegang tot afspeellijst',
+			'musicTools.playlistRecipient' => 'Plex-gebruikersnaam of e-mail',
+			'musicTools.playlistSharingHint' => 'Geef toegang tot deze afspeellijst en de nummers. De ontvanger moet mogelijk een uitnodiging accepteren.',
+			'musicTools.playlistSharingFailed' => 'Kon geen toegang tot de afspeellijst aanvragen.',
+			'musicTools.playlistSharingAccepted' => 'Plex heeft het toegangsverzoek geaccepteerd.',
 			'musicDevices.playOn' => 'Afspelen op',
 			'musicDevices.thisDevice' => 'Dit apparaat',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',

@@ -4390,6 +4390,11 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Zvuková analýza';
 	@override String get serverAnalysisScope => 'Všechny způsobilé hudební knihovny na tomto serveru. Jejich nastavení analýzy se nezmění.';
 	@override String get serverActivities => 'Aktivity serveru';
+	@override String get playlistSharing => 'Přístup k playlistu';
+	@override String get playlistRecipient => 'Uživatelské jméno Plex nebo e-mail';
+	@override String get playlistSharingHint => 'Udělte přístup k tomuto playlistu a jeho skladbám. Příjemce možná bude muset přijmout pozvánku.';
+	@override String get playlistSharingFailed => 'Nepodařilo se požádat o přístup k playlistu.';
+	@override String get playlistSharingAccepted => 'Plex přijal žádost o přístup.';
 }
 
 // Path: musicDevices
@@ -9595,6 +9600,11 @@ extension on TranslationsCs {
 			'musicTools.sonicAnalysis' => 'Zvuková analýza',
 			'musicTools.serverAnalysisScope' => 'Všechny způsobilé hudební knihovny na tomto serveru. Jejich nastavení analýzy se nezmění.',
 			'musicTools.serverActivities' => 'Aktivity serveru',
+			'musicTools.playlistSharing' => 'Přístup k playlistu',
+			'musicTools.playlistRecipient' => 'Uživatelské jméno Plex nebo e-mail',
+			'musicTools.playlistSharingHint' => 'Udělte přístup k tomuto playlistu a jeho skladbám. Příjemce možná bude muset přijmout pozvánku.',
+			'musicTools.playlistSharingFailed' => 'Nepodařilo se požádat o přístup k playlistu.',
+			'musicTools.playlistSharingAccepted' => 'Plex přijal žádost o přístup.',
 			'musicDevices.playOn' => 'Přehrávat na',
 			'musicDevices.thisDevice' => 'Toto zařízení',
 			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',

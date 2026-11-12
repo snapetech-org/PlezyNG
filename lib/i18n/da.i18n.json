@@ -5571,7 +5571,12 @@
     "serverAnalysis": "Serveranalyse",
     "sonicAnalysis": "Lydanalyse",
     "serverAnalysisScope": "Alle egnede musikbiblioteker på denne server. Deres analyseindstillinger ændres ikke.",
-    "serverActivities": "Serveraktiviteter"
+    "serverActivities": "Serveraktiviteter",
+    "playlistSharing": "Adgang til afspilningsliste",
+    "playlistRecipient": "Plex-brugernavn eller e-mail",
+    "playlistSharingHint": "Giv adgang til denne afspilningsliste og dens numre. Modtageren skal muligvis acceptere en invitation.",
+    "playlistSharingFailed": "Kunne ikke anmode om adgang til afspilningslisten.",
+    "playlistSharingAccepted": "Plex accepterede adgangsanmodningen."
   },
   "musicDevices": {
     "playOn": "Afspil på",

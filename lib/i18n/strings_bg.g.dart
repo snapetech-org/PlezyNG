@@ -4348,6 +4348,11 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Звуков анализ';
 	@override String get serverAnalysisScope => 'Всички подходящи музикални библиотеки на този сървър. Настройките им за анализ не се променят.';
 	@override String get serverActivities => 'Дейности на сървъра';
+	@override String get playlistSharing => 'Достъп до плейлист';
+	@override String get playlistRecipient => 'Plex потребителско име или имейл';
+	@override String get playlistSharingHint => 'Дайте достъп до този плейлист и песните му. Получателят може да трябва да приеме покана.';
+	@override String get playlistSharingFailed => 'Неуспешна заявка за достъп до плейлиста.';
+	@override String get playlistSharingAccepted => 'Plex прие заявката за достъп.';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsBg {
 			'musicTools.sonicAnalysis' => 'Звуков анализ',
 			'musicTools.serverAnalysisScope' => 'Всички подходящи музикални библиотеки на този сървър. Настройките им за анализ не се променят.',
 			'musicTools.serverActivities' => 'Дейности на сървъра',
+			'musicTools.playlistSharing' => 'Достъп до плейлист',
+			'musicTools.playlistRecipient' => 'Plex потребителско име или имейл',
+			'musicTools.playlistSharingHint' => 'Дайте достъп до този плейлист и песните му. Получателят може да трябва да приеме покана.',
+			'musicTools.playlistSharingFailed' => 'Неуспешна заявка за достъп до плейлиста.',
+			'musicTools.playlistSharingAccepted' => 'Plex прие заявката за достъп.',
 			'musicDevices.playOn' => 'Възпроизвеждане на',
 			'musicDevices.thisDevice' => 'Това устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',

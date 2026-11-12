@@ -1048,6 +1048,11 @@ class _Translations$musicTools$fr_CA extends Translations$musicTools$fr {
 	@override String get sonicAnalysis => 'Analyse sonore';
 	@override String get serverAnalysisScope => 'Toutes les bibliothèques musicales admissibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.';
 	@override String get serverActivities => 'Activités du serveur';
+	@override String get playlistSharing => 'Accès à la liste';
+	@override String get playlistRecipient => 'Nom d’utilisateur Plex ou courriel';
+	@override String get playlistSharingHint => 'Accordez l’accès à cette liste et à ses pistes. Le destinataire devra peut-être accepter une invitation.';
+	@override String get playlistSharingFailed => 'Impossible de demander l’accès à la liste.';
+	@override String get playlistSharingAccepted => 'Plex a accepté la demande d’accès.';
 }
 
 // Path: musicExperience
@@ -1911,6 +1916,11 @@ extension on TranslationsFrCa {
 			'musicTools.sonicAnalysis' => 'Analyse sonore',
 			'musicTools.serverAnalysisScope' => 'Toutes les bibliothèques musicales admissibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.',
 			'musicTools.serverActivities' => 'Activités du serveur',
+			'musicTools.playlistSharing' => 'Accès à la liste',
+			'musicTools.playlistRecipient' => 'Nom d’utilisateur Plex ou courriel',
+			'musicTools.playlistSharingHint' => 'Accordez l’accès à cette liste et à ses pistes. Le destinataire devra peut-être accepter une invitation.',
+			'musicTools.playlistSharingFailed' => 'Impossible de demander l’accès à la liste.',
+			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
 			'musicExperience.bluetoothDriving' => 'Sorties Bluetooth pour la conduite',
 			'musicExperience.bluetoothDrivingHint' => 'Choisissez les sorties Bluetooth connectées qui ouvrent automatiquement la vue conduite.',
 			_ => null,

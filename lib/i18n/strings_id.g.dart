@@ -4325,6 +4325,11 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Analisis sonik';
 	@override String get serverAnalysisScope => 'Semua pustaka musik yang memenuhi syarat di server ini. Pengaturan analisisnya tidak diubah.';
 	@override String get serverActivities => 'Aktivitas server';
+	@override String get playlistSharing => 'Akses daftar putar';
+	@override String get playlistRecipient => 'Nama pengguna Plex atau email';
+	@override String get playlistSharingHint => 'Berikan akses ke daftar putar ini dan lagunya. Penerima mungkin perlu menerima undangan.';
+	@override String get playlistSharingFailed => 'Tidak dapat meminta akses daftar putar.';
+	@override String get playlistSharingAccepted => 'Plex menerima permintaan akses.';
 }
 
 // Path: musicDevices
@@ -9526,6 +9531,11 @@ extension on TranslationsId {
 			'musicTools.sonicAnalysis' => 'Analisis sonik',
 			'musicTools.serverAnalysisScope' => 'Semua pustaka musik yang memenuhi syarat di server ini. Pengaturan analisisnya tidak diubah.',
 			'musicTools.serverActivities' => 'Aktivitas server',
+			'musicTools.playlistSharing' => 'Akses daftar putar',
+			'musicTools.playlistRecipient' => 'Nama pengguna Plex atau email',
+			'musicTools.playlistSharingHint' => 'Berikan akses ke daftar putar ini dan lagunya. Penerima mungkin perlu menerima undangan.',
+			'musicTools.playlistSharingFailed' => 'Tidak dapat meminta akses daftar putar.',
+			'musicTools.playlistSharingAccepted' => 'Plex menerima permintaan akses.',
 			'musicDevices.playOn' => 'Putar di',
 			'musicDevices.thisDevice' => 'Perangkat ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',

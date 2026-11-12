@@ -5571,7 +5571,12 @@
     "serverAnalysis": "Анализ на сървъра",
     "sonicAnalysis": "Звуков анализ",
     "serverAnalysisScope": "Всички подходящи музикални библиотеки на този сървър. Настройките им за анализ не се променят.",
-    "serverActivities": "Дейности на сървъра"
+    "serverActivities": "Дейности на сървъра",
+    "playlistSharing": "Достъп до плейлист",
+    "playlistRecipient": "Plex потребителско име или имейл",
+    "playlistSharingHint": "Дайте достъп до този плейлист и песните му. Получателят може да трябва да приеме покана.",
+    "playlistSharingFailed": "Неуспешна заявка за достъп до плейлиста.",
+    "playlistSharingAccepted": "Plex прие заявката за достъп."
   },
   "musicDevices": {
     "playOn": "Възпроизвеждане на",

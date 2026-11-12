@@ -4325,6 +4325,11 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'การวิเคราะห์เสียง';
 	@override String get serverAnalysisScope => 'คลังเพลงที่เข้าเกณฑ์ทั้งหมดบนเซิร์ฟเวอร์นี้ การตั้งค่าการวิเคราะห์ของคลังจะไม่เปลี่ยนแปลง';
 	@override String get serverActivities => 'กิจกรรมเซิร์ฟเวอร์';
+	@override String get playlistSharing => 'สิทธิ์เข้าถึงเพลย์ลิสต์';
+	@override String get playlistRecipient => 'ชื่อผู้ใช้ Plex หรืออีเมล';
+	@override String get playlistSharingHint => 'ให้สิทธิ์เข้าถึงเพลย์ลิสต์นี้และเพลงในรายการ ผู้รับอาจต้องตอบรับคำเชิญ';
+	@override String get playlistSharingFailed => 'ไม่สามารถขอสิทธิ์เข้าถึงเพลย์ลิสต์ได้';
+	@override String get playlistSharingAccepted => 'Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว';
 }
 
 // Path: musicDevices
@@ -9526,6 +9531,11 @@ extension on TranslationsTh {
 			'musicTools.sonicAnalysis' => 'การวิเคราะห์เสียง',
 			'musicTools.serverAnalysisScope' => 'คลังเพลงที่เข้าเกณฑ์ทั้งหมดบนเซิร์ฟเวอร์นี้ การตั้งค่าการวิเคราะห์ของคลังจะไม่เปลี่ยนแปลง',
 			'musicTools.serverActivities' => 'กิจกรรมเซิร์ฟเวอร์',
+			'musicTools.playlistSharing' => 'สิทธิ์เข้าถึงเพลย์ลิสต์',
+			'musicTools.playlistRecipient' => 'ชื่อผู้ใช้ Plex หรืออีเมล',
+			'musicTools.playlistSharingHint' => 'ให้สิทธิ์เข้าถึงเพลย์ลิสต์นี้และเพลงในรายการ ผู้รับอาจต้องตอบรับคำเชิญ',
+			'musicTools.playlistSharingFailed' => 'ไม่สามารถขอสิทธิ์เข้าถึงเพลย์ลิสต์ได้',
+			'musicTools.playlistSharingAccepted' => 'Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',

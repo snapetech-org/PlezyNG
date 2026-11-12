@@ -4348,6 +4348,11 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Ses analizi';
 	@override String get serverAnalysisScope => 'Bu sunucudaki uygun tüm müzik kitaplıkları. Analiz ayarları değiştirilmez.';
 	@override String get serverActivities => 'Sunucu etkinlikleri';
+	@override String get playlistSharing => 'Çalma listesi erişimi';
+	@override String get playlistRecipient => 'Plex kullanıcı adı veya e-posta';
+	@override String get playlistSharingHint => 'Bu çalma listesine ve parçalarına erişim verin. Alıcının bir daveti kabul etmesi gerekebilir.';
+	@override String get playlistSharingFailed => 'Çalma listesi erişimi istenemedi.';
+	@override String get playlistSharingAccepted => 'Plex erişim isteğini kabul etti.';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsTr {
 			'musicTools.sonicAnalysis' => 'Ses analizi',
 			'musicTools.serverAnalysisScope' => 'Bu sunucudaki uygun tüm müzik kitaplıkları. Analiz ayarları değiştirilmez.',
 			'musicTools.serverActivities' => 'Sunucu etkinlikleri',
+			'musicTools.playlistSharing' => 'Çalma listesi erişimi',
+			'musicTools.playlistRecipient' => 'Plex kullanıcı adı veya e-posta',
+			'musicTools.playlistSharingHint' => 'Bu çalma listesine ve parçalarına erişim verin. Alıcının bir daveti kabul etmesi gerekebilir.',
+			'musicTools.playlistSharingFailed' => 'Çalma listesi erişimi istenemedi.',
+			'musicTools.playlistSharingAccepted' => 'Plex erişim isteğini kabul etti.',
 			'musicDevices.playOn' => 'Şurada çal',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} üzerinde çalınıyor',

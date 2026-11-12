@@ -5544,7 +5544,12 @@
     "serverAnalysis": "Phân tích máy chủ",
     "sonicAnalysis": "Phân tích âm thanh",
     "serverAnalysisScope": "Tất cả thư viện nhạc đủ điều kiện trên máy chủ này. Không thay đổi cài đặt phân tích của chúng.",
-    "serverActivities": "Hoạt động máy chủ"
+    "serverActivities": "Hoạt động máy chủ",
+    "playlistSharing": "Quyền truy cập danh sách phát",
+    "playlistRecipient": "Tên người dùng Plex hoặc email",
+    "playlistSharingHint": "Cấp quyền truy cập danh sách phát này và các bản nhạc. Người nhận có thể cần chấp nhận lời mời.",
+    "playlistSharingFailed": "Không thể yêu cầu truy cập danh sách phát.",
+    "playlistSharingAccepted": "Plex đã tiếp nhận yêu cầu truy cập."
   },
   "musicDevices": {
     "playOn": "Phát trên",

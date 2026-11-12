@@ -5571,7 +5571,12 @@
     "serverAnalysis": "সার্ভার বিশ্লেষণ",
     "sonicAnalysis": "সোনিক বিশ্লেষণ",
     "serverAnalysisScope": "এই সার্ভারের সব উপযুক্ত সঙ্গীত লাইব্রেরি। এতে তাদের বিশ্লেষণ সেটিংস বদলাবে না।",
-    "serverActivities": "সার্ভারের কার্যকলাপ"
+    "serverActivities": "সার্ভারের কার্যকলাপ",
+    "playlistSharing": "প্লেলিস্টে প্রবেশাধিকার",
+    "playlistRecipient": "Plex ব্যবহারকারীর নাম বা ইমেইল",
+    "playlistSharingHint": "এই প্লেলিস্ট ও এর ট্র্যাকগুলোতে প্রবেশাধিকার দিন। প্রাপককে আমন্ত্রণ গ্রহণ করতে হতে পারে।",
+    "playlistSharingFailed": "প্লেলিস্টে প্রবেশাধিকারের অনুরোধ করা যায়নি।",
+    "playlistSharingAccepted": "Plex প্রবেশাধিকারের অনুরোধ গ্রহণ করেছে।"
   },
   "musicDevices": {
     "playOn": "এখানে চালান",

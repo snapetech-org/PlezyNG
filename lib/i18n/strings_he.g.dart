@@ -4356,6 +4356,11 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'ניתוח צליל';
 	@override String get serverAnalysisScope => 'כל ספריות המוזיקה המתאימות בשרת זה. הגדרות הניתוח שלהן לא ישתנו.';
 	@override String get serverActivities => 'פעילויות השרת';
+	@override String get playlistSharing => 'גישה לרשימת השמעה';
+	@override String get playlistRecipient => 'שם משתמש Plex או דוא״ל';
+	@override String get playlistSharingHint => 'הענקת גישה לרשימה זו ולרצועות שלה. ייתכן שהנמען יצטרך לאשר הזמנה.';
+	@override String get playlistSharingFailed => 'לא ניתן לבקש גישה לרשימת ההשמעה.';
+	@override String get playlistSharingAccepted => 'Plex קיבל את בקשת הגישה.';
 }
 
 // Path: musicDevices
@@ -9559,6 +9564,11 @@ extension on TranslationsHe {
 			'musicTools.sonicAnalysis' => 'ניתוח צליל',
 			'musicTools.serverAnalysisScope' => 'כל ספריות המוזיקה המתאימות בשרת זה. הגדרות הניתוח שלהן לא ישתנו.',
 			'musicTools.serverActivities' => 'פעילויות השרת',
+			'musicTools.playlistSharing' => 'גישה לרשימת השמעה',
+			'musicTools.playlistRecipient' => 'שם משתמש Plex או דוא״ל',
+			'musicTools.playlistSharingHint' => 'הענקת גישה לרשימה זו ולרצועות שלה. ייתכן שהנמען יצטרך לאשר הזמנה.',
+			'musicTools.playlistSharingFailed' => 'לא ניתן לבקש גישה לרשימת ההשמעה.',
+			'musicTools.playlistSharingAccepted' => 'Plex קיבל את בקשת הגישה.',
 			'musicDevices.playOn' => 'ניגון באמצעות',
 			'musicDevices.thisDevice' => 'מכשיר זה',
 			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',

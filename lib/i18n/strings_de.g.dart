@@ -4348,6 +4348,11 @@ class _Translations$musicTools$de extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Klanganalyse';
 	@override String get serverAnalysisScope => 'Alle geeigneten Musikbibliotheken auf diesem Server. Ihre Analyseeinstellungen werden nicht geändert.';
 	@override String get serverActivities => 'Serveraktivitäten';
+	@override String get playlistSharing => 'Playlist-Zugriff';
+	@override String get playlistRecipient => 'Plex-Benutzername oder E-Mail';
+	@override String get playlistSharingHint => 'Zugriff auf diese Playlist und ihre Titel gewähren. Der Empfänger muss eventuell eine Einladung annehmen.';
+	@override String get playlistSharingFailed => 'Playlist-Zugriff konnte nicht angefordert werden.';
+	@override String get playlistSharingAccepted => 'Plex hat die Zugriffsanfrage angenommen.';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsDe {
 			'musicTools.sonicAnalysis' => 'Klanganalyse',
 			'musicTools.serverAnalysisScope' => 'Alle geeigneten Musikbibliotheken auf diesem Server. Ihre Analyseeinstellungen werden nicht geändert.',
 			'musicTools.serverActivities' => 'Serveraktivitäten',
+			'musicTools.playlistSharing' => 'Playlist-Zugriff',
+			'musicTools.playlistRecipient' => 'Plex-Benutzername oder E-Mail',
+			'musicTools.playlistSharingHint' => 'Zugriff auf diese Playlist und ihre Titel gewähren. Der Empfänger muss eventuell eine Einladung annehmen.',
+			'musicTools.playlistSharingFailed' => 'Playlist-Zugriff konnte nicht angefordert werden.',
+			'musicTools.playlistSharingAccepted' => 'Plex hat die Zugriffsanfrage angenommen.',
 			'musicDevices.playOn' => 'Wiedergeben auf',
 			'musicDevices.thisDevice' => 'Dieses Gerät',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wiedergabe auf ${device}',

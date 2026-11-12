@@ -4348,6 +4348,11 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get sonicAnalysis => 'Hangelemzés';
 	@override String get serverAnalysisScope => 'A szerver összes alkalmas zenei könyvtára. Az elemzési beállításaik nem változnak.';
 	@override String get serverActivities => 'Szervertevékenységek';
+	@override String get playlistSharing => 'Lejátszási lista elérése';
+	@override String get playlistRecipient => 'Plex-felhasználónév vagy e-mail';
+	@override String get playlistSharingHint => 'Adjon hozzáférést ehhez a listához és számaihoz. A címzettnek esetleg el kell fogadnia egy meghívást.';
+	@override String get playlistSharingFailed => 'Nem sikerült hozzáférést kérni a listához.';
+	@override String get playlistSharingAccepted => 'A Plex elfogadta a hozzáférési kérést.';
 }
 
 // Path: musicDevices
@@ -9551,6 +9556,11 @@ extension on TranslationsHu {
 			'musicTools.sonicAnalysis' => 'Hangelemzés',
 			'musicTools.serverAnalysisScope' => 'A szerver összes alkalmas zenei könyvtára. Az elemzési beállításaik nem változnak.',
 			'musicTools.serverActivities' => 'Szervertevékenységek',
+			'musicTools.playlistSharing' => 'Lejátszási lista elérése',
+			'musicTools.playlistRecipient' => 'Plex-felhasználónév vagy e-mail',
+			'musicTools.playlistSharingHint' => 'Adjon hozzáférést ehhez a listához és számaihoz. A címzettnek esetleg el kell fogadnia egy meghívást.',
+			'musicTools.playlistSharingFailed' => 'Nem sikerült hozzáférést kérni a listához.',
+			'musicTools.playlistSharingAccepted' => 'A Plex elfogadta a hozzáférési kérést.',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',

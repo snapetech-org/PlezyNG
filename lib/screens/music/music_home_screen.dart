@@ -19,11 +19,13 @@ import '../../services/music/music_library_store.dart';
 import '../../services/music/music_nfc_writer.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../services/music/music_station.dart';
+import '../../services/music/music_tracks_loader.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/music/music_anniversary_shelf.dart';
 import '../../widgets/music/music_favorites_shelf.dart';
 import '../../widgets/music/music_pins_shelf.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../utils/music_read_scope.dart';
 import 'music_discovery_screen.dart';
 import 'music_driving_screen.dart';
 import 'music_prompt_screen.dart';
@@ -173,33 +175,53 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
     final downloaded = context.read<DownloadProvider>().downloadedTracks;
     final offline = client == null || client.isOfflineMode;
     try {
-      final tracks = group == MusicChartGroup.tracks
-          ? [seed]
-          : offline
-          ? downloaded
-                .where(
-                  (item) =>
-                      item.serverId == seed.serverId &&
-                      (group == MusicChartGroup.albums
-                          ? item.parentId == seed.parentId
-                          : item.grandparentId == seed.grandparentId),
-                )
-                .toList()
-          : group == MusicChartGroup.albums && seed.parentId != null
-          ? await client.fetchAlbumTracks(seed.parentId!)
-          : group == MusicChartGroup.artists && seed.grandparentId != null
-          ? await client.fetchPlayableDescendants(seed.grandparentId!)
-          : <MediaItem>[];
+      late final List<MediaItem> tracks;
+      if (group == MusicChartGroup.tracks) {
+        tracks = [seed];
+      } else if (offline) {
+        tracks = downloaded
+            .where(
+              (item) =>
+                  item.serverId == seed.serverId &&
+                  (group == MusicChartGroup.albums
+                      ? item.parentId == seed.parentId
+                      : item.grandparentId == seed.grandparentId),
+            )
+            .toList();
+      } else {
+        final online = client;
+        final parentId = group == MusicChartGroup.albums ? seed.parentId : seed.grandparentId;
+        if (parentId == null || parentId.isEmpty) return;
+        final scope = await MusicReadScope.forItem(context, seed, selectedClient: online);
+        if (scope == null) return;
+        bool current() =>
+            mounted &&
+            _experience.store.active &&
+            music.isPlayIntentCurrent(intent) &&
+            identical(online, _experience.clientFor(seed)) &&
+            identical(authentication, online.authenticationSessionId) &&
+            scope.current;
+        final kind = group == MusicChartGroup.albums ? MediaKind.album : MediaKind.artist;
+        tracks = await fetchMusicTracks(
+          online,
+          parentId,
+          kind: kind,
+          current: current,
+          acceptsItem: (item) =>
+              scope.ownsTrack(item) &&
+              (group == MusicChartGroup.albums ? item.parentId == parentId : item.grandparentId == parentId),
+        );
+      }
       if (!mounted ||
+          !_experience.store.active ||
           !music.isPlayIntentCurrent(intent) ||
           !identical(client, _experience.clientFor(seed)) ||
           !identical(authentication, client?.authenticationSessionId)) {
         return;
       }
-      final playable = tracks.where((item) => item.kind == MediaKind.track && item.serverId == seed.serverId).toList();
-      if (playable.isEmpty) throw StateError('No playable music');
+      if (tracks.isEmpty) throw StateError('No playable music');
       await music.playFromList(
-        tracks: playable,
+        tracks: tracks,
         offline: offline,
         playContext: MusicPlayContext(
           title: title,

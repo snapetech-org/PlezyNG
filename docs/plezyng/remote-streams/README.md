@@ -201,6 +201,8 @@ not presumed to exist or inherit native playback/CORS capabilities.
   First results appear incrementally; enrichment continues without blocking use.
 - Stremio import previews installed add-ons and imports selected HTTPS entries;
   one malformed add-on cannot invalidate the rest of the account collection.
+  Installed add-ons can be reordered locally to set stream priority, and later
+  account imports preserve that local order and each add-on's enabled state.
 - A title detail page offers one primary Play/Resume action and one compact
   Sources action, rather than a wall of filenames.
 - Provider expiry, queueing and missing files have specific recovery actions.

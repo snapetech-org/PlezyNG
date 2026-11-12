@@ -25,6 +25,8 @@ import '../../widgets/pending_auth_dialog.dart';
 import '../../widgets/settings_section.dart';
 import '../remote_streams/remote_cloud_files_screen.dart';
 
+enum _AddonMenuAction { configure, checkForUpdates, moveUp, moveDown, remove }
+
 class RemoteStreamingSettingsScreen extends StatefulWidget {
   const RemoteStreamingSettingsScreen({super.key});
 
@@ -893,8 +895,10 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                         child: Text(t.streaming.addonEmpty, style: Theme.of(context).textTheme.bodyMedium),
                       )
                     else
-                      for (final addon in streaming.addons)
-                        FocusableListTile(
+                      ...streaming.addons.asMap().entries.map((entry) {
+                        final addon = entry.value;
+                        final busy = _configuringAddonIds.contains(addon.id) || _checkingAddonIds.contains(addon.id);
+                        return FocusableListTile(
                           leading: const AppIcon(Symbols.extension_rounded),
                           title: Text(addon.name),
                           subtitle: Text(addon.enabled ? t.streaming.addonInstalled : t.streaming.addonToggle),
@@ -902,48 +906,64 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (addon.configurationSchema.isNotEmpty && addon.configurationBaseUrl != null)
-                                IconButton(
-                                  tooltip: t.common.edit,
-                                  onPressed: _configuringAddonIds.contains(addon.id)
-                                      ? null
-                                      : () => unawaited(_configureAddon(addon)),
-                                  icon: _configuringAddonIds.contains(addon.id)
-                                      ? const SizedBox.square(
-                                          dimension: 20,
-                                          child: CircularProgressIndicator(strokeWidth: 2),
-                                        )
-                                      : const AppIcon(Symbols.tune_rounded),
-                                ),
-                              IconButton(
-                                tooltip: t.settings.checkForUpdates,
-                                onPressed: _checkingAddonIds.contains(addon.id)
-                                    ? null
-                                    : () => unawaited(_checkAddonUpdate(addon)),
-                                icon: _checkingAddonIds.contains(addon.id)
-                                    ? const SizedBox.square(
-                                        dimension: 20,
-                                        child: CircularProgressIndicator(strokeWidth: 2),
-                                      )
-                                    : const AppIcon(Symbols.system_update_rounded),
-                              ),
                               Switch.adaptive(
                                 value: addon.enabled,
                                 onChanged: (value) => unawaited(streaming.setAddonEnabled(addon.id, value)),
                               ),
-                              IconButton(
-                                tooltip: t.common.delete,
-                                onPressed: () async {
-                                  await streaming.removeAddon(addon.id);
-                                  if (context.mounted) {
-                                    showAppSnackBar(context, t.streaming.addonRemoved);
-                                  }
-                                },
-                                icon: const AppIcon(Symbols.delete_outline_rounded),
-                              ),
+                              if (busy)
+                                const Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: SizedBox.square(
+                                    dimension: 20,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  ),
+                                )
+                              else
+                                PopupMenuButton<_AddonMenuAction>(
+                                  icon: const AppIcon(Symbols.more_vert_rounded),
+                                  itemBuilder: (context) => [
+                                    if (addon.configurationSchema.isNotEmpty && addon.configurationBaseUrl != null)
+                                      PopupMenuItem(value: _AddonMenuAction.configure, child: Text(t.common.edit)),
+                                    PopupMenuItem(
+                                      value: _AddonMenuAction.checkForUpdates,
+                                      child: Text(t.settings.checkForUpdates),
+                                    ),
+                                    PopupMenuItem(
+                                      value: _AddonMenuAction.moveUp,
+                                      enabled: entry.key > 0,
+                                      child: Text(t.fileSources.moveUp),
+                                    ),
+                                    PopupMenuItem(
+                                      value: _AddonMenuAction.moveDown,
+                                      enabled: entry.key < streaming.addons.length - 1,
+                                      child: Text(t.fileSources.moveDown),
+                                    ),
+                                    PopupMenuItem(value: _AddonMenuAction.remove, child: Text(t.common.delete)),
+                                  ],
+                                  onSelected: (action) {
+                                    switch (action) {
+                                      case _AddonMenuAction.configure:
+                                        unawaited(_configureAddon(addon));
+                                      case _AddonMenuAction.checkForUpdates:
+                                        unawaited(_checkAddonUpdate(addon));
+                                      case _AddonMenuAction.moveUp:
+                                        unawaited(streaming.moveAddon(addon.id, entry.key - 1));
+                                      case _AddonMenuAction.moveDown:
+                                        unawaited(streaming.moveAddon(addon.id, entry.key + 1));
+                                      case _AddonMenuAction.remove:
+                                        unawaited(() async {
+                                          await streaming.removeAddon(addon.id);
+                                          if (context.mounted) {
+                                            showAppSnackBar(context, t.streaming.addonRemoved);
+                                          }
+                                        }());
+                                    }
+                                  },
+                                ),
                             ],
                           ),
-                        ),
+                        );
+                      }),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
                       child: FilledButton.tonalIcon(

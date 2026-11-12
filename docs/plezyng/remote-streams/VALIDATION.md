@@ -41,7 +41,7 @@ Separate parser/unit, integration, live-account and packaged-device evidence.
 | C05 | Add-on offline, malformed JSON, oversized/deep response | Other providers still render; bounded resource use and specific retry |
 | C06 | Add-on update requests new resources/hosts | Old grants preserved; new privilege requires user review |
 | C07 | Stremio import has bad descriptor among valid ones | Valid items import; failures remain localized; remote collection untouched |
-| C08 | Reimport after local reorder/disable | No duplicates; explicit merge preview preserves local intent |
+| C08 | Reimport after local reorder/disable | No duplicates; account import preserves local priority and enabled state |
 | C09 | Stremio QR/social account/password fallback | Qualified linking works or clear import alternative; no browser-storage scraping |
 | C10 | Unsupported NZB/archive/YouTube/external payload | Correct capability/explicit external action; never fed blindly to native decoder |
 | I01 | Movie shared by server and cloud | One merged logical result with separate playable copies |

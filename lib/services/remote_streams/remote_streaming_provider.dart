@@ -1072,6 +1072,23 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     });
   }
 
+  /// Moves an installed add-on to its new priority position. The snapshot list
+  /// is the canonical order, so the change survives profile switches and
+  /// account reimports while stream results retain the same priority order.
+  Future<void> moveAddon(String id, int newIndex) async {
+    final (profile, generation) = _requireProfile();
+    await _commit(profile, generation, (current) {
+      final oldIndex = current.addons.indexWhere((addon) => addon.id == id);
+      if (oldIndex < 0) return current;
+      final next = current.addons.toList(growable: true);
+      final addon = next.removeAt(oldIndex);
+      final targetIndex = newIndex.clamp(0, next.length);
+      if (targetIndex == oldIndex) return current;
+      next.insert(targetIndex, addon);
+      return current.copyWith(addons: next);
+    });
+  }
+
   Future<void> removeAddon(String id) async {
     final (profile, generation) = _requireProfile();
     await _commit(

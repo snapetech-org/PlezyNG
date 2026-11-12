@@ -1,3 +1,4 @@
+import 'music_driving_routes.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 
@@ -28,6 +29,7 @@ class MusicExperience extends ChangeNotifier {
     bool Function(MediaItem)? pinVisible,
     Future<void> Function()? pinReady,
   }) {
+    drivingRoutes = MusicDrivingRoutes(store)..addListener(notifyListeners);
     dj = MusicGuestDj(music, clientFor, sharedSources: sharedSources)..addListener(notifyListeners);
     recorder = MusicListeningRecorder(
       music,
@@ -50,6 +52,7 @@ class MusicExperience extends ChangeNotifier {
   final MusicPlaybackService music;
   final MusicLibraryStore store;
   final MediaServerClient? Function(MediaItem) clientFor;
+  late final MusicDrivingRoutes drivingRoutes;
   late final MusicGuestDj dj;
   late final MusicListeningRecorder recorder;
   late final MusicRatingJournal ratings;
@@ -68,6 +71,8 @@ class MusicExperience extends ChangeNotifier {
   @override
   void dispose() {
     onDispose?.call(this);
+    drivingRoutes.removeListener(notifyListeners);
+    drivingRoutes.dispose();
     dj.removeListener(notifyListeners);
     dj.dispose();
     recorder.dispose();

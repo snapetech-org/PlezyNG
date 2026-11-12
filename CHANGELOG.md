@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Persist explicitly selected Bluetooth driving-route identities per profile, with bounded storage, serialized changes and retirement guards. Reuse one foreground-only OS-route observer for Apple diagnostics and driving integration.
+
 - Choose Apple music output through the native audio-session route picker and inspect the selected route. Route notifications refresh diagnostics, stale inspections cannot overwrite newer routes, and observation stops in the background without activating audio or autoplaying.
 
 - Inspect the audible music renderer, including the independent native group source speaker, and recover to the system default output without replacing the queue, playhead, pause state or general DSP. Account-retired or failed inspections cannot show a stale report.

@@ -804,6 +804,13 @@ certificates against their original workflow/run, and publishes a distinct
 `tvos_source` proof. Ordinary Linux/Mac repair reuse keeps its existing meaning.
 The existing workflow `reuse_repaired_run_id` slot is interpreted as TV reuse only
 for this explicit frozen Apple mode; no additional dispatch input is required.
+After both signed Apple siblings are complete, an approved assembly-only repair
+can use `--reuse-tvos-run` and `--reuse-ios-run` together. The existing workflow
+slot then carries `tvos:RUN,ios:RUN`. Verify each sibling's signed build,
+attestations, unpublished assembly and exact artifact ID/digest. Original
+platform artifacts remain bound to the frozen product source SHA, while Apple
+sibling artifacts remain bound to their own workflow source SHA. No platform
+jobs rebuild for this assembly-only repair.
 
 
 Before iOS compilation, signed releases validate the Runner App Store profile and

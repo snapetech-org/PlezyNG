@@ -90,7 +90,7 @@ on:
         required: false
         type: string
       reuse_repaired_run_id:
-        description: Reuse signed tvOS from an approved Apple repair, or legacy repaired Linux and Mac outputs
+        description: Reuse signed Apple sibling runs (tvos:ID,ios:ID), or legacy repaired Linux and Mac outputs
         required: false
         type: string
       reuse_platform_run_id:
@@ -697,7 +697,18 @@ jobs:
           if [[ "$REBUILD_TVOS" == true ]]; then options+=(--rebuild-tvos); fi
           if [[ "$REBUILD_IOS" == true ]]; then options+=(--rebuild-ios); fi
           if [[ -n "$REPAIRED_RUN" ]]; then
-            if [[ -n "$PACKAGING_SHA" ]]; then options+=(--tvos-run "$REPAIRED_RUN"); else options+=(--repaired-run "$REPAIRED_RUN"); fi
+            if [[ -n "$PACKAGING_SHA" ]]; then
+              if [[ "$REPAIRED_RUN" =~ ^tvos:([1-9][0-9]*),ios:([1-9][0-9]*)$ ]]; then
+                options+=(--tvos-run "${BASH_REMATCH[1]}" --ios-run "${BASH_REMATCH[2]}")
+              elif [[ "$REPAIRED_RUN" =~ ^[1-9][0-9]*$ ]]; then
+                options+=(--tvos-run "$REPAIRED_RUN")
+              else
+                echo "Invalid signed Apple sibling source identities." >&2
+                exit 1
+              fi
+            else
+              options+=(--repaired-run "$REPAIRED_RUN")
+            fi
           fi
           if [[ -n "$WEBOS_RUN" ]]; then options+=(--webos-run "$WEBOS_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
@@ -3280,7 +3291,18 @@ jobs:
           if [[ "$REBUILD_TVOS" == true ]]; then options+=(--rebuild-tvos); fi
           if [[ "$REBUILD_IOS" == true ]]; then options+=(--rebuild-ios); fi
           if [[ -n "$REPAIRED_RUN" ]]; then
-            if [[ -n "$PACKAGING_SHA" ]]; then options+=(--tvos-run "$REPAIRED_RUN"); else options+=(--repaired-run "$REPAIRED_RUN"); fi
+            if [[ -n "$PACKAGING_SHA" ]]; then
+              if [[ "$REPAIRED_RUN" =~ ^tvos:([1-9][0-9]*),ios:([1-9][0-9]*)$ ]]; then
+                options+=(--tvos-run "${BASH_REMATCH[1]}" --ios-run "${BASH_REMATCH[2]}")
+              elif [[ "$REPAIRED_RUN" =~ ^[1-9][0-9]*$ ]]; then
+                options+=(--tvos-run "$REPAIRED_RUN")
+              else
+                echo "Invalid signed Apple sibling source identities." >&2
+                exit 1
+              fi
+            else
+              options+=(--repaired-run "$REPAIRED_RUN")
+            fi
           fi
           if [[ -n "$WEBOS_RUN" ]]; then options+=(--webos-run "$WEBOS_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi

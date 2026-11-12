@@ -141,6 +141,7 @@ open class MpvPlayerPlugin(
   )
 
   private val channels = PlayerChannelBinding(channelBase, this, this, tag)
+  private var musicRoutes: MusicAudioRouteBridge? = null
   private var playerCore: MpvPlayerCore? = null
   private var textureRegistry: io.flutter.view.TextureRegistry? = null
   private var visualizer: MilkRustVisualizer? = null
@@ -275,6 +276,9 @@ open class MpvPlayerPlugin(
     applicationContext = binding.applicationContext
     binding.applicationContext.registerComponentCallbacks(memoryCallbacks)
     channels.attach(binding)
+    if (channelBase == "com.plezy/mpv_audio_player") {
+      musicRoutes = MusicAudioRouteBridge(binding.applicationContext, binding.binaryMessenger)
+    }
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -289,6 +293,8 @@ open class MpvPlayerPlugin(
     activityBinding = null
     applicationContext = null
     textureRegistry = null
+    musicRoutes?.close()
+    musicRoutes = null
     channels.detach()
   }
 

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Observe Android 13+ selected media routes through the public audio-attribute API, with stable Bluetooth identities, foreground subscription cleanup and explicit unknown measurements. Available or communication devices and masked addresses cannot arm driving entry.
+
 - Persist explicitly selected Bluetooth driving-route identities per profile, with bounded storage, serialized changes and retirement guards. Reuse one foreground-only OS-route observer for Apple diagnostics and driving integration.
 
 - Choose Apple music output through the native audio-session route picker and inspect the selected route. Route notifications refresh diagnostics, stale inspections cannot overwrite newer routes, and observation stops in the background without activating audio or autoplaying.

@@ -507,7 +507,10 @@ void main() {
     final loaded = await session.load();
     expect(loaded!.queue.items, isA<MusicQueueItemsSnapshot>());
     expect(loaded.queue.items, hasLength(10000));
-    expect(scratch.listSync(), hasLength(1));
+    expect(
+      scratch.listSync().map((entry) => entry.path.split('/').last),
+      unorderedEquals([startsWith('pleazyng-music-queue-'), startsWith('pleazyng-music-order-')]),
+    );
     expect(loaded.queue.order, order);
     expect(loaded.queue.cursor, 700);
     final controller = MusicQueueController();

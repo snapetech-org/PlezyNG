@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve incremental music queue saves with bounded order storage: write only moved positions, changed metadata and new or retired occurrences.
+
 - Add optional rolling playback for saved filtered music stations, with exact-preview adoption, persisted rules, whole-album exclusions and native car controls. Keep downloads and offline playback finite and reject snapshots from another station source.
 
 - Add saved Album Radio recipes that play complete ordered albums, refill from authorized sonic neighbors, preserve queue edits and account ownership, and support finite download previews and native car playback.

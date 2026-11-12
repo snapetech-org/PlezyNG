@@ -144,87 +144,72 @@ class MusicSessionStore {
     _guard();
     final count = shape.read<int>('n');
     final reusableShape =
-        count == queue.items.length &&
-        count > 0 &&
-        shape.read<int>('cmin') == 0 &&
-        shape.read<int>('cmax') == count - 1 &&
-        shape.read<int>('pmin') == 0 &&
-        shape.read<int>('pmax') == count - 1;
+        count == 0 ||
+        (shape.read<int>('cmin') == 0 &&
+            shape.read<int>('cmax') == count - 1 &&
+            shape.read<int>('pmin') == 0 &&
+            shape.read<int>('pmax') == count - 1);
 
-    var sameOrder = reusableShape;
-    if (reusableShape) {
-      for (var start = 0; start < queue.order.length; start += pageSize) {
-        _guard();
-        final end = (start + pageSize).clamp(0, queue.order.length);
-        final rows = await _database
-            .customSelect(
-              'SELECT canonical_index, playback_index FROM music_queue_entries '
-              'WHERE profile_id = ? AND playback_index >= ? AND playback_index < ? ORDER BY playback_index',
-              variables: [Variable(_profileId), Variable(start), Variable(end)],
-            )
-            .get();
-        if (rows.length != end - start) {
-          sameOrder = false;
-          break;
-        }
-        for (var offset = 0; offset < rows.length; offset++) {
-          final row = rows[offset];
-          final playback = start + offset;
-          if (row.read<int>('playback_index') != playback ||
-              row.read<int>('canonical_index') != queue.order[playback]) {
-            sameOrder = false;
-            break;
-          }
-        }
-        if (!sameOrder) break;
-      }
-    }
-
-    if (reusableShape) {
-      if (!sameOrder) await _writePlaybackOrder(queue, stageExisting: true);
-      await _writeQueueMetadata(queue);
-    } else {
-      // A changed queue size or invalid durable shape needs a full rewrite.
-      // Negative playback indexes are private transaction staging values;
-      // each final index can be assigned without a positions array.
-      await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ?', [_profileId]);
-      for (var start = 0; start < queue.items.length; start += pageSize) {
-        _guard();
-        final end = (start + pageSize).clamp(0, queue.items.length);
-        await _database.batch((batch) {
-          for (var canonical = start; canonical < end; canonical++) {
-            batch.customStatement(
-              'INSERT INTO music_queue_entries (profile_id, canonical_index, playback_index, metadata) '
-              'VALUES (?, ?, ?, ?)',
-              [_profileId, canonical, -canonical - 1, jsonEncode(queue.items[canonical].toJson())],
-            );
-          }
-        });
-      }
-      await _writePlaybackOrder(queue, stageExisting: false);
-    }
-    _guard();
-  }
-
-  Future<void> _writePlaybackOrder(MusicQueueState queue, {required bool stageExisting}) async {
-    if (stageExisting) {
-      await _database.customStatement(
-        'UPDATE music_queue_entries SET playback_index = -canonical_index - 1 WHERE profile_id = ?',
-        [_profileId],
-      );
-    }
+    // Keep the inverse permutation in SQLite, populated in bounded pages.
+    // This avoids an O(N) Dart array while retaining incremental durable writes.
+    await _database.customStatement(
+      'CREATE TEMP TABLE IF NOT EXISTS music_queue_save_target '
+      '(canonical_index INTEGER PRIMARY KEY, playback_index INTEGER NOT NULL)',
+    );
+    await _database.customStatement('DELETE FROM music_queue_save_target');
     for (var start = 0; start < queue.order.length; start += pageSize) {
       _guard();
       final end = (start + pageSize).clamp(0, queue.order.length);
       await _database.batch((batch) {
         for (var playback = start; playback < end; playback++) {
+          batch.customStatement('INSERT INTO music_queue_save_target (canonical_index, playback_index) VALUES (?, ?)', [
+            queue.order[playback],
+            playback,
+          ]);
+        }
+      });
+    }
+    if (reusableShape) {
+      await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ? AND canonical_index >= ?', [
+        _profileId,
+        queue.items.length,
+      ]);
+      // Stage only moved occurrences. All target positions are unique, so an
+      // unchanged occurrence cannot collide with a moved or appended row.
+      await _database.customStatement(
+        'UPDATE music_queue_entries SET playback_index = -canonical_index - 1 '
+        'WHERE profile_id = ? AND playback_index != '
+        '(SELECT playback_index FROM music_queue_save_target '
+        'WHERE canonical_index = music_queue_entries.canonical_index)',
+        [_profileId],
+      );
+    } else {
+      await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ?', [_profileId]);
+    }
+    final retained = reusableShape ? count.clamp(0, queue.items.length) : 0;
+    for (var start = retained; start < queue.items.length; start += pageSize) {
+      _guard();
+      final end = (start + pageSize).clamp(0, queue.items.length);
+      await _database.batch((batch) {
+        for (var canonical = start; canonical < end; canonical++) {
           batch.customStatement(
-            'UPDATE music_queue_entries SET playback_index = ? WHERE profile_id = ? AND canonical_index = ?',
-            [playback, _profileId, queue.order[playback]],
+            'INSERT INTO music_queue_entries (profile_id, canonical_index, playback_index, metadata) '
+            'VALUES (?, ?, (SELECT playback_index FROM music_queue_save_target WHERE canonical_index = ?), ?)',
+            [_profileId, canonical, canonical, jsonEncode(queue.items[canonical].toJson())],
           );
         }
       });
     }
+    await _database.customStatement(
+      'UPDATE music_queue_entries SET playback_index = '
+      '(SELECT playback_index FROM music_queue_save_target '
+      'WHERE canonical_index = music_queue_entries.canonical_index) '
+      'WHERE profile_id = ? AND playback_index < 0',
+      [_profileId],
+    );
+    await _writeQueueMetadata(queue);
+    await _database.customStatement('DELETE FROM music_queue_save_target');
+    _guard();
   }
 
   Future<void> _writeQueueMetadata(MusicQueueState queue) async {

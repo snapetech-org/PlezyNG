@@ -1,6 +1,6 @@
 # Using the visualizer library
 
-Open Now Playing, enable the visualizer, then choose the library button. The six original scenes remain available on their existing platforms. Native preset playback is currently unqualified; regular build recipes include MilkRust, while engine/audio availability still varies by platform. It needs the matching native dependencies described in `native/visualizer/README.md`. Existing shipped binaries have not been replaced by this PR.
+Start a music track, open Now Playing, and select the waveform-shaped Visualizer button. The six original scenes appear immediately. To play a MilkRust preset, select the preset-library button in the visualizer controls, choose Browse installed presets, then choose a playable preset. The included sample pack installs offline when the library opens. A new profile prefers MilkRust when its native renderer is available and uses projectM when only projectM is available; a saved engine choice is preserved. The library shows the reason when native preset playback is unavailable. Native preset playback is still unqualified across release platforms, and needs the matching engine and audio dependencies described in `native/visualizer/README.md`.
 
 Original scenes also remain available for local/source audio. They use Plex loudness when present, otherwise available live MPV audio statistics, otherwise ambient motion. The live statistics are compact measurements, not a full spectrum or waveform display. Native preset controls use the active dedicated audio player in either source path.
 
@@ -42,7 +42,8 @@ Use **Check for pack updates** in the library to fetch a signed catalog when the
 ### Choosing a native engine
 
 The preset library offers projectM and experimental native MilkRust. The choice
-is saved with the profile. Linux has source for both engines; Windows, macOS,
+is saved with the profile. New profiles prefer an available MilkRust renderer,
+then projectM; a previously selected engine is never silently changed. Linux has source for both engines; Windows, macOS,
 iOS/tvOS, Android/TV, Tizen and webOS have source for native MilkRust. A build without the
 matching engine and same-player PCM extension reports the missing dependency.
 This source increment does not add compiled engines to existing releases.

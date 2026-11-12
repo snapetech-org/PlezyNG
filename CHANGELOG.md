@@ -6,6 +6,7 @@
 
 - Clarify future Chocolatey package metadata: link the Pleazyng website separately from its source code and identify the Chocolatey maintainer account separately from the software author.
 - Make orphaned-download review discoverable in Download settings, using the same guarded scan and confirmation as the Downloads toolbar.
+- Prefer the available MilkRust renderer for new visualizer profiles, falling back to projectM when necessary while preserving each user's saved engine choice. Clarify how to open presets from Now Playing; native release qualification remains in progress.
 
 - Preserve video aspect ratio on window resize. Retire Stretch fit and interpret saved Stretch choices as Contain; the player now cycles between Contain and Cover.
 - Added an owner-authorized Plex music playlist access dialog with explicit recipient confirmation, fresh playlist preflight and account retirement guards.

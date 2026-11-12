@@ -94,6 +94,14 @@ class VisualizerSession extends ChangeNotifier {
     }
   }
 
+  /// Use the bundled native renderer for a new profile when it is available.
+  /// An explicit saved engine remains the user's choice.
+  static Future<String> defaultEngine() async {
+    if ((await capabilities(engine: 'milkrust')).available) return 'milkrust';
+    if ((await capabilities(engine: 'projectm')).available) return 'projectm';
+    return 'milkrust';
+  }
+
   void _changed() {
     if (!_closed) notifyListeners();
   }

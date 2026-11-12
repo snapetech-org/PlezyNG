@@ -6,8 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/visualization/visualizer_pack_store.dart';
 import 'package:plezy/services/visualization/visualizer_session.dart';
 
-// Regression source only in this delivery. Run on an authorized private JIT
-// runner with the rest of the Flutter checks before promoting the feature.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const channel = MethodChannel('com.plezy/mpv_audio_player');
@@ -24,6 +22,28 @@ void main() {
   tearDown(() {
     debugDefaultTargetPlatformOverride = null;
     messenger.setMockMethodCallHandler(channel, null);
+  });
+
+  test('new profiles prefer the bundled MilkRust renderer when available', () async {
+    final queries = <String>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      final engine = (call.arguments as Map)['engine'] as String;
+      queries.add(engine);
+      return {'available': engine == 'milkrust', 'engine': engine};
+    });
+    expect(await VisualizerSession.defaultEngine(), 'milkrust');
+    expect(queries, ['milkrust']);
+  });
+
+  test('new profiles use projectM when MilkRust is unavailable', () async {
+    final queries = <String>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      final engine = (call.arguments as Map)['engine'] as String;
+      queries.add(engine);
+      return {'available': engine == 'projectm', 'engine': engine};
+    });
+    expect(await VisualizerSession.defaultEngine(), 'projectm');
+    expect(queries, ['milkrust', 'projectm']);
   });
 
   test('disposing during creation releases the lease without loading into a dead widget', () async {

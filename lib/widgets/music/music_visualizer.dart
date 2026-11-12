@@ -327,7 +327,12 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       if (!mounted || generation != _preferenceGeneration) {
         return;
       }
-      await _native.setEngine(prefs['engine'] == 'milkrust' ? 'milkrust' : 'projectm');
+      final savedEngine = prefs['engine'];
+      final engine = savedEngine == 'milkrust' || savedEngine == 'projectm'
+          ? savedEngine as String
+          : await VisualizerSession.defaultEngine();
+      if (!mounted || generation != _preferenceGeneration) return;
+      await _native.setEngine(engine);
       if (!mounted || generation != _preferenceGeneration) {
         return;
       }

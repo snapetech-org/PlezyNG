@@ -7,6 +7,12 @@
 
 Current integration: PR #82 was reconciled into main on 2026-11-05. See SOURCE_COMPLETION.md and BUILD_HANDOFF.md for the current ABI v2 pin, executed regression checks and remaining artifact/device/provisioning gates. Dated sections below retain their original commit scope.
 
+## Local Linux check, 2026-11-11
+
+From the current source lock, a local x64 MilkRust runtime build completed. Its GL and GLES smoke checks each rendered 12 changing frames for both bundled sample presets. A Linux release-mode Flutter app built and contained the matching MilkRust shared library, helper, source archive and notices. Focused visualizer session, Now Playing, visualizer widget and native worker tests passed.
+
+The first local app build linked the host's unpatched libmpv. The locked mpv-build artifact contains the required audio-tap symbols and was copied into the bundle using the release workflow's steps, but this Arch workstation lacks three of that artifact's Linux dependencies (`libmujs.so.3`, `liblua5.2.so.0`, `libdisplay-info.so.1`). The Debian package dependency guard also cannot qualify packages on this Arch host. This is build and rendering evidence, not an end-to-end app playback or release qualification. CI installs those dependencies; its produced artifact and live playback still need validation.
+
 Updated 2026-10-30. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/pleazyng/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
 pins the current MilkRust PR #20 source revision in `native/visualizer/sources.lock.json`; the exact dependency

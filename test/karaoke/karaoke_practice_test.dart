@@ -35,6 +35,70 @@ KaraokeRequest _request(String trackId, {KaraokeRequestState state = KaraokeRequ
     KaraokeRequest(id: 'request-$trackId', trackId: trackId, singers: const [], createdMs: 1, state: state);
 
 void main() {
+  group('Karaoke trim and skip markers', () {
+    test('round-trips validated trim markers and rejects an unusable range', () {
+      final trimmed = KaraokeTrack.fromJson(
+        _track('trim').toJson()
+          ..['introTrimEndMs'] = 12000
+          ..['outroTrimStartMs'] = 48000,
+      );
+      expect(trimmed.introTrimEndMs, 12000);
+      expect(trimmed.outroTrimStartMs, 48000);
+      expect(KaraokeTrack.fromJson(trimmed.toJson()).toJson(), trimmed.toJson());
+      expect(
+        () => KaraokeTrack.fromJson(
+          _track('bad-trim').toJson()
+            ..['introTrimEndMs'] = 20000
+            ..['outroTrimStartMs'] = 20499,
+        ),
+        throwsFormatException,
+      );
+      expect(
+        () => KaraokeTrack.fromJson(_track('bad-end-trim').toJson()..['outroTrimStartMs'] = 60000),
+        throwsFormatException,
+      );
+    });
+
+    test('previews the retained range inside medley clip boundaries', () {
+      final trimmed = KaraokeTrack.fromJson(
+        _track('trim-preview').toJson()
+          ..['introTrimEndMs'] = 12000
+          ..['outroTrimStartMs'] = 48000,
+      );
+      expect(karaokeTrimmedPlaybackRange(trimmed, 60000), (startMs: 12000, endMs: 48000));
+      expect(karaokeTrimmedPlaybackRange(trimmed, 60000, clipStartMs: 20000, clipEndMs: 40000), (
+        startMs: 20000,
+        endMs: 40000,
+      ));
+      expect(karaokeTrimmedPlaybackRange(trimmed, 60000, clipStartMs: 47800, clipEndMs: 48000), isNull);
+      expect(karaokeTrimmedPlaybackRange(trimmed, 0), isNull);
+    });
+
+    test('skips only marked instrumentals of eight seconds or longer', () {
+      final sections = [
+        const KaraokeSection(name: 'pickup', startMs: 0, endMs: 7999, instrumental: true),
+        const KaraokeSection(name: 'verse', startMs: 8000, endMs: 20000),
+        const KaraokeSection(name: 'break', startMs: 21000, endMs: 29000, instrumental: true),
+      ];
+      expect(karaokeInstrumentalSkipTarget(sections, 1000), isNull);
+      expect(karaokeInstrumentalSkipTarget(sections, 10000), isNull);
+      expect(karaokeInstrumentalSkipTarget(sections, 22000), 29000);
+      expect(karaokeInstrumentalSkipTarget(sections, 22000, clipEndMs: 25000), 25000);
+    });
+
+    test('persists the host automatic-skip override', () async {
+      final store = _MemoryKaraokeStore();
+      final session = KaraokeSession(music: _UnusedMusicService(), profileId: 'trim', store: store);
+      await session.ready;
+      await session.setAutoSkipMarkersEnabled(true);
+      final restored = KaraokeSession(music: _UnusedMusicService(), profileId: 'trim', store: store);
+      await restored.ready;
+      expect(restored.autoSkipMarkersEnabled, isTrue);
+      session.dispose();
+      restored.dispose();
+    });
+  });
+
   group('Karaoke practice markers', () {
     test('persists independent rendition loops through profile session recovery', () async {
       final store = _MemoryKaraokeStore();

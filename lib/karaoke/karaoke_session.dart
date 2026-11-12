@@ -80,9 +80,15 @@ class KaraokeSession extends ChangeNotifier {
   KaraokeRequest? current;
   int revision = 0, epoch = 0, _turnNumber = 0, _savedAt = 0;
   int? loopStartMs, loopEndMs, _undoSeek;
+  int? _trimPreviewEndMs;
+  int _trimPreviewGeneration = 0;
+  List<KaraokeSection> _instrumentalSkipMarkers = const [];
   bool fairRotation = true, allowExplicit = true, requireApproval = true, allowVotes = false, held = false;
   bool practiceCountInEnabled = false;
+  bool autoSkipMarkersEnabled = false;
   bool _disposed = false, _loopSeeking = false, _finishing = false;
+  bool _instrumentalSkipSeeking = false, _trimPreviewActive = false, _trimPreviewStopping = false;
+  bool _trimPreviewHeldAtEnd = false;
   bool _usingMusic = false, _started = false;
   bool _resumeAfterQuiz = false;
   KaraokeMode mode = KaraokeMode.sing;
@@ -184,6 +190,7 @@ class KaraokeSession extends ChangeNotifier {
       requireApproval = j['requireApproval'] != false;
       allowVotes = j['allowVotes'] == true;
       practiceCountInEnabled = j['practiceCountInEnabled'] == true;
+      autoSkipMarkersEnabled = j['autoSkipMarkersEnabled'] == true;
       banner = j['banner'] as String? ?? '';
       stageColor = j['stageColor'] as int? ?? stageColor;
       stageTextScale = ((j['stageTextScale'] as num?)?.toDouble() ?? 1).clamp(.75, 2).toDouble();
@@ -232,6 +239,7 @@ class KaraokeSession extends ChangeNotifier {
     'requireApproval': requireApproval,
     'allowVotes': allowVotes,
     'practiceCountInEnabled': practiceCountInEnabled,
+    'autoSkipMarkersEnabled': autoSkipMarkersEnabled,
     'party': party.toJson(),
     'duetInvitation': duetInvitation,
     'fillerTrackIds': fillerTrackIds,
@@ -1058,6 +1066,21 @@ class KaraokeSession extends ChangeNotifier {
     final song = catalog[request.trackId]!;
     _usingFiller = false;
     resumeMs = math.max(resumeMs, request.clipStartMs ?? 0);
+    final introTrim = song.introTrimEndMs;
+    if (autoSkipMarkersEnabled &&
+        introTrim != null &&
+        resumeMs < introTrim &&
+        (request.clipEndMs == null || introTrim <= request.clipEndMs!)) {
+      resumeMs = introTrim;
+    }
+    _instrumentalSkipMarkers =
+        song.sections
+            .where(
+              (section) =>
+                  section.instrumental && section.endMs - section.startMs >= karaokeLongInstrumentalSkipThresholdMs,
+            )
+            .toList()
+          ..sort((a, b) => a.startMs.compareTo(b.startMs));
     current = request;
     _loopRenditionId = song.id;
     unawaited(loadAnalysis(song.id));
@@ -1168,6 +1191,7 @@ class KaraokeSession extends ChangeNotifier {
   }
 
   Future<void> pause() async {
+    _cancelTrimPreview();
     _cancelPracticeCountIn();
     await stopCapture?.call();
     epoch++;
@@ -1184,6 +1208,7 @@ class KaraokeSession extends ChangeNotifier {
       throw StateError('No active performance');
     }
     final wasCountingIn = _cancelPracticeCountIn();
+    _trimPreviewHeldAtEnd = false;
     if (wasCountingIn && loopStartMs != null) {
       await _seekPlaybackTo(loopStartMs!);
     }
@@ -1195,10 +1220,16 @@ class KaraokeSession extends ChangeNotifier {
     _notify();
   }
 
-  Future<void> seek(int ms) async {
+  Future<void> seek(int ms) => _seek(ms);
+
+  Future<void> _seek(int ms, {bool preserveTrimPreview = false}) async {
     if (!_started) {
       throw StateError('No performance');
     }
+    if (!preserveTrimPreview) {
+      _cancelTrimPreview();
+    }
+    _trimPreviewHeldAtEnd = false;
     _undoSeek = positionMs.value;
     final target = Duration(milliseconds: ms.clamp(0, durationMs > 0 ? durationMs : math.max(0, ms)));
     if (current?.clipStartMs != null && target.inMilliseconds < current!.clipStartMs!) {
@@ -1225,6 +1256,81 @@ class KaraokeSession extends ChangeNotifier {
       }
     }
     _notify();
+  }
+
+  Future<void> previewTrimmedRange(KaraokeTrack selected) async {
+    if (!_started || current?.trackId != selected.id) {
+      throw StateError('Preview requires this rendition to be playing');
+    }
+    if (stopCapture != null) {
+      throw StateError('Stop vocal capture before previewing trim markers');
+    }
+    final duration = durationMs;
+    final request = current!;
+    final range = karaokeTrimmedPlaybackRange(
+      selected,
+      duration,
+      clipStartMs: request.clipStartMs,
+      clipEndMs: request.clipEndMs,
+    );
+    if (range == null) {
+      throw StateError('Trimmed range must be at least 500 ms within the rendition');
+    }
+    _cancelPracticeCountIn();
+    final generation = ++_trimPreviewGeneration;
+    _trimPreviewActive = true;
+    _trimPreviewStopping = false;
+    _trimPreviewHeldAtEnd = false;
+    _trimPreviewEndMs = range.endMs;
+    try {
+      await _seek(range.startMs, preserveTrimPreview: true);
+      if (generation != _trimPreviewGeneration || !_trimPreviewActive) {
+        return;
+      }
+      if (_usingMusic) {
+        await music.play();
+      } else {
+        await _player?.play();
+      }
+      _notify();
+    } catch (_) {
+      if (generation == _trimPreviewGeneration) {
+        _cancelTrimPreview();
+      }
+      rethrow;
+    }
+  }
+
+  void _cancelTrimPreview() {
+    _trimPreviewGeneration++;
+    _trimPreviewActive = false;
+    _trimPreviewStopping = false;
+    _trimPreviewEndMs = null;
+  }
+
+  Future<void> _finishTrimPreview() async {
+    if (!_trimPreviewActive || _trimPreviewStopping) {
+      return;
+    }
+    final generation = _trimPreviewGeneration;
+    _trimPreviewStopping = true;
+    try {
+      if (_usingMusic) {
+        await music.pause();
+      } else {
+        await _player?.pause();
+      }
+    } catch (error) {
+      report(error);
+    } finally {
+      if (generation == _trimPreviewGeneration) {
+        _trimPreviewActive = false;
+        _trimPreviewStopping = false;
+        _trimPreviewHeldAtEnd = true;
+        _trimPreviewEndMs = null;
+        _notify();
+      }
+    }
   }
 
   Future<void> undoSeek() async {
@@ -1301,6 +1407,12 @@ class KaraokeSession extends ChangeNotifier {
         await _player?.play();
       }
     }
+    await save();
+  }
+
+  Future<void> setAutoSkipMarkersEnabled(bool enabled) async {
+    autoSkipMarkersEnabled = enabled;
+    _notify();
     await save();
   }
 
@@ -1531,7 +1643,11 @@ class KaraokeSession extends ChangeNotifier {
 
   Future<void> _stopPlayback() async {
     PlaybackCoordinator.instance.unregisterKaraoke(stopPlayback);
+    _cancelTrimPreview();
+    _trimPreviewHeldAtEnd = false;
     _cancelPracticeCountIn();
+    _instrumentalSkipSeeking = false;
+    _instrumentalSkipMarkers = const [];
     _started = false;
     Object? failure;
     Future<void> attempt(Future<void> Function() action) async {
@@ -1715,15 +1831,43 @@ class KaraokeSession extends ChangeNotifier {
     if (_started && ms != positionMs.value) {
       positionMs.value = ms;
     }
-    if (_started && loopStartMs != null && loopEndMs != null && ms >= loopEndMs! && playing && !_loopSeeking) {
+    final practiceLoopActive = loopStartMs != null && loopEndMs != null;
+    if (_started && !_trimPreviewActive && practiceLoopActive && ms >= loopEndMs! && playing && !_loopSeeking) {
       _loopSeeking = true;
       final restart = practiceCountInEnabled && stopCapture == null ? _startPracticeCountIn() : seek(loopStartMs!);
       unawaited(restart.catchError(report).whenComplete(() => _loopSeeking = false));
     }
-    if (current?.clipEndMs != null && ms >= current!.clipEndMs! && playing) {
-      unawaited(_completeAtBoundary());
+    if (_started && _trimPreviewActive) {
+      if (_trimPreviewEndMs case final endMs? when ms >= endMs && playing && !_trimPreviewStopping) {
+        unawaited(_finishTrimPreview());
+      }
+    } else if (_started && !practiceLoopActive) {
+      int? boundary = current?.clipEndMs;
+      final outroTrim = autoSkipMarkersEnabled ? track?.outroTrimStartMs : null;
+      if (outroTrim != null) {
+        final clipStart = current?.clipStartMs ?? 0;
+        final effectiveOutro = math.max(outroTrim, clipStart);
+        if (boundary == null || effectiveOutro < boundary) {
+          boundary = effectiveOutro;
+        }
+      }
+      if (boundary != null && ms >= boundary && playing) {
+        unawaited(_completeAtBoundary());
+      } else if (autoSkipMarkersEnabled && playing && !_instrumentalSkipSeeking) {
+        final target = karaokeInstrumentalSkipTarget(_instrumentalSkipMarkers, ms, clipEndMs: current?.clipEndMs);
+        if (target != null) {
+          _instrumentalSkipSeeking = true;
+          unawaited(seek(target).catchError(report).whenComplete(() => _instrumentalSkipSeeking = false));
+        }
+      }
     }
-    if (_usingMusic && loopEndMs == null && !playing && durationMs > 0 && ms >= durationMs - 150) {
+    if (_usingMusic &&
+        loopEndMs == null &&
+        !_trimPreviewActive &&
+        !_trimPreviewHeldAtEnd &&
+        !playing &&
+        durationMs > 0 &&
+        ms >= durationMs - 150) {
       unawaited(_completeAtBoundary());
     }
     final now = DateTime.now().millisecondsSinceEpoch;

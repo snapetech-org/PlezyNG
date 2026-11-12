@@ -1100,6 +1100,14 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
                     value: s.practiceCountInEnabled,
                     onChanged: _busy ? null : (value) => _run(() => s.setPracticeCountInEnabled(value)),
                   ),
+                if (s.track case final track? when track.hasTrimMarkers || track.hasLongInstrumentalSkipMarkers)
+                  SwitchListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.t.karaokeUi.automaticTrimAndInstrumentalSkips),
+                    value: s.autoSkipMarkersEnabled,
+                    onChanged: _busy ? null : (value) => _run(() => s.setAutoSkipMarkersEnabled(value)),
+                  ),
               ],
             ),
           ),

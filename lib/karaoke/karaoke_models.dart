@@ -134,6 +134,47 @@ class KaraokeSection {
   }
 }
 
+const int karaokeLongInstrumentalSkipThresholdMs = 8000;
+
+int? karaokeInstrumentalSkipTarget(Iterable<KaraokeSection> sections, int positionMs, {int? clipEndMs}) {
+  for (final section in sections) {
+    if (!section.instrumental || section.endMs - section.startMs < karaokeLongInstrumentalSkipThresholdMs) {
+      continue;
+    }
+    if (positionMs < section.startMs || positionMs >= section.endMs) {
+      continue;
+    }
+    final target = clipEndMs == null || section.endMs < clipEndMs ? section.endMs : clipEndMs;
+    if (target > positionMs) {
+      return target;
+    }
+  }
+  return null;
+}
+
+({int startMs, int endMs})? karaokeTrimmedPlaybackRange(
+  KaraokeTrack track,
+  int durationMs, {
+  int? clipStartMs,
+  int? clipEndMs,
+}) {
+  if (durationMs <= 0) {
+    return null;
+  }
+  var start = track.introTrimEndMs ?? 0;
+  if (clipStartMs != null && clipStartMs > start) {
+    start = clipStartMs;
+  }
+  var end = track.outroTrimStartMs ?? durationMs;
+  if (end > durationMs) {
+    end = durationMs;
+  }
+  if (clipEndMs != null && clipEndMs < end) {
+    end = clipEndMs;
+  }
+  return end - start < 500 ? null : (startMs: start, endMs: end);
+}
+
 /// A rendition is a specific arrangement/cut, not just an album or song title.
 class KaraokeTrack {
   final String id, songId, title, artist, language, producer, genre;
@@ -143,6 +184,7 @@ class KaraokeTrack {
   final List<KaraokeAsset> assets;
   final List<KaraokeSection> sections;
   final int durationMs, lyricOffsetMs;
+  final int? introTrimEndMs, outroTrimStartMs;
   final int? year, difficulty;
   final bool chartReviewed, explicit;
   final String? providerId, license;
@@ -164,6 +206,8 @@ class KaraokeTrack {
     this.sections = const [],
     this.durationMs = 0,
     this.lyricOffsetMs = 0,
+    this.introTrimEndMs,
+    this.outroTrimStartMs,
     this.chartReviewed = false,
     this.explicit = false,
     this.providerId,
@@ -173,6 +217,10 @@ class KaraokeTrack {
 
   bool get canScore => chartReviewed && notes.any((n) => !n.freestyle);
   bool get hasBacking => assets.any((a) => a.kind == KaraokeAssetKind.instrumental);
+  bool get hasTrimMarkers => introTrimEndMs != null || outroTrimStartMs != null;
+  bool get hasLongInstrumentalSkipMarkers => sections.any(
+    (section) => section.instrumental && section.endMs - section.startMs >= karaokeLongInstrumentalSkipThresholdMs,
+  );
   bool get singAlongOnly => media != null && !hasBacking;
   bool get hasLocalAudio =>
       assets.any((a) => a.kind == KaraokeAssetKind.audio || a.kind == KaraokeAssetKind.instrumental);
@@ -202,6 +250,8 @@ class KaraokeTrack {
     'sections': sections.map((s) => s.toJson()).toList(),
     'durationMs': durationMs,
     'lyricOffsetMs': lyricOffsetMs,
+    if (introTrimEndMs != null) 'introTrimEndMs': introTrimEndMs,
+    if (outroTrimStartMs != null) 'outroTrimStartMs': outroTrimStartMs,
     'chartReviewed': chartReviewed,
     'explicit': explicit,
     'providerId': providerId,
@@ -250,10 +300,30 @@ class KaraokeTrack {
     final year = j['year'] as int?;
     final difficulty = j['difficulty'] as int?;
     final genre = j['genre'] as String? ?? '';
+    final durationMs = (j['durationMs'] as int? ?? 0).clamp(0, 24 * 3600000);
+    final rawIntroTrimEndMs = j['introTrimEndMs'];
+    final rawOutroTrimStartMs = j['outroTrimStartMs'];
+    if ((rawIntroTrimEndMs != null && rawIntroTrimEndMs is! int) ||
+        (rawOutroTrimStartMs != null && rawOutroTrimStartMs is! int)) {
+      throw const FormatException('Invalid trim markers');
+    }
+    final introTrimEndMs = rawIntroTrimEndMs as int?;
+    final outroTrimStartMs = rawOutroTrimStartMs as int?;
     if (genre.length > 100 ||
         (year != null && (year < 1800 || year > 2200)) ||
         (difficulty != null && (difficulty < 1 || difficulty > 5))) {
       throw const FormatException('Invalid rendition year or difficulty');
+    }
+    if ((introTrimEndMs != null &&
+            (introTrimEndMs < 0 ||
+                introTrimEndMs > 24 * 3600000 ||
+                (durationMs > 0 && durationMs - introTrimEndMs < 500))) ||
+        (outroTrimStartMs != null &&
+            (outroTrimStartMs < 0 ||
+                outroTrimStartMs > 24 * 3600000 ||
+                (durationMs > 0 && (outroTrimStartMs < 500 || durationMs - outroTrimStartMs < 500)))) ||
+        (introTrimEndMs != null && outroTrimStartMs != null && outroTrimStartMs - introTrimEndMs < 500)) {
+      throw const FormatException('Invalid trim markers');
     }
     for (final l in lyrics.lines) {
       if (l.spans.isNotEmpty && l.spans.map((span) => span.text).join() != l.text) {
@@ -297,8 +367,10 @@ class KaraokeTrack {
       sections: List.unmodifiable(
         sections.map((section) => KaraokeSection.fromJson(Map<String, dynamic>.from(section as Map))),
       ),
-      durationMs: (j['durationMs'] as int? ?? 0).clamp(0, 24 * 3600000),
+      durationMs: durationMs,
       lyricOffsetMs: (j['lyricOffsetMs'] as int? ?? 0).clamp(-600000, 600000),
+      introTrimEndMs: introTrimEndMs,
+      outroTrimStartMs: outroTrimStartMs,
       chartReviewed: j['chartReviewed'] == true,
       explicit: j['explicit'] == true,
       providerId: providerId,

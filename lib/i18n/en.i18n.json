@@ -5500,7 +5500,11 @@
     "hostUnlock": "Host unlock",
     "chooseYourSingerName": "Choose your singer name",
     "searchSongs": "Search songs",
-    "countInOnPracticeLoops": "Count in on practice loops"
+    "countInOnPracticeLoops": "Count in on practice loops",
+    "setIntroTrimAtPlayhead": "Mark intro end here",
+    "setOutroTrimAtPlayhead": "Mark outro start here",
+    "previewTrimmedRange": "Play marked range",
+    "automaticTrimAndInstrumentalSkips": "Apply intro/outro markers and skip marked sections without singing automatically"
   },
   "bonusExtras": {
     "title": "Extras",

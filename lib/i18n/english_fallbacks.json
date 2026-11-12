@@ -1,6 +1,6 @@
 {
   "baseLocale": "en",
-  "reason": "Product-specific karaoke, including host-stage analysis corrections, curated extras, Steam, service integration, required Trakt attribution, discovery, podcast, library genre, privacy, store review access, IPTV, motion processing, subtitle, visualizer and playback copy use Slang’s base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback.",
+  "reason": "Product-specific karaoke, including host-stage analysis corrections, curated extras, Steam, service integration, required Trakt attribution, discovery, podcast, library genre, privacy, store review access, IPTV, motion processing, subtitle, visualizer and playback copy use Slang’s base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback. K23 karaoke trim and skip controls use explicit English fallbacks until translations are reviewed.",
   "keys": [
     "about.traktAttribution",
     "appAccess.activateReviewAccess",
@@ -627,6 +627,7 @@
     "karaokeUi.askPhones",
     "karaokeUi.assignSingersAndParts",
     "karaokeUi.auditCompleteOfflineAssets",
+    "karaokeUi.automaticTrimAndInstrumentalSkips",
     "karaokeUi.average",
     "karaokeUi.backing",
     "karaokeUi.beginAFreshScoreRound",
@@ -718,6 +719,7 @@
     "karaokeUi.preparationRunsBetweenPerformancesOriginalsStayUnchangedGeneratedBacki",
     "karaokeUi.prepare",
     "karaokeUi.prepareBackingTimingAndGuidance",
+    "karaokeUi.previewTrimmedRange",
     "karaokeUi.privateTakes",
     "karaokeUi.queueAssignedSingers",
     "karaokeUi.queueThisSetlist",
@@ -758,6 +760,8 @@
     "karaokeUi.selectPrivatePEMKey",
     "karaokeUi.selectTrustedPEMCertificate",
     "karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire",
+    "karaokeUi.setIntroTrimAtPlayhead",
+    "karaokeUi.setOutroTrimAtPlayhead",
     "karaokeUi.songs",
     "karaokeUi.stageBanner",
     "karaokeUi.stageTextSize",

@@ -622,6 +622,24 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
     }
   }
 
+  Future<void> _setTrimMarker({required bool intro}) => _run(() async {
+    if (widget.session.track?.id != _track.id || !widget.session.hasPerformance) {
+      throw StateError('Play this rendition to set trim markers at the playhead');
+    }
+    final position = widget.session.positionMs.value;
+    final duration = widget.session.durationMs > 0 ? widget.session.durationMs : _track.durationMs;
+    if (duration <= 0 || position < 500 || position > duration - 500) {
+      throw StateError('Leave at least 500 ms in the trimmed range');
+    }
+    final key = intro ? 'introTrimEndMs' : 'outroTrimStartMs';
+    _edit(KaraokeTrack.fromJson(_track.toJson()..[key] = position));
+  });
+
+  void _clearTrimMarker({required bool intro}) {
+    final key = intro ? 'introTrimEndMs' : 'outroTrimStartMs';
+    _edit(KaraokeTrack.fromJson(_track.toJson()..[key] = null));
+  }
+
   Future<void> _importLyrics() => _run(() async {
     final choice = await FilePickerService.instance.pickFiles(
       type: FileType.custom,
@@ -822,6 +840,57 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
         ),
         if (_track.notes.isNotEmpty) SizedBox(height: 180, child: CustomPaint(painter: _NoteLane(_track.notes))),
         Text(l10n.t.karaokeUi.sectionsAndMedleyCues, style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          '${l10n.t.subtitleAiUi.startMs}: ${_track.introTrimEndMs ?? '—'} ms · '
+          '${l10n.t.subtitleAiUi.endMs}: ${_track.outroTrimStartMs ?? '—'} ms',
+        ),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                OutlinedButton(
+                  onPressed: _busy || widget.session.track?.id != _track.id || !widget.session.hasPerformance
+                      ? null
+                      : () => _setTrimMarker(intro: true),
+                  child: Text(l10n.t.karaokeUi.setIntroTrimAtPlayhead),
+                ),
+                TextButton(
+                  onPressed: _busy || _track.introTrimEndMs == null ? null : () => _clearTrimMarker(intro: true),
+                  child: Text(l10n.t.common.clear),
+                ),
+              ],
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                OutlinedButton(
+                  onPressed: _busy || widget.session.track?.id != _track.id || !widget.session.hasPerformance
+                      ? null
+                      : () => _setTrimMarker(intro: false),
+                  child: Text(l10n.t.karaokeUi.setOutroTrimAtPlayhead),
+                ),
+                TextButton(
+                  onPressed: _busy || _track.outroTrimStartMs == null ? null : () => _clearTrimMarker(intro: false),
+                  child: Text(l10n.t.common.clear),
+                ),
+              ],
+            ),
+            OutlinedButton.icon(
+              onPressed:
+                  _busy ||
+                      !_track.hasTrimMarkers ||
+                      widget.session.track?.id != _track.id ||
+                      !widget.session.hasPerformance
+                  ? null
+                  : () => _run(() => widget.session.previewTrimmedRange(_track)),
+              icon: const AppIcon(Symbols.play_arrow_rounded),
+              label: Text(l10n.t.karaokeUi.previewTrimmedRange),
+            ),
+          ],
+        ),
         OutlinedButton(
           onPressed: () => _section(null),
           child: Text(l10n.t.karaokeUi.addSectionFromCurrentPlaybackTimes),

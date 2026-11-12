@@ -14412,6 +14412,18 @@ class Translations$karaokeUi$en {
 
 	/// en: 'Count in on practice loops'
 	String get countInOnPracticeLoops => 'Count in on practice loops';
+
+	/// en: 'Mark intro end here'
+	String get setIntroTrimAtPlayhead => 'Mark intro end here';
+
+	/// en: 'Mark outro start here'
+	String get setOutroTrimAtPlayhead => 'Mark outro start here';
+
+	/// en: 'Play marked range'
+	String get previewTrimmedRange => 'Play marked range';
+
+	/// en: 'Apply intro/outro markers and skip marked sections without singing automatically'
+	String get automaticTrimAndInstrumentalSkips => 'Apply intro/outro markers and skip marked sections without singing automatically';
 }
 
 // Path: bonusExtras
@@ -22788,6 +22800,10 @@ extension on Translations {
 			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
 			'karaokeUi.searchSongs' => 'Search songs',
 			'karaokeUi.countInOnPracticeLoops' => 'Count in on practice loops',
+			'karaokeUi.setIntroTrimAtPlayhead' => 'Mark intro end here',
+			'karaokeUi.setOutroTrimAtPlayhead' => 'Mark outro start here',
+			'karaokeUi.previewTrimmedRange' => 'Play marked range',
+			'karaokeUi.automaticTrimAndInstrumentalSkips' => 'Apply intro/outro markers and skip marked sections without singing automatically',
 			'bonusExtras.title' => 'Extras',
 			'bonusExtras.seeAll' => 'See all extras',
 			'bonusExtras.findMore' => 'Find more',

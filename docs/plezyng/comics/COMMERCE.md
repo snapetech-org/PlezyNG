@@ -54,7 +54,7 @@ GlobalComix's published creator pages describe subscription and PDF sales revenu
 
 Copy server/comic-commerce.env.example into the relay deployment's private environment and fill only the partner values whose approvals are complete. server/docker-compose.yml passes these variables through without storing values in Git. Store AWIN_API_TOKEN, FLEXOFFERS_API_KEY, and KOBO_RAKUTEN_API_TOKEN in a managed secret store in production.
 
-The app defaults to Plezy's hosted relay at ice.plezy.app. Deploy the new server route there with the app release, or set the Flutter build define PLEZY_COMIC_COMMERCE_BASE_URL to the separate relay's base URL. Until the route is deployed, the client falls back to direct official storefront links.
+The app uses the Pleazyng-owned relay configured by the `PLEAZYNG_RELAY_BASE_URL` release variable. If comic commerce is hosted on a separate relay, set the `PLEAZYNG_COMIC_COMMERCE_BASE_URL` Flutter build define to that relay's base URL. The client falls back to the direct official storefront link when the relay is unavailable, the route is not deployed, or the response is invalid.
 
 Before enabling a provider, record the approved property, permitted distribution channels, territories, agreement version, and effective/expiry dates in the partner source record. Set the approval flag back to false to disable tracking. If a retailer or network changes its host or link format, the exact-host check fails closed and the screen continues to the official handoff.
 

@@ -149,7 +149,11 @@ env:
   TVOS_FLUTTER_VERSION: "3.47.1" # Pinned custom tvOS engine has this ABI.
   # Shared by every release build command.
   COMPILE_SOURCE_SHA: ${{ inputs.recovery_source_sha || github.sha }}
-  RELEASE_DART_DEFINES: --dart-define=ENABLE_UPDATE_CHECK=true --dart-define=GIT_COMMIT=${{ inputs.recovery_product_sha || github.sha }}
+  RELEASE_DART_DEFINES: >-
+    --dart-define=ENABLE_UPDATE_CHECK=true
+    --dart-define=GIT_COMMIT=${{ inputs.recovery_product_sha || github.sha }}
+    --dart-define=PLEAZYNG_RELAY_BASE_URL=${{ vars.PLEAZYNG_RELAY_BASE_URL }}
+    --dart-define=PLEAZYNG_DISCORD_APPLICATION_ID=${{ vars.PLEAZYNG_DISCORD_APPLICATION_ID }}
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
   LINUX_APT_PACKAGES: >
     clang cmake meson ninja-build pkg-config nasm libgtk-3-dev libwebkit2gtk-4.1-dev libsecret-1-dev libevdev-dev liblzma-dev
@@ -2624,6 +2628,8 @@ jobs:
         shell: pwsh
         env:
           MSSTORE_LIFETIME_PRODUCT_ID: ${{ vars.MSSTORE_LIFETIME_PRODUCT_ID }}
+          PLEAZYNG_RELAY_BASE_URL: ${{ vars.PLEAZYNG_RELAY_BASE_URL }}
+          PLEAZYNG_DISCORD_APPLICATION_ID: ${{ vars.PLEAZYNG_DISCORD_APPLICATION_ID }}
           FLUTTER_WHISPER_GPU_BACKEND: ${{ inputs.subtitle_gpu_backend == 'vulkan' && matrix.arch == 'x64' && 'VULKAN' || inputs.subtitle_gpu_backend == 'cuda' && matrix.arch == 'x64' && 'CUDA' || 'CPU' }}
         run: python scripts/build_microsoft_store.py --arch "${{ matrix.arch }}"
 

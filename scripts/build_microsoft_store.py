@@ -21,16 +21,29 @@ def validate_product_id(product_id: str) -> None:
         raise ValueError('Microsoft lifetime add-on needs its 12-character Partner Center Store ID')
 
 
-def build_arguments(arch: str, product_id: str) -> list[str]:
+def build_arguments(
+    arch: str,
+    product_id: str,
+    *,
+    relay_base_url: str = '',
+    discord_application_id: str = '',
+) -> list[str]:
     validate_product_id(product_id)
     if arch not in ('x64', 'arm64'):
         raise ValueError('Microsoft Store builds require x64 or arm64')
-    return [
+    arguments = [
         'flutter', 'build', 'windows', '--release',
         '--dart-define=SUPPORTER_MODE=iap', '--dart-define=MSSTORE_BUILD=true',
         f'--dart-define=LIFETIME_UNLOCK_PRODUCT_ID={product_id}',
         f'--split-debug-info=debug-info/windows-store-{arch}',
     ]
+    for name, value in (
+        ('PLEAZYNG_RELAY_BASE_URL', relay_base_url),
+        ('PLEAZYNG_DISCORD_APPLICATION_ID', discord_application_id),
+    ):
+        if value.strip():
+            arguments.append(f'--dart-define={name}={value}')
+    return arguments
 
 
 def digest(path: Path) -> str:
@@ -76,7 +89,12 @@ def main() -> None:
     if args.verify_only:
         verify_payload(bundle, args.product_id, args.arch)
         return
-    command = build_arguments(args.arch, args.product_id)
+    command = build_arguments(
+        args.arch,
+        args.product_id,
+        relay_base_url=os.environ.get('PLEAZYNG_RELAY_BASE_URL', ''),
+        discord_application_id=os.environ.get('PLEAZYNG_DISCORD_APPLICATION_ID', ''),
+    )
     # Current Flutter selects Windows architecture from its native host and
     # does not expose --target-platform for this command.
     host_arch = {'amd64': 'x64', 'x86_64': 'x64', 'arm64': 'arm64', 'aarch64': 'arm64'}.get(platform.machine().lower())

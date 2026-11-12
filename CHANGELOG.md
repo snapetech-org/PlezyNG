@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Pass the configured Pleazyng relay and owned Discord application ID into every official release build, including Microsoft Store payloads, enabling optional provider routes without upstream-service fallbacks.
+
 - Make `plezyctl --open` use the registered `pleazyng://open-media` scheme so selected results open in Pleazyng.
 
 - Fix Launchpad PPA binary uploads rejected for 1970 timestamps on bundled Dolby Vision tools, and allow re-uploading an existing release with a new PPA revision using the PPA's existing source tarball and current packaging fixes.

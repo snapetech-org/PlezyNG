@@ -8,7 +8,7 @@ Use the application name **Pleazyng**, publisher **SnapeTech / SNAPE TECHNOLOGIE
 
 | Provider | Actual application path | Required registration/configuration | Current gate |
 | --- | --- | --- | --- |
-| Discord | Desktop Rich Presence | Own application and icon; asset keys matching the client; public `PLEAZYNG_DISCORD_APPLICATION_ID` | Own application `1568149865551237160` created; icon, description, privacy URL and optional `pleazyng` art asset saved. Repository variable staged; client compile activation and desktop runtime verification pending. Existing unrelated apps preserved |
+| Discord | Desktop Rich Presence | Own application and icon; asset keys matching the client; public `PLEAZYNG_DISCORD_APPLICATION_ID` | Own application `1568149865551237160` created; icon, description, privacy URL and optional `pleazyng` art asset saved. Official release builds now consume the repository variable; desktop runtime verification remains pending. Existing unrelated apps preserved |
 | MyAnimeList | Relay authorization with PKCE; device performs public-client refresh | Exact callback `https://pleazyng-api.snape.tech/auth/mal/callback`; same owned public client ID in server `MAL_CLIENT_ID` and client `PLEAZYNG_MAL_CLIENT_ID` | Owner submitted signup; registration email verification and login pending. No API client created |
 | AniList | Relay authorization-code exchange | Exact callback `https://pleazyng-api.snape.tech/auth/anilist/callback`; server-only `ANILIST_CLIENT_ID` and `ANILIST_CLIENT_SECRET`; no secret in app | Own login/client not verified; commercial terms below and actual consent/exchange tests required |
 | Trakt | TV Device Code; browser S256 PKCE through owned relay | Same approved public Client ID in server `TRAKT_CLIENT_ID` and app `PLEAZYNG_TRAKT_CLIENT_ID`; no client secret; production HTTPS callback derived from relay base URL | Owned development app created; production approval and deployment/activation are separate gates. Follow [Trakt readiness](trakt-production-readiness.md) |
@@ -33,11 +33,11 @@ Simkl documents free commercial usage below $150 monthly revenue and requires a 
 
 1. Verify account ownership and save the new public app/client ID. Store confidential fields in approved private secret storage, with a recoverable backup.
 2. Confirm displayed app name/icon, exact callback and requested scopes. No generic website redirect may receive an OAuth code or token.
-3. Enable only that provider; restart only the owned service if server configuration changed. Preserve the current release qualification source hold; client compile definitions belong in a subsequent qualified revision.
+3. Enable only that provider; restart only the owned service if server configuration changed. The official build workflow consumes the public relay and Discord application ID variables; preserve release qualification until those values are exercised by a published client.
 4. Test real consent, cancellation, state/replay rejection, token exchange, refresh/expiry/revoke and actual read/write synchronization. Test the TV QR path where implemented. Keep test tokens and capability URLs out of logs and receipts.
 5. Record accepted terms and any commercial permission accurately. Reconnect tokens tied to another registration without discarding unrelated local data. A working health endpoint is not provider qualification.
 
-Discord’s current source uses dynamic HTTPS poster assets, so the uploaded static `pleazyng` asset is available for future use rather than a required client key. No bot/OAuth registration is needed for this existing desktop IPC Rich Presence path. Both public repository variables (`PLEAZYNG_DISCORD_APPLICATION_ID`, `PLEAZYNG_RELAY_BASE_URL`) are staged and read back; current workflow source does not consume them, so this is not activation or end-to-end qualification.
+Discord’s current source uses dynamic HTTPS poster assets, so the uploaded static `pleazyng` asset is available for future use rather than a required client key. No bot/OAuth registration is needed for this existing desktop IPC Rich Presence path. The public repository variables (`PLEAZYNG_DISCORD_APPLICATION_ID`, `PLEAZYNG_RELAY_BASE_URL`) are consumed by the official release workflow and are not secrets. This enables the configured client routes but is not desktop IPC, poster upload, or provider end-to-end qualification.
 
 ## OAuth hosting split
 

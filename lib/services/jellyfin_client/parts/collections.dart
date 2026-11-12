@@ -107,7 +107,9 @@ mixin _JellyfinCollectionMethods on _JellyfinClientInternals {
     required String title,
     required List<MediaItem> items,
     MediaKind? itemKind,
+    bool Function()? isCurrent,
   }) async {
+    if (isCurrent?.call() == false) throw StateError('Collection source changed');
     // ParentId is optional on Jellyfin's `/Collections` endpoint — when
     // omitted the server picks a default BoxSet root. We pass libraryId so
     // the new collection lives in the same library as the seeded items.
@@ -125,7 +127,12 @@ mixin _JellyfinCollectionMethods on _JellyfinClientInternals {
   }
 
   @override
-  Future<bool> addToCollection({required String collectionId, required List<MediaItem> items}) async {
+  Future<bool> addToCollection({
+    required String collectionId,
+    required List<MediaItem> items,
+    bool Function()? isCurrent,
+  }) async {
+    if (isCurrent?.call() == false) throw StateError('Collection source changed');
     if (items.isEmpty) return true;
     final response = await _http.post(
       '/Collections/${_segment(collectionId)}/Items',

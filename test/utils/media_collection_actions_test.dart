@@ -166,7 +166,10 @@ void main() {
 
   testWidgets('hidden, uninitialized and foreign profile library rules prevent writes', (tester) async {
     final h = await _scope(tester);
+    expect(h.scope.allowsLibrary('music'), isTrue);
+    expect(h.scope.allowsLibrary('other'), isFalse);
     h.hidden.hiddenLibraryKeys.add('s:music');
+    expect(h.scope.allowsLibrary('music'), isFalse);
     expect(h.scope.current, isFalse);
     h.hidden.hiddenLibraryKeys.clear();
     h.hidden.isInitialized = false;

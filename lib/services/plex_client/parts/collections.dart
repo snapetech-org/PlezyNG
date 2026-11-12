@@ -293,10 +293,33 @@ mixin _PlexCollectionMethods on _PlexClientInternals {
     required String title,
     required List<MediaItem> items,
     MediaKind? itemKind,
+    bool Function()? isCurrent,
   }) async {
-    final uri = items.isEmpty ? '' : await buildMetadataUri(items.map((item) => item.id).join(','));
-    // Plex collections are only created for video kinds; music kinds send no type.
-    final type = itemKind == null || itemKind.isMusic ? null : PlexMetadataType.forKind(itemKind);
+    final authentication = authenticationSessionId;
+    void check() {
+      if (isOfflineMode || !identical(authentication, authenticationSessionId) || isCurrent?.call() == false) {
+        throw StateError('Collection source changed');
+      }
+    }
+
+    check();
+    final frozen = List<MediaItem>.unmodifiable(items);
+    final kind = itemKind ?? frozen.firstOrNull?.kind;
+    if (kind == MediaKind.track ||
+        kind == MediaKind.collection ||
+        frozen.any(
+          (item) =>
+              item.backend != MediaBackend.plex ||
+              item.serverId != null && item.serverId != serverId.value ||
+              item.libraryId != null && item.libraryId != libraryId ||
+              kind != null && item.kind != kind,
+        )) {
+      throw ArgumentError('Collection members must belong to one supported source');
+    }
+    final type = PlexMetadataType.forKind(kind);
+    final ids = frozen.map((item) => item.id).join(',');
+    final uri = frozen.isEmpty ? '' : await buildMetadataUri(ids);
+    check();
     return createCollectionFromUri(sectionId: libraryId, title: title, uri: uri, type: type);
   }
 
@@ -323,9 +346,49 @@ mixin _PlexCollectionMethods on _PlexClientInternals {
   }
 
   @override
-  Future<bool> addToCollection({required String collectionId, required List<MediaItem> items}) async {
-    if (items.isEmpty) return true;
-    final uri = await buildMetadataUri(items.map((item) => item.id).join(','));
+  Future<bool> addToCollection({
+    required String collectionId,
+    required List<MediaItem> items,
+    bool Function()? isCurrent,
+  }) async {
+    final authentication = authenticationSessionId;
+    void check() {
+      if (isOfflineMode || !identical(authentication, authenticationSessionId) || isCurrent?.call() == false) {
+        throw StateError('Collection source changed');
+      }
+    }
+
+    check();
+    final frozen = List<MediaItem>.unmodifiable(items);
+    if (frozen.isEmpty) return true;
+    final kind = frozen.first.kind;
+    if (frozen.any(
+          (item) =>
+              item.backend != MediaBackend.plex ||
+              item.serverId != null && item.serverId != serverId.value ||
+              item.kind != kind,
+        ) ||
+        kind == MediaKind.track) {
+      throw ArgumentError('Collection members must belong to one supported source');
+    }
+    if (kind == MediaKind.artist || kind == MediaKind.album) {
+      final response = await _getWithFailover('/library/metadata/$collectionId');
+      check();
+      final rows = _getMediaContainer(response)?['Metadata'];
+      final raw = rows is List && rows.length == 1 && rows.single is Map ? rows.single as Map : null;
+      final smart = raw?['smart'];
+      if (raw == null ||
+          raw['ratingKey']?.toString() != collectionId ||
+          raw['type'] != 'collection' ||
+          raw['subtype'] != kind.name ||
+          !(smart == false || smart == 0 || smart == '0') ||
+          raw['librarySectionID'] == null ||
+          frozen.any((item) => item.libraryId == null || item.libraryId != raw['librarySectionID'].toString())) {
+        throw StateError('Choose a regular collection for this music library and item type');
+      }
+    }
+    final uri = await buildMetadataUri(frozen.map((item) => item.id).join(','));
+    check();
     return addItemsToCollectionByUri(collectionId: collectionId, uri: uri);
   }
 

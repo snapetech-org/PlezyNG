@@ -434,6 +434,11 @@ mixin _PlexClientInternals on MediaServerCacheMixin {
     String errorMessage,
   );
 
+  @override
+  Object get authenticationSessionId;
+  @override
+  bool get isOfflineMode;
+
   Future<String> buildMetadataUri(String ratingKey);
 }
 

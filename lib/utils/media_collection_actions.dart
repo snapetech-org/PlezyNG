@@ -25,12 +25,19 @@ bool isAdminActionAllowedForMediaItem({
 /// visibility are rechecked after pickers/confirmations, never re-resolved
 /// into a replacement account when a delayed decision completes.
 class MediaCollectionWriteScope {
-  MediaCollectionWriteScope({required this.client, required this.item, required this.authorized})
+  MediaCollectionWriteScope({required this.client, required this.item, required this.authorized, this.libraryVisible})
     : _authentication = client.authenticationSessionId,
       _account = musicAccountScope(client);
   final MediaServerClient client;
   final MediaItem item;
   final bool Function() authorized;
+  final bool Function(String libraryId)? libraryVisible;
+
+  bool allowsLibrary(String libraryId) =>
+      current &&
+      libraryId.isNotEmpty &&
+      (item.libraryId == null || item.libraryId == libraryId) &&
+      (libraryVisible?.call(libraryId) ?? true);
   final Object _authentication;
   final String _account;
   bool get current =>
@@ -54,6 +61,7 @@ class MediaCollectionWriteScope {
     return MediaCollectionWriteScope(
       client: client,
       item: item,
+      libraryVisible: (id) => hidden == null || !hidden.hiddenLibraryKeys.contains('$server:$id'),
       authorized: () {
         if (!context.mounted ||
             servers.isDisposed ||

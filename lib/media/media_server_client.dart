@@ -598,16 +598,22 @@ abstract class MediaServerClient {
   /// created collection id when it can be recovered from an accepted response,
   /// or `null` when that response contains no usable id. Request failures
   /// throw. [itemKind] is only used by Plex (it disambiguates the section type
-  /// — movie/show/season/episode); Jellyfin ignores it.
+  /// — movie/show/season/episode/artist/album); Jellyfin ignores it.
   Future<String?> createCollection({
     required String libraryId,
     required String title,
     required List<MediaItem> items,
     MediaKind? itemKind,
+    bool Function()? isCurrent,
   });
 
-  /// Append [items] to an existing collection.
-  Future<bool> addToCollection({required String collectionId, required List<MediaItem> items});
+  /// Append [items] to an existing collection. Recheck [isCurrent] after any
+  /// preparation before issuing a write.
+  Future<bool> addToCollection({
+    required String collectionId,
+    required List<MediaItem> items,
+    bool Function()? isCurrent,
+  });
 
   /// Remove a single [item] from [collectionId].
   Future<bool> removeFromCollection({required String collectionId, required MediaItem item});

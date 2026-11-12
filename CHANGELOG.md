@@ -5,6 +5,8 @@
 - Retry the published release's PPA, Snap, and WinGet deliveries with the tools and complete manifest set required by their selected runners.
 - Edit collection titles, sort titles, summaries, posters and backgrounds with account-bound decisions, square music artwork and correct Plex collection writes; refresh the collection view after artwork or metadata changes.
 
+- Create and populate Plex artist and album collections from music menus with correct member types, subtype/library checks, immutable seeds and account guards across metadata URI discovery.
+
 - Assemble the complete frozen release from independently signed iOS and tvOS sibling runs, verifying both IPA attestations and original platform artifact identities before publication.
 - Keep shared libraries read-only for collection changes and bind collection confirmations to their original authorized account.
 

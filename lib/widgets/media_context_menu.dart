@@ -781,6 +781,8 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     };
     final ancestorArtistId = context.findAncestorWidgetOfExactType<ArtistDetailScreen>()?.artist.id;
     return [
+      if (menu.isPlex && menu.canManageCollections && (mediaKind == MediaKind.artist || mediaKind == MediaKind.album))
+        _MenuAction(value: 'music_collection', icon: Symbols.collections_rounded, label: t.common.addTo),
       _MenuAction(value: 'music_play', icon: Symbols.play_arrow_rounded, label: t.common.play),
       if (menu.itemServerOnline && canPinMusicHomeItem(context, mediaItem))
         _MenuAction(value: 'music_pin', icon: Symbols.keep_rounded, label: t.musicTools.pinToHome),
@@ -1028,6 +1030,9 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         } else if (context.mounted) {
           await _pushAndRefresh(context, mediaItem, MetadataEditScreen(metadata: mediaItem));
         }
+        break;
+      case 'music_collection':
+        await _showAddToCollectionDialog(context, menu.collectionScope);
         break;
       case 'quick_tag':
         if (context.mounted) await _showQuickTagDialog(context, mediaItem);
@@ -1647,13 +1652,17 @@ class MediaContextMenuState extends State<MediaContextMenu> {
 
     try {
       final item = scope.item;
-      bool current() => context.mounted && scope.current && _mediaItem?.globalKey == item.globalKey;
+      String? libraryId = item.libraryId;
+      bool current() =>
+          context.mounted &&
+          scope.current &&
+          _mediaItem?.globalKey == item.globalKey &&
+          (libraryId == null || scope.allowsLibrary(libraryId));
       final itemKind = item.kind;
 
       // Resolve the library/section id from the item itself, falling back to
       // a metadata round-trip and the show's library if missing. Both
       // backends store this on [MediaItem.libraryId].
-      String? libraryId = item.libraryId;
       appLogger.d('Resolving libraryId for ${item.title} (initial: $libraryId)');
 
       if (libraryId == null || libraryId.isEmpty) {
@@ -1699,7 +1708,11 @@ class MediaContextMenuState extends State<MediaContextMenu> {
 
       final result = await showScopedDialog<String>(
         context: context,
-        builder: (context) => CollectionSelectionDialog(client: client, libraryId: resolvedLibraryId),
+        builder: (context) => CollectionSelectionDialog(
+          client: client,
+          libraryId: resolvedLibraryId,
+          memberKind: itemKind.isMusic ? itemKind : null,
+        ),
       );
 
       if (result == null || !context.mounted || !current()) return;
@@ -1716,11 +1729,16 @@ class MediaContextMenuState extends State<MediaContextMenu> {
           label: t.collections.collectionName,
           hint: t.collections.enterCollectionName,
         ),
-        create: (name) =>
-            client.createCollection(libraryId: resolvedLibraryId, title: name, items: [item], itemKind: itemKind),
+        create: (name) => client.createCollection(
+          libraryId: resolvedLibraryId,
+          title: name,
+          items: [item],
+          itemKind: itemKind,
+          isCurrent: current,
+        ),
         createdLog: (id) => 'Successfully created collection with ID: $id',
         eagerSyncId: (id) => id,
-        add: () => client.addToCollection(collectionId: result, items: [item]),
+        add: () => client.addToCollection(collectionId: result, items: [item], isCurrent: current),
         messages: (
           created: t.collections.created,
           createError: t.collections.errorAddingToCollection,

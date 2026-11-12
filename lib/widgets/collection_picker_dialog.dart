@@ -7,6 +7,8 @@ import '../focus/focusable_text_field.dart';
 import '../i18n/strings.g.dart';
 import '../media/library_query.dart';
 import '../media/media_item.dart';
+import '../media/media_kind.dart';
+import '../media/media_backend.dart';
 import '../media/media_playlist.dart';
 import '../media/media_server_client.dart';
 import '../utils/media_server_http_client.dart';
@@ -256,8 +258,18 @@ class PlaylistSelectionDialog extends StatelessWidget {
 class CollectionSelectionDialog extends StatelessWidget {
   final MediaServerClient client;
   final String libraryId;
+  final MediaKind? memberKind;
 
-  const CollectionSelectionDialog({super.key, required this.client, required this.libraryId});
+  const CollectionSelectionDialog({super.key, required this.client, required this.libraryId, this.memberKind});
+
+  bool _accepts(MediaItem item) {
+    if (memberKind == null) return true;
+    return item.backend == client.backend &&
+        item.serverId == client.serverId.value &&
+        item.libraryId == libraryId &&
+        item.kind == MediaKind.collection &&
+        (item.backend != MediaBackend.plex || item is PlexMediaItem && item.subtype == memberKind!.name);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -271,7 +283,8 @@ class CollectionSelectionDialog extends StatelessWidget {
         leading: const AppIcon(Symbols.collections_rounded, fill: 1),
         title: Text(collection.title ?? ''),
         subtitle: collection.childCount != null ? Text(t.playlists.itemCount(count: collection.childCount!)) : null,
-        onTap: () => Navigator.pop(context, collection.id),
+        enabled: _accepts(collection),
+        onTap: _accepts(collection) ? () => Navigator.pop(context, collection.id) : null,
       ),
     );
   }

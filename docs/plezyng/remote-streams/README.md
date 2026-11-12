@@ -13,8 +13,9 @@ Prepared 2026-10-27 (America/Regina). The planning baseline was inspected at
 
 ## Current behavior
 
-- Connect Real-Debrid or AllDebrid through a QR/code flow; connect Premiumize
-  or TorBox with an API key.
+- Connect Real-Debrid, AllDebrid or TorBox through a QR/device-code flow.
+  TorBox API-key entry remains available as a fallback; Premiumize uses a
+  validated API key because Pleazyng has no registered OAuth client.
 - Link a Stremio account with its QR approval flow, preview installed
   add-ons, and select which secure HTTPS add-ons to import. PlezyNG does not
   ask for the Stremio password, persist the account authorization key, or
@@ -178,7 +179,7 @@ help sentence at setup, rather than requiring users to learn the architecture.
 
 | Completion level | Required outcome |
 | --- | --- |
-| Implemented connected-source slice | Real-Debrid device sign-in, AllDebrid PIN sign-in, Premiumize/TorBox API-key validation; profile-scoped settings; on-demand cloud files and virtual sources; Stremio QR add-on import and manual manifest connection; Explore catalog/search and metadata; direct, hash, file-host and subtitle choices; shared video player for server-matched, catalog-only, local/offline and multi-file source playback; source-local resume; durable preparation checkpoints; cloud downloads with encrypted Android/iOS lease renewal; bounded Search/Videos shelf/Home poster integration with opt-in metadata |
+| Implemented connected-source slice | Real-Debrid device sign-in, AllDebrid PIN sign-in, TorBox device sign-in with API-key fallback, Premiumize API-key validation; profile-scoped settings; on-demand cloud files and virtual sources; Stremio QR add-on import and manual manifest connection; Explore catalog/search and metadata; direct, hash, file-host and subtitle choices; shared video player for server-matched, catalog-only, local/offline and multi-file source playback; source-local resume; durable preparation checkpoints; cloud downloads with encrypted Android/iOS lease renewal; bounded Search/Videos shelf/Home poster integration with opt-in metadata |
 | Implemented integration and release gates | Mixed server/cloud/Stremio queues, persistent canonical cards, OS-scheduled preparation and native P2P build hooks are present. Signed target builds, live provider accounts, OS callbacks, downloads and device behavior still require qualification |
 | Ecosystem breadth | put.io, Debrid-Link and Seedr qualification; user-configured aggregators; seedboxes and Usenet bridges through the existing file/HTTP adapters; capability-aware downloads and casting |
 | Native P2P | Pinned libtorrent 2.0.11 with Boost 1.86, verified-piece byte ranges, seek deadlines, quotas and playback-owned cleanup. Controlled single/multi-file transfer tests pass; packaged device testing remains |

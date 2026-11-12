@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../models/trackers/device_code.dart';
 import 'real_debrid_client.dart';
 import 'remote_stream_models.dart';
 
@@ -427,6 +428,124 @@ class TorBoxClient {
   final http.Client _http;
   final RemoteStreamAccount account;
 
+  static Future<DeviceCode> startDeviceAuthorization({http.Client? client}) async {
+    final owned = client == null;
+    final transport = client ?? http.Client();
+    try {
+      final response = await transport
+          .get(
+            Uri.parse('$_base/user/auth/device/start').replace(queryParameters: {'app': 'Pleazyng'}),
+            headers: const {'accept': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 15));
+      final envelope = _decodeTorBoxAuthResponse(response);
+      if (response.statusCode < 200 || response.statusCode >= 300 || envelope['success'] != true) {
+        throw const RemoteProviderException(RemoteProviderFailure.unavailable);
+      }
+      final raw = envelope['data'];
+      if (raw is! Map) throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+      final data = Map<String, dynamic>.from(raw);
+      final deviceCode = data['device_code'];
+      final userCode = data['code'] ?? data['user_code'];
+      final verificationValue = data['verification_url'];
+      final completeValue = data['verification_url_complete'];
+      final baseValue = verificationValue is String && verificationValue.trim().isNotEmpty
+          ? verificationValue
+          : completeValue;
+      if (deviceCode is! String ||
+          deviceCode.isEmpty ||
+          deviceCode.length > 512 ||
+          userCode is! String ||
+          userCode.trim().isEmpty ||
+          userCode.length > 64 ||
+          baseValue is! String) {
+        throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+      }
+      final verificationUrl = _torBoxVerificationUrl(baseValue);
+      final completeUrl = switch (completeValue) {
+        final String value when value.trim().isNotEmpty => _torBoxVerificationUrl(value),
+        null => null,
+        _ => throw const RemoteProviderException(RemoteProviderFailure.invalidResponse),
+      };
+      final interval = _int(data['interval'], fallback: 5).clamp(3, 30).toInt();
+      final expiresIn = _int(data['expires_in'], fallback: 600).clamp(30, 1800).toInt();
+      return DeviceCode(
+        deviceCode: deviceCode,
+        userCode: userCode.trim(),
+        verificationUrl: verificationUrl.toString(),
+        verificationUrlComplete: completeUrl?.toString(),
+        interval: interval,
+        expiresIn: expiresIn,
+      );
+    } on RemoteProviderException {
+      rethrow;
+    } on Object {
+      throw const RemoteProviderException(RemoteProviderFailure.unavailable);
+    } finally {
+      if (owned) transport.close();
+    }
+  }
+
+  static Future<RemoteStreamAccount?> finishDeviceAuthorization(
+    DeviceCode code, {
+    bool Function()? shouldCancel,
+    http.Client? client,
+  }) async {
+    final owned = client == null;
+    final transport = client ?? http.Client();
+    try {
+      final deadline = DateTime.now().add(Duration(seconds: code.expiresIn));
+      while (DateTime.now().isBefore(deadline)) {
+        if (shouldCancel?.call() == true) return null;
+        final response = await transport
+            .post(
+              Uri.parse('$_base/user/auth/device/token'),
+              headers: const {'accept': 'application/json', 'content-type': 'application/json'},
+              body: jsonEncode({'device_code': code.deviceCode}),
+            )
+            .timeout(const Duration(seconds: 15));
+        late final Map<String, dynamic> envelope;
+        try {
+          envelope = _decodeTorBoxAuthResponse(response);
+        } on RemoteProviderException {
+          if (response.statusCode == 401 || response.statusCode == 403) {
+            throw const RemoteProviderException(RemoteProviderFailure.authentication);
+          }
+          rethrow;
+        }
+        if (response.statusCode >= 200 && response.statusCode < 300 && envelope['success'] == true) {
+          final raw = envelope['data'];
+          if (raw is! Map) throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+          final token = raw['token'];
+          if (token is! String || token.trim().isEmpty || token.length > 8192) {
+            throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+          }
+          return await connectWithApiKey(token, client: transport);
+        }
+        final error = _torBoxAuthError(envelope);
+        if (error == 'DEVICE_CODE_NOT_USED') {
+          await Future<void>.delayed(Duration(seconds: code.interval));
+          continue;
+        }
+        if (error == 'ITEM_NOT_FOUND') return null;
+        if (error == 'DEVICE_CODE_USED') {
+          throw const RemoteProviderException(RemoteProviderFailure.authentication);
+        }
+        if (response.statusCode == 401 || response.statusCode == 403) {
+          throw const RemoteProviderException(RemoteProviderFailure.authentication);
+        }
+        throw const RemoteProviderException(RemoteProviderFailure.unavailable);
+      }
+      return null;
+    } on RemoteProviderException {
+      rethrow;
+    } on Object {
+      throw const RemoteProviderException(RemoteProviderFailure.unavailable);
+    } finally {
+      if (owned) transport.close();
+    }
+  }
+
   static Future<RemoteStreamAccount> connectWithApiKey(String apiKey, {http.Client? client}) async {
     final owned = client == null;
     final httpClient = client ?? http.Client();
@@ -832,6 +951,49 @@ Map<String, dynamic> _decodeObject(List<int> bytes, int statusCode) {
   final decoded = jsonDecode(utf8.decode(bytes));
   if (decoded is! Map) throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
   return Map<String, dynamic>.from(decoded);
+}
+
+Map<String, dynamic> _decodeTorBoxAuthResponse(http.Response response) {
+  if (response.bodyBytes.length > 64 * 1024) {
+    throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+  }
+  try {
+    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+    if (decoded is! Map) throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+    return Map<String, dynamic>.from(decoded);
+  } on RemoteProviderException {
+    rethrow;
+  } on Object {
+    throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+  }
+}
+
+String? _torBoxAuthError(Map<String, dynamic> envelope) {
+  final data = envelope['data'];
+  final error = envelope['error'] ?? (data is Map ? data['error'] : null);
+  if (error is String) return error;
+  if (error is Map) {
+    final code = error['code'];
+    if (code is String) return code;
+  }
+  final detail = envelope['detail'] ?? (data is Map ? data['detail'] : null);
+  if (detail is String) return detail;
+  if (detail is Map && detail['code'] is String) return detail['code'] as String;
+  return null;
+}
+
+Uri _torBoxVerificationUrl(String value) {
+  final uri = Uri.tryParse(value);
+  final host = uri?.host.toLowerCase();
+  if (uri == null ||
+      uri.scheme != 'https' ||
+      host == null ||
+      !(host == 'torbox.app' || host.endsWith('.torbox.app')) ||
+      uri.userInfo.isNotEmpty ||
+      uri.toString().length > 2048) {
+    throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+  }
+  return uri;
 }
 
 Map<String, dynamic> _decodeEnvelope(List<int> bytes, int statusCode, {bool allowPending = false}) {

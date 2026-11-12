@@ -32,6 +32,8 @@
 - Keep canonical music order implicit, spill large shuffled and album-shuffle orders to bounded scratch storage, avoid decoding album labels again during merge output, persist order in pages, and clear shuffled tails without per-item arrays or retaining discarded metadata in the active spool.
 - Require Chocolatey package authors and owners to match the maintainer account, and validate project/source URLs from the generated package before publishing.
 
+- Connect TorBox through its device authorization flow, verify the returned token against the account endpoint, and retain API-key setup as a fallback.
+
 - Require the complete acknowledged Cast occurrence order before returning playback locally, and recheck it during preparation and receiver pause so receiver edits cannot be overwritten by a stale queue.
 
 - Support repeat-one and repeat-all for bounded standalone Cast queue transfers, with acknowledged native item rearming, restart recovery and receiver repeat settings preserved on return. Keep local playback intact if preparation or ownership checks fail.

@@ -18,6 +18,7 @@ import '../../utils/snackbar_helper.dart';
 import '../../utils/formatters.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/connector_brand_mark.dart';
+import '../../widgets/device_code_dialog.dart';
 import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/focused_scroll_scaffold.dart';
 import '../../widgets/pending_auth_dialog.dart';
@@ -30,6 +31,8 @@ class RemoteStreamingSettingsScreen extends StatefulWidget {
   @override
   State<RemoteStreamingSettingsScreen> createState() => _RemoteStreamingSettingsScreenState();
 }
+
+enum _TorBoxConnectionMethod { deviceCode, apiKey }
 
 class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsScreen> {
   bool _connecting = false;
@@ -455,6 +458,93 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
     }
   }
 
+  Future<void> _connectTorBox() async {
+    if (_connecting) return;
+    final method = await showDialog<_TorBoxConnectionMethod>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(t.streaming.torbox),
+        content: Text(t.streaming.torboxDescription),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(t.common.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, _TorBoxConnectionMethod.apiKey),
+            child: Text(t.streaming.connectApiKey),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, _TorBoxConnectionMethod.deviceCode),
+            child: Text(t.streaming.connectAllDebrid),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || method == null) return;
+    if (method == _TorBoxConnectionMethod.apiKey) {
+      await _connectWithApiKey(RemoteStreamService.torbox, t.streaming.torbox);
+      return;
+    }
+    await _connectTorBoxWithDeviceCode();
+  }
+
+  Future<void> _connectTorBoxWithDeviceCode() async {
+    if (_connecting) return;
+    final streaming = context.read<RemoteStreamingProvider>();
+    final profile = streaming.profileId;
+    if (profile == null || !streaming.isReady) return;
+    setState(() => _connecting = true);
+    var cancelled = false;
+    var closingDialog = false;
+    var dialogOpen = false;
+    Future<void>? dialogFuture;
+    try {
+      final code = await TorBoxClient.startDeviceAuthorization();
+      if (!mounted || streaming.profileId != profile || !streaming.isReady) return;
+      dialogFuture = showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => DeviceCodeDialog(
+          code: code,
+          serviceName: t.streaming.torbox,
+          onCancel: () {
+            if (!closingDialog) cancelled = true;
+          },
+        ),
+      );
+      dialogOpen = true;
+      final account = await TorBoxClient.finishDeviceAuthorization(
+        code,
+        shouldCancel: () => cancelled || streaming.profileId != profile,
+      );
+      if (account != null && !cancelled && mounted && streaming.profileId == profile && streaming.isReady) {
+        await streaming.saveAccount(account);
+        if (mounted) {
+          showAppSnackBar(context, t.streaming.accountConnected(username: account.displayName));
+        }
+      }
+      if (dialogOpen && mounted && !cancelled) {
+        closingDialog = true;
+        Navigator.of(context, rootNavigator: true).pop();
+        closingDialog = false;
+      }
+      await dialogFuture;
+      if (account == null && mounted && !cancelled && streaming.profileId == profile) {
+        showAppSnackBar(context, t.services.connectFailed(service: t.streaming.torbox));
+      }
+    } on Object {
+      if (dialogOpen && mounted && !cancelled) {
+        closingDialog = true;
+        Navigator.of(context, rootNavigator: true).pop();
+        closingDialog = false;
+      }
+      if (dialogFuture != null) await dialogFuture;
+      if (mounted && !cancelled && streaming.profileId == profile) {
+        showAppSnackBar(context, t.services.connectFailed(service: t.streaming.torbox));
+      }
+    } finally {
+      if (mounted) setState(() => _connecting = false);
+    }
+  }
+
   Future<void> _connectWithApiKey(RemoteStreamService service, String label) async {
     if (_connecting) {
       return;
@@ -640,7 +730,7 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                   label: Text(
                     service == RemoteStreamService.realDebrid
                         ? t.streaming.connectRealDebrid
-                        : service == RemoteStreamService.allDebrid
+                        : service == RemoteStreamService.allDebrid || service == RemoteStreamService.torbox
                         ? t.streaming.connectAllDebrid
                         : t.streaming.connectApiKey,
                   ),
@@ -899,7 +989,7 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                       description: t.streaming.torboxDescription,
                       account: torbox,
                       canConnect: streaming.isReady,
-                      onConnect: () => _connectWithApiKey(RemoteStreamService.torbox, t.streaming.torbox),
+                      onConnect: _connectTorBox,
                       onBrowse: () => _browseCloud(RemoteStreamService.torbox),
                     ),
                   ],

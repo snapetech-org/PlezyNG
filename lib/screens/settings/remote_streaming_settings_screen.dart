@@ -901,7 +901,26 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                         return FocusableListTile(
                           leading: const AppIcon(Symbols.extension_rounded),
                           title: Text(addon.name),
-                          subtitle: Text(addon.enabled ? t.streaming.addonInstalled : t.streaming.addonToggle),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(addon.enabled ? t.streaming.addonInstalled : t.streaming.addonToggle),
+                              if (addon.updateAvailable)
+                                Text(
+                                  t.update.available,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.primary),
+                                )
+                              else if (addon.manifestCheckFailed)
+                                Text(
+                                  t.update.checkFailed,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.error),
+                                ),
+                            ],
+                          ),
                           onTap: () => unawaited(streaming.setAddonEnabled(addon.id, !addon.enabled)),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -926,7 +945,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                                       PopupMenuItem(value: _AddonMenuAction.configure, child: Text(t.common.edit)),
                                     PopupMenuItem(
                                       value: _AddonMenuAction.checkForUpdates,
-                                      child: Text(t.settings.checkForUpdates),
+                                      child: Text(
+                                        addon.updateAvailable ? t.update.available : t.settings.checkForUpdates,
+                                      ),
                                     ),
                                     PopupMenuItem(
                                       value: _AddonMenuAction.moveUp,

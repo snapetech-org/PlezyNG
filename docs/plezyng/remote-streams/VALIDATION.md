@@ -44,6 +44,7 @@ Separate parser/unit, integration, live-account and packaged-device evidence.
 | C08 | Reimport after local reorder/disable | No duplicates; account import preserves local priority and enabled state |
 | C09 | Stremio QR/social account/password fallback | Qualified linking works or clear import alternative; no browser-storage scraping |
 | C10 | Unsupported NZB/archive/YouTube/external payload | Correct capability/explicit external action; never fed blindly to native decoder |
+| C11 | Automatic manifest check finds changed, unchanged, malformed or identity-swapped manifest | Throttled check status is profile-local; changed manifests await explicit review; changed IDs never replace installed sources |
 | I01 | Movie shared by server and cloud | One merged logical result with separate playable copies |
 | I02 | Same title/year conflict or remake | No automatic merge without reliable ID evidence |
 | I03 | Anime season, absolute numbering, specials, double episode | Distinct correct episode identities; no series-level collapse |

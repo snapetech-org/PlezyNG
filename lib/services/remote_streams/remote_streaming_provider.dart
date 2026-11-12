@@ -32,6 +32,9 @@ class RemoteStreamSearchResult {
 class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver {
   static const _maxAutomaticRecoveryAttempts = 3;
   static const _retryableRecoveryErrors = {'unavailable', 'timeout', 'preparationFailed'};
+  static const _addonManifestCheckInterval = Duration(days: 1);
+  static const _addonManifestFailureRetryInterval = Duration(hours: 6);
+  static const _addonManifestCheckConcurrency = 3;
 
   RemoteStreamingProvider({StremioAddonClient Function()? stremioAddonClientFactory, this.backgroundWorker = false})
     : _stremioAddonClientFactory = stremioAddonClientFactory ?? StremioAddonClient.new {
@@ -43,6 +46,8 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   final bool backgroundWorker;
   DateTime? _workerDeadline;
   Timer? _journalRefresh;
+  Timer? _addonManifestCheckTimer;
+  Future<void>? _addonManifestSweep;
   final Set<TorrentLease> _nativeLeases = {};
   int _nativeOpening = 0;
   final Map<Object, int> _nativeReservations = {};
@@ -174,7 +179,11 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      unawaited(_refreshJournal());
+      final profile = _profileId;
+      final generation = _generation;
+      if (profile != null && isReady && !backgroundWorker) {
+        unawaited(_refreshJournal().then((_) => _checkDueAddonManifests(profile, generation)));
+      }
     }
   }
 
@@ -199,6 +208,66 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       /* retry on the next foreground tick */
     }
   });
+
+  Future<void> _checkDueAddonManifests(String profile, int generation) {
+    if (backgroundWorker || loading || !_current(profile, generation)) {
+      return Future.value();
+    }
+    final activeSweep = _addonManifestSweep;
+    if (activeSweep != null) return activeSweep;
+    final sweep = _runDueAddonManifestChecks(profile, generation);
+    _addonManifestSweep = sweep;
+    return sweep.whenComplete(() {
+      if (identical(_addonManifestSweep, sweep)) _addonManifestSweep = null;
+    });
+  }
+
+  Future<void> _runDueAddonManifestChecks(String profile, int generation) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final due = _snapshot.addons
+        .where((addon) {
+          final interval = addon.manifestCheckFailed ? _addonManifestFailureRetryInterval : _addonManifestCheckInterval;
+          return addon.enabled &&
+              (addon.manifestCheckedAt == null || now - addon.manifestCheckedAt! >= interval.inMilliseconds);
+        })
+        .toList(growable: false);
+    for (var offset = 0; offset < due.length; offset += _addonManifestCheckConcurrency) {
+      if (!_current(profile, generation)) return;
+      final batch = due.skip(offset).take(_addonManifestCheckConcurrency);
+      await Future.wait(
+        batch.map((addon) async {
+          try {
+            await _checkAddonUpdate(addon.id, automatic: true);
+          } on Object {
+            await _recordAddonManifestCheckFailure(profile, generation, addon.id, addon.manifestUrl);
+          }
+        }),
+      );
+    }
+  }
+
+  Future<void> _recordAddonManifestCheckFailure(String profile, int generation, String id, String manifestUrl) async {
+    if (!_current(profile, generation)) return;
+    try {
+      await _commit(profile, generation, (current) {
+        final saved = current.addons.where((addon) => addon.id == id).firstOrNull;
+        if (saved == null || !saved.enabled || saved.manifestUrl != manifestUrl) return current;
+        final checked = saved.copyWith(
+          manifestCheckedAt: DateTime.now().millisecondsSinceEpoch,
+          manifestCheckFailed: true,
+        );
+        return current.copyWith(
+          addons: [
+            for (final addon in current.addons)
+              if (addon.id == id) checked else addon,
+          ],
+        );
+      });
+    } on Object {
+      // Leave the previous check timestamp so a later active session retries.
+    }
+  }
+
   Future<void> _scheduleRecovery() async {
     if (backgroundWorker) {
       return;
@@ -363,6 +432,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     if (_profileId != profileId || blocked) {
       _closeNativeLeases();
       _journalRefresh?.cancel();
+      _addonManifestCheckTimer?.cancel();
+      _addonManifestCheckTimer = null;
+      _addonManifestSweep = null;
     }
     if (blocked || profileId == null) {
       if (_profileId != null || loading) {
@@ -424,6 +496,13 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       if (_current(profileId, generation)) {
         loading = false;
         _notify();
+        if (isReady && !backgroundWorker) {
+          _addonManifestCheckTimer?.cancel();
+          _addonManifestCheckTimer = Timer.periodic(const Duration(hours: 1), (_) {
+            unawaited(_checkDueAddonManifests(profileId, generation));
+          });
+          unawaited(_checkDueAddonManifests(profileId, generation));
+        }
       }
     }
   }
@@ -798,6 +877,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       return;
     }
     final generation = ++_generation;
+    _addonManifestCheckTimer?.cancel();
+    _addonManifestCheckTimer = null;
+    _addonManifestSweep = null;
     loading = true;
     loadFailed = false;
     settingsUnreadable = false;
@@ -909,6 +991,7 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
           configurationBaseUrl: fields.isEmpty ? null : baseUrl,
           configurationSchema: fields,
           configurationValues: values,
+          manifestCheckedAt: DateTime.now().millisecondsSinceEpoch,
         );
         return current.copyWith(addons: [...current.addons, installed]);
       });
@@ -963,6 +1046,8 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
           configurationBaseUrl: baseUrl,
           configurationSchema: fields,
           configurationValues: values,
+          manifestCheckedAt: DateTime.now().millisecondsSinceEpoch,
+          updateAvailable: false,
         );
         return current.copyWith(
           addons: [
@@ -976,12 +1061,14 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     }
   }
 
-  /// Fetches a fresh manifest without changing the saved installation.
-  /// Callers can show the proposed version and ask before applying it.
-  Future<StremioAddonUpdateCheck> checkAddonUpdate(String id) async {
+  /// Fetches the current manifest, records freshness, and reports whether the
+  /// saved installation changed. Callers still review before applying it.
+  Future<StremioAddonUpdateCheck> checkAddonUpdate(String id) => _checkAddonUpdate(id);
+
+  Future<StremioAddonUpdateCheck> _checkAddonUpdate(String id, {bool automatic = false}) async {
     final (profile, generation) = _requireProfile();
     final installed = addons.where((addon) => addon.id == id).firstOrNull;
-    if (installed == null) {
+    if (installed == null || (automatic && !installed.enabled)) {
       throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
     }
     final client = _stremioAddonClientFactory();
@@ -1007,10 +1094,31 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       if (latestManifest['id'] != installed.manifest['id']) {
         throw const StremioAddonException(StremioAddonFailure.invalidResponse);
       }
+      final hasChanges = _canonicalManifest(installed.manifest) != _canonicalManifest(latestManifest);
+      await _commit(profile, generation, (current) {
+        final saved = current.addons.where((addon) => addon.id == id).firstOrNull;
+        if (saved == null ||
+            saved.manifestUrl != installed.manifestUrl ||
+            _canonicalManifest(saved.manifest) != _canonicalManifest(installed.manifest) ||
+            (automatic && !saved.enabled)) {
+          throw const StremioAddonException(StremioAddonFailure.unavailable);
+        }
+        final checked = saved.copyWith(
+          manifestCheckedAt: DateTime.now().millisecondsSinceEpoch,
+          updateAvailable: hasChanges,
+          manifestCheckFailed: false,
+        );
+        return current.copyWith(
+          addons: [
+            for (final addon in current.addons)
+              if (addon.id == id) checked else addon,
+          ],
+        );
+      });
       return StremioAddonUpdateCheck(
         installed: installed,
         latestManifest: latestManifest,
-        hasChanges: _canonicalManifest(installed.manifest) != _canonicalManifest(latestManifest),
+        hasChanges: hasChanges,
         profileId: profile,
         generation: generation,
         latestConfigurationSchema: latestConfigurationSchema,
@@ -1052,6 +1160,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         configurationBaseUrl: saved.configurationBaseUrl,
         configurationSchema: check.latestConfigurationSchema ?? saved.configurationSchema,
         configurationValues: saved.configurationValues,
+        manifestCheckedAt: DateTime.now().millisecondsSinceEpoch,
+        updateAvailable: false,
+        manifestCheckFailed: false,
       );
       return current.copyWith(
         addons: [
@@ -1781,6 +1892,7 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     _disposed = true;
     _generation++;
     _journalRefresh?.cancel();
+    _addonManifestCheckTimer?.cancel();
     _closeNativeLeases();
     if (!backgroundWorker) {
       WidgetsBinding.instance.removeObserver(this);

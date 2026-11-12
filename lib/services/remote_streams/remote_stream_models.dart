@@ -161,6 +161,9 @@ class StremioAddonInstallation {
     this.configurationBaseUrl,
     this.configurationSchema = const [],
     this.configurationValues = const {},
+    this.manifestCheckedAt,
+    this.updateAvailable = false,
+    this.manifestCheckFailed = false,
   });
 
   final String id;
@@ -175,12 +178,18 @@ class StremioAddonInstallation {
   final String? configurationBaseUrl;
   final List<StremioAddonConfigurationField> configurationSchema;
   final Map<String, String> configurationValues;
+  final int? manifestCheckedAt;
+  final bool updateAvailable;
+  final bool manifestCheckFailed;
 
   StremioAddonInstallation copyWith({
     bool? enabled,
     String? configurationBaseUrl,
     List<StremioAddonConfigurationField>? configurationSchema,
     Map<String, String>? configurationValues,
+    int? manifestCheckedAt,
+    bool? updateAvailable,
+    bool? manifestCheckFailed,
   }) => StremioAddonInstallation(
     id: id,
     name: name,
@@ -191,6 +200,9 @@ class StremioAddonInstallation {
     configurationBaseUrl: configurationBaseUrl ?? this.configurationBaseUrl,
     configurationSchema: configurationSchema ?? this.configurationSchema,
     configurationValues: configurationValues ?? this.configurationValues,
+    manifestCheckedAt: manifestCheckedAt ?? this.manifestCheckedAt,
+    updateAvailable: updateAvailable ?? this.updateAvailable,
+    manifestCheckFailed: manifestCheckFailed ?? this.manifestCheckFailed,
   );
 
   Map<String, Object?> toJson() => {
@@ -203,6 +215,9 @@ class StremioAddonInstallation {
     if (configurationBaseUrl != null) 'configurationBaseUrl': configurationBaseUrl,
     'configurationSchema': configurationSchema.map((field) => field.toJson()).toList(growable: false),
     'configurationValues': configurationValues,
+    if (manifestCheckedAt != null) 'manifestCheckedAt': manifestCheckedAt,
+    'updateAvailable': updateAvailable,
+    'manifestCheckFailed': manifestCheckFailed,
   };
 
   factory StremioAddonInstallation.fromJson(Map<String, dynamic> json) {
@@ -230,6 +245,7 @@ class StremioAddonInstallation {
       }
     }
     final rawBaseUrl = json['configurationBaseUrl'];
+    final rawManifestCheckedAt = json['manifestCheckedAt'];
     return StremioAddonInstallation(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -240,6 +256,14 @@ class StremioAddonInstallation {
       configurationBaseUrl: rawBaseUrl is String && rawBaseUrl.length <= 4096 ? rawBaseUrl : null,
       configurationSchema: List.unmodifiable(schema),
       configurationValues: Map.unmodifiable(values),
+      manifestCheckedAt:
+          rawManifestCheckedAt is int &&
+              rawManifestCheckedAt >= 0 &&
+              rawManifestCheckedAt <= DateTime.now().millisecondsSinceEpoch
+          ? rawManifestCheckedAt
+          : null,
+      updateAvailable: json['updateAvailable'] == true,
+      manifestCheckFailed: json['manifestCheckFailed'] == true,
     );
   }
 }

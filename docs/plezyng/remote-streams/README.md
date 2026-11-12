@@ -203,6 +203,8 @@ not presumed to exist or inherit native playback/CORS capabilities.
   one malformed add-on cannot invalidate the rest of the account collection.
   Installed add-ons can be reordered locally to set stream priority, and later
   account imports preserve that local order and each add-on's enabled state.
+  Enabled add-ons are checked daily while the profile is active; settings mark
+  pending changes, and a user must review them before applying an update.
 - A title detail page offers one primary Play/Resume action and one compact
   Sources action, rather than a wall of filenames.
 - Provider expiry, queueing and missing files have specific recovery actions.

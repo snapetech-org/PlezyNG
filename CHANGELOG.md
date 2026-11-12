@@ -5,6 +5,7 @@
 - Let users set Stremio add-on priority, persist it per profile, and preserve local order and enabled state when importing the account again.
 
 - Preserve the selected duplicate playlist occurrence when starting playback on a transferred device, including cloned rows and shuffled queues.
+- Check enabled Stremio add-on manifests daily while a profile is active, show pending updates in settings, and require review before applying them.
 
 - Extend reproducible native gapless qualification to ALAC, AAC and Opus, and fix JSON receipts while recording encoder versions and measured error tolerances.
 

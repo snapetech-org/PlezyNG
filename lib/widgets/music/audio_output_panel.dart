@@ -1,3 +1,4 @@
+import 'apple_audio_route_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../i18n/strings.g.dart';
@@ -120,6 +121,13 @@ class _MusicAudioOutputPanelState extends State<MusicAudioOutputPanel> with Widg
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if (_snapshot?.isNotEmpty == true)
+                      MusicAppleAudioRoutePicker(
+                        current: () => _visible,
+                        onChanged: () {
+                          if (_visible && !_busy) _read();
+                        },
+                      ),
                     if (_busy) const LinearProgressIndicator(),
                     if (_failed) Text(t.musicExperience.error),
                     if (_snapshot?.isNotEmpty != true && !_busy) Text(t.musicExperience.outputUnknown),

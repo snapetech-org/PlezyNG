@@ -38,6 +38,9 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
 
   static func register(with registrar: FlutterPluginRegistrar) {
     register(with: registrar, channelName: "com.plezy/mpv_audio_player")
+    #if os(iOS) || os(tvOS)
+      MusicSystemAudioRoutePlugin.register(with: registrar)
+    #endif
   }
 
   static func registerOverlap(with registrar: FlutterPluginRegistrar) {
@@ -291,3 +294,106 @@ private final class MilkRustFlutterTexture: NSObject, FlutterTexture {
     return Unmanaged.passRetained(buffer)
   }
 }
+
+#if os(iOS) || os(tvOS)
+  import AVFAudio
+  import AVKit
+
+  /// OS-selected routes only. Inspection and observation never activate the
+  /// audio session, change its category, claim focus or start media.
+  private class MusicSystemAudioRoutePlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
+    private var notification: NSObjectProtocol?
+    private var events: FlutterEventSink?
+
+    static func register(with registrar: FlutterPluginRegistrar) {
+      let bridge = MusicSystemAudioRoutePlugin()
+      let messenger = registrar.messenger()
+      let methods = FlutterMethodChannel(name: "com.pleazyng/music_audio_route", binaryMessenger: messenger)
+      registrar.addMethodCallDelegate(bridge, channel: methods)
+      FlutterEventChannel(name: "com.pleazyng/music_audio_route/events", binaryMessenger: messenger)
+        .setStreamHandler(bridge)
+      registrar.register(MusicAudioRoutePickerFactory(), withId: "com.pleazyng/music_audio_route_picker")
+    }
+
+    private static func snapshot() -> [String: Any] {
+      let session = AVAudioSession.sharedInstance()
+      let outputs = session.currentRoute.outputs.prefix(16).map { port -> [String: Any] in
+        [
+          "id": String(port.uid.prefix(512)),
+          "name": String(port.portName.prefix(256)),
+          "type": String(port.portType.rawValue.prefix(128)),
+          "bluetooth": port.portType == .bluetoothA2DP || port.portType == .bluetoothHFP
+            || port.portType == .bluetoothLE,
+          "channels": port.channels?.count ?? 0,
+        ]
+      }
+      return [
+        "version": 1, "outputs": outputs,
+        "sampleRate": session.sampleRate,
+        "outputChannels": session.outputNumberOfChannels,
+        "outputLatencyMs": session.outputLatency * 1000,
+        "ioBufferMs": session.ioBufferDuration * 1000,
+      ]
+    }
+
+    func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+      if call.method == "snapshot" { result(Self.snapshot()) } else { result(FlutterMethodNotImplemented) }
+    }
+
+    func onListen(withArguments _: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+      stopObserving()
+      self.events = events
+      notification = NotificationCenter.default.addObserver(
+        forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main
+      ) { [weak self] _ in
+        self?.events?(Self.snapshot())
+      }
+      events(Self.snapshot())
+      return nil
+    }
+
+    func onCancel(withArguments _: Any?) -> FlutterError? {
+      stopObserving()
+      return nil
+    }
+
+    private func stopObserving() {
+      if let notification { NotificationCenter.default.removeObserver(notification) }
+      notification = nil
+      events = nil
+    }
+
+    deinit { stopObserving() }
+  }
+
+  private class MusicAudioRoutePickerFactory: NSObject, FlutterPlatformViewFactory {
+    func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
+      FlutterStandardMessageCodec.sharedInstance()
+    }
+
+    func create(withFrame frame: CGRect, viewIdentifier _: Int64, arguments args: Any?) -> FlutterPlatformView {
+      MusicAudioRoutePicker(frame: frame, arguments: args as? [String: Any])
+    }
+  }
+
+  private class MusicAudioRoutePicker: NSObject, FlutterPlatformView {
+    private let picker: AVRoutePickerView
+
+    init(frame: CGRect, arguments: [String: Any]?) {
+      picker = AVRoutePickerView(frame: frame)
+      if #available(iOS 13.0, tvOS 13.0, *) { picker.prioritizesVideoDevices = false }
+      if let color = arguments?["tint"] as? NSNumber {
+        let argb = color.uint32Value
+        picker.tintColor = UIColor(
+          red: CGFloat((argb >> 16) & 255) / 255,
+          green: CGFloat((argb >> 8) & 255) / 255,
+          blue: CGFloat(argb & 255) / 255,
+          alpha: CGFloat((argb >> 24) & 255) / 255
+        )
+      }
+      super.init()
+    }
+
+    func view() -> UIView { picker }
+  }
+#endif

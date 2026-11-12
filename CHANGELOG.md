@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Correct the optional live audio spectrum filter so FFmpeg accepts its centroid and flatness measurements during music visualization.
+
 - Remove an obsolete music-playback warning from translations so release code analysis recognizes the working music player.
 - Add optional per-span pronunciation readings to karaoke lyric packages and render them as ruby annotations on the Flutter and browser stages, with line-level pronunciation retained as a fallback.
 - Preserve simple WebVTT ruby readings through import and export as timed per-span pronunciations. Refuse LRC/WebVTT exports when the format cannot preserve other lyric metadata or timing, and close WebVTT speaker tags correctly.

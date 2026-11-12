@@ -1507,7 +1507,7 @@ abstract class PlayerBase
   static const String _androidNormalizationFilter =
       'acompressor=threshold=-34dB:ratio=4:knee=6dB:attack=30:release=300:makeup=15dB:link=maximum,'
       'alimiter=limit=-3dB:attack=1:release=60:level=false';
-  static const String _spectrumAnalysisFilter = '@plezy_spectrum:lavfi=[aspectralstats=measure=centroid flatness]';
+  static const String _spectrumAnalysisFilter = '@plezy_spectrum:lavfi=[aspectralstats=measure=centroid+flatness]';
 
   static const List<int> _audioEqualizerFrequencies = [60, 125, 250, 500, 1000, 2000, 4000, 8000, 12000, 16000];
   List<double> _audioEqualizerBandGains = List<double>.filled(_audioEqualizerFrequencies.length, 0);

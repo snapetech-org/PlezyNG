@@ -253,15 +253,25 @@ store; stations reject an album larger than the remaining whole-album budget;
 Guest DJ reads at most 20 pages while searching for tracks not already queued.
 Jellyfin artist discography reads now drain server pages instead of relying on
 the endpoint's default result limit. Native car pages validate offsets/counts
-and filter hidden-library children. The queue order index still scales with
-queue length.
+and filter hidden-library children.
+
+The queue controller now represents canonical playback order implicitly and
+spills large shuffled permutations to a fixed-width scratch file. Immutable
+queue and session snapshots retain stable copy-on-write leases, with a bounded
+256 KiB random-access cache. Session persistence compares and writes order in
+pages without allocating a second full canonical-to-playback index; v2 restore
+streams playback order directly from SQLite into the same bounded index.
+Clear-upcoming remaps the retained order and compacts canonical item handles in
+place, without full-size keep/remap arrays. Album-shuffle grouping still builds
+temporary per-entry collections and remains the next queue-memory work.
 
 Validation for this audit pass: Dart formatting and targeted static analysis
-passed; tests were not run.
+passed. Queue behavior and native/device qualification remain separate evidence.
 
 Remaining limits include provider/reference metadata equivalence, merged
-server/local history, additional discovery controls, bounded queue-index
-storage, the 32-track/48 KiB standalone Cast transfer cap with rolling
+server/local history, additional discovery controls, bounded temporary
+working sets for album shuffle, the 32-track/48 KiB
+standalone Cast transfer cap with rolling
 continuation disabled, and native group device/acoustic qualification.
 Native car artwork/provisioning and physical iPhone/Pi/car/Cast/DAC/codec and
 acoustic qualification remain. No complete-parity claim is made.

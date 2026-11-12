@@ -12,6 +12,7 @@ import '../../utils/app_logger.dart';
 import 'music_playback_service.dart';
 import 'music_queue_controller.dart';
 import 'music_queue_items.dart';
+import 'music_queue_order.dart';
 
 /// Everything needed to rebuild a parked music session on the next launch:
 /// the full queue state plus provenance and the playhead. Volume is excluded —
@@ -118,9 +119,7 @@ class MusicSessionStore {
     });
   });
 
-  /// Stage only moved playback positions before upserting changed rows. The
-  /// negative positions are private to this transaction, so permutation cycles
-  /// never collide with the unique playback index seen by committed readers.
+  /// Keep order comparisons, rebuilds, and metadata writes page-bounded.
   Future<void> _writeQueueRows(MusicQueueState queue) async {
     final shape = await _database
         .customSelect(
@@ -132,62 +131,104 @@ class MusicSessionStore {
         .getSingle();
     _guard();
     final count = shape.read<int>('n');
-    if (count > 0 &&
-        (shape.read<int>('cmin') != 0 ||
-            shape.read<int>('cmax') != count - 1 ||
-            shape.read<int>('pmin') != 0 ||
-            shape.read<int>('pmax') != count - 1)) {
-      // An interrupted/corrupt legacy shape has no safe incremental identity.
-      await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ?', [_profileId]);
-    }
-    await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ? AND canonical_index >= ?', [
-      _profileId,
-      queue.items.length,
-    ]);
-    final positions = List<int>.filled(queue.items.length, 0);
-    for (var i = 0; i < queue.order.length; i++) {
-      positions[queue.order[i]] = i;
-    }
-    for (var start = 0; start < queue.items.length; start += pageSize) {
-      _guard();
-      final rows = await _database
-          .customSelect(
-            'SELECT canonical_index, playback_index FROM music_queue_entries '
-            'WHERE profile_id = ? AND canonical_index >= ? AND canonical_index < ?',
-            variables: [Variable(_profileId), Variable(start), Variable(start + pageSize)],
-          )
-          .get();
-      await _database.batch((batch) {
-        for (final row in rows) {
-          final canonical = row.read<int>('canonical_index');
-          if (row.read<int>('playback_index') != positions[canonical]) {
-            batch.customStatement(
-              'UPDATE music_queue_entries SET playback_index = ? WHERE profile_id = ? AND canonical_index = ?',
-              [-canonical - 1, _profileId, canonical],
-            );
+    final reusableShape =
+        count == queue.items.length &&
+        count > 0 &&
+        shape.read<int>('cmin') == 0 &&
+        shape.read<int>('cmax') == count - 1 &&
+        shape.read<int>('pmin') == 0 &&
+        shape.read<int>('pmax') == count - 1;
+
+    var sameOrder = reusableShape;
+    if (reusableShape) {
+      for (var start = 0; start < queue.order.length; start += pageSize) {
+        _guard();
+        final end = (start + pageSize).clamp(0, queue.order.length);
+        final rows = await _database
+            .customSelect(
+              'SELECT canonical_index, playback_index FROM music_queue_entries '
+              'WHERE profile_id = ? AND playback_index >= ? AND playback_index < ? ORDER BY playback_index',
+              variables: [Variable(_profileId), Variable(start), Variable(end)],
+            )
+            .get();
+        if (rows.length != end - start) {
+          sameOrder = false;
+          break;
+        }
+        for (var offset = 0; offset < rows.length; offset++) {
+          final row = rows[offset];
+          final playback = start + offset;
+          if (row.read<int>('playback_index') != playback ||
+              row.read<int>('canonical_index') != queue.order[playback]) {
+            sameOrder = false;
+            break;
           }
         }
-      });
+        if (!sameOrder) break;
+      }
     }
-    // Encoding remains bounded. Unchanged payloads and positions cause no row
-    // update, including repeat/context-only edits and an appended queue tail.
-    for (var start = 0; start < queue.items.length; start += pageSize) {
+
+    if (reusableShape) {
+      if (!sameOrder) await _writePlaybackOrder(queue, stageExisting: true);
+      await _writeQueueMetadata(queue);
+    } else {
+      // A changed queue size or invalid durable shape needs a full rewrite.
+      // Negative playback indexes are private transaction staging values;
+      // each final index can be assigned without a positions array.
+      await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ?', [_profileId]);
+      for (var start = 0; start < queue.items.length; start += pageSize) {
+        _guard();
+        final end = (start + pageSize).clamp(0, queue.items.length);
+        await _database.batch((batch) {
+          for (var canonical = start; canonical < end; canonical++) {
+            batch.customStatement(
+              'INSERT INTO music_queue_entries (profile_id, canonical_index, playback_index, metadata) '
+              'VALUES (?, ?, ?, ?)',
+              [_profileId, canonical, -canonical - 1, jsonEncode(queue.items[canonical].toJson())],
+            );
+          }
+        });
+      }
+      await _writePlaybackOrder(queue, stageExisting: false);
+    }
+    _guard();
+  }
+
+  Future<void> _writePlaybackOrder(MusicQueueState queue, {required bool stageExisting}) async {
+    if (stageExisting) {
+      await _database.customStatement(
+        'UPDATE music_queue_entries SET playback_index = -canonical_index - 1 WHERE profile_id = ?',
+        [_profileId],
+      );
+    }
+    for (var start = 0; start < queue.order.length; start += pageSize) {
       _guard();
-      final end = (start + pageSize).clamp(0, queue.items.length);
+      final end = (start + pageSize).clamp(0, queue.order.length);
       await _database.batch((batch) {
-        for (var i = start; i < end; i++) {
+        for (var playback = start; playback < end; playback++) {
           batch.customStatement(
-            'INSERT INTO music_queue_entries (profile_id, canonical_index, playback_index, metadata) '
-            'VALUES (?, ?, ?, ?) ON CONFLICT (profile_id, canonical_index) DO UPDATE SET '
-            'playback_index = excluded.playback_index, metadata = excluded.metadata '
-            'WHERE music_queue_entries.playback_index != excluded.playback_index '
-            'OR music_queue_entries.metadata != excluded.metadata',
-            [_profileId, i, positions[i], jsonEncode(queue.items[i].toJson())],
+            'UPDATE music_queue_entries SET playback_index = ? WHERE profile_id = ? AND canonical_index = ?',
+            [playback, _profileId, queue.order[playback]],
           );
         }
       });
     }
-    _guard();
+  }
+
+  Future<void> _writeQueueMetadata(MusicQueueState queue) async {
+    for (var start = 0; start < queue.items.length; start += pageSize) {
+      _guard();
+      final end = (start + pageSize).clamp(0, queue.items.length);
+      await _database.batch((batch) {
+        for (var canonical = start; canonical < end; canonical++) {
+          final metadata = jsonEncode(queue.items[canonical].toJson());
+          batch.customStatement(
+            'UPDATE music_queue_entries SET metadata = ? WHERE profile_id = ? AND canonical_index = ? AND metadata != ?',
+            [metadata, _profileId, canonical, metadata],
+          );
+        }
+      });
+    }
   }
 
   Future<void> updateProgress({required int cursor, required Duration position}) => _writes.run(() async {
@@ -211,9 +252,9 @@ class MusicSessionStore {
       final row = await _database.getMusicSession(_profileId);
       if (row == null || !_active) return null;
       final items = MusicQueueItems(spill: true, scratchRoot: queueScratchDirectory);
+      final order = MusicQueueOrder(spill: true, scratchRoot: queueScratchDirectory);
       try {
         final payload = jsonDecode(row.queueJson);
-        final order = <int>[];
         MediaItem? continuationSeed;
         String? continuationAccount;
         var continuationAlbumRadio = false;
@@ -222,7 +263,7 @@ class MusicSessionStore {
         if (payload is List) {
           // Read v1 rows until their next save; upgrading never loses the old session.
           items.addAll(payload.map((json) => MediaItem.fromJson(json as Map<String, dynamic>)));
-          order.addAll((jsonDecode(row.orderJson) as List).cast<int>());
+          order.replaceWith((jsonDecode(row.orderJson) as List).cast<int>());
         } else if (payload is Map && payload['version'] == 2) {
           if (payload['continuation'] case final Map continuation) {
             final seed = MediaItem.fromJson(Map<String, dynamic>.from(continuation['seed'] as Map));
@@ -245,33 +286,51 @@ class MusicSessionStore {
           }
           final length = payload['length'] as int;
           if (length <= 0) return null;
-          final count = await _database
+          final shape = await _database
               .customSelect(
-                'SELECT COUNT(*) AS n FROM music_queue_entries WHERE profile_id = ?',
+                'SELECT COUNT(*) AS n, MIN(canonical_index) AS cmin, MAX(canonical_index) AS cmax, '
+                'MIN(playback_index) AS pmin, MAX(playback_index) AS pmax '
+                'FROM music_queue_entries WHERE profile_id = ?',
                 variables: [Variable<String>(_profileId)],
               )
               .getSingle();
-          if (count.read<int>('n') != length) return null;
-          order.addAll(List<int>.filled(length, -1));
+          if (shape.read<int>('n') != length ||
+              shape.read<int>('cmin') != 0 ||
+              shape.read<int>('cmax') != length - 1 ||
+              shape.read<int>('pmin') != 0 ||
+              shape.read<int>('pmax') != length - 1) {
+            return null;
+          }
           for (var start = 0; start < length; start += pageSize) {
             final rows = await _database
                 .customSelect(
-                  'SELECT canonical_index, playback_index, metadata FROM music_queue_entries '
+                  'SELECT canonical_index, metadata FROM music_queue_entries '
                   'WHERE profile_id = ? AND canonical_index >= ? ORDER BY canonical_index LIMIT ?',
                   variables: [Variable<String>(_profileId), Variable<int>(start), Variable<int>(pageSize)],
                 )
                 .get();
             for (final entry in rows) {
               final canonical = entry.read<int>('canonical_index');
-              final playback = entry.read<int>('playback_index');
-              if (canonical != items.length || playback < 0 || playback >= length || order[playback] != -1) {
-                return null;
-              }
+              if (canonical != items.length) return null;
               items.add(MediaItem.fromJson(jsonDecode(entry.read<String>('metadata')) as Map<String, dynamic>));
-              order[playback] = canonical;
             }
           }
           if (items.length != length) return null;
+          for (var start = 0; start < length; start += pageSize) {
+            final rows = await _database
+                .customSelect(
+                  'SELECT canonical_index, playback_index FROM music_queue_entries '
+                  'WHERE profile_id = ? AND playback_index >= ? ORDER BY playback_index LIMIT ?',
+                  variables: [Variable<String>(_profileId), Variable<int>(start), Variable<int>(pageSize)],
+                )
+                .get();
+            for (final entry in rows) {
+              final playback = entry.read<int>('playback_index');
+              if (playback != order.length) return null;
+              order.add(entry.read<int>('canonical_index'));
+            }
+          }
+          if (order.length != length) return null;
         } else {
           return null;
         }
@@ -280,7 +339,7 @@ class MusicSessionStore {
         final contextKind = row.contextKind != null ? _contextKindFromId(row.contextKind!) : null;
         final queue = MusicQueueState(
           items: items.snapshot(),
-          order: order,
+          order: order.snapshot(validatedPermutation: payload is Map),
           cursor: row.cursor,
           shuffled: row.shuffled,
           repeatMode: repeatMode,
@@ -304,6 +363,7 @@ class MusicSessionStore {
         return null;
       } finally {
         items.clear();
+        order.clear();
       }
     });
   }

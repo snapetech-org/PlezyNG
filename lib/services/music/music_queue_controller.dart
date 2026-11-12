@@ -5,6 +5,7 @@ import 'dart:io';
 import '../../media/media_item.dart';
 import 'music_playback_service.dart';
 import 'music_queue_items.dart';
+import 'music_queue_order.dart';
 
 /// Immutable copy of the queue's full state, for session persistence (#2148).
 /// [order] indexes into [items] (canonical order); [cursor] indexes [order].
@@ -27,6 +28,8 @@ class MusicQueueState {
   bool get isValid {
     final length = items.length;
     if (length == 0 || order.length != length || cursor < 0 || cursor >= length) return false;
+    final savedOrder = order;
+    if (savedOrder is MusicQueueOrderSnapshot && savedOrder.isValidatedPermutation) return true;
     final seen = List<bool>.filled(length, false);
     for (final index in order) {
       if (index < 0 || index >= length || seen[index]) return false;
@@ -50,7 +53,8 @@ class MusicQueueState {
 class MusicQueueController {
   MusicQueueController({Random? random, bool spillLargeQueues = false, Directory? queueScratchDirectory})
     : _random = random ?? Random(),
-      _items = MusicQueueItems(spill: spillLargeQueues, scratchRoot: queueScratchDirectory);
+      _items = MusicQueueItems(spill: spillLargeQueues, scratchRoot: queueScratchDirectory),
+      _order = MusicQueueOrder(spill: spillLargeQueues, scratchRoot: queueScratchDirectory);
 
   final Random _random;
 
@@ -59,7 +63,7 @@ class MusicQueueController {
   final MusicQueueItems _items;
 
   /// Playback order: indexes into [_items]. Identity when unshuffled.
-  List<int> _order = [];
+  final MusicQueueOrder _order;
   List<MediaItem>? _queueSnapshot;
 
   int _cursor = -1;
@@ -77,7 +81,8 @@ class MusicQueueController {
   MediaItem? get current => trackAt(_cursor);
 
   /// Full queue in playback order (what the UI renders).
-  List<MediaItem> get queue => _queueSnapshot ??= MusicQueueView._(_items.snapshot(), List.unmodifiable(_order));
+  List<MediaItem> get queue =>
+      _queueSnapshot ??= MusicQueueView._(_items.snapshot(), _order.snapshot(validatedPermutation: true));
 
   MediaItem? trackAt(int queueIndex) =>
       queueIndex >= 0 && queueIndex < _order.length ? _items[_order[queueIndex]] : null;
@@ -117,7 +122,7 @@ class MusicQueueController {
   /// restored session can still un-shuffle back to the original order.
   MusicQueueState captureState() => MusicQueueState(
     items: _items.snapshot(),
-    order: List.of(_order),
+    order: _order.snapshot(validatedPermutation: true),
     cursor: _cursor,
     shuffled: _shuffled,
     repeatMode: repeatMode,
@@ -131,7 +136,7 @@ class MusicQueueController {
     if (!state.isValid) return false;
     _queueSnapshot = null;
     _items.replaceWith(state.items);
-    _order = List.of(state.order);
+    _order.replaceWith(state.order);
     _cursor = state.cursor;
     _shuffled = state.shuffled;
     repeatMode = state.repeatMode;
@@ -150,7 +155,7 @@ class MusicQueueController {
   void load(List<MediaItem> tracks, {int? startIndex, bool shuffle = false}) {
     _queueSnapshot = null;
     _items.replaceWith(tracks);
-    _order = List.generate(tracks.length, (i) => i);
+    _order.resetIdentity(tracks.length);
     _shuffled = false;
     _cursor = tracks.isEmpty ? -1 : (startIndex ?? 0).clamp(0, tracks.length - 1);
     if (!shuffle || tracks.isEmpty) return;
@@ -168,7 +173,7 @@ class MusicQueueController {
   void clear() {
     _queueSnapshot = null;
     _items.clear();
-    _order = [];
+    _order.clear();
     _cursor = -1;
     _shuffled = false;
   }
@@ -203,21 +208,19 @@ class MusicQueueController {
   void addNext(List<MediaItem> tracks) {
     if (tracks.isEmpty) return;
     _queueSnapshot = null;
-    _order.insertAll(_cursor < 0 ? 0 : _cursor + 1, _append(tracks));
+    final first = _items.length;
+    _items.addAll(tracks);
+    _order.insertRange(_cursor < 0 ? 0 : _cursor + 1, first, tracks.length);
     if (_cursor < 0) _cursor = 0;
   }
 
   void addToEnd(List<MediaItem> tracks) {
     if (tracks.isEmpty) return;
     _queueSnapshot = null;
-    _order.addAll(_append(tracks));
-    if (_cursor < 0) _cursor = 0;
-  }
-
-  List<int> _append(List<MediaItem> tracks) {
     final first = _items.length;
     _items.addAll(tracks);
-    return List.generate(tracks.length, (i) => first + i);
+    _order.appendRange(first, tracks.length);
+    if (_cursor < 0) _cursor = 0;
   }
 
   /// Remove the queue entry at playback-order [queueIndex]. Returns true
@@ -231,9 +234,7 @@ class MusicQueueController {
     final wasCurrent = queueIndex == _cursor;
     final itemIndex = _order.removeAt(queueIndex);
     _items.removeAt(itemIndex);
-    for (var i = 0; i < _order.length; i++) {
-      if (_order[i] > itemIndex) _order[i]--;
-    }
+    _order.decrementAbove(itemIndex);
     if (queueIndex < _cursor) {
       _cursor--;
     } else if (_cursor >= _order.length) {
@@ -268,7 +269,7 @@ class MusicQueueController {
     _queueSnapshot = null;
     if (_shuffled) {
       final currentItem = _order[_cursor];
-      _order = List.generate(_items.length, (i) => i);
+      _order.resetIdentity(_items.length);
       _cursor = currentItem;
       _shuffled = false;
     } else {
@@ -298,7 +299,14 @@ class MusicQueueController {
     }
     final anchor = blocks.remove(key(currentItem))!;
     final rest = blocks.values.toList()..shuffle(_random);
-    _order = [...anchor, for (final block in rest) ...block];
+    Iterable<int> ordered() sync* {
+      yield* anchor;
+      for (final block in rest) {
+        yield* block;
+      }
+    }
+
+    _order.replaceWith(ordered());
     _cursor = _order.indexOf(currentItem);
     _shuffled = true;
   }
@@ -316,12 +324,9 @@ class MusicQueueController {
   }
 
   void _shuffleAnchoringCurrent() {
-    final anchor = _order[_cursor < 0 ? 0 : _cursor];
-    final rest = [
-      for (final i in _order)
-        if (i != anchor) i,
-    ]..shuffle(_random);
-    _order = [anchor, ...rest];
+    final anchorPosition = _cursor < 0 ? 0 : _cursor;
+    _order.swap(0, anchorPosition);
+    _order.shuffleFrom(1, _random);
     _cursor = 0;
     _shuffled = true;
   }
@@ -339,23 +344,8 @@ class MusicQueueController {
   void clearUpcoming() {
     if (_cursor < 0 || _cursor >= _order.length - 1) return;
     _queueSnapshot = null;
-    final retained = _order.sublist(0, _cursor + 1);
-    final keep = List<bool>.filled(_items.length, false);
-    for (final index in retained) {
-      keep[index] = true;
-    }
-    final remap = List<int>.filled(_items.length, -1);
-    var length = 0;
-    // Compact canonical occurrences once. Repeated removeAt plus index
-    // repair made dropping a large shuffled tail quadratic.
-    for (var index = 0; index < _items.length; index++) {
-      if (keep[index]) {
-        remap[index] = length;
-        length++;
-      }
-    }
-    _items.retainCanonical(retained.toSet());
-    _order = [for (final index in retained) remap[index]];
+    _order.removeRange(_cursor + 1, _order.length);
+    _items.retainInPlaybackOrder(_order);
   }
 }
 
@@ -364,7 +354,7 @@ class MusicQueueController {
 class MusicQueueView extends ListBase<MediaItem> {
   MusicQueueView._(this._items, this._order);
   final MusicQueueItemsSnapshot _items;
-  final List<int> _order;
+  final MusicQueueOrderSnapshot _order;
   Object occurrenceAt(int index) => _items.occurrenceAt(_order[index]);
   @override
   int get length => _order.length;

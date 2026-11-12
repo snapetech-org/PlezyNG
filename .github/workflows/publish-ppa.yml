@@ -236,6 +236,16 @@ jobs:
            -- SnapeTech <noreply@github.com>  $(date -R)
           EOF
           cd "$source_dir"
+          # Launchpad rejects binaries with pre-1980 file times only after a
+          # full remote build; run the real install recipe for each arch first.
+          SOURCE_DATE_EPOCH="$(dpkg-parsechangelog -STimestamp)"
+          export SOURCE_DATE_EPOCH
+          for arch in amd64 arm64; do
+            make -s -f debian/rules override_dh_auto_install DEB_HOST_ARCH="$arch"
+            stale="$(find debian/pleazyng ! -newermt 1980-01-02 -print | head -5)"
+            rm -rf debian/pleazyng
+            [[ -z "$stale" ]] || { printf 'Pre-1980 file times in %s package:\n%s\n' "$arch" "$stale" >&2; exit 1; }
+          done
           dpkg-buildpackage -S "$source_flag" -d -k"$GPG_FINGERPRINT"
           changes="$(find "$work" -maxdepth 1 -type f -name "pleazyng_${ppa_version}_source.changes" -print -quit)"
           test -n "$changes" && test -s "$changes"

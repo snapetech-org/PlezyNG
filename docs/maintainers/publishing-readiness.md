@@ -155,4 +155,8 @@ and technical validation can continue independently.
 
 `https://pleazyng-api.snape.tech/health` returns HTTP 200. A real secure WebSocket protocol 2 session passed create, join, leave and end; the test room was removed. Scanner requests are blocked, the existing Knock boundary refuses a blocked identity, and the backend/origin/metrics listeners remain loopback-only and unreachable from the peer LAN. The dedicated connector is healthy; existing shared ingress services were preserved.
 
+See the [Pleazyng service endpoint inventory](pleazyng-relay-endpoints.md) for
+the complete route list and app-feature mapping, including routes outside the
+room protocol exercised by this check.
+
 This service was built from immutable source `4eb97fe98dcf1115a98aa4c081c43ad981c12d44`. It does not qualify provider OAuth or enable new client compile settings. Provider credentials remain absent; missing integrations stay disabled. Client activation is staged for a separate release after the current full-platform qualification.

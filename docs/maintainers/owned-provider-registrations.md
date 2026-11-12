@@ -2,6 +2,9 @@
 
 Checked 2026-11-06. The owned relay is live at `https://pleazyng-api.snape.tech` and its core HTTPS/WSS checks pass. This does not establish any tracker registration, provider consent, commercial permission or end-to-end account synchronization. Optional clients remain unset until their own registrations and tests pass. Do not borrow upstream application IDs.
 
+See the [Pleazyng service endpoint inventory](pleazyng-relay-endpoints.md) for
+the complete app-to-relay route and feature mapping.
+
 ## Registration values
 
 Use the application name **Pleazyng**, publisher **SnapeTech / SNAPE TECHNOLOGIES LIMITED**, the existing public source repository `https://github.com/snapetech-org/pleazyng`, and support/privacy pages under `https://snape.tech/privacy/pleazyng/`. Repository renaming is deferred. Keep owner authentication and client secrets outside this document and Git.

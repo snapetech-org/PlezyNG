@@ -39,6 +39,16 @@ void main() {
     expect(clock.observe(300, 1300, 1400, 350), isFalse);
   });
 
+  test('a fast probe may cross a millisecond boundary on only one peer', () {
+    final clock = MusicGroupClock();
+    expect(clock.observe(300, 1300, 1301, 300), isTrue);
+    expect(clock.ready, isTrue);
+    expect(clock.offset, 1000.5);
+    expect(clock.observe(300, 1300, 1302, 300), isFalse);
+    expect(clock.observe(500, 1501, 1501, 502), isTrue);
+    expect(clock.offset, 1000.5);
+  });
+
   test('prepares paused, corrects distinct clock epochs and follows play/pause and duplicate cursor', () {
     fakeAsync((async) {
       final pair = _Pair(async);

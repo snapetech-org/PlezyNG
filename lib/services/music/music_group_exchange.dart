@@ -11,8 +11,11 @@ class MusicGroupClock {
 
   bool observe(int localSent, int remoteReceived, int remoteSent, int localReceived) {
     if (localSent < 0 || remoteReceived < 0 || remoteSent < remoteReceived || localReceived < localSent) return false;
-    final rtt = localReceived - localSent - (remoteSent - remoteReceived);
-    if (rtt < 0 || rtt > 1000) return false;
+    final measuredRtt = localReceived - localSent - (remoteSent - remoteReceived);
+    // Each clock rounds independently to whole milliseconds. A sub-millisecond
+    // exchange can cross a tick on the peer while staying within one local tick.
+    if (measuredRtt < -1 || measuredRtt > 1000) return false;
+    final rtt = max(0, measuredRtt);
     if (_bestRtt == null || rtt <= _bestRtt!) {
       _bestRtt = rtt;
       offset = ((remoteReceived - localSent) + (remoteSent - localReceived)) / 2;

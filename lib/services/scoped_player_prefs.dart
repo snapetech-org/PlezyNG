@@ -327,7 +327,7 @@ abstract final class ScopedPlayerPrefs {
     return value;
   }
 
-  static int? _decodeBoxFit(Object? raw) => raw is int ? raw.clamp(0, 2) : null;
+  static int? _decodeBoxFit(Object? raw) => raw is int ? (raw == 1 ? 1 : 0) : null;
 
   static String? _decodeString(Object? raw) => raw is String ? raw : null;
 

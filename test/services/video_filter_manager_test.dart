@@ -46,16 +46,17 @@ void main() {
     expect(zoomWrites.last.value, '0.0');
   });
 
-  test('stretch mode applies the initial player size before a resize event', () async {
+  test('legacy stretch mode becomes contain and clears the mpv aspect override', () async {
     final player = _RecordingPlayer();
     final manager = VideoFilterManager(player: player, initialBoxFitMode: 2, initialPlayerSize: const Size(1920, 1080));
     addTearDown(manager.dispose);
 
     await manager.updateVideoFilter();
 
+    expect(manager.boxFitMode, 0);
     final aspectWrites = player.writes.where((write) => write.key == 'video-aspect-override').toList();
-    expect(aspectWrites, isNotEmpty);
-    expect(double.parse(aspectWrites.last.value), closeTo(16 / 9, 0.0001));
+    expect(aspectWrites, hasLength(1));
+    expect(aspectWrites.single.value, 'no');
   });
 
   test('cover-mode zoom change writes only video-zoom', () async {
@@ -131,9 +132,9 @@ void main() {
     expect(player.zoomCalls, [1.0, 0.8]);
   });
 
-  test('fill mode rewrites aspect on player size change', () async {
+  test('resizing never changes source aspect and fit cycles only contain and cover', () async {
     final player = _RecordingPlayer();
-    final manager = VideoFilterManager(player: player, initialBoxFitMode: 2, initialPlayerSize: const Size(1920, 1080));
+    final manager = VideoFilterManager(player: player, initialPlayerSize: const Size(1920, 1080));
     addTearDown(manager.dispose);
 
     await manager.updateVideoFilter();
@@ -144,8 +145,13 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 120));
 
     final aspectWrites = player.writes.where((write) => write.key == 'video-aspect-override').toList();
-    expect(aspectWrites, hasLength(1));
-    expect(double.parse(aspectWrites.single.value), closeTo(1.0, 0.0001));
+    expect(aspectWrites, isEmpty);
+    manager.cycleBoxFitMode();
+    expect(manager.boxFitMode, 1);
+    manager.cycleBoxFitMode();
+    expect(manager.boxFitMode, 0);
+    manager.setBoxFitMode(2);
+    expect(manager.boxFitMode, 0);
   });
 
   // Pinching back is the touch path to an unzoomed picture (#1505). Without a

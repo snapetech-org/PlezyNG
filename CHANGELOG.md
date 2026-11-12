@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve video aspect ratio on window resize. Retire Stretch fit and interpret saved Stretch choices as Contain; the player now cycles between Contain and Cover.
+
 - Retry the published release's PPA, Snap, and WinGet deliveries with the tools and complete manifest set required by their selected runners.
 - Edit collection titles, sort titles, summaries, posters and backgrounds with account-bound decisions, square music artwork and correct Plex collection writes; refresh the collection view after artwork or metadata changes.
 

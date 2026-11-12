@@ -1541,7 +1541,9 @@ class SettingsService extends BaseSharedPreferencesService {
     defaultValue: 1.0,
     transform: (v) => v.clamp(minimumPlaybackRate, maximumPlaybackRate),
   );
-  static final defaultBoxFitMode = IntPref('default_box_fit_mode', transform: (v) => v.clamp(0, 2));
+  // Legacy Stretch (2) is read as Contain so an old saved preference cannot
+  // deform playback in future builds.
+  static final defaultBoxFitMode = IntPref('default_box_fit_mode', transform: (v) => v == 1 ? 1 : 0);
 
   /// Custom zoom layered on fit mode; separate scope defaults to session-only.
   static final defaultVideoZoom = DoublePref(
@@ -2480,7 +2482,7 @@ class SettingsService extends BaseSharedPreferencesService {
     'stream_buffer_mb' => (0, 4096),
     'downmix_center_boost' => (0, 12),
     'default_playback_speed' => (minimumPlaybackRate, maximumPlaybackRate),
-    'default_box_fit_mode' => (0, 2),
+    'default_box_fit_mode' => (0, 1),
     'default_video_zoom' => (minimumVideoZoom, maximumVideoZoom),
     'library_density' => (LibraryDensity.min, LibraryDensity.max),
     'automotive_ui_scale' => (AutomotiveUiScale.min, AutomotiveUiScale.max),

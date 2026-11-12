@@ -12,8 +12,8 @@ import 'ambient_lighting_service.dart';
 /// Manages video filtering, aspect ratio modes, and subtitle positioning for video playback.
 ///
 /// This service handles:
-/// - BoxFit mode cycling (contain → cover → fill)
-/// - Video cropping calculations for fill screen mode
+/// - Aspect-preserving BoxFit mode cycling (contain → cover)
+/// - Video cropping calculations for cover mode
 /// - Subtitle positioning adjustments based on crop parameters
 /// - Debounced video filter updates on resize events
 /// - Ambient-lighting-friendly reset to contain mode
@@ -51,7 +51,7 @@ class VideoFilterManager {
   /// Dolby Vision passthrough — zoom must stay out of mpv's pipeline there.
   final bool nativeVideoZoom;
 
-  /// BoxFit mode state: 0=contain (letterbox), 1=cover (fill screen), 2=fill (stretch)
+  /// BoxFit mode state: 0=contain (letterbox), 1=cover (crop to fill screen).
   int _boxFitMode;
 
   /// Store the boxFitMode before entering PiP so it can be restored
@@ -95,7 +95,7 @@ class VideoFilterManager {
     double initialZoomScale = 1.0,
     Size? initialPlayerSize,
     this.onBoxFitModeChanged,
-  }) : _boxFitMode = initialBoxFitMode,
+  }) : _boxFitMode = initialBoxFitMode == 1 ? 1 : 0,
        _zoomScale = normalizeZoomScale(initialZoomScale),
        _playerSize = initialPlayerSize {
     _debouncedUpdateVideoFilter = debounce(
@@ -106,7 +106,7 @@ class VideoFilterManager {
     );
   }
 
-  /// Current BoxFit mode (0=contain, 1=cover, 2=fill)
+  /// Current BoxFit mode (0=contain, 1=cover)
   int get boxFitMode => _boxFitMode;
 
   double get zoomScale => _zoomScale;
@@ -134,9 +134,9 @@ class VideoFilterManager {
     return _zoomScale;
   }
 
-  /// Cycle through BoxFit modes: contain → cover → fill → contain (for button)
+  /// Cycle through the two aspect-preserving fit modes.
   void cycleBoxFitMode() {
-    _boxFitMode = (_boxFitMode + 1) % 3;
+    _boxFitMode = (_boxFitMode + 1) % 2;
     onBoxFitModeChanged?.call(_boxFitMode);
     updateVideoFilter();
   }
@@ -145,7 +145,7 @@ class VideoFilterManager {
   /// on an in-place item change). Does not fire [onBoxFitModeChanged]: the
   /// value came from the store, so echoing it back would be redundant.
   void setBoxFitMode(int mode) {
-    final next = mode.clamp(0, 2);
+    final next = mode == 1 ? 1 : 0;
     if (_boxFitMode == next) return;
     _boxFitMode = next;
     updateVideoFilter();
@@ -217,8 +217,8 @@ class VideoFilterManager {
   /// Writes are diffed against the last applied values and serialized: while a
   /// run is in flight, further calls coalesce into one trailing re-run instead
   /// of interleaving stale writes (pinch zoom calls this per gesture tick).
-  /// Owns `video-aspect-override` (the stretch of fill mode); ambient lighting
-  /// fills through `keepaspect` instead and never writes it.
+  /// Always clear `video-aspect-override`; old Stretch preferences must never
+  /// deform a source frame when the viewport changes shape.
   Future<void> updateVideoFilter() {
     final running = _updateLoop;
     if (running != null) {
@@ -245,7 +245,6 @@ class VideoFilterManager {
     try {
       final boxFitMode = _boxFitMode;
       final zoomScale = _zoomScale;
-      final playerSize = _playerSize;
       final coverMode = boxFitMode == 1;
 
       // ExoPlayer handles scaling via AspectRatioFrameLayout (no-op on mpv
@@ -262,21 +261,8 @@ class VideoFilterManager {
         _appliedVideoZoom = zoomScale;
       }
 
-      // Compute final target values up-front: each mpv write takes effect
-      // immediately, so transient intermediate values would flash on screen.
-      var aspectOverride = 'no';
-      if (boxFitMode == 2) {
-        // Fill/stretch mode - override aspect ratio to match player (stretches video)
-        if (playerSize != null && playerSize.width > 0 && playerSize.height > 0) {
-          final playerAspect = playerSize.width / playerSize.height;
-          if (playerAspect.isFinite && playerAspect > 0) {
-            aspectOverride = playerAspect.toString();
-            appLogger.d('Stretch mode: aspect-override=$playerAspect (player: $playerSize)');
-          }
-        }
-      }
-
-      await _applyProperty('video-aspect-override', aspectOverride);
+      // Clear an override left by an older player before applying crop/zoom.
+      await _applyProperty('video-aspect-override', 'no');
       await _applyProperty('sub-ass-force-margins', coverMode || zoomScale > 1.0001 ? 'yes' : 'no');
       await _applyProperty('panscan', coverMode ? '1.0' : '0');
       await _applyProperty('video-zoom', nativeVideoZoom ? '0.0' : videoZoomPropertyForScale(zoomScale).toString());

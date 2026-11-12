@@ -183,7 +183,7 @@ class VisualEffectsController {
     if (await shaderService.reapplyForContent() && _isMounted()) _requestRebuild();
   }
 
-  /// Cycle through BoxFit modes: contain → cover → fill → contain (for button)
+  /// Cycle through the aspect-preserving contain and cover fit modes.
   void cycleBoxFitMode() {
     // Disable ambient lighting when switching boxfit modes
     // (cover/fill change the video rect, making the baked-in shader incorrect)

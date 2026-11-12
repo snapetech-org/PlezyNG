@@ -609,8 +609,6 @@ class TrackChapterControls extends StatelessWidget {
         return Symbols.fit_screen_rounded; // contain (letterbox)
       case 1:
         return Symbols.aspect_ratio_rounded; // cover (fill screen)
-      case 2:
-        return Symbols.settings_overscan_rounded; // fill (stretch)
       default:
         return Symbols.fit_screen_rounded;
     }
@@ -622,8 +620,6 @@ class TrackChapterControls extends StatelessWidget {
         return t.videoControls.letterbox;
       case 1:
         return t.videoControls.fillScreen;
-      case 2:
-        return t.videoControls.stretch;
       default:
         return t.videoControls.letterbox;
     }

@@ -33,6 +33,12 @@ void main() {
       expect(ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.playbackSpeed, movie(id: 'other')), 1.5);
       expect(settings.read(SettingsService.scopedPlayerPrefValues), isEmpty);
     });
+
+    test('legacy saved stretch preference resolves to aspect-preserving contain', () async {
+      await settings.prefs.setInt(SettingsService.defaultBoxFitMode.key, 2);
+      expect(settings.read(SettingsService.defaultBoxFitMode), 0);
+      expect(ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.boxFitMode, movie()), 0);
+    });
   });
 
   group('video zoom', () {

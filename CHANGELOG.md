@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Avoid repeated `media-title` expansion in each iOS and tvOS mpv context while preserving macOS window titles. The source is upstream Plezy commit [`847842c3d0`](https://github.com/edde746/plezy/commit/847842c3d075b56d686409850e12fa1cca0b19d9), contributed there by [@edde746](https://github.com/edde746); Pleazyng independently adapted it. See [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md#credited-plezy-commits).
+
 - Move a playing or paused movie or episode to Google Cast from the video player's **Play on** control. The phone follows the receiver's current playback and keeps play, pause, seek and stop controls.
 
 - Show music output selection in Now Playing and the mini-player during an open session, with localized receiver setup guidance in Settings.

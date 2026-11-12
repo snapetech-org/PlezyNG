@@ -142,10 +142,23 @@ adaptations and dispositions. The reconciliation uses Git's `ours` merge
 strategy; the fork tree retains the decisions above. Behavioral scope is
 specified by the disposition table, including the three unshipped native items.
 
+## Follow-up upstream review — 2026-11-12
+
+Upstream subsequently advanced beyond the 64-commit checkpoint above. Commit
+[`847842c3d0`](https://github.com/edde746/plezy/commit/847842c3d075b56d686409850e12fa1cca0b19d9),
+authored upstream by [@edde746](https://github.com/edde746), sets a constant
+mpv title before initialization on iOS and tvOS to avoid repeatedly expanding
+the default `media-title` title. The upstream report measured about 2% CPU in
+its iPhone Air bench app and explicitly did not measure Plezy. Pleazyng
+independently adapted the option in its shared iOS/tvOS context setup and added
+iOS/tvOS contract tests; macOS continues using its window title. This
+follow-up is an adaptation, not a claim that the upstream branch is otherwise
+synchronized. Apple target execution remains separate qualification.
+
 ## Upstream sources
 
-Each table row links its originating upstream commit and upstream author.
-The table is the complete source list for this implementation/review record.
+Each reviewed record links its originating upstream commit and upstream author.
+The table and follow-up above are the source list for this implementation/review record.
 See the [source ledger](../../UPSTREAM_ATTRIBUTION.md),
 [adaptive UI record](adaptive-mobile-and-tvos.md) and
 [AppImage contract](appimage-update-contract.md).

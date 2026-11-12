@@ -299,6 +299,21 @@ final class MpvPlayerContractTests: XCTestCase {
     XCTAssertLessThan(avFoundationIndex, audioUnitIndex, "AVFoundation must precede AudioUnit")
   }
 
+  func testMpvContextsKeepAConstantTitle() {
+    // mpv's default title is a `media-title` expansion redone on every OSD
+    // update, for a window and an audio stream name iPhone and iPad lack.
+    // The video and the music core share this context setup.
+    let core = MpvAudioPlayerCore()
+    XCTAssertTrue(core.initialize())
+    defer {
+      core.dispose()
+      core.queue.sync {}
+    }
+
+    XCTAssertEqual(try awaitGetProperty(core, name: "options/title").get(), "mpv")
+    XCTAssertEqual(try awaitGetProperty(core, name: "title").get(), "mpv")
+  }
+
   func testPauseIntentUpdatesCacheBeforeAsyncWriteCompletes() {
     let core = MpvAudioPlayerCore()
     XCTAssertTrue(core.initialize())

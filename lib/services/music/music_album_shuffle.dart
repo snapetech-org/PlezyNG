@@ -130,8 +130,10 @@ MusicQueueOrderSnapshot buildShuffledAlbumOrder({
 Iterable<int> _canonicalIndexes(File run) sync* {
   final reader = _AlbumOrderRun(run);
   try {
-    while (reader.advance()) {
-      yield reader.current!.canonicalIndex;
+    while (true) {
+      final canonical = reader.advanceCanonicalIndex();
+      if (canonical == null) return;
+      yield canonical;
     }
   } finally {
     reader.close();
@@ -276,6 +278,26 @@ class _AlbumOrderRun {
   final RandomAccessFile _handle;
   int _remaining;
   _AlbumOrderRecord? current;
+
+  int? advanceCanonicalIndex() {
+    if (_remaining == 0) return null;
+    if (_remaining < 4) throw const FormatException('Truncated album shuffle record header');
+    final header = _readExactly(_handle, 4);
+    final recordBytes = ByteData.sublistView(header).getUint32(0, Endian.little);
+    if (recordBytes < _fixedRecordBytes || recordBytes > _fixedRecordBytes + _maxGroupKeyBytes) {
+      throw const FormatException('Invalid album shuffle record size');
+    }
+    if (_remaining < recordBytes + 4) throw const FormatException('Truncated album shuffle record');
+    final bytes = _readExactly(_handle, _fixedRecordBytes);
+    final data = ByteData.sublistView(bytes);
+    final keyUnits = data.getUint32(25, Endian.little);
+    if (recordBytes != _fixedRecordBytes + keyUnits * 2 || data.getUint8(0) > 1) {
+      throw const FormatException('Invalid album shuffle record');
+    }
+    _handle.setPositionSync(_handle.positionSync() + keyUnits * 2);
+    _remaining -= recordBytes + 4;
+    return data.getUint32(21, Endian.little);
+  }
 
   bool advance() {
     if (_remaining == 0) {

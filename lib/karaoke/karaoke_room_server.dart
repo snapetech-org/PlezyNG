@@ -35,6 +35,7 @@ class KaraokeRoomServer extends ChangeNotifier {
   final Map<String, _Grant> _invites = {}, _grants = {};
   final Map<String, ({int second, int count})> _rates = {};
   final Map<String, Map<String, dynamic>> _pairs = {};
+  String? _hostGrantToken;
   Future<void> _pairSerial = Future.value();
   Timer? _expiry;
   bool _disposed = false;
@@ -78,6 +79,13 @@ class KaraokeRoomServer extends ChangeNotifier {
       final now = DateTime.now();
       _invites.removeWhere((_, g) => g.expires.isBefore(now));
       _grants.removeWhere((_, g) => g.expires.isBefore(now));
+      _pairs.removeWhere((_, pair) {
+        final token = pair['token'];
+        return token is! String || !_grants.containsKey(token);
+      });
+      if (_hostGrantToken != null && !_grants.containsKey(_hostGrantToken)) {
+        _hostGrantToken = null;
+      }
       _rates.clear();
       if (!_disposed) {
         notifyListeners();
@@ -106,6 +114,7 @@ class KaraokeRoomServer extends ChangeNotifier {
     _grants.clear();
     _invites.clear();
     _pairs.clear();
+    _hostGrantToken = null;
     unawaited(phoneInputs.expire({}, stopAll: true).catchError(session.report));
     notifyListeners();
   }
@@ -122,6 +131,7 @@ class KaraokeRoomServer extends ChangeNotifier {
     _grants.clear();
     _invites.clear();
     _pairs.clear();
+    _hostGrantToken = null;
     _rates.clear();
     await server?.close(force: true);
     if (!_disposed) {
@@ -366,7 +376,11 @@ class KaraokeRoomServer extends ChangeNotifier {
       if (prior['name'] != name) {
         throw StateError('Pairing ID reused');
       }
-      return prior;
+      final priorToken = prior['token'];
+      if (priorToken is String && _grants.containsKey(priorToken)) {
+        return prior;
+      }
+      _pairs.remove(key);
     }
     final grant = _invites[invite];
     if (grant == null || grant.expires.isBefore(DateTime.now())) {
@@ -381,6 +395,10 @@ class KaraokeRoomServer extends ChangeNotifier {
       singer = result['singerId'] as String;
     }
     final token = _token(), expires = DateTime.now().add(const Duration(hours: 8));
+    if (grant.role == KaraokeRoomRole.host) {
+      _revokeHostGrant();
+      _hostGrantToken = token;
+    }
     _grants[token] = _Grant(grant.role, expires, singer: singer);
     final result = <String, dynamic>{
       'token': token,
@@ -396,6 +414,15 @@ class KaraokeRoomServer extends ChangeNotifier {
     }
     notifyListeners();
     return result;
+  }
+
+  void _revokeHostGrant() {
+    final token = _hostGrantToken;
+    if (token == null) return;
+    _grants.remove(token);
+    _rates.remove('grant:$token');
+    _pairs.removeWhere((_, pair) => pair['token'] == token);
+    _hostGrantToken = null;
   }
 
   Map<String, dynamic> _state(_Grant grant) {

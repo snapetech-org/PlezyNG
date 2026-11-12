@@ -10,6 +10,8 @@
 
 - Create and select a persistent singer identity from the active Pleazyng profile; keep paired LAN guest singers separate.
 
+- Make paired host handover exclusive: a newly paired one-use host link revokes the previous host grant, and expired pairing receipts are removed so reconnects cannot reuse stale credentials.
+
 - Save karaoke A–B practice loops per rendition and restore them with the profile session.
 
 - Compare a private karaoke take with its matching guide vocal or original audio at the recorded rendition position, key and tempo where supported.

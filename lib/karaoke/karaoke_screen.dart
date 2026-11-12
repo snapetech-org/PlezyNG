@@ -1080,18 +1080,16 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
                   spacing: 12,
                   children: [
                     TextButton(
-                      onPressed: !s.hasPerformance ? null : () => s.setLoop(s.positionMs.value, null),
+                      onPressed: !s.hasPerformance ? null : () => _run(() => s.setLoop(s.positionMs.value, null)),
                       child: Text(tr('loopStart')),
                     ),
                     TextButton(
                       onPressed: s.loopStartMs == null
                           ? null
-                          : () => _run(() async {
-                              s.setLoop(s.loopStartMs, s.positionMs.value);
-                            }),
+                          : () => _run(() => s.setLoop(s.loopStartMs, s.positionMs.value)),
                       child: Text(tr('loopEnd')),
                     ),
-                    TextButton(onPressed: () => s.setLoop(null, null), child: Text(tr('clearLoop'))),
+                    TextButton(onPressed: () => _run(() => s.setLoop(null, null)), child: Text(tr('clearLoop'))),
                   ],
                 ),
               ],

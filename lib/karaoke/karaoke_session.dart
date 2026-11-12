@@ -27,6 +27,10 @@ class KaraokeConflict implements Exception {
   String toString() => 'The room changed. Refresh and retry (revision $revision).';
 }
 
+typedef KaraokePracticeMarkers = ({int? startMs, int? endMs});
+
+const _maxPracticeMarkerRenditions = 512;
+
 /// One profile, one authority and one playback clock. Microphones are never
 /// restored automatically. Commands are serialized and acknowledged only after
 /// the resulting snapshot and idempotency receipt have reached durable storage.
@@ -47,6 +51,8 @@ class KaraokeSession extends ChangeNotifier {
   final List<KaraokeRequest> requests = [];
   final List<KaraokeMissingSong> missingSongs = [];
   final Map<String, List<String>> setlists = {};
+  final Map<String, KaraokePracticeMarkers> _practiceMarkers = {};
+  String? _loopRenditionId;
   final Map<String, int> _turns = {}, _lastTurn = {};
   final Map<String, Map<String, dynamic>> _receipts = {};
   final List<StreamSubscription<dynamic>> _subscriptions = [];
@@ -138,6 +144,17 @@ class KaraokeSession extends ChangeNotifier {
           current = r;
         }
       }
+      _restorePracticeMarkers(j['practiceMarkers']);
+      final savedLoopRenditionId = j['practiceRenditionId'];
+      if (savedLoopRenditionId is String && _practiceMarkers.containsKey(savedLoopRenditionId)) {
+        _loopRenditionId = savedLoopRenditionId;
+      }
+      if (current != null) {
+        _loopRenditionId = current!.trackId;
+      }
+      final markers = _loopRenditionId == null ? null : practiceMarkersFor(_loopRenditionId!);
+      loopStartMs = markers?.startMs;
+      loopEndMs = markers?.endMs;
       positionMs.value = j['positionMs'] as int? ?? 0;
       revision = j['revision'] as int? ?? 0;
       epoch = (j['epoch'] as int? ?? 0) + 1;
@@ -187,6 +204,14 @@ class KaraokeSession extends ChangeNotifier {
     'turnNumber': _turnNumber,
     'receipts': _receipts,
     'setlists': setlists,
+    'practiceRenditionId': _loopRenditionId,
+    'practiceMarkers': {
+      for (final entry in _practiceMarkers.entries)
+        entry.key: {
+          if (entry.value.startMs != null) 'startMs': entry.value.startMs,
+          if (entry.value.endMs != null) 'endMs': entry.value.endMs,
+        },
+    },
     'fairRotation': fairRotation,
     'allowExplicit': allowExplicit,
     'requireApproval': requireApproval,
@@ -201,6 +226,40 @@ class KaraokeSession extends ChangeNotifier {
     'displayOffsetMs': displayOffsetMs,
   };
   Future<void> save() => store.write('session', _snapshot());
+
+  KaraokePracticeMarkers? practiceMarkersFor(String renditionId) => _practiceMarkers[renditionId];
+
+  void _restorePracticeMarkers(dynamic raw) {
+    if (raw is! Map) {
+      return;
+    }
+    for (final entry in raw.entries.take(_maxPracticeMarkerRenditions)) {
+      final id = entry.key;
+      final value = entry.value;
+      if (id is! String || !catalog.containsKey(id) || value is! Map) {
+        continue;
+      }
+      final rawStart = value['startMs'];
+      final rawEnd = value['endMs'];
+      if ((rawStart != null && rawStart is! int) || (rawEnd != null && rawEnd is! int)) {
+        continue;
+      }
+      final start = rawStart as int?;
+      final end = rawEnd as int?;
+      final duration = catalog[id]!.durationMs;
+      if ((start == null && end == null) ||
+          (start == null && end != null) ||
+          (start != null && start < 0) ||
+          (end != null && end < 0) ||
+          (start != null && duration > 0 && start >= duration) ||
+          (end != null && duration > 0 && end > duration) ||
+          (start != null && end != null && end - start < 500)) {
+        continue;
+      }
+      _practiceMarkers[id] = (startMs: start, endMs: end);
+    }
+  }
+
   String _analysisKey(String id) => 'analysis-${sha256.convert(utf8.encode(id))}';
   Future<void> saveAnalysis(String id, Map<String, dynamic> value) async {
     await loadAnalysis(id);
@@ -984,6 +1043,10 @@ class KaraokeSession extends ChangeNotifier {
     _usingFiller = false;
     resumeMs = math.max(resumeMs, request.clipStartMs ?? 0);
     current = request;
+    _loopRenditionId = song.id;
+    final markers = practiceMarkersFor(song.id);
+    loopStartMs = markers?.startMs;
+    loopEndMs = markers?.endMs;
     positionMs.value = resumeMs;
     error = null;
     try {
@@ -1150,13 +1213,36 @@ class KaraokeSession extends ChangeNotifier {
     }
   }
 
-  void setLoop(int? start, int? end) {
-    if (start != null && end != null && (start < 0 || end - start < 500 || (durationMs > 0 && end > durationMs))) {
+  Future<void> setLoop(int? start, int? end) async {
+    final duration = durationMs;
+    if ((start == null && end != null) ||
+        (start != null && start < 0) ||
+        (start != null && duration > 0 && start >= duration) ||
+        (end != null && end < 0) ||
+        (end != null && duration > 0 && end > duration) ||
+        (start != null && end != null && end - start < 500)) {
       throw ArgumentError('Loop must be at least 500 ms within the song');
+    }
+    final renditionId = current?.trackId ?? _loopRenditionId;
+    if (start != null && (renditionId == null || !catalog.containsKey(renditionId))) {
+      throw StateError('Choose a valid rendition before saving a practice loop');
+    }
+    if (renditionId != null) {
+      if (start == null) {
+        _practiceMarkers.remove(renditionId);
+        _loopRenditionId = null;
+      } else {
+        if (!_practiceMarkers.containsKey(renditionId) && _practiceMarkers.length >= _maxPracticeMarkerRenditions) {
+          throw StateError('Practice loop limit reached');
+        }
+        _loopRenditionId = renditionId;
+        _practiceMarkers[renditionId] = (startMs: start, endMs: end);
+      }
     }
     loopStartMs = start;
     loopEndMs = end;
     _notify();
+    await save();
   }
 
   Future<void> setControls(double key, double tempo) async {

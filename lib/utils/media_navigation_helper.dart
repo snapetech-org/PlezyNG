@@ -296,7 +296,7 @@ Future<MediaNavigationResult> navigateToMediaItem(
     case MediaKind.track:
       // Tracks start playback in their album queue instead of opening a
       // detail surface.
-      await playTrackWithAlbumContext(context, mi);
+      await playTrackWithAlbumContext(context, mi, isOffline: isOffline);
       return MediaNavigationResult.navigated;
 
     case MediaKind.clip:

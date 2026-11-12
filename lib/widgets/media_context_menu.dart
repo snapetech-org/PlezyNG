@@ -1533,7 +1533,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
   Future<void> _handleMusicPlay(BuildContext context) async {
     final item = _mediaItem!;
     if (item.kind == MediaKind.track) {
-      await playTrackWithAlbumContext(context, item);
+      await playTrackWithAlbumContext(context, item, isOffline: widget.isOffline);
       return;
     }
     // No onError: a failed container fetch falls through to this menu's own

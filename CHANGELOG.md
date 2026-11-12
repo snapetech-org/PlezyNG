@@ -32,6 +32,8 @@
 
 - Page accepted incoming Plex audio playlists through the authorized server, bound metadata reads, retire stale account/catalog results and recheck exact access before opening. Browse shared playlists from Music home with paging and read-only detail, retain shared-session playback, and bind one-time downloads to their original source across dialogs.
 
+- Bind track-to-album playback to the original profile, account, server and visible library. Preserve owned offline playback from Downloads without fetching a live album, and reject stale or foreign album rows.
+
 - Assemble the complete frozen release from independently signed iOS and tvOS sibling runs, verifying both IPA attestations and original platform artifact identities before publication.
 - Keep shared libraries read-only for collection changes and bind collection confirmations to their original authorized account.
 

@@ -16,8 +16,8 @@ import '../theme/mono_motion.dart';
 import '../theme/mono_tokens.dart';
 import '../i18n/strings.g.dart';
 import 'app_logger.dart';
+import 'music_read_scope.dart';
 import 'platform_detector.dart';
-import 'provider_extensions.dart';
 import 'snackbar_helper.dart';
 
 /// Route name of the now-playing screen — the mini-player's route observer
@@ -121,12 +121,14 @@ Future<void> playTracks(
   MediaItem? startTrack,
   required MusicPlayContext playContext,
   bool shuffle = false,
+  bool offline = false,
 }) async {
   await context.read<MusicPlaybackService>().playFromList(
     tracks: tracks,
     startTrack: startTrack,
     playContext: playContext,
     shuffle: shuffle,
+    offline: offline,
   );
   if (context.mounted) _autoOpenNowPlayingOnTv(context);
 }
@@ -210,18 +212,28 @@ Future<void> playAudioPlaylist(
 /// Hand-written rather than routed through [playFetchedTracks]: the fallback
 /// must play under the *same* intent as the album fetch, so a stale fallback
 /// can never supersede a newer request.
-Future<void> playTrackWithAlbumContext(BuildContext context, MediaItem track) async {
+Future<void> playTrackWithAlbumContext(BuildContext context, MediaItem track, {bool isOffline = false}) async {
   final service = context.read<MusicPlaybackService>();
   final intent = service.beginPlayIntent();
-
+  final scope = await MusicReadScope.forTrack(context, track, offline: isOffline);
+  bool current() =>
+      context.mounted &&
+      scope != null &&
+      scope.current &&
+      identical(context.read<MusicPlaybackService>(), service) &&
+      service.isPlayIntentCurrent(intent);
+  if (!current()) return;
   final albumId = track.parentId;
-  final client = context.getMediaClientForItemOrNull(track);
-  if (albumId != null && client != null) {
+  final client = scope!.client;
+  if (albumId != null && albumId.isNotEmpty && client != null) {
     try {
       final tracks = await client.fetchAlbumTracks(albumId);
-      final startIndex = tracks.indexWhere((item) => item.id == track.id);
-      if (!context.mounted || !service.isPlayIntentCurrent(intent)) return;
-      if (startIndex != -1) {
+      if (!current()) return;
+      final startIndex = tracks.indexWhere(
+        (item) => item.globalKey == track.globalKey && item.backend == track.backend,
+      );
+      if (startIndex != -1 && tracks.every((item) => scope.ownsAlbumTrack(item, albumId))) {
+        if (!context.mounted) return;
         await playTracks(
           context,
           tracks: tracks,
@@ -230,17 +242,16 @@ Future<void> playTrackWithAlbumContext(BuildContext context, MediaItem track) as
         );
         return;
       }
-    } catch (e) {
-      if (!service.isPlayIntentCurrent(intent)) return;
-      appLogger.w('Failed to fetch album context for track ${track.id}; playing single track', error: e);
-      if (!context.mounted) return;
+    } catch (error) {
+      if (!current()) return;
+      appLogger.w('Failed to fetch authorized album context; playing the selected track', error: error);
     }
   }
-
-  if (!context.mounted || !service.isPlayIntentCurrent(intent)) return;
+  if (!context.mounted || !current()) return;
   await playTracks(
     context,
     tracks: [track],
+    offline: scope.offline,
     playContext: MusicPlayContext(title: track.title ?? '', kind: MusicPlayContextKind.tracks),
   );
 }

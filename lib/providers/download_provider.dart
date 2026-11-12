@@ -236,6 +236,9 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     return _downloadManager.resetDownloadLocation(checkCurrent: checkCurrent);
   }
 
+  /// The profile whose owned files and rules are currently exposed.
+  String? get activeProfileId => _activeProfileId;
+
   /// Switch the visible sync-rule scope to [profileId]. Physical downloads are
   /// intentionally not reloaded because they are shared across profiles.
   void setActiveProfileId(String? profileId) {

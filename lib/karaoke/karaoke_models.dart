@@ -173,10 +173,12 @@ class KaraokeTrack {
   bool get hasLocalAudio =>
       assets.any((a) => a.kind == KaraokeAssetKind.audio || a.kind == KaraokeAssetKind.instrumental);
   Set<String> get parts => {
-    ...notes.map((n) => n.part),
-    ...lyrics.lines.expand(
-      (line) => [if (line.part != null) line.part!, ...line.spans.map((span) => span.part).whereType<String>()],
-    ),
+    ...notes.map((note) => note.part).where((part) => part.trim().isNotEmpty),
+    ...lyrics.lines
+        .expand(
+          (line) => [if (line.part != null) line.part!, ...line.spans.map((span) => span.part).whereType<String>()],
+        )
+        .where((part) => part.trim().isNotEmpty),
   };
   Map<String, dynamic> toJson() => {
     'schema': 1,

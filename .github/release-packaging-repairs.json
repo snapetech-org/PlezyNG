@@ -118,6 +118,21 @@
         "scripts/recover_release_platforms.py": "681edcf76c1e0d6de47c4efaa66d83ee7cce4dc8",
         "scripts/test_build_apple_store_archive.py": "86b0925df94cf3bea211273a7aca74e47cdabd6c"
       }
+    },
+    {
+      "product_source_sha": "240994590dd3e5411ee3b02c2bcfc0a1fd51a431",
+      "packaging_source_sha": "6ebb1f0f559c45fa8a5071744526269394f76308",
+      "files": {
+        ".github/workflows/build.yml": "c6a0e17e43579eeb369b06d9cb866ebe589b00ff",
+        "CHANGELOG.md": "e9de4595fbcf66b0ef2144b61bf416171898c1e9",
+        "docs/maintainers/full-release-build.md": "0e0d307da8065ee83b2ccfb44767b8d75b2caccb",
+        "scripts/build_apple_store_archive.py": "31978a785db68c4603dea1a2cc4e5047c8c85b62",
+        "scripts/checks/test_apple_packaging_repair_controller.py": "3d9d028b75fdf57d4554dea3dda175a81a5b48ab",
+        "scripts/checks/test_recover_release_platforms.py": "deafbe37b35e8d17204df3855931d468a9976e38",
+        "scripts/recover_release_platforms.py": "50ec0672824d3270446a7e2f871d04f437016b1c",
+        "scripts/release_all_platforms.py": "e71d2f10e75b0182c34d1cfdb08b8dd6b666cd19",
+        "scripts/test_build_apple_store_archive.py": "86b0925df94cf3bea211273a7aca74e47cdabd6c"
+      }
     }
   ]
 }

@@ -139,7 +139,9 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
                     child: TextField(
                       controller: e.value,
                       decoration: InputDecoration(
-                        labelText: e.key == 'spans' ? 'Word/syllable timing (JSON: text, startMs, endMs, unit)' : e.key,
+                        labelText: e.key == 'spans'
+                            ? 'Word/syllable timing (JSON: text, startMs, endMs, unit, pronunciation)'
+                            : e.key,
                       ),
                       minLines: e.key == 'spans' ? 4 : 1,
                       maxLines: e.key == 'spans' ? 10 : 3,

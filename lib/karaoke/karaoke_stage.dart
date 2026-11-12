@@ -224,7 +224,11 @@ class _StageLine extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Semantics(
-        label: '${line.part ?? ''} ${line.text}',
+        label: [
+          line.part,
+          line.text,
+          ...line.spans.map((span) => span.pronunciation).whereType<String>(),
+        ].where((value) => value?.trim().isNotEmpty ?? false).join(' '),
         child: ExcludeSemantics(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -250,15 +254,31 @@ class _StageLine extends StatelessWidget {
                           : ((time - span.startMs) / math.max(1, end - span.startMs)).clamp(0.0, 1.0);
                       // Whole source spans preserve grapheme clusters, whitespace and bidi
                       // shaping. Opacity expresses within-span progress without splitting.
-                      return TextSpan(
-                        text: span.text,
-                        style: style.copyWith(color: Color.lerp(Colors.white54, color, progress)),
+                      final lyricStyle = style.copyWith(color: Color.lerp(Colors.white54, color, progress));
+                      final reading = span.pronunciation;
+                      if (reading == null || reading.trim().isEmpty) {
+                        return TextSpan(text: span.text, style: lyricStyle);
+                      }
+                      return WidgetSpan(
+                        alignment: PlaceholderAlignment.bottom,
+                        baseline: TextBaseline.alphabetic,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              reading,
+                              style: style.copyWith(fontSize: font * .32, color: Colors.white70, height: 1),
+                            ),
+                            Text(span.text, style: lyricStyle),
+                          ],
+                        ),
                       );
                     }).toList(),
                   ),
                   textAlign: TextAlign.center,
                 ),
-              if (line.pronunciation != null)
+              if (line.pronunciation != null &&
+                  !line.spans.any((span) => span.pronunciation?.trim().isNotEmpty ?? false))
                 Text(
                   line.pronunciation!,
                   textAlign: TextAlign.center,

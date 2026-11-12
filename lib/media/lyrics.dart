@@ -8,6 +8,9 @@ class LyricSpan {
   final int? endMs;
   final LyricUnit unit;
   final String? part;
+
+  /// Reading or transliteration shown above this timed lyric span when present.
+  final String? pronunciation;
   final double? confidence;
 
   const LyricSpan({
@@ -16,6 +19,7 @@ class LyricSpan {
     this.endMs,
     this.unit = LyricUnit.word,
     this.part,
+    this.pronunciation,
     this.confidence,
   });
 
@@ -25,6 +29,7 @@ class LyricSpan {
     if (endMs != null) 'endMs': endMs,
     'unit': unit.name,
     if (part != null) 'part': part,
+    if (pronunciation != null) 'pronunciation': pronunciation,
     if (confidence != null) 'confidence': confidence,
   };
 
@@ -33,6 +38,7 @@ class LyricSpan {
     startMs: json['startMs'] as int,
     endMs: json['endMs'] as int?,
     part: json['part'] as String?,
+    pronunciation: json['pronunciation'] as String?,
     confidence: (json['confidence'] as num?)?.toDouble(),
     unit: LyricUnit.values.firstWhere((u) => u.name == json['unit'], orElse: () => LyricUnit.word),
   );

@@ -86,8 +86,8 @@ require(
     "full iOS/tvOS release builds must default to the proven on-demand Apple lane",
 )
 require(
-    "apple_runner_pool: hosted" in job("release-ci"),
-    "Release CI native reliability checks must remain on hosted Apple runners",
+    "apple_runner_pool: ${{ inputs.tvos_runner_pool }}" in job("release-ci"),
+    "Release CI Apple reliability checks must share the release's private-first capacity route",
 )
 require(
     "inputs.action == 'release' && 'pleazyng-versioned-release-v2'" in text
@@ -118,6 +118,10 @@ require(
     and apple_pool_default.value == "auto"
     and "def select_apple_runner_pool(requested: str) -> str:" in release_driver_text
     and "apple_queue.active_run_scoped_apple_runner()" in release_driver_text
+    and "def private_apple_capacity_from_dashboard(" in release_driver_text
+    and "RUNNER_QUEUE_SCAN_MAX_AGE_SECONDS = 180" in release_driver_text
+    and "for workflow in (RELEASE_WORKFLOW, CI_WORKFLOW)" in release_driver_text
+    and "apple_runner_pool=apple_pool" in release_driver_text
     and 'print("Apple route: hosted Apple is also busy; queueing private for its next free slot."' in release_driver_text,
     "release driver must prefer private Apple, fall back on capacity, and return to private when hosted Apple is queued",
 )

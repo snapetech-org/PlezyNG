@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import json
 import os
 import subprocess
@@ -23,15 +24,18 @@ from release_all_platforms import (  # noqa: E402
     ensure_ci,
     ensure_tag,
     select_apple_runner_pool,
+    private_apple_capacity_from_dashboard,
+    hosted_apple_queue_busy,
     release_ci_source,
     run_has_successful_step,
 )
 
 
 class AppleRunnerRoutingTests(unittest.TestCase):
+    @patch("release_all_platforms.live_private_apple_capacity", return_value=(True, "free slot"))
     @patch("release_all_platforms.hosted_apple_queue_busy")
     @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=False)
-    def test_private_is_selected_first_when_available(self, _private_busy, hosted_busy) -> None:
+    def test_private_is_selected_first_when_available(self, _private_busy, hosted_busy, _capacity) -> None:
         self.assertEqual(select_apple_runner_pool("auto"), "private")
         hosted_busy.assert_not_called()
 
@@ -49,10 +53,70 @@ class AppleRunnerRoutingTests(unittest.TestCase):
     ) -> None:
         self.assertEqual(select_apple_runner_pool("auto"), "private")
 
+    @patch("release_all_platforms.live_private_apple_capacity", return_value=(False, "disk reserve"))
+    @patch("release_all_platforms.hosted_apple_queue_busy", return_value=False)
+    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=False)
+    def test_offline_mac_without_launch_capacity_falls_back_to_hosted(
+        self, _private_busy, _hosted_busy, _capacity
+    ) -> None:
+        self.assertEqual(select_apple_runner_pool("auto"), "hosted")
+
+    @patch("release_all_platforms.live_private_apple_capacity", return_value=(False, "disk reserve"))
+    @patch("release_all_platforms.hosted_apple_queue_busy", return_value=True)
+    @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner", return_value=False)
+    def test_private_is_retried_when_hosted_is_busy_and_mac_has_no_slot(
+        self, _private_busy, _hosted_busy, _capacity
+    ) -> None:
+        self.assertEqual(select_apple_runner_pool("auto"), "private")
+
     @patch("release_all_platforms.apple_queue.active_run_scoped_apple_runner")
-    def test_explicit_route_override_skips_capacity_probe(self, private_busy) -> None:
+    @patch("release_all_platforms.live_private_apple_capacity")
+    @patch("release_all_platforms.hosted_apple_queue_busy")
+    def test_explicit_route_override_skips_capacity_probe(
+        self, hosted_busy, capacity, private_busy
+    ) -> None:
         self.assertEqual(select_apple_runner_pool("hosted"), "hosted")
+        hosted_busy.assert_not_called()
+        capacity.assert_not_called()
         private_busy.assert_not_called()
+
+    def test_fresh_dashboard_slot_is_available_and_disk_gate_is_not(self) -> None:
+        now = dt.datetime(2026, 11, 12, 5, 0, tzinfo=dt.timezone.utc)
+        base = {
+            "broker": {
+                "service": {"ActiveState": "active"},
+                "journal_ok": True,
+                "latest_scan": {
+                    "t": now.isoformat(),
+                    "hosts": {"macbook-air": {"free": [1], "reasons": []}},
+                },
+            }
+        }
+        self.assertEqual(
+            private_apple_capacity_from_dashboard(base, now_utc=now),
+            (True, "free Apple JIT slot"),
+        )
+        base["broker"]["latest_scan"]["hosts"]["macbook-air"] = {
+            "free": [], "reasons": ["local-disk-below-38gib"],
+        }
+        self.assertEqual(
+            private_apple_capacity_from_dashboard(base, now_utc=now),
+            (False, "local-disk-below-38gib"),
+        )
+
+    @patch("release_all_platforms.gh_json", return_value={
+        "total_count": 1,
+        "jobs": [{"status": "queued", "labels": ["macos-26"]}],
+    })
+    @patch("release_all_platforms.workflow_runs")
+    def test_hosted_apple_busy_check_includes_ci_workflow(self, runs, _gh_json) -> None:
+        def active_runs(repo: str, workflow: str, **_kwargs):
+            if workflow == "ci.yml":
+                return [{"databaseId": 42, "status": "queued"}]
+            return []
+
+        runs.side_effect = active_runs
+        self.assertTrue(hosted_apple_queue_busy())
 
 
 class ReleaseCIGateManifestTests(unittest.TestCase):
@@ -81,6 +145,7 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
                 "runner_pool": "private",
                 "execution_profile": "hybrid",
                 "build_linux_packages": "true",
+                "apple_runner_pool": "private",
             },
             "Pleazyng CI",
             expected_title="action:ci:pool:private",
@@ -104,11 +169,22 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
                 "runner_pool": "private",
                 "execution_profile": "hybrid",
                 "build_linux_packages": "true",
+                "apple_runner_pool": "private",
             },
             "Pleazyng CI",
             expected_title="action:ci:pool:private",
             expected_sha=commit_sha,
         )
+
+    @patch("release_all_platforms.dispatch")
+    @patch("release_all_platforms.matching_run", return_value=None)
+    def test_release_ci_dispatch_can_use_hosted_when_private_capacity_is_busy(
+        self, _matching_run, dispatch
+    ) -> None:
+        commit_sha = "e" * 40
+        ensure_ci(commit_sha, apple_runner_pool="hosted")
+
+        self.assertEqual(dispatch.call_args.args[3]["apple_runner_pool"], "hosted")
 
     @patch(
         "release_all_platforms.gh_json",

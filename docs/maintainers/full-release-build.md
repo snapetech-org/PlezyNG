@@ -87,7 +87,10 @@ falls back to hosted when private is occupied and no hosted Apple package is
 queued, and returns to private when hosted Apple work is already queued. The
 private queue controller starts the runner on demand and serializes jobs on
 the single Mac slot. GitHub does not expose global hosted macOS capacity, so an
-already queued hosted Apple package in this repository is the busy signal.
+already queued hosted Apple package in this repository is the busy signal. The
+controller reads `q.home`'s fresh broker scan and APFS gate; an offline GitHub
+runner alone does not prove that the private Mac can launch a job. Hosted queue
+checks include both release builds and Apple reliability CI.
 Use `--apple-arm-runner-pool hosted|private` only to override the automatic
 choice. Run the release through `scripts/release_all_platforms.py` so it can
 probe capacity and launch the private JIT controller. Every Apple build still
@@ -162,8 +165,8 @@ each job still run in order.
 
 Capacity determines which eligible jobs start. The hybrid Linux, Android,
 Tizen, and Windows jobs can occupy separate hosted runners concurrently.
-Apple native reliability checks use hosted macOS, while iOS and tvOS package
-jobs follow the private-first capacity route described above. WebOS uses its
+Apple native reliability checks and iOS/tvOS package jobs share the
+private-first capacity route described above. WebOS uses its
 own private Linux route and can remain queued until that compatible capacity is
 available; it has no dependency on an Apple job. The stage-by-stage waits in
 `release_all_platforms.py` protect the exact

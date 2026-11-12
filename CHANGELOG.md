@@ -13,6 +13,7 @@
 
 - Keep native car/voice and music-link queue admission paged and account-bound. Preserve duplicate playlist entries, reject foreign/incomplete batches, and prevent metadata fetched before an account change from becoming a catalog entry owned by the replacement account.
 - Route iOS and tvOS packages private-first with capacity fallbacks; keep nonpublishing builds from blocking versioned releases.
+- Read live private Mac capacity before selecting the Apple release route, and count queued Apple jobs in both build and CI workflows before falling back to hosted.
 
 - Admit album and artist playback in bounded metadata pages, preserving Plex child/grandchild routes and MediaBrowser music credits. Recheck the original account and play intent between pages and reject malformed or unauthorized pages before replacing the queue.
 - Start the bundled offline MilkRust sample automatically for a new music visualizer profile when native audio is available; keep saved engine and original-scene choices.

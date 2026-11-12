@@ -43,6 +43,8 @@ FFMPEG_SIGNING_FINGERPRINT = "FCF986EA15E6E293A5644F10B4322F04D67658D8"
 DOWNLOAD_ATTEMPTS = 4
 DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
 APPLE_JIT_EVIDENCE_ROOT: Path | None = None
+RUNNER_QUEUE_STATE_URL = "https://q.home/api/state"
+RUNNER_QUEUE_SCAN_MAX_AGE_SECONDS = 180
 RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "tools/webos/NATIVE-PREFLIGHT.md",
     "webos/CMakeLists.txt", "scripts/verify_webos_link_patch.py", "scripts/test_verify_webos_link_patch.py",
@@ -398,59 +400,122 @@ def active_run(repo: str, workflow: str, *, ref: str) -> dict | None:
     return None
 
 
+def private_apple_capacity_from_dashboard(
+    state: object, *, now_utc: dt.datetime | None = None
+) -> tuple[bool | None, str]:
+    """Read one fresh private Mac slot from the local runner capacity dashboard."""
+    if not isinstance(state, dict):
+        return None, "invalid queue dashboard response"
+    broker = state.get("broker")
+    if not isinstance(broker, dict):
+        return None, "missing broker state"
+    service = broker.get("service")
+    scan = broker.get("latest_scan")
+    if (not isinstance(service, dict) or service.get("ActiveState") != "active"
+            or broker.get("journal_ok") is not True or not isinstance(scan, dict)):
+        return None, "broker scan unavailable"
+    stamp = scan.get("t")
+    if not isinstance(stamp, str):
+        return None, "broker scan timestamp unavailable"
+    try:
+        scan_time = dt.datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except ValueError:
+        return None, "broker scan timestamp invalid"
+    if scan_time.tzinfo is None:
+        return None, "broker scan timestamp has no timezone"
+    now = now_utc or dt.datetime.now(dt.timezone.utc)
+    age = (now.astimezone(dt.timezone.utc) - scan_time.astimezone(dt.timezone.utc)).total_seconds()
+    if age < -30 or age > RUNNER_QUEUE_SCAN_MAX_AGE_SECONDS:
+        return None, "broker capacity scan is stale"
+    hosts = scan.get("hosts")
+    mac = hosts.get("macbook-air") if isinstance(hosts, dict) else None
+    if not isinstance(mac, dict) or not isinstance(mac.get("free"), list):
+        return None, "private Apple host capacity missing"
+    if mac["free"]:
+        return True, "free Apple JIT slot"
+    reasons = mac.get("reasons")
+    if isinstance(reasons, list) and reasons:
+        reason = ", ".join(str(item) for item in reasons if isinstance(item, str))
+    else:
+        reason = "no free Apple JIT slot"
+    return False, reason
+
+
+def live_private_apple_capacity() -> tuple[bool | None, str]:
+    """Use the fresh q.home broker scan; GitHub's offline runner list is insufficient."""
+    try:
+        with urllib.request.urlopen(RUNNER_QUEUE_STATE_URL, timeout=5) as response:
+            state = json.load(response)
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError) as error:
+        return None, f"queue dashboard unavailable ({type(error).__name__})"
+    return private_apple_capacity_from_dashboard(state)
+
+
 def hosted_apple_queue_busy() -> bool:
-    """Return true when a hosted Apple package job is already waiting for a runner."""
+    """Return true when this repository already has hosted Apple jobs queued."""
     active_states = {"queued", "in_progress", "waiting", "requested", "pending"}
-    for run in workflow_runs(PLEZY_REPO, RELEASE_WORKFLOW):
-        if run.get("status") not in active_states:
-            continue
-        run_id = run.get("databaseId")
-        if not isinstance(run_id, int):
-            continue
-        inventory = gh_json(
-            "api", f"repos/{PLEZY_REPO}/actions/runs/{run_id}/jobs?per_page=100"
-        )
-        jobs = inventory.get("jobs")
-        if not isinstance(jobs, list) or any(not isinstance(job, dict) for job in jobs):
-            raise ReleaseError(f"Cannot read Apple queue state for workflow run {run_id}.")
-        if inventory.get("total_count", len(jobs)) > len(jobs):
-            raise ReleaseError(f"Apple queue state for workflow run {run_id} is truncated.")
-        if any(
-            job.get("status") == "queued"
-            and isinstance(job.get("labels"), list)
-            and any(
-                isinstance(label, str) and label.startswith("macos-")
-                for label in job["labels"]
+    queued_states = {"queued", "waiting", "requested", "pending"}
+    seen_run_ids: set[int] = set()
+    for workflow in (RELEASE_WORKFLOW, CI_WORKFLOW):
+        for run in workflow_runs(PLEZY_REPO, workflow):
+            if run.get("status") not in active_states:
+                continue
+            run_id = run.get("databaseId")
+            if not isinstance(run_id, int) or run_id in seen_run_ids:
+                continue
+            seen_run_ids.add(run_id)
+            inventory = gh_json(
+                "api", f"repos/{PLEZY_REPO}/actions/runs/{run_id}/jobs?per_page=100"
             )
-            for job in jobs
-        ):
-            print(
-                f"Hosted Apple capacity is busy: workflow run {run_id} already has a queued Apple job.",
-                flush=True,
-            )
-            return True
+            jobs = inventory.get("jobs")
+            if not isinstance(jobs, list) or any(not isinstance(job, dict) for job in jobs):
+                raise ReleaseError(f"Cannot read Apple queue state for workflow run {run_id}.")
+            if inventory.get("total_count", len(jobs)) > len(jobs):
+                raise ReleaseError(f"Apple queue state for workflow run {run_id} is truncated.")
+            if any(
+                job.get("status") in queued_states
+                and isinstance(job.get("labels"), list)
+                and any(
+                    isinstance(label, str) and label.startswith("macos-")
+                    for label in job["labels"]
+                )
+                for job in jobs
+            ):
+                print(
+                    f"Hosted Apple capacity is busy: workflow run {run_id} already has a queued Apple job.",
+                    flush=True,
+                )
+                return True
     return False
 
 
 def select_apple_runner_pool(requested: str) -> str:
-    """Prefer private Apple JIT, using observed queue state for a fast fallback."""
+    """Prefer a launchable private Mac, then use hosted queue state for fallback."""
     if requested != "auto":
         return requested
     try:
         private_busy = apple_queue.active_run_scoped_apple_runner()
     except apple_queue.QueueError as error:
-        # Private is the first choice. If telemetry is unavailable, keep that
-        # choice and let the existing JIT controller report any real blocker.
         print(
-            f"Could not read private Apple capacity ({error}); keeping the private-first route.",
+            f"Could not read private Apple runner registration ({error}); checking the live capacity scan.",
+            flush=True,
+        )
+        private_busy = False
+    if private_busy:
+        capacity_available, capacity_reason = False, "private Mac runner is occupied"
+    else:
+        capacity_available, capacity_reason = live_private_apple_capacity()
+    if capacity_available is True:
+        print("Apple route: private Mac has a free JIT slot; selecting private first.", flush=True)
+        return "private"
+    if capacity_available is None:
+        print(
+            f"Could not confirm private Apple capacity ({capacity_reason}); keeping the private-first route.",
             flush=True,
         )
         return "private"
-    if not private_busy:
-        print("Apple route: private Mac is available; selecting private first.", flush=True)
-        return "private"
 
-    print("Apple route: private Mac is occupied; checking the hosted Apple queue.", flush=True)
+    print(f"Apple route: private Mac is unavailable ({capacity_reason}); checking hosted Apple queue.", flush=True)
     try:
         public_busy = hosted_apple_queue_busy()
     except ReleaseError as error:
@@ -985,7 +1050,7 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
 
 
 def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref: str = "main",
-              apple_runner_pool: str = "hosted") -> dict:
+              apple_runner_pool: str = "private") -> dict:
     if source_ref != "main":
         ensure_frozen_release_source(source_ref, commit_sha)
     existing = matching_run(PLEZY_REPO, CI_WORKFLOW, commit_sha, ref=source_ref)
@@ -1006,8 +1071,7 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref:
         )
     fields = {"action": "ci", "runner_pool": "private", "execution_profile": execution_profile,
               "build_linux_packages": "true"}
-    if apple_runner_pool == "private":
-        fields["apple_runner_pool"] = "private"
+    fields["apple_runner_pool"] = apple_runner_pool
     return dispatch(
         PLEZY_REPO,
         CI_WORKFLOW,
@@ -2372,8 +2436,9 @@ def main() -> int:
         progress["stage"] = stage
         save_progress()
         apple_pool = getattr(args, "apple_arm_runner_pool", "auto")
-        if frozen:
+        if apple_pool == "auto":
             apple_pool = select_apple_runner_pool(apple_pool)
+        if frozen:
             # One main workflow captures the source for reusable CI and every
             # platform. Existing main-only private runner authorization remains
             # unchanged; the stable tag is created inside only after CI passes.
@@ -2394,7 +2459,11 @@ def main() -> int:
                 progress["embedded_ci"] = proof["embedded_ci"]
             print(f"Verified unchanged product inputs and exact-source CI from run {proof['ci_run_id']}.")
         else:
-            ci = ensure_ci(ci_source, execution_profile=args.execution_profile)
+            ci = ensure_ci(
+                ci_source,
+                execution_profile=args.execution_profile,
+                apple_runner_pool=apple_pool,
+            )
         progress["ci_run"] = ci["databaseId"]
         # Store variants are explicit preparation, never implied by publishing.
         include_apple_store_build = args.include_apple_store_build
@@ -2414,8 +2483,6 @@ def main() -> int:
         stage = "all-platform release build"
         progress["stage"] = stage
         save_progress()
-        if apple_pool == "auto":
-            apple_pool = select_apple_runner_pool(apple_pool)
         progress["apple_arm_runner_pool"] = apple_pool
         save_progress()
         release = ensure_release(

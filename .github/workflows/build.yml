@@ -240,9 +240,9 @@ jobs:
       runner_pool: private
       execution_profile: hybrid
       build_linux_packages: true
-      # Keep the fast native reliability checks on hosted macOS; this input
-      # controls only the full iOS/tvOS package jobs below.
-      apple_runner_pool: hosted
+      # Keep Release CI on the same private-first Apple route selected for the
+      # package jobs; the controller falls back only when live capacity says to.
+      apple_runner_pool: ${{ inputs.tvos_runner_pool }}
 
   freeze-qualified-source:
     name: Freeze qualified source

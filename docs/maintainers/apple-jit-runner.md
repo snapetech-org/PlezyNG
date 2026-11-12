@@ -1,11 +1,14 @@
 # Pleazyng Apple JIT runner
 
 Full iOS and tvOS package routing is private-first. Before dispatch, the
-release controller checks whether the on-demand private-apple-builds ARM lane
-is occupied. If it is, the controller checks active hosted Apple jobs: it uses
-hosted when no Apple package is queued, and selects private again when hosted
-Apple work is already waiting. The private queue controller waits for the
-single Mac slot and launches each selected job as soon as it is free.
+release controller checks the private runner registration and the fresh
+`https://q.home/api/state` broker scan. An offline GitHub runner is not treated
+as available by itself: the Mac must have a free JIT slot and pass its APFS
+capacity gate. If private capacity is unavailable, the controller checks
+queued Apple jobs in both `build.yml` and `ci.yml`: it uses hosted when their
+Apple queues are clear, and selects private again when hosted Apple work is
+already waiting. The private queue controller waits for the single Mac slot
+and launches each selected job as soon as it is free.
 
 This policy responds to the v3.0.33 hosted release, which waited 7h18 for its
 Apple jobs, then the signed iOS job reached its six-hour limit while archiving.
@@ -15,16 +18,15 @@ A verified private Apple recovery completed iOS in 1h43 and tvOS in 26 minutes
 [tvOS recovery](https://github.com/snapetech-org/pleazyng/actions/runs/43115287017)).
 The release controller starts the runner on demand and serializes Apple jobs
 because the lane has one Mac slot. Direct workflow dispatches default to the
-private lane; the release controller can select either lane from live queue
-state, and `--apple-arm-runner-pool hosted|private` remains available as an
-explicit override. GitHub does not expose global hosted macOS capacity, so the
-controller treats an already queued hosted Apple job in this repository as a
-busy signal and prefers private when it observes one.
+private lane; the release controller can select either lane from live capacity
+and queue state, and `--apple-arm-runner-pool hosted|private` remains available
+as an explicit override. GitHub does not expose global hosted macOS capacity,
+so an already queued hosted Apple job in this repository is the busy signal.
 
-Apple native reliability checks in Release CI remain on GitHub-hosted runners;
-they completed within 43 minutes in the same release. Linux, Android,
-Windows, macOS desktop, and other compatible lanes also keep their hosted
-routes.
+Release CI's Apple native reliability checks use the same selected route as
+the iOS/tvOS package jobs. This prevents a private-capacity decision for the
+packages from silently sending their prerequisite checks to a congested hosted
+Mac queue. Other hybrid lanes retain their platform-compatible routes.
 
 ## Pinned tvOS host tools on Apple silicon
 

@@ -321,6 +321,9 @@ extension _VideoPlayerBuildMethods on VideoPlayerScreenState {
                         sourcePartId: _currentMediaInfo?.partId,
                         onPlaybackSourceChanged: _switchPlaybackSource,
                         onTogglePIPMode: _togglePIPMode,
+                        onPlayOn: _canCastActiveVideo && !_movingVideoOutput
+                            ? () => unawaited(_moveVideoToCast())
+                            : null,
                         pipActionLabel: _workspaceSurfaceDetached || PipService().isPipActive.value
                             ? t.videoControls.returnToFullPlayer
                             : t.videoControls.openMiniPlayer,
@@ -342,8 +345,8 @@ extension _VideoPlayerBuildMethods on VideoPlayerScreenState {
                         onBack: _handleBackButton,
                         onReachedEnd: ({skipAutoPlayCountdown = false}) =>
                             _onVideoCompleted(true, skipAutoPlayCountdown: skipAutoPlayCountdown),
-                        canControl: authority.canControlPlayback,
-                        canNavigateMediaItems: authority.canNavigateMediaItems,
+                        canControl: authority.canControlPlayback && !_videoOutputFrozen,
+                        canNavigateMediaItems: authority.canNavigateMediaItems && !_videoOutputFrozen,
                         hasFirstFrame: _firstFrame.uiReady,
                         playNextFocusNode: _episode.showPlayNextDialog ? _playNextConfirmFocusNode : null,
                         playbackPromptOpen: _showStillWatchingPrompt,

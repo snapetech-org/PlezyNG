@@ -293,33 +293,6 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
             ),
           );
 
-    Future<void> onCastPressed() async {
-      if (!_canUseDetail || !context.mounted) return;
-      final MediaItem? playbackItem = metadata.isShow
-          ? _showPlayEpisode()
-          : metadata.isSeason
-          ? (_episodes.isEmpty ? null : _episodes.first)
-          : metadata.isMovie || metadata.isEpisode
-          ? metadata
-          : null;
-      if (playbackItem == null) {
-        showErrorSnackBar(context, t.cast.noEpisodeAvailable);
-        return;
-      }
-      final client = _getMediaClientForMetadata(context);
-      if (client == null) {
-        showErrorSnackBar(context, t.cast.serverNotAvailable);
-        return;
-      }
-      try {
-        await CastMediaService.instance.handleCastPressed(context, client: client, item: playbackItem);
-      } on CastPlaybackException catch (error) {
-        if (context.mounted) showErrorSnackBar(context, error.message);
-      } catch (_) {
-        if (context.mounted) showErrorSnackBar(context, t.cast.startFailed);
-      }
-    }
-
     Future<void> onWatchWithServicesPressed() async {
       if (!_canUseDetail || !context.mounted) return;
       final streaming = context.read<RemoteStreamingProvider>();
@@ -394,29 +367,6 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
         if (context.mounted) showErrorSnackBar(context, t.streaming.streamLookupFailed);
       }
     }
-
-    final castAction =
-        CastMediaService.isSupportedPlatform &&
-            !widget.isOffline &&
-            (metadata.isMovie || metadata.isEpisode || metadata.isShow || metadata.isSeason)
-        ? FocusableAction(
-            debugLabel: 'detail_cast',
-            onPressed: onCastPressed,
-            builder: (context, state) => AnimatedBuilder(
-              animation: CastMediaService.instance,
-              builder: (context, _) => iconActionButton(
-                state,
-                onPressed: onCastPressed,
-                icon: AppIcon(
-                  CastMediaService.instance.isConnected ? Symbols.cast_connected_rounded : Symbols.cast_rounded,
-                ),
-                tooltip: CastMediaService.instance.isConnected
-                    ? t.cast.connectedTo(device: CastMediaService.instance.deviceName ?? t.cast.device)
-                    : t.cast.castToDevice,
-              ),
-            ),
-          )
-        : null;
 
     final remoteStreamAction =
         !widget.isOffline && (metadata.isMovie || metadata.isEpisode || metadata.isShow || metadata.isSeason)
@@ -586,7 +536,6 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
             tooltip: t.bonusExtras.title,
           ),
         ),
-      ?castAction,
       ?shuffleAction,
       ...seerrRequestActions,
       ?downloadAction,
@@ -630,7 +579,6 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       final medium = <FocusableAction>[
         playAction,
         ?versionAction,
-        ?castAction,
         ?remoteStreamAction,
         if (seerrRequestActions.isNotEmpty) seerrRequestActions.first,
         ?downloadAction,
@@ -642,7 +590,6 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       final compact = <FocusableAction>[
         playAction,
         ?versionAction,
-        ?castAction,
         ?remoteStreamAction,
         watchedAction,
         ?moreActionsAction,

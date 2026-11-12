@@ -2,8 +2,63 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/cast_playback_ownership.dart';
+import 'package:plezy/services/cast_video_transfer.dart';
 
 void main() {
+  test('a paused video moves at the playhead captured after receiver preparation', () async {
+    const latest = Duration(seconds: 42);
+    final steps = <Object>[];
+    final point = await commitPreparedCastVideo(
+      source: CastVideoSource(
+        position: () => const Duration(seconds: 15),
+        isCurrent: () => true,
+        freeze: () async {
+          steps.add('freeze');
+          return (position: latest, playing: false);
+        },
+        restore: () async => steps.add('restore'),
+      ),
+      positionReceiver: (position) async => steps.add(position),
+      playReceiver: () async => steps.add('play'),
+      stopReceiver: () async {
+        steps.add('stop');
+        return true;
+      },
+    );
+    expect(point, (position: latest, playing: false));
+    expect(steps, ['freeze', latest]);
+  });
+
+  for (final stopped in [true, false]) {
+    test('a rejected video start restores the source only after a confirmed stop ($stopped)', () async {
+      final steps = <String>[];
+      await expectLater(
+        commitPreparedCastVideo(
+          source: CastVideoSource(
+            position: () => Duration.zero,
+            isCurrent: () => true,
+            freeze: () async {
+              steps.add('freeze');
+              return (position: Duration.zero, playing: true);
+            },
+            restore: () async => steps.add('restore'),
+          ),
+          positionReceiver: (_) async => steps.add('seek'),
+          playReceiver: () async {
+            steps.add('play');
+            throw StateError('receiver timed out');
+          },
+          stopReceiver: () async {
+            steps.add('stop');
+            return stopped;
+          },
+        ),
+        stopped ? throwsStateError : throwsA(isA<CastVideoTransferUncertain>()),
+      );
+      expect(steps, ['freeze', 'seek', 'play', 'stop', if (stopped) 'restore']);
+    });
+  }
+
   test('dispatches load before waiting and catches synchronous acknowledgement', () async {
     final statuses = StreamController<String>.broadcast(sync: true);
     var loaded = false;

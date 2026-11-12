@@ -71,6 +71,8 @@ import '../iptv/iptv_live_tv_session.dart';
 import '../iptv/iptv_models.dart';
 import '../services/fullscreen_state_manager.dart';
 import '../services/car_ux_restrictions_service.dart';
+import '../services/cast_media_service.dart';
+import '../services/cast_video_transfer.dart';
 import '../services/driver_distraction.dart';
 import '../services/discord_rpc_service.dart';
 import '../services/trackers/tracker_coordinator.dart';
@@ -157,6 +159,7 @@ import 'video_player/tv_background_suspend_policy.dart';
 import 'video_player/tv_background_suspend_state.dart';
 import 'video_player/visual_effects_controller.dart';
 import 'video_player/widgets/player_prompt_overlays.dart';
+import 'video_player/widgets/cast_video_controls_screen.dart';
 import '../widgets/overlay_sheet.dart';
 import '../widgets/video_controls/player_chrome_controller.dart';
 import '../widgets/video_controls/video_controls.dart';
@@ -175,6 +178,7 @@ import '../watch_together/services/player_adapter.dart';
 import '../utils/error_message_utils.dart';
 
 part 'video_player/parts/companion_remote.dart';
+part 'video_player/parts/cast.dart';
 part 'video_player/parts/display_matching.dart';
 part 'video_player/parts/episode_navigation.dart';
 part 'video_player/parts/episode_queue.dart';
@@ -827,6 +831,8 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   // and channel switches are mutually exclusive.
   final PlaybackTransitionGate _transitionGate = PlaybackTransitionGate();
   bool _playbackIntentShouldPlay = true;
+  bool _movingVideoOutput = false;
+  bool _videoOutputFrozen = false;
 
   int _pendingSubtitleCycleCount = 0;
   bool _subtitleCycleDrainActive = false;
@@ -1461,7 +1467,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Future<void> _playWithPlaybackIntent(Player currentPlayer) {
-    if (_shuttingDown) {
+    if (_shuttingDown || _videoOutputFrozen) {
       return Future<void>.value();
     }
     if (!automotivePlaybackAllowedNow()) {
@@ -1493,7 +1499,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Future<void> _playOrPauseWithPlaybackIntent(Player currentPlayer) {
-    if (_shuttingDown) {
+    if (_shuttingDown || _videoOutputFrozen) {
       return Future<void>.value();
     }
     if (!automotivePlaybackAllowedNow()) {

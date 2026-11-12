@@ -38,10 +38,10 @@ extension _VideoPlayerWatchTogetherMethods on VideoPlayerScreenState {
   bool _watchTogetherOwnsPlaybackRate() => _watchTogetherOwnsPlaybackStart();
 
   /// Without control of a room that drives this player, presses do nothing.
-  bool _canControlPlayback() => !_shuttingDown && (_followedRoom()?.canControl ?? true);
+  bool _canControlPlayback() => !_shuttingDown && !_videoOutputFrozen && (_followedRoom()?.canControl ?? true);
 
   /// Another item replaces the room's media for everyone: host only.
-  bool _canNavigateMediaItems() => !_shuttingDown && (_followedRoom()?.isHost ?? true);
+  bool _canNavigateMediaItems() => !_shuttingDown && !_videoOutputFrozen && (_followedRoom()?.isHost ?? true);
 
   /// Registers this screen as the player the room switches and closes.
   void _registerWithWatchTogether() {

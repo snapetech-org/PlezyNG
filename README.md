@@ -481,7 +481,7 @@ This list covers the current Pleazyng codebase, including additions since the fo
 - Trakt, MyAnimeList, AniList, and Simkl — ratings, watched sync, and real-time scrobbling[^rt]
 - Scores from connected trackers on detail pages — Trakt, Simkl, MyAnimeList, and AniList, plus Rotten Tomatoes, Metacritic, Letterboxd, IMDb, and TMDB through MDBList
 - Plezy Remote — control desktop and TV from mobile
-- Google Cast handoff on Android/iOS; receiver codecs and server reachability determine playback
+- **Play on** in the video player moves the current movie or episode to a Google Cast receiver from Android/iOS. The phone keeps play, pause, seek and stop controls. The receiving device can control the same session.
 - Previewed Trakt movie-history CSV export for manual Letterboxd import, including rewatches
 - Official storefront/rental handoffs, commercially gated Watchmode availability, and an iOS-only Apple MusicKit pilot behind a build flag; see the [integration status and activation gates](docs/plezyng/service-integrations/README.md)
 - Watch Next row and tvOS Top Shelf[^shelf]

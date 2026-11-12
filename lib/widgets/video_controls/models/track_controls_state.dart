@@ -39,6 +39,7 @@ class TrackControlsState {
   final bool isFullscreen;
   final bool isAlwaysOnTop;
   final VoidCallback? onTogglePIPMode;
+  final VoidCallback? onPlayOn;
   final String? pipActionLabel;
   final VoidCallback? onCycleBoxFitMode;
   final ValueChanged<double>? onVideoZoomChanged;
@@ -116,6 +117,7 @@ class TrackControlsState {
     this.isFullscreen = false,
     this.isAlwaysOnTop = false,
     this.onTogglePIPMode,
+    this.onPlayOn,
     this.pipActionLabel,
     this.onCycleBoxFitMode,
     this.onVideoZoomChanged,

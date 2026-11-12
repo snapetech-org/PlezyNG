@@ -16,8 +16,8 @@ and Resume actions for starting playback after browsing or opening the app.
   recovery tray only on request.
 - [x] Put the music output chooser on the player and mini-player. Keep setup
   available in Settings.
-- [ ] Move video output selection into the active player. Keep the sender's
-  controls connected to the receiving session after the move.
+- [x] Move Google Cast video output selection into the active player on
+  Android and iOS. Keep the sender's controls connected to the receiver.
 
 ## Implementation
 

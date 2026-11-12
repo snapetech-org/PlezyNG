@@ -445,6 +445,20 @@ class TrackChapterControls extends StatelessWidget {
             buttonIndex++;
           }
 
+          if (state.onPlayOn != null) {
+            buttons.add(
+              _buildTrackButton(
+                buttonIndex: buttonIndex,
+                icon: Symbols.cast_rounded,
+                tooltip: t.musicDevices.playOn,
+                semanticLabel: t.musicDevices.playOn,
+                buttons: buttons,
+                onPressed: state.onPlayOn,
+              ),
+            );
+            buttonIndex++;
+          }
+
           if (state.onTogglePIPMode != null) {
             final currentIndex = buttonIndex;
             buttons.add(

@@ -4,7 +4,15 @@ import 'dart:async';
 /// start and live-stream recovery a channel zap must not race. They are
 /// mutually exclusive by construction — entry points bail while a transition
 /// is in flight (a zap instead supersedes a recovery; see `_switchLiveChannel`).
-enum PlaybackTransition { idle, startingLive, switchingSource, reloadingMedia, switchingChannel, recoveringLive }
+enum PlaybackTransition {
+  idle,
+  startingLive,
+  switchingSource,
+  reloadingMedia,
+  switchingChannel,
+  recoveringLive,
+  movingOutput,
+}
 
 /// Identity token for one owner of the in-place playback transition lock.
 ///

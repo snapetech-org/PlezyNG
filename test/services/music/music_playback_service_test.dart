@@ -3014,6 +3014,11 @@ void main() {
       await h.service.next();
       expect(h.service.currentTrack?.id, 't2');
       expect(receiver.service.currentTrack?.id, 't2');
+      await receiver.service.pause();
+      expect(await outgoing.output.refresh(), isTrue);
+      expect(h.service.isPlaying, isFalse);
+      await h.service.play();
+      expect(receiver.service.isPlaying, isTrue);
       receiver.player.setPosition(const Duration(seconds: 53));
       expect(await controller.moveTo(null), MusicDeviceMoveResult.completed);
       expect(h.service.remoteOutputName, isNull);
@@ -3021,7 +3026,12 @@ void main() {
       expect(h.service.position, const Duration(seconds: 53));
       expect(h.service.isPlaying, isTrue);
       expect(receiver.service.isPlaying, isFalse);
+      await h.service.pause();
       expect(await controller.moveTo(outgoing.output), MusicDeviceMoveResult.completed);
+      expect(receiver.service.isPlaying, isFalse);
+      await receiver.service.play();
+      expect(await outgoing.output.refresh(), isTrue);
+      expect(h.service.isPlaying, isTrue);
       final first = MediaItem.fromJson({...t1.toJson(), 'playlistItemId': 10});
       final repeated = MediaItem.fromJson({...t1.toJson(), 'playlistItemId': 11});
       for (final shuffle in [false, true]) {

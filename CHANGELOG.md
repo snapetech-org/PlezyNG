@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Move a playing or paused movie or episode to Google Cast from the video player's **Play on** control. The phone follows the receiver's current playback and keeps play, pause, seek and stop controls.
+
 - Show music output selection in Now Playing and the mini-player during an open session. Configure receivers in Settings.
 - Keep the Android Automotive hardware feature in the dedicated AAOS manifest and enforce Google Play delivery version code 189 or higher after the v3.0.33+188 bundle was rejected for declaring Android Auto projection metadata and the automotive hardware feature together.
 

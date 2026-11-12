@@ -282,9 +282,10 @@ queue and session snapshots retain stable copy-on-write leases, with a bounded
 pages without allocating a second full canonical-to-playback index; v2 restore
 streams playback order directly from SQLite into the same bounded index.
 Clear-upcoming remaps the retained order and compacts canonical item handles in
-place, without full-size keep/remap arrays. Large production album shuffles sort
-fixed-size runs on disk and merge with bounded fan-in; small queues retain the
-simple in-memory grouping path.
+place, without full-size keep/remap arrays. When metadata is spooled, it stages
+a compact spool for retained rows and releases the old spool after existing
+snapshots let go. Large production album shuffles sort fixed-size runs on disk
+and merge with bounded fan-in; small queues retain the simple in-memory path.
 
 Validation for this audit pass: Dart formatting and targeted static analysis
 passed. Queue behavior and native/device qualification remain separate evidence.

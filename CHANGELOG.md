@@ -11,7 +11,7 @@
 - Add saved Album Radio recipes that play complete ordered albums, refill from authorized sonic neighbors, preserve queue edits and account ownership, and support finite download previews and native car playback.
 
 - Save Sonic Adventure track counts and maximum sonic distance, forward them to each Plex path request, and reject paths that omit a waypoint or exceed their budget. Retire discovery editors and related results with their original profile/account.
-- Keep canonical music order implicit, spill large shuffled and album-shuffle orders to bounded scratch storage, avoid decoding album labels again during merge output, persist order in pages, and clear shuffled tails without per-item keep/remap arrays.
+- Keep canonical music order implicit, spill large shuffled and album-shuffle orders to bounded scratch storage, avoid decoding album labels again during merge output, persist order in pages, and clear shuffled tails without per-item arrays or retaining discarded metadata in the active spool.
 - Validate Chocolatey package ownership and project URLs from the generated package before publishing.
 
 - Require the complete acknowledged Cast occurrence order before returning playback locally, and recheck it during preparation and receiver pause so receiver edits cannot be overwritten by a stale queue.
@@ -80,7 +80,7 @@
 
 - Stop playlist pagination and artist/album expansion when their account, profile, library visibility or play request changes. Validate queue rows against the original source and keep offline playlist occurrences limited to owned files.
 
-- Clear large shuffled queue tails in place without per-item keep/remap arrays while preserving canonical duplicate occurrences. Reuse immutable queue snapshots across cursor and status updates so the queue sheet can skip unchanged row reconciliation.
+- Clear large shuffled queue tails in place without per-item keep/remap arrays or stale active-spool records while preserving canonical duplicate occurrences. Reuse immutable queue snapshots across cursor and status updates so the queue sheet can skip unchanged row reconciliation.
 
 - Spool large live music metadata into a bounded decoded window while preserving immutable occurrence snapshots, shuffle, edits and asynchronous saves. Restore SQLite queue rows through that window, keep queue rendering lazy, and trim decoded metadata on memory pressure.
 

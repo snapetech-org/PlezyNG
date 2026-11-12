@@ -109,31 +109,62 @@ class MusicQueueItems extends ListBase<MediaItem> {
   /// queue and the playback order without allocating per-item side arrays.
   void retainInPlaybackOrder(MusicQueueOrder order) {
     final retainedLength = order.length;
-    for (var playback = 0; playback < retainedLength; playback++) {
-      RangeError.checkValidIndex(order[playback], _entries);
-      _entries[order[playback]]._retained = true;
-    }
+    _Spool? compactedSpool;
+    try {
+      for (var playback = 0; playback < retainedLength; playback++) {
+        RangeError.checkValidIndex(order[playback], _entries);
+        _entries[order[playback]]._retained = true;
+      }
 
-    var nextCanonical = 0;
-    for (final entry in _entries) {
-      if (!entry._retained) continue;
-      entry._compactedIndex = nextCanonical++;
-    }
+      var nextCanonical = 0;
+      for (final entry in _entries) {
+        if (!entry._retained) continue;
+        entry._compactedIndex = nextCanonical++;
+      }
 
-    for (var playback = 0; playback < retainedLength; playback++) {
-      order[playback] = _entries[order[playback]]._compactedIndex!;
-    }
-    order.removeRange(retainedLength, order.length);
+      final currentSpool = _spool;
+      if (currentSpool != null) {
+        compactedSpool = _Spool.create(scratchRoot);
+        for (final entry in _entries) {
+          if (entry._retained) {
+            entry._compactedEntry = compactedSpool.append(entry.read(), key: entry.key);
+          }
+        }
+      }
 
-    var write = 0;
-    for (var read = 0; read < _entries.length; read++) {
-      final entry = _entries[read];
-      if (entry._retained) _entries[write++] = entry;
-      entry
-        .._retained = false
-        .._compactedIndex = null;
+      for (var playback = 0; playback < retainedLength; playback++) {
+        order[playback] = _entries[order[playback]]._compactedIndex!;
+      }
+      order.removeRange(retainedLength, order.length);
+
+      var write = 0;
+      for (var read = 0; read < _entries.length; read++) {
+        final entry = _entries[read];
+        if (entry._retained) _entries[write++] = entry._compactedEntry ?? entry;
+        entry
+          .._retained = false
+          .._compactedIndex = null
+          .._compactedEntry = null;
+      }
+      _entries.length = write;
+
+      if (compactedSpool != null) {
+        final previousSpool = _spool;
+        _spool = compactedSpool;
+        compactedSpool = null;
+        previousSpool?.release();
+      }
+    } catch (_) {
+      for (final entry in _entries) {
+        entry
+          .._retained = false
+          .._compactedIndex = null
+          .._compactedEntry = null;
+      }
+      rethrow;
+    } finally {
+      compactedSpool?.release();
     }
-    _entries.length = write;
   }
 
   @override
@@ -210,6 +241,7 @@ class _Entry {
   final int _offset, _size;
   bool _retained = false;
   int? _compactedIndex;
+  _Entry? _compactedEntry;
   MediaItem read() {
     final item = _memory ?? _weak?.target;
     if (item != null) return item;

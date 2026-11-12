@@ -4,6 +4,8 @@
 
 - Route an explicit private Apple selection to macOS as well as iOS and tvOS, and bound the macOS compile and package job to 100 and 150 minutes.
 
+- Export multi-page PDF karaoke songbooks with embedded Unicode fonts, alongside CSV/XML catalogs and print-ready HTML.
+
 - Add per-rendition intro/outro trim markers, playhead editing, trimmed-range preview and a persisted host override for automatic trim and marked long-instrumental skips. Instrumental sections under eight seconds are preserved.
 
 - Pause and restart queued karaoke companion work around active music playback, and prioritize preparation for the track most recently selected by the host.

@@ -1,7 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:uuid/uuid.dart';
+import '../i18n/strings.g.dart' as l10n;
+import 'karaoke_catalog_formats.dart';
 import 'karaoke_models.dart';
 import 'karaoke_session.dart';
 
@@ -146,7 +151,6 @@ class KaraokeCollections {
           s.canScore ? 'Yes' : 'No',
         ],
     ];
-    String xml(String s) => const HtmlEscape(HtmlEscapeMode.element).convert(s);
     String csv(String s) {
       if (RegExp(r'^[=+@\-\t\r]').hasMatch(s)) {
         s = "'$s";
@@ -154,15 +158,118 @@ class KaraokeCollections {
       return '"${s.replaceAll('"', '""')}"';
     }
 
+    final songbookTitle = session.banner.isEmpty ? l10n.t.karaokeUi.karaokeTools : session.banner;
+
+    if (format == 'pdf') {
+      final bytes = await _songbookPdf(songs);
+      await File(destination).writeAsBytes(bytes, flush: true);
+      return;
+    }
+
     final output = switch (format) {
       'csv' => rows.map((r) => r.map(csv).join(',')).join('\r\n'),
-      'xml' =>
-        '<?xml version="1.0" encoding="UTF-8"?><songbook version="1">${songs.map((s) => '<song id="${s.id}"><title>${xml(s.title)}</title><artist>${xml(s.artist)}</artist><language>${xml(s.language)}</language><genre>${xml(s.genre)}</genre><year>${s.year ?? ''}</year><difficulty>${s.difficulty ?? ''}</difficulty><producer>${xml(s.producer)}</producer></song>').join()}</songbook>',
-      'html' =>
-        '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Karaoke songbook</title><style>body{font:14px system-ui;margin:24px}table{border-collapse:collapse;width:100%}th,td{text-align:left;border-bottom:1px solid #bbb;padding:8px}thead{display:table-header-group}tr{break-inside:avoid}@media print{body{margin:0}td:first-child,th:first-child{display:none}}</style><h1>${xml(session.banner.isEmpty ? 'Karaoke songbook' : session.banner)}</h1><p>${songs.length} renditions · ${DateTime.now().toIso8601String().substring(0, 10)}</p><table><thead><tr>${columns.map((v) => '<th>${xml(v)}</th>').join()}</tr></thead><tbody>${rows.skip(1).map((r) => '<tr>${r.map((v) => '<td>${xml(v)}</td>').join()}</tr>').join()}</tbody></table>',
+      'xml' => KaraokeCatalogFormats.xml(songs),
+      'html' => KaraokeCatalogFormats.html(
+        title: songbookTitle,
+        countLabel: l10n.t.karaokeUi.songs(value1: songs.length.toString()),
+        generated: DateTime.now().toIso8601String().substring(0, 10),
+        columns: [
+          columns[0],
+          l10n.t.metadataEdit.title,
+          l10n.t.common.mediaKind.artist,
+          l10n.t.settings.language,
+          l10n.t.libraries.filterCategories.genre,
+          l10n.t.libraries.filterCategories.year,
+          l10n.t.karaokeUi.allDifficultyLevels,
+          l10n.t.metadataEdit.producer,
+          l10n.t.karaokeUi.assignSingersAndParts,
+          columns[9],
+          l10n.t.karaokeUi.scoredCharts,
+        ],
+        rows: rows,
+      ),
       _ => throw UnsupportedError('Catalog format unavailable'),
     };
     await File(destination).writeAsString(output, flush: true);
+  }
+
+  Future<List<int>> _songbookPdf(List<KaraokeTrack> songs) async {
+    if (songs.length > 5000) {
+      throw StateError('PDF songbooks are limited to 5,000 renditions. Export CSV or XML for a larger catalog.');
+    }
+    final regularFont = pw.Font.ttf((await rootBundle.load('assets/go-noto-current-regular.ttf')).buffer.asByteData());
+    final hangulFont = pw.Font.ttf((await rootBundle.load('assets/go-noto-kurrent-hangul.ttf')).buffer.asByteData());
+    final title = session.banner.isEmpty ? l10n.t.karaokeUi.karaokeTools : session.banner;
+    final generated = DateTime.now().toIso8601String().substring(0, 10);
+    final document = pw.Document(title: title, author: 'Pleazyng');
+
+    pw.Widget cell(String value, {bool bold = false, double fontSize = 9}) => pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+      child: pw.Text(
+        value,
+        style: pw.TextStyle(fontSize: fontSize, fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal),
+      ),
+    );
+
+    String details(KaraokeTrack song) => [
+      if (song.language.isNotEmpty) '${l10n.t.settings.language}: ${song.language}',
+      if (song.genre.isNotEmpty) '${l10n.t.libraries.filterCategories.genre}: ${song.genre}',
+      if (song.year != null) '${l10n.t.libraries.filterCategories.year}: ${song.year}',
+      if (song.difficulty != null) l10n.t.karaokeUi.difficulty5(value1: '${song.difficulty}/5'),
+      if (song.producer.isNotEmpty) '${l10n.t.metadataEdit.producer}: ${song.producer}',
+      if (song.parts.isNotEmpty) '${l10n.t.karaokeUi.assignSingersAndParts}: ${song.parts.join(' / ')}',
+      if (song.canScore) l10n.t.karaokeUi.scoredCharts,
+    ].join(' · ');
+
+    document.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4.landscape,
+        margin: pw.EdgeInsets.all(PdfPageFormat.mm * 12),
+        maxPages: 500,
+        theme: pw.ThemeData.withFont(base: regularFont, bold: regularFont, fontFallback: [hangulFont]),
+        header: (_) => pw.Padding(
+          padding: const pw.EdgeInsets.only(bottom: 8),
+          child: pw.Text('${l10n.t.app.title} · $title', style: pw.TextStyle(fontSize: 9, color: PdfColors.grey700)),
+        ),
+        footer: (context) => pw.Align(
+          alignment: pw.Alignment.centerRight,
+          child: pw.Text('${context.pageNumber}', style: pw.TextStyle(fontSize: 8, color: PdfColors.grey700)),
+        ),
+        build: (_) => [
+          pw.Text(title, style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
+          pw.SizedBox(height: 4),
+          pw.Text(
+            '${l10n.t.karaokeUi.songs(value1: songs.length.toString())} · $generated',
+            style: const pw.TextStyle(fontSize: 10),
+          ),
+          pw.SizedBox(height: 14),
+          if (songs.isNotEmpty)
+            pw.Table(
+              border: pw.TableBorder(
+                horizontalInside: pw.BorderSide(color: PdfColors.grey300, width: 0.5),
+                bottom: pw.BorderSide(color: PdfColors.grey500, width: 0.8),
+              ),
+              columnWidths: const {0: pw.FlexColumnWidth(3), 1: pw.FlexColumnWidth(2), 2: pw.FlexColumnWidth(4)},
+              defaultVerticalAlignment: pw.TableCellVerticalAlignment.middle,
+              children: [
+                pw.TableRow(
+                  decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                  children: [
+                    cell(l10n.t.metadataEdit.title, bold: true),
+                    cell(l10n.t.common.mediaKind.artist, bold: true),
+                    cell(l10n.t.discover.findNext.details, bold: true),
+                  ],
+                ),
+                for (final song in songs)
+                  pw.TableRow(
+                    children: [cell(song.title, bold: true), cell(song.artist), cell(details(song), fontSize: 8)],
+                  ),
+              ],
+            ),
+        ],
+      ),
+    );
+    return document.save();
   }
 
   Future<List<String>> audit(Iterable<String> ids) async {

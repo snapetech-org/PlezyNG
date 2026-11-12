@@ -332,7 +332,7 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
                 onPressed: busy ? null : () => run(importCollection),
                 child: Text(l10n.t.karaokeUi.importCollection),
               ),
-              for (final format in ['csv', 'xml', 'html'])
+              for (final format in ['csv', 'xml', 'html', 'pdf'])
                 TextButton(
                   onPressed: busy
                       ? null
@@ -342,7 +342,7 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
                             await collections.catalog(file, format);
                           }
                         }),
-                  child: Text(format == 'html' ? 'Print-ready songbook' : 'Catalog ${format.toUpperCase()}'),
+                  child: Text(l10n.t.karaokeUi.export(value1: format.toUpperCase())),
                 ),
             ],
           ),

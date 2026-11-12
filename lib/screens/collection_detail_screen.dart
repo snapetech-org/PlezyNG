@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import '../media/ids.dart';
+import '../utils/media_collection_actions.dart';
+import '../profiles/active_profile_provider.dart';
+import '../providers/multi_server_provider.dart';
+import '../providers/hidden_libraries_provider.dart';
 import '../focus/focusable_action_bar.dart';
 import '../media/library_query.dart';
 import '../media/media_item.dart';
@@ -74,6 +78,16 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
   static const double _titleFadeDistance = 80;
 
   final FocusNode _summaryFocusNode = FocusNode(debugLabel: 'collection_summary');
+  MediaCollectionWriteScope? _collectionScope;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.isOffline) _collectionScope = MediaCollectionWriteScope.forItem(context, widget.collection);
+  }
+
+  bool get _collectionCurrent =>
+      _collectionScope?.current == true && _collectionScope!.item.globalKey == widget.collection.globalKey;
 
   @override
   MediaItem get mediaItem => widget.collection;
@@ -144,6 +158,9 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
   @override
   List<FocusableAction> getAppBarActions() {
     if (widget.isOffline) return _downloadsFolderActions();
+    context.watch<ActiveProfileProvider?>();
+    context.watch<MultiServerProvider?>();
+    context.watch<HiddenLibrariesProvider?>();
     final ruleKey = syncRuleKey;
     // Select the specific bool we care about so unrelated DownloadProvider
     // ticks (e.g. active download progress) don't rebuild the action row.
@@ -164,12 +181,13 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
         showDownload: true,
         onDownload: _downloadCollection,
       ),
-      FocusableAction(
-        icon: Symbols.delete_rounded,
-        tooltip: t.common.delete,
-        onPressed: _deleteCollection,
-        iconColor: Colors.red,
-      ),
+      if (_collectionCurrent)
+        FocusableAction(
+          icon: Symbols.delete_rounded,
+          tooltip: t.common.delete,
+          onPressed: _deleteCollection,
+          iconColor: Colors.red,
+        ),
     ];
   }
 
@@ -230,21 +248,22 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
   }
 
   Future<void> _deleteCollection() async {
+    final scope = _collectionScope;
+    if (scope == null || !_collectionCurrent) return;
     final confirmed = await showDeleteConfirmation(
       context,
       title: t.collections.deleteCollection,
       message: t.collections.deleteConfirm(title: widget.collection.displayTitle),
     );
 
-    if (!confirmed) return;
-    if (!mounted) return;
+    if (!confirmed || !mounted || !_collectionCurrent || !identical(scope, _collectionScope)) return;
 
     try {
       // Backend-neutral [deleteCollection] reads `libraryId` from the
       // [MediaItem] for Plex's section-id; Jellyfin ignores it.
-      final success = await mediaClient.deleteCollection(widget.collection);
+      final success = await scope.client.deleteCollection(scope.item);
 
-      if (!mounted) return;
+      if (!mounted || !_collectionCurrent) return;
 
       if (success) {
         showSuccessSnackBar(context, t.collections.deleted);
@@ -254,7 +273,7 @@ class _CollectionDetailScreenState extends BaseMediaListDetailScreen<CollectionD
       }
     } catch (e) {
       appLogger.e('Failed to delete collection', error: e);
-      if (mounted) {
+      if (mounted && _collectionCurrent) {
         showErrorSnackBar(context, t.collections.deleteFailedWithError(error: localizedErrorReason(e)));
       }
     }

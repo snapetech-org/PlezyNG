@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Assemble the complete frozen release from independently signed iOS and tvOS sibling runs, verifying both IPA attestations and original platform artifact identities before publication.
+- Keep shared libraries read-only for collection changes and bind collection confirmations to their original authorized account.
 
 - Add server-authored recommendation previews to customizable Music home. Preserve native family titles, bound parallel loading and preview sizes, reject foreign rows, and recheck profile, library and account ownership before opening or starting an album queue.
 

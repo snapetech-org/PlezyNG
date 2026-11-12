@@ -2094,7 +2094,14 @@ Future<GlobalKey<MediaContextMenuState>> _pumpJellyfinItemMenu(
   final manager = MultiServerManager()..debugRegisterJellyfinClientForTesting(client, online: serverOnline);
   final multiServerProvider = testMultiServerProvider(manager);
   final offlineMode = OfflineModeProvider(manager);
-  final stack = await ProfileStack.create(withStorage: false);
+  resetSharedPreferencesForTest();
+  final stack = (await tester.runAsync(() async {
+    final stack = await ProfileStack.create();
+    final actor = Profile.local(id: 'collection-owner', displayName: 'Owner', createdAt: DateTime.utc(2024));
+    await stack.profiles.upsert(actor);
+    expect(await stack.active.activate(actor), isTrue);
+    return stack;
+  }))!;
   addTearDown(() async {
     await stack.dispose();
     offlineMode.dispose();
@@ -2145,8 +2152,6 @@ Future<void> _openPlaylistPicker(WidgetTester tester, GlobalKey<MediaContextMenu
   menuKey.currentState!.showContextMenu(tester.element(find.text('picker target')));
   await tester.pumpAndSettle();
   await tester.tap(find.text(t.common.addTo));
-  await tester.pumpAndSettle();
-  await tester.tap(find.text(t.playlists.playlist));
   await tester.pumpAndSettle();
   expect(find.text(t.playlists.selectPlaylist), findsOneWidget);
 }

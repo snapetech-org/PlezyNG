@@ -36,7 +36,8 @@ import '../providers/catalog_sources_provider.dart';
 import '../services/catalog/seerr_catalog_source.dart';
 import 'seerr_title_action.dart';
 import '../profiles/active_profile_provider.dart';
-import '../profiles/profile.dart';
+import '../utils/media_collection_actions.dart';
+export '../utils/media_collection_actions.dart' show isAdminActionAllowedForMediaItem;
 import '../utils/provider_extensions.dart';
 import '../utils/external_ids.dart';
 import '../utils/app_logger.dart';
@@ -102,6 +103,7 @@ class _MenuContext {
   final bool showWatchlistEntry;
   final bool watchlistRemoveOffered;
   final bool canDeleteFromServer;
+  final MediaCollectionWriteScope? collectionScope;
 
   /// A downloads folder (see [MediaContextMenu.isOffline]).
   final bool isDownloadsFolder;
@@ -122,6 +124,7 @@ class _MenuContext {
     required this.showWatchlistEntry,
     required this.watchlistRemoveOffered,
     required this.canDeleteFromServer,
+    this.collectionScope,
   }) : isDownloadsFolder = false;
 
   /// A downloads folder's entries act on local downloads, so none of the
@@ -141,6 +144,7 @@ class _MenuContext {
       showWatchlistEntry = false,
       watchlistRemoveOffered = false,
       canDeleteFromServer = false,
+      collectionScope = null,
       isDownloadsFolder = true;
 
   bool get isPlaylist => playlist != null;
@@ -155,11 +159,9 @@ class _MenuContext {
   /// crash or hit the wrong server.
   bool get isPlex => itemBackend == MediaBackend.plex;
 
-  /// Jellyfin and Emby refuse collection edits unless the user is an
-  /// administrator (or holds a collection-management policy that sign-in
-  /// does not capture), so MediaBrowser non-admins only get playlists. Plex
-  /// keeps offering collections to everyone, as before.
-  bool get canManageCollections => isPlex || isAdmin;
+  /// Collection metadata is server-owned; personal playlists remain available
+  /// without collection-management rights.
+  bool get canManageCollections => collectionScope?.current == true;
 }
 
 /// Whether the picked entry navigated away, in which case the menu must not
@@ -199,16 +201,6 @@ List<_MenuAction> _syncDownloadMenuActions({
     else
       _MenuAction(value: downloadValue, icon: Symbols.download_rounded, label: t.downloads.downloadNow),
   ];
-}
-
-bool isAdminActionAllowedForMediaItem({
-  required bool isOwnerOrAdmin,
-  required MediaBackend? itemBackend,
-  required Profile? activeProfile,
-}) {
-  final blockedByPlexHomeRole =
-      itemBackend == MediaBackend.plex && activeProfile != null && activeProfile.isPlexHome && !activeProfile.plexAdmin;
-  return isOwnerOrAdmin && !blockedByPlexHomeRole;
 }
 
 /// Whether "Delete from server" may be offered for an item.
@@ -516,6 +508,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     // Backend capabilities gate menu items so we don't expose actions the
     // active server cannot perform.
     final mediaClient = _itemServerId != null ? multiServerProvider.getClientForServer(ServerId(_itemServerId!)) : null;
+    final collectionScope = mediaItem == null ? null : MediaCollectionWriteScope.forItem(context, mediaItem);
     final canTranscode = mediaClient?.capabilities.videoTranscoding ?? false;
     // Static capabilities stay truthy while the server is unreachable, so
     // version/quality choices need a liveness check on top.
@@ -638,6 +631,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       showWatchlistEntry: showWatchlistEntry,
       watchlistRemoveOffered: watchlistRemoveOffered,
       canDeleteFromServer: canDeleteFromServer,
+      collectionScope: collectionScope,
     );
   }
 
@@ -1033,7 +1027,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         await _handleUnmatch(context, mediaItem);
         break;
       case 'remove_from_collection':
-        await _handleRemoveFromCollection(context, mediaItem);
+        await _handleRemoveFromCollection(context, mediaItem, menu.collectionScope);
         break;
       case 'series':
         outcome.didNavigate = true;
@@ -1081,7 +1075,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         );
         break;
       case 'add_to':
-        await _showAddToSubmenu(context, offerCollections: menu.canManageCollections);
+        await _showAddToSubmenu(context, offerCollections: menu.canManageCollections, scope: menu.collectionScope);
         break;
       case 'delete_media':
         await _handleDeleteMediaItem(context, mediaItem.kind);
@@ -1556,7 +1550,11 @@ class MediaContextMenuState extends State<MediaContextMenu> {
 
   /// Show submenu for Add to... (Playlist or Collection). Without collection
   /// rights the only destination is a playlist, so its picker opens directly.
-  Future<void> _showAddToSubmenu(BuildContext context, {required bool offerCollections}) async {
+  Future<void> _showAddToSubmenu(
+    BuildContext context, {
+    required bool offerCollections,
+    required MediaCollectionWriteScope? scope,
+  }) async {
     if (!offerCollections) {
       await _showAddToPlaylistDialog(context);
       return;
@@ -1573,7 +1571,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     if (selected == 'playlist' && context.mounted) {
       await _showAddToPlaylistDialog(context);
     } else if (selected == 'collection' && context.mounted) {
-      await _showAddToCollectionDialog(context);
+      await _showAddToCollectionDialog(context, scope);
     }
   }
 
@@ -1617,11 +1615,13 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     }
   }
 
-  Future<void> _showAddToCollectionDialog(BuildContext context) async {
-    final client = _getMediaClientForItem();
+  Future<void> _showAddToCollectionDialog(BuildContext context, MediaCollectionWriteScope? scope) async {
+    if (scope?.current != true) return;
+    final client = scope!.client;
 
     try {
-      final item = _mediaItem!;
+      final item = scope.item;
+      bool current() => context.mounted && scope.current && _mediaItem?.globalKey == item.globalKey;
       final itemKind = item.kind;
 
       // Resolve the library/section id from the item itself, falling back to
@@ -1633,6 +1633,10 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       if (libraryId == null || libraryId.isEmpty) {
         try {
           final fullMetadata = await client.fetchItem(item.id);
+          if (!current()) return;
+          if (fullMetadata != null && fullMetadata.globalKey != item.globalKey) {
+            throw StateError('Collection source changed');
+          }
           libraryId = fullMetadata?.libraryId;
           appLogger.d('  - libraryId from full metadata: $libraryId');
         } catch (e) {
@@ -1640,9 +1644,17 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         }
       }
 
+      if (!current()) return;
       if ((libraryId == null || libraryId.isEmpty) && item.grandparentId != null) {
         try {
           final parentMeta = await client.fetchItem(item.grandparentId!);
+          if (!current()) return;
+          if (parentMeta != null &&
+              (parentMeta.id != item.grandparentId ||
+                  parentMeta.serverId != item.serverId ||
+                  parentMeta.backend != item.backend)) {
+            throw StateError('Collection parent changed');
+          }
           libraryId = parentMeta?.libraryId;
           appLogger.d('  - libraryId from grandparent: $libraryId');
         } catch (e) {
@@ -1657,18 +1669,19 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         return;
       }
       final resolvedLibraryId = libraryId;
-      if (!context.mounted) return;
+      if (!context.mounted || !current()) return;
 
       final result = await showScopedDialog<String>(
         context: context,
         builder: (context) => CollectionSelectionDialog(client: client, libraryId: resolvedLibraryId),
       );
 
-      if (result == null || !context.mounted) return;
+      if (result == null || !context.mounted || !current()) return;
 
       await _addItemToContainer<String>(
         context,
         kind: 'collection',
+        isCurrent: current,
         item: item,
         client: client,
         result: result,
@@ -1716,7 +1729,9 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     required Future<bool> Function() add,
     required ({String created, String createError, String added, String addError}) messages,
     required VoidCallback notifyChanged,
+    bool Function()? isCurrent,
   }) async {
+    if (isCurrent?.call() == false) return;
     if (result == '_create_new') {
       final name = await showTextInputDialog(
         context,
@@ -1725,12 +1740,12 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         hintText: createPrompt.hint,
       );
 
-      if (name == null || name.isEmpty || !context.mounted) return;
+      if (name == null || name.isEmpty || !context.mounted || isCurrent?.call() == false) return;
 
       appLogger.d('Creating $kind "$name" seeded with item ${item.id}');
       final created = await create(name);
 
-      if (!context.mounted) return;
+      if (!context.mounted || isCurrent?.call() == false) return;
 
       if (created != null) {
         appLogger.d(createdLog(created));
@@ -1748,7 +1763,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       appLogger.d('Adding item ${item.id} to $kind $result');
       final success = await add();
 
-      if (!context.mounted) return;
+      if (!context.mounted || isCurrent?.call() == false) return;
 
       if (success) {
         appLogger.d('Successfully added item(s) to $kind $result');
@@ -1785,8 +1800,13 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     );
   }
 
-  Future<void> _handleRemoveFromCollection(BuildContext context, MediaItem item) async {
-    final client = _getMediaClientForItem();
+  Future<void> _handleRemoveFromCollection(
+    BuildContext context,
+    MediaItem item,
+    MediaCollectionWriteScope? scope,
+  ) async {
+    if (scope?.current != true) return;
+    final client = scope!.client;
 
     if (widget.collectionId == null) {
       appLogger.e('Cannot remove from collection: collectionId is null');
@@ -1800,13 +1820,13 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       message: t.collections.removeFromCollectionConfirm(title: item.displayTitle),
     );
 
-    if (!confirmed || !context.mounted) return;
+    if (!confirmed || !context.mounted || !scope.current) return;
 
     try {
       appLogger.d('Removing item ${item.id} from collection ${widget.collectionId}');
       final success = await client.removeFromCollection(collectionId: widget.collectionId!, item: item);
 
-      if (context.mounted) {
+      if (context.mounted && scope.current) {
         if (success) {
           showSuccessSnackBar(context, t.collections.removedFromCollection);
           // Trigger refresh of collections tab
@@ -1819,7 +1839,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       }
     } catch (e) {
       appLogger.e('Failed to remove from collection', error: e);
-      if (context.mounted) {
+      if (context.mounted && scope.current) {
         showErrorSnackBar(context, t.collections.removeFromCollectionError(error: localizedErrorReason(e)));
       }
     }

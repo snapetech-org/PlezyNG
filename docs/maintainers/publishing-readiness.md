@@ -18,7 +18,11 @@ Owner requested a roughly 24-hour hold on GST/HST-dependent tax submissions whil
 ## No business-registration prerequisite identified
 
 These channels can proceed when their technical prerequisites pass. None is
-currently claimed to have published the new release.
+claimed to have published a new release in this 2026-11-05 snapshot. Since that
+snapshot, the independent aerynOS preview published and qualified package
+`3.0.33-5`; official aerynOS repository acceptance and physical HDR/FEL output
+qualification remain separate. See the [current channel guide](linux-distribution-channels.md)
+and [aerynOS publication record](aerynos-sync.md).
 
 | Channel | Current setup / automation | Remaining before first Pleazyng publication |
 | --- | --- | --- |

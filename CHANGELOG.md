@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Remove an obsolete music-playback warning from translations so release code analysis recognizes the working music player.
+
 - Flush the TrueHD decoder's stream state through FFmpeg on reset instead of recreating its native context, and align the Android decoder ABI check with the pinned FFmpeg 9 libraries. Independently adapted from [upstream 54a002f](https://github.com/edde746/plezy/commit/54a002f9b7271603d6eecba16079990dd1f83d28), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
 - Use the existing translations for the preferred subtitle languages setting in Playback settings.

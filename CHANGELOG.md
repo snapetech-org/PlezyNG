@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Skip an orphaned download file during cleanup if its size or modification time changed after the review scan.
+
 - Clarify future Chocolatey package metadata: link the Pleazyng website separately from its source code and identify the Chocolatey maintainer account separately from the software author.
 - Make orphaned-download review discoverable in Download settings, using the same guarded scan and confirmation as the Downloads toolbar.
 

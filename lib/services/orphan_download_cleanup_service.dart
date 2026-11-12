@@ -7,11 +7,12 @@ enum OrphanDownloadScanFailure { unsafeRoot, tooManyEntries, scanFailed }
 /// A file in Pleazyng's recognized, app-managed download layout that no stored
 /// download row or native download task currently owns.
 class OrphanDownloadFile {
-  const OrphanDownloadFile({required this.relativePath, required this.itemTag, required this.sizeBytes});
+  const OrphanDownloadFile({required this.relativePath, required this.itemTag, required this.sizeBytes, required this.modified});
 
   final String relativePath;
   final String itemTag;
   final int sizeBytes;
+  final DateTime modified;
 }
 
 class OrphanDownloadScan {
@@ -225,10 +226,14 @@ class OrphanDownloadCleanupService {
           continue;
         }
         final file = File(filePath);
-        final size = await file.length();
+        final stat = await file.stat();
+        if (stat.size != candidate.sizeBytes || stat.modified != candidate.modified) {
+          skippedCount++;
+          continue;
+        }
         await file.delete();
         deletedCount++;
-        deletedBytes += size;
+        deletedBytes += stat.size;
       } catch (_) {
         skippedCount++;
       }
@@ -369,11 +374,13 @@ class _ScanState {
 
   Future<void> addCandidate(String filePath, String tag) async {
     final file = File(filePath);
+    final stat = await file.stat();
     files.add(
       OrphanDownloadFile(
         relativePath: path.relative(filePath, from: rootPath),
         itemTag: tag,
-        sizeBytes: await file.length(),
+        sizeBytes: stat.size,
+        modified: stat.modified,
       ),
     );
   }

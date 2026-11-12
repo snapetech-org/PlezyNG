@@ -87,13 +87,38 @@ void main() {
     expect(await second.exists(), isFalse);
   });
 
+  test('keeps files replaced after the review scan', () async {
+    final changedSizeTag = DownloadStorageService.tagForGlobalKey('server:changed-size');
+    final changedTimeTag = DownloadStorageService.tagForGlobalKey('server:changed-time');
+    final changedSize = await write('Movies/A/A [$changedSizeTag].mp4', [1, 2]);
+    final changedTime = await write('Movies/B/B [$changedTimeTag].mp4', [3, 4]);
+    final service = const OrphanDownloadCleanupService();
+    final scan = await service.scan(downloads, protectedTags: const {});
+
+    await changedSize.writeAsBytes([1, 2, 3]);
+    await changedTime.writeAsBytes([5, 6]);
+    await changedTime.setLastModified((await changedTime.lastModified()).add(const Duration(seconds: 10)));
+
+    final result = await service.delete(scan, protectedTags: const {});
+
+    expect(result.deletedCount, 0);
+    expect(result.skippedCount, 2);
+    expect(await changedSize.readAsBytes(), [1, 2, 3]);
+    expect(await changedTime.readAsBytes(), [5, 6]);
+  });
+
   test('rejects paths that were not produced by the recognized download layout', () async {
     final tag = DownloadStorageService.tagForGlobalKey('server:forged');
     final keep = await write('Movies/Personal/notes.txt', [1, 2, 3]);
     final fabricated = OrphanDownloadScan(
       rootPath: downloads.path,
       files: [
-        OrphanDownloadFile(relativePath: path.join('Movies', 'Personal', 'notes.txt'), itemTag: tag, sizeBytes: 3),
+        OrphanDownloadFile(
+          relativePath: path.join('Movies', 'Personal', 'notes.txt'),
+          itemTag: tag,
+          sizeBytes: 3,
+          modified: await keep.lastModified(),
+        ),
       ],
       failure: null,
       scannedEntries: 1,
@@ -127,6 +152,7 @@ void main() {
           relativePath: path.join('Movies', 'Escape', 'Escape [$tag].mp4'),
           itemTag: tag,
           sizeBytes: 4,
+          modified: await keep.lastModified(),
         ),
       ],
       failure: null,

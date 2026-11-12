@@ -31,7 +31,7 @@ The 26 October engineering audit is pinned to main commit `c781dd83d69025c8596ac
 - An idle content screensaver rotates artwork from selected libraries across connected servers, with configurable delay and dismiss controls.
 - Optional TheIntroDB community intro timings are queried only when no server or chapter-derived intro exists. The setting is off by default and requires a catalog ID and internet access.
 - People search and offline playlist downloads were already present in the merged code. Existing watched-download cleanup and per-item sync offsets were also present.
-- The Downloads screen can review and remove orphaned tagged media, episode thumbnails, and numeric-ID subtitle sidecars from PlezyNG's default app-managed folders. The scan preserves database-owned or active-task files, custom/SAF roots, iOS Documents, legacy paths, shared artwork, unknown files, and symlinks.
+- The Downloads screen can review and remove orphaned tagged media, episode thumbnails, and numeric-ID subtitle sidecars from PlezyNG's default app-managed folders. The scan preserves database-owned or active-task files, files whose size or modification time changed since review, custom/SAF roots, iOS Documents, legacy paths, shared artwork, unknown files, and symlinks.
 - The earlier 23 upstream PR integrations remain on `main`, including local Plex connections, download storage reporting, deep links, external-player return sync, repeat playlists, swipe/frame controls, subtitle preview and delay hotkeys, bulk selection, prerolls, live-TV timeshift, theme songs, and download sync actions.
 
 ## Remaining work and platform limits

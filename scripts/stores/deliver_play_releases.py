@@ -20,6 +20,9 @@ from release_coverage import missing_assets
 
 REPOSITORY = "snapetech-org/pleazyng"
 WORKFLOW = "publish-app-stores.yml"
+PLAY_RECEIPT_ARTIFACT = "google-play-delivery-receipt"
+MAX_RECEIPT_ARCHIVE_BYTES = 1048576
+MAX_RECEIPT_JSON_BYTES = 131072
 
 
 def gh(*args):
@@ -57,8 +60,11 @@ def release_version(release, source, minimum):
 
 
 def delivery_state(runs, tag, now, track="internal"):
-    title = f"action:publish-app-stores:pool:public:tag:{tag}:channel:google-play:track:{track}:status:completed"
-    matching = [run for run in runs if run.get("display_title") == title
+    titles = {
+        f"action:publish-app-stores:pool:{pool}:tag:{tag}:channel:google-play:track:{track}:status:completed"
+        for pool in ("public", "private")
+    }
+    matching = [run for run in runs if run.get("display_title") in titles
                 and run.get("head_branch") == "main" and run.get("event") == "workflow_dispatch"]
     if any(run.get("conclusion") == "success" for run in matching):
         return "delivered"
@@ -69,6 +75,107 @@ def delivery_state(runs, tag, now, track="internal"):
         if now - updated < dt.timedelta(minutes=2):
             return "retry_cooldown"
     return "dispatch"
+
+
+def release_bundle_sha256(release):
+    assets = [asset for asset in release.get("assets", [])
+              if asset.get("name") == "pleazyng-android-play.aab"]
+    if len(assets) != 1:
+        return None
+    digest = assets[0].get("digest")
+    match = re.fullmatch(r"sha256:([0-9a-f]{64})", digest) if isinstance(digest, str) else None
+    return match.group(1) if match else None
+
+
+def _receipt_requires_manual_review(receipt, tag, code, digest, track, now):
+    identity = {
+        "release_tag": tag,
+        "version_code": code,
+        "aab_sha256": digest,
+        "track": track,
+    }
+    if any(receipt.get(key) != value for key, value in identity.items()):
+        return False
+    if receipt.get("committed") is True or receipt.get("distributed") is True:
+        return False
+
+    pending = receipt.get("pending_edit")
+    pending_active = False
+    if isinstance(pending, dict):
+        expiry = pending.get("expiry")
+        if isinstance(expiry, (int, float)) and not isinstance(expiry, bool) and expiry > now.timestamp():
+            pending_active = True
+    if pending_active:
+        return False
+
+    if (receipt.get("manual_review_required") is True
+            and receipt.get("manual_review_reason") == "previous_upload_edit_unavailable"):
+        return receipt.get("action") == "upload"
+
+    # Compatibility for receipts created before the publisher wrote an
+    # explicit manual-review marker. This is the exact terminal state emitted
+    # by the old publisher guard: an attempted upload edit is gone, the new
+    # edit was removed, and no Play release was committed.
+    previous = receipt.get("previous_edit")
+    expiry = previous.get("expiry") if isinstance(previous, dict) else None
+    return (
+        receipt.get("action") == "upload"
+        and isinstance(previous, dict)
+        and previous.get("upload_attempted") is True
+        and isinstance(expiry, (int, float))
+        and not isinstance(expiry, bool)
+        and expiry <= now.timestamp()
+        and not pending_active
+        and receipt.get("committed") is not True
+        and receipt.get("distributed") is not True
+    )
+
+
+def prior_run_review_state(runs, tag, code, digest, track, now):
+    """Classify the latest completed non-success run using its receipt."""
+    titles = {
+        f"action:publish-app-stores:pool:{pool}:tag:{tag}:channel:google-play:track:{track}:status:completed"
+        for pool in ("public", "private")
+    }
+    matching = [run for run in runs if run.get("display_title") in titles
+                and run.get("head_branch") == "main" and run.get("event") == "workflow_dispatch"
+                and run.get("status") == "completed" and run.get("conclusion") != "success"]
+    if not matching:
+        return None
+    run = max(matching, key=lambda item: item.get("created_at", ""))
+    if not digest:
+        return "receipt_unavailable"
+    artifacts = api(f"actions/runs/{int(run['id'])}/artifacts").get("artifacts", [])
+    receipts = [artifact for artifact in artifacts
+                if artifact.get("name") == PLAY_RECEIPT_ARTIFACT and artifact.get("expired") is False]
+    if len(receipts) != 1:
+        return "receipt_unavailable"
+    artifact = receipts[0]
+    archive_size = artifact.get("size_in_bytes")
+    if (type(archive_size) is not int or archive_size < 0
+            or archive_size > MAX_RECEIPT_ARCHIVE_BYTES):
+        return "receipt_unavailable"
+    raw = subprocess.check_output([
+        "gh", "api", f"repos/{REPOSITORY}/actions/artifacts/{int(artifact['id'])}/zip"
+    ])
+    if len(raw) > MAX_RECEIPT_ARCHIVE_BYTES:
+        return "receipt_unavailable"
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            entries = [entry for entry in archive.infolist() if entry.filename == "receipt.json"]
+            if len(entries) != 1 or entries[0].file_size > MAX_RECEIPT_JSON_BYTES:
+                return "receipt_unavailable"
+            receipt = json.loads(archive.read(entries[0]))
+    except (OSError, ValueError, zipfile.BadZipFile, json.JSONDecodeError):
+        return "receipt_unavailable"
+    if not isinstance(receipt, dict):
+        return "receipt_unavailable"
+    identity = {"release_tag": tag, "version_code": code, "aab_sha256": digest, "track": track}
+    if any(receipt.get(key) != value for key, value in identity.items()):
+        return "receipt_unavailable"
+    if _receipt_requires_manual_review(receipt, tag, code, digest, track, now):
+        return "manual_review"
+    return "retryable"
 
 
 def settings(environment):
@@ -164,14 +271,25 @@ def main():
                     comparison = api(f"compare/{tag}...main")
                     if comparison.get("status") not in {"ahead", "identical"}:
                         raise ValueError(f"{tag} is not an ancestor of canonical main")
-                    candidates.append((build, tag))
+                    candidates.append((build, tag, release))
             except (ValueError, KeyError, subprocess.CalledProcessError) as error:
                 receipt['errors'].append({'tag': tag, 'error': str(error)})
         runs = pages(f"actions/workflows/{WORKFLOW}/runs?event=workflow_dispatch&per_page=100", "workflow_runs") if candidates else []
         now = dt.datetime.now(dt.timezone.utc)
-        for build, tag in sorted(candidates):
+        for build, tag, release in sorted(candidates, key=lambda item: (item[0], item[1])):
             state = delivery_state(runs, tag, now, track)
+            digest = release_bundle_sha256(release)
+            if state == "dispatch":
+                prior_run = prior_run_review_state(runs, tag, build, digest, track, now)
+                if prior_run == "manual_review":
+                    state = "manual_review"
+                elif prior_run == "receipt_unavailable":
+                    state = "receipt_unavailable"
             record = {"tag": tag, "version_code": build, "state": state}
+            if state == "manual_review":
+                record["reason"] = "previous_upload_edit_unavailable"
+            elif state == "receipt_unavailable":
+                record["reason"] = "prior_delivery_receipt_unavailable"
             receipt["releases"].append(record)
             if state == "dispatch" and args.dispatch:
                 gh("workflow", "run", WORKFLOW, "--repo", REPOSITORY, "--ref", "main",

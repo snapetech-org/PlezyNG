@@ -51,6 +51,10 @@ class PlayReleasePublisher
     if File.file?(@receipt_path)
       previous = JSON.parse(File.read(@receipt_path))
       if %w[release_tag version_code aab_sha256 track].all? { |key| previous[key] == @receipt[key] }
+        if previous['manual_review_required'] == true && previous['manual_review_reason'] == 'previous_upload_edit_unavailable'
+          @receipt['manual_review_required'] = true
+          @receipt['manual_review_reason'] = 'previous_upload_edit_unavailable'
+        end
         if previous.dig('previous_edit', 'upload_attempted')
           @receipt['previous_edit'] = previous['previous_edit'].slice('id', 'expiry', 'upload_attempted')
         end
@@ -160,9 +164,15 @@ class PlayReleasePublisher
     # A recovered edit exposes staged state, not proof of a committed release.
     plan = :assign if plan == :delivered && @recovered_edit
     @receipt['action'] = plan.to_s
+    if plan == :assign
+      @receipt.delete('manual_review_required')
+      @receipt.delete('manual_review_reason')
+    end
     if %i[delivered superseded].include?(plan)
       @receipt['distributed'] = plan == :delivered && @track == 'internal' && @status == 'completed'
       @receipt['verified_track'] = track
+      @receipt.delete('manual_review_required')
+      @receipt.delete('manual_review_reason')
       api('delete', "/edits/#{@edit}")
       @receipt.delete('pending_edit')
       @edit = nil
@@ -171,7 +181,12 @@ class PlayReleasePublisher
       return
     end
     if plan == :upload
-      raise 'Prior upload edit expired or was invalidated; this version is not available for reassignment' if @receipt.dig('previous_edit', 'upload_attempted')
+      if @receipt.dig('previous_edit', 'upload_attempted')
+        @receipt['manual_review_required'] = true
+        @receipt['manual_review_reason'] = 'previous_upload_edit_unavailable'
+        save
+        raise 'Prior upload edit expired or was invalidated; this version is not available for reassignment'
+      end
       upload
     end
     release = { 'name' => @tag, 'status' => @status, 'versionCodes' => [@code.to_s] }
@@ -180,6 +195,8 @@ class PlayReleasePublisher
     api('post', "/edits/#{@edit}:commit?changesInReviewBehavior=ERROR_IF_IN_REVIEW")
     @committed = true
     @receipt.delete('pending_edit')
+    @receipt.delete('manual_review_required')
+    @receipt.delete('manual_review_reason')
     @receipt['committed'] = true
     save
     # Read the actual committed track in a separate, discarded verification edit.

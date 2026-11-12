@@ -39,8 +39,18 @@ checksum manifest, matching immutable pubspec version and ancestry on canonical
 main. Drafts, prereleases and incomplete releases are not delivered. An older
 incomplete release records its own error without blocking a later complete one.
 Successful completed-track runs are idempotent; successful draft uploads do not
-count as completed distribution. Failed runs become retryable after two minutes,
-so the next catch-up run can recover a still-valid pending edit.
+count as completed distribution. The controller applies a two-minute cooldown
+after a non-successful completed run, then checks the latest publisher receipt
+for the exact tag, version code, AAB digest and track. A receipt that records an
+unavailable prior upload edit with no active pending edit becomes
+`manual_review`; the controller does not dispatch it again. If that receipt is
+missing, expired, malformed or cannot be tied to the release digest, the state
+is `receipt_unavailable` and automatic dispatch is withheld for operator
+review. Failed, cancelled and timed-out runs all require this transaction
+evidence because Play may have accepted mutations before the run stopped.
+Older receipts without the explicit marker use the same narrowly matched
+terminal shape. Ordinary transient failures with a valid receipt and
+still-valid pending edits remain retryable, including track-assignment retries.
 
 ## Publication and recovery
 
@@ -58,8 +68,15 @@ Staged track state never counts as a committed publication. Committing uses
 A lost commit response is detected without uploading the version again. Existing
 newer versions are never rolled back. An expired reserved upload that is not
 assignable fails explicitly rather than silently consuming another build number.
-The Play Console reservation state for the rejected v3.0.33+188 upload is
-unverified; inspect the Console before attempting any manual recovery.
+Before that guard fails, the publisher writes
+`manual_review_required=true` with reason `previous_upload_edit_unavailable`.
+For example, [run 43285693893](https://github.com/snapetech-org/pleazyng/actions/runs/43285693893)
+for v3.0.33 code 192 failed after its previous upload edit expired or was
+invalidated; the receipt confirms the released AAB digest, no active edit and no
+committed distribution. The controller now keeps that version in manual review
+instead of redispatching it. The Play Console reservation state for the earlier
+rejected v3.0.33+188 upload remains unverified; inspect the Console before any
+manual recovery.
 
 Do not change Console release state while a delivery owns a pending edit.
 Inspect the retained receipt and actual track before retrying. Retry delivery

@@ -41,6 +41,7 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
   SourceController? _cloudMetadataController;
   Future<bool>? _cloudMetadataFuture;
   final Set<String> _checkingAddonIds = {};
+  final Set<String> _configuringAddonIds = {};
 
   Future<void> _copyAuthorizationCode(String value) async {
     await Clipboard.setData(ClipboardData(text: value));
@@ -98,8 +99,8 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
       return;
     }
     try {
-      await context.read<RemoteStreamingProvider>().installAddon(result.address, allowHttp: result.allowHttp);
-      if (mounted) {
+      final installed = await _installAddonFromAddress(result.address, allowHttp: result.allowHttp);
+      if (installed == true && mounted) {
         showAppSnackBar(context, t.streaming.addonInstalled);
       }
     } on StremioAddonException {
@@ -110,6 +111,70 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
       if (mounted) {
         showAppSnackBar(context, t.streaming.addonError);
       }
+    }
+  }
+
+  Future<bool?> _installAddonFromAddress(String address, {required bool allowHttp}) async {
+    final streaming = context.read<RemoteStreamingProvider>();
+    final profile = streaming.profileId;
+    if (profile == null || !streaming.isReady) return null;
+    final configuration = await streaming.inspectAddon(address, allowHttp: allowHttp);
+    if (!mounted || streaming.profileId != profile || !streaming.isReady) return null;
+    Map<String, String> values = configuration.initialValues;
+    if (configuration.fields.isNotEmpty) {
+      final configured = await showDialog<Map<String, String>>(
+        context: context,
+        builder: (_) => _StremioAddonConfigurationDialog(
+          title: configuration.manifest['name'] as String? ?? t.streaming.addons,
+          fields: configuration.fields,
+          initialValues: configuration.initialValues,
+        ),
+      );
+      if (configured == null) return null;
+      values = configured;
+    } else if (configuration.isRequired) {
+      throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
+    }
+    if (!mounted || streaming.profileId != profile || !streaming.isReady) return null;
+    await streaming.installAddon(
+      address,
+      allowHttp: allowHttp,
+      configurationValues: values,
+      expectedManifestId: configuration.manifest['id'] as String,
+    );
+    return true;
+  }
+
+  Future<void> _configureAddon(StremioAddonInstallation addon) async {
+    if (addon.configurationSchema.isEmpty ||
+        addon.configurationBaseUrl == null ||
+        !_configuringAddonIds.add(addon.id)) {
+      return;
+    }
+    final streaming = context.read<RemoteStreamingProvider>();
+    final profile = streaming.profileId;
+    setState(() {});
+    try {
+      final values = await showDialog<Map<String, String>>(
+        context: context,
+        builder: (_) => _StremioAddonConfigurationDialog(
+          title: addon.name,
+          fields: addon.configurationSchema,
+          initialValues: addon.configurationValues,
+        ),
+      );
+      if (values == null || !mounted || streaming.profileId != profile || !streaming.isReady) return;
+      await streaming.configureAddon(addon.id, values);
+      if (mounted && streaming.profileId == profile) {
+        showAppSnackBar(context, t.streaming.addonInstalled);
+      }
+    } on Object {
+      if (mounted && streaming.profileId == profile) {
+        showAppSnackBar(context, t.streaming.addonError);
+      }
+    } finally {
+      _configuringAddonIds.remove(addon.id);
+      if (mounted) setState(() {});
     }
   }
 
@@ -264,7 +329,8 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
           return;
         }
         try {
-          await streaming.installAddon(addon.manifestUrl, allowHttp: false);
+          final installed = await _installAddonFromAddress(addon.manifestUrl, allowHttp: false);
+          if (installed == null) return;
           added++;
         } on Object {
           failed++;
@@ -836,6 +902,19 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              if (addon.configurationSchema.isNotEmpty && addon.configurationBaseUrl != null)
+                                IconButton(
+                                  tooltip: t.common.edit,
+                                  onPressed: _configuringAddonIds.contains(addon.id)
+                                      ? null
+                                      : () => unawaited(_configureAddon(addon)),
+                                  icon: _configuringAddonIds.contains(addon.id)
+                                      ? const SizedBox.square(
+                                          dimension: 20,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        )
+                                      : const AppIcon(Symbols.tune_rounded),
+                                ),
                               IconButton(
                                 tooltip: t.settings.checkForUpdates,
                                 onPressed: _checkingAddonIds.contains(addon.id)
@@ -1156,6 +1235,178 @@ class _AddAddonDialogState extends State<_AddAddonDialog> {
       ),
     ],
   );
+}
+
+class _StremioAddonConfigurationDialog extends StatefulWidget {
+  const _StremioAddonConfigurationDialog({required this.title, required this.fields, required this.initialValues});
+
+  final String title;
+  final List<StremioAddonConfigurationField> fields;
+  final Map<String, String> initialValues;
+
+  @override
+  State<_StremioAddonConfigurationDialog> createState() => _StremioAddonConfigurationDialogState();
+}
+
+class _StremioAddonConfigurationDialogState extends State<_StremioAddonConfigurationDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final Map<String, TextEditingController> _textValues = {};
+  final Map<String, bool> _checkboxValues = {};
+  final Map<String, String?> _selectValues = {};
+
+  @override
+  void initState() {
+    super.initState();
+    for (final field in widget.fields) {
+      final initial = widget.initialValues[field.key];
+      switch (field.type) {
+        case 'text':
+        case 'number':
+        case 'password':
+          _textValues[field.key] = TextEditingController(text: initial ?? field.defaultValue ?? '');
+          break;
+        case 'checkbox':
+          _checkboxValues[field.key] = initial == 'on' || (initial == null && field.defaultValue == 'checked');
+          break;
+        case 'select':
+          _selectValues[field.key] = field.options.contains(initial)
+              ? initial
+              : field.options.contains(field.defaultValue)
+              ? field.defaultValue
+              : field.options.firstOrNull;
+          break;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _textValues.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  String? _validate(StremioAddonConfigurationField field, String? value) {
+    if (field.isRequired && (value == null || value.trim().isEmpty)) return t.addServer.required;
+    if (field.type == 'number' && value != null && value.trim().isNotEmpty) {
+      final number = num.tryParse(value);
+      if (number == null || !number.isFinite) return t.common.error;
+    }
+    return null;
+  }
+
+  Widget _field(StremioAddonConfigurationField field) {
+    switch (field.type) {
+      case 'text':
+      case 'number':
+      case 'password':
+        final controller = _textValues[field.key]!;
+        return FormField<String>(
+          key: ValueKey(field.key),
+          initialValue: controller.text,
+          validator: (value) => _validate(field, value),
+          builder: (state) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FocusableTextField(
+                controller: controller,
+                keyboardType: field.type == 'number'
+                    ? const TextInputType.numberWithOptions(decimal: true, signed: true)
+                    : TextInputType.text,
+                obscureText: field.type == 'password',
+                maxLength: 4096,
+                textDirection: TextDirection.ltr,
+                autocorrect: false,
+                enableSuggestions: field.type != 'password',
+                decoration: InputDecoration(
+                  labelText: field.title,
+                  suffixText: field.isRequired ? t.addServer.required : null,
+                ),
+                onChanged: state.didChange,
+              ),
+              if (state.errorText case final error?)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 12, top: 4),
+                  child: Text(error, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                ),
+            ],
+          ),
+        );
+      case 'checkbox':
+        return SwitchListTile.adaptive(
+          contentPadding: EdgeInsets.zero,
+          value: _checkboxValues[field.key] ?? false,
+          onChanged: (value) => setState(() => _checkboxValues[field.key] = value),
+          title: Text(field.title),
+        );
+      case 'select':
+        final selected = _selectValues[field.key];
+        return DropdownButtonFormField<String>(
+          initialValue: selected,
+          decoration: InputDecoration(labelText: field.title),
+          items: [for (final value in field.options) DropdownMenuItem(value: value, child: Text(value))],
+          onChanged: (value) => setState(() => _selectValues[field.key] = value),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Map<String, String> _values() {
+    final result = <String, String>{};
+    for (final field in widget.fields) {
+      switch (field.type) {
+        case 'text':
+        case 'number':
+        case 'password':
+          final value = _textValues[field.key]!.text;
+          if (value.isNotEmpty) result[field.key] = value;
+          break;
+        case 'checkbox':
+          if (_checkboxValues[field.key] == true) result[field.key] = 'on';
+          break;
+        case 'select':
+          final value = _selectValues[field.key];
+          if (value != null) result[field.key] = value;
+          break;
+      }
+    }
+    return Map.unmodifiable(result);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final height = (MediaQuery.sizeOf(context).height * 0.58).clamp(180.0, 480.0).toDouble();
+    return AlertDialog(
+      title: Text(widget.title),
+      content: SizedBox(
+        width: 520,
+        height: height,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final field in widget.fields) ...[_field(field), const SizedBox(height: 12)],
+              ],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(t.common.cancel)),
+        FilledButton(
+          onPressed: () {
+            if (_formKey.currentState?.validate() != true) return;
+            Navigator.pop(context, _values());
+          },
+          child: Text(t.common.save),
+        ),
+      ],
+    );
+  }
 }
 
 class _StremioAddonImportDialog extends StatefulWidget {

@@ -41,6 +41,11 @@ Prepared 2026-10-27 (America/Regina). The planning baseline was inspected at
 - Check installed add-ons for manifest changes and review the proposed version
   before applying it. Updates keep the saved installation and enabled state;
   changed add-on identities require an explicit reinstall.
+- Configure supported Stremio
+  [`manifest.config`](https://github.com/Stremio/stremio-addon-sdk/blob/master/docs/api/responses/manifest.md#user-data)
+  text, number, password, checkbox and select fields while adding an add-on or editing it later.
+  Settings stay in the encrypted profile snapshot and configured endpoint.
+  Provider-hosted custom configuration pages are not executed in the app.
 - Fetch add-on stream options for supported library and catalog movie/episode
   details, with show episodes listed and selectable inside the existing title
   detail screen.

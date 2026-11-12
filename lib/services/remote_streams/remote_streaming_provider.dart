@@ -828,24 +828,71 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     });
   }
 
-  Future<StremioAddonInstallation> installAddon(String address, {required bool allowHttp}) async {
+  Future<StremioAddonConfiguration> inspectAddon(String address, {required bool allowHttp}) async {
     final (profile, generation) = _requireProfile();
-    final existing = addons.where((addon) => addon.manifestUrl == address).firstOrNull;
-    if (existing != null) {
-      return existing;
-    }
-    if (addons.length >= 50) {
-      throw const StremioAddonException(StremioAddonFailure.unavailable);
-    }
+    final imported = StremioAddonClient.configurationFromUrl(address, allowHttp: allowHttp);
+    final baseUrl = imported?.baseUrl ?? address;
     final client = _stremioAddonClientFactory();
     try {
-      final manifest = await client.fetchManifest(address, allowHttp: allowHttp);
+      final manifest = await client.fetchManifest(baseUrl, allowHttp: allowHttp);
       if (!_current(profile, generation)) {
         throw const StremioAddonException(StremioAddonFailure.unavailable);
       }
+      final fields = StremioAddonClient.configurationFields(manifest);
+      return StremioAddonConfiguration(
+        baseUrl: baseUrl,
+        manifest: manifest,
+        fields: fields,
+        initialValues: imported?.values ?? const {},
+        isRequired: StremioAddonClient.configurationRequired(manifest),
+      );
+    } finally {
+      client.close();
+    }
+  }
+
+  Future<StremioAddonInstallation> installAddon(
+    String address, {
+    required bool allowHttp,
+    Map<String, String>? configurationValues,
+    String? expectedManifestId,
+  }) async {
+    final (profile, generation) = _requireProfile();
+    final imported = StremioAddonClient.configurationFromUrl(address, allowHttp: allowHttp);
+    final baseUrl = imported?.baseUrl ?? address;
+    final client = _stremioAddonClientFactory();
+    try {
+      final baseManifest = await client.fetchManifest(baseUrl, allowHttp: allowHttp);
+      if (expectedManifestId != null && baseManifest['id'] != expectedManifestId) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      final fields = StremioAddonClient.configurationFields(baseManifest);
+      if (fields.isEmpty && configurationValues?.isNotEmpty == true && imported == null) {
+        throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
+      }
+      final requestedValues = configurationValues ?? imported?.values ?? const <String, String>{};
+      final values = fields.isEmpty
+          ? Map<String, String>.unmodifiable(imported?.values ?? const {})
+          : StremioAddonClient.normalizeConfiguration(fields, requestedValues);
+      final configurationRequired = StremioAddonClient.configurationRequired(baseManifest);
+      if ((configurationRequired && fields.isEmpty && imported == null) || (configurationRequired && values.isEmpty)) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      final manifestUrl = fields.isEmpty ? address : StremioAddonClient.configuredManifestUrl(baseUrl, values);
+      final manifest = manifestUrl == baseUrl
+          ? baseManifest
+          : await client.fetchManifest(manifestUrl, allowHttp: allowHttp);
+      if (manifest['id'] != baseManifest['id']) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      if (!_current(profile, generation)) {
+        throw const StremioAddonException(StremioAddonFailure.unavailable);
+      }
+      final existing = addons.where((addon) => addon.manifestUrl == manifestUrl).firstOrNull;
+      if (existing != null) return existing;
       late StremioAddonInstallation installed;
       await _commit(profile, generation, (current) {
-        final existing = current.addons.where((addon) => addon.manifestUrl == address).firstOrNull;
+        final existing = current.addons.where((addon) => addon.manifestUrl == manifestUrl).firstOrNull;
         if (existing != null) {
           installed = existing;
           return current;
@@ -856,13 +903,74 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         installed = StremioAddonInstallation(
           id: const Uuid().v4(),
           name: (manifest['name'] as String).trim(),
-          manifestUrl: address,
+          manifestUrl: manifestUrl,
           manifest: manifest,
           allowHttp: allowHttp,
+          configurationBaseUrl: fields.isEmpty ? null : baseUrl,
+          configurationSchema: fields,
+          configurationValues: values,
         );
         return current.copyWith(addons: [...current.addons, installed]);
       });
       return installed;
+    } finally {
+      client.close();
+    }
+  }
+
+  Future<void> configureAddon(String id, Map<String, String> configurationValues) async {
+    final (profile, generation) = _requireProfile();
+    final installed = addons.where((addon) => addon.id == id).firstOrNull;
+    final baseUrl = installed?.configurationBaseUrl;
+    if (installed == null || baseUrl == null) {
+      throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
+    }
+    final client = _stremioAddonClientFactory();
+    try {
+      final baseManifest = await client.fetchManifest(baseUrl, allowHttp: installed.allowHttp);
+      if (baseManifest['id'] != installed.manifest['id']) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      final fields = StremioAddonClient.configurationFields(baseManifest);
+      if (fields.isEmpty) throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
+      final values = StremioAddonClient.normalizeConfiguration(fields, configurationValues);
+      final configurationRequired = StremioAddonClient.configurationRequired(baseManifest);
+      if (configurationRequired && values.isEmpty) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      final manifestUrl = StremioAddonClient.configuredManifestUrl(baseUrl, values);
+      final manifest = manifestUrl == baseUrl
+          ? baseManifest
+          : await client.fetchManifest(manifestUrl, allowHttp: installed.allowHttp);
+      if (manifest['id'] != baseManifest['id'] || !_current(profile, generation)) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      await _commit(profile, generation, (current) {
+        final saved = current.addons.where((addon) => addon.id == id).firstOrNull;
+        if (saved == null ||
+            saved.manifestUrl != installed.manifestUrl ||
+            saved.configurationBaseUrl != baseUrl ||
+            jsonEncode(saved.configurationValues) != jsonEncode(installed.configurationValues)) {
+          throw const StremioAddonException(StremioAddonFailure.unavailable);
+        }
+        final replacement = StremioAddonInstallation(
+          id: saved.id,
+          name: (manifest['name'] as String).trim(),
+          manifestUrl: manifestUrl,
+          manifest: manifest,
+          enabled: saved.enabled,
+          allowHttp: saved.allowHttp,
+          configurationBaseUrl: baseUrl,
+          configurationSchema: fields,
+          configurationValues: values,
+        );
+        return current.copyWith(
+          addons: [
+            for (final addon in current.addons)
+              if (addon.id == id) replacement else addon,
+          ],
+        );
+      });
     } finally {
       client.close();
     }
@@ -879,6 +987,17 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     final client = _stremioAddonClientFactory();
     try {
       final latestManifest = await client.fetchManifest(installed.manifestUrl, allowHttp: installed.allowHttp);
+      List<StremioAddonConfigurationField>? latestConfigurationSchema;
+      final configurationBaseUrl = installed.configurationBaseUrl;
+      if (configurationBaseUrl != null) {
+        final schemaManifest = configurationBaseUrl == installed.manifestUrl
+            ? latestManifest
+            : await client.fetchManifest(configurationBaseUrl, allowHttp: installed.allowHttp);
+        if (schemaManifest['id'] != installed.manifest['id']) {
+          throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+        }
+        latestConfigurationSchema = StremioAddonClient.configurationFields(schemaManifest);
+      }
       if (!_current(profile, generation)) {
         throw const StremioAddonException(StremioAddonFailure.unavailable);
       }
@@ -894,6 +1013,7 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         hasChanges: _canonicalManifest(installed.manifest) != _canonicalManifest(latestManifest),
         profileId: profile,
         generation: generation,
+        latestConfigurationSchema: latestConfigurationSchema,
       );
     } finally {
       client.close();
@@ -929,6 +1049,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         manifest: check.latestManifest,
         enabled: saved.enabled,
         allowHttp: saved.allowHttp,
+        configurationBaseUrl: saved.configurationBaseUrl,
+        configurationSchema: check.latestConfigurationSchema ?? saved.configurationSchema,
+        configurationValues: saved.configurationValues,
       );
       return current.copyWith(
         addons: [

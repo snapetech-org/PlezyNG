@@ -158,6 +158,9 @@ class StremioAddonInstallation {
     required this.manifest,
     this.enabled = true,
     this.allowHttp = false,
+    this.configurationBaseUrl,
+    this.configurationSchema = const [],
+    this.configurationValues = const {},
   });
 
   final String id;
@@ -169,14 +172,25 @@ class StremioAddonInstallation {
   final Map<String, dynamic> manifest;
   final bool enabled;
   final bool allowHttp;
+  final String? configurationBaseUrl;
+  final List<StremioAddonConfigurationField> configurationSchema;
+  final Map<String, String> configurationValues;
 
-  StremioAddonInstallation copyWith({bool? enabled}) => StremioAddonInstallation(
+  StremioAddonInstallation copyWith({
+    bool? enabled,
+    String? configurationBaseUrl,
+    List<StremioAddonConfigurationField>? configurationSchema,
+    Map<String, String>? configurationValues,
+  }) => StremioAddonInstallation(
     id: id,
     name: name,
     manifestUrl: manifestUrl,
     manifest: manifest,
     enabled: enabled ?? this.enabled,
     allowHttp: allowHttp,
+    configurationBaseUrl: configurationBaseUrl ?? this.configurationBaseUrl,
+    configurationSchema: configurationSchema ?? this.configurationSchema,
+    configurationValues: configurationValues ?? this.configurationValues,
   );
 
   Map<String, Object?> toJson() => {
@@ -186,15 +200,83 @@ class StremioAddonInstallation {
     'manifest': manifest,
     'enabled': enabled,
     'allowHttp': allowHttp,
+    if (configurationBaseUrl != null) 'configurationBaseUrl': configurationBaseUrl,
+    'configurationSchema': configurationSchema.map((field) => field.toJson()).toList(growable: false),
+    'configurationValues': configurationValues,
   };
 
-  factory StremioAddonInstallation.fromJson(Map<String, dynamic> json) => StremioAddonInstallation(
-    id: json['id'] as String,
-    name: json['name'] as String,
-    manifestUrl: json['manifestUrl'] as String,
-    manifest: Map<String, dynamic>.from(json['manifest'] as Map),
-    enabled: json['enabled'] as bool? ?? true,
-    allowHttp: json['allowHttp'] as bool? ?? false,
+  factory StremioAddonInstallation.fromJson(Map<String, dynamic> json) {
+    final rawSchema = json['configurationSchema'];
+    final schema = <StremioAddonConfigurationField>[];
+    if (rawSchema is List) {
+      for (final row in rawSchema.whereType<Map>().take(64)) {
+        try {
+          schema.add(StremioAddonConfigurationField.fromJson(Map<String, dynamic>.from(row)));
+        } on Object {
+          continue;
+        }
+      }
+    }
+    final rawValues = json['configurationValues'];
+    final values = <String, String>{};
+    if (rawValues is Map) {
+      for (final entry in rawValues.entries.take(64)) {
+        if (entry.key is String &&
+            RegExp(r'^[A-Za-z_][A-Za-z0-9_-]{0,63}$').hasMatch(entry.key as String) &&
+            entry.value is String &&
+            (entry.value as String).length <= 4096) {
+          values[entry.key as String] = entry.value as String;
+        }
+      }
+    }
+    final rawBaseUrl = json['configurationBaseUrl'];
+    return StremioAddonInstallation(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      manifestUrl: json['manifestUrl'] as String,
+      manifest: Map<String, dynamic>.from(json['manifest'] as Map),
+      enabled: json['enabled'] as bool? ?? true,
+      allowHttp: json['allowHttp'] as bool? ?? false,
+      configurationBaseUrl: rawBaseUrl is String && rawBaseUrl.length <= 4096 ? rawBaseUrl : null,
+      configurationSchema: List.unmodifiable(schema),
+      configurationValues: Map.unmodifiable(values),
+    );
+  }
+}
+
+class StremioAddonConfigurationField {
+  const StremioAddonConfigurationField({
+    required this.key,
+    required this.title,
+    required this.type,
+    this.defaultValue,
+    this.options = const [],
+    this.isRequired = false,
+  });
+
+  final String key;
+  final String title;
+  final String type;
+  final String? defaultValue;
+  final List<String> options;
+  final bool isRequired;
+
+  Map<String, Object?> toJson() => {
+    'key': key,
+    'title': title,
+    'type': type,
+    if (defaultValue != null) 'default': defaultValue,
+    if (options.isNotEmpty) 'options': options,
+    if (isRequired) 'required': true,
+  };
+
+  factory StremioAddonConfigurationField.fromJson(Map<String, dynamic> json) => StremioAddonConfigurationField(
+    key: json['key'] as String,
+    title: json['title'] as String? ?? json['key'] as String,
+    type: json['type'] as String,
+    defaultValue: json['default'] as String?,
+    options: (json['options'] as List? ?? const []).whereType<String>().take(200).toList(growable: false),
+    isRequired: json['required'] == true,
   );
 }
 
@@ -210,6 +292,7 @@ class StremioAddonUpdateCheck {
     required this.hasChanges,
     required this.profileId,
     required this.generation,
+    this.latestConfigurationSchema,
   });
 
   final StremioAddonInstallation installed;
@@ -217,6 +300,7 @@ class StremioAddonUpdateCheck {
   final bool hasChanges;
   final String profileId;
   final int generation;
+  final List<StremioAddonConfigurationField>? latestConfigurationSchema;
 
   String get currentVersion => installed.manifest['version'] as String? ?? '';
   String get latestVersion => latestManifest['version'] as String? ?? '';

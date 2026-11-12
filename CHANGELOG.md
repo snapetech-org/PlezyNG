@@ -34,6 +34,8 @@
 
 - Connect TorBox through its device authorization flow, verify the returned token against the account endpoint, and retain API-key setup as a fallback.
 
+- Support Stremio `manifest.config` fields during add-on installation and reconfiguration, with bounded schema validation and profile-encrypted settings.
+
 - Require the complete acknowledged Cast occurrence order before returning playback locally, and recheck it during preparation and receiver pause so receiver edits cannot be overwritten by a stale queue.
 
 - Support repeat-one and repeat-all for bounded standalone Cast queue transfers, with acknowledged native item rearming, restart recovery and receiver repeat settings preserved on return. Keep local playback intact if preparation or ownership checks fail.

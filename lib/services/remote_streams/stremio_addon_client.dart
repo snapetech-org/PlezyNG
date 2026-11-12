@@ -45,6 +45,22 @@ class StremioAddonExtra {
   final int optionsLimit;
 }
 
+class StremioAddonConfiguration {
+  const StremioAddonConfiguration({
+    required this.baseUrl,
+    required this.manifest,
+    required this.fields,
+    this.initialValues = const {},
+    this.isRequired = false,
+  });
+
+  final String baseUrl;
+  final Map<String, dynamic> manifest;
+  final List<StremioAddonConfigurationField> fields;
+  final Map<String, String> initialValues;
+  final bool isRequired;
+}
+
 /// Bounded client for the Stremio add-on HTTP protocol. It never logs a
 /// manifest or resource URL because either may carry the add-on's secret.
 class StremioAddonClient {
@@ -55,6 +71,182 @@ class StremioAddonClient {
   static const _maxStreamsPerAddon = 100;
   static const _timeout = Duration(seconds: 18);
   final http.Client _client;
+
+  static List<StremioAddonConfigurationField> configurationFields(Map<String, dynamic> manifest) {
+    final rawFields = manifest['config'];
+    if (rawFields == null) return const [];
+    if (rawFields is! List || rawFields.length > 64) {
+      throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+    }
+    final fields = <StremioAddonConfigurationField>[];
+    final knownKeys = <String>{};
+    for (final raw in rawFields) {
+      if (raw is! Map) throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      final row = Map<String, dynamic>.from(raw);
+      final key = row['key'];
+      final type = row['type'];
+      if (key is! String ||
+          !RegExp(r'^[A-Za-z_][A-Za-z0-9_-]{0,63}$').hasMatch(key) ||
+          !knownKeys.add(key) ||
+          type is! String ||
+          !const {'text', 'number', 'password', 'checkbox', 'select'}.contains(type)) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      final titleValue = row['title'];
+      if (titleValue != null && titleValue is! String) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      final title = _displayText(titleValue) ?? key;
+      final defaultValue = row['default'];
+      if (defaultValue != null && (defaultValue is! String || defaultValue.length > 1024)) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      final requiredValue = row['required'];
+      if (requiredValue != null && requiredValue is! bool) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      final rawOptions = row['options'];
+      if (type == 'select' && rawOptions is! List) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      final options = <String>[];
+      if (type == 'select') {
+        final values = rawOptions as List;
+        if (values.isEmpty || values.length > 200) {
+          throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+        }
+        for (final option in values) {
+          if (option is! String || !_validExtraValue(option) || options.contains(option)) {
+            throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+          }
+          options.add(option);
+        }
+        if (defaultValue is String && !options.contains(defaultValue)) {
+          throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+        }
+      }
+      fields.add(
+        StremioAddonConfigurationField(
+          key: key,
+          title: title,
+          type: type,
+          defaultValue: defaultValue as String?,
+          options: List.unmodifiable(options),
+          isRequired: requiredValue == true && type != 'checkbox' && type != 'select',
+        ),
+      );
+    }
+    return List.unmodifiable(fields);
+  }
+
+  static bool configurationRequired(Map<String, dynamic> manifest) {
+    final hints = manifest['behaviorHints'];
+    return hints is Map && hints['configurationRequired'] == true;
+  }
+
+  static Map<String, String> normalizeConfiguration(
+    List<StremioAddonConfigurationField> fields,
+    Map<String, String> requested,
+  ) {
+    final fieldsByKey = {for (final field in fields) field.key: field};
+    if (requested.length > fields.length || requested.keys.any((key) => !fieldsByKey.containsKey(key))) {
+      throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+    }
+    final result = <String, String>{};
+    for (final field in fields) {
+      final input = requested[field.key];
+      if (input != null && input.length > 4096) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      if (field.type == 'checkbox') {
+        if (input == 'on' || (input == null && field.defaultValue == 'checked')) {
+          result[field.key] = 'on';
+        } else if (input != null && input != 'off' && input != 'false' && input.isNotEmpty) {
+          throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+        }
+        continue;
+      }
+      final value = input ?? field.defaultValue;
+      if (value == null || value.trim().isEmpty) {
+        if (field.isRequired) throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+        continue;
+      }
+      if (field.type == 'number') {
+        final number = num.tryParse(value);
+        if (number == null || !number.isFinite) {
+          throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+        }
+      }
+      if (field.type == 'select' && !field.options.contains(value)) {
+        throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+      }
+      result[field.key] = value;
+    }
+    if (jsonEncode(result).length > 12 * 1024) {
+      throw const StremioAddonException(StremioAddonFailure.invalidResponse);
+    }
+    return Map.unmodifiable(result);
+  }
+
+  static String configuredManifestUrl(String baseUrl, Map<String, String> values) {
+    if (values.isEmpty) return baseUrl;
+    final uri = Uri.tryParse(baseUrl);
+    final queryIndex = baseUrl.indexOf('?');
+    final end = queryIndex < 0 ? baseUrl.length : queryIndex;
+    final pathAndOrigin = baseUrl.substring(0, end);
+    const manifestSuffix = '/manifest.json';
+    if (uri == null ||
+        uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty ||
+        uri.hasFragment ||
+        !pathAndOrigin.endsWith(manifestSuffix)) {
+      throw const StremioAddonException(StremioAddonFailure.invalidAddress);
+    }
+    final encoded = Uri.encodeComponent(jsonEncode(values));
+    final configured =
+        '${pathAndOrigin.substring(0, pathAndOrigin.length - manifestSuffix.length)}/$encoded$manifestSuffix${baseUrl.substring(end)}';
+    if (configured.length > 4096) throw const StremioAddonException(StremioAddonFailure.invalidAddress);
+    return configured;
+  }
+
+  static ({String baseUrl, Map<String, String> values})? configurationFromUrl(
+    String address, {
+    required bool allowHttp,
+  }) {
+    final uri = Uri.tryParse(address);
+    if (uri == null ||
+        uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty ||
+        uri.hasFragment ||
+        (uri.scheme != 'https' && !(allowHttp && uri.scheme == 'http')) ||
+        address.length > 4096) {
+      return null;
+    }
+    final queryIndex = address.indexOf('?');
+    final pathEnd = queryIndex < 0 ? address.length : queryIndex;
+    final pathAndOrigin = address.substring(0, pathEnd);
+    const manifestSuffix = '/manifest.json';
+    if (!pathAndOrigin.endsWith(manifestSuffix)) return null;
+    final beforeManifest = pathAndOrigin.substring(0, pathAndOrigin.length - manifestSuffix.length);
+    final segmentSlash = beforeManifest.lastIndexOf('/');
+    final originLength = '${uri.scheme}://${uri.authority}'.length;
+    if (segmentSlash < originLength) return null;
+    final rawSegment = beforeManifest.substring(segmentSlash + 1);
+    try {
+      final decoded = jsonDecode(Uri.decodeComponent(rawSegment));
+      if (decoded is! Map || decoded.length > 64) return null;
+      final values = <String, String>{};
+      for (final entry in decoded.entries) {
+        if (entry.key is! String || entry.value is! String || (entry.value as String).length > 4096) return null;
+        values[entry.key as String] = entry.value as String;
+      }
+      if (values.isEmpty) return null;
+      final baseUrl = '${beforeManifest.substring(0, segmentSlash)}$manifestSuffix${address.substring(pathEnd)}';
+      return (baseUrl: baseUrl, values: Map.unmodifiable(values));
+    } on Object {
+      return null;
+    }
+  }
 
   Future<Map<String, dynamic>> fetchManifest(String address, {required bool allowHttp}) async {
     final uri = _validateAddress(address, allowHttp: allowHttp);

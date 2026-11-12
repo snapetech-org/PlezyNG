@@ -2781,6 +2781,23 @@ jobs:
           $nuspec = Get-Content $nuspecPath -Raw
           $nuspec = $nuspec -replace '<version>[^<]+</version>', "<version>$env:PACKAGE_VERSION</version>"
           Set-Content -Path $nuspecPath -Value $nuspec -Encoding utf8
+          [xml]$nuspecDocument = Get-Content $nuspecPath -Raw
+          $metadataNode = $nuspecDocument.SelectSingleNode("/*[local-name()='package']/*[local-name()='metadata']")
+          if ($null -eq $metadataNode) { throw 'Chocolatey nuspec has no metadata block.' }
+          $expectedMetadata = [ordered]@{
+            id = 'pleazyng'
+            authors = 'slskdn'
+            owners = 'slskdn'
+            projectUrl = 'https://pleazyng.app/'
+            projectSourceUrl = 'https://github.com/snapetech-org/pleazyng'
+            packageSourceUrl = 'https://github.com/snapetech-org/pleazyng/tree/main/packaging/chocolatey'
+          }
+          foreach ($name in $expectedMetadata.Keys) {
+            $node = $metadataNode.SelectSingleNode("*[local-name()='$name']")
+            if ($null -eq $node -or $node.InnerText.Trim() -ne $expectedMetadata[$name]) {
+              throw "Chocolatey nuspec metadata '$name' must be '$($expectedMetadata[$name])'."
+            }
+          }
           New-Item -ItemType Directory -Force 'release-packages' | Out-Null
           choco pack $nuspecPath --outputdirectory release-packages
           if ($LASTEXITCODE -ne 0) { throw "Chocolatey pack failed with exit code $LASTEXITCODE" }

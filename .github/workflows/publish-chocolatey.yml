@@ -132,7 +132,7 @@ jobs:
           if ($null -eq $metadataNode) { throw 'Chocolatey package has no nuspec metadata block.' }
           $expectedMetadata = [ordered]@{
             id = 'pleazyng'
-            authors = 'SnapeTech'
+            authors = 'slskdn'
             owners = 'slskdn'
             projectUrl = 'https://pleazyng.app/'
             projectSourceUrl = 'https://github.com/snapetech-org/pleazyng'

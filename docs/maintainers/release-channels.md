@@ -69,7 +69,7 @@ Changing the install IDs means an install signed under upstream's identity canno
 | GitHub Releases | Active | Dispatch the hybrid `Pleazyng Release` workflow from `main` for a `v<major>.<minor>.<patch>` tag after CI passes on that exact main SHA. Compatible jobs use GitHub-hosted runners; iOS/tvOS packages use private-first capacity routing with hosted fallback, and storage-constrained WebOS jobs use private JIT. Tag pushes do not start jobs. The workflow checks every required artifact before the draft is promoted with `--publish-github-only` or `--publish`. The experimental webOS IPK was included in v3.0.33 after its artifact and redistribution gates passed; future candidates still require those gates. |
 | Homebrew and Sparkle | Homebrew 3.0.7 published and natively installed; updater feed is a release asset | The Cask in `snapetech-org/homebrew-pleazyng` passed app signature, notarization ticket and installed-app Gatekeeper checks. Install by its fully qualified Cask name. Mutable appcast branch publication is retired. See [channel evidence](releases/v3.0.7-channels.json). |
 | WinGet | v3.0.33 manifest submitted; Microsoft review pending | [PR #478005](https://github.com/microsoft/winget-pkgs/pull/478005) is open. `publish-winget.yml` submitted the versioned manifests; merge and public package availability remain separate checks. |
-| Chocolatey | v3.0.33 submitted; moderation pending as of 2026-11-11 | [Package version 3.0.33](https://community.chocolatey.org/packages/pleazyng/3.0.33) passed automated validation. Chocolatey reported no required validator changes, but automated testing and human review may still follow. The next release's nuspec corrects the project/source URLs and maintainer metadata. |
+| Chocolatey | v3.0.33 submitted; moderation pending as of 2026-11-11 | [Package version 3.0.33](https://community.chocolatey.org/packages/pleazyng/3.0.33) passed automated validation. Chocolatey reported no required validator changes, but automated testing and human review may still follow. The submitted nuspec already points `projectUrl` to the Pleazyng website and `projectSourceUrl` to the application source; the next package version sets `authors` to match the Chocolatey maintainer account. |
 | Microsoft Store | Package prepared, listing identity required | Set the repository variables below to build `pleazyng-windows.msixbundle`; submit it through Pleazyng's Partner Center listing. The optional signed Inno Setup installer is also retained for manual EXE/MSI listing workflows. No automated Partner Center submission is configured. |
 | Samsung Smart TV (Tizen) | Experimental ARM tester candidate included in versioned builds; Seller Office package and device qualification remain pending | The hybrid Pleazyng Release builds a development-signed ARM TPK on compatible hosted Ubuntu and retains it as an experimental Actions artifact. The build bootstraps a pinned Linux SDK and requires acceptance of Samsung's SDK and extension licenses. The tester package needs re-signing for a specific Samsung TV and is not Seller Office-ready. Seller Office handoff remains disabled; x64 emulator packages are excluded. |
 | LG Content Store (webOS) | Experimental ARM IPK published in v3.0.33; store submission and broader device qualification remain open | The exact released IPK was installed and launched on a rooted LG C6. Pleazyng Release builds and verifies the IPK on private JIT; future release inclusion still requires an explicit input and exact-candidate gates. See [webOS qualification](webos-tv.md). Vendor submission remains manual. |
@@ -84,14 +84,15 @@ Changing the install IDs means an install signed under upstream's identity canno
 | Launchpad PPA | Signed v3.0.33 sources uploaded; binary builds need separate confirmation | [Publisher run 43137380683](https://github.com/snapetech-org/pleazyng/actions/runs/43137380683) uploaded the signed Jammy and Noble source packages to `ppa:keefshape/pleazyng`. Check Launchpad acceptance and amd64/arm64 binary build results before advertising v3.0.33 installation. |
 | Flathub | Not submitted | The attached Flatpak bundles use the prebuilt Linux bundle. Flathub requires its own source-built manifest submission and reviewer approval; it is not an automatic upload channel. |
 
-For future Chocolatey releases, keep the nuspec `projectUrl` on the Pleazyng
-website and `projectSourceUrl` on the application source repository. Set `owners`
-to the Chocolatey maintainer account (`slskdn`) and `authors` to the software
-author (`SnapeTech`). `packageSourceUrl` points to the Chocolatey recipe. Check
-these fields in the generated `.nupkg` before publishing; `publish-chocolatey.yml`
-now enforces the expected values before its push step. The 3.0.33 submission
-passed automated validation and was pending further review when these metadata
-guidelines were received; a successful push alone does not establish approval.
+For future Chocolatey releases, keep `projectUrl` on the Pleazyng website,
+`projectSourceUrl` on the application source repository, and `packageSourceUrl`
+on the Chocolatey recipe. Set both `owners` and `authors` to the Chocolatey
+maintainer account (`slskdn`), as requested in the 3.0.33 moderation note; retain
+SnapeTech's copyright attribution in the nuspec. The Windows release build checks
+the source nuspec, and `publish-chocolatey.yml` checks the generated `.nupkg`
+before its push step. The 3.0.33 submission passed automated validation and was
+pending further review when this note was received; a successful push alone does
+not establish approval.
 
 The app-store workflow does not build packages or submit store reviews. Run it from `main`, select a release tag, and choose a channel. It accepts a draft GitHub Release for Google Play internal/closed testing tracks, Amazon binary updates after its first console submission, and iOS/tvOS App Store Connect build uploads. Production Play uploads still require a published stable GitHub Release. The workflow sends binaries only, with no listing metadata or screenshots. Samsung and LG TV handoff bundles use separate build outputs and must be uploaded through Seller Office or Seller Lounge manually; neither workflow claims an automated vendor-store submission. TV screenshots must be captured from the target device.
 

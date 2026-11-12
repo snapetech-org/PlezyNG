@@ -24,7 +24,7 @@
 
 - Save Sonic Adventure track counts and maximum sonic distance, forward them to each Plex path request, and reject paths that omit a waypoint or exceed their budget. Retire discovery editors and related results with their original profile/account.
 - Keep canonical music order implicit, spill large shuffled and album-shuffle orders to bounded scratch storage, avoid decoding album labels again during merge output, persist order in pages, and clear shuffled tails without per-item arrays or retaining discarded metadata in the active spool.
-- Validate Chocolatey package ownership and project URLs from the generated package before publishing.
+- Require Chocolatey package authors and owners to match the maintainer account, and validate project/source URLs from the generated package before publishing.
 
 - Require the complete acknowledged Cast occurrence order before returning playback locally, and recheck it during preparation and receiver pause so receiver edits cannot be overwritten by a stale queue.
 
@@ -69,7 +69,6 @@
 
 - Skip an orphaned download file during cleanup if its size or modification time changed after the review scan.
 
-- Clarify future Chocolatey package metadata: link the Pleazyng website separately from its source code and identify the Chocolatey maintainer account separately from the software author.
 - Make orphaned-download review discoverable in Download settings, using the same guarded scan and confirmation as the Downloads toolbar.
 - Prefer the available MilkRust renderer for new visualizer profiles, falling back to projectM when necessary while preserving each user's saved engine choice. Clarify how to open presets from Now Playing; native release qualification remains in progress.
 

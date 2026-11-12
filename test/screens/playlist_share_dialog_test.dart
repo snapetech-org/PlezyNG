@@ -47,7 +47,8 @@ void main() {
         client.plexAccountToken = 'account-token';
         final auth = PlexAuthService.forTesting(
           http: MediaServerHttpClient(
-            client: MockClient((_) {
+            client: MockClient((request) {
+              if (request.method == 'GET') return Future.value(jsonResponse([]));
               requests++;
               return pending.future;
             }),
@@ -118,5 +119,78 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
+  }
+  for (final decision in ['confirm', 'cancel', 'retired']) {
+    testWidgets('access revocation requires the original account and $decision decision', (tester) async {
+      var current = true, writes = 0;
+      final client = testPlexClient(
+        serverId: ServerId('s'),
+        config: testPlexConfig(machineIdentifier: 'machine'),
+        handler: (_) async => jsonResponse({
+          'MediaContainer': {
+            'Metadata': [
+              {'ratingKey': '123', 'title': 'Music', 'playlistType': 'audio', 'smart': false},
+            ],
+          },
+        }),
+      );
+      client.plexAccountToken = 'cloud';
+      final auth = PlexAuthService.forTesting(
+        http: MediaServerHttpClient(
+          client: MockClient((request) async {
+            if (request.method == 'DELETE') {
+              writes++;
+              return http.Response('', 204);
+            }
+            return jsonResponse([
+              {
+                'id': 42,
+                'invited': {'id': 8, 'username': 'friend'},
+                'sharedItems': [
+                  {'id': 99, 'uri': 'server://machine/com.plexapp.plugins.library/playlists/123/items'},
+                ],
+              },
+            ]);
+          }),
+        ),
+      );
+      addTearDown(client.close);
+      addTearDown(auth.dispose);
+      final sharing = PlexPlaylistSharing(
+        client: client,
+        auth: auth,
+        isCurrent: () => current,
+        playlist: const MediaPlaylist(
+          id: '123',
+          backend: MediaBackend.plex,
+          title: 'Music',
+          playlistType: 'audio',
+          serverId: 's',
+        ),
+      );
+      final draft = await sharing.prepare();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PlaylistShareDialog(draft: draft, sharing: sharing),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('friend'), findsOneWidget);
+      expect(writes, 0);
+      await tester.tap(find.byKey(const ValueKey('playlist_revoke_99')));
+      await tester.pumpAndSettle();
+      expect(writes, 0);
+      if (decision == 'retired') current = false;
+      await tester.tap(
+        decision == 'cancel' ? find.text(t.common.cancel).last : find.byKey(const ValueKey('playlist_revoke_confirm')),
+      );
+      await tester.pumpAndSettle();
+      expect(writes, decision == 'confirm' ? 1 : 0);
+      expect(find.byKey(const ValueKey('playlist_revoke_99')), decision == 'confirm' ? findsNothing : findsOneWidget);
+      if (decision == 'confirm') expect(find.text(t.musicTools.playlistAccessNone), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   }
 }

@@ -1172,7 +1172,6 @@ class _Translations$videoControls$id extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Surat Kotak';
 	@override String get fillScreen => 'Mengisi layar';
-	@override String get stretch => 'Mengisi';
 	@override String get lockRotation => 'Lock rotasi';
 	@override String get unlockRotation => 'Unlock rotasi';
 	@override String get timerActive => 'Timer aktif';
@@ -4330,6 +4329,8 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Berikan akses ke daftar putar ini dan lagunya. Penerima mungkin perlu menerima undangan.';
 	@override String get playlistSharingFailed => 'Tidak dapat meminta akses daftar putar.';
 	@override String get playlistSharingAccepted => 'Plex menerima permintaan akses.';
+	@override String get playlistAccessList => 'Akses saat ini';
+	@override String get playlistAccessNone => 'Belum ada akses daftar putar yang diberikan';
 }
 
 // Path: musicDevices
@@ -6449,7 +6450,6 @@ extension on TranslationsId {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Surat Kotak',
 			'videoControls.fillScreen' => 'Mengisi layar',
-			'videoControls.stretch' => 'Mengisi',
 			'videoControls.lockRotation' => 'Lock rotasi',
 			'videoControls.unlockRotation' => 'Unlock rotasi',
 			'videoControls.timerActive' => 'Timer aktif',
@@ -6494,9 +6494,9 @@ extension on TranslationsId {
 			'videoControls.chaptersAndBookmarks' => 'Bab dan Bookmark',
 			'videoControls.segmentLoop' => 'Segmen Lingkungan',
 			'videoControls.addBookmark' => 'Tambahkan Bookmark',
+			'videoControls.bookmarkName' => 'Nama Bookmark',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Nama Bookmark',
 			'videoControls.bookmarkNameHint' => 'Misalnya, adegan pembukaan',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark yang ${n}',
 			'videoControls.bookmarkNameRequired' => 'Masukkan nama untuk buku ini.',
@@ -7008,9 +7008,9 @@ extension on TranslationsId {
 			'libraries.hideLibrary' => 'Perpustakaan tersembunyi',
 			'libraries.libraryOptions' => 'Pilihan perpustakaan',
 			'libraries.content' => 'Perpustakaan konten',
+			'libraries.selectLibrary' => 'Pilih perpustakaan',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Pilih perpustakaan',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			'libraries.noRecommendations' => 'Tidak ada rekomendasi tersedia',
 			'libraries.noCollections' => 'Tidak ada koleksi di perpustakaan ini',
@@ -7522,9 +7522,9 @@ extension on TranslationsId {
 			'watchTogether.enterRoomCode' => 'Masukkan kode 6 karakter dari host.',
 			'watchTogether.roomCode' => 'Kode kamar',
 			'watchTogether.paste' => 'Tempel',
+			'watchTogether.noCodeInClipboard' => 'Clipboard tidak mengandung kode kamar',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Clipboard tidak mengandung kode kamar',
 			'watchTogether.copyCode' => 'Kopi kode',
 			'watchTogether.codeCopied' => 'Kode kamar disalin',
 			'watchTogether.shareInvite' => 'Membagi Jemputan',
@@ -8036,9 +8036,9 @@ extension on TranslationsId {
 			'metadataEdit.selectLogo' => 'Pilih Logo',
 			'metadataEdit.selectSquareArt' => 'Seleksi Square Art',
 			'metadataEdit.fromUrl' => 'dari URL',
+			'metadataEdit.uploadFile' => 'Upload file',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Upload file',
 			'metadataEdit.enterImageUrl' => 'Masukkan URL gambar',
 			'metadataEdit.imageUrl' => 'Gambar URL',
 			'metadataEdit.metadataUpdated' => 'Metadata yang diperbarui',
@@ -8550,9 +8550,9 @@ extension on TranslationsId {
 			'universalMedia.intro' => 'Buka link, playlist, atau file. Playback menggunakan pemutar standar Pleazyng dan tidak menambahkan sejarah ke perpustakaan Anda.',
 			'universalMedia.openWhat' => 'Apa yang ingin Anda buka?',
 			'universalMedia.stream' => 'Alamat Stream',
+			'universalMedia.playlist' => 'Daftar Playlist',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Daftar Playlist',
 			'universalMedia.files' => 'perangkat file',
 			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
@@ -9064,9 +9064,9 @@ extension on TranslationsId {
 			'sourceSetup.nfsTrustHelp' => 'Kosongkan untuk sertifikat yang dipercaya perangkat ini. Jika perlu, tambahkan sertifikat CA privat atau sertifikat server yang ditandatangani sendiri; namanya harus cocok dengan host pada URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Gunakan sertifikat CA atau server dalam format PEM. Jangan sertakan kunci privat.',
 			'sourceSetup.addTrustCertificate' => 'Tambahkan sertifikat kepercayaan khusus',
+			'sourceSetup.replaceTrustCertificate' => 'Ganti sertifikat khusus yang tersimpan',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Ganti sertifikat khusus yang tersimpan',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan layanan mount biasa serta memerlukan dukungan RFC 9289 pada NAS. TLS 1.3 wajib digunakan. Nama host atau IP harus cocok dengan sertifikat. AUTH_SYS UID/GID tetap berlaku di dalam saluran terenkripsi.',
 			'sourceSetup.clientCertificate' => 'Sertifikat klien (opsional)',
 			'sourceSetup.clientCertificateHelp' => 'Memungkinkan NAS mengautentikasi klien ini; ID AUTH_SYS tetap bergantung pada kebijakan ekspor NFS di NAS.',
@@ -9536,6 +9536,8 @@ extension on TranslationsId {
 			'musicTools.playlistSharingHint' => 'Berikan akses ke daftar putar ini dan lagunya. Penerima mungkin perlu menerima undangan.',
 			'musicTools.playlistSharingFailed' => 'Tidak dapat meminta akses daftar putar.',
 			'musicTools.playlistSharingAccepted' => 'Plex menerima permintaan akses.',
+			'musicTools.playlistAccessList' => 'Akses saat ini',
+			'musicTools.playlistAccessNone' => 'Belum ada akses daftar putar yang diberikan',
 			'musicDevices.playOn' => 'Putar di',
 			'musicDevices.thisDevice' => 'Perangkat ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',

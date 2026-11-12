@@ -1187,7 +1187,6 @@ class _Translations$videoControls$uk extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Літературний ящик';
 	@override String get fillScreen => 'Завантажити екран';
-	@override String get stretch => 'Розтягнути';
 	@override String get lockRotation => 'Ротація замку';
 	@override String get unlockRotation => 'Відключення ротації';
 	@override String get timerActive => 'Активний час';
@@ -4395,6 +4394,8 @@ class _Translations$musicTools$uk extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Надайте доступ до цього списку та його композицій. Одержувачу може знадобитися прийняти запрошення.';
 	@override String get playlistSharingFailed => 'Не вдалося запросити доступ до списку.';
 	@override String get playlistSharingAccepted => 'Plex прийняв запит на доступ.';
+	@override String get playlistAccessList => 'Поточний доступ';
+	@override String get playlistAccessNone => 'Доступ до списку нікому не надано';
 }
 
 // Path: musicDevices
@@ -6518,7 +6519,6 @@ extension on TranslationsUk {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Літературний ящик',
 			'videoControls.fillScreen' => 'Завантажити екран',
-			'videoControls.stretch' => 'Розтягнути',
 			'videoControls.lockRotation' => 'Ротація замку',
 			'videoControls.unlockRotation' => 'Відключення ротації',
 			'videoControls.timerActive' => 'Активний час',
@@ -6563,9 +6563,9 @@ extension on TranslationsUk {
 			'videoControls.chaptersAndBookmarks' => 'Розділи та книжкові знаки',
 			'videoControls.segmentLoop' => 'сегмент лоуп',
 			'videoControls.addBookmark' => 'Додати книжковий знак',
+			'videoControls.bookmarkName' => 'Bookmark ім\'я',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark ім\'я',
 			'videoControls.bookmarkNameHint' => 'Наприклад, відкриття сцені',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Книжковий знак ${n}',
 			'videoControls.bookmarkNameRequired' => 'Введіть ім\'я для цієї книжкової марки.',
@@ -7077,9 +7077,9 @@ extension on TranslationsUk {
 			'libraries.hideLibrary' => 'Сховати бібліотеку',
 			'libraries.libraryOptions' => 'Бібліотечні варіанти',
 			'libraries.content' => 'Бібліотека контент',
+			'libraries.selectLibrary' => 'Вибір бібліотеки',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Вибір бібліотеки',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фільтри (${count})',
 			'libraries.noRecommendations' => 'Немає доступних рекомендацій',
 			'libraries.noCollections' => 'Ніяких колекцій в цій бібліотеці',
@@ -7591,9 +7591,9 @@ extension on TranslationsUk {
 			'watchTogether.enterRoomCode' => 'Введіть 6-картний код з хостингу.',
 			'watchTogether.roomCode' => 'Код кімнати',
 			'watchTogether.paste' => 'Пастир',
+			'watchTogether.noCodeInClipboard' => 'Кліпборд не містить коду кімнати',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Кліпборд не містить коду кімнати',
 			'watchTogether.copyCode' => 'Копіювати код',
 			'watchTogether.codeCopied' => 'Код кімнати копіюється',
 			'watchTogether.shareInvite' => 'Поділимо запрошення',
@@ -8105,9 +8105,9 @@ extension on TranslationsUk {
 			'metadataEdit.selectLogo' => 'Вибір логотипу',
 			'metadataEdit.selectSquareArt' => 'Вибір площі мистецтва',
 			'metadataEdit.fromUrl' => 'Від URL',
+			'metadataEdit.uploadFile' => 'Завантажити файл',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Завантажити файл',
 			'metadataEdit.enterImageUrl' => 'Введіть URL',
 			'metadataEdit.imageUrl' => 'Зображення URL',
 			'metadataEdit.metadataUpdated' => 'Актуальні метастази',
@@ -8619,9 +8619,9 @@ extension on TranslationsUk {
 			'universalMedia.intro' => 'Відкрийте посилання, перелік або файл. Playback використовує стандартний гравець Pleazyng і не додає історії до вашої бібліотеки.',
 			'universalMedia.openWhat' => 'Що ви хотіли б відкрити?',
 			'universalMedia.stream' => 'Потік адреси',
+			'universalMedia.playlist' => 'Ігровий список',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Ігровий список',
 			'universalMedia.files' => 'Файли пристроїв',
 			'universalMedia.favorites' => 'Збережений потік улюблених',
 			'universalMedia.address' => 'Медіа адреса',
@@ -9133,9 +9133,9 @@ extension on TranslationsUk {
 			'sourceSetup.nfsTrustHelp' => 'Залиште порожнім для сертифікатів, яким довіряє цей пристрій. За потреби додайте сертифікат приватного CA або самопідписаний сертифікат сервера; імена в ньому мають відповідати хосту в URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Використайте сертифікат CA або сервера у форматі PEM. Не додавайте приватний ключ.',
 			'sourceSetup.addTrustCertificate' => 'Додати власний довірений сертифікат',
+			'sourceSetup.replaceTrustCertificate' => 'Замінити збережений власний сертифікат',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Замінити збережений власний сертифікат',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS використовує звичайні порти NFS і служби монтування та потребує підтримки RFC 9289 на NAS. Потрібен TLS 1.3. Ім’я хоста або IP-адреса мають відповідати сертифікату. UID/GID AUTH_SYS і далі застосовуються в зашифрованому каналі.',
 			'sourceSetup.clientCertificate' => 'Сертифікат клієнта (необов’язково)',
 			'sourceSetup.clientCertificateHelp' => 'Дає змогу NAS автентифікувати цього клієнта; ID AUTH_SYS і далі залежать від правил експорту NFS на NAS.',
@@ -9605,6 +9605,8 @@ extension on TranslationsUk {
 			'musicTools.playlistSharingHint' => 'Надайте доступ до цього списку та його композицій. Одержувачу може знадобитися прийняти запрошення.',
 			'musicTools.playlistSharingFailed' => 'Не вдалося запросити доступ до списку.',
 			'musicTools.playlistSharingAccepted' => 'Plex прийняв запит на доступ.',
+			'musicTools.playlistAccessList' => 'Поточний доступ',
+			'musicTools.playlistAccessNone' => 'Доступ до списку нікому не надано',
 			'musicDevices.playOn' => 'Відтворити на',
 			'musicDevices.thisDevice' => 'Цей пристрій',
 			'musicDevices.playingOn' => ({required Object device}) => 'Відтворюється на ${device}',

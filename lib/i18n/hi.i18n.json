@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "पत्रबॉक्स",
     "fillScreen": "स्क्रीन भरें",
-    "stretch": "तंग",
     "lockRotation": "लॉक रोटेशन",
     "unlockRotation": "रोटेशन को खत्म करें",
     "timerActive": "टाइमर सक्रिय",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex उपयोगकर्ता नाम या ईमेल",
     "playlistSharingHint": "इस प्लेलिस्ट और इसके ट्रैक का ऐक्सेस दें। प्राप्तकर्ता को निमंत्रण स्वीकार करना पड़ सकता है।",
     "playlistSharingFailed": "प्लेलिस्ट के ऐक्सेस का अनुरोध नहीं किया जा सका।",
-    "playlistSharingAccepted": "Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।"
+    "playlistSharingAccepted": "Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।",
+    "playlistAccessList": "मौजूदा ऐक्सेस",
+    "playlistAccessNone": "प्लेलिस्ट का ऐक्सेस किसी को नहीं दिया गया"
   },
   "musicDevices": {
     "playOn": "इस पर चलाएँ",

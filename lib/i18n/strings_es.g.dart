@@ -1183,7 +1183,6 @@ class Translations$videoControls$es extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Con bandas negras';
 	@override String get fillScreen => 'Llenar pantalla';
-	@override String get stretch => 'Estirar';
 	@override String get lockRotation => 'Bloquear rotación';
 	@override String get unlockRotation => 'Desbloquear rotación';
 	@override String get timerActive => 'Temporizador activo';
@@ -4443,6 +4442,8 @@ class Translations$musicTools$es extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Concede acceso a esta lista y sus pistas. Es posible que el destinatario deba aceptar una invitación.';
 	@override String get playlistSharingFailed => 'No se pudo solicitar acceso a la lista.';
 	@override String get playlistSharingAccepted => 'Plex aceptó la solicitud de acceso.';
+	@override String get playlistAccessList => 'Acceso actual';
+	@override String get playlistAccessNone => 'No hay permisos de acceso a la lista';
 }
 
 // Path: musicDevices
@@ -6601,7 +6602,6 @@ extension on TranslationsEs {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Con bandas negras',
 			'videoControls.fillScreen' => 'Llenar pantalla',
-			'videoControls.stretch' => 'Estirar',
 			'videoControls.lockRotation' => 'Bloquear rotación',
 			'videoControls.unlockRotation' => 'Desbloquear rotación',
 			'videoControls.timerActive' => 'Temporizador activo',
@@ -6643,9 +6643,9 @@ extension on TranslationsEs {
 			'videoControls.loopPointNotSet' => 'No se establece',
 			'videoControls.bookmarksHelp' => 'Las notas se almacenan en este dispositivo. Seleccione una para ir a ese tiempo.',
 			'videoControls.bookmarksButton' => 'Bookmarcas',
+			'videoControls.chaptersAndBookmarks' => 'Capítulos y Bookmarks',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.chaptersAndBookmarks' => 'Capítulos y Bookmarks',
 			'videoControls.segmentLoop' => 'El segmento Loop',
 			'videoControls.addBookmark' => 'Añadir Bookmark',
 			'videoControls.bookmarkName' => 'Nombre Bookmark',
@@ -7157,9 +7157,9 @@ extension on TranslationsEs {
 			'libraries.noLibrariesFound' => 'No se encontraron bibliotecas',
 			'libraries.allLibrariesHidden' => 'Todas las bibliotecas están ocultas',
 			'libraries.hiddenLibrariesCount' => ({required Object count}) => 'Bibliotecas ocultas (${count})',
+			'libraries.thisLibraryIsEmpty' => 'Esta biblioteca está vacía',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.thisLibraryIsEmpty' => 'Esta biblioteca está vacía',
 			'libraries.noItemsMatchFilters' => 'Ningún elemento coincide con los filtros activos',
 			'libraries.resetFilters' => 'Restablecer filtros',
 			'libraries.all' => 'Todos',
@@ -7671,9 +7671,9 @@ extension on TranslationsEs {
 			'music.noAudioUrl' => ({required Object track}) => 'No hay ninguna URL de audio disponible para ${track}',
 			'music.discography.singlesAndEps' => 'Sencillos y EP',
 			'music.discography.live' => 'En directo',
+			'music.discography.compilations' => 'Recopilaciones',
 			_ => null,
 		} ?? switch (path) {
-			'music.discography.compilations' => 'Recopilaciones',
 			'music.backTo' => 'Volver a',
 			'music.upNext' => 'A continuación',
 			'watchTogether.title' => 'Ver juntos',
@@ -8185,9 +8185,9 @@ extension on TranslationsEs {
 			'metadataEdit.editMetadata' => 'Editar...',
 			'metadataEdit.screenTitle' => 'Editar metadatos',
 			'metadataEdit.basicInfo' => 'Información básica',
+			'metadataEdit.artwork' => 'Imágenes',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artwork' => 'Imágenes',
 			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
 			'metadataEdit.title' => 'Título',
 			'metadataEdit.sortTitle' => 'Título de ordenación',
@@ -8699,9 +8699,9 @@ extension on TranslationsEs {
 			'homeLayout.layoutNavDescription' => 'Elegir líneas, bibliotecas y categorías de colección',
 			'homeLayout.editHomeRow' => 'Edit Home Rue',
 			'homeLayout.resetHeroButton' => 'Reset el layout de héroe a stock Pleazyng',
+			'homeLayout.reorderingUnlocked' => 'Reorganización desbloqueada',
 			_ => null,
 		} ?? switch (path) {
-			'homeLayout.reorderingUnlocked' => 'Reorganización desbloqueada',
 			'homeLayout.reorderingLocked' => 'Reorganización localizada',
 			'homeLayout.rowsCanBeDragged' => 'Las rayas pueden ser atraídas — tapar el cierre para evitar que',
 			'homeLayout.tapLockToDrag' => 'Toma el cierre para sacar líneas',
@@ -9213,9 +9213,9 @@ extension on TranslationsEs {
 			'sourceSetup.savedCertificate' => 'Certificado del servidor guardado',
 			'sourceSetup.nfsEndpointInvalid' => 'Introduce una URL NFS, como nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'No se encontraron servidores DLNA. Introduce manualmente la URL de descripción del dispositivo.',
+			'sourceSetup.dlnaServers' => 'Servidores multimedia DLNA',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.dlnaServers' => 'Servidores multimedia DLNA',
 			'sourceSetup.dlnaUnavailable' => 'La detección DLNA no está disponible en esta red. Introduce manualmente la URL de descripción del dispositivo.',
 			'sourceSetup.dlnaSearching' => 'Buscando servidores DLNA en la red local',
 			'sourceSetup.networkSearching' => 'Buscando en la red local…',
@@ -9727,9 +9727,9 @@ extension on TranslationsEs {
 			'musicExperience.play' => 'Reproducir selección',
 			'musicExperience.next' => 'Reproducir a continuación',
 			'musicExperience.error' => 'La solicitud de música ha fallado',
+			'musicExperience.on' => 'En',
 			_ => null,
 		} ?? switch (path) {
-			'musicExperience.on' => 'En',
 			'musicExperience.off' => 'Desactivado',
 			'musicExperience.unknown' => 'Desconocido',
 			'musicExperience.routeLost' => 'Salida de audio desconectada. Reproducción pausada.',
@@ -9787,6 +9787,8 @@ extension on TranslationsEs {
 			'musicTools.playlistSharingHint' => 'Concede acceso a esta lista y sus pistas. Es posible que el destinatario deba aceptar una invitación.',
 			'musicTools.playlistSharingFailed' => 'No se pudo solicitar acceso a la lista.',
 			'musicTools.playlistSharingAccepted' => 'Plex aceptó la solicitud de acceso.',
+			'musicTools.playlistAccessList' => 'Acceso actual',
+			'musicTools.playlistAccessNone' => 'No hay permisos de acceso a la lista',
 			'musicDevices.playOn' => 'Reproducir en',
 			'musicDevices.thisDevice' => 'Este dispositivo',
 			'musicDevices.playingOn' => ({required Object device}) => 'Reproduciendo en ${device}',

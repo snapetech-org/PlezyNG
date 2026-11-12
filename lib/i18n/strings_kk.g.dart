@@ -1177,7 +1177,6 @@ class _Translations$videoControls$kk extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Кең экран (Letterbox)';
 	@override String get fillScreen => 'Экранды толтыру';
-	@override String get stretch => 'Созу';
 	@override String get lockRotation => 'Бұрылысты бұғаттау';
 	@override String get unlockRotation => 'Бұрылысты бұғаттаудан шығару';
 	@override String get timerActive => 'Таймер белсенді';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Осы тізімге және оның тректеріне қатынау беріңіз. Алушы шақыруды қабылдауы қажет болуы мүмкін.';
 	@override String get playlistSharingFailed => 'Тізімге қатынау сұрауын жіберу мүмкін болмады.';
 	@override String get playlistSharingAccepted => 'Plex қатынау сұрауын қабылдады.';
+	@override String get playlistAccessList => 'Ағымдағы қатынау';
+	@override String get playlistAccessNone => 'Ойнату тізіміне қатынау берілмеген';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsKk {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Кең экран (Letterbox)',
 			'videoControls.fillScreen' => 'Экранды толтыру',
-			'videoControls.stretch' => 'Созу',
 			'videoControls.lockRotation' => 'Бұрылысты бұғаттау',
 			'videoControls.unlockRotation' => 'Бұрылысты бұғаттаудан шығару',
 			'videoControls.timerActive' => 'Таймер белсенді',
@@ -6519,9 +6519,9 @@ extension on TranslationsKk {
 			'videoControls.chaptersAndBookmarks' => 'Тараулар мен бетбелгілер',
 			'videoControls.segmentLoop' => 'Бөлімді қайталау',
 			'videoControls.addBookmark' => 'Бетбелгі қосу',
+			'videoControls.bookmarkName' => 'Бетбелгі атауы',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Бетбелгі атауы',
 			'videoControls.bookmarkNameHint' => 'Мысалы, кіріспе көрінісі',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Бетбелгі ${n}',
 			'videoControls.bookmarkNameRequired' => 'Бұл бетбелгіге атау енгізіңіз.',
@@ -7033,9 +7033,9 @@ extension on TranslationsKk {
 			'libraries.hideLibrary' => 'Кітапхананы жасыру',
 			'libraries.libraryOptions' => 'Кітапхана параметрлері',
 			'libraries.content' => 'кітапхана мазмұны',
+			'libraries.selectLibrary' => 'Кітапхананы таңдау',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Кітапхананы таңдау',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтрлер (${count})',
 			'libraries.noRecommendations' => 'Ұсыныстар жоқ',
 			'libraries.noCollections' => 'Бұл кітапханада топтамалар жоқ',
@@ -7547,9 +7547,9 @@ extension on TranslationsKk {
 			'watchTogether.enterRoomCode' => 'Ұйымдастырушыдан алған 6 таңбалы кодты енгізіңіз.',
 			'watchTogether.roomCode' => 'Бөлме коды',
 			'watchTogether.paste' => 'Қою',
+			'watchTogether.noCodeInClipboard' => 'Алмасу буферінде бөлме коды жоқ',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Алмасу буферінде бөлме коды жоқ',
 			'watchTogether.copyCode' => 'Кодты көшіру',
 			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
 			'watchTogether.shareInvite' => 'Шақыру жіберу',
@@ -8061,9 +8061,9 @@ extension on TranslationsKk {
 			'metadataEdit.selectLogo' => 'Логотипті таңдау',
 			'metadataEdit.selectSquareArt' => 'Шаршы суретті таңдау',
 			'metadataEdit.fromUrl' => 'URL арқылы',
+			'metadataEdit.uploadFile' => 'Файлды жүктеу',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Файлды жүктеу',
 			'metadataEdit.enterImageUrl' => 'Сурет URL-ін енгізіңіз',
 			'metadataEdit.imageUrl' => 'Сурет URL-і',
 			'metadataEdit.metadataUpdated' => 'Метадеректер жаңартылды',
@@ -8575,9 +8575,9 @@ extension on TranslationsKk {
 			'universalMedia.intro' => 'Өзі сүйікті жабдықтар, жүктеу спиртке немесе файлға айналады. Playback-ге Pleazyng стандартты фейерверктері бар және библиографиясы көшіру керек емес.',
 			'universalMedia.openWhat' => 'Қанша идеялардан тұрады?',
 			'universalMedia.stream' => 'Тегін адресы',
+			'universalMedia.playlist' => 'Жүзілік',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Жүзілік',
 			'universalMedia.files' => 'Файлы',
 			'universalMedia.favorites' => 'Алдыңғы ең айқын көргенде',
 			'universalMedia.address' => 'Медыялық адресы',
@@ -9089,9 +9089,9 @@ extension on TranslationsKk {
 			'sourceSetup.nfsTrustHelp' => 'Осы құрылғы сенетін сертификаттар үшін бос қалдырыңыз. Қажет болса, жеке CA сертификатын немесе өзі қол қойған сервер сертификатын қосыңыз; ондағы атаулар NFS URL мекенжайындағы хостқа сәйкес болуы керек.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM пішіміндегі CA немесе сервер сертификатын пайдаланыңыз. Жеке кілтті қоспаңыз.',
 			'sourceSetup.addTrustCertificate' => 'Теңшелетін сенім сертификатын қосу',
+			'sourceSetup.replaceTrustCertificate' => 'Сақталған теңшелетін сертификатты ауыстыру',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Сақталған теңшелетін сертификатты ауыстыру',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS әдеттегі NFS және mount қызметінің порттарын пайдаланады және NAS-та RFC 9289 қолдауын талап етеді. TLS 1.3 қажет. Хост атауы немесе IP мекенжайы сертификатқа сәйкес болуы керек. Шифрланған арнада да AUTH_SYS UID/GID қолданылады.',
 			'sourceSetup.clientCertificate' => 'Клиент сертификаты (міндетті емес)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-қа осы клиентті аутентификациялауға мүмкіндік береді; AUTH_SYS ID мәндері әлі де NAS-тағы NFS ортақ ресурсының ережелеріне тәуелді.',
@@ -9561,6 +9561,8 @@ extension on TranslationsKk {
 			'musicTools.playlistSharingHint' => 'Осы тізімге және оның тректеріне қатынау беріңіз. Алушы шақыруды қабылдауы қажет болуы мүмкін.',
 			'musicTools.playlistSharingFailed' => 'Тізімге қатынау сұрауын жіберу мүмкін болмады.',
 			'musicTools.playlistSharingAccepted' => 'Plex қатынау сұрауын қабылдады.',
+			'musicTools.playlistAccessList' => 'Ағымдағы қатынау',
+			'musicTools.playlistAccessNone' => 'Ойнату тізіміне қатынау берілмеген',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',

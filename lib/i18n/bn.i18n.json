@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "বাক্স",
     "fillScreen": "স্ক্রিন পূরণ",
-    "stretch": "বিস্তারিত",
     "lockRotation": "লক রটেশন",
     "unlockRotation": "রটিং অসুবিধা",
     "timerActive": "টাইমিং সক্রিয়",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex ব্যবহারকারীর নাম বা ইমেইল",
     "playlistSharingHint": "এই প্লেলিস্ট ও এর ট্র্যাকগুলোতে প্রবেশাধিকার দিন। প্রাপককে আমন্ত্রণ গ্রহণ করতে হতে পারে।",
     "playlistSharingFailed": "প্লেলিস্টে প্রবেশাধিকারের অনুরোধ করা যায়নি।",
-    "playlistSharingAccepted": "Plex প্রবেশাধিকারের অনুরোধ গ্রহণ করেছে।"
+    "playlistSharingAccepted": "Plex প্রবেশাধিকারের অনুরোধ গ্রহণ করেছে।",
+    "playlistAccessList": "বর্তমান প্রবেশাধিকার",
+    "playlistAccessNone": "প্লেলিস্টে কাউকে প্রবেশাধিকার দেওয়া হয়নি"
   },
   "musicDevices": {
     "playOn": "এখানে চালান",

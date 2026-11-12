@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Черни ленти",
     "fillScreen": "Запълни екрана",
-    "stretch": "Разтегни",
     "lockRotation": "Заключи завъртането",
     "unlockRotation": "Отключи завъртането",
     "timerActive": "Таймерът е активен",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex потребителско име или имейл",
     "playlistSharingHint": "Дайте достъп до този плейлист и песните му. Получателят може да трябва да приеме покана.",
     "playlistSharingFailed": "Неуспешна заявка за достъп до плейлиста.",
-    "playlistSharingAccepted": "Plex прие заявката за достъп."
+    "playlistSharingAccepted": "Plex прие заявката за достъп.",
+    "playlistAccessList": "Текущ достъп",
+    "playlistAccessNone": "Няма предоставен достъп до плейлиста"
   },
   "musicDevices": {
     "playOn": "Възпроизвеждане на",

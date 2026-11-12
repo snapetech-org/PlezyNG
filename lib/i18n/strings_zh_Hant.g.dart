@@ -1176,7 +1176,6 @@ class _Translations$videoControls$zh_Hant extends Translations$videoControls$zh 
 	@override String addTime({required Object amount, required Object unit}) => '+${amount} ${unit}';
 	@override String get letterbox => '信箱模式（Letterbox）';
 	@override String get fillScreen => '填滿螢幕';
-	@override String get stretch => '拉伸';
 	@override String get lockRotation => '鎖定旋轉';
 	@override String get unlockRotation => '解除鎖定旋轉';
 	@override String get timerActive => '計時器已啟動';
@@ -4349,6 +4348,8 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String get playlistSharingHint => '授予此播放清單及其曲目的存取權。收件者可能需要接受邀請。';
 	@override String get playlistSharingFailed => '無法請求播放清單存取權。';
 	@override String get playlistSharingAccepted => 'Plex 已接受存取請求。';
+	@override String get playlistAccessList => '目前的存取權';
+	@override String get playlistAccessNone => '尚未授予播放清單存取權';
 }
 
 // Path: musicDevices
@@ -6470,7 +6471,6 @@ extension on TranslationsZhHant {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount} ${unit}',
 			'videoControls.letterbox' => '信箱模式（Letterbox）',
 			'videoControls.fillScreen' => '填滿螢幕',
-			'videoControls.stretch' => '拉伸',
 			'videoControls.lockRotation' => '鎖定旋轉',
 			'videoControls.unlockRotation' => '解除鎖定旋轉',
 			'videoControls.timerActive' => '計時器已啟動',
@@ -6515,9 +6515,9 @@ extension on TranslationsZhHant {
 			'videoControls.chaptersAndBookmarks' => '章節和書標',
 			'videoControls.segmentLoop' => '分割槽路徑',
 			'videoControls.addBookmark' => '新增 Bookmark',
+			'videoControls.bookmarkName' => 'Bookmark 名稱',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark 名稱',
 			'videoControls.bookmarkNameHint' => '例如,開幕式',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => '圖示 ${n}',
 			'videoControls.bookmarkNameRequired' => '請輸入本書標誌的名稱。',
@@ -7029,9 +7029,9 @@ extension on TranslationsZhHant {
 			'libraries.hideLibrary' => '隱藏媒體庫',
 			'libraries.libraryOptions' => '媒體庫選項',
 			'libraries.content' => '媒體庫內容',
+			'libraries.selectLibrary' => '選擇媒體庫',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => '選擇媒體庫',
 			'libraries.filtersWithCount' => ({required Object count}) => '篩選器（${count}）',
 			'libraries.noRecommendations' => '目前沒有推薦',
 			'libraries.noCollections' => '此媒體庫中沒有收藏集',
@@ -7543,9 +7543,9 @@ extension on TranslationsZhHant {
 			'watchTogether.enterRoomCode' => '請輸入主持人提供的 6 字元代碼。',
 			'watchTogether.roomCode' => '房間代碼',
 			'watchTogether.paste' => '貼上',
+			'watchTogether.noCodeInClipboard' => '剪貼簿中沒有房間代碼',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => '剪貼簿中沒有房間代碼',
 			'watchTogether.copyCode' => '複製代碼',
 			'watchTogether.codeCopied' => '房間代碼已複製',
 			'watchTogether.shareInvite' => '分享邀請',
@@ -8057,9 +8057,9 @@ extension on TranslationsZhHant {
 			'metadataEdit.selectLogo' => '選擇標誌',
 			'metadataEdit.selectSquareArt' => '選擇方形圖片',
 			'metadataEdit.fromUrl' => '自訂網址',
+			'metadataEdit.uploadFile' => '上傳檔案',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => '上傳檔案',
 			'metadataEdit.enterImageUrl' => '輸入圖片 URL',
 			'metadataEdit.imageUrl' => '圖片 URL',
 			'metadataEdit.metadataUpdated' => '中繼資料已更新',
@@ -8571,9 +8571,9 @@ extension on TranslationsZhHant {
 			'universalMedia.intro' => '開啟連結、播放列表或檔案 Playback 使用 Pleazyng 的標準播放器,並且不會將歷史新增到您的圖書館。',
 			'universalMedia.openWhat' => '你想開啟什麼?',
 			'universalMedia.stream' => '流地址',
+			'universalMedia.playlist' => '播放列表',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => '播放列表',
 			'universalMedia.files' => '裝置檔案',
 			'universalMedia.favorites' => '儲存流喜愛',
 			'universalMedia.address' => '媒體地址',
@@ -9085,9 +9085,9 @@ extension on TranslationsZhHant {
 			'sourceSetup.nfsTrustHelp' => '使用此裝置信任的憑證時請留空。需要時可新增私人 CA 或自我簽署的伺服器憑證；憑證中的名稱必須與 NFS 網址的主機名稱相符。',
 			'sourceSetup.nfsTrustInvalid' => '請使用 PEM 格式的 CA 或伺服器憑證。請勿包含私密金鑰。',
 			'sourceSetup.addTrustCertificate' => '新增自訂信任憑證',
+			'sourceSetup.replaceTrustCertificate' => '取代已儲存的自訂憑證',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => '取代已儲存的自訂憑證',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用一般的 NFS 和掛載服務連接埠，並要求 NAS 支援 RFC 9289。必須使用 TLS 1.3。主機名稱或 IP 位址必須與憑證相符。加密通道內仍須使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '用戶端憑證（選填）',
 			'sourceSetup.clientCertificateHelp' => '讓 NAS 驗證此用戶端的身分；AUTH_SYS ID 仍受 NAS 匯出原則約束。',
@@ -9557,6 +9557,8 @@ extension on TranslationsZhHant {
 			'musicTools.playlistSharingHint' => '授予此播放清單及其曲目的存取權。收件者可能需要接受邀請。',
 			'musicTools.playlistSharingFailed' => '無法請求播放清單存取權。',
 			'musicTools.playlistSharingAccepted' => 'Plex 已接受存取請求。',
+			'musicTools.playlistAccessList' => '目前的存取權',
+			'musicTools.playlistAccessNone' => '尚未授予播放清單存取權',
 			'musicDevices.playOn' => '播放裝置',
 			'musicDevices.thisDevice' => '此裝置',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

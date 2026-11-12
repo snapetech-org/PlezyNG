@@ -1172,7 +1172,6 @@ class _Translations$videoControls$th extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'กล่องข้อความ';
 	@override String get fillScreen => 'หน้าจอเต็มรูปแบบ';
-	@override String get stretch => 'ยืด';
 	@override String get lockRotation => 'ล็อคหมุน';
 	@override String get unlockRotation => 'ล็อคหมุน';
 	@override String get timerActive => 'ฤดูใบไม้ผลิ';
@@ -4330,6 +4329,8 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'ให้สิทธิ์เข้าถึงเพลย์ลิสต์นี้และเพลงในรายการ ผู้รับอาจต้องตอบรับคำเชิญ';
 	@override String get playlistSharingFailed => 'ไม่สามารถขอสิทธิ์เข้าถึงเพลย์ลิสต์ได้';
 	@override String get playlistSharingAccepted => 'Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว';
+	@override String get playlistAccessList => 'สิทธิ์เข้าถึงปัจจุบัน';
+	@override String get playlistAccessNone => 'ยังไม่มีการให้สิทธิ์เข้าถึงเพลย์ลิสต์';
 }
 
 // Path: musicDevices
@@ -6449,7 +6450,6 @@ extension on TranslationsTh {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'กล่องข้อความ',
 			'videoControls.fillScreen' => 'หน้าจอเต็มรูปแบบ',
-			'videoControls.stretch' => 'ยืด',
 			'videoControls.lockRotation' => 'ล็อคหมุน',
 			'videoControls.unlockRotation' => 'ล็อคหมุน',
 			'videoControls.timerActive' => 'ฤดูใบไม้ผลิ',
@@ -6494,9 +6494,9 @@ extension on TranslationsTh {
 			'videoControls.chaptersAndBookmarks' => 'ประเภทและ bookmarks',
 			'videoControls.segmentLoop' => 'ชิ้นส่วน',
 			'videoControls.addBookmark' => 'เพิ่ม Bookmark',
+			'videoControls.bookmarkName' => 'ชื่อ Bookmark',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'ชื่อ Bookmark',
 			'videoControls.bookmarkNameHint' => 'ตัวอย่างเช่น ฉากเปิด',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'บัญชี ${n}',
 			'videoControls.bookmarkNameRequired' => 'ใส่ชื่อสําหรับจดหมายนี้',
@@ -7008,9 +7008,9 @@ extension on TranslationsTh {
 			'libraries.hideLibrary' => 'ซ่อนห้องสมุด',
 			'libraries.libraryOptions' => 'ตัวเลือกห้องสมุด',
 			'libraries.content' => 'วัสดุห้องสมุด',
+			'libraries.selectLibrary' => 'เลือกห้องสมุด',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'เลือกห้องสมุด',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ตัวกรอง (${count})',
 			'libraries.noRecommendations' => 'ไม่มีคําแนะนําที่มีอยู่',
 			'libraries.noCollections' => 'ไม่มีคอลเลกชันในห้องสมุดนี้',
@@ -7522,9 +7522,9 @@ extension on TranslationsTh {
 			'watchTogether.enterRoomCode' => 'ใส่รหัส 6 หมายเลขจากโฮสต์',
 			'watchTogether.roomCode' => 'รหัสห้อง',
 			'watchTogether.paste' => 'แพสติ้ง',
+			'watchTogether.noCodeInClipboard' => 'แผ่นคลิปไม่ได้มีรหัสห้อง',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'แผ่นคลิปไม่ได้มีรหัสห้อง',
 			'watchTogether.copyCode' => 'รหัสคัดลอก',
 			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
 			'watchTogether.shareInvite' => 'คู่มือ',
@@ -8036,9 +8036,9 @@ extension on TranslationsTh {
 			'metadataEdit.selectLogo' => 'เลือกโลโก้',
 			'metadataEdit.selectSquareArt' => 'เลือก Square Art',
 			'metadataEdit.fromUrl' => 'จาก URL',
+			'metadataEdit.uploadFile' => 'ดาวน์โหลดไฟล์',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'ดาวน์โหลดไฟล์',
 			'metadataEdit.enterImageUrl' => 'หมายเลข URL',
 			'metadataEdit.imageUrl' => 'ภาพ URL',
 			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
@@ -8550,9 +8550,9 @@ extension on TranslationsTh {
 			'universalMedia.intro' => 'เปิดลิงค์รายการเล่นหรือไฟล์ Playback ใช้ผู้เล่นมาตรฐานของ Pleazyng และไม่เพิ่มประวัติไปยังห้องสมุดของคุณ',
 			'universalMedia.openWhat' => 'สิ่งที่คุณต้องการเปิด',
 			'universalMedia.stream' => 'หมายเลข Stream',
+			'universalMedia.playlist' => 'เล่น',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'เล่น',
 			'universalMedia.files' => 'ไฟล์อุปกรณ์',
 			'universalMedia.favorites' => 'เก็บ Stream มือสมัครเล่น',
 			'universalMedia.address' => 'อ้างอิงสื่อ',
@@ -9064,9 +9064,9 @@ extension on TranslationsTh {
 			'sourceSetup.nfsTrustHelp' => 'เว้นว่างไว้เพื่อใช้ใบรับรองที่อุปกรณ์นี้เชื่อถือ หากจำเป็น ให้เพิ่มใบรับรองจาก CA ส่วนตัวหรือใบรับรองเซิร์ฟเวอร์ที่ลงนามด้วยตนเอง ชื่อในใบรับรองต้องตรงกับโฮสต์ใน URL ของ NFS',
 			'sourceSetup.nfsTrustInvalid' => 'ใช้ใบรับรอง CA หรือเซิร์ฟเวอร์ในรูปแบบ PEM ห้ามใส่กุญแจส่วนตัว',
 			'sourceSetup.addTrustCertificate' => 'เพิ่มใบรับรองความเชื่อถือที่กำหนดเอง',
+			'sourceSetup.replaceTrustCertificate' => 'แทนที่ใบรับรองที่กำหนดเองซึ่งบันทึกไว้',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'แทนที่ใบรับรองที่กำหนดเองซึ่งบันทึกไว้',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS ใช้พอร์ต NFS และบริการเมานต์ตามปกติ และ NAS ต้องรองรับ RFC 9289 ต้องใช้ TLS 1.3 ชื่อโฮสต์หรือ IP ต้องตรงกับใบรับรอง AUTH_SYS UID/GID ยังคงมีผลภายในช่องทางที่เข้ารหัส',
 			'sourceSetup.clientCertificate' => 'ใบรับรองไคลเอนต์ (ไม่บังคับ)',
 			'sourceSetup.clientCertificateHelp' => 'ช่วยให้ NAS ยืนยันตัวตนของไคลเอนต์นี้ได้ โดย ID ของ AUTH_SYS ยังขึ้นอยู่กับนโยบายส่วนแบ่งปัน NFS ของ NAS',
@@ -9536,6 +9536,8 @@ extension on TranslationsTh {
 			'musicTools.playlistSharingHint' => 'ให้สิทธิ์เข้าถึงเพลย์ลิสต์นี้และเพลงในรายการ ผู้รับอาจต้องตอบรับคำเชิญ',
 			'musicTools.playlistSharingFailed' => 'ไม่สามารถขอสิทธิ์เข้าถึงเพลย์ลิสต์ได้',
 			'musicTools.playlistSharingAccepted' => 'Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว',
+			'musicTools.playlistAccessList' => 'สิทธิ์เข้าถึงปัจจุบัน',
+			'musicTools.playlistAccessNone' => 'ยังไม่มีการให้สิทธิ์เข้าถึงเพลย์ลิสต์',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',

@@ -1080,7 +1080,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "תיבת הדואר",
     "fillScreen": "מלא מסך",
-    "stretch": "מתיחה",
     "lockRotation": "סגור סיבוב",
     "unlockRotation": "פתיחת סיבוב",
     "timerActive": "זמן פעיל",
@@ -5586,7 +5585,9 @@
     "playlistRecipient": "שם משתמש Plex או דוא״ל",
     "playlistSharingHint": "הענקת גישה לרשימה זו ולרצועות שלה. ייתכן שהנמען יצטרך לאשר הזמנה.",
     "playlistSharingFailed": "לא ניתן לבקש גישה לרשימת ההשמעה.",
-    "playlistSharingAccepted": "Plex קיבל את בקשת הגישה."
+    "playlistSharingAccepted": "Plex קיבל את בקשת הגישה.",
+    "playlistAccessList": "גישה נוכחית",
+    "playlistAccessNone": "לא הוענקו הרשאות גישה לרשימת ההשמעה"
   },
   "musicDevices": {
     "playOn": "ניגון באמצעות",

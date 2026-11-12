@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Letterbox",
     "fillScreen": "Scherm vullen",
-    "stretch": "Uitrekken",
     "lockRotation": "Rotatie vergrendelen",
     "unlockRotation": "Rotatie ontgrendelen",
     "timerActive": "Timer actief",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex-gebruikersnaam of e-mail",
     "playlistSharingHint": "Geef toegang tot deze afspeellijst en de nummers. De ontvanger moet mogelijk een uitnodiging accepteren.",
     "playlistSharingFailed": "Kon geen toegang tot de afspeellijst aanvragen.",
-    "playlistSharingAccepted": "Plex heeft het toegangsverzoek geaccepteerd."
+    "playlistSharingAccepted": "Plex heeft het toegangsverzoek geaccepteerd.",
+    "playlistAccessList": "Huidige toegang",
+    "playlistAccessNone": "Er is geen toegang tot deze afspeellijst verleend"
   },
   "musicDevices": {
     "playOn": "Afspelen op",

@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Letterbox",
     "fillScreen": "Bild füllen",
-    "stretch": "Strecken",
     "lockRotation": "Rotation sperren",
     "unlockRotation": "Rotation entsperren",
     "timerActive": "Schlaftimer aktiv",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex-Benutzername oder E-Mail",
     "playlistSharingHint": "Zugriff auf diese Playlist und ihre Titel gewähren. Der Empfänger muss eventuell eine Einladung annehmen.",
     "playlistSharingFailed": "Playlist-Zugriff konnte nicht angefordert werden.",
-    "playlistSharingAccepted": "Plex hat die Zugriffsanfrage angenommen."
+    "playlistSharingAccepted": "Plex hat die Zugriffsanfrage angenommen.",
+    "playlistAccessList": "Aktueller Zugriff",
+    "playlistAccessNone": "Keine Playlist-Zugriffsrechte vergeben"
   },
   "musicDevices": {
     "playOn": "Wiedergeben auf",

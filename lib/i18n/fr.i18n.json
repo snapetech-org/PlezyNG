@@ -1080,7 +1080,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Format letterbox",
     "fillScreen": "Remplir l’écran",
-    "stretch": "Étirer",
     "lockRotation": "Verrouiller la rotation",
     "unlockRotation": "Déverrouiller la rotation",
     "timerActive": "Minuterie active",
@@ -5585,7 +5584,9 @@
     "playlistRecipient": "Nom d’utilisateur Plex ou e-mail",
     "playlistSharingHint": "Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.",
     "playlistSharingFailed": "Impossible de demander l’accès à la liste.",
-    "playlistSharingAccepted": "Plex a accepté la demande d’accès."
+    "playlistSharingAccepted": "Plex a accepté la demande d’accès.",
+    "playlistAccessList": "Accès actuel",
+    "playlistAccessNone": "Aucun accès accordé à cette liste"
   },
   "musicDevices": {
     "playOn": "Lire sur",

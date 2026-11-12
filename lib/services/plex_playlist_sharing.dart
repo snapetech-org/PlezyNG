@@ -1,5 +1,6 @@
 import '../media/media_backend.dart';
 import '../media/media_playlist.dart';
+import '../models/plex/plex_playlist_access.dart';
 import 'music/music_account_scope.dart';
 import 'plex_auth_service.dart';
 import 'plex_client.dart';
@@ -71,19 +72,57 @@ class PlexPlaylistSharing {
       throw StateError('Playlist server is unavailable');
     }
     final uri = root.replace(path: '/com.plexapp.plugins.library/playlists/${playlist.id}/items').toString();
+    _grants = const [];
     return _prepared = PlexPlaylistAccessDraft._(fresh!, uri);
   }
 
-  Future<int> grant(PlexPlaylistAccessDraft draft, String recipient) async {
+  List<PlexPlaylistAccessGrant> _grants = const [];
+
+  void _decision(PlexPlaylistAccessDraft draft) {
     _check();
-    if (!identical(draft, _prepared) || _busy || _accepted) throw StateError('Playlist sharing decision expired');
+    if (!identical(draft, _prepared) || _busy || _accepted) {
+      throw StateError('Playlist sharing decision expired');
+    }
+  }
+
+  Future<void> _validatePlaylist(PlexPlaylistAccessDraft draft) async {
+    final fresh = await client.fetchPlaylistMetadata(playlist.id);
+    _check();
+    if (!_owns(fresh) || fresh!.title != draft.playlist.title) {
+      throw StateError('Playlist changed during sharing');
+    }
+  }
+
+  Future<List<PlexPlaylistAccessGrant>> listAccess(PlexPlaylistAccessDraft draft) async {
+    _decision(draft);
+    final grants = await auth.getPlaylistAccess(authToken: _token!, playlistUri: draft.uri, isCurrent: () => current);
+    _decision(draft);
+    return _grants = grants;
+  }
+
+  Future<void> revoke(PlexPlaylistAccessDraft draft, PlexPlaylistAccessGrant grant) async {
+    _decision(draft);
+    if (!_grants.contains(grant) || grant.received || grant.uri != draft.uri) {
+      throw StateError('Playlist access decision expired');
+    }
+    _busy = true;
+    try {
+      await _validatePlaylist(draft);
+      await auth.revokePlaylistAccess(authToken: _token!, grant: grant, isCurrent: () => current);
+      _check();
+      _grants = List.unmodifiable(_grants.where((item) => !identical(item, grant)));
+    } finally {
+      _busy = false;
+    }
+  }
+
+  Future<int> grant(PlexPlaylistAccessDraft draft, String recipient) async {
+    _decision(draft);
     _busy = true;
     try {
       // Validate the resource again after the recipient/name decision. An
       // update to the contents is allowed: this grants a live playlist.
-      final fresh = await client.fetchPlaylistMetadata(playlist.id);
-      _check();
-      if (!_owns(fresh) || fresh!.title != draft.playlist.title) throw StateError('Playlist changed during sharing');
+      await _validatePlaylist(draft);
       final source = await auth.grantPlaylistAccess(
         authToken: _token!,
         playlistUri: draft.uri,

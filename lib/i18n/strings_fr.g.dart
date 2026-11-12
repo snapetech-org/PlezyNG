@@ -1182,7 +1182,6 @@ class Translations$videoControls$fr extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Format letterbox';
 	@override String get fillScreen => 'Remplir l’écran';
-	@override String get stretch => 'Étirer';
 	@override String get lockRotation => 'Verrouiller la rotation';
 	@override String get unlockRotation => 'Déverrouiller la rotation';
 	@override String get timerActive => 'Minuterie active';
@@ -4414,6 +4413,8 @@ class Translations$musicTools$fr extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.';
 	@override String get playlistSharingFailed => 'Impossible de demander l’accès à la liste.';
 	@override String get playlistSharingAccepted => 'Plex a accepté la demande d’accès.';
+	@override String get playlistAccessList => 'Accès actuel';
+	@override String get playlistAccessNone => 'Aucun accès accordé à cette liste';
 }
 
 // Path: musicDevices
@@ -6538,7 +6539,6 @@ extension on TranslationsFr {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Format letterbox',
 			'videoControls.fillScreen' => 'Remplir l’écran',
-			'videoControls.stretch' => 'Étirer',
 			'videoControls.lockRotation' => 'Verrouiller la rotation',
 			'videoControls.unlockRotation' => 'Déverrouiller la rotation',
 			'videoControls.timerActive' => 'Minuterie active',
@@ -6583,9 +6583,9 @@ extension on TranslationsFr {
 			'videoControls.chaptersAndBookmarks' => 'Chapitres et bookmarks',
 			'videoControls.segmentLoop' => 'Le Segment Loop',
 			'videoControls.addBookmark' => 'Ajoutez le bookmark',
+			'videoControls.bookmarkName' => 'Nom de Bookmark',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Nom de Bookmark',
 			'videoControls.bookmarkNameHint' => 'Par exemple, la scène d’ouverture',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Le Bookmark ${n}',
 			'videoControls.bookmarkNameRequired' => 'Entrez un nom pour ce livre.',
@@ -7097,9 +7097,9 @@ extension on TranslationsFr {
 			'libraries.emptyTrashConfirm' => ({required Object title}) => 'Voulez-vous vraiment vider la corbeille de « ${title} » ?',
 			'libraries.manageLibraries' => 'Gérer les bibliothèques',
 			'libraries.sort' => 'Trier',
+			'libraries.sortBy' => 'Trier par',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.sortBy' => 'Trier par',
 			'libraries.filters' => 'Filtres',
 			'libraries.confirmActionMessage' => 'Êtes-vous sûr de vouloir effectuer cette action ?',
 			'libraries.showLibrary' => 'Afficher la bibliothèque',
@@ -7611,9 +7611,9 @@ extension on TranslationsFr {
 			'watchTogether.connecting' => 'Connexion...',
 			'watchTogether.relayPublic' => 'Les salons utilisent les relais publics Open Watch Party.',
 			'watchTogether.relayCustom' => ({required Object url}) => 'Les salons utilisent votre relais à l’adresse ${url}.',
+			'watchTogether.recentRooms' => 'Salons récents',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.recentRooms' => 'Salons récents',
 			'watchTogether.roomActions' => 'Actions du salon',
 			'watchTogether.renameRoom' => 'Renommer le salon',
 			'watchTogether.removeRoom' => 'Supprimer',
@@ -8125,9 +8125,9 @@ extension on TranslationsFr {
 			'metadataEdit.summary' => 'Résumé',
 			'metadataEdit.poster' => 'Affiche',
 			'metadataEdit.background' => 'Arrière-plan',
+			'metadataEdit.logo' => 'Logo',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Image carrée',
 			'metadataEdit.selectPoster' => 'Sélectionner l\'affiche',
 			'metadataEdit.selectBackground' => 'Sélectionner l\'arrière-plan',
@@ -8639,9 +8639,9 @@ extension on TranslationsFr {
 			'homeLayout.heroTapDetailsDescription' => 'Ouvrez les détails de l\'élément sélectionné avant de choisir une action.',
 			'platform.localNetworkPermission' => 'Pleazyng se connecte à vos serveurs multimédias et à vos appareils de lecture sur votre réseau local.',
 			'platform.locationPermission' => 'Pleazyng utilise l\'accès à la localisation lorsque iOS l\'exige pour détecter votre réseau local et se connecter à vos serveurs de médias.',
+			'platform.photoLibraryPermission' => 'Choisissez des images de votre photothèque pour illustrer vos médias.',
 			_ => null,
 		} ?? switch (path) {
-			'platform.photoLibraryPermission' => 'Choisissez des images de votre photothèque pour illustrer vos médias.',
 			'platform.cameraPermission' => 'Scannez des codes QR pour associer une Companion Remote.',
 			'universalMedia.title' => 'Médias ouverts',
 			'universalMedia.shortcutHelp' => 'Jouez à un lien, une playlist ou un fichier pour cette session.',
@@ -9153,9 +9153,9 @@ extension on TranslationsFr {
 			'sourceSetup.nfsMountPort' => 'Port TCP du service de montage NFS',
 			'sourceSetup.nfsMountPortHelp' => 'Par défaut : 20048',
 			'sourceSetup.nfsUserId' => 'Identifiant utilisateur NFS (AUTH_SYS)',
+			'sourceSetup.nfsUserIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant autorisé par le partage NFS du NAS.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.nfsUserIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsGroupId' => 'Identifiant de groupe NFS (AUTH_SYS)',
 			'sourceSetup.nfsGroupIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant de groupe autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsEncryption' => 'Exiger NFS chiffré (RPC-with-TLS)',
@@ -9652,6 +9652,8 @@ extension on TranslationsFr {
 			'musicTools.playlistSharingHint' => 'Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.',
 			'musicTools.playlistSharingFailed' => 'Impossible de demander l’accès à la liste.',
 			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
+			'musicTools.playlistAccessList' => 'Accès actuel',
+			'musicTools.playlistAccessNone' => 'Aucun accès accordé à cette liste',
 			'musicDevices.playOn' => 'Lire sur',
 			'musicDevices.thisDevice' => 'Cet appareil',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lecture sur ${device}',

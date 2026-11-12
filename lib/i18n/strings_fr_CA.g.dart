@@ -340,7 +340,6 @@ class _Translations$videoControls$fr_CA extends Translations$videoControls$fr {
 
 	// Translations
 	@override String get subtitlesLabel => 'Sous-titres';
-	@override String get stretch => 'Étirer';
 	@override String get playNext => 'Lire le suivant';
 	@override String get playButton => 'Lire';
 	@override String get nextButton => 'Épisode suivant';
@@ -1053,6 +1052,8 @@ class _Translations$musicTools$fr_CA extends Translations$musicTools$fr {
 	@override String get playlistSharingHint => 'Accordez l’accès à cette liste et à ses pistes. Le destinataire devra peut-être accepter une invitation.';
 	@override String get playlistSharingFailed => 'Impossible de demander l’accès à la liste.';
 	@override String get playlistSharingAccepted => 'Plex a accepté la demande d’accès.';
+	@override String get playlistAccessList => 'Accès actuel';
+	@override String get playlistAccessNone => 'Aucun accès accordé à cette liste';
 }
 
 // Path: musicExperience
@@ -1458,7 +1459,6 @@ extension on TranslationsFrCa {
 			'accessibility.green' => 'Vert',
 			'accessibility.blue' => 'Bleu',
 			'videoControls.subtitlesLabel' => 'Sous-titres',
-			'videoControls.stretch' => 'Étirer',
 			'videoControls.playNext' => 'Lire le suivant',
 			'videoControls.playButton' => 'Lire',
 			'videoControls.nextButton' => 'Épisode suivant',
@@ -1846,9 +1846,9 @@ extension on TranslationsFrCa {
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',
 			'romm.touchControls' => 'Touch controls',
+			'romm.controls' => 'Controls',
 			_ => null,
 		} ?? switch (path) {
-			'romm.controls' => 'Controls',
 			'romm.resetControls' => 'Reset controls',
 			'romm.playerOne' => 'Player 1',
 			'romm.select' => 'Select',
@@ -1921,6 +1921,8 @@ extension on TranslationsFrCa {
 			'musicTools.playlistSharingHint' => 'Accordez l’accès à cette liste et à ses pistes. Le destinataire devra peut-être accepter une invitation.',
 			'musicTools.playlistSharingFailed' => 'Impossible de demander l’accès à la liste.',
 			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
+			'musicTools.playlistAccessList' => 'Accès actuel',
+			'musicTools.playlistAccessNone' => 'Aucun accès accordé à cette liste',
 			'musicExperience.bluetoothDriving' => 'Sorties Bluetooth pour la conduite',
 			'musicExperience.bluetoothDrivingHint' => 'Choisissez les sorties Bluetooth connectées qui ouvrent automatiquement la vue conduite.',
 			_ => null,

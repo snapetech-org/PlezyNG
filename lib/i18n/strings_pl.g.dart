@@ -1187,7 +1187,6 @@ class _Translations$videoControls$pl extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Pasy wokół obrazu';
 	@override String get fillScreen => 'Wypełnij ekran';
-	@override String get stretch => 'Rozciągnij';
 	@override String get lockRotation => 'Zablokuj obrót';
 	@override String get unlockRotation => 'Odblokuj obrót';
 	@override String get timerActive => 'Wyłącznik aktywny';
@@ -4399,6 +4398,8 @@ class _Translations$musicTools$pl extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Przyznaj dostęp do tej playlisty i jej utworów. Odbiorca może musieć zaakceptować zaproszenie.';
 	@override String get playlistSharingFailed => 'Nie udało się wysłać prośby o dostęp do playlisty.';
 	@override String get playlistSharingAccepted => 'Plex przyjął prośbę o dostęp.';
+	@override String get playlistAccessList => 'Bieżący dostęp';
+	@override String get playlistAccessNone => 'Nie przyznano dostępu do playlisty';
 }
 
 // Path: musicDevices
@@ -6524,7 +6525,6 @@ extension on TranslationsPl {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Pasy wokół obrazu',
 			'videoControls.fillScreen' => 'Wypełnij ekran',
-			'videoControls.stretch' => 'Rozciągnij',
 			'videoControls.lockRotation' => 'Zablokuj obrót',
 			'videoControls.unlockRotation' => 'Odblokuj obrót',
 			'videoControls.timerActive' => 'Wyłącznik aktywny',
@@ -6569,9 +6569,9 @@ extension on TranslationsPl {
 			'videoControls.chaptersAndBookmarks' => 'Rozdziały i księgarnia',
 			'videoControls.segmentLoop' => 'Segmentacja Loop',
 			'videoControls.addBookmark' => 'Dodaj Bookmark',
+			'videoControls.bookmarkName' => 'Nazwa Bookmark',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Nazwa Bookmark',
 			'videoControls.bookmarkNameHint' => 'Na przykład scena otwarcia',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Zakładka ${n}',
 			'videoControls.bookmarkNameRequired' => 'Wprowadź nazwę dla tego znaku.',
@@ -7083,9 +7083,9 @@ extension on TranslationsPl {
 			'libraries.hideLibrary' => 'Ukryj bibliotekę',
 			'libraries.libraryOptions' => 'Opcje biblioteki',
 			'libraries.content' => 'zawartość biblioteki',
+			'libraries.selectLibrary' => 'Wybierz bibliotekę',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Wybierz bibliotekę',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			'libraries.noRecommendations' => 'Brak dostępnych rekomendacji',
 			'libraries.noCollections' => 'Brak kolekcji w tej bibliotece',
@@ -7597,9 +7597,9 @@ extension on TranslationsPl {
 			'watchTogether.enterRoomCode' => 'Wpisz 6-znakowy kod otrzymany od gospodarza.',
 			'watchTogether.roomCode' => 'Kod pokoju',
 			'watchTogether.paste' => 'Wklej',
+			'watchTogether.noCodeInClipboard' => 'Schowek nie zawiera kodu pokoju',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Schowek nie zawiera kodu pokoju',
 			'watchTogether.copyCode' => 'Kopiuj kod',
 			'watchTogether.codeCopied' => 'Skopiowano kod pokoju',
 			'watchTogether.shareInvite' => 'Udostępnij zaproszenie',
@@ -8111,9 +8111,9 @@ extension on TranslationsPl {
 			'metadataEdit.selectLogo' => 'Wybierz logo',
 			'metadataEdit.selectSquareArt' => 'Wybierz kwadratowy obraz',
 			'metadataEdit.fromUrl' => 'Z URL',
+			'metadataEdit.uploadFile' => 'Prześlij plik',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Prześlij plik',
 			'metadataEdit.enterImageUrl' => 'Wprowadź URL obrazu',
 			'metadataEdit.imageUrl' => 'URL obrazu',
 			'metadataEdit.metadataUpdated' => 'Metadane zaktualizowane',
@@ -8625,9 +8625,9 @@ extension on TranslationsPl {
 			'universalMedia.intro' => 'Otwórz link, listę odtwarzania lub plik. Playback korzysta z standardowego odtwarzacza Pleazyng i nie doda historii do biblioteki.',
 			'universalMedia.openWhat' => 'Co chciałbyś otworzyć?',
 			'universalMedia.stream' => 'adres strumieniowy',
+			'universalMedia.playlist' => 'Playlisty',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Playlisty',
 			'universalMedia.files' => 'Archiwum urządzeń',
 			'universalMedia.favorites' => 'Zbawiony strumień ulubionych',
 			'universalMedia.address' => 'Adres medialny',
@@ -9139,9 +9139,9 @@ extension on TranslationsPl {
 			'sourceSetup.nfsTrustHelp' => 'Pozostaw puste dla certyfikatów zaufanych przez to urządzenie. W razie potrzeby dodaj certyfikat prywatnego CA lub samopodpisany certyfikat serwera; jego nazwy muszą odpowiadać hostowi w adresie NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Użyj certyfikatu CA lub serwera w formacie PEM. Nie dołączaj klucza prywatnego.',
 			'sourceSetup.addTrustCertificate' => 'Dodaj własny zaufany certyfikat',
+			'sourceSetup.replaceTrustCertificate' => 'Zastąp zapisany własny certyfikat',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Zastąp zapisany własny certyfikat',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS używa standardowych portów NFS i usługi montowania oraz wymaga obsługi RFC 9289 przez NAS. Wymagany jest TLS 1.3. Nazwa hosta lub adres IP musi odpowiadać certyfikatowi. UID/GID AUTH_SYS nadal obowiązują wewnątrz szyfrowanego kanału.',
 			'sourceSetup.clientCertificate' => 'Certyfikat klienta (opcjonalnie)',
 			'sourceSetup.clientCertificateHelp' => 'Pozwala NAS uwierzytelnić tego klienta; ID AUTH_SYS nadal zależą od zasad eksportu NFS na NAS.',
@@ -9611,6 +9611,8 @@ extension on TranslationsPl {
 			'musicTools.playlistSharingHint' => 'Przyznaj dostęp do tej playlisty i jej utworów. Odbiorca może musieć zaakceptować zaproszenie.',
 			'musicTools.playlistSharingFailed' => 'Nie udało się wysłać prośby o dostęp do playlisty.',
 			'musicTools.playlistSharingAccepted' => 'Plex przyjął prośbę o dostęp.',
+			'musicTools.playlistAccessList' => 'Bieżący dostęp',
+			'musicTools.playlistAccessNone' => 'Nie przyznano dostępu do playlisty',
 			'musicDevices.playOn' => 'Odtwarzaj na',
 			'musicDevices.thisDevice' => 'To urządzenie',
 			'musicDevices.playingOn' => ({required Object device}) => 'Odtwarzanie na ${device}',

@@ -1177,7 +1177,6 @@ class _Translations$videoControls$hi extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'पत्रबॉक्स';
 	@override String get fillScreen => 'स्क्रीन भरें';
-	@override String get stretch => 'तंग';
 	@override String get lockRotation => 'लॉक रोटेशन';
 	@override String get unlockRotation => 'रोटेशन को खत्म करें';
 	@override String get timerActive => 'टाइमर सक्रिय';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'इस प्लेलिस्ट और इसके ट्रैक का ऐक्सेस दें। प्राप्तकर्ता को निमंत्रण स्वीकार करना पड़ सकता है।';
 	@override String get playlistSharingFailed => 'प्लेलिस्ट के ऐक्सेस का अनुरोध नहीं किया जा सका।';
 	@override String get playlistSharingAccepted => 'Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।';
+	@override String get playlistAccessList => 'मौजूदा ऐक्सेस';
+	@override String get playlistAccessNone => 'प्लेलिस्ट का ऐक्सेस किसी को नहीं दिया गया';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsHi {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'पत्रबॉक्स',
 			'videoControls.fillScreen' => 'स्क्रीन भरें',
-			'videoControls.stretch' => 'तंग',
 			'videoControls.lockRotation' => 'लॉक रोटेशन',
 			'videoControls.unlockRotation' => 'रोटेशन को खत्म करें',
 			'videoControls.timerActive' => 'टाइमर सक्रिय',
@@ -6519,9 +6519,9 @@ extension on TranslationsHi {
 			'videoControls.chaptersAndBookmarks' => 'अध्याय और बुकमार्क',
 			'videoControls.segmentLoop' => 'सेगमेंट लॉक',
 			'videoControls.addBookmark' => 'Bookmark जोड़ें',
+			'videoControls.bookmarkName' => 'Bookmark नाम',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark नाम',
 			'videoControls.bookmarkNameHint' => 'उदाहरण के लिए, खोलने की दृश्य',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'बुकमार्क ${n}',
 			'videoControls.bookmarkNameRequired' => 'इस पुस्तक के लिए एक नाम दर्ज करें।',
@@ -7033,9 +7033,9 @@ extension on TranslationsHi {
 			'libraries.hideLibrary' => 'पुस्तकालय छिपाना',
 			'libraries.libraryOptions' => 'पुस्तकालय विकल्प',
 			'libraries.content' => 'पुस्तकालय सामग्री',
+			'libraries.selectLibrary' => 'पुस्तकालय चुनें',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'पुस्तकालय चुनें',
 			'libraries.filtersWithCount' => ({required Object count}) => 'फ़िल्टर (${count})',
 			'libraries.noRecommendations' => 'कोई प्रस्ताव उपलब्ध नहीं है',
 			'libraries.noCollections' => 'इस पुस्तकालय में कोई संग्रह नहीं',
@@ -7547,9 +7547,9 @@ extension on TranslationsHi {
 			'watchTogether.enterRoomCode' => 'मेजबान से 6 अक्षर कोड दर्ज करें।',
 			'watchTogether.roomCode' => 'कमरे का कोड',
 			'watchTogether.paste' => 'पास्ता',
+			'watchTogether.noCodeInClipboard' => 'क्लिपबोर्ड में कोई कमरे कोड नहीं है',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'क्लिपबोर्ड में कोई कमरे कोड नहीं है',
 			'watchTogether.copyCode' => 'कॉपी कोड',
 			'watchTogether.codeCopied' => 'कमरे का कोड कॉपी',
 			'watchTogether.shareInvite' => 'आमंत्रण साझा',
@@ -8061,9 +8061,9 @@ extension on TranslationsHi {
 			'metadataEdit.selectLogo' => 'लॉग चुनें',
 			'metadataEdit.selectSquareArt' => 'Square Art का चयन करें',
 			'metadataEdit.fromUrl' => 'URL से',
+			'metadataEdit.uploadFile' => 'फ़ाइल अपलोड करें',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'फ़ाइल अपलोड करें',
 			'metadataEdit.enterImageUrl' => 'इमेज URL',
 			'metadataEdit.imageUrl' => 'इमेज URL',
 			'metadataEdit.metadataUpdated' => 'मेटाडेटा अपडेट',
@@ -8575,9 +8575,9 @@ extension on TranslationsHi {
 			'universalMedia.intro' => 'Playback Pleazyng के मानक प्लेयर का उपयोग करता है और आपकी पुस्तकालय में इतिहास नहीं जोड़ता है।',
 			'universalMedia.openWhat' => 'आप क्या खोलना चाहते हैं?',
 			'universalMedia.stream' => 'स्ट्रीम एड्रेस',
+			'universalMedia.playlist' => 'प्लेलिस्ट',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'प्लेलिस्ट',
 			'universalMedia.files' => 'डिवाइस फ़ाइल',
 			'universalMedia.favorites' => 'बचाए गए स्ट्रीम पसंदीदा',
 			'universalMedia.address' => 'मीडिया संदेश',
@@ -9089,9 +9089,9 @@ extension on TranslationsHi {
 			'sourceSetup.nfsTrustHelp' => 'इस डिवाइस के भरोसेमंद प्रमाणपत्रों के लिए खाली छोड़ें। ज़रूरत होने पर निजी CA या स्वयं हस्ताक्षरित सर्वर प्रमाणपत्र जोड़ें; उसके नाम NFS URL के होस्ट से मेल खाने चाहिए।',
 			'sourceSetup.nfsTrustInvalid' => 'PEM प्रारूप में CA या सर्वर प्रमाणपत्र इस्तेमाल करें। निजी कुंजी शामिल न करें।',
 			'sourceSetup.addTrustCertificate' => 'कस्टम भरोसेमंद प्रमाणपत्र जोड़ें',
+			'sourceSetup.replaceTrustCertificate' => 'सहेजा गया कस्टम प्रमाणपत्र बदलें',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'सहेजा गया कस्टम प्रमाणपत्र बदलें',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS सामान्य NFS और माउंट सेवा पोर्ट इस्तेमाल करता है और NAS में RFC 9289 का समर्थन होना ज़रूरी है। TLS 1.3 अनिवार्य है। होस्ट का नाम या IP प्रमाणपत्र से मेल खाना चाहिए। एन्क्रिप्टेड चैनल में भी AUTH_SYS UID/GID लागू रहते हैं।',
 			'sourceSetup.clientCertificate' => 'क्लाइंट प्रमाणपत्र (वैकल्पिक)',
 			'sourceSetup.clientCertificateHelp' => 'NAS को इस क्लाइंट की पहचान सत्यापित करने देता है; AUTH_SYS ID अब भी NAS की एक्सपोर्ट नीति पर निर्भर रहते हैं।',
@@ -9561,6 +9561,8 @@ extension on TranslationsHi {
 			'musicTools.playlistSharingHint' => 'इस प्लेलिस्ट और इसके ट्रैक का ऐक्सेस दें। प्राप्तकर्ता को निमंत्रण स्वीकार करना पड़ सकता है।',
 			'musicTools.playlistSharingFailed' => 'प्लेलिस्ट के ऐक्सेस का अनुरोध नहीं किया जा सका।',
 			'musicTools.playlistSharingAccepted' => 'Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।',
+			'musicTools.playlistAccessList' => 'मौजूदा ऐक्सेस',
+			'musicTools.playlistAccessNone' => 'प्लेलिस्ट का ऐक्सेस किसी को नहीं दिया गया',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',

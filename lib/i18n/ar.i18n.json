@@ -1098,7 +1098,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "الكتب",
     "fillScreen": "ملء الشاشة",
-    "stretch": "تمديد",
     "lockRotation": "قفل الدوران",
     "unlockRotation": "إلغاء الدوران",
     "timerActive": "التوقيت النشط",
@@ -5684,7 +5683,9 @@
     "playlistRecipient": "اسم مستخدم Plex أو البريد الإلكتروني",
     "playlistSharingHint": "امنح الوصول إلى قائمة التشغيل هذه ومقاطعها. قد يحتاج المستلم إلى قبول دعوة.",
     "playlistSharingFailed": "تعذر طلب الوصول إلى قائمة التشغيل.",
-    "playlistSharingAccepted": "قبل Plex طلب الوصول."
+    "playlistSharingAccepted": "قبل Plex طلب الوصول.",
+    "playlistAccessList": "الوصول الحالي",
+    "playlistAccessNone": "لا توجد أذونات للوصول إلى قائمة التشغيل"
   },
   "musicDevices": {
     "playOn": "التشغيل على",

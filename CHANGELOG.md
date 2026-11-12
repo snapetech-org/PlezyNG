@@ -15,6 +15,8 @@
 
 - Add the Plex playlist access-grant transport with validated credential-free playlist URIs, bounded recipients, account-retirement checks, explicit acknowledgements and no automatic mutation retries.
 
+- Read actual owned and accepted received Plex playlist grants; revalidate recipient, source and item identity before revoking one item grant, without canceling unrelated sharing. Show the current recipients in the playlist access dialog with explicit revocation confirmation and account-bound decisions. Remove the unused Stretch label after retiring that video fit mode.
+
 - Assemble the complete frozen release from independently signed iOS and tvOS sibling runs, verifying both IPA attestations and original platform artifact identities before publication.
 - Keep shared libraries read-only for collection changes and bind collection confirmations to their original authorized account.
 

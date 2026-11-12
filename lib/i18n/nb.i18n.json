@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Letterbox",
     "fillScreen": "Fyll skjerm",
-    "stretch": "Strekk",
     "lockRotation": "Lås rotasjon",
     "unlockRotation": "Lås opp rotasjon",
     "timerActive": "Timer aktiv",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex-brukernavn eller e-post",
     "playlistSharingHint": "Gi tilgang til denne spillelisten og sporene. Mottakeren må kanskje godta en invitasjon.",
     "playlistSharingFailed": "Kunne ikke be om tilgang til spillelisten.",
-    "playlistSharingAccepted": "Plex godtok tilgangsforespørselen."
+    "playlistSharingAccepted": "Plex godtok tilgangsforespørselen.",
+    "playlistAccessList": "Nåværende tilgang",
+    "playlistAccessNone": "Ingen har fått tilgang til spillelisten"
   },
   "musicDevices": {
     "playOn": "Spill av på",

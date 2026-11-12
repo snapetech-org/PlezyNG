@@ -1177,7 +1177,6 @@ class _Translations$videoControls$nl extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Letterbox';
 	@override String get fillScreen => 'Scherm vullen';
-	@override String get stretch => 'Uitrekken';
 	@override String get lockRotation => 'Rotatie vergrendelen';
 	@override String get unlockRotation => 'Rotatie ontgrendelen';
 	@override String get timerActive => 'Timer actief';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Geef toegang tot deze afspeellijst en de nummers. De ontvanger moet mogelijk een uitnodiging accepteren.';
 	@override String get playlistSharingFailed => 'Kon geen toegang tot de afspeellijst aanvragen.';
 	@override String get playlistSharingAccepted => 'Plex heeft het toegangsverzoek geaccepteerd.';
+	@override String get playlistAccessList => 'Huidige toegang';
+	@override String get playlistAccessNone => 'Er is geen toegang tot deze afspeellijst verleend';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsNl {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Letterbox',
 			'videoControls.fillScreen' => 'Scherm vullen',
-			'videoControls.stretch' => 'Uitrekken',
 			'videoControls.lockRotation' => 'Rotatie vergrendelen',
 			'videoControls.unlockRotation' => 'Rotatie ontgrendelen',
 			'videoControls.timerActive' => 'Timer actief',
@@ -6519,9 +6519,9 @@ extension on TranslationsNl {
 			'videoControls.chaptersAndBookmarks' => 'Hoofdstukken en bookmarks',
 			'videoControls.segmentLoop' => 'Fragment herhalen',
 			'videoControls.addBookmark' => 'Voeg Bookmark toe',
+			'videoControls.bookmarkName' => 'Bookmark naam',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark naam',
 			'videoControls.bookmarkNameHint' => 'Bijvoorbeeld de openingsscène',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Boekmark ${n}',
 			'videoControls.bookmarkNameRequired' => 'Voer een naam in voor dit boekmerk.',
@@ -7033,9 +7033,9 @@ extension on TranslationsNl {
 			'libraries.hideLibrary' => 'Bibliotheek verbergen',
 			'libraries.libraryOptions' => 'Bibliotheekopties',
 			'libraries.content' => 'bibliotheekinhoud',
+			'libraries.selectLibrary' => 'Bibliotheek kiezen',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Bibliotheek kiezen',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
 			'libraries.noRecommendations' => 'Geen aanbevelingen beschikbaar',
 			'libraries.noCollections' => 'Geen collecties in deze bibliotheek',
@@ -7547,9 +7547,9 @@ extension on TranslationsNl {
 			'watchTogether.enterRoomCode' => 'Voer de code van 6 tekens van de host in.',
 			'watchTogether.roomCode' => 'Kamercode',
 			'watchTogether.paste' => 'Plakken',
+			'watchTogether.noCodeInClipboard' => 'Het klembord bevat geen kamercode',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Het klembord bevat geen kamercode',
 			'watchTogether.copyCode' => 'Code kopiëren',
 			'watchTogether.codeCopied' => 'Kamercode gekopieerd',
 			'watchTogether.shareInvite' => 'Uitnodiging delen',
@@ -8061,9 +8061,9 @@ extension on TranslationsNl {
 			'metadataEdit.selectLogo' => 'Logo selecteren',
 			'metadataEdit.selectSquareArt' => 'Vierkante afbeelding selecteren',
 			'metadataEdit.fromUrl' => 'Vanaf URL',
+			'metadataEdit.uploadFile' => 'Bestand uploaden',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Bestand uploaden',
 			'metadataEdit.enterImageUrl' => 'Voer de afbeeldings-URL in',
 			'metadataEdit.imageUrl' => 'Afbeeldings-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata bijgewerkt',
@@ -8575,9 +8575,9 @@ extension on TranslationsNl {
 			'universalMedia.intro' => 'Open een link, playlist of bestand.Playback gebruikt de standaardspeler van Pleazyng en voegt geen geschiedenis toe aan uw bibliotheek.',
 			'universalMedia.openWhat' => 'Wat wil je graag openen?',
 			'universalMedia.stream' => 'Streamadres',
+			'universalMedia.playlist' => 'Playlijst',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Playlijst',
 			'universalMedia.files' => 'Gerelateerde bestanden',
 			'universalMedia.favorites' => 'Save Stream favorieten',
 			'universalMedia.address' => 'Media adres',
@@ -9089,9 +9089,9 @@ extension on TranslationsNl {
 			'sourceSetup.nfsTrustHelp' => 'Laat leeg voor certificaten die dit apparaat vertrouwt. Voeg zo nodig een certificaat van een private CA of een zelfondertekend servercertificaat toe; de namen moeten overeenkomen met de host in de NFS-URL.',
 			'sourceSetup.nfsTrustInvalid' => 'Gebruik een CA- of servercertificaat in PEM-formaat. Voeg geen privésleutel toe.',
 			'sourceSetup.addTrustCertificate' => 'Aangepast vertrouwenscertificaat toevoegen',
+			'sourceSetup.replaceTrustCertificate' => 'Opgeslagen aangepast certificaat vervangen',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Opgeslagen aangepast certificaat vervangen',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS gebruikt de gebruikelijke poorten van NFS en de mountservice en vereist RFC 9289-ondersteuning op de NAS. TLS 1.3 is verplicht. De hostnaam of het IP-adres moet overeenkomen met het certificaat. AUTH_SYS-UID/GID blijven ook binnen het versleutelde kanaal gelden.',
 			'sourceSetup.clientCertificate' => 'Clientcertificaat (optioneel)',
 			'sourceSetup.clientCertificateHelp' => 'Hiermee kan de NAS deze client authenticeren; AUTH_SYS-ID’s blijven afhankelijk van het beleid van de NFS-share op de NAS.',
@@ -9561,6 +9561,8 @@ extension on TranslationsNl {
 			'musicTools.playlistSharingHint' => 'Geef toegang tot deze afspeellijst en de nummers. De ontvanger moet mogelijk een uitnodiging accepteren.',
 			'musicTools.playlistSharingFailed' => 'Kon geen toegang tot de afspeellijst aanvragen.',
 			'musicTools.playlistSharingAccepted' => 'Plex heeft het toegangsverzoek geaccepteerd.',
+			'musicTools.playlistAccessList' => 'Huidige toegang',
+			'musicTools.playlistAccessNone' => 'Er is geen toegang tot deze afspeellijst verleend',
 			'musicDevices.playOn' => 'Afspelen op',
 			'musicDevices.thisDevice' => 'Dit apparaat',
 			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',

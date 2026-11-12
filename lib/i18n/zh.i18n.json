@@ -1076,7 +1076,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "黑边模式",
     "fillScreen": "填充屏幕",
-    "stretch": "拉伸",
     "lockRotation": "锁定旋转",
     "unlockRotation": "解锁旋转",
     "timerActive": "定时器已激活",
@@ -5571,7 +5570,9 @@
     "playlistRecipient": "Plex 用户名或电子邮件",
     "playlistSharingHint": "授予对此播放列表及其曲目的访问权限。接收者可能需要接受邀请。",
     "playlistSharingFailed": "无法请求播放列表访问权限。",
-    "playlistSharingAccepted": "Plex 已接受访问请求。"
+    "playlistSharingAccepted": "Plex 已接受访问请求。",
+    "playlistAccessList": "当前访问权限",
+    "playlistAccessNone": "尚未授予播放列表访问权限"
   },
   "musicDevices": {
     "playOn": "播放设备",

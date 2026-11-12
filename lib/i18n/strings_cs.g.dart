@@ -1187,7 +1187,6 @@ class _Translations$videoControls$cs extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Textová krabička';
 	@override String get fillScreen => 'vyplňte obrazovku';
-	@override String get stretch => 'Roztáhnout';
 	@override String get lockRotation => 'Závěsná rotace';
 	@override String get unlockRotation => 'Odemknutí rotace';
 	@override String get timerActive => 'Aktivní čas';
@@ -4395,6 +4394,8 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Udělte přístup k tomuto playlistu a jeho skladbám. Příjemce možná bude muset přijmout pozvánku.';
 	@override String get playlistSharingFailed => 'Nepodařilo se požádat o přístup k playlistu.';
 	@override String get playlistSharingAccepted => 'Plex přijal žádost o přístup.';
+	@override String get playlistAccessList => 'Aktuální přístup';
+	@override String get playlistAccessNone => 'K playlistu nebyl udělen žádný přístup';
 }
 
 // Path: musicDevices
@@ -6518,7 +6519,6 @@ extension on TranslationsCs {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Textová krabička',
 			'videoControls.fillScreen' => 'vyplňte obrazovku',
-			'videoControls.stretch' => 'Roztáhnout',
 			'videoControls.lockRotation' => 'Závěsná rotace',
 			'videoControls.unlockRotation' => 'Odemknutí rotace',
 			'videoControls.timerActive' => 'Aktivní čas',
@@ -6563,9 +6563,9 @@ extension on TranslationsCs {
 			'videoControls.chaptersAndBookmarks' => 'Kapitoly a bookmarks',
 			'videoControls.segmentLoop' => 'Segmentový loop',
 			'videoControls.addBookmark' => 'Přidat bookmark',
+			'videoControls.bookmarkName' => 'Bookmark jméno',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark jméno',
 			'videoControls.bookmarkNameHint' => 'Například otevírací scény',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarková ${n}',
 			'videoControls.bookmarkNameRequired' => 'Zadejte jméno pro tuto knižní značku.',
@@ -7077,9 +7077,9 @@ extension on TranslationsCs {
 			'libraries.hideLibrary' => 'Skryté knihovny',
 			'libraries.libraryOptions' => 'Možnosti knihovny',
 			'libraries.content' => 'Obsah knihovny',
+			'libraries.selectLibrary' => 'Vyberte knihovnu',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Vyberte knihovnu',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			'libraries.noCollections' => 'Žádné sbírky v této knihovně',
@@ -7591,9 +7591,9 @@ extension on TranslationsCs {
 			'watchTogether.enterRoomCode' => 'Vložte šesti znakový kód z hostitele.',
 			'watchTogether.roomCode' => 'Kód místnosti',
 			'watchTogether.paste' => 'Vložit',
+			'watchTogether.noCodeInClipboard' => 'Klipboard neobsahuje kód místnosti',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Klipboard neobsahuje kód místnosti',
 			'watchTogether.copyCode' => 'Kopírování kódu',
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
@@ -8105,9 +8105,9 @@ extension on TranslationsCs {
 			'metadataEdit.selectLogo' => 'Vyberte logo',
 			'metadataEdit.selectSquareArt' => 'Výběr Square Art',
 			'metadataEdit.fromUrl' => 'Od URL',
+			'metadataEdit.uploadFile' => 'Upload souborů',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Upload souborů',
 			'metadataEdit.enterImageUrl' => 'Vložte obrázek URL',
 			'metadataEdit.imageUrl' => 'obrázek URL',
 			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
@@ -8619,9 +8619,9 @@ extension on TranslationsCs {
 			'universalMedia.intro' => 'Otevřete odkaz, playlist nebo soubor. Playback používá standardní přehrávač Pleazyng a do vaší knihovny nepřidá historii.',
 			'universalMedia.openWhat' => 'Co byste chtěli otevřít?',
 			'universalMedia.stream' => 'Streamová adresa',
+			'universalMedia.playlist' => 'Playlisty',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Playlisty',
 			'universalMedia.files' => 'Přístrojové soubory',
 			'universalMedia.favorites' => 'Úsporný stream oblíbené',
 			'universalMedia.address' => 'Mediální adresa',
@@ -9133,9 +9133,9 @@ extension on TranslationsCs {
 			'sourceSetup.nfsTrustHelp' => 'Ponechte prázdné pro certifikáty, kterým toto zařízení důvěřuje. V případě potřeby přidejte certifikát soukromé CA nebo certifikát serveru podepsaný sebou samým; jeho názvy se musí shodovat s hostitelem v adrese NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Použijte certifikát CA nebo serveru ve formátu PEM. Nevkládejte soukromý klíč.',
 			'sourceSetup.addTrustCertificate' => 'Přidat vlastní důvěryhodný certifikát',
+			'sourceSetup.replaceTrustCertificate' => 'Nahradit uložený vlastní certifikát',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Nahradit uložený vlastní certifikát',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS používá běžné porty NFS a služby připojení a vyžaduje podporu RFC 9289 na NAS. Je nutné TLS 1.3. Název hostitele nebo IP adresa musí odpovídat certifikátu. UID/GID AUTH_SYS nadále platí i v šifrovaném kanálu.',
 			'sourceSetup.clientCertificate' => 'Klientský certifikát (nepovinné)',
 			'sourceSetup.clientCertificateHelp' => 'Umožňuje NAS ověřit tohoto klienta; ID AUTH_SYS stále podléhají pravidlům exportu NFS na NAS.',
@@ -9605,6 +9605,8 @@ extension on TranslationsCs {
 			'musicTools.playlistSharingHint' => 'Udělte přístup k tomuto playlistu a jeho skladbám. Příjemce možná bude muset přijmout pozvánku.',
 			'musicTools.playlistSharingFailed' => 'Nepodařilo se požádat o přístup k playlistu.',
 			'musicTools.playlistSharingAccepted' => 'Plex přijal žádost o přístup.',
+			'musicTools.playlistAccessList' => 'Aktuální přístup',
+			'musicTools.playlistAccessNone' => 'K playlistu nebyl udělen žádný přístup',
 			'musicDevices.playOn' => 'Přehrávat na',
 			'musicDevices.thisDevice' => 'Toto zařízení',
 			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',

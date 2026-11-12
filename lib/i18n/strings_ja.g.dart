@@ -1175,7 +1175,6 @@ class _Translations$videoControls$ja extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'レターボックス';
 	@override String get fillScreen => '画面を埋める';
-	@override String get stretch => '引き延ばす';
 	@override String get lockRotation => '回転をロック';
 	@override String get unlockRotation => '回転のロックを解除';
 	@override String get timerActive => 'タイマー動作中';
@@ -4348,6 +4347,8 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'このプレイリストと曲へのアクセスを許可します。受信者による招待の承諾が必要な場合があります。';
 	@override String get playlistSharingFailed => 'プレイリストへのアクセスをリクエストできませんでした。';
 	@override String get playlistSharingAccepted => 'Plexがアクセスのリクエストを受け付けました。';
+	@override String get playlistAccessList => '現在のアクセス権';
+	@override String get playlistAccessNone => 'プレイリストのアクセス権は付与されていません';
 }
 
 // Path: musicDevices
@@ -6469,7 +6470,6 @@ extension on TranslationsJa {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'レターボックス',
 			'videoControls.fillScreen' => '画面を埋める',
-			'videoControls.stretch' => '引き延ばす',
 			'videoControls.lockRotation' => '回転をロック',
 			'videoControls.unlockRotation' => '回転のロックを解除',
 			'videoControls.timerActive' => 'タイマー動作中',
@@ -6514,9 +6514,9 @@ extension on TranslationsJa {
 			'videoControls.chaptersAndBookmarks' => '章とブックマーク',
 			'videoControls.segmentLoop' => 'セグメントループ',
 			'videoControls.addBookmark' => 'ブックマーク追加',
+			'videoControls.bookmarkName' => 'Bookmark 名称',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark 名称',
 			'videoControls.bookmarkNameHint' => 'たとえば、オープンシーン。',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'ブックマーク ${n}',
 			'videoControls.bookmarkNameRequired' => 'このブックマークの名前を入力します。',
@@ -7028,9 +7028,9 @@ extension on TranslationsJa {
 			'libraries.hideLibrary' => 'ライブラリを非表示',
 			'libraries.libraryOptions' => 'ライブラリオプション',
 			'libraries.content' => 'ライブラリコンテンツ',
+			'libraries.selectLibrary' => 'ライブラリを選択',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'ライブラリを選択',
 			'libraries.filtersWithCount' => ({required Object count}) => 'フィルター (${count})',
 			'libraries.noRecommendations' => 'おすすめがありません',
 			'libraries.noCollections' => 'このライブラリにコレクションがありません',
@@ -7542,9 +7542,9 @@ extension on TranslationsJa {
 			'watchTogether.enterRoomCode' => 'ホストから共有された6文字のコードを入力してください。',
 			'watchTogether.roomCode' => 'ルームコード',
 			'watchTogether.paste' => '貼り付け',
+			'watchTogether.noCodeInClipboard' => 'クリップボードにルームコードがありません',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'クリップボードにルームコードがありません',
 			'watchTogether.copyCode' => 'コードをコピー',
 			'watchTogether.codeCopied' => 'ルームコードをコピーしました',
 			'watchTogether.shareInvite' => '招待を共有',
@@ -8056,9 +8056,9 @@ extension on TranslationsJa {
 			'metadataEdit.selectLogo' => 'ロゴを選択',
 			'metadataEdit.selectSquareArt' => '正方形アートを選択',
 			'metadataEdit.fromUrl' => 'URLから',
+			'metadataEdit.uploadFile' => 'ファイルをアップロード',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'ファイルをアップロード',
 			'metadataEdit.enterImageUrl' => '画像URLを入力',
 			'metadataEdit.imageUrl' => '画像URL',
 			'metadataEdit.metadataUpdated' => 'メタデータを更新しました',
@@ -8570,9 +8570,9 @@ extension on TranslationsJa {
 			'universalMedia.intro' => 'Playback は Pleazyng の標準プレーヤーを使用し、図書館に歴史を追加しない。',
 			'universalMedia.openWhat' => '何を開けたいですか?',
 			'universalMedia.stream' => 'ストリームアドレス',
+			'universalMedia.playlist' => 'プレイリスト',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'プレイリスト',
 			'universalMedia.files' => 'デバイスファイル',
 			'universalMedia.favorites' => 'お気に入りのSave Stream',
 			'universalMedia.address' => 'メディアアドレス',
@@ -9084,9 +9084,9 @@ extension on TranslationsJa {
 			'sourceSetup.nfsTrustHelp' => 'このデバイスが信頼する証明書を使う場合は空欄にします。必要に応じてプライベート CA または自己署名のサーバー証明書を追加してください。証明書の名前は NFS URL のホスト名と一致する必要があります。',
 			'sourceSetup.nfsTrustInvalid' => 'PEM 形式の CA 証明書またはサーバー証明書を使用してください。秘密鍵を含めないでください。',
 			'sourceSetup.addTrustCertificate' => 'カスタムの信頼証明書を追加',
+			'sourceSetup.replaceTrustCertificate' => '保存済みのカスタム証明書を置き換え',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => '保存済みのカスタム証明書を置き換え',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS は通常の NFS およびマウントサービスのポートを使用し、NAS の RFC 9289 対応が必要です。TLS 1.3 が必須です。ホスト名または IP アドレスは証明書と一致する必要があります。暗号化された通信でも AUTH_SYS UID/GID は引き続き適用されます。',
 			'sourceSetup.clientCertificate' => 'クライアント証明書（任意）',
 			'sourceSetup.clientCertificateHelp' => 'NAS がこのクライアントを認証できるようにします。AUTH_SYS ID は引き続き NAS のエクスポートポリシーに従います。',
@@ -9556,6 +9556,8 @@ extension on TranslationsJa {
 			'musicTools.playlistSharingHint' => 'このプレイリストと曲へのアクセスを許可します。受信者による招待の承諾が必要な場合があります。',
 			'musicTools.playlistSharingFailed' => 'プレイリストへのアクセスをリクエストできませんでした。',
 			'musicTools.playlistSharingAccepted' => 'Plexがアクセスのリクエストを受け付けました。',
+			'musicTools.playlistAccessList' => '現在のアクセス権',
+			'musicTools.playlistAccessNone' => 'プレイリストのアクセス権は付与されていません',
 			'musicDevices.playOn' => '再生先',
 			'musicDevices.thisDevice' => 'このデバイス',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} で再生中',

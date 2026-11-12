@@ -1076,7 +1076,6 @@
     "addTime": "+${amount} ${unit}",
     "letterbox": "信箱模式（Letterbox）",
     "fillScreen": "填滿螢幕",
-    "stretch": "拉伸",
     "lockRotation": "鎖定旋轉",
     "unlockRotation": "解除鎖定旋轉",
     "timerActive": "計時器已啟動",
@@ -5571,7 +5570,9 @@
     "playlistRecipient": "Plex 使用者名稱或電子郵件",
     "playlistSharingHint": "授予此播放清單及其曲目的存取權。收件者可能需要接受邀請。",
     "playlistSharingFailed": "無法請求播放清單存取權。",
-    "playlistSharingAccepted": "Plex 已接受存取請求。"
+    "playlistSharingAccepted": "Plex 已接受存取請求。",
+    "playlistAccessList": "目前的存取權",
+    "playlistAccessNone": "尚未授予播放清單存取權"
   },
   "musicDevices": {
     "playOn": "播放裝置",

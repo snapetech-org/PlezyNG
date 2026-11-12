@@ -1073,7 +1073,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "กล่องข้อความ",
     "fillScreen": "หน้าจอเต็มรูปแบบ",
-    "stretch": "ยืด",
     "lockRotation": "ล็อคหมุน",
     "unlockRotation": "ล็อคหมุน",
     "timerActive": "ฤดูใบไม้ผลิ",
@@ -5549,7 +5548,9 @@
     "playlistRecipient": "ชื่อผู้ใช้ Plex หรืออีเมล",
     "playlistSharingHint": "ให้สิทธิ์เข้าถึงเพลย์ลิสต์นี้และเพลงในรายการ ผู้รับอาจต้องตอบรับคำเชิญ",
     "playlistSharingFailed": "ไม่สามารถขอสิทธิ์เข้าถึงเพลย์ลิสต์ได้",
-    "playlistSharingAccepted": "Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว"
+    "playlistSharingAccepted": "Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว",
+    "playlistAccessList": "สิทธิ์เข้าถึงปัจจุบัน",
+    "playlistAccessNone": "ยังไม่มีการให้สิทธิ์เข้าถึงเพลย์ลิสต์"
   },
   "musicDevices": {
     "playOn": "เล่นบน",

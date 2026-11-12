@@ -341,7 +341,6 @@ class _Translations$videoControls$es_419 extends Translations$videoControls$es {
 
 	// Translations
 	@override String get subtitlesLabel => 'Subtítulos';
-	@override String get stretch => 'Estirar';
 	@override String get playNext => 'Reproducir siguiente';
 	@override String get playButton => 'Reproducir';
 	@override String get pauseButton => 'Pausar';
@@ -1066,6 +1065,8 @@ class _Translations$musicTools$es_419 extends Translations$musicTools$es {
 	@override String get playlistSharingHint => 'Otorga acceso a esta lista y sus pistas. Es posible que el destinatario deba aceptar una invitación.';
 	@override String get playlistSharingFailed => 'No se pudo solicitar acceso a la lista.';
 	@override String get playlistSharingAccepted => 'Plex aceptó la solicitud de acceso.';
+	@override String get playlistAccessList => 'Acceso actual';
+	@override String get playlistAccessNone => 'No hay permisos de acceso a la lista';
 }
 
 // Path: musicExperience
@@ -1491,7 +1492,6 @@ extension on TranslationsEs419 {
 			'accessibility.green' => 'Verde',
 			'accessibility.blue' => 'Azul',
 			'videoControls.subtitlesLabel' => 'Subtítulos',
-			'videoControls.stretch' => 'Estirar',
 			'videoControls.playNext' => 'Reproducir siguiente',
 			'videoControls.playButton' => 'Reproducir',
 			'videoControls.pauseButton' => 'Pausar',
@@ -1875,9 +1875,9 @@ extension on TranslationsEs419 {
 			'romm.loadState' => 'Load state',
 			'romm.saveAndExit' => 'Save and exit',
 			'romm.exitWithoutSaving' => 'Exit without saving',
+			'romm.exitConfirm' => 'Finish this game session?',
 			_ => null,
 		} ?? switch (path) {
-			'romm.exitConfirm' => 'Finish this game session?',
 			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
 			'romm.starting' => 'Starting game…',
 			'romm.connecting' => 'Connecting…',
@@ -1969,6 +1969,8 @@ extension on TranslationsEs419 {
 			'musicTools.playlistSharingHint' => 'Otorga acceso a esta lista y sus pistas. Es posible que el destinatario deba aceptar una invitación.',
 			'musicTools.playlistSharingFailed' => 'No se pudo solicitar acceso a la lista.',
 			'musicTools.playlistSharingAccepted' => 'Plex aceptó la solicitud de acceso.',
+			'musicTools.playlistAccessList' => 'Acceso actual',
+			'musicTools.playlistAccessNone' => 'No hay permisos de acceso a la lista',
 			'musicExperience.bluetoothDriving' => 'Salidas Bluetooth para conducir',
 			'musicExperience.bluetoothDrivingHint' => 'Elige las salidas Bluetooth conectadas que abren automáticamente la vista de conducción.',
 			_ => null,

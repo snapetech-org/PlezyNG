@@ -1172,7 +1172,6 @@ class _Translations$videoControls$ms extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Kotak Surat';
 	@override String get fillScreen => 'Mengisi skrin';
-	@override String get stretch => 'Regang';
 	@override String get lockRotation => 'Lock rotasi';
 	@override String get unlockRotation => 'Menghapuskan rotasi';
 	@override String get timerActive => 'Aktiviti Aktiviti';
@@ -4330,6 +4329,8 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Berikan akses kepada senarai main ini dan lagunya. Penerima mungkin perlu menerima jemputan.';
 	@override String get playlistSharingFailed => 'Tidak dapat meminta akses senarai main.';
 	@override String get playlistSharingAccepted => 'Plex menerima permintaan akses.';
+	@override String get playlistAccessList => 'Akses semasa';
+	@override String get playlistAccessNone => 'Tiada akses senarai main diberikan';
 }
 
 // Path: musicDevices
@@ -6449,7 +6450,6 @@ extension on TranslationsMs {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Kotak Surat',
 			'videoControls.fillScreen' => 'Mengisi skrin',
-			'videoControls.stretch' => 'Regang',
 			'videoControls.lockRotation' => 'Lock rotasi',
 			'videoControls.unlockRotation' => 'Menghapuskan rotasi',
 			'videoControls.timerActive' => 'Aktiviti Aktiviti',
@@ -6494,9 +6494,9 @@ extension on TranslationsMs {
 			'videoControls.chaptersAndBookmarks' => 'Bab dan Bookmark',
 			'videoControls.segmentLoop' => 'Perbezaan segmen',
 			'videoControls.addBookmark' => 'Menambah Bookmark',
+			'videoControls.bookmarkName' => 'Nama Bookmark',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Nama Bookmark',
 			'videoControls.bookmarkNameHint' => 'Sebagai contoh, adegan pembukaan',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Perpustakaan ${n}',
 			'videoControls.bookmarkNameRequired' => 'Masukkan nama untuk buku ini.',
@@ -7008,9 +7008,9 @@ extension on TranslationsMs {
 			'libraries.hideLibrary' => 'Perpustakaan tersembunyi',
 			'libraries.libraryOptions' => 'Pilihan Perpustakaan',
 			'libraries.content' => 'Perpustakaan kandungan',
+			'libraries.selectLibrary' => 'Pilih Perpustakaan',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Pilih Perpustakaan',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			'libraries.noRecommendations' => 'Tiada cadangan yang tersedia',
 			'libraries.noCollections' => 'Tiada koleksi dalam perpustakaan ini',
@@ -7522,9 +7522,9 @@ extension on TranslationsMs {
 			'watchTogether.enterRoomCode' => 'Masukkan kod 6 aksara daripada tuan rumah.',
 			'watchTogether.roomCode' => 'Kod bilik',
 			'watchTogether.paste' => 'Paste yang',
+			'watchTogether.noCodeInClipboard' => 'Klipboard tidak mengandungi kod bilik',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Klipboard tidak mengandungi kod bilik',
 			'watchTogether.copyCode' => 'Kode salinan',
 			'watchTogether.codeCopied' => 'Kod bilik disalin',
 			'watchTogether.shareInvite' => 'Memberi jemputan',
@@ -8036,9 +8036,9 @@ extension on TranslationsMs {
 			'metadataEdit.selectLogo' => 'Pilih logo',
 			'metadataEdit.selectSquareArt' => 'Pilih Square Art',
 			'metadataEdit.fromUrl' => 'Daripada URL',
+			'metadataEdit.uploadFile' => 'Muat naik fail',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Muat naik fail',
 			'metadataEdit.enterImageUrl' => 'Masukkan URL imej',
 			'metadataEdit.imageUrl' => 'imej URL',
 			'metadataEdit.metadataUpdated' => 'Metadata dikemaskini',
@@ -8550,9 +8550,9 @@ extension on TranslationsMs {
 			'universalMedia.intro' => 'Buka pautan, senarai main, atau fail. Playback menggunakan pemain standard Pleazyng dan tidak menambah sejarah kepada perpustakaan anda.',
 			'universalMedia.openWhat' => 'Apa yang anda mahu buka?',
 			'universalMedia.stream' => 'Alamat aliran',
+			'universalMedia.playlist' => 'Senarai Playlist',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Senarai Playlist',
 			'universalMedia.files' => 'Peranti fail',
 			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
@@ -9064,9 +9064,9 @@ extension on TranslationsMs {
 			'sourceSetup.nfsTrustHelp' => 'Biarkan kosong untuk sijil yang dipercayai oleh peranti ini. Jika perlu, tambah sijil CA persendirian atau sijil pelayan yang ditandatangani sendiri; namanya mesti sepadan dengan hos dalam URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Gunakan sijil CA atau pelayan dalam format PEM. Jangan sertakan kunci peribadi.',
 			'sourceSetup.addTrustCertificate' => 'Tambah sijil kepercayaan tersuai',
+			'sourceSetup.replaceTrustCertificate' => 'Gantikan sijil tersuai yang disimpan',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Gantikan sijil tersuai yang disimpan',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan perkhidmatan lekap yang biasa serta memerlukan sokongan RFC 9289 pada NAS. TLS 1.3 diwajibkan. Nama hos atau IP mesti sepadan dengan sijil. AUTH_SYS UID/GID masih terpakai dalam saluran yang disulitkan.',
 			'sourceSetup.clientCertificate' => 'Sijil klien (pilihan)',
 			'sourceSetup.clientCertificateHelp' => 'Membolehkan NAS mengesahkan klien ini; ID AUTH_SYS masih bergantung pada dasar perkongsian NFS pada NAS.',
@@ -9536,6 +9536,8 @@ extension on TranslationsMs {
 			'musicTools.playlistSharingHint' => 'Berikan akses kepada senarai main ini dan lagunya. Penerima mungkin perlu menerima jemputan.',
 			'musicTools.playlistSharingFailed' => 'Tidak dapat meminta akses senarai main.',
 			'musicTools.playlistSharingAccepted' => 'Plex menerima permintaan akses.',
+			'musicTools.playlistAccessList' => 'Akses semasa',
+			'musicTools.playlistAccessNone' => 'Tiada akses senarai main diberikan',
 			'musicDevices.playOn' => 'Mainkan pada',
 			'musicDevices.thisDevice' => 'Peranti ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',

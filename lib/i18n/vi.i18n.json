@@ -1073,7 +1073,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Bảng Letterbox",
     "fillScreen": "Full màn hình",
-    "stretch": "Kéo dài",
     "lockRotation": "Lock xoay",
     "unlockRotation": "Khóa xoay",
     "timerActive": "Thời gian hoạt động",
@@ -5549,7 +5548,9 @@
     "playlistRecipient": "Tên người dùng Plex hoặc email",
     "playlistSharingHint": "Cấp quyền truy cập danh sách phát này và các bản nhạc. Người nhận có thể cần chấp nhận lời mời.",
     "playlistSharingFailed": "Không thể yêu cầu truy cập danh sách phát.",
-    "playlistSharingAccepted": "Plex đã tiếp nhận yêu cầu truy cập."
+    "playlistSharingAccepted": "Plex đã tiếp nhận yêu cầu truy cập.",
+    "playlistAccessList": "Quyền truy cập hiện tại",
+    "playlistAccessNone": "Chưa cấp quyền truy cập danh sách phát"
   },
   "musicDevices": {
     "playOn": "Phát trên",

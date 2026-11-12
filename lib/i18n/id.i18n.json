@@ -1073,7 +1073,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Surat Kotak",
     "fillScreen": "Mengisi layar",
-    "stretch": "Mengisi",
     "lockRotation": "Lock rotasi",
     "unlockRotation": "Unlock rotasi",
     "timerActive": "Timer aktif",
@@ -5549,7 +5548,9 @@
     "playlistRecipient": "Nama pengguna Plex atau email",
     "playlistSharingHint": "Berikan akses ke daftar putar ini dan lagunya. Penerima mungkin perlu menerima undangan.",
     "playlistSharingFailed": "Tidak dapat meminta akses daftar putar.",
-    "playlistSharingAccepted": "Plex menerima permintaan akses."
+    "playlistSharingAccepted": "Plex menerima permintaan akses.",
+    "playlistAccessList": "Akses saat ini",
+    "playlistAccessNone": "Belum ada akses daftar putar yang diberikan"
   },
   "musicDevices": {
     "playOn": "Putar di",

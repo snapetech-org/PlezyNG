@@ -1177,7 +1177,6 @@ class _Translations$videoControls$tr extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Geniş Ekran (Letterbox)';
 	@override String get fillScreen => 'Ekrana Doldur';
-	@override String get stretch => 'Uzat';
 	@override String get lockRotation => 'Döndürmeyi kilitle';
 	@override String get unlockRotation => 'Döndürme kilidini aç';
 	@override String get timerActive => 'Zamanlayıcı Aktif';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Bu çalma listesine ve parçalarına erişim verin. Alıcının bir daveti kabul etmesi gerekebilir.';
 	@override String get playlistSharingFailed => 'Çalma listesi erişimi istenemedi.';
 	@override String get playlistSharingAccepted => 'Plex erişim isteğini kabul etti.';
+	@override String get playlistAccessList => 'Geçerli erişim';
+	@override String get playlistAccessNone => 'Çalma listesi erişimi verilmedi';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsTr {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Geniş Ekran (Letterbox)',
 			'videoControls.fillScreen' => 'Ekrana Doldur',
-			'videoControls.stretch' => 'Uzat',
 			'videoControls.lockRotation' => 'Döndürmeyi kilitle',
 			'videoControls.unlockRotation' => 'Döndürme kilidini aç',
 			'videoControls.timerActive' => 'Zamanlayıcı Aktif',
@@ -6519,9 +6519,9 @@ extension on TranslationsTr {
 			'videoControls.chaptersAndBookmarks' => 'Bölümler ve Bookmarks',
 			'videoControls.segmentLoop' => 'Segment Yürüyüşü',
 			'videoControls.addBookmark' => 'Bookmark ekleyin',
+			'videoControls.bookmarkName' => 'Bookmark Adı',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark Adı',
 			'videoControls.bookmarkNameHint' => 'Örneğin, açılan sahne',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Hakkında ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu kitaplık için bir isim girin.',
@@ -7033,9 +7033,9 @@ extension on TranslationsTr {
 			'libraries.hideLibrary' => 'Kitaplığı gizle',
 			'libraries.libraryOptions' => 'Kitaplık seçenekleri',
 			'libraries.content' => 'kitaplık içeriği',
+			'libraries.selectLibrary' => 'Kitaplık seç',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Kitaplık seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtreler (${count})',
 			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			'libraries.noCollections' => 'Bu kitaplıkta koleksiyon yok',
@@ -7547,9 +7547,9 @@ extension on TranslationsTr {
 			'watchTogether.enterRoomCode' => 'Kurucudan aldığınız 6 karakterlik kodu girin.',
 			'watchTogether.roomCode' => 'Oda Kodu',
 			'watchTogether.paste' => 'Yapıştır',
+			'watchTogether.noCodeInClipboard' => 'Panoda oda kodu yok',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Panoda oda kodu yok',
 			'watchTogether.copyCode' => 'Kodu Kopyala',
 			'watchTogether.codeCopied' => 'Oda kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Daveti Paylaş',
@@ -8061,9 +8061,9 @@ extension on TranslationsTr {
 			'metadataEdit.selectLogo' => 'Logo Seç',
 			'metadataEdit.selectSquareArt' => 'Kare Görsel Seç',
 			'metadataEdit.fromUrl' => 'URL\'den',
+			'metadataEdit.uploadFile' => 'Dosya Yükle',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Dosya Yükle',
 			'metadataEdit.enterImageUrl' => 'Görsel URL\'si girin',
 			'metadataEdit.imageUrl' => 'Görsel URL\'si',
 			'metadataEdit.metadataUpdated' => 'Meta veriler güncellendi',
@@ -8575,9 +8575,9 @@ extension on TranslationsTr {
 			'universalMedia.intro' => 'Bir bağlantı, oynatma listesi veya dosyayı açın. Playback Pleazyng\'nin standart oyuncusu kullanır ve kütüphanenize tarih eklemez.',
 			'universalMedia.openWhat' => 'Neyi açmak ister misiniz?',
 			'universalMedia.stream' => 'Stream Adresi',
+			'universalMedia.playlist' => 'Oyun Listesi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Oyun Listesi',
 			'universalMedia.files' => 'cihaz dosyaları',
 			'universalMedia.favorites' => 'Saved Stream Favori',
 			'universalMedia.address' => 'Medya Adresi',
@@ -9089,9 +9089,9 @@ extension on TranslationsTr {
 			'sourceSetup.nfsTrustHelp' => 'Bu aygıtın güvendiği sertifikalar için boş bırakın. Gerektiğinde özel bir CA sertifikası veya kendinden imzalı sunucu sertifikası ekleyin; sertifikadaki adlar NFS URL’sindeki ana makineyle eşleşmelidir.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM biçiminde bir CA veya sunucu sertifikası kullanın. Özel anahtar eklemeyin.',
 			'sourceSetup.addTrustCertificate' => 'Özel güven sertifikası ekle',
+			'sourceSetup.replaceTrustCertificate' => 'Kaydedilmiş özel sertifikayı değiştir',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Kaydedilmiş özel sertifikayı değiştir',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS normal NFS ve bağlama hizmeti bağlantı noktalarını kullanır ve NAS’ta RFC 9289 desteği gerektirir. TLS 1.3 zorunludur. Ana makine adı veya IP adresi sertifikayla eşleşmelidir. Şifreli kanal içinde de AUTH_SYS UID/GID geçerlidir.',
 			'sourceSetup.clientCertificate' => 'İstemci sertifikası (isteğe bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS’ın bu istemcinin kimliğini doğrulamasını sağlar; AUTH_SYS kimlikleri hâlâ NAS’ın NFS paylaşım ilkesine bağlıdır.',
@@ -9561,6 +9561,8 @@ extension on TranslationsTr {
 			'musicTools.playlistSharingHint' => 'Bu çalma listesine ve parçalarına erişim verin. Alıcının bir daveti kabul etmesi gerekebilir.',
 			'musicTools.playlistSharingFailed' => 'Çalma listesi erişimi istenemedi.',
 			'musicTools.playlistSharingAccepted' => 'Plex erişim isteğini kabul etti.',
+			'musicTools.playlistAccessList' => 'Geçerli erişim',
+			'musicTools.playlistAccessNone' => 'Çalma listesi erişimi verilmedi',
 			'musicDevices.playOn' => 'Şurada çal',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} üzerinde çalınıyor',

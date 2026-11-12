@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Letterbox",
     "fillScreen": "Fill screen",
-    "stretch": "Stretch",
     "lockRotation": "Lock rotation",
     "unlockRotation": "Unlock rotation",
     "timerActive": "Timer Active",
@@ -5655,7 +5654,9 @@
     "playlistRecipient": "Plex username or email",
     "playlistSharingHint": "Grant access to this playlist and its tracks. The recipient may need to accept an invitation.",
     "playlistSharingFailed": "Could not request playlist access.",
-    "playlistSharingAccepted": "Plex accepted the access request."
+    "playlistSharingAccepted": "Plex accepted the access request.",
+    "playlistAccessList": "Current access",
+    "playlistAccessNone": "No playlist access grants"
   },
   "musicDevices": {
     "playOn": "Play on",

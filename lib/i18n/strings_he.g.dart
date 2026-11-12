@@ -1179,7 +1179,6 @@ class _Translations$videoControls$he extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'תיבת הדואר';
 	@override String get fillScreen => 'מלא מסך';
-	@override String get stretch => 'מתיחה';
 	@override String get lockRotation => 'סגור סיבוב';
 	@override String get unlockRotation => 'פתיחת סיבוב';
 	@override String get timerActive => 'זמן פעיל';
@@ -4361,6 +4360,8 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'הענקת גישה לרשימה זו ולרצועות שלה. ייתכן שהנמען יצטרך לאשר הזמנה.';
 	@override String get playlistSharingFailed => 'לא ניתן לבקש גישה לרשימת ההשמעה.';
 	@override String get playlistSharingAccepted => 'Plex קיבל את בקשת הגישה.';
+	@override String get playlistAccessList => 'גישה נוכחית';
+	@override String get playlistAccessNone => 'לא הוענקו הרשאות גישה לרשימת ההשמעה';
 }
 
 // Path: musicDevices
@@ -6482,7 +6483,6 @@ extension on TranslationsHe {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'תיבת הדואר',
 			'videoControls.fillScreen' => 'מלא מסך',
-			'videoControls.stretch' => 'מתיחה',
 			'videoControls.lockRotation' => 'סגור סיבוב',
 			'videoControls.unlockRotation' => 'פתיחת סיבוב',
 			'videoControls.timerActive' => 'זמן פעיל',
@@ -6527,9 +6527,9 @@ extension on TranslationsHe {
 			'videoControls.chaptersAndBookmarks' => 'פרקים וספריות',
 			'videoControls.segmentLoop' => 'סגמנט לואי',
 			'videoControls.addBookmark' => 'להוסיף bookmark',
+			'videoControls.bookmarkName' => 'Bookmark שם',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark שם',
 			'videoControls.bookmarkNameHint' => 'לדוגמה, פתיחת סצנה',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'סימנייה ${n}',
 			'videoControls.bookmarkNameRequired' => 'הקלד שם עבור ספר זה.',
@@ -7041,9 +7041,9 @@ extension on TranslationsHe {
 			'libraries.hideLibrary' => 'להסתיר את הספרייה',
 			'libraries.libraryOptions' => 'אפשרויות ספרייה',
 			'libraries.content' => 'ספרייה תוכן',
+			'libraries.selectLibrary' => 'בחר ספרייה',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'בחר ספרייה',
 			'libraries.filtersWithCount' => ({required Object count}) => 'מסננים (${count})',
 			'libraries.noRecommendations' => 'אין המלצות זמינות',
 			'libraries.noCollections' => 'אין אוסף בספריה זו',
@@ -7555,9 +7555,9 @@ extension on TranslationsHe {
 			'watchTogether.enterRoomCode' => 'הקלד את הקוד של 6 תווים מהארח.',
 			'watchTogether.roomCode' => 'קוד חדר',
 			'watchTogether.paste' => 'פסטה',
+			'watchTogether.noCodeInClipboard' => 'הקליפ לא מכיל קוד חדר',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'הקליפ לא מכיל קוד חדר',
 			'watchTogether.copyCode' => 'עותק קוד',
 			'watchTogether.codeCopied' => 'קוד חדר עותק',
 			'watchTogether.shareInvite' => 'שיתוף הזמנה',
@@ -8069,9 +8069,9 @@ extension on TranslationsHe {
 			'metadataEdit.selectLogo' => 'בחר את הלוגו',
 			'metadataEdit.selectSquareArt' => 'בחר Square Art',
 			'metadataEdit.fromUrl' => 'מתוך URL',
+			'metadataEdit.uploadFile' => 'להעלות קובץ',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'להעלות קובץ',
 			'metadataEdit.enterImageUrl' => 'כניסת תמונה URL',
 			'metadataEdit.imageUrl' => 'תמונה URL',
 			'metadataEdit.metadataUpdated' => 'נתונים מתעדכנים',
@@ -8583,9 +8583,9 @@ extension on TranslationsHe {
 			'universalMedia.intro' => 'פתח קישור, רשימת משחקים או קובץ.Playback משתמש בשחקן סטנדרטי של Pleazyng ואינו מוסיף היסטוריה לספריה שלך.',
 			'universalMedia.openWhat' => 'מה היית רוצה לפתוח?',
 			'universalMedia.stream' => 'כתובת זרם',
+			'universalMedia.playlist' => 'Playlist',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'מכשיר קבצים',
 			'universalMedia.favorites' => 'זרם אחסון האהובים',
 			'universalMedia.address' => 'כתובת התקשורת',
@@ -9097,9 +9097,9 @@ extension on TranslationsHe {
 			'sourceSetup.nfsTrustHelp' => 'יש להשאיר ריק לאישורים שהתקן זה נותן בהם אמון. לפי הצורך, אפשר להוסיף אישור CA פרטי או אישור שרת בחתימה עצמית; השמות בו חייבים להתאים למארח שבכתובת NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'יש להשתמש באישור CA או שרת בפורמט PEM. אין לכלול מפתח פרטי.',
 			'sourceSetup.addTrustCertificate' => 'הוספת אישור אמון מותאם אישית',
+			'sourceSetup.replaceTrustCertificate' => 'החלפת האישור המותאם אישית השמור',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'החלפת האישור המותאם אישית השמור',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS משתמש ביציאות הרגילות של NFS ושירות ה־mount, ודורש תמיכה ב־RFC 9289 מצד ה־NAS. נדרש TLS 1.3. שם המארח או כתובת ה־IP חייבים להתאים לאישור. מזהי AUTH_SYS UID/GID עדיין חלים בתוך הערוץ המוצפן.',
 			'sourceSetup.clientCertificate' => 'אישור לקוח (רשות)',
 			'sourceSetup.clientCertificateHelp' => 'מאפשר ל־NAS לאמת את הלקוח הזה; מזהי AUTH_SYS עדיין כפופים למדיניות הייצוא של ה־NAS.',
@@ -9569,6 +9569,8 @@ extension on TranslationsHe {
 			'musicTools.playlistSharingHint' => 'הענקת גישה לרשימה זו ולרצועות שלה. ייתכן שהנמען יצטרך לאשר הזמנה.',
 			'musicTools.playlistSharingFailed' => 'לא ניתן לבקש גישה לרשימת ההשמעה.',
 			'musicTools.playlistSharingAccepted' => 'Plex קיבל את בקשת הגישה.',
+			'musicTools.playlistAccessList' => 'גישה נוכחית',
+			'musicTools.playlistAccessNone' => 'לא הוענקו הרשאות גישה לרשימת ההשמעה',
 			'musicDevices.playOn' => 'ניגון באמצעות',
 			'musicDevices.thisDevice' => 'מכשיר זה',
 			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',

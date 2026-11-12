@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Geniş Ekran (Letterbox)",
     "fillScreen": "Ekrana Doldur",
-    "stretch": "Uzat",
     "lockRotation": "Döndürmeyi kilitle",
     "unlockRotation": "Döndürme kilidini aç",
     "timerActive": "Zamanlayıcı Aktif",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex kullanıcı adı veya e-posta",
     "playlistSharingHint": "Bu çalma listesine ve parçalarına erişim verin. Alıcının bir daveti kabul etmesi gerekebilir.",
     "playlistSharingFailed": "Çalma listesi erişimi istenemedi.",
-    "playlistSharingAccepted": "Plex erişim isteğini kabul etti."
+    "playlistSharingAccepted": "Plex erişim isteğini kabul etti.",
+    "playlistAccessList": "Geçerli erişim",
+    "playlistAccessNone": "Çalma listesi erişimi verilmedi"
   },
   "musicDevices": {
     "playOn": "Şurada çal",

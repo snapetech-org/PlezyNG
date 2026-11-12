@@ -1088,7 +1088,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Textová krabička",
     "fillScreen": "vyplňte obrazovku",
-    "stretch": "Roztáhnout",
     "lockRotation": "Závěsná rotace",
     "unlockRotation": "Odemknutí rotace",
     "timerActive": "Aktivní čas",
@@ -5624,7 +5623,9 @@
     "playlistRecipient": "Uživatelské jméno Plex nebo e-mail",
     "playlistSharingHint": "Udělte přístup k tomuto playlistu a jeho skladbám. Příjemce možná bude muset přijmout pozvánku.",
     "playlistSharingFailed": "Nepodařilo se požádat o přístup k playlistu.",
-    "playlistSharingAccepted": "Plex přijal žádost o přístup."
+    "playlistSharingAccepted": "Plex přijal žádost o přístup.",
+    "playlistAccessList": "Aktuální přístup",
+    "playlistAccessNone": "K playlistu nebyl udělen žádný přístup"
   },
   "musicDevices": {
     "playOn": "Přehrávat na",

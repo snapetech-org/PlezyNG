@@ -177,7 +177,6 @@
   },
   "videoControls": {
     "subtitlesLabel": "Subtítulos",
-    "stretch": "Estirar",
     "playNext": "Reproducir siguiente",
     "playButton": "Reproducir",
     "pauseButton": "Pausar",
@@ -924,7 +923,9 @@
     "playlistRecipient": "Usuario de Plex o correo electrónico",
     "playlistSharingHint": "Otorga acceso a esta lista y sus pistas. Es posible que el destinatario deba aceptar una invitación.",
     "playlistSharingFailed": "No se pudo solicitar acceso a la lista.",
-    "playlistSharingAccepted": "Plex aceptó la solicitud de acceso."
+    "playlistSharingAccepted": "Plex aceptó la solicitud de acceso.",
+    "playlistAccessList": "Acceso actual",
+    "playlistAccessNone": "No hay permisos de acceso a la lista"
   },
   "musicExperience": {
     "bluetoothDriving": "Salidas Bluetooth para conducir",

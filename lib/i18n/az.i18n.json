@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Geniş ekran (Letterbox)",
     "fillScreen": "Ekrana doldur",
-    "stretch": "Gərmək",
     "lockRotation": "Dönməni kilidlə",
     "unlockRotation": "Dönmə kilidini aç",
     "timerActive": "Taymer aktivdir",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex istifadəçi adı və ya e-poçt",
     "playlistSharingHint": "Bu pleylistə və treklərinə giriş verin. Alıcı dəvəti qəbul etməli ola bilər.",
     "playlistSharingFailed": "Pleylistə giriş istənilə bilmədi.",
-    "playlistSharingAccepted": "Plex giriş sorğusunu qəbul etdi."
+    "playlistSharingAccepted": "Plex giriş sorğusunu qəbul etdi.",
+    "playlistAccessList": "Cari giriş",
+    "playlistAccessNone": "Pleylistə giriş icazəsi yoxdur"
   },
   "musicDevices": {
     "playOn": "Burada səsləndir",

@@ -1177,7 +1177,6 @@ class _Translations$videoControls$da extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Letterbox';
 	@override String get fillScreen => 'Fyld skærm';
-	@override String get stretch => 'Stræk';
 	@override String get lockRotation => 'Lås rotation';
 	@override String get unlockRotation => 'Lås rotation op';
 	@override String get timerActive => 'Timer aktiv';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$da extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Giv adgang til denne afspilningsliste og dens numre. Modtageren skal muligvis acceptere en invitation.';
 	@override String get playlistSharingFailed => 'Kunne ikke anmode om adgang til afspilningslisten.';
 	@override String get playlistSharingAccepted => 'Plex accepterede adgangsanmodningen.';
+	@override String get playlistAccessList => 'Nuværende adgang';
+	@override String get playlistAccessNone => 'Ingen har fået adgang til afspilningslisten';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsDa {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Letterbox',
 			'videoControls.fillScreen' => 'Fyld skærm',
-			'videoControls.stretch' => 'Stræk',
 			'videoControls.lockRotation' => 'Lås rotation',
 			'videoControls.unlockRotation' => 'Lås rotation op',
 			'videoControls.timerActive' => 'Timer aktiv',
@@ -6519,9 +6519,9 @@ extension on TranslationsDa {
 			'videoControls.chaptersAndBookmarks' => 'Kapitel og bogmærker',
 			'videoControls.segmentLoop' => 'Segment Løgn',
 			'videoControls.addBookmark' => 'Tilføj Bookmark',
+			'videoControls.bookmarkName' => 'Bookmark navn',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark navn',
 			'videoControls.bookmarkNameHint' => 'For eksempel åbningsscenen',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bogmærke ${n}',
 			'videoControls.bookmarkNameRequired' => 'Indtast et navn til denne bogmærke.',
@@ -7033,9 +7033,9 @@ extension on TranslationsDa {
 			'libraries.hideLibrary' => 'Skjul bibliotek',
 			'libraries.libraryOptions' => 'Biblioteksindstillinger',
 			'libraries.content' => 'biblioteksindhold',
+			'libraries.selectLibrary' => 'Vælg bibliotek',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Vælg bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtre (${count})',
 			'libraries.noRecommendations' => 'Ingen anbefalinger tilgængelige',
 			'libraries.noCollections' => 'Ingen samlinger i dette bibliotek',
@@ -7547,9 +7547,9 @@ extension on TranslationsDa {
 			'watchTogether.enterRoomCode' => 'Indtast koden på 6 tegn fra værten.',
 			'watchTogether.roomCode' => 'Rumkode',
 			'watchTogether.paste' => 'Indsæt',
+			'watchTogether.noCodeInClipboard' => 'Udklipsholderen indeholder ikke en rumkode',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Udklipsholderen indeholder ikke en rumkode',
 			'watchTogether.copyCode' => 'Kopiér kode',
 			'watchTogether.codeCopied' => 'Rumkode kopieret',
 			'watchTogether.shareInvite' => 'Del invitation',
@@ -8061,9 +8061,9 @@ extension on TranslationsDa {
 			'metadataEdit.selectLogo' => 'Vælg logo',
 			'metadataEdit.selectSquareArt' => 'Vælg kvadratisk billede',
 			'metadataEdit.fromUrl' => 'Fra URL',
+			'metadataEdit.uploadFile' => 'Upload fil',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Upload fil',
 			'metadataEdit.enterImageUrl' => 'Indtast billed-URL',
 			'metadataEdit.imageUrl' => 'Billed-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata opdateret',
@@ -8575,9 +8575,9 @@ extension on TranslationsDa {
 			'universalMedia.intro' => 'Opret en link, playlist eller fil. Playback bruger Pleazyng\'s standardspiller og tilføjer ikke historie til biblioteket.',
 			'universalMedia.openWhat' => 'Hvad vil du gerne åbne?',
 			'universalMedia.stream' => 'Stream adresse',
+			'universalMedia.playlist' => 'Playlist',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Enheder filer',
 			'universalMedia.favorites' => 'Saved stream favoritter',
 			'universalMedia.address' => 'Medieadresse',
@@ -9089,9 +9089,9 @@ extension on TranslationsDa {
 			'sourceSetup.nfsTrustHelp' => 'Lad feltet stå tomt for certifikater, som denne enhed har tillid til. Tilføj om nødvendigt et certifikat fra en privat CA eller et selvsigneret servercertifikat; navnene skal svare til værten i NFS-URL’en.',
 			'sourceSetup.nfsTrustInvalid' => 'Brug et CA- eller servercertifikat i PEM-format. Medtag ikke en privat nøgle.',
 			'sourceSetup.addTrustCertificate' => 'Tilføj brugerdefineret tillidscertifikat',
+			'sourceSetup.replaceTrustCertificate' => 'Erstat gemt brugerdefineret certifikat',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Erstat gemt brugerdefineret certifikat',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS bruger de sædvanlige NFS- og monteringsporte og kræver, at NAS-enheden understøtter RFC 9289. TLS 1.3 er påkrævet. Værtsnavnet eller IP-adressen skal svare til certifikatet. AUTH_SYS UID/GID gælder stadig i den krypterede kanal.',
 			'sourceSetup.clientCertificate' => 'Klientcertifikat (valgfrit)',
 			'sourceSetup.clientCertificateHelp' => 'Lader NAS-enheden godkende denne klient; AUTH_SYS-ID’er afhænger stadig af reglerne for NAS-enhedens NFS-deling.',
@@ -9561,6 +9561,8 @@ extension on TranslationsDa {
 			'musicTools.playlistSharingHint' => 'Giv adgang til denne afspilningsliste og dens numre. Modtageren skal muligvis acceptere en invitation.',
 			'musicTools.playlistSharingFailed' => 'Kunne ikke anmode om adgang til afspilningslisten.',
 			'musicTools.playlistSharingAccepted' => 'Plex accepterede adgangsanmodningen.',
+			'musicTools.playlistAccessList' => 'Nuværende adgang',
+			'musicTools.playlistAccessNone' => 'Ingen har fået adgang til afspilningslisten',
 			'musicDevices.playOn' => 'Afspil på',
 			'musicDevices.thisDevice' => 'Denne enhed',
 			'musicDevices.playingOn' => ({required Object device}) => 'Afspiller på ${device}',

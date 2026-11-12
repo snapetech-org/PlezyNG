@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Keng ekran (Letterbox)",
     "fillScreen": "Ekranni toʻldirish",
-    "stretch": "Choʻzish",
     "lockRotation": "Aylanishni qulflash",
     "unlockRotation": "Aylanish qulfini ochish",
     "timerActive": "Taymer faol",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex foydalanuvchi nomi yoki email",
     "playlistSharingHint": "Bu pleylist va uning treklariga kirishga ruxsat bering. Qabul qiluvchi taklifni qabul qilishi kerak bo‘lishi mumkin.",
     "playlistSharingFailed": "Pleylistga kirish so‘rovini yuborib bo‘lmadi.",
-    "playlistSharingAccepted": "Plex kirish so‘rovini qabul qildi."
+    "playlistSharingAccepted": "Plex kirish so‘rovini qabul qildi.",
+    "playlistAccessList": "Joriy kirish",
+    "playlistAccessNone": "Pleylistga kirish ruxsati berilmagan"
   },
   "musicDevices": {
     "playOn": "Shu qurilmada ijro etish",

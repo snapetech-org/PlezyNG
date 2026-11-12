@@ -346,7 +346,6 @@ class Translations$videoControls$pt_BR extends Translations$videoControls$pt {
 	// Translations
 	@override String get audioLabel => 'Áudio';
 	@override String get subtitlesLabel => 'Legendas';
-	@override String get stretch => 'Esticar';
 	@override String get playNext => 'Reproduzir próximo';
 	@override String get playButton => 'Reproduzir';
 	@override String get pauseButton => 'Pausar';
@@ -1072,6 +1071,8 @@ class Translations$musicTools$pt_BR extends Translations$musicTools$pt {
 	@override String get playlistSharingHint => 'Conceda acesso a esta playlist e às suas faixas. O destinatário pode precisar aceitar um convite.';
 	@override String get playlistSharingFailed => 'Não foi possível solicitar acesso à playlist.';
 	@override String get playlistSharingAccepted => 'O Plex aceitou a solicitação de acesso.';
+	@override String get playlistAccessList => 'Acesso atual';
+	@override String get playlistAccessNone => 'Nenhum acesso concedido à playlist';
 }
 
 // Path: musicExperience
@@ -1506,7 +1507,6 @@ extension on TranslationsPtBr {
 			'accessibility.blue' => 'Azul',
 			'videoControls.audioLabel' => 'Áudio',
 			'videoControls.subtitlesLabel' => 'Legendas',
-			'videoControls.stretch' => 'Esticar',
 			'videoControls.playNext' => 'Reproduzir próximo',
 			'videoControls.playButton' => 'Reproduzir',
 			'videoControls.pauseButton' => 'Pausar',
@@ -1884,9 +1884,9 @@ extension on TranslationsPtBr {
 			'romm.keepBoth' => 'Keep both',
 			'romm.useServer' => 'Use server copy',
 			'romm.replaceServer' => 'Replace server copy',
+			'romm.pendingSaves' => 'Saves waiting to sync',
 			_ => null,
 		} ?? switch (path) {
-			'romm.pendingSaves' => 'Saves waiting to sync',
 			'romm.sync' => 'Sync saves',
 			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
 			'romm.pause' => 'Pause',
@@ -1987,6 +1987,8 @@ extension on TranslationsPtBr {
 			'musicTools.playlistSharingHint' => 'Conceda acesso a esta playlist e às suas faixas. O destinatário pode precisar aceitar um convite.',
 			'musicTools.playlistSharingFailed' => 'Não foi possível solicitar acesso à playlist.',
 			'musicTools.playlistSharingAccepted' => 'O Plex aceitou a solicitação de acesso.',
+			'musicTools.playlistAccessList' => 'Acesso atual',
+			'musicTools.playlistAccessNone' => 'Nenhum acesso concedido à playlist',
 			'musicExperience.bluetoothDriving' => 'Saídas Bluetooth para dirigir',
 			'musicExperience.bluetoothDrivingHint' => 'Escolha as saídas Bluetooth conectadas que abrem automaticamente a visualização de direção.',
 			_ => null,

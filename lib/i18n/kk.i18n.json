@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Кең экран (Letterbox)",
     "fillScreen": "Экранды толтыру",
-    "stretch": "Созу",
     "lockRotation": "Бұрылысты бұғаттау",
     "unlockRotation": "Бұрылысты бұғаттаудан шығару",
     "timerActive": "Таймер белсенді",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex пайдаланушы аты немесе электрондық пошта",
     "playlistSharingHint": "Осы тізімге және оның тректеріне қатынау беріңіз. Алушы шақыруды қабылдауы қажет болуы мүмкін.",
     "playlistSharingFailed": "Тізімге қатынау сұрауын жіберу мүмкін болмады.",
-    "playlistSharingAccepted": "Plex қатынау сұрауын қабылдады."
+    "playlistSharingAccepted": "Plex қатынау сұрауын қабылдады.",
+    "playlistAccessList": "Ағымдағы қатынау",
+    "playlistAccessNone": "Ойнату тізіміне қатынау берілмеген"
   },
   "musicDevices": {
     "playOn": "Ойнату құрылғысы",

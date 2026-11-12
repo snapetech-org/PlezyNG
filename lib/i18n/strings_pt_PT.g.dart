@@ -350,7 +350,6 @@ class Translations$videoControls$pt_PT extends Translations$videoControls$pt {
 	// Translations
 	@override String get audioLabel => 'Áudio';
 	@override String get subtitlesLabel => 'Legendas';
-	@override String get stretch => 'Esticar';
 	@override String get playNext => 'Reproduzir a seguir';
 	@override String get playButton => 'Reproduzir';
 	@override String get pauseButton => 'Pausar';
@@ -1090,6 +1089,8 @@ class Translations$musicTools$pt_PT extends Translations$musicTools$pt {
 	@override String get playlistSharingHint => 'Conceda acesso a esta lista e às suas faixas. O destinatário poderá ter de aceitar um convite.';
 	@override String get playlistSharingFailed => 'Não foi possível solicitar acesso à lista.';
 	@override String get playlistSharingAccepted => 'O Plex aceitou o pedido de acesso.';
+	@override String get playlistAccessList => 'Acesso atual';
+	@override String get playlistAccessNone => 'Não há acessos concedidos à lista';
 }
 
 // Path: musicExperience
@@ -1525,7 +1526,6 @@ extension on TranslationsPtPt {
 			'accessibility.blue' => 'Azul',
 			'videoControls.audioLabel' => 'Áudio',
 			'videoControls.subtitlesLabel' => 'Legendas',
-			'videoControls.stretch' => 'Esticar',
 			'videoControls.playNext' => 'Reproduzir a seguir',
 			'videoControls.playButton' => 'Reproduzir',
 			'videoControls.pauseButton' => 'Pausar',
@@ -1901,9 +1901,9 @@ extension on TranslationsPtPt {
 			'romm.saveImported' => 'Save imported',
 			'romm.saveExported' => 'Save exported',
 			'romm.engine' => 'Emulator identity',
+			'romm.slot' => 'Save slot',
 			_ => null,
 		} ?? switch (path) {
-			'romm.slot' => 'Save slot',
 			'romm.core' => 'Core identity',
 			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
 			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
@@ -2011,6 +2011,8 @@ extension on TranslationsPtPt {
 			'musicTools.playlistSharingHint' => 'Conceda acesso a esta lista e às suas faixas. O destinatário poderá ter de aceitar um convite.',
 			'musicTools.playlistSharingFailed' => 'Não foi possível solicitar acesso à lista.',
 			'musicTools.playlistSharingAccepted' => 'O Plex aceitou o pedido de acesso.',
+			'musicTools.playlistAccessList' => 'Acesso atual',
+			'musicTools.playlistAccessNone' => 'Não há acessos concedidos à lista',
 			'musicExperience.bluetoothDriving' => 'Saídas Bluetooth para condução',
 			'musicExperience.bluetoothDrivingHint' => 'Escolha as saídas Bluetooth ligadas que abrem automaticamente a vista de condução.',
 			_ => null,

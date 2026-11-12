@@ -1078,7 +1078,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Fekete sávok",
     "fillScreen": "Képernyő kitöltése",
-    "stretch": "Nyújtás",
     "lockRotation": "Forgatás zárolása",
     "unlockRotation": "Forgatás feloldása",
     "timerActive": "Időzítő aktív",
@@ -5576,7 +5575,9 @@
     "playlistRecipient": "Plex-felhasználónév vagy e-mail",
     "playlistSharingHint": "Adjon hozzáférést ehhez a listához és számaihoz. A címzettnek esetleg el kell fogadnia egy meghívást.",
     "playlistSharingFailed": "Nem sikerült hozzáférést kérni a listához.",
-    "playlistSharingAccepted": "A Plex elfogadta a hozzáférési kérést."
+    "playlistSharingAccepted": "A Plex elfogadta a hozzáférési kérést.",
+    "playlistAccessList": "Jelenlegi hozzáférés",
+    "playlistAccessNone": "Nincs megadott hozzáférés a listához"
   },
   "musicDevices": {
     "playOn": "Lejátszás itt",

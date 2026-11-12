@@ -1177,7 +1177,6 @@ class _Translations$videoControls$az extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Geniş ekran (Letterbox)';
 	@override String get fillScreen => 'Ekrana doldur';
-	@override String get stretch => 'Gərmək';
 	@override String get lockRotation => 'Dönməni kilidlə';
 	@override String get unlockRotation => 'Dönmə kilidini aç';
 	@override String get timerActive => 'Taymer aktivdir';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$az extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Bu pleylistə və treklərinə giriş verin. Alıcı dəvəti qəbul etməli ola bilər.';
 	@override String get playlistSharingFailed => 'Pleylistə giriş istənilə bilmədi.';
 	@override String get playlistSharingAccepted => 'Plex giriş sorğusunu qəbul etdi.';
+	@override String get playlistAccessList => 'Cari giriş';
+	@override String get playlistAccessNone => 'Pleylistə giriş icazəsi yoxdur';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsAz {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Geniş ekran (Letterbox)',
 			'videoControls.fillScreen' => 'Ekrana doldur',
-			'videoControls.stretch' => 'Gərmək',
 			'videoControls.lockRotation' => 'Dönməni kilidlə',
 			'videoControls.unlockRotation' => 'Dönmə kilidini aç',
 			'videoControls.timerActive' => 'Taymer aktivdir',
@@ -6519,9 +6519,9 @@ extension on TranslationsAz {
 			'videoControls.chaptersAndBookmarks' => 'Fəsillər və əlfəcinlər',
 			'videoControls.segmentLoop' => 'Bölmə təkrarı',
 			'videoControls.addBookmark' => 'Əlfəcin əlavə et',
+			'videoControls.bookmarkName' => 'Əlfəcin adı',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Əlfəcin adı',
 			'videoControls.bookmarkNameHint' => 'Məsələn, açılış səhnəsi',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Əlfəcin ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu əlfəcin üçün ad daxil edin.',
@@ -7033,9 +7033,9 @@ extension on TranslationsAz {
 			'libraries.hideLibrary' => 'Kitabxananı gizlət',
 			'libraries.libraryOptions' => 'Kitabxana seçimləri',
 			'libraries.content' => 'kitabxana məzmunu',
+			'libraries.selectLibrary' => 'Kitabxana seç',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Kitabxana seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlər (${count})',
 			'libraries.noRecommendations' => 'Tövsiyə yoxdur',
 			'libraries.noCollections' => 'Bu kitabxanada kolleksiya yoxdur',
@@ -7547,9 +7547,9 @@ extension on TranslationsAz {
 			'watchTogether.enterRoomCode' => 'Təşkilatçının verdiyi 6 simvollu kodu daxil edin.',
 			'watchTogether.roomCode' => 'Otaq kodu',
 			'watchTogether.paste' => 'Yapışdır',
+			'watchTogether.noCodeInClipboard' => 'Buferdə otaq kodu yoxdur',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Buferdə otaq kodu yoxdur',
 			'watchTogether.copyCode' => 'Kodu kopyala',
 			'watchTogether.codeCopied' => 'Otaq kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Dəvəti paylaş',
@@ -8061,9 +8061,9 @@ extension on TranslationsAz {
 			'metadataEdit.selectLogo' => 'Loqo seç',
 			'metadataEdit.selectSquareArt' => 'Kvadrat şəkil seç',
 			'metadataEdit.fromUrl' => 'URL-dən',
+			'metadataEdit.uploadFile' => 'Fayl yüklə',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Fayl yüklə',
 			'metadataEdit.enterImageUrl' => 'Şəkil URL-i daxil edin',
 			'metadataEdit.imageUrl' => 'Şəkil URL-i',
 			'metadataEdit.metadataUpdated' => 'Meta-məlumatlar yeniləndi',
@@ -8575,9 +8575,9 @@ extension on TranslationsAz {
 			'universalMedia.intro' => 'Playback Pleazyng standart oynatıcı ilə istifadə edir və kütüphaneye tarih ekləmir.',
 			'universalMedia.openWhat' => '- Neyi açmaq istəyirsiniz?',
 			'universalMedia.stream' => 'Trafik adresi',
+			'universalMedia.playlist' => 'Oyunçı',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Oyunçı',
 			'universalMedia.files' => 'Fillər',
 			'universalMedia.favorites' => 'Sürücüsüz favoritlər',
 			'universalMedia.address' => 'Medyanın adresi',
@@ -9089,9 +9089,9 @@ extension on TranslationsAz {
 			'sourceSetup.nfsTrustHelp' => 'Bu cihazın etibar etdiyi sertifikatlar üçün boş saxlayın. Lazım olduqda özəl CA sertifikatı və ya öz-özünə imzalanmış server sertifikatı əlavə edin; sertifikatdakı adlar NFS URL-indəki hosta uyğun gəlməlidir.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM formatında CA və ya server sertifikatı istifadə edin. Özəl açar daxil etməyin.',
 			'sourceSetup.addTrustCertificate' => 'Xüsusi etibar sertifikatı əlavə et',
+			'sourceSetup.replaceTrustCertificate' => 'Yadda saxlanmış xüsusi sertifikatı əvəz et',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Yadda saxlanmış xüsusi sertifikatı əvəz et',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS adi NFS və mount xidməti portlarını istifadə edir və NAS-da RFC 9289 dəstəyi tələb edir. TLS 1.3 tələb olunur. Host adı və ya IP ünvanı sertifikata uyğun gəlməlidir. Şifrələnmiş kanalda da AUTH_SYS UID/GID qüvvədə qalır.',
 			'sourceSetup.clientCertificate' => 'Klient sertifikatı (istəyə bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-a bu klientin kimliyini təsdiqləməyə imkan verir; AUTH_SYS ID-ləri yenə NAS-ın NFS paylaşım qaydalarından asılıdır.',
@@ -9561,6 +9561,8 @@ extension on TranslationsAz {
 			'musicTools.playlistSharingHint' => 'Bu pleylistə və treklərinə giriş verin. Alıcı dəvəti qəbul etməli ola bilər.',
 			'musicTools.playlistSharingFailed' => 'Pleylistə giriş istənilə bilmədi.',
 			'musicTools.playlistSharingAccepted' => 'Plex giriş sorğusunu qəbul etdi.',
+			'musicTools.playlistAccessList' => 'Cari giriş',
+			'musicTools.playlistAccessNone' => 'Pleylistə giriş icazəsi yoxdur',
 			'musicDevices.playOn' => 'Burada səsləndir',
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',

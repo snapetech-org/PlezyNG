@@ -1076,7 +1076,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "レターボックス",
     "fillScreen": "画面を埋める",
-    "stretch": "引き延ばす",
     "lockRotation": "回転をロック",
     "unlockRotation": "回転のロックを解除",
     "timerActive": "タイマー動作中",
@@ -5571,7 +5570,9 @@
     "playlistRecipient": "Plexユーザー名またはメール",
     "playlistSharingHint": "このプレイリストと曲へのアクセスを許可します。受信者による招待の承諾が必要な場合があります。",
     "playlistSharingFailed": "プレイリストへのアクセスをリクエストできませんでした。",
-    "playlistSharingAccepted": "Plexがアクセスのリクエストを受け付けました。"
+    "playlistSharingAccepted": "Plexがアクセスのリクエストを受け付けました。",
+    "playlistAccessList": "現在のアクセス権",
+    "playlistAccessNone": "プレイリストのアクセス権は付与されていません"
   },
   "musicDevices": {
     "playOn": "再生先",

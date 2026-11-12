@@ -1088,7 +1088,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Вписать в экран",
     "fillScreen": "Заполнить экран",
-    "stretch": "Растянуть",
     "lockRotation": "Заблокировать поворот",
     "unlockRotation": "Разблокировать поворот",
     "timerActive": "Таймер активен",
@@ -5630,7 +5629,9 @@
     "playlistRecipient": "Имя пользователя Plex или эл. почта",
     "playlistSharingHint": "Предоставьте доступ к этому плейлисту и его трекам. Получателю может потребоваться принять приглашение.",
     "playlistSharingFailed": "Не удалось запросить доступ к плейлисту.",
-    "playlistSharingAccepted": "Plex принял запрос на доступ."
+    "playlistSharingAccepted": "Plex принял запрос на доступ.",
+    "playlistAccessList": "Текущий доступ",
+    "playlistAccessNone": "Доступ к плейлисту никому не предоставлен"
   },
   "musicDevices": {
     "playOn": "Воспроизвести на",

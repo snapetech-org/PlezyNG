@@ -8,6 +8,7 @@ import 'package:plezy/database/app_database.dart';
 import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/media_backend.dart';
 import 'package:plezy/media/media_playlist.dart';
+import 'package:plezy/models/plex/plex_playlist_access.dart';
 import 'package:plezy/services/plex_api_cache.dart';
 import 'package:plezy/services/plex_auth_service.dart';
 import 'package:plezy/services/plex_client.dart';
@@ -182,5 +183,49 @@ void main() {
     final draft = await sharing.prepare();
     await expectLater(sharing.grant(draft, 'friend'), throwsA(anything));
     expect(grants, hasLength(1));
+  });
+  test('revoke requires a displayed grant and retires changed playlist metadata', () async {
+    cloudResponse = () async => jsonResponse([
+      {
+        'id': 42,
+        'invited': {'id': 8, 'username': 'friend'},
+        'sharedItems': [
+          {'id': 99, 'uri': 'server://machine/com.plexapp.plugins.library/playlists/123/items'},
+        ],
+      },
+    ]);
+    final draft = await sharing.prepare();
+    final access = await sharing.listAccess(draft);
+    final forged = PlexPlaylistAccessGrant(
+      itemId: 99,
+      sourceId: 42,
+      userId: 8,
+      userName: 'friend',
+      uri: draft.uri,
+      received: false,
+    );
+    await expectLater(sharing.revoke(draft, forged), throwsStateError);
+    metadata['title'] = 'Renamed';
+    await expectLater(sharing.revoke(draft, access.single), throwsStateError);
+    expect(grants.where((r) => r.method == 'DELETE'), isEmpty);
+  });
+
+  test('revocation removes only the displayed grant once', () async {
+    cloudResponse = () async => grants.last.method == 'GET'
+        ? jsonResponse([
+            {
+              'id': 42,
+              'invited': {'id': 8, 'username': 'friend'},
+              'sharedItems': [
+                {'id': 99, 'uri': 'server://machine/com.plexapp.plugins.library/playlists/123/items'},
+              ],
+            },
+          ])
+        : http.Response('', 204);
+    final draft = await sharing.prepare();
+    final access = await sharing.listAccess(draft);
+    await sharing.revoke(draft, access.single);
+    await expectLater(sharing.revoke(draft, access.single), throwsStateError);
+    expect(grants.map((r) => r.method), ['GET', 'GET', 'DELETE']);
   });
 }

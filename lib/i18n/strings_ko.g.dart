@@ -1175,7 +1175,6 @@ class _Translations$videoControls$ko extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => '레터박스 모드';
 	@override String get fillScreen => '화면 채우기';
-	@override String get stretch => '확장';
 	@override String get lockRotation => '회전 잠금';
 	@override String get unlockRotation => '회전 잠금 해제';
 	@override String get timerActive => '타이머 활성화됨';
@@ -4348,6 +4347,8 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get playlistSharingHint => '이 재생목록과 트랙에 대한 접근을 허용합니다. 수신자가 초대를 수락해야 할 수 있습니다.';
 	@override String get playlistSharingFailed => '재생목록 접근을 요청할 수 없습니다.';
 	@override String get playlistSharingAccepted => 'Plex가 접근 요청을 접수했습니다.';
+	@override String get playlistAccessList => '현재 접근 권한';
+	@override String get playlistAccessNone => '부여된 재생목록 접근 권한이 없습니다';
 }
 
 // Path: musicDevices
@@ -6469,7 +6470,6 @@ extension on TranslationsKo {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => '레터박스 모드',
 			'videoControls.fillScreen' => '화면 채우기',
-			'videoControls.stretch' => '확장',
 			'videoControls.lockRotation' => '회전 잠금',
 			'videoControls.unlockRotation' => '회전 잠금 해제',
 			'videoControls.timerActive' => '타이머 활성화됨',
@@ -6514,9 +6514,9 @@ extension on TranslationsKo {
 			'videoControls.chaptersAndBookmarks' => '장 및 책표',
 			'videoControls.segmentLoop' => '세그먼트 루프',
 			'videoControls.addBookmark' => 'Bookmark 추가하기',
+			'videoControls.bookmarkName' => 'Bookmark 이름',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark 이름',
 			'videoControls.bookmarkNameHint' => '예를 들어, 개방 장면',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => '책표 ${n}',
 			'videoControls.bookmarkNameRequired' => '이 책자에 대한 이름을 입력합니다.',
@@ -7028,9 +7028,9 @@ extension on TranslationsKo {
 			'libraries.hideLibrary' => '미디어 라이브러리 숨기기',
 			'libraries.libraryOptions' => '미디어 라이브러리 옵션',
 			'libraries.content' => '미디어 라이브러리 콘텐츠',
+			'libraries.selectLibrary' => '미디어 라이브러리 선택',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => '미디어 라이브러리 선택',
 			'libraries.filtersWithCount' => ({required Object count}) => '필터 (${count})',
 			'libraries.noRecommendations' => '추천 없음',
 			'libraries.noCollections' => '이 미디어 라이브러리에는 컬렉션이 없습니다',
@@ -7542,9 +7542,9 @@ extension on TranslationsKo {
 			'watchTogether.enterRoomCode' => '호스트에게 받은 6자리 코드를 입력하세요.',
 			'watchTogether.roomCode' => '방 코드',
 			'watchTogether.paste' => '붙여넣기',
+			'watchTogether.noCodeInClipboard' => '클립보드에 방 코드가 없습니다',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => '클립보드에 방 코드가 없습니다',
 			'watchTogether.copyCode' => '코드 복사',
 			'watchTogether.codeCopied' => '방 코드가 복사되었습니다',
 			'watchTogether.shareInvite' => '초대 공유',
@@ -8056,9 +8056,9 @@ extension on TranslationsKo {
 			'metadataEdit.selectLogo' => '로고 선택',
 			'metadataEdit.selectSquareArt' => '정사각형 아트 선택',
 			'metadataEdit.fromUrl' => 'URL에서',
+			'metadataEdit.uploadFile' => '파일 업로드',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => '파일 업로드',
 			'metadataEdit.enterImageUrl' => '이미지 URL 입력',
 			'metadataEdit.imageUrl' => '이미지 URL',
 			'metadataEdit.metadataUpdated' => '메타데이터가 업데이트되었습니다',
@@ -8570,9 +8570,9 @@ extension on TranslationsKo {
 			'universalMedia.intro' => 'Playback은 Pleazyng의 표준 플레이어를 사용하고 도서관에 역사를 추가하지 않습니다.',
 			'universalMedia.openWhat' => '무엇을 열고 싶으신가요?',
 			'universalMedia.stream' => '흐름 주소',
+			'universalMedia.playlist' => '플레이리스트',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => '플레이리스트',
 			'universalMedia.files' => '장치 파일',
 			'universalMedia.favorites' => '저장된 스트림 좋아하는',
 			'universalMedia.address' => '미디어 주소',
@@ -9084,9 +9084,9 @@ extension on TranslationsKo {
 			'sourceSetup.nfsTrustHelp' => '이 장치에서 신뢰하는 인증서를 사용하려면 비워 두세요. 필요하면 사설 CA 또는 자체 서명 서버 인증서를 추가하세요. 인증서의 이름은 NFS URL의 호스트와 일치해야 합니다.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM 형식의 CA 또는 서버 인증서를 사용하세요. 개인 키는 포함하지 마세요.',
 			'sourceSetup.addTrustCertificate' => '사용자 지정 신뢰 인증서 추가',
+			'sourceSetup.replaceTrustCertificate' => '저장된 사용자 지정 인증서 교체',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => '저장된 사용자 지정 인증서 교체',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS는 일반 NFS 및 마운트 서비스 포트를 사용하며, NAS가 RFC 9289를 지원해야 합니다. TLS 1.3이 필수입니다. 호스트 이름 또는 IP가 인증서와 일치해야 합니다. 암호화된 채널에서도 AUTH_SYS UID/GID가 적용됩니다.',
 			'sourceSetup.clientCertificate' => '클라이언트 인증서(선택 사항)',
 			'sourceSetup.clientCertificateHelp' => 'NAS가 이 클라이언트를 인증하도록 합니다. AUTH_SYS ID에는 여전히 NAS 내보내기 정책이 적용됩니다.',
@@ -9556,6 +9556,8 @@ extension on TranslationsKo {
 			'musicTools.playlistSharingHint' => '이 재생목록과 트랙에 대한 접근을 허용합니다. 수신자가 초대를 수락해야 할 수 있습니다.',
 			'musicTools.playlistSharingFailed' => '재생목록 접근을 요청할 수 없습니다.',
 			'musicTools.playlistSharingAccepted' => 'Plex가 접근 요청을 접수했습니다.',
+			'musicTools.playlistAccessList' => '현재 접근 권한',
+			'musicTools.playlistAccessNone' => '부여된 재생목록 접근 권한이 없습니다',
 			'musicDevices.playOn' => '재생 기기',
 			'musicDevices.thisDevice' => '이 기기',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',

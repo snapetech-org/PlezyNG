@@ -1177,7 +1177,6 @@ class _Translations$videoControls$bg extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Черни ленти';
 	@override String get fillScreen => 'Запълни екрана';
-	@override String get stretch => 'Разтегни';
 	@override String get lockRotation => 'Заключи завъртането';
 	@override String get unlockRotation => 'Отключи завъртането';
 	@override String get timerActive => 'Таймерът е активен';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Дайте достъп до този плейлист и песните му. Получателят може да трябва да приеме покана.';
 	@override String get playlistSharingFailed => 'Неуспешна заявка за достъп до плейлиста.';
 	@override String get playlistSharingAccepted => 'Plex прие заявката за достъп.';
+	@override String get playlistAccessList => 'Текущ достъп';
+	@override String get playlistAccessNone => 'Няма предоставен достъп до плейлиста';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsBg {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Черни ленти',
 			'videoControls.fillScreen' => 'Запълни екрана',
-			'videoControls.stretch' => 'Разтегни',
 			'videoControls.lockRotation' => 'Заключи завъртането',
 			'videoControls.unlockRotation' => 'Отключи завъртането',
 			'videoControls.timerActive' => 'Таймерът е активен',
@@ -6519,9 +6519,9 @@ extension on TranslationsBg {
 			'videoControls.chaptersAndBookmarks' => 'Глави и книжници',
 			'videoControls.segmentLoop' => 'Сегментът Лоу',
 			'videoControls.addBookmark' => 'Добавяне на Bookmark',
+			'videoControls.bookmarkName' => 'Bookmark име',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark име',
 			'videoControls.bookmarkNameHint' => 'Например, отваряща сцена',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
 			'videoControls.bookmarkNameRequired' => 'Въведете име за тази книжка.',
@@ -7033,9 +7033,9 @@ extension on TranslationsBg {
 			'libraries.hideLibrary' => 'Скрий библиотеката',
 			'libraries.libraryOptions' => 'Опции на библиотеката',
 			'libraries.content' => 'съдържание на библиотеката',
+			'libraries.selectLibrary' => 'Избери библиотека',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Избери библиотека',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Филтри (${count})',
 			'libraries.noRecommendations' => 'Няма налични препоръки',
 			'libraries.noCollections' => 'Няма колекции в тази библиотека',
@@ -7547,9 +7547,9 @@ extension on TranslationsBg {
 			'watchTogether.enterRoomCode' => 'Въведете 6-символния код от организатора.',
 			'watchTogether.roomCode' => 'Код на стаята',
 			'watchTogether.paste' => 'Постави',
+			'watchTogether.noCodeInClipboard' => 'В клипборда няма код на стая',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'В клипборда няма код на стая',
 			'watchTogether.copyCode' => 'Копирай кода',
 			'watchTogether.codeCopied' => 'Кодът на стаята е копиран',
 			'watchTogether.shareInvite' => 'Сподели покана',
@@ -8061,9 +8061,9 @@ extension on TranslationsBg {
 			'metadataEdit.selectLogo' => 'Избери лого',
 			'metadataEdit.selectSquareArt' => 'Избери квадратно изображение',
 			'metadataEdit.fromUrl' => 'От URL',
+			'metadataEdit.uploadFile' => 'Качи файл',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Качи файл',
 			'metadataEdit.enterImageUrl' => 'Въведете URL на изображение',
 			'metadataEdit.imageUrl' => 'URL на изображение',
 			'metadataEdit.metadataUpdated' => 'Метаданните са обновени',
@@ -8575,9 +8575,9 @@ extension on TranslationsBg {
 			'universalMedia.intro' => 'Отворете линк, списък за възпроизвеждане или файл. Playback използва стандартния плейър на Pleazyng и не добавя история към вашата библиотека.',
 			'universalMedia.openWhat' => 'Какво бихте искали да отворите?',
 			'universalMedia.stream' => 'Поток адреси',
+			'universalMedia.playlist' => 'Playlist игра',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Playlist игра',
 			'universalMedia.files' => 'Филми на устройството',
 			'universalMedia.favorites' => 'Спасените любимци на потока',
 			'universalMedia.address' => 'Медиен адрес',
@@ -9089,9 +9089,9 @@ extension on TranslationsBg {
 			'sourceSetup.nfsTrustHelp' => 'Оставете празно за сертификатите, на които това устройство се доверява. При нужда добавете сертификат от частен CA или самоподписан сертификат на сървъра; имената в него трябва да съответстват на хоста в NFS URL адреса.',
 			'sourceSetup.nfsTrustInvalid' => 'Използвайте сертификат на CA или сървър във формат PEM. Не включвайте частен ключ.',
 			'sourceSetup.addTrustCertificate' => 'Добавяне на персонализиран доверен сертификат',
+			'sourceSetup.replaceTrustCertificate' => 'Замяна на запазения персонализиран сертификат',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Замяна на запазения персонализиран сертификат',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS използва обичайните портове на NFS и услугата за монтиране и изисква NAS да поддържа RFC 9289. Изисква се TLS 1.3. Името на хоста или IP адресът трябва да съответства на сертификата. AUTH_SYS UID/GID продължават да важат в шифрования канал.',
 			'sourceSetup.clientCertificate' => 'Клиентски сертификат (незадължително)',
 			'sourceSetup.clientCertificateHelp' => 'Позволява на NAS да удостовери този клиент; ID на AUTH_SYS все още зависят от правилата на NFS експорта на NAS.',
@@ -9561,6 +9561,8 @@ extension on TranslationsBg {
 			'musicTools.playlistSharingHint' => 'Дайте достъп до този плейлист и песните му. Получателят може да трябва да приеме покана.',
 			'musicTools.playlistSharingFailed' => 'Неуспешна заявка за достъп до плейлиста.',
 			'musicTools.playlistSharingAccepted' => 'Plex прие заявката за достъп.',
+			'musicTools.playlistAccessList' => 'Текущ достъп',
+			'musicTools.playlistAccessNone' => 'Няма предоставен достъп до плейлиста',
 			'musicDevices.playOn' => 'Възпроизвеждане на',
 			'musicDevices.thisDevice' => 'Това устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',

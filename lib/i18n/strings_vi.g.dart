@@ -1172,7 +1172,6 @@ class _Translations$videoControls$vi extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Bảng Letterbox';
 	@override String get fillScreen => 'Full màn hình';
-	@override String get stretch => 'Kéo dài';
 	@override String get lockRotation => 'Lock xoay';
 	@override String get unlockRotation => 'Khóa xoay';
 	@override String get timerActive => 'Thời gian hoạt động';
@@ -4330,6 +4329,8 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Cấp quyền truy cập danh sách phát này và các bản nhạc. Người nhận có thể cần chấp nhận lời mời.';
 	@override String get playlistSharingFailed => 'Không thể yêu cầu truy cập danh sách phát.';
 	@override String get playlistSharingAccepted => 'Plex đã tiếp nhận yêu cầu truy cập.';
+	@override String get playlistAccessList => 'Quyền truy cập hiện tại';
+	@override String get playlistAccessNone => 'Chưa cấp quyền truy cập danh sách phát';
 }
 
 // Path: musicDevices
@@ -6449,7 +6450,6 @@ extension on TranslationsVi {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Bảng Letterbox',
 			'videoControls.fillScreen' => 'Full màn hình',
-			'videoControls.stretch' => 'Kéo dài',
 			'videoControls.lockRotation' => 'Lock xoay',
 			'videoControls.unlockRotation' => 'Khóa xoay',
 			'videoControls.timerActive' => 'Thời gian hoạt động',
@@ -6494,9 +6494,9 @@ extension on TranslationsVi {
 			'videoControls.chaptersAndBookmarks' => 'Chương và Bookmark',
 			'videoControls.segmentLoop' => 'phân đoạn loop',
 			'videoControls.addBookmark' => 'Thêm Bookmark',
+			'videoControls.bookmarkName' => 'Bookmark tên',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark tên',
 			'videoControls.bookmarkNameHint' => 'Ví dụ: Mở cảnh',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Đề ${n}',
 			'videoControls.bookmarkNameRequired' => 'Nhập tên cho bookmark này.',
@@ -7008,9 +7008,9 @@ extension on TranslationsVi {
 			'libraries.hideLibrary' => 'ẩn thư viện',
 			'libraries.libraryOptions' => 'Tùy chọn thư viện',
 			'libraries.content' => 'Thư viện Content',
+			'libraries.selectLibrary' => 'Chọn thư viện',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Chọn thư viện',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Bộ lọc (${count})',
 			'libraries.noRecommendations' => 'Không có khuyến nghị có sẵn',
 			'libraries.noCollections' => 'Không có tập hợp trong thư viện này',
@@ -7522,9 +7522,9 @@ extension on TranslationsVi {
 			'watchTogether.enterRoomCode' => 'Nhập mã 6 ký tự từ host.',
 			'watchTogether.roomCode' => 'Mã phòng',
 			'watchTogether.paste' => 'Ăn bánh',
+			'watchTogether.noCodeInClipboard' => 'Clipboard không chứa mã phòng',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Clipboard không chứa mã phòng',
 			'watchTogether.copyCode' => 'Copy mã',
 			'watchTogether.codeCopied' => 'Mã phòng copy',
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
@@ -8036,9 +8036,9 @@ extension on TranslationsVi {
 			'metadataEdit.selectLogo' => 'Chọn logo',
 			'metadataEdit.selectSquareArt' => 'Chọn Square Art',
 			'metadataEdit.fromUrl' => 'Từ URL',
+			'metadataEdit.uploadFile' => 'tải file',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'tải file',
 			'metadataEdit.enterImageUrl' => 'Nhập hình ảnh URL',
 			'metadataEdit.imageUrl' => 'Ảnh URL',
 			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
@@ -8550,9 +8550,9 @@ extension on TranslationsVi {
 			'universalMedia.intro' => 'Mở một liên kết, danh sách phát hoặc tệp. Playback sử dụng người chơi tiêu chuẩn của Pleazyng và không thêm lịch sử vào thư viện của bạn.',
 			'universalMedia.openWhat' => 'Bạn muốn mở cái gì?',
 			'universalMedia.stream' => 'Địa chỉ Stream',
+			'universalMedia.playlist' => 'Danh sách Playlist',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Danh sách Playlist',
 			'universalMedia.files' => 'Thiết bị file',
 			'universalMedia.favorites' => 'Save Stream yêu thích',
 			'universalMedia.address' => 'Địa chỉ Media',
@@ -9064,9 +9064,9 @@ extension on TranslationsVi {
 			'sourceSetup.nfsTrustHelp' => 'Để trống để dùng các chứng chỉ được thiết bị này tin cậy. Nếu cần, thêm chứng chỉ của CA riêng hoặc chứng chỉ máy chủ tự ký; các tên trong chứng chỉ phải khớp với máy chủ trong URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Dùng chứng chỉ CA hoặc máy chủ ở định dạng PEM. Không kèm khóa riêng.',
 			'sourceSetup.addTrustCertificate' => 'Thêm chứng chỉ tin cậy tùy chỉnh',
+			'sourceSetup.replaceTrustCertificate' => 'Thay chứng chỉ tùy chỉnh đã lưu',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Thay chứng chỉ tùy chỉnh đã lưu',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS dùng các cổng thông thường của NFS và dịch vụ gắn kết, đồng thời yêu cầu NAS hỗ trợ RFC 9289. Bắt buộc dùng TLS 1.3. Tên máy chủ hoặc địa chỉ IP phải khớp với chứng chỉ. AUTH_SYS UID/GID vẫn áp dụng trong kênh được mã hóa.',
 			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
 			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
@@ -9536,6 +9536,8 @@ extension on TranslationsVi {
 			'musicTools.playlistSharingHint' => 'Cấp quyền truy cập danh sách phát này và các bản nhạc. Người nhận có thể cần chấp nhận lời mời.',
 			'musicTools.playlistSharingFailed' => 'Không thể yêu cầu truy cập danh sách phát.',
 			'musicTools.playlistSharingAccepted' => 'Plex đã tiếp nhận yêu cầu truy cập.',
+			'musicTools.playlistAccessList' => 'Quyền truy cập hiện tại',
+			'musicTools.playlistAccessNone' => 'Chưa cấp quyền truy cập danh sách phát',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',

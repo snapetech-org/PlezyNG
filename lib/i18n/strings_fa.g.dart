@@ -1177,7 +1177,6 @@ class _Translations$videoControls$fa extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'نامه جعبه';
 	@override String get fillScreen => 'صفحه نمایش پر';
-	@override String get stretch => 'پر کنید';
 	@override String get lockRotation => 'چرخش قفل';
 	@override String get unlockRotation => 'باز کردن چرخش';
 	@override String get timerActive => 'زمان فعال';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'به این فهرست پخش و آهنگ‌های آن دسترسی بدهید. گیرنده ممکن است لازم باشد دعوتی را بپذیرد.';
 	@override String get playlistSharingFailed => 'درخواست دسترسی به فهرست پخش ممکن نشد.';
 	@override String get playlistSharingAccepted => 'Plex درخواست دسترسی را پذیرفت.';
+	@override String get playlistAccessList => 'دسترسی فعلی';
+	@override String get playlistAccessNone => 'هیچ دسترسی به فهرست پخش داده نشده است';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsFa {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'نامه جعبه',
 			'videoControls.fillScreen' => 'صفحه نمایش پر',
-			'videoControls.stretch' => 'پر کنید',
 			'videoControls.lockRotation' => 'چرخش قفل',
 			'videoControls.unlockRotation' => 'باز کردن چرخش',
 			'videoControls.timerActive' => 'زمان فعال',
@@ -6519,9 +6519,9 @@ extension on TranslationsFa {
 			'videoControls.chaptersAndBookmarks' => 'فصل ها و کتاب نشانه ها',
 			'videoControls.segmentLoop' => 'بخش لوله',
 			'videoControls.addBookmark' => 'اضافه کردن Bookmark',
+			'videoControls.bookmarkName' => 'Bookmark نام',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark نام',
 			'videoControls.bookmarkNameHint' => 'به عنوان مثال، صحنه باز',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'برچسب ها ${n}',
 			'videoControls.bookmarkNameRequired' => 'نام این کتاب را وارد کنید.',
@@ -7033,9 +7033,9 @@ extension on TranslationsFa {
 			'libraries.hideLibrary' => 'کتابخانه پنهان',
 			'libraries.libraryOptions' => 'گزینه های کتابخانه',
 			'libraries.content' => 'محتوای کتابخانه',
+			'libraries.selectLibrary' => 'انتخاب کتابخانه',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'انتخاب کتابخانه',
 			'libraries.filtersWithCount' => ({required Object count}) => 'فیلترها (${count})',
 			'libraries.noRecommendations' => 'بدون توصیه در دسترس',
 			'libraries.noCollections' => 'هیچ مجموعه ای در این کتابخانه وجود ندارد',
@@ -7547,9 +7547,9 @@ extension on TranslationsFa {
 			'watchTogether.enterRoomCode' => 'کد 6 کاراکتر را از میزبان وارد کنید.',
 			'watchTogether.roomCode' => 'کد اتاق',
 			'watchTogether.paste' => 'پستی',
+			'watchTogether.noCodeInClipboard' => 'این صفحه شامل کد اتاق نیست.',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'این صفحه شامل کد اتاق نیست.',
 			'watchTogether.copyCode' => 'کپی کد',
 			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
 			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
@@ -8061,9 +8061,9 @@ extension on TranslationsFa {
 			'metadataEdit.selectLogo' => 'انتخاب لوگو',
 			'metadataEdit.selectSquareArt' => 'انتخاب میدان هنر',
 			'metadataEdit.fromUrl' => 'از URL',
+			'metadataEdit.uploadFile' => 'دانلود فایل',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'دانلود فایل',
 			'metadataEdit.enterImageUrl' => 'URL تصویر را وارد کنید',
 			'metadataEdit.imageUrl' => 'تصویر URL',
 			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
@@ -8575,9 +8575,9 @@ extension on TranslationsFa {
 			'universalMedia.intro' => 'لینک، لیست پخش یا فایل را باز کنید Playback از بازیکن استاندارد Pleazyng استفاده می کند و تاریخچه را به کتابخانه شما اضافه نمی کند.',
 			'universalMedia.openWhat' => 'چه چیزی را دوست دارید باز کنید؟',
 			'universalMedia.stream' => 'آدرس جریان',
+			'universalMedia.playlist' => 'بازی لیست',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'بازی لیست',
 			'universalMedia.files' => 'فایل های دستگاه',
 			'universalMedia.favorites' => 'ذخیره جریان مورد علاقه',
 			'universalMedia.address' => 'آدرس رسانه ها',
@@ -9089,9 +9089,9 @@ extension on TranslationsFa {
 			'sourceSetup.nfsTrustHelp' => 'برای گواهی‌های مورد اعتماد این دستگاه، خالی بگذارید. در صورت نیاز، گواهی CA خصوصی یا گواهی خودامضای سرور را اضافه کنید؛ نام‌های آن باید با میزبان نشانی NFS مطابقت داشته باشند.',
 			'sourceSetup.nfsTrustInvalid' => 'از گواهی CA یا سرور با قالب PEM استفاده کنید. کلید خصوصی را در آن قرار ندهید.',
 			'sourceSetup.addTrustCertificate' => 'افزودن گواهی اعتماد سفارشی',
+			'sourceSetup.replaceTrustCertificate' => 'جایگزینی گواهی سفارشی ذخیره‌شده',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'جایگزینی گواهی سفارشی ذخیره‌شده',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS از درگاه‌های معمول NFS و سرویس mount استفاده می‌کند و به پشتیبانی NAS از RFC 9289 نیاز دارد. TLS 1.3 الزامی است. نام میزبان یا IP باید با گواهی مطابقت داشته باشد. AUTH_SYS UID/GID در کانال رمزگذاری‌شده نیز اعمال می‌شوند.',
 			'sourceSetup.clientCertificate' => 'گواهی کارخواه (اختیاری)',
 			'sourceSetup.clientCertificateHelp' => 'به NAS اجازه می‌دهد هویت این کارخواه را تأیید کند؛ شناسه‌های AUTH_SYS همچنان تابع سیاست اشتراک‌گذاری NAS هستند.',
@@ -9561,6 +9561,8 @@ extension on TranslationsFa {
 			'musicTools.playlistSharingHint' => 'به این فهرست پخش و آهنگ‌های آن دسترسی بدهید. گیرنده ممکن است لازم باشد دعوتی را بپذیرد.',
 			'musicTools.playlistSharingFailed' => 'درخواست دسترسی به فهرست پخش ممکن نشد.',
 			'musicTools.playlistSharingAccepted' => 'Plex درخواست دسترسی را پذیرفت.',
+			'musicTools.playlistAccessList' => 'دسترسی فعلی',
+			'musicTools.playlistAccessNone' => 'هیچ دسترسی به فهرست پخش داده نشده است',
 			'musicDevices.playOn' => 'پخش در',
 			'musicDevices.thisDevice' => 'این دستگاه',
 			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',

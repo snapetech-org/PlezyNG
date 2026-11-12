@@ -1177,7 +1177,6 @@ class _Translations$videoControls$hu extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Fekete sávok';
 	@override String get fillScreen => 'Képernyő kitöltése';
-	@override String get stretch => 'Nyújtás';
 	@override String get lockRotation => 'Forgatás zárolása';
 	@override String get unlockRotation => 'Forgatás feloldása';
 	@override String get timerActive => 'Időzítő aktív';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Adjon hozzáférést ehhez a listához és számaihoz. A címzettnek esetleg el kell fogadnia egy meghívást.';
 	@override String get playlistSharingFailed => 'Nem sikerült hozzáférést kérni a listához.';
 	@override String get playlistSharingAccepted => 'A Plex elfogadta a hozzáférési kérést.';
+	@override String get playlistAccessList => 'Jelenlegi hozzáférés';
+	@override String get playlistAccessNone => 'Nincs megadott hozzáférés a listához';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsHu {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Fekete sávok',
 			'videoControls.fillScreen' => 'Képernyő kitöltése',
-			'videoControls.stretch' => 'Nyújtás',
 			'videoControls.lockRotation' => 'Forgatás zárolása',
 			'videoControls.unlockRotation' => 'Forgatás feloldása',
 			'videoControls.timerActive' => 'Időzítő aktív',
@@ -6519,9 +6519,9 @@ extension on TranslationsHu {
 			'videoControls.chaptersAndBookmarks' => 'fejezetek és könyvjelzők',
 			'videoControls.segmentLoop' => 'Segmentális lejátszás',
 			'videoControls.addBookmark' => 'Hozzáadása Bookmark',
+			'videoControls.bookmarkName' => 'Bookmark név',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark név',
 			'videoControls.bookmarkNameHint' => 'Például a színpad megnyitása',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'könyvjelző ${n}',
 			'videoControls.bookmarkNameRequired' => 'Írjon be egy nevet erre a könyvjelzőre.',
@@ -7033,9 +7033,9 @@ extension on TranslationsHu {
 			'libraries.hideLibrary' => 'Könyvtár elrejtése',
 			'libraries.libraryOptions' => 'Könyvtár beállításai',
 			'libraries.content' => 'könyvtár tartalma',
+			'libraries.selectLibrary' => 'Könyvtár kiválasztása',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Könyvtár kiválasztása',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Szűrők (${count})',
 			'libraries.noRecommendations' => 'Nincsenek elérhető ajánlások',
 			'libraries.noCollections' => 'Nincsenek gyűjtemények ebben a könyvtárban',
@@ -7547,9 +7547,9 @@ extension on TranslationsHu {
 			'watchTogether.enterRoomCode' => 'Add meg a házigazdától kapott 6 karakteres kódot.',
 			'watchTogether.roomCode' => 'Szobakód',
 			'watchTogether.paste' => 'Beillesztés',
+			'watchTogether.noCodeInClipboard' => 'A vágólapon nincs szobakód',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'A vágólapon nincs szobakód',
 			'watchTogether.copyCode' => 'Kód másolása',
 			'watchTogether.codeCopied' => 'Szobakód másolva',
 			'watchTogether.shareInvite' => 'Meghívó megosztása',
@@ -8061,9 +8061,9 @@ extension on TranslationsHu {
 			'metadataEdit.selectLogo' => 'Logó kiválasztása',
 			'metadataEdit.selectSquareArt' => 'Négyzetes kép kiválasztása',
 			'metadataEdit.fromUrl' => 'URL-ről',
+			'metadataEdit.uploadFile' => 'Fájl feltöltése',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Fájl feltöltése',
 			'metadataEdit.enterImageUrl' => 'Add meg a kép URL-címét',
 			'metadataEdit.imageUrl' => 'Kép URL-címe',
 			'metadataEdit.metadataUpdated' => 'Metaadatok frissítve',
@@ -8575,9 +8575,9 @@ extension on TranslationsHu {
 			'universalMedia.intro' => 'Nyissa meg a linket, a lejátszási listát vagy a fájlt.A Playback használja a Pleazyng szabványos lejátszóját és nem ad hozzá történetet a könyvtárához.',
 			'universalMedia.openWhat' => 'Mit szeretne megnyitni?',
 			'universalMedia.stream' => 'Stream cím',
+			'universalMedia.playlist' => 'játéklisták',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'játéklisták',
 			'universalMedia.files' => 'készülék fájl',
 			'universalMedia.favorites' => 'Megtakarított stream kedvencek',
 			'universalMedia.address' => 'média cím',
@@ -9089,9 +9089,9 @@ extension on TranslationsHu {
 			'sourceSetup.nfsTrustHelp' => 'Hagyd üresen az eszköz által megbízhatónak tartott tanúsítványokhoz. Szükség esetén adj hozzá privát CA-tanúsítványt vagy önaláírt szervertanúsítványt; a benne szereplő neveknek egyezniük kell az NFS URL gépnevével.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM-formátumú CA- vagy szervertanúsítványt használj. Ne adj meg privát kulcsot.',
 			'sourceSetup.addTrustCertificate' => 'Egyéni megbízható tanúsítvány hozzáadása',
+			'sourceSetup.replaceTrustCertificate' => 'Mentett egyéni tanúsítvány cseréje',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Mentett egyéni tanúsítvány cseréje',
 			'sourceSetup.nfsTlsHelp' => 'Az RPC-with-TLS a szokásos NFS- és csatolásiszolgáltatás-portokat használja, és RFC 9289-támogatást igényel a NAS-on. TLS 1.3 szükséges. A gépnévnek vagy IP-címnek egyeznie kell a tanúsítvánnyal. Az AUTH_SYS UID/GID a titkosított csatornán belül is érvényes.',
 			'sourceSetup.clientCertificate' => 'Kliens tanúsítványa (nem kötelező)',
 			'sourceSetup.clientCertificateHelp' => 'Lehetővé teszi, hogy a NAS hitelesítse ezt a klienst; az AUTH_SYS-azonosítók továbbra is a NAS NFS-megosztásának szabályaitól függenek.',
@@ -9561,6 +9561,8 @@ extension on TranslationsHu {
 			'musicTools.playlistSharingHint' => 'Adjon hozzáférést ehhez a listához és számaihoz. A címzettnek esetleg el kell fogadnia egy meghívást.',
 			'musicTools.playlistSharingFailed' => 'Nem sikerült hozzáférést kérni a listához.',
 			'musicTools.playlistSharingAccepted' => 'A Plex elfogadta a hozzáférési kérést.',
+			'musicTools.playlistAccessList' => 'Jelenlegi hozzáférés',
+			'musicTools.playlistAccessNone' => 'Nincs megadott hozzáférés a listához',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',

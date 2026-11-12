@@ -1088,7 +1088,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Pasy wokół obrazu",
     "fillScreen": "Wypełnij ekran",
-    "stretch": "Rozciągnij",
     "lockRotation": "Zablokuj obrót",
     "unlockRotation": "Odblokuj obrót",
     "timerActive": "Wyłącznik aktywny",
@@ -5630,7 +5629,9 @@
     "playlistRecipient": "Nazwa użytkownika Plex lub e-mail",
     "playlistSharingHint": "Przyznaj dostęp do tej playlisty i jej utworów. Odbiorca może musieć zaakceptować zaproszenie.",
     "playlistSharingFailed": "Nie udało się wysłać prośby o dostęp do playlisty.",
-    "playlistSharingAccepted": "Plex przyjął prośbę o dostęp."
+    "playlistSharingAccepted": "Plex przyjął prośbę o dostęp.",
+    "playlistAccessList": "Bieżący dostęp",
+    "playlistAccessNone": "Nie przyznano dostępu do playlisty"
   },
   "musicDevices": {
     "playOn": "Odtwarzaj na",

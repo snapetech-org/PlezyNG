@@ -185,7 +185,6 @@
   "videoControls": {
     "audioLabel": "Áudio",
     "subtitlesLabel": "Legendas",
-    "stretch": "Esticar",
     "playNext": "Reproduzir a seguir",
     "playButton": "Reproduzir",
     "pauseButton": "Pausar",
@@ -942,7 +941,9 @@
     "playlistRecipient": "Nome de utilizador Plex ou e-mail",
     "playlistSharingHint": "Conceda acesso a esta lista e às suas faixas. O destinatário poderá ter de aceitar um convite.",
     "playlistSharingFailed": "Não foi possível solicitar acesso à lista.",
-    "playlistSharingAccepted": "O Plex aceitou o pedido de acesso."
+    "playlistSharingAccepted": "O Plex aceitou o pedido de acesso.",
+    "playlistAccessList": "Acesso atual",
+    "playlistAccessNone": "Não há acessos concedidos à lista"
   },
   "musicExperience": {
     "bluetoothDriving": "Saídas Bluetooth para condução",

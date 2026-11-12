@@ -1187,7 +1187,6 @@ class _Translations$videoControls$ru extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Вписать в экран';
 	@override String get fillScreen => 'Заполнить экран';
-	@override String get stretch => 'Растянуть';
 	@override String get lockRotation => 'Заблокировать поворот';
 	@override String get unlockRotation => 'Разблокировать поворот';
 	@override String get timerActive => 'Таймер активен';
@@ -4399,6 +4398,8 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Предоставьте доступ к этому плейлисту и его трекам. Получателю может потребоваться принять приглашение.';
 	@override String get playlistSharingFailed => 'Не удалось запросить доступ к плейлисту.';
 	@override String get playlistSharingAccepted => 'Plex принял запрос на доступ.';
+	@override String get playlistAccessList => 'Текущий доступ';
+	@override String get playlistAccessNone => 'Доступ к плейлисту никому не предоставлен';
 }
 
 // Path: musicDevices
@@ -6524,7 +6525,6 @@ extension on TranslationsRu {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Вписать в экран',
 			'videoControls.fillScreen' => 'Заполнить экран',
-			'videoControls.stretch' => 'Растянуть',
 			'videoControls.lockRotation' => 'Заблокировать поворот',
 			'videoControls.unlockRotation' => 'Разблокировать поворот',
 			'videoControls.timerActive' => 'Таймер активен',
@@ -6569,9 +6569,9 @@ extension on TranslationsRu {
 			'videoControls.chaptersAndBookmarks' => 'Главы и книжные знаки',
 			'videoControls.segmentLoop' => 'Сегмент Лоуп',
 			'videoControls.addBookmark' => 'Добавить Bookmark',
+			'videoControls.bookmarkName' => 'Bookmark имя',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark имя',
 			'videoControls.bookmarkNameHint' => 'Например, сцены открытия',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
 			'videoControls.bookmarkNameRequired' => 'Введите имя для этой книжной марки.',
@@ -7083,9 +7083,9 @@ extension on TranslationsRu {
 			'libraries.hideLibrary' => 'Скрыть библиотеку',
 			'libraries.libraryOptions' => 'Параметры библиотеки',
 			'libraries.content' => 'содержимое библиотеки',
+			'libraries.selectLibrary' => 'Выбрать библиотеку',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Выбрать библиотеку',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтры (${count})',
 			'libraries.noRecommendations' => 'Рекомендации недоступны',
 			'libraries.noCollections' => 'В этой библиотеке нет коллекций',
@@ -7597,9 +7597,9 @@ extension on TranslationsRu {
 			'watchTogether.enterRoomCode' => 'Введите код из 6 символов, полученный от организатора.',
 			'watchTogether.roomCode' => 'Код комнаты',
 			'watchTogether.paste' => 'Вставить',
+			'watchTogether.noCodeInClipboard' => 'В буфере обмена нет кода комнаты',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'В буфере обмена нет кода комнаты',
 			'watchTogether.copyCode' => 'Скопировать код',
 			'watchTogether.codeCopied' => 'Код комнаты скопирован',
 			'watchTogether.shareInvite' => 'Поделиться приглашением',
@@ -8111,9 +8111,9 @@ extension on TranslationsRu {
 			'metadataEdit.selectLogo' => 'Выбрать логотип',
 			'metadataEdit.selectSquareArt' => 'Выбрать квадратное изображение',
 			'metadataEdit.fromUrl' => 'По URL',
+			'metadataEdit.uploadFile' => 'Загрузить файл',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Загрузить файл',
 			'metadataEdit.enterImageUrl' => 'Введите URL изображения',
 			'metadataEdit.imageUrl' => 'URL изображения',
 			'metadataEdit.metadataUpdated' => 'Метаданные обновлены',
@@ -8625,9 +8625,9 @@ extension on TranslationsRu {
 			'universalMedia.intro' => 'Откройте ссылку, перечень игр или файл. Playback использует стандартный плейер Pleazyng и не добавляет историю в библиотеку.',
 			'universalMedia.openWhat' => 'Что бы вы хотели открыть?',
 			'universalMedia.stream' => 'Поток адресов',
+			'universalMedia.playlist' => 'Playlist →',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Playlist →',
 			'universalMedia.files' => 'Устройство файлы',
 			'universalMedia.favorites' => 'Спасенные потоки любимцы',
 			'universalMedia.address' => 'Медийный адрес',
@@ -9139,9 +9139,9 @@ extension on TranslationsRu {
 			'sourceSetup.nfsTrustHelp' => 'Оставьте пустым для сертификатов, которым доверяет это устройство. При необходимости добавьте сертификат частного CA или самоподписанный сертификат сервера; имена в нём должны совпадать с хостом в URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Используйте сертификат CA или сервера в формате PEM. Не добавляйте закрытый ключ.',
 			'sourceSetup.addTrustCertificate' => 'Добавить собственный доверенный сертификат',
+			'sourceSetup.replaceTrustCertificate' => 'Заменить сохранённый собственный сертификат',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Заменить сохранённый собственный сертификат',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS использует обычные порты NFS и службы монтирования и требует поддержки RFC 9289 на NAS. Требуется TLS 1.3. Имя хоста или IP-адрес должны соответствовать сертификату. UID/GID AUTH_SYS по-прежнему применяются внутри зашифрованного канала.',
 			'sourceSetup.clientCertificate' => 'Сертификат клиента (необязательно)',
 			'sourceSetup.clientCertificateHelp' => 'Позволяет NAS аутентифицировать этого клиента; ID AUTH_SYS по-прежнему зависят от правил экспорта NFS на NAS.',
@@ -9611,6 +9611,8 @@ extension on TranslationsRu {
 			'musicTools.playlistSharingHint' => 'Предоставьте доступ к этому плейлисту и его трекам. Получателю может потребоваться принять приглашение.',
 			'musicTools.playlistSharingFailed' => 'Не удалось запросить доступ к плейлисту.',
 			'musicTools.playlistSharingAccepted' => 'Plex принял запрос на доступ.',
+			'musicTools.playlistAccessList' => 'Текущий доступ',
+			'musicTools.playlistAccessNone' => 'Доступ к плейлисту никому не предоставлен',
 			'musicDevices.playOn' => 'Воспроизвести на',
 			'musicDevices.thisDevice' => 'Это устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Воспроизводится на ${device}',

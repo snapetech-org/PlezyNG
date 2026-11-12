@@ -10,6 +10,7 @@ import '../i18n/strings.g.dart';
 import '../media/account_preferences.dart';
 import '../models/plex/plex_account_preferences.dart';
 import '../models/plex/plex_home.dart';
+import '../models/plex/plex_playlist_access.dart';
 import '../models/plex/plex_home_user.dart';
 import '../models/plex/plex_switch_response.dart';
 import '../utils/app_logger.dart';
@@ -81,6 +82,61 @@ class PlexAuthService {
     String platform = 'Flutter',
     String? deviceName,
   }) : this._(http, clientIdentifier, appVersion, platformVersion, platform, deviceName);
+
+  /// Read actual item grants. Received playlists must be accepted before
+  /// navigation/playback; URI values never supply connection credentials.
+  Future<List<PlexPlaylistAccessGrant>> getPlaylistAccess({
+    required String authToken,
+    required bool Function() isCurrent,
+    bool received = false,
+    String? playlistUri,
+  }) async {
+    void check() {
+      if (!isCurrent()) throw StateError('Playlist sharing source changed');
+    }
+
+    check();
+    if (authToken.isEmpty || playlistUri != null && !PlexPlaylistAccessGrant.isPlaylistUri(playlistUri)) {
+      throw ArgumentError('Invalid playlist access request');
+    }
+    final uri = Uri.parse(
+      '$_plexApiBase/shared_sources/${received ? 'received' : 'owned'}',
+    ).replace(queryParameters: {'includeItems': '1'});
+    final response = await _http.get(uri.toString(), headers: _getCommonHeaders(authToken: authToken));
+    check();
+    _checkStatus(response);
+    return PlexPlaylistAccessGrant.parseSources(response.data, received: received, playlistUri: playlistUri);
+  }
+
+  /// Re-read the exact owned grant after confirmation, then remove only its
+  /// shared-item id. Never cancel the source or remove unrelated grants.
+  Future<void> revokePlaylistAccess({
+    required String authToken,
+    required PlexPlaylistAccessGrant grant,
+    required bool Function() isCurrent,
+  }) async {
+    if (grant.received || grant.itemId <= 0 || grant.sourceId <= 0 || grant.userId <= 0) {
+      throw ArgumentError('An owned playlist grant is required');
+    }
+    final fresh = await getPlaylistAccess(authToken: authToken, isCurrent: isCurrent, playlistUri: grant.uri);
+    if (!isCurrent()) throw StateError('Playlist sharing source changed');
+    if (!fresh.any(
+      (item) =>
+          item.itemId == grant.itemId &&
+          item.sourceId == grant.sourceId &&
+          item.userId == grant.userId &&
+          item.uri == grant.uri &&
+          !item.received,
+    )) {
+      throw StateError('Playlist grant is no longer available');
+    }
+    final response = await _http.delete(
+      '$_plexApiBase/shared_items/${grant.itemId}',
+      headers: _getCommonHeaders(authToken: authToken),
+    );
+    if (!isCurrent()) throw StateError('Playlist sharing source changed');
+    _checkStatus(response);
+  }
 
   /// Grant a Plex account access to a live playlist through Plex's item
   /// sharing service. Returns the acknowledged shared-source id; recipients

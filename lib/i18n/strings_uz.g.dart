@@ -1177,7 +1177,6 @@ class _Translations$videoControls$uz extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'Keng ekran (Letterbox)';
 	@override String get fillScreen => 'Ekranni toʻldirish';
-	@override String get stretch => 'Choʻzish';
 	@override String get lockRotation => 'Aylanishni qulflash';
 	@override String get unlockRotation => 'Aylanish qulfini ochish';
 	@override String get timerActive => 'Taymer faol';
@@ -4353,6 +4352,8 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'Bu pleylist va uning treklariga kirishga ruxsat bering. Qabul qiluvchi taklifni qabul qilishi kerak bo‘lishi mumkin.';
 	@override String get playlistSharingFailed => 'Pleylistga kirish so‘rovini yuborib bo‘lmadi.';
 	@override String get playlistSharingAccepted => 'Plex kirish so‘rovini qabul qildi.';
+	@override String get playlistAccessList => 'Joriy kirish';
+	@override String get playlistAccessNone => 'Pleylistga kirish ruxsati berilmagan';
 }
 
 // Path: musicDevices
@@ -6474,7 +6475,6 @@ extension on TranslationsUz {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Keng ekran (Letterbox)',
 			'videoControls.fillScreen' => 'Ekranni toʻldirish',
-			'videoControls.stretch' => 'Choʻzish',
 			'videoControls.lockRotation' => 'Aylanishni qulflash',
 			'videoControls.unlockRotation' => 'Aylanish qulfini ochish',
 			'videoControls.timerActive' => 'Taymer faol',
@@ -6519,9 +6519,9 @@ extension on TranslationsUz {
 			'videoControls.chaptersAndBookmarks' => 'Boblar va xatcho‘plar',
 			'videoControls.segmentLoop' => 'Bo‘limni takrorlash',
 			'videoControls.addBookmark' => 'Xatcho‘p qo‘shish',
+			'videoControls.bookmarkName' => 'Xatcho‘p nomi',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Xatcho‘p nomi',
 			'videoControls.bookmarkNameHint' => 'Masalan, kirish sahnasi',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Xatcho‘p ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu xatcho‘p uchun nom kiriting.',
@@ -7033,9 +7033,9 @@ extension on TranslationsUz {
 			'libraries.hideLibrary' => 'Kutubxonani yashirish',
 			'libraries.libraryOptions' => 'Kutubxona parametrlari',
 			'libraries.content' => 'kutubxona tarkibi',
+			'libraries.selectLibrary' => 'Kutubxonani tanlash',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'Kutubxonani tanlash',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlar (${count})',
 			'libraries.noRecommendations' => 'Tavsiyalar yoʻq',
 			'libraries.noCollections' => 'Ushbu kutubxonada toʻplamlar yoʻq',
@@ -7547,9 +7547,9 @@ extension on TranslationsUz {
 			'watchTogether.enterRoomCode' => 'Tashkilotchidan olingan 6 belgili kodni kiriting.',
 			'watchTogether.roomCode' => 'Xona kodi',
 			'watchTogether.paste' => 'Qoʻyish',
+			'watchTogether.noCodeInClipboard' => 'Almashish buferida xona kodi yoʻq',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'Almashish buferida xona kodi yoʻq',
 			'watchTogether.copyCode' => 'Kodni nusxalash',
 			'watchTogether.codeCopied' => 'Xona kodi nusxalandi',
 			'watchTogether.shareInvite' => 'Taklifni ulashish',
@@ -8061,9 +8061,9 @@ extension on TranslationsUz {
 			'metadataEdit.selectLogo' => 'Logotipni tanlash',
 			'metadataEdit.selectSquareArt' => 'Kvadrat rasm tanlash',
 			'metadataEdit.fromUrl' => 'URL orqali',
+			'metadataEdit.uploadFile' => 'Fayl yuklash',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'Fayl yuklash',
 			'metadataEdit.enterImageUrl' => 'Rasm URL-manzilini kiriting',
 			'metadataEdit.imageUrl' => 'Rasm URL-manzili',
 			'metadataEdit.metadataUpdated' => 'Metamaʼlumotlar yangilandi',
@@ -8575,9 +8575,9 @@ extension on TranslationsUz {
 			'universalMedia.intro' => 'Bir link, playlist, o‘fili. Playback Pleazyng\'nin standart oynatıcını kullanır ve librariyizga istorik qoşmaz.',
 			'universalMedia.openWhat' => 'Siz o‘zʻqʻqqʻʻqō qʻq?',
 			'universalMedia.stream' => 'Adresi',
+			'universalMedia.playlist' => 'Playlist',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Filmi',
 			'universalMedia.favorites' => 'Rashida rashida favoritlar',
 			'universalMedia.address' => 'Medya adresi',
@@ -9089,9 +9089,9 @@ extension on TranslationsUz {
 			'sourceSetup.nfsTrustHelp' => 'Ushbu qurilma ishonadigan sertifikatlar uchun bo‘sh qoldiring. Zarur bo‘lsa, xususiy CA sertifikati yoki o‘zi imzolagan server sertifikatini qo‘shing; undagi nomlar NFS URL manzilidagi hostga mos kelishi kerak.',
 			'sourceSetup.nfsTrustInvalid' => 'PEM formatidagi CA yoki server sertifikatidan foydalaning. Maxfiy kalitni qo‘shmang.',
 			'sourceSetup.addTrustCertificate' => 'Maxsus ishonch sertifikatini qo‘shish',
+			'sourceSetup.replaceTrustCertificate' => 'Saqlangan maxsus sertifikatni almashtirish',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'Saqlangan maxsus sertifikatni almashtirish',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS odatiy NFS va ulash xizmati portlaridan foydalanadi va NAS da RFC 9289 qo‘llab-quvvatlanishini talab qiladi. TLS 1.3 zarur. Host nomi yoki IP manzili sertifikatga mos kelishi kerak. Shifrlangan kanal ichida ham AUTH_SYS UID/GID amal qiladi.',
 			'sourceSetup.clientCertificate' => 'Klient sertifikati (ixtiyoriy)',
 			'sourceSetup.clientCertificateHelp' => 'NAS ga ushbu klientni autentifikatsiya qilish imkonini beradi; AUTH_SYS ID-lari baribir NAS dagi NFS umumiy katalogining qoidalariga bog‘liq.',
@@ -9561,6 +9561,8 @@ extension on TranslationsUz {
 			'musicTools.playlistSharingHint' => 'Bu pleylist va uning treklariga kirishga ruxsat bering. Qabul qiluvchi taklifni qabul qilishi kerak bo‘lishi mumkin.',
 			'musicTools.playlistSharingFailed' => 'Pleylistga kirish so‘rovini yuborib bo‘lmadi.',
 			'musicTools.playlistSharingAccepted' => 'Plex kirish so‘rovini qabul qildi.',
+			'musicTools.playlistAccessList' => 'Joriy kirish',
+			'musicTools.playlistAccessNone' => 'Pleylistga kirish ruxsati berilmagan',
 			'musicDevices.playOn' => 'Shu qurilmada ijro etish',
 			'musicDevices.thisDevice' => 'Bu qurilma',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} qurilmasida ijro etilmoqda',

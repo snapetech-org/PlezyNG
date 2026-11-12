@@ -1197,7 +1197,6 @@ class _Translations$videoControls$ar extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => 'الكتب';
 	@override String get fillScreen => 'ملء الشاشة';
-	@override String get stretch => 'تمديد';
 	@override String get lockRotation => 'قفل الدوران';
 	@override String get unlockRotation => 'إلغاء الدوران';
 	@override String get timerActive => 'التوقيت النشط';
@@ -4445,6 +4444,8 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String get playlistSharingHint => 'امنح الوصول إلى قائمة التشغيل هذه ومقاطعها. قد يحتاج المستلم إلى قبول دعوة.';
 	@override String get playlistSharingFailed => 'تعذر طلب الوصول إلى قائمة التشغيل.';
 	@override String get playlistSharingAccepted => 'قبل Plex طلب الوصول.';
+	@override String get playlistAccessList => 'الوصول الحالي';
+	@override String get playlistAccessNone => 'لا توجد أذونات للوصول إلى قائمة التشغيل';
 }
 
 // Path: musicDevices
@@ -6574,7 +6575,6 @@ extension on TranslationsAr {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'الكتب',
 			'videoControls.fillScreen' => 'ملء الشاشة',
-			'videoControls.stretch' => 'تمديد',
 			'videoControls.lockRotation' => 'قفل الدوران',
 			'videoControls.unlockRotation' => 'إلغاء الدوران',
 			'videoControls.timerActive' => 'التوقيت النشط',
@@ -6619,9 +6619,9 @@ extension on TranslationsAr {
 			'videoControls.chaptersAndBookmarks' => 'الفصول والعلامات الكتابية',
 			'videoControls.segmentLoop' => 'القسم القصير',
 			'videoControls.addBookmark' => 'إضافة bookmark',
+			'videoControls.bookmarkName' => 'Bookmark الاسم',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark الاسم',
 			'videoControls.bookmarkNameHint' => 'على سبيل المثال، فتح المشهد',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'الكتابة ${n}',
 			'videoControls.bookmarkNameRequired' => 'أدخل اسمًا لهذا الكتاب.',
@@ -7133,9 +7133,9 @@ extension on TranslationsAr {
 			'libraries.hideLibrary' => 'إخفاء المكتبة',
 			'libraries.libraryOptions' => 'خيارات المكتبة',
 			'libraries.content' => 'مكتبة المحتوى',
+			'libraries.selectLibrary' => 'اختيار المكتبة',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => 'اختيار المكتبة',
 			'libraries.filtersWithCount' => ({required Object count}) => 'الفلاتر (${count})',
 			'libraries.noRecommendations' => 'لا توجد توصيات متاحة',
 			'libraries.noCollections' => 'لا توجد مجموعات في هذه المكتبة',
@@ -7647,9 +7647,9 @@ extension on TranslationsAr {
 			'watchTogether.enterRoomCode' => 'أدخل رمز 6 أحرف من المضيف.',
 			'watchTogether.roomCode' => 'رمز الغرفة',
 			'watchTogether.paste' => 'كعكة',
+			'watchTogether.noCodeInClipboard' => 'لا يحتوي الكليب على رمز غرفة',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => 'لا يحتوي الكليب على رمز غرفة',
 			'watchTogether.copyCode' => 'نسخ الرمز',
 			'watchTogether.codeCopied' => 'رمز الغرفة نسخة',
 			'watchTogether.shareInvite' => 'مشاركة دعوة',
@@ -8161,9 +8161,9 @@ extension on TranslationsAr {
 			'metadataEdit.selectLogo' => 'اختيار الشعار',
 			'metadataEdit.selectSquareArt' => 'اختيار الفنون الميدانية',
 			'metadataEdit.fromUrl' => 'من URL',
+			'metadataEdit.uploadFile' => 'تحميل الملفات',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => 'تحميل الملفات',
 			'metadataEdit.enterImageUrl' => 'إدخال صورة URL',
 			'metadataEdit.imageUrl' => 'صورة URL',
 			'metadataEdit.metadataUpdated' => 'متاجدات تحديثات',
@@ -8675,9 +8675,9 @@ extension on TranslationsAr {
 			'universalMedia.intro' => 'افتح رابطًا أو قائمة تشغيل أو ملفًا.تستخدم Playback مشغل Pleazyng القياسي ولا تضاف التاريخ إلى مكتبتك.',
 			'universalMedia.openWhat' => 'ما الذي ترغب في فتحه؟',
 			'universalMedia.stream' => 'البريد الإلكتروني Stream',
+			'universalMedia.playlist' => 'لعبة',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => 'لعبة',
 			'universalMedia.files' => 'أجهزة الملفات',
 			'universalMedia.favorites' => 'المفضلة التي تم إنقاذها',
 			'universalMedia.address' => 'عناوين وسائل الإعلام',
@@ -9189,9 +9189,9 @@ extension on TranslationsAr {
 			'sourceSetup.nfsTrustHelp' => 'اتركه فارغًا للشهادات التي يثق بها هذا الجهاز. أضف شهادة CA خاصة أو شهادة خادم موقّعة ذاتيًا عند الحاجة؛ يجب أن تطابق أسماؤها المضيف في عنوان NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'استخدم شهادة CA أو خادم بتنسيق PEM. لا تُضمّن مفتاحًا خاصًا.',
 			'sourceSetup.addTrustCertificate' => 'إضافة شهادة ثقة مخصّصة',
+			'sourceSetup.replaceTrustCertificate' => 'استبدال الشهادة المخصّصة المحفوظة',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => 'استبدال الشهادة المخصّصة المحفوظة',
 			'sourceSetup.nfsTlsHelp' => 'يستخدم RPC-with-TLS منافذ NFS وخدمة التركيب المعتادة، ويتطلب دعم NAS للمعيار RFC 9289. يلزم TLS 1.3. يجب أن يطابق اسم المضيف أو عنوان IP الشهادة. تظل معرّفات AUTH_SYS UID/GID سارية داخل القناة المشفّرة.',
 			'sourceSetup.clientCertificate' => 'شهادة العميل (اختيارية)',
 			'sourceSetup.clientCertificateHelp' => 'تتيح لـ NAS التحقّق من هوية هذا العميل؛ تظل معرّفات AUTH_SYS خاضعة لسياسة تصدير NAS.',
@@ -9661,6 +9661,8 @@ extension on TranslationsAr {
 			'musicTools.playlistSharingHint' => 'امنح الوصول إلى قائمة التشغيل هذه ومقاطعها. قد يحتاج المستلم إلى قبول دعوة.',
 			'musicTools.playlistSharingFailed' => 'تعذر طلب الوصول إلى قائمة التشغيل.',
 			'musicTools.playlistSharingAccepted' => 'قبل Plex طلب الوصول.',
+			'musicTools.playlistAccessList' => 'الوصول الحالي',
+			'musicTools.playlistAccessNone' => 'لا توجد أذونات للوصول إلى قائمة التشغيل',
 			'musicDevices.playOn' => 'التشغيل على',
 			'musicDevices.thisDevice' => 'هذا الجهاز',
 			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',

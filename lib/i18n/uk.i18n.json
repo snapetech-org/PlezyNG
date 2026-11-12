@@ -1088,7 +1088,6 @@
     "addTime": "+${amount}${unit}",
     "letterbox": "Літературний ящик",
     "fillScreen": "Завантажити екран",
-    "stretch": "Розтягнути",
     "lockRotation": "Ротація замку",
     "unlockRotation": "Відключення ротації",
     "timerActive": "Активний час",
@@ -5624,7 +5623,9 @@
     "playlistRecipient": "Ім’я користувача Plex або ел. пошта",
     "playlistSharingHint": "Надайте доступ до цього списку та його композицій. Одержувачу може знадобитися прийняти запрошення.",
     "playlistSharingFailed": "Не вдалося запросити доступ до списку.",
-    "playlistSharingAccepted": "Plex прийняв запит на доступ."
+    "playlistSharingAccepted": "Plex прийняв запит на доступ.",
+    "playlistAccessList": "Поточний доступ",
+    "playlistAccessNone": "Доступ до списку нікому не надано"
   },
   "musicDevices": {
     "playOn": "Відтворити на",

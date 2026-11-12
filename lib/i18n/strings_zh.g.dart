@@ -1175,7 +1175,6 @@ class Translations$videoControls$zh extends Translations$videoControls$en {
 	@override String addTime({required Object amount, required Object unit}) => '+${amount}${unit}';
 	@override String get letterbox => '黑边模式';
 	@override String get fillScreen => '填充屏幕';
-	@override String get stretch => '拉伸';
 	@override String get lockRotation => '锁定旋转';
 	@override String get unlockRotation => '解锁旋转';
 	@override String get timerActive => '定时器已激活';
@@ -4348,6 +4347,8 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	@override String get playlistSharingHint => '授予对此播放列表及其曲目的访问权限。接收者可能需要接受邀请。';
 	@override String get playlistSharingFailed => '无法请求播放列表访问权限。';
 	@override String get playlistSharingAccepted => 'Plex 已接受访问请求。';
+	@override String get playlistAccessList => '当前访问权限';
+	@override String get playlistAccessNone => '尚未授予播放列表访问权限';
 }
 
 // Path: musicDevices
@@ -6469,7 +6470,6 @@ extension on TranslationsZh {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => '黑边模式',
 			'videoControls.fillScreen' => '填充屏幕',
-			'videoControls.stretch' => '拉伸',
 			'videoControls.lockRotation' => '锁定旋转',
 			'videoControls.unlockRotation' => '解锁旋转',
 			'videoControls.timerActive' => '定时器已激活',
@@ -6514,9 +6514,9 @@ extension on TranslationsZh {
 			'videoControls.chaptersAndBookmarks' => '章节和书标',
 			'videoControls.segmentLoop' => '分区路径',
 			'videoControls.addBookmark' => '添加 Bookmark',
+			'videoControls.bookmarkName' => 'Bookmark 名称',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.bookmarkName' => 'Bookmark 名称',
 			'videoControls.bookmarkNameHint' => '例如,开幕式',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => '图标 ${n}',
 			'videoControls.bookmarkNameRequired' => '请输入本书标志的名称。',
@@ -7028,9 +7028,9 @@ extension on TranslationsZh {
 			'libraries.hideLibrary' => '隐藏媒体库',
 			'libraries.libraryOptions' => '媒体库选项',
 			'libraries.content' => '媒体库内容',
+			'libraries.selectLibrary' => '选择媒体库',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.selectLibrary' => '选择媒体库',
 			'libraries.filtersWithCount' => ({required Object count}) => '筛选器（${count}）',
 			'libraries.noRecommendations' => '暂无推荐',
 			'libraries.noCollections' => '此媒体库中没有合集',
@@ -7542,9 +7542,9 @@ extension on TranslationsZh {
 			'watchTogether.enterRoomCode' => '输入主持人提供的 6 位代码。',
 			'watchTogether.roomCode' => '房间代码',
 			'watchTogether.paste' => '粘贴',
+			'watchTogether.noCodeInClipboard' => '剪贴板中没有房间代码',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.noCodeInClipboard' => '剪贴板中没有房间代码',
 			'watchTogether.copyCode' => '复制代码',
 			'watchTogether.codeCopied' => '房间代码已复制',
 			'watchTogether.shareInvite' => '分享邀请',
@@ -8056,9 +8056,9 @@ extension on TranslationsZh {
 			'metadataEdit.selectLogo' => '选择标志',
 			'metadataEdit.selectSquareArt' => '选择方形图片',
 			'metadataEdit.fromUrl' => '通过 URL',
+			'metadataEdit.uploadFile' => '上传文件',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.uploadFile' => '上传文件',
 			'metadataEdit.enterImageUrl' => '输入图片 URL',
 			'metadataEdit.imageUrl' => '图片 URL',
 			'metadataEdit.metadataUpdated' => '元数据已更新',
@@ -8570,9 +8570,9 @@ extension on TranslationsZh {
 			'universalMedia.intro' => '打开链接、播放列表或文件 Playback 使用 Pleazyng 的标准播放器,并且不会将历史添加到您的图书馆。',
 			'universalMedia.openWhat' => '你想打开什么?',
 			'universalMedia.stream' => '流地址',
+			'universalMedia.playlist' => '播放列表',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.playlist' => '播放列表',
 			'universalMedia.files' => '设备文件',
 			'universalMedia.favorites' => '保存流喜爱',
 			'universalMedia.address' => '媒體地址',
@@ -9084,9 +9084,9 @@ extension on TranslationsZh {
 			'sourceSetup.nfsTrustHelp' => '使用此设备信任的证书时请留空。需要时可添加私有 CA 或自签名服务器证书；证书中的名称必须与 NFS 地址的主机名匹配。',
 			'sourceSetup.nfsTrustInvalid' => '请使用 PEM 格式的 CA 或服务器证书。不要包含私钥。',
 			'sourceSetup.addTrustCertificate' => '添加自定义信任证书',
+			'sourceSetup.replaceTrustCertificate' => '替换已保存的自定义证书',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.replaceTrustCertificate' => '替换已保存的自定义证书',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用常规 NFS 和挂载服务端口，并要求 NAS 支持 RFC 9289。必须使用 TLS 1.3。主机名或 IP 地址必须与证书匹配。加密通道内仍需使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '客户端证书（可选）',
 			'sourceSetup.clientCertificateHelp' => '允许 NAS 验证此客户端的身份；AUTH_SYS ID 仍受 NAS 导出策略约束。',
@@ -9556,6 +9556,8 @@ extension on TranslationsZh {
 			'musicTools.playlistSharingHint' => '授予对此播放列表及其曲目的访问权限。接收者可能需要接受邀请。',
 			'musicTools.playlistSharingFailed' => '无法请求播放列表访问权限。',
 			'musicTools.playlistSharingAccepted' => 'Plex 已接受访问请求。',
+			'musicTools.playlistAccessList' => '当前访问权限',
+			'musicTools.playlistAccessNone' => '尚未授予播放列表访问权限',
 			'musicDevices.playOn' => '播放设备',
 			'musicDevices.thisDevice' => '此设备',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',

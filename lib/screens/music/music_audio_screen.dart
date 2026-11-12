@@ -1,3 +1,4 @@
+import '../../widgets/music/audio_output_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -204,6 +205,16 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
                 },
           child: Text(t.common.preview),
         ),
+        if (_audio case final audio?)
+          MusicAudioOutputPanel(
+            audio: audio,
+            current: () => mounted && identical(_music, context.read<MusicPlaybackService>()),
+            onAutomaticOutput: () => setState(() {
+              _output.text = 'auto';
+              _exclusive = false;
+              _rate = 0;
+            }),
+          ),
         TextField(
           controller: _output,
           decoration: InputDecoration(labelText: t.videoSettings.audioOutput),

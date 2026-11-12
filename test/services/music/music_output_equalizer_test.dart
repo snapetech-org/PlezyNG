@@ -161,6 +161,35 @@ void main() {
     expect(player.bands.first, -2);
   });
 
+  test('automatic output recovery keeps the queue, position, pause and general DSP', () async {
+    await music.setAudioPolicy(
+      const MusicAudioPolicy(
+        output: 'alsa/usb',
+        sampleRate: 96000,
+        exclusive: true,
+        leveling: MusicLeveling.album,
+        preampDb: -3,
+        bands: [3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        prefetchMiB: 128,
+      ),
+    );
+    await play();
+    player.setPosition(const Duration(seconds: 23));
+    await music.pause();
+    final track = music.currentTrack, queue = music.queue.toList(), opens = player.openedUris.toList();
+    final before = music.audioPolicy.toJson();
+    await music.setAudioPolicy(
+      MusicAudioPolicy.fromJson({...before, 'output': 'auto', 'sampleRate': 0, 'exclusive': false}),
+    );
+    expect(music.currentTrack, same(track));
+    expect(music.queue, queue);
+    expect(music.position, const Duration(seconds: 23));
+    expect(music.isPlaying, isFalse);
+    expect(player.openedUris, opens);
+    expect(player.properties['audio-device'], 'auto');
+    expect(music.audioPolicy.toJson(), {...before, 'output': 'auto', 'sampleRate': 0, 'exclusive': false});
+  });
+
   test('native source excludes local output presets and restores edits made while transmitting', () async {
     final address = (await NetworkInterface.list(
       type: InternetAddressType.IPv4,
@@ -216,6 +245,13 @@ void main() {
         _MusicNetworkHttp(),
       );
       expect(music.sendingNativeMusicGroup, isTrue);
+      player.properties['audio-out-params/samplerate'] = '44100';
+      groupOutput.properties['audio-out-params/samplerate'] = '48000';
+      expect(
+        await music.inspectAudioOutput(),
+        containsPair('audio-out-params/samplerate', '48000'),
+        reason: 'Diagnostics must describe the audible speaker, not the muted capture AO',
+      );
       expect(player.bands.first, -2, reason: 'Headphone correction must not enter shared PCM');
       expect(player.captureEnabled, isTrue);
       expect(music.currentTrack, same(track));
@@ -230,6 +266,7 @@ void main() {
       }
       expect(player.bands.first, 6);
       expect(player.captureEnabled, isFalse);
+      expect(await music.inspectAudioOutput(), containsPair('audio-out-params/samplerate', '44100'));
       expect(music.currentTrack, same(track));
       expect(player.properties['audio-device'], 'alsa/usb');
     } finally {

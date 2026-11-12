@@ -1,3 +1,4 @@
+import 'music_audio_output_inspection.dart';
 import 'dart:async';
 import '../../mpv/models.dart';
 import '../../mpv/player/player.dart';
@@ -89,6 +90,14 @@ class CalderaLocalAudioOutput implements CalderaAudioOutput, CalderaAudioClockOu
       return null;
     }
     return Duration(microseconds: (value * 1000000).round());
+  }
+
+  Future<Map<String, String>> inspectOutput() {
+    final player = _player, owner = _owner;
+    return inspectMusicAudioOutput(
+      player,
+      current: () => owner != null && ownsCalderaAudio(owner) && identical(player, _player),
+    );
   }
 
   Future<void> refresh() async {

@@ -1,3 +1,4 @@
+import 'music_audio_output_inspection.dart';
 import 'package:uuid/uuid.dart';
 import 'music_discovery.dart';
 import 'music_account_scope.dart';
@@ -429,7 +430,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       throw UnsupportedError('Native source speaker EQ unavailable');
     }
     if (!current()) return;
-    // General EQ, ReplayGain, fades and user volume are already in wire PCM.
+    // General EQ, ReplayGain and fades are already in wire PCM.
+    // User volume belongs to this independent physical renderer.
     // Only the physical output correction and its headroom belong here.
     await player.setVolume(
       musicVolumeForGain(_volume, _workspaceAudioEnabled ? eq?.gain ?? 1 : 0, nativeCubic: player.playerType == 'mpv'),
@@ -1086,27 +1088,23 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<Map<String, String>> inspectAudioOutput() async {
+    final source = _calderaSource;
     final player = _player;
-    if (player == null || player.playerType != 'mpv') return {};
-    final result = <String, String>{};
-    for (final property in [
-      'audio-params/samplerate',
-      'audio-params/channel-count',
-      'audio-out-params/samplerate',
-      'audio-out-params/channel-count',
-      'audio-out-params/format',
-      'current-ao',
-      'audio-device',
-      'replaygain',
-      'replaygain-fallback',
-      'replaygain-clip',
-      'af',
-    ]) {
-      final value = await player.getProperty(property);
-      if (_disposed || _player != player) return {};
-      if (value != null && value.isNotEmpty) result[property] = value;
+    bool current() =>
+        !_disposed &&
+        identical(player, _player) &&
+        identical(source, _calderaSource) &&
+        _playbackOutput == null &&
+        _musicDeviceOutput == null &&
+        !_musicGroupFollower;
+    if (!current()) return const {};
+    if (source != null) {
+      final output = source.localOutput;
+      if (output is! CalderaLocalAudioOutput) return const {};
+      final result = await output.inspectOutput();
+      return current() ? result : const {};
     }
-    return result;
+    return inspectMusicAudioOutput(player, current: current);
   }
 
   @override

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Inspect the audible music renderer, including the independent native group source speaker, and recover to the system default output without replacing the queue, playhead, pause state or general DSP. Account-retired or failed inspections cannot show a stale report.
+
 - Manage advertised Sonic and loudness tasks from track details with verified-owner checks, server-wide confirmation and live individual server activities. Retired accounts, routes and background panels cannot send late actions.
 
 - Isolate native music socket fixtures across parallel test processes and inject the independent source-speaker decoder in output EQ tests.

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
+
 /// A derived subtitle file whose cue times follow the active MPV timing
 /// correction. The source bytes are never modified.
 final class SubtitleRetimingResult {
@@ -18,12 +20,34 @@ final class SubtitleRetimingResult {
 
 /// A text-backed subtitle event available for manual timing alignment.
 final class SubtitleCue {
-  const SubtitleCue({required this.index, required this.startMs, required this.endMs, required this.text});
+  const SubtitleCue({
+    required this.id,
+    required this.index,
+    required this.startMs,
+    required this.endMs,
+    required this.text,
+  });
 
+  /// Immutable identity within the source or reviewed cue set. [index] remains
+  /// the mutable order used for display and export.
+  final String id;
   final int index;
   final int startMs;
   final int endMs;
   final String text;
+
+  static String idFor(String namespace, int ordinal) =>
+      sha256.convert(utf8.encode('pleazyng.subtitle-cue.v1\u0000$namespace\u0000$ordinal')).toString();
+
+  static bool isValidId(String value) => RegExp(r'^[0-9a-f]{64}$').hasMatch(value);
+
+  SubtitleCue copyWith({int? index, int? startMs, int? endMs, String? text}) => SubtitleCue(
+    id: id,
+    index: index ?? this.index,
+    startMs: startMs ?? this.startMs,
+    endMs: endMs ?? this.endMs,
+    text: text ?? this.text,
+  );
 }
 
 enum _SubtitleTextEncoding { utf8, utf8Bom, utf16LittleEndian, utf16BigEndian }
@@ -149,7 +173,8 @@ abstract final class SubtitleRetimer {
     if (sourceBytes.isEmpty || sourceBytes.length > maximumInputBytes) {
       throw FormatException('Subtitle input is empty or larger than the 5 MiB processing bound.');
     }
-    if (format == '.ass' || format == '.ssa') return _parseAssCues(sourceBytes);
+    final sourceNamespace = sha256.convert(sourceBytes).toString();
+    if (format == '.ass' || format == '.ssa') return _parseAssCues(sourceBytes, sourceNamespace);
 
     final source = _decodeText(sourceBytes).text;
     if (source.contains('\u0000')) throw const FormatException('Subtitle contains a NUL byte.');
@@ -187,7 +212,15 @@ abstract final class SubtitleRetimer {
           if (cues.length >= maximumCueCount) {
             throw const FormatException('Subtitle has more cues than the 50000 cue processing bound.');
           }
-          cues.add(SubtitleCue(index: cues.length + 1, startMs: start, endMs: end, text: text));
+          cues.add(
+            SubtitleCue(
+              id: SubtitleCue.idFor(sourceNamespace, cues.length + 1),
+              index: cues.length + 1,
+              startMs: start,
+              endMs: end,
+              text: text,
+            ),
+          );
         }
         break;
       }
@@ -442,7 +475,7 @@ abstract final class SubtitleRetimer {
     return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${subsecond.toString().padLeft(2, '0')}';
   }
 
-  static List<SubtitleCue> _parseAssCues(List<int> sourceBytes) {
+  static List<SubtitleCue> _parseAssCues(List<int> sourceBytes, String sourceNamespace) {
     final source = _decodeText(sourceBytes).text;
     if (source.contains('\u0000')) throw const FormatException('Subtitle contains a NUL byte.');
 
@@ -488,7 +521,15 @@ abstract final class SubtitleRetimer {
       if (cues.length >= maximumCueCount) {
         throw const FormatException('Subtitle has more cues than the 50000 cue processing bound.');
       }
-      cues.add(SubtitleCue(index: cues.length + 1, startMs: start, endMs: end, text: text));
+      cues.add(
+        SubtitleCue(
+          id: SubtitleCue.idFor(sourceNamespace, cues.length + 1),
+          index: cues.length + 1,
+          startMs: start,
+          endMs: end,
+          text: text,
+        ),
+      );
     }
     if (cues.isEmpty) throw const FormatException('No text subtitle cues were found.');
     cues.sort((a, b) {

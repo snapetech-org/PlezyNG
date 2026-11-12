@@ -14,6 +14,7 @@ final class SubtitleWordTiming {
     required this.text,
     required this.confidence,
     required this.unit,
+    this.cueId,
     this.cueIndex,
   });
 
@@ -23,7 +24,10 @@ final class SubtitleWordTiming {
   final double? confidence;
   final SubtitleWordTimingUnit unit;
 
-  /// One-based SRT cue index, assigned only when the timed span overlaps a cue.
+  /// Stable cue identity. This remains attached when the cue order changes.
+  final String? cueId;
+
+  /// One-based position kept for compatibility with older revision records.
   final int? cueIndex;
 
   SubtitleWordTiming withCueIndex(int? value) => SubtitleWordTiming(
@@ -32,7 +36,18 @@ final class SubtitleWordTiming {
     text: text,
     confidence: confidence,
     unit: unit,
+    cueId: cueId,
     cueIndex: value,
+  );
+
+  SubtitleWordTiming withCueReference(String? id, int? index) => SubtitleWordTiming(
+    startMs: startMs,
+    endMs: endMs,
+    text: text,
+    confidence: confidence,
+    unit: unit,
+    cueId: id,
+    cueIndex: index,
   );
 }
 
@@ -41,6 +56,9 @@ final class SubtitleWordTiming {
 /// retain honest token timings instead of inventing word boundaries.
 abstract final class SubtitleWordTimingBuilder {
   static const int _maximumWordTimings = 250000;
+
+  static List<SubtitleWordTiming> detachCueReferences(Iterable<SubtitleWordTiming> wordTimings) =>
+      List<SubtitleWordTiming>.unmodifiable(wordTimings.map((timing) => timing.withCueReference(null, null)));
 
   static List<SubtitleWordTiming> fromWhisperSegments(
     Iterable<whisper.WhisperSegment> segments, {
@@ -140,27 +158,76 @@ abstract final class SubtitleWordTimingBuilder {
     return List.unmodifiable(output);
   }
 
-  static List<SubtitleWordTiming> attachCueIndices(List<SubtitleWordTiming> wordTimings, List<SubtitleCue> cues) {
-    if (wordTimings.isEmpty || cues.isEmpty) return List.unmodifiable(wordTimings);
-    final result = <SubtitleWordTiming>[];
+  static List<SubtitleWordTiming> attachCueReferences(List<SubtitleWordTiming> wordTimings, List<SubtitleCue> cues) {
+    final cuePositions = <String, int>{};
+    for (var index = 0; index < cues.length; index++) {
+      if (!SubtitleCue.isValidId(cues[index].id)) {
+        throw const FormatException('Subtitle cue identity is invalid.');
+      }
+      if (cuePositions.containsKey(cues[index].id)) {
+        throw const FormatException('Subtitle cue identities must be unique.');
+      }
+      cuePositions[cues[index].id] = index;
+    }
+    if (wordTimings.isEmpty) return const <SubtitleWordTiming>[];
+    final orderedCues = List<int>.generate(cues.length, (index) => index)
+      ..sort((left, right) {
+        final start = cues[left].startMs.compareTo(cues[right].startMs);
+        if (start != 0) return start;
+        final end = cues[left].endMs.compareTo(cues[right].endMs);
+        return end != 0 ? end : left.compareTo(right);
+      });
+    final wordOrder = List<int>.generate(wordTimings.length, (index) => index)
+      ..sort((left, right) {
+        final start = wordTimings[left].startMs.compareTo(wordTimings[right].startMs);
+        if (start != 0) return start;
+        final end = wordTimings[left].endMs.compareTo(wordTimings[right].endMs);
+        return end != 0 ? end : left.compareTo(right);
+      });
+    final result = List<SubtitleWordTiming>.of(wordTimings);
     var firstPossibleCue = 0;
-    for (final word in wordTimings) {
-      while (firstPossibleCue < cues.length && cues[firstPossibleCue].endMs < word.startMs) {
+    for (final wordPosition in wordOrder) {
+      final word = wordTimings[wordPosition];
+      if (word.cueId case final cueId?) {
+        final cuePosition = cuePositions[cueId];
+        if (cuePosition == null) {
+          throw const FormatException('Word timing references a missing subtitle cue identity.');
+        }
+        result[wordPosition] = word.withCueReference(cueId, cuePosition + 1);
+        continue;
+      }
+      while (firstPossibleCue < orderedCues.length && cues[orderedCues[firstPossibleCue]].endMs < word.startMs) {
         firstPossibleCue++;
       }
-      var bestIndex = -1;
+      var bestPosition = -1;
       var bestOverlap = 0;
-      for (var index = firstPossibleCue; index < cues.length && cues[index].startMs <= word.endMs; index++) {
+      for (
+        var cursor = firstPossibleCue;
+        cursor < orderedCues.length && cues[orderedCues[cursor]].startMs <= word.endMs;
+        cursor++
+      ) {
+        final cuePosition = orderedCues[cursor];
+        final cue = cues[cuePosition];
         final overlap =
-            (cues[index].endMs < word.endMs ? cues[index].endMs : word.endMs) -
-            (cues[index].startMs > word.startMs ? cues[index].startMs : word.startMs);
+            (cue.endMs < word.endMs ? cue.endMs : word.endMs) -
+            (cue.startMs > word.startMs ? cue.startMs : word.startMs);
         if (overlap > bestOverlap) {
           bestOverlap = overlap;
-          bestIndex = index;
+          bestPosition = cuePosition;
         }
       }
-      result.add(word.withCueIndex(bestIndex < 0 ? null : cues[bestIndex].index));
+      final legacyIndex = word.cueIndex;
+      if (bestPosition < 0 && legacyIndex != null && legacyIndex >= 1 && legacyIndex <= cues.length) {
+        bestPosition = legacyIndex - 1;
+      }
+      result[wordPosition] = bestPosition < 0
+          ? word.withCueReference(null, null)
+          : word.withCueReference(cues[bestPosition].id, bestPosition + 1);
     }
-    return List.unmodifiable(result);
+    return List<SubtitleWordTiming>.unmodifiable(result);
   }
+
+  /// Compatibility name for callers that still consume a positional cue field.
+  static List<SubtitleWordTiming> attachCueIndices(List<SubtitleWordTiming> wordTimings, List<SubtitleCue> cues) =>
+      attachCueReferences(wordTimings, cues);
 }

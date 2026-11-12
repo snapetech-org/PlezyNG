@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
+
 import '../services/subtitle_retimer.dart';
 import 'podcast_metadata.dart';
 import 'source_models.dart';
@@ -23,6 +25,7 @@ final class PodcastTranscript {
       throw const SourceException(SourceFailure.invalidData);
     }
     var cues = <SubtitleCue>[];
+    final sourceNamespace = sha256.convert(utf8.encode(body)).toString();
     if (type == 'text/vtt' || type == 'application/srt' || type == 'application/x-subrip') {
       cues = SubtitleRetimer.parseCues(sourceBytes: utf8.encode(body), extension: type == 'text/vtt' ? '.vtt' : '.srt');
     } else if (type == 'application/json') {
@@ -31,7 +34,8 @@ final class PodcastTranscript {
       if (segments.length > 20000) {
         throw const SourceException(SourceFailure.invalidData);
       }
-      for (final segment in segments) {
+      for (var segmentOrdinal = 0; segmentOrdinal < segments.length; segmentOrdinal++) {
+        final segment = segments[segmentOrdinal];
         final data = sourceMap(segment), start = data['startTime'], end = data['endTime'];
         if (start is! num ||
             end is! num ||
@@ -49,6 +53,7 @@ final class PodcastTranscript {
         }
         cues.add(
           SubtitleCue(
+            id: SubtitleCue.idFor('podcast:$sourceNamespace', segmentOrdinal + 1),
             index: cues.length + 1,
             startMs: (start * 1000).round(),
             endMs: (end * 1000).round(),
@@ -61,7 +66,13 @@ final class PodcastTranscript {
     cues = [
       for (final cue in cues)
         if (podcastPlainText(cue.text).isNotEmpty)
-          SubtitleCue(index: cue.index, startMs: cue.startMs, endMs: cue.endMs, text: podcastPlainText(cue.text)),
+          SubtitleCue(
+            id: cue.id,
+            index: cue.index,
+            startMs: cue.startMs,
+            endMs: cue.endMs,
+            text: podcastPlainText(cue.text),
+          ),
     ];
     if (type == 'application/json' && cues.isEmpty) {
       throw const SourceException(SourceFailure.invalidData);
@@ -93,24 +104,36 @@ final class PodcastTranscript {
       .trim();
 
   Map<String, dynamic> toJson() => {
+    'schema': 'plezyng.podcast-transcript.v2',
     'text': text,
     'cues': [
-      for (final cue in cues) {'start': cue.startMs, 'end': cue.endMs, 'text': cue.text},
+      for (final cue in cues) {'id': cue.id, 'start': cue.startMs, 'end': cue.endMs, 'text': cue.text},
     ],
   };
 
   factory PodcastTranscript.fromJson(Map<String, dynamic> value) {
+    final schema = value['schema'];
+    if (schema != null && schema != 'plezyng.podcast-transcript.v2') {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     final text = value['text'];
     final raw = sourceList(value['cues']);
     if (text is! String || text.length > 512 * 1024 || raw.length > 20000) {
       throw const SourceException(SourceFailure.invalidData);
     }
+    final sourceNamespace = sha256.convert(utf8.encode(jsonEncode(value))).toString();
     final cues = <SubtitleCue>[];
-    for (final item in raw) {
+    final ids = <String>{};
+    for (var ordinal = 0; ordinal < raw.length; ordinal++) {
+      final item = raw[ordinal];
       final map = sourceMap(item), start = sourceInt(map['start']), end = sourceInt(map['end']);
       final body = map['text'];
+      final rawId = map['id'];
+      final id = rawId is String ? rawId : SubtitleCue.idFor('podcast-cache:$sourceNamespace', ordinal + 1);
       if (body is! String ||
           body.length > 8000 ||
+          !SubtitleCue.isValidId(id) ||
+          ids.contains(id) ||
           start == null ||
           end == null ||
           start < 0 ||
@@ -118,7 +141,8 @@ final class PodcastTranscript {
           end > 7 * 24 * 3600000) {
         throw const SourceException(SourceFailure.invalidData);
       }
-      cues.add(SubtitleCue(index: cues.length + 1, startMs: start, endMs: end, text: body));
+      ids.add(id);
+      cues.add(SubtitleCue(id: id, index: cues.length + 1, startMs: start, endMs: end, text: body));
     }
     return PodcastTranscript(text: text, cues: List.unmodifiable(cues));
   }

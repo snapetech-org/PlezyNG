@@ -11,6 +11,8 @@
 
 - Report live-subtitle PCM provenance from the active Android, Tizen or MPV player instead of always labeling it Android ExoPlayer.
 
+- Give subtitle cues stable identities through editing, translation, synchronization, podcast transcript caches and revision history; migrate positional word timing references into revision schema v3.
+
 - Add per-rendition intro/outro trim markers, playhead editing, trimmed-range preview and a persisted host override for automatic trim and marked long-instrumental skips. Instrumental sections under eight seconds are preserved.
 
 - Pause and restart queued karaoke companion work around active music playback, and prioritize preparation for the track most recently selected by the host.

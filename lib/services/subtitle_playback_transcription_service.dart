@@ -629,7 +629,8 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     )) {
       _mergeWordTiming(word);
     }
-    for (final segment in result.segments) {
+    for (var segmentOrdinal = 0; segmentOrdinal < result.segments.length; segmentOrdinal++) {
+      final segment = result.segments[segmentOrdinal];
       final text = segment.text.trim().replaceAll(RegExp(r'\s+'), ' ');
       if (text.isEmpty || text.length > 600) {
         continue;
@@ -639,7 +640,15 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       if (start < 0 || end <= start || end > SubtitleRetimer.maximumTimeMs) {
         continue;
       }
-      _mergeCue(SubtitleCue(index: 0, startMs: start, endMs: end, text: text));
+      _mergeCue(
+        SubtitleCue(
+          id: SubtitleCue.idFor('pcm:$generation:$startMs', segmentOrdinal + 1),
+          index: 0,
+          startMs: start,
+          endMs: end,
+          text: text,
+        ),
+      );
     }
   }
 
@@ -692,6 +701,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     if (existingIndex >= 0) {
       final old = _cues[existingIndex];
       _cues[existingIndex] = SubtitleCue(
+        id: old.id,
         index: old.index,
         startMs: math.min(old.startMs, cue.startMs).toInt(),
         endMs: math.max(old.endMs, cue.endMs).toInt(),
@@ -700,10 +710,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     } else if (_cues.length < _maximumCueCount) {
       _cues.add(cue);
     }
-    _cues.sort((left, right) => left.startMs.compareTo(right.startMs));
+    _cues.sort((left, right) {
+      final start = left.startMs.compareTo(right.startMs);
+      if (start != 0) return start;
+      final end = left.endMs.compareTo(right.endMs);
+      return end != 0 ? end : left.id.compareTo(right.id);
+    });
     for (var index = 0; index < _cues.length; index++) {
-      final cue = _cues[index];
-      _cues[index] = SubtitleCue(index: index + 1, startMs: cue.startMs, endMs: cue.endMs, text: cue.text);
+      _cues[index] = _cues[index].copyWith(index: index + 1);
     }
     _publishTranscript();
   }
@@ -724,7 +738,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       fellBackToCpu: false,
       detectedLanguage: _detectedLanguage,
       translatedToEnglish: false,
-      wordTimings: SubtitleWordTimingBuilder.attachCueIndices(_wordTimings, _cues),
+      wordTimings: SubtitleWordTimingBuilder.attachCueReferences(_wordTimings, _cues),
     );
     notifyListeners();
   }

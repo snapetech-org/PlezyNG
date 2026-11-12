@@ -7,6 +7,8 @@
 - Show music output selection in Now Playing and the mini-player during an open session. Configure receivers in Settings.
 - Keep the Android Automotive hardware feature in the dedicated AAOS manifest and enforce Google Play delivery version code 189 or higher after the v3.0.33+188 bundle was rejected for declaring Android Auto projection metadata and the automotive hardware feature together.
 
+- Accept expiring OPDS acquisition URLs while keeping credentialed source and catalogue URLs rejected, and keep signed credentials out of saved entry identity.
+
 - Open saved Multiview sessions on demand from Settings so app startup goes straight to the normal browsing and resume flow.
 
 - Pass the configured Pleazyng relay and owned Discord application ID into every official release build, including Microsoft Store payloads, enabling optional provider routes without upstream-service fallbacks.

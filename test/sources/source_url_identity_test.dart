@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -7,6 +8,26 @@ import 'package:plezy/sources/source_models.dart';
 import 'package:plezy/sources/source_transport.dart';
 
 void main() {
+  test('public source URLs reject credential queries outside transient resources', () {
+    final signed = Uri.parse('https://files.example/book?signature=private');
+    expect(() => validatePublicSourceUri(signed), throwsA(isA<SourceException>()));
+    expect(() => validatePublicSourceUri(signed, allowTransientCredentialQuery: true), returnsNormally);
+    expect(
+      () => validatePublicSourceUri(
+        Uri.parse('https://user:pass@files.example/book?signature=private'),
+        allowTransientCredentialQuery: true,
+      ),
+      throwsA(isA<SourceException>()),
+    );
+    expect(
+      () => validatePublicSourceUri(
+        Uri.parse('https://files.example/book?signature=private#fragment'),
+        allowTransientCredentialQuery: true,
+      ),
+      throwsA(isA<SourceException>()),
+    );
+  });
+
   test('OPDS lease rotation and acquisition reordering preserve the edition identity', () async {
     var generation = 0;
     final source = OpdsSourceAdapter(

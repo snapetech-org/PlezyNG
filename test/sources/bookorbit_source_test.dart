@@ -11,7 +11,7 @@ http.Response jsonResponse(Object? value, {int status = 200}) =>
     http.Response(jsonEncode(value), status, headers: const {'content-type': 'application/json'});
 
 void main() {
-  test('BookOrbit browses, opens both formats, and synchronizes audio position', () async {
+  test('BookOrbit browses ebooks, comics, and audio with synchronized position', () async {
     final seen = <http.Request>[];
     var logins = 0;
     final transport = SourceTransport(
@@ -126,9 +126,10 @@ void main() {
       final page = await adapter.browse();
       final entry = page.entries.single;
       expect(entry.kind, SourceItemKind.audiobook);
-      expect(entry.ebooks.length, 1);
+      expect(entry.ebooks.length, 2);
+      expect(entry.ebooks.map((file) => file.kind), contains(SourceItemKind.comic));
       expect(entry.audio.length, 2);
-      expect(entry.files.length, 3); // CBR is handled by BookOrbit, not Pleazyng's ZIP comic reader.
+      expect(entry.files.length, 4);
       expect(entry.identifiers['isbn13'], '9781234567897');
       final hydrated = await adapter.hydrate(entry);
       expect(hydrated.author, 'Writer');
@@ -143,9 +144,11 @@ void main() {
       expect(hydrated.audio.map((file) => sourceInt(sourceMap(jsonDecode(file.id))['file'])), [11, 12]);
       expect(hydrated.chapters.map((chapter) => chapter.title), ['Departure', 'Beyond']);
       expect((await adapter.cover(hydrated))?.uri.path, '/books/api/v1/books/5/cover');
-      final ebook = await adapter.resolve(hydrated.ebooks.single);
+      final ebook = await adapter.resolve(hydrated.ebooks.singleWhere((file) => file.kind == SourceItemKind.ebook));
+      final comic = await adapter.resolve(hydrated.ebooks.singleWhere((file) => file.kind == SourceItemKind.comic));
       final audio = await adapter.resolve(hydrated.audio.first);
       expect(ebook.uri.path, '/books/api/v1/books/files/10/serve');
+      expect(comic.uri.path, '/books/api/v1/books/files/13/serve');
       expect(audio.uri.path, '/books/api/v1/audiobooks/5/assets/aud_123e4567-e89b-42d3-a456-426614174000/content');
       expect(audio.headers['Authorization'], 'Bearer private-access-token');
       final local = PublicationProgress(

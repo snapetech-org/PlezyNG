@@ -69,12 +69,12 @@ final sourceCredentialParameter = RegExp(
   caseSensitive: false,
 );
 
-void validatePublicSourceUri(Uri uri, {bool allowHttp = false}) {
+void validatePublicSourceUri(Uri uri, {bool allowHttp = false, bool allowTransientCredentialQuery = false}) {
   if (uri.host.isEmpty ||
       uri.userInfo.isNotEmpty ||
       uri.hasFragment ||
       (uri.scheme != 'https' && !(allowHttp && uri.scheme == 'http')) ||
-      uri.queryParameters.keys.any(sourceCredentialParameter.hasMatch)) {
+      (!allowTransientCredentialQuery && uri.queryParameters.keys.any(sourceCredentialParameter.hasMatch))) {
     throw const SourceException(SourceFailure.permission);
   }
 }

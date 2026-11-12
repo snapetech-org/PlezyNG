@@ -42,8 +42,12 @@ class OpdsSourceAdapter extends SourceAdapter {
     streamOnly: true,
   );
 
-  Uri _catalog(Uri uri) {
-    validatePublicSourceUri(uri, allowHttp: transport.allowHttp);
+  Uri _catalog(Uri uri, {bool allowTransientCredentialQuery = false}) {
+    validatePublicSourceUri(
+      uri,
+      allowHttp: transport.allowHttp,
+      allowTransientCredentialQuery: allowTransientCredentialQuery,
+    );
     return protectKavitaOpdsUri(uri, _kavitaAuthKey, sourceEndpoint: Uri.parse(source.endpoint));
   }
 
@@ -247,7 +251,7 @@ class OpdsSourceAdapter extends SourceAdapter {
       final links = sourceList(j['links']).map(sourceMap).toList();
       final self = links.where((l) => _rels(l).contains('self')).firstOrNull?['href'];
       final id = _safeEntryId(
-        '${meta['identifier'] ?? (self == null ? sourceDigest(jsonEncode([uri.toString(), meta['title'], meta['author'], links.where((l) => _supportedFileAcquisition(_rels(l))).map((l) => _identity(_catalog(uri.resolve(l['href'] as String)))).toList()])) : _identity(_catalog(uri.resolve(self as String))))}',
+        '${meta['identifier'] ?? (self == null ? sourceDigest(jsonEncode([uri.toString(), meta['title'], meta['author'], links.where((l) => _supportedFileAcquisition(_rels(l))).map((l) => _identity(_catalog(uri.resolve(l['href'] as String), allowTransientCredentialQuery: true))).toList()])) : _identity(_catalog(uri.resolve(self as String))))}',
       );
       final image = sourceList(j['images']).map(sourceMap).where((i) => i['href'] is String).firstOrNull;
       if (image != null) _covers[id] = _catalog(uri.resolve(image['href'] as String));
@@ -268,7 +272,7 @@ class OpdsSourceAdapter extends SourceAdapter {
           continue;
         }
         final mime = link['type'] as String? ?? '';
-        final acquisition = _catalog(uri.resolve(link['href'] as String));
+        final acquisition = _catalog(uri.resolve(link['href'] as String), allowTransientCredentialQuery: true);
         final name = '${_label(meta['title'])}${_extension(mime, acquisition)}';
         final sampleOnly = _sampleAcquisition(rels);
         final ref = _fileRef(uri, id, acquisition, mime, sampleOnly: sampleOnly);
@@ -325,7 +329,11 @@ class OpdsSourceAdapter extends SourceAdapter {
                   text('author'),
                   links
                       .where((l) => _supportedFileAcquisition([l.getAttribute('rel') ?? '']))
-                      .map((l) => _identity(_catalog(uri.resolve(l.getAttribute('href') ?? ''))))
+                      .map(
+                        (l) => _identity(
+                          _catalog(uri.resolve(l.getAttribute('href') ?? ''), allowTransientCredentialQuery: true),
+                        ),
+                      )
                       .toList(),
                 ]),
               )
@@ -357,7 +365,7 @@ class OpdsSourceAdapter extends SourceAdapter {
         final rel = link.getAttribute('rel') ?? '', mime = link.getAttribute('type') ?? '';
         final rels = [rel];
         if (_downloadable(rel)) {
-          final acquisition = _catalog(uri.resolve(href));
+          final acquisition = _catalog(uri.resolve(href), allowTransientCredentialQuery: true);
           final sampleOnly = _sampleAcquisition(rels);
           final ref = _fileRef(uri, id, acquisition, mime, sampleOnly: sampleOnly);
           _acquisitions[ref] = acquisition;

@@ -1,6 +1,6 @@
 # PlezyNG feature build-out handoff
 
-Status: 2026-10-28. PlezyNG is a fork of `edde746/plezy` intended to carry requested features that upstream declined or has not shipped, while keeping parity across Plex, Jellyfin, and Emby where the APIs allow it. The fork should retire as the corresponding capabilities converge upstream.
+Historical feature handoff, status **2026-10-28**. This records the implementation slice and qualification limits reviewed at that time; it is not a live inventory of `main`. The README feature comparison links here for detail. For current implementation and release evidence, use the [capability and qualification ledger](../maintainers/capability-manifest.json) and the feature-specific delivery records. PleazyNG is a fork of `edde746/plezy` intended to carry requested features that upstream declined or has not shipped, while keeping parity across Plex, Jellyfin, and Emby where the APIs allow it. The fork should retire as the corresponding capabilities converge upstream.
 
 ## Current audit remediation status
 

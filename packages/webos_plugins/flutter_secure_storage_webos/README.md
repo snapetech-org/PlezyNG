@@ -15,13 +15,13 @@ Therefore, you have to include `flutter_secure_storage_webos` alongside `flutter
 
 ```yaml
 dependencies:
-  flutter_secure_storage: ^9.2.3
+  flutter_secure_storage: ^10.3.4
   flutter_secure_storage_webos:
-    git:
-      url: https://github.com/lg-flutter-webos/plugins.git
-      path: packages/flutter_secure_storage
-      ref: main
+    path: packages/webos_plugins/flutter_secure_storage_webos
 ```
+
+This is the dependency configuration used by Pleazyng. The webOS adapter is
+maintained in this repository and contains changes beyond the upstream plugin.
 
 **Import:**
 
@@ -43,11 +43,14 @@ Add the following ACGs to your `appinfo.json`:
 
 ## Example
 
-See the [example application](example/lib/main.dart) for a complete usage demonstration.
+The package does not include a standalone example app. Pleazyng uses the
+standard `FlutterSecureStorage` API through its
+[credential key store](../../../lib/services/credential_key_store.dart).
 
 ## API Reference
 
-See the [API Reference](API_REFERENCE.md) for webOS-specific behavior details.
+See the [webOS API reference](API_REFERENCE.md) for supported operations,
+options, migration, and error behavior.
 
 ## Limitations
 

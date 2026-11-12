@@ -2,6 +2,8 @@
 
 A robust, multi-platform background file transfer plugin for Flutter supporting background downloads, uploads, and data tasks across iOS, Android, MacOS, Windows, and Linux.
 
+This vendored package snapshot omits the upstream `doc/` directory. The guide links below point to the exact dependency revision recorded in `PATCHES.md`.
+
 Uses native `URLSession` on iOS and MacOS, and `DownloadWorker` (WorkManager) / `JobService` (UIDT) on Android, ensuring transfers continue even when your app is in the background or terminated by the OS.
 
 ---
@@ -10,7 +12,7 @@ Uses native `URLSession` on iOS and MacOS, and `DownloadWorker` (WorkManager) / 
 
 The easiest and most powerful way to use `background_downloader` is via the **Transfer API**.
 
-On app startup (e.g. in `main()` or your top-level `initState()`), call `FileDownloader().start(autoCleanDatabase: true)` to activate persistent database tracking, automatically purge old task records, and reconcile transfers that completed or were interrupted while the app was suspended or closed. Then simply define a [`DownloadTask`](doc/downloads.md) or [`UploadTask`](doc/uploads.md), start it using `FileDownloader().transfers.start`, and receive a reactive [`Transfer`](doc/transfers.md) handle:
+On app startup (e.g. in `main()` or your top-level `initState()`), call `FileDownloader().start(autoCleanDatabase: true)` to activate persistent database tracking, automatically purge old task records, and reconcile transfers that completed or were interrupted while the app was suspended or closed. Then simply define a [`DownloadTask`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/downloads.md) or [`UploadTask`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/uploads.md), start it using `FileDownloader().transfers.start`, and receive a reactive [`Transfer`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md) handle:
 
 ```dart
 // 1. Activate database tracking & auto-cleanup on app launch (recommended)
@@ -41,17 +43,17 @@ print('Downloaded to: ${file.path}');
 
 ### Why use `Transfer`?
 
-- **Awaitable Futures**: Await [`transfer.file`](doc/transfers.md#awaitable-futures) for the completed `File`, [`transfer.result`](doc/transfers.md#awaitable-futures) for the `TaskStatusUpdate`, or [`transfer.responseBody`](doc/transfers.md#awaitable-futures) for server response text.
+- **Awaitable Futures**: Await [`transfer.file`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md#awaitable-futures) for the completed `File`, [`transfer.result`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md#awaitable-futures) for the `TaskStatusUpdate`, or [`transfer.responseBody`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md#awaitable-futures) for server response text.
 - **Reactive UI Notifiers**: Direct `ValueNotifier` bindings for Flutter widgets: `transfer.progressNotifier` (clean `0.0`–`1.0`), `transfer.statusNotifier`, `transfer.networkSpeedNotifier`, `transfer.timeRemainingNotifier`, and `transfer.notificationTapNotifier`.
-- **Plug-and-Play Widgets**: Pre-built UI components including [`TransferProgressBar`](doc/transfers.md#transferprogressbar), [`TransferButton`](doc/transfers.md#transferbutton), and [`TransferListTile`](doc/transfers.md#transferlisttile).
+- **Plug-and-Play Widgets**: Pre-built UI components including [`TransferProgressBar`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md#transferprogressbar), [`TransferButton`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md#transferbutton), and [`TransferListTile`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md#transferlisttile).
 - **Direct Controls**: Pause, resume, cancel, or allow cellular without managing task IDs: `await transfer.pause()`, `await transfer.resume()`, `await transfer.cancel()`.
 - **Batch Processing**: Enqueue hundreds of transfers with aggregate progress using `FileDownloader().transfers.startAll(tasks, onProgress: ...)`.
-- **Smart Auto-Tuning & Android 14+ UIDT**: Use [`TransferHint`](doc/transfers.md#6-smart-tuning-with-transferhint--android-14-uidt) (`userInitiated`, `largeFile`, `smallFile`, `lowPriority`, `useSuggestedFilename`, `binaryUpload`) to configure optimal priority, Android 14+ UIDT, and pause resilience automatically.
+- **Smart Auto-Tuning & Android 14+ UIDT**: Use [`TransferHint`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md#6-smart-tuning-with-transferhint--android-14-uidt) (`userInitiated`, `largeFile`, `smallFile`, `lowPriority`, `useSuggestedFilename`, `binaryUpload`) to configure optimal priority, Android 14+ UIDT, and pause resilience automatically.
 - **Notification Tap Integration**: React directly to user notification taps per transfer via `transfer.notificationTapNotifier` or open downloaded files automatically with `tapOpensFile: true`.
-- **Scoping & Isolation**: Modularize downloads in plugins or sub-features with isolated namespaces using [`FileDownloader.scoped('my_feature')`](doc/transfers.md#7-scoping-with-filedownloaderscoped).
+- **Scoping & Isolation**: Modularize downloads in plugins or sub-features with isolated namespaces using [`FileDownloader.scoped('my_feature')`](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md#7-scoping-with-filedownloaderscoped).
 - **Network Resilience**: Automatic offline holding and resume, plus configurable stall detection (`stallTimeout`).
 
-👉 **[Read the complete Transfers Guide](doc/transfers.md)**
+👉 **[Read the complete Transfers Guide](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md)**
 
 ---
 
@@ -105,27 +107,27 @@ To ensure file paths work robustly across platform restarts (especially on iOS a
 * **`directory`**: An optional subdirectory within the base directory.
 * **`filename`**: The name of the file (or `DownloadTask.suggestedFilename` / `'?'` to use the server's `Content-Disposition` header).
 
-See [File Storage](doc/storage.md) for details on shared and scoped storage.
+See [File Storage](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/storage.md) for details on shared and scoped storage.
 
 ---
 
 ## 📚 Documentation Index
 
-Check the **[Topic Index](doc/topic_index.md)** or specific guides:
+Check the **[Topic Index](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/topic_index.md)** or specific guides:
 
-* **[Transfers & High-Level API](doc/transfers.md)**: `Transfer` handles, reactive notifiers, UI widgets, batches, and scoping.
-* **[Downloads](doc/downloads.md)**: Normal and parallel chunked downloads.
-* **[Uploads](doc/uploads.md)**: Multipart, binary, and multi-file uploads.
-* **[Notifications](doc/notifications.md)**: Native progress and completion notifications.
-* **[Database & Central Monitoring](doc/database.md)**: Event streams, callbacks, and persistent database tracking.
-* **[Status & Progress Updates](doc/status_updates.md)**: Status lifecycles and progress events.
-* **[File Storage & Locations](doc/storage.md)**: Scoped storage, app directories, moving files to Photos/Downloads.
-* **[Lifecycle & Queue Management](doc/lifecycle.md)**: Pausing, resuming, canceling, task queues, holding queues, and auth callbacks.
-* **[Permissions](doc/permissions.md)**: Android & iOS permissions setup.
-* **[Server Requests & Cookies](doc/requests.md)**: Immediate HTTP requests and cookie handling.
-* **[Optional Parameters](doc/parameters.md)**: Headers, retries, priority, metadata, hints, and timeouts.
-* **[Configuration](doc/CONFIG.md)**: Timeouts, proxies, bypass TLS, etc.
-* **[Working with URIs](doc/URI.md)**: Content URIs, URL Bookmarks, and platform pickers.
+* **[Transfers & High-Level API](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/transfers.md)**: `Transfer` handles, reactive notifiers, UI widgets, batches, and scoping.
+* **[Downloads](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/downloads.md)**: Normal and parallel chunked downloads.
+* **[Uploads](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/uploads.md)**: Multipart, binary, and multi-file uploads.
+* **[Notifications](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/notifications.md)**: Native progress and completion notifications.
+* **[Database & Central Monitoring](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/database.md)**: Event streams, callbacks, and persistent database tracking.
+* **[Status & Progress Updates](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/status_updates.md)**: Status lifecycles and progress events.
+* **[File Storage & Locations](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/storage.md)**: Scoped storage, app directories, moving files to Photos/Downloads.
+* **[Lifecycle & Queue Management](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/lifecycle.md)**: Pausing, resuming, canceling, task queues, holding queues, and auth callbacks.
+* **[Permissions](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/permissions.md)**: Android & iOS permissions setup.
+* **[Server Requests & Cookies](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/requests.md)**: Immediate HTTP requests and cookie handling.
+* **[Optional Parameters](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/parameters.md)**: Headers, retries, priority, metadata, hints, and timeouts.
+* **[Configuration](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/CONFIG.md)**: Timeouts, proxies, bypass TLS, etc.
+* **[Working with URIs](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/URI.md)**: Content URIs, URL Bookmarks, and platform pickers.
 
 ---
 
@@ -155,6 +157,6 @@ Add the client network entitlement to `macos/Runner/DebugProfile.entitlements` a
 
 ## ⚠️ Platform Notes & Limitations
 
-* **iOS**: Minimum iOS 14.0. Background transfers must complete within the system resource timeout (defaults to 4 hours, configurable via [CONFIG.md](doc/CONFIG.md)).
-* **Android**: Minimum API 21. Standard background tasks are limited to 9 minutes by WorkManager. To allow longer downloads, set `allowPause: true` (or `TransferHint.largeFile` / `userInitiated`), which automatically resumes across 9-minute cycles, or set `priority: 0` on Android 14+ to use UIDT (see [parameters.md](doc/parameters.md#priority)).
+* **iOS**: Minimum iOS 14.0. Background transfers must complete within the system resource timeout (defaults to 4 hours, configurable via [CONFIG.md](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/CONFIG.md)).
+* **Android**: Minimum API 21. Standard background tasks are limited to 9 minutes by WorkManager. To allow longer downloads, set `allowPause: true` (or `TransferHint.largeFile` / `userInitiated`), which automatically resumes across 9-minute cycles, or set `priority: 0` on Android 14+ to use UIDT (see [parameters.md](https://github.com/edde746/background_downloader/blob/7c341be73df8a6a5ddccb06124807ac250a32bc1/doc/parameters.md#priority)).
 * **OS Termination**: If the user forcefully swipes the app away from the iOS App Switcher or Android Recents, the OS may terminate background transfers without notification.

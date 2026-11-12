@@ -64,19 +64,26 @@ the release.
 ### Changelog and release notes
 
 Add a concise, user-visible bullet under `CHANGELOG.md` → `## [Unreleased]` for app, platform, or release-build changes.
-The pre-commit hook checks staged changes. Run CI manually on `main` before tagging a release. Install the hook once with
-`scripts/setup_hooks.sh`.
+The pre-commit hook checks staged changes. Install it once with
+`scripts/setup_hooks.sh`. For releases, use the controller below; it verifies CI
+against the exact source before creating or checking the immutable version tag.
 
-The `PlezyNG Release` workflow accepts a pushed `v<major>.<minor>.<patch>` tag or a manual dispatch from `main`.
-Push a tag only after the matching `main` commit has a completed successful manual CI run; the tag must point to `main`
-and match the version in `pubspec.yaml`. The tag starts the private-JIT release build and creates a draft GitHub release.
-Manual dispatch remains available for build-only, release, and webOS validation runs. A tag release does not include the webOS IPK;
-that channel remains opt-in after its artifact and redistribution gates are approved.
+Use `scripts/release_all_platforms.py` to prepare and run a versioned release; pushing a version tag does not start a build.
+The controller validates the exact `main` source, runs CI, creates or verifies the immutable version tag, builds the
+required platform artifacts, checks release coverage, and then publishes according to the selected option. Compatible
+GitHub-hosted runners are the default; private JIT is reserved for constrained work such as the webOS build. Every
+versioned release includes Android, Linux x64/arm64, Windows x64/arm64, universal macOS, iOS, tvOS, Tizen and webOS.
+See [the full release build runbook](docs/maintainers/full-release-build.md) for the complete process and recovery
+procedures, and [release channels](docs/maintainers/release-channels.md) for downstream delivery status.
 
-The workflow uses a matching changelog version section when one exists, otherwise it uses `Unreleased`. Before later
-releases, move shipped bullets into a dated version section and keep `Unreleased` for new work. Publish the draft when it
-is ready; publishing updates the Homebrew cask and appcast, then announces the release in Discord with its changelog notes
-and a link. Regular branch pushes do not run the release build.
+For GitHub-only publication, the controller accepts `--publish-github-only`; `--publish` also dispatches configured
+package and store channels. Publishing a binary does not mean a vendor store has reviewed or approved it.
+
+Release notes use a matching changelog version section when one exists, otherwise they use `Unreleased`. After a release,
+move shipped bullets into its dated version section and keep `Unreleased` for new work. Publishing the GitHub Release
+triggers the Discord announcement; configured downstream package and store workflows run only when the controller is
+invoked with `--publish`. The core release carries the updater feed asset; the old appcast branch writer is retired.
+Regular branch pushes do not run a release build.
 
 ### Maestro end-to-end tests
 

@@ -15,6 +15,8 @@ Pleazyng is a downstream fork for feature requests that Plezy upstream has decli
 
 See [Files, books and listening](docs/FILES_AND_BOOKS.md) for standard/cloud sources, readers and offline behavior, and [Public-library setup](docs/LENDING_SETUP.md) for the staged OverDrive integration.
 
+Browse the [documentation index](docs/README.md) for product guides, feature records, maintainer runbooks, release evidence and historical snapshots.
+
 The [capability and qualification ledger](docs/maintainers/capability-manifest.json) tracks implementation evidence, release status, platform limits and remaining gates. Code being present does not imply device qualification or a published download.
 
 The [debrid, Stremio and remote-streaming guide](docs/plezyng/remote-streams/README.md) describes the implemented providers, shared playback and queue flows, architecture, native P2P status, and remaining validation limits.

@@ -261,7 +261,8 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
         verify.assert_called_once_with(124, "b" * 40, "3.0.0", action="build")
         fields = dispatch.call_args.args[3]
         self.assertEqual(fields["tvos_runner_pool"], "private")
-        self.assertEqual(fields["runner_acquisition_retry_of"], "124")
+        self.assertEqual(fields["reuse_repaired_run_id"], "124")
+        self.assertEqual(fields["rebuild_tvos"], "true")
         self.assertEqual(
             dispatch.call_args.kwargs["expected_title"],
             "action:build:pool:private:mode:release:version:3.0.0:runner-retry-of:124",

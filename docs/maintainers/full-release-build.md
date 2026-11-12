@@ -815,8 +815,14 @@ successful platform artifacts unchanged.
 The producer pins the exact TV artifact ID and digest, verifies both IPA
 certificates against their original workflow/run, and publishes a distinct
 `tvos_source` proof. Ordinary Linux/Mac repair reuse keeps its existing meaning.
-The existing workflow `reuse_repaired_run_id` slot is interpreted as TV reuse only
-for this explicit frozen Apple mode; no additional dispatch input is required.
+The existing workflow `reuse_repaired_run_id` slot carries Apple sibling
+identities in this explicit frozen Apple mode; no additional dispatch input is
+required.
+The same slot carries the numeric failed-run ID for a complete private retry
+after hosted tvOS was canceled before runner assignment, paired with
+`rebuild_tvos=true` and no platform-reuse source. The workflow revalidates that
+exact run before building. Reusing an existing input keeps the dispatch within
+GitHub's 25-input limit.
 After both signed Apple siblings are complete, an approved assembly-only repair
 can use `--reuse-tvos-run` and `--reuse-ios-run` together. The existing workflow
 slot then carries `tvos:RUN,ios:RUN`. Verify each sibling's signed build,

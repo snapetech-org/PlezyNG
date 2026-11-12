@@ -2,7 +2,7 @@
 # The trusted-main hybrid profile uses compatible hosted runners by default; the release controller retries tvOS on private Apple JIT only after verified runner non-acquisition.
 # packer-windows-jit-v1
 name: Pleazyng Release
-run-name: ${{ inputs.runner_acquisition_retry_of != '' && inputs.action == 'build' && format('action:{0}:pool:{1}:mode:{2}:version:{3}:runner-retry-of:{4}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version, inputs.runner_acquisition_retry_of) || inputs.runner_acquisition_retry_of != '' && inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}:runner-retry-of:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.runner_acquisition_retry_of) || inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && inputs.reuse_platform_run_id != '' && inputs.rebuild_tvos && format('action:{0}:pool:{1}:tag:v{2}:recovery:source:{3}:tvos', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_platform_run_id) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
+run-name: ${{ inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'build' && format('action:{0}:pool:{1}:mode:{2}:version:{3}:runner-retry-of:{4}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}:runner-retry-of:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && inputs.reuse_platform_run_id != '' && inputs.rebuild_tvos && format('action:{0}:pool:{1}:tag:v{2}:recovery:source:{3}:tvos', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_platform_run_id) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
 on:
   workflow_dispatch:
@@ -53,10 +53,6 @@ on:
         type: choice
         options: [hosted, private]
         default: hosted
-      runner_acquisition_retry_of:
-        description: Exact failed release build whose hosted tvOS job was canceled before runner assignment
-        required: false
-        type: string
       macos_compilation_job_id:
         description: Recover a verified same-product Mac compilation for signing-only macos-validation
         required: false
@@ -80,7 +76,7 @@ on:
         required: false
         default: false
       rebuild_tvos:
-        description: Rebuild tvOS on a compatible ARM host during verified platform recovery
+        description: Build tvOS during verified recovery or a hosted runner-acquisition retry
         type: boolean
         required: false
         default: false
@@ -94,7 +90,7 @@ on:
         required: false
         type: string
       reuse_repaired_run_id:
-        description: Reuse signed Apple sibling runs (tvos:ID,ios:ID), or legacy repaired Linux and Mac outputs
+        description: Reuse signed Apple sibling runs (tvos:ID,ios:ID), repaired Linux/Mac outputs, or mark a tvOS retry source run ID
         required: false
         type: string
       reuse_platform_run_id:
@@ -366,7 +362,7 @@ jobs:
           INCLUDE_APPLE_STORE_BUILD_INPUT: ${{ inputs.include_apple_store_build }}
           PREPARE_HOMEBREW_CASK_INPUT: ${{ inputs.prepare_homebrew_cask }}
           SUBTITLE_GPU_BACKEND_INPUT: ${{ inputs.subtitle_gpu_backend }}
-          RUNNER_ACQUISITION_RETRY_OF: ${{ inputs.runner_acquisition_retry_of }}
+          RUNNER_ACQUISITION_RETRY_OF: ${{ inputs.reuse_platform_run_id == '' && inputs.rebuild_tvos && inputs.reuse_repaired_run_id || '' }}
           REUSE_PLATFORMS: ${{ inputs.reuse_platform_run_id }}
           REUSE_ANDROID: ${{ inputs.reuse_android_run_id }}
           MACOS_COMPILATION_JOB: ${{ inputs.macos_compilation_job_id }}
@@ -403,7 +399,7 @@ jobs:
             echo "This workflow currently supports only the private runner pool." >&2
             exit 1
           fi
-          if [[ -n "$RUNNER_ACQUISITION_RETRY_OF" ]] && { [[ ! "$RUNNER_ACQUISITION_RETRY_OF" =~ ^[1-9][0-9]*$ ]] || [[ "$MODE" != "release" || "$TVOS_RUNNER_POOL_INPUT" != "private" ]]; }; then
+          if [[ -n "$RUNNER_ACQUISITION_RETRY_OF" ]] && { [[ ! "$RUNNER_ACQUISITION_RETRY_OF" =~ ^[1-9][0-9]*$ ]] || [[ "$MODE" != "release" || "$TVOS_RUNNER_POOL_INPUT" != "private" || -n "$REUSE_PLATFORMS" ]]; }; then
             echo "Runner-acquisition retries require a numeric failed run, release mode, and private tvOS route." >&2
             exit 1
           fi
@@ -538,10 +534,10 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Verify hosted tvOS runner-acquisition retry source
-        if: ${{ inputs.runner_acquisition_retry_of != '' }}
+        if: ${{ inputs.reuse_platform_run_id == '' && inputs.rebuild_tvos && inputs.reuse_repaired_run_id != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
-          SOURCE_RUN: ${{ inputs.runner_acquisition_retry_of }}
+          SOURCE_RUN: ${{ inputs.reuse_repaired_run_id }}
           SOURCE_SHA: ${{ github.sha }}
           VERSION: ${{ inputs.build_version }}
           ACTION: ${{ inputs.action }}

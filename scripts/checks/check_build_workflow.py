@@ -79,11 +79,26 @@ tvos_pool_input = re.search(
     r"(?ms)^      tvos_runner_pool:\n(?P<body>.*?)(?=^      [a-z_]+:|\Z)",
     text,
 )
+dispatch_inputs = re.search(
+    r"(?ms)^on:\n  workflow_dispatch:\n    inputs:\n(?P<body>.*?)(?=^jobs:)",
+    text,
+)
+dispatch_input_count = (len(re.findall(r"^      [a-z_][a-z0-9_]*:", dispatch_inputs.group("body"), re.MULTILINE))
+                        if dispatch_inputs else 0)
+require(
+    dispatch_inputs is not None and dispatch_input_count <= 25,
+    f"GitHub workflow_dispatch supports at most 25 inputs (found {dispatch_input_count})",
+)
 require(
     tvos_pool_input is not None
     and "options: [hosted, private]" in tvos_pool_input.group("body")
     and "default: hosted" in tvos_pool_input.group("body"),
     "full iOS/tvOS release builds must default to compatible hosted Apple",
+)
+require(
+    "inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos"
+    in text and "inputs.runner_acquisition_retry_of" not in text,
+    "tvOS runner retries must reuse an existing dispatch input within GitHub's input limit",
 )
 require(
     "apple_runner_pool: ${{ inputs.tvos_runner_pool }}" in job("release-ci"),
@@ -1557,7 +1572,7 @@ run_name_expression = run_name.group(1) if run_name else ""
 require(
     all(field in run_name_expression for field in ("inputs.action", "inputs.runner_pool", "inputs.build_version"))
     and "format('action:{0}:pool:{1}:tag:v{2}'" in run_name_expression
-    and "inputs.runner_acquisition_retry_of" in run_name_expression
+    and "inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos" in run_name_expression
     and "format('action:{0}:pool:{1}:tag:v{2}:recovery:source:{3}:tvos'" in run_name_expression
     and "inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != ''" in run_name_expression
     and "format('action:{0}:pool:{1}:mode:{2}:version:{3}'" in run_name_expression

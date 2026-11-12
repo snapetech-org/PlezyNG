@@ -1032,7 +1032,8 @@ def ensure_candidate_build(
             "prepare_homebrew_cask": "true" if prepare_homebrew_cask else "false",
         }
         if retry_of is not None:
-            fields["runner_acquisition_retry_of"] = str(retry_of)
+            fields["reuse_repaired_run_id"] = str(retry_of)
+            fields["rebuild_tvos"] = "true"
         return fields
 
     source = matching_run(
@@ -1297,7 +1298,8 @@ def ensure_release(
     run_title = f"action:release:pool:private:tag:{tag}"
     repair = packaging_source_sha is not None
     if runner_acquisition_retry_of is not None:
-        if repair or type(runner_acquisition_retry_of) is not int or runner_acquisition_retry_of < 1:
+        if (repair or reuse_platform_run_id or reuse_repaired_run_id is not None
+                or type(runner_acquisition_retry_of) is not int or runner_acquisition_retry_of < 1):
             raise ReleaseError("A full runner-acquisition retry requires one exact failed release run.")
         run_title += f":runner-retry-of:{runner_acquisition_retry_of}"
         tvos_runner_pool = "private"
@@ -1502,7 +1504,8 @@ def ensure_release(
     if reuse_macos_run_id:
         fields["reuse_macos_package_run_id"] = str(reuse_macos_run_id)
     if runner_acquisition_retry_of is not None:
-        fields["runner_acquisition_retry_of"] = str(runner_acquisition_retry_of)
+        fields["reuse_repaired_run_id"] = str(runner_acquisition_retry_of)
+        fields["rebuild_tvos"] = "true"
     allow_failure = (not start_only and not repair and not reuse_platform_run_id
                      and runner_acquisition_retry_of is None)
     result = dispatch(

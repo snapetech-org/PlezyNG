@@ -182,8 +182,17 @@ class MusicStation {
         }
         if (!seenContainers.add(item.globalKey)) continue;
         fresh = true;
-        final block = albums ? await client.fetchAlbumTracks(item.id) : [item];
+        final block = albums
+            ? await _fetchStationAlbumTracks(
+                client,
+                item.id,
+                maxTracks: trackLimit - result.length,
+                abort: abort,
+                checkCurrent: checkCurrent,
+              )
+            : [item];
         checkCurrent();
+        if (block == null) continue;
         final tracks = block
             .where(
               (t) =>
@@ -238,6 +247,46 @@ class MusicStation {
     }
     return result;
   }
+}
+
+/// Read a complete album in bounded pages. Albums larger than the station's
+/// remaining track budget cannot be admitted without being split, so reject
+/// them as soon as the first page reports their size.
+Future<List<MediaItem>?> _fetchStationAlbumTracks(
+  MediaServerClient client,
+  String albumId, {
+  required int maxTracks,
+  required AbortController? abort,
+  required void Function() checkCurrent,
+}) async {
+  const pageSize = 200;
+  final tracks = <MediaItem>[];
+  var offset = 0;
+  int? totalCount;
+  while (totalCount == null || offset < totalCount) {
+    checkCurrent();
+    final page = await client.fetchMusicTracksPage(
+      albumId,
+      kind: MediaKind.album,
+      start: offset,
+      size: pageSize,
+      abort: abort,
+    );
+    checkCurrent();
+    if (page.offset != offset ||
+        page.items.length > pageSize ||
+        page.totalCount < offset + page.items.length ||
+        page.items.isEmpty && page.totalCount > offset ||
+        totalCount != null && page.totalCount != totalCount ||
+        page.totalCount > maxTracks) {
+      return null;
+    }
+    totalCount = page.totalCount;
+    if (page.items.isEmpty) break;
+    tracks.addAll(page.items);
+    offset += page.items.length;
+  }
+  return offset == totalCount ? tracks : null;
 }
 
 int? musicTrackEstimatedBytes(MediaItem track) {

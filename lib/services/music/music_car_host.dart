@@ -27,6 +27,8 @@ import '../../providers/multi_server_provider.dart';
 import '../../screens/music/music_driving_screen.dart';
 import '../../services/settings_service.dart';
 import '../../utils/provider_extensions.dart';
+import '../../utils/music_read_scope.dart';
+import 'music_tracks_loader.dart';
 import '../../utils/media_server_http_client.dart';
 import 'music_car_artwork.dart';
 import 'music_queue_controller.dart';
@@ -63,7 +65,8 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   final _artworkItems =
       <String, ({MediaItem item, MediaServerClient? client, Object? authentication, String? scope})>{};
   final Map<String, MediaItem> _items = {};
-  final Map<String, Object?> _authorizations = {};
+  final _authorizations =
+      <String, ({MediaServerClient? client, Object? authentication, String? account, int generation})>{};
   Object? _queueShape;
   String? _catalogShape;
   final List<Listenable> _catalogSources = [];
@@ -75,7 +78,12 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   Route<void>? _automaticDrivingRoute;
   int _catalogRevision = 0;
 
-  bool get _current => mounted && identical(_owner, _identity) && _profiles.activeId == _profileId;
+  bool get _current =>
+      mounted &&
+      identical(_owner, _identity) &&
+      _profiles.activeId == _profileId &&
+      !_profiles.isBinding &&
+      _profiles.lastBindingSucceeded;
 
   @override
   void initState() {
@@ -249,7 +257,13 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     }
     _items[id] = item;
     _rememberArtwork(id, item);
-    _authorizations[id] = context.getMediaClientForItemOrNull(item)?.authenticationSessionId;
+    final client = context.getMediaClientForItemOrNull(item);
+    _authorizations[id] = (
+      client: client,
+      authentication: client?.authenticationSessionId,
+      account: client == null ? null : musicAccountScope(client),
+      generation: _profiles.identityMutationGeneration,
+    );
     return {
       'id': id,
       'title': item.displayTitle,
@@ -348,6 +362,26 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         return _artworkHttp.getBytes(url, maxBytes: MusicCarArtwork.maxInputBytes, timeout: const Duration(seconds: 6));
       },
     );
+  }
+
+  bool _catalogItemCurrent(String id) {
+    final owner = _authorizations[id];
+    if (!_current || owner == null || owner.generation != _profiles.identityMutationGeneration) return false;
+    final client = owner.client;
+    return client == null ||
+        _clientCurrent(client, owner.authentication!) && owner.account == musicAccountScope(client);
+  }
+
+  bool Function() _readClient(MediaServerClient client) {
+    final authentication = client.authenticationSessionId, account = musicAccountScope(client);
+    final generation = _profiles.identityMutationGeneration;
+    return () =>
+        _current &&
+        generation == _profiles.identityMutationGeneration &&
+        _clientCurrent(client, authentication) &&
+        account == musicAccountScope(client) &&
+        !client.isOfflineMode &&
+        context.read<MultiServerProvider>().serverManager.isClientOnline(client.serverId);
   }
 
   bool _clientCurrent(MediaServerClient client, Object authentication) {
@@ -529,41 +563,32 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
               hidden?.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}') == true) {
             return false;
           }
-          final client = context.getMediaClientForItemOrNull(item);
-          final authentication = client?.authenticationSessionId;
-          if (client != null && !identical(_authorizations[id], authentication)) return false;
-          final offlineTracks = context.read<DownloadProvider>().downloadedTracks;
-          final downloaded = offlineTracks.where((track) => track.globalKey == item.globalKey).firstOrNull;
-          if (client == null && downloaded == null && item.kind == MediaKind.track) return false;
-          final tracks = item.kind == MediaKind.track
-              ? [downloaded ?? item]
-              : item.kind == MediaKind.album
-              ? await client?.fetchAlbumTracks(item.id) ?? <MediaItem>[]
-              : item.kind == MediaKind.artist
-              ? await client?.fetchPlayableDescendants(item.id) ?? <MediaItem>[]
-              : item.kind == MediaKind.playlist && client != null
-              ? await loadMusicPlaylist(
-                  client,
+          if (!_catalogItemCurrent(id)) return false;
+          final client = _authorizations[id]!.client;
+          final scope = await MusicReadScope.forItem(
+            context,
+            item,
+            selectedClient: client,
+            offline: client == null || client.isOfflineMode,
+          );
+          bool current() => _catalogItemCurrent(id) && _music.isPlayIntentCurrent(intent) && scope?.current == true;
+          if (!current()) return false;
+          final playable = scope!.offline
+              ? scope.offlineTracks
+              : item.kind == MediaKind.track
+              ? [item]
+              : item.kind == MediaKind.album || item.kind == MediaKind.artist
+              ? await fetchMusicTracks(
+                  client!,
                   item.id,
-                  current: () =>
-                      _current && _music.isPlayIntentCurrent(intent) && _clientCurrent(client, authentication!),
+                  kind: item.kind,
+                  current: current,
+                  acceptsItem: scope.ownsTrack,
                 )
+              : item.kind == MediaKind.playlist
+              ? await loadMusicPlaylist(client!, item.id, current: current, acceptsItem: scope.ownsTrack)
               : <MediaItem>[];
-          if (!_current ||
-              !_music.isPlayIntentCurrent(intent) ||
-              tracks.isEmpty ||
-              client != null && !_clientCurrent(client, authentication!)) {
-            return false;
-          }
-          final playable = tracks
-              .where(
-                (track) =>
-                    track.kind == MediaKind.track &&
-                    track.serverId == item.serverId &&
-                    hidden?.hiddenLibraryKeys.contains('${track.serverId}:${track.libraryId}') != true,
-              )
-              .toList();
-          if (playable.isEmpty) return false;
+          if (!current() || playable.isEmpty) return false;
           if (args['queue'] == 'next') {
             _music.addNext(playable);
             return true;
@@ -584,7 +609,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
                   ? MusicPlayContextKind.playlist
                   : MusicPlayContextKind.tracks,
             ),
-            offline: downloaded != null && (client == null || client.isOfflineMode),
+            offline: scope.offline,
             shuffle: args['shuffle'] == true,
           );
         }
@@ -702,9 +727,9 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     if (id.startsWith('playlists:')) {
       final client = context.read<MultiServerProvider>().getClientForServer(ServerId(id.substring(10)));
       if (client == null) return [];
-      final authentication = client.authenticationSessionId;
+      final current = _readClient(client);
       final page = await client.fetchPlaylistsPage(playlistType: 'audio', start: offset, size: _pageSize);
-      if (!_current || !_clientCurrent(client, authentication)) return [];
+      if (!current()) return [];
       return [
         ...page.items
             .where((p) => p.playlistType == 'audio' && (p.serverId == null || p.serverId == client.serverId.value))
@@ -764,7 +789,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       final library = found.first;
       final client = context.read<MultiServerProvider>().getClientForServer(ServerId(library.serverId!));
       if (client == null) return [];
-      final authentication = client.authenticationSessionId;
+      final current = _readClient(client);
       final page = await client.fetchLibraryPagedContent(
         library.id,
         query: LibraryQuery(
@@ -774,9 +799,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           sort: const LibrarySort(field: 'title', direction: LibrarySortDirection.ascending),
         ),
       );
-      if (!_current ||
-          !_clientCurrent(client, authentication) ||
-          hidden.hiddenLibraryKeys.contains(library.globalKey)) {
+      if (!current() || hidden.hiddenLibraryKeys.contains(library.globalKey)) {
         return [];
       }
       return [
@@ -787,12 +810,11 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     }
     final item = _items[id];
     if (item == null) return [];
-    final client = context.getMediaClientForItemOrNull(item);
-    if (client == null || !identical(_authorizations[id], client.authenticationSessionId)) return [];
-    final authentication = client.authenticationSessionId;
+    final client = _authorizations[id]?.client;
+    if (client == null || !_catalogItemCurrent(id)) return [];
     if (item.kind == MediaKind.playlist) {
       final page = await client.fetchPlaylistPage(item.id, start: offset, size: _pageSize - 1);
-      if (!_current || !_clientCurrent(client, authentication)) return [];
+      if (!_catalogItemCurrent(id)) return [];
       return [
         {'id': id, 'title': t.common.play, 'playable': true},
         ...page.items.where((child) => child.kind == MediaKind.track && child.serverId == item.serverId).map(_item),
@@ -803,9 +825,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     final children = item.kind == MediaKind.artist
         ? await client.fetchArtistAlbums(item)
         : await client.fetchAlbumTracks(item.id);
-    return _current &&
-            _clientCurrent(client, authentication) &&
-            !hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')
+    return _catalogItemCurrent(id) && !hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')
         ? _page(children.where((child) => child.serverId == item.serverId).map(_item), id, offset)
         : [];
   }
@@ -813,11 +833,13 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   Future<List<MediaItem>> _search(String query) async {
     if (query.trim().isEmpty || query.length > 200) return [];
     final result = <String, MediaItem>{};
-    final sources = <String, (MediaServerClient, Object)>{};
+    final sources = <String, bool Function()>{};
+    final generation = _profiles.identityMutationGeneration;
+    bool current() => _current && generation == _profiles.identityMutationGeneration;
     final offlineKeys = <String>{};
     final hidden = context.read<HiddenLibrariesProvider>();
     await hidden.ensureInitialized();
-    if (!mounted || !_current) return [];
+    if (!mounted || !current()) return [];
     final normalized = query.trim().toLowerCase();
     for (final track in context.read<DownloadProvider>().downloadedTracks) {
       if (track.displayTitle.toLowerCase().contains(normalized) ||
@@ -829,7 +851,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     }
     final clients = context.read<MultiServerProvider>().serverManager.visibleOnlineClients;
     for (final client in clients.values) {
-      final authentication = client.authenticationSessionId;
+      final sourceCurrent = _readClient(client);
       final excluded = context
           .read<LibrariesProvider>()
           .libraries
@@ -843,14 +865,14 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         // One unreachable server must not hide downloaded/other-server matches.
         continue;
       }
-      if (!mounted || !_current) return [];
-      if (!_clientCurrent(client, authentication)) continue;
+      if (!mounted || !current()) return [];
+      if (!sourceCurrent()) continue;
       for (final item in items) {
         if (item.serverId == client.serverId.value &&
             const [MediaKind.track, MediaKind.album, MediaKind.artist, MediaKind.playlist].contains(item.kind) &&
             !hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}')) {
           result[item.globalKey] = item;
-          sources[item.globalKey] = (client, authentication);
+          sources[item.globalKey] = sourceCurrent;
         }
       }
       if (result.length >= 100) break;
@@ -860,9 +882,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         .where((item) {
           if (offlineKeys.contains(item.globalKey)) return true;
           final source = sources[item.globalKey];
-          return source != null &&
-              _clientCurrent(source.$1, source.$2) &&
-              !hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}');
+          return source != null && source() && !hidden.hiddenLibraryKeys.contains('${item.serverId}:${item.libraryId}');
         })
         .take(100)
         .toList();

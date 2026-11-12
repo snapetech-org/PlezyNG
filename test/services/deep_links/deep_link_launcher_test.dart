@@ -4,6 +4,9 @@ import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/media_backend.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
+import 'package:plezy/media/library_query.dart';
+import 'package:plezy/utils/media_server_http_client.dart';
+import 'package:plezy/services/music/music_queue_items.dart';
 import 'package:plezy/media/media_server_client.dart';
 import 'package:plezy/services/data_aggregation_service.dart';
 import 'package:plezy/services/deep_links/deep_link.dart';
@@ -13,7 +16,7 @@ import 'package:plezy/utils/external_ids.dart';
 import '../../test_helpers/media_items.dart';
 
 /// Serves canned items. Every other call reaches [noSuchMethod] and throws.
-class _Client implements MediaServerClient {
+class _Client implements MediaServerClient, ScopedMediaServerClient {
   _Client(String serverId, {this.backend = MediaBackend.plex}) : serverId = ServerId(serverId);
 
   @override
@@ -21,6 +24,14 @@ class _Client implements MediaServerClient {
 
   @override
   final MediaBackend backend;
+  @override
+  Object authenticationSessionId = Object();
+  @override
+  String get scopedServerId => '$serverId|$user';
+  String user = 'original';
+  Future<void> Function()? beforeItem, beforeMusic;
+  int musicReads = 0;
+  int? musicTotal;
 
   final items = <String, MediaItem>{};
   final onDeck = <String, MediaItem>{};
@@ -29,6 +40,7 @@ class _Client implements MediaServerClient {
 
   @override
   Future<MediaItem?> fetchItem(String id) async {
+    await beforeItem?.call();
     if (fetchError case final error?) throw error;
     return items[id];
   }
@@ -41,6 +53,29 @@ class _Client implements MediaServerClient {
 
   @override
   Future<List<MediaItem>> fetchAlbumTracks(String id) async => descendants[id] ?? const [];
+  @override
+  Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
+    String id, {
+    required MediaKind kind,
+    int? start,
+    int? size,
+    AbortController? abort,
+  }) async {
+    musicReads++;
+    await beforeMusic?.call();
+    final rows = descendants[id] ?? const <MediaItem>[];
+    final offset = start ?? 0, total = musicTotal ?? rows.length;
+    return LibraryPage(
+      items: musicTotal == null
+          ? rows.skip(offset).take(size ?? 200).toList()
+          : List.generate(
+              (total - offset).clamp(0, size ?? 200),
+              (i) => _item('t$offset-$i', MediaKind.track, serverId.value).copyWith(parentId: id),
+            ),
+      offset: offset,
+      totalCount: total,
+    );
+  }
 
   @override
   Future<List<MediaItem>> fetchPlayableDescendants(String parentId) async => descendants[parentId] ?? const [];
@@ -185,13 +220,12 @@ void main() {
       expect(await servers.resolver().resolve(_itemLink('s1', 'gone')), _fails(PlayLinkFailureReason.notFound));
     });
 
-    test('music album links expand only music and preserve shuffle intent', () async {
+    test('music album links preserve ordered music and shuffle intent', () async {
       final client = _Client('s1')
         ..items['album'] = _item('album', MediaKind.album, 's1')
         ..descendants['album'] = [
-          _item('a', MediaKind.track, 's1'),
-          _item('video', MediaKind.movie, 's1'),
-          _item('b', MediaKind.track, 's1'),
+          _item('a', MediaKind.track, 's1').copyWith(parentId: 'album'),
+          _item('b', MediaKind.track, 's1').copyWith(parentId: 'album'),
         ];
       servers.add(client);
       final result = await servers.resolver().resolve(_itemLink('s1', 'album', mode: PlayMode.shuffle));
@@ -200,6 +234,59 @@ void main() {
       expect(music.tracks.map((t) => t.id), ['a', 'b']);
       expect(music.shuffle, isTrue);
     });
+    test('large album links retain the queue metadata window', () async {
+      final client = _Client('s1')
+        ..items['album'] = _item('album', MediaKind.album, 's1')
+        ..musicTotal = 10000;
+      servers.add(client);
+      final result = await servers.resolver().resolve(_itemLink('s1', 'album'));
+      expect(result, isA<PlayLinkMusic>());
+      expect((result as PlayLinkMusic).tracks, isA<MusicQueueItemsSnapshot>());
+      expect(result.tracks.length, 10000);
+      expect(client.musicReads, 50);
+    });
+
+    for (final moment in ['metadata', 'page']) {
+      for (final change in ['account', 'authentication', 'client']) {
+        test('music link retires $change replacement during $moment', () async {
+          final client = _Client('s1')
+            ..items['album'] = _item('album', MediaKind.album, 's1')
+            ..musicTotal = 10000;
+          servers.add(client);
+          Future<void> retire() async {
+            switch (change) {
+              case 'account':
+                client.user = 'other';
+              case 'authentication':
+                client.authenticationSessionId = Object();
+              case 'client':
+                servers.add(_Client('s1'));
+            }
+          }
+
+          if (moment == 'metadata') {
+            client.beforeItem = retire;
+          } else {
+            client.beforeMusic = retire;
+          }
+          final result = await servers.resolver().resolve(_itemLink('s1', 'album'));
+          expect(result, _fails(PlayLinkFailureReason.serverUnavailable));
+          expect(client.musicReads, moment == 'metadata' ? 0 : 1);
+        });
+      }
+    }
+
+    test('music link rejects foreign rows without reassigning their server', () async {
+      final client = _Client('s1')
+        ..items['album'] = _item('album', MediaKind.album, 's1')
+        ..descendants['album'] = [_item('foreign', MediaKind.track, 'other').copyWith(parentId: 'album')];
+      servers.add(client);
+      expect(
+        await servers.resolver().resolve(_itemLink('s1', 'album')),
+        _fails(PlayLinkFailureReason.serverUnavailable),
+      );
+    });
+
     test('downloaded music links work with the server offline', () async {
       servers.add(_Client('s1'), online: false);
       servers.downloads['s1:track'] = _item('track', MediaKind.track, 's1');

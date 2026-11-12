@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:provider/provider.dart';
 
 import '../../i18n/strings.g.dart';
@@ -12,6 +13,11 @@ import '../../media/media_server_client.dart';
 import '../../models/livetv_channel.dart';
 import '../../providers/catalog_sources_provider.dart';
 import '../../providers/download_provider.dart';
+import '../../profiles/active_profile_provider.dart';
+import '../../providers/hidden_libraries_provider.dart';
+import '../../utils/music_read_scope.dart';
+import '../music/music_tracks_loader.dart';
+import '../music/music_account_scope.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/global_key_utils.dart';
@@ -92,6 +98,30 @@ Future<void> _launchPlayLink(BuildContext context, PlayLink link, {required bool
   final musicIntent = music?.beginPlayIntent();
   final multiServer = context.read<MultiServerProvider>();
   final downloads = context.read<DownloadProvider>();
+  final profiles = context.read<ActiveProfileProvider?>();
+  final profile = profiles?.activeId, generation = profiles?.identityMutationGeneration;
+  final hidden = context.read<HiddenLibrariesProvider?>();
+  bool ownerCurrent() =>
+      context.mounted &&
+      !multiServer.isDisposed &&
+      !downloads.isDisposed &&
+      identical(context.read<MultiServerProvider>(), multiServer) &&
+      identical(context.read<DownloadProvider>(), downloads) &&
+      identical(context.read<ActiveProfileProvider?>(), profiles) &&
+      (profiles == null ||
+          profiles.activeId == profile &&
+              profiles.identityMutationGeneration == generation &&
+              !profiles.isBinding &&
+              profiles.lastBindingSucceeded);
+  await hidden?.ensureInitialized();
+  if (!context.mounted || !ownerCurrent()) return;
+  final visibility = hidden == null ? null : Set.of(hidden.hiddenLibraryKeys);
+  bool musicCurrent() =>
+      ownerCurrent() &&
+      (music == null || identical(context.read<MusicPlaybackService?>(), music)) &&
+      (musicIntent == null || music?.isPlayIntentCurrent(musicIntent) == true) &&
+      identical(context.read<HiddenLibrariesProvider?>(), hidden) &&
+      (hidden == null || !hidden.isDisposed && setEquals(hidden.hiddenLibraryKeys, visibility));
   final plexCatalog = context
       .read<CatalogSourcesProvider>()
       .connectedSources
@@ -100,6 +130,7 @@ Future<void> _launchPlayLink(BuildContext context, PlayLink link, {required bool
   final resolver = PlayLinkResolver(
     PlayLinkSources(
       clientFor: multiServer.getClientForServer,
+      current: musicCurrent,
       isServerOnline: multiServer.isServerOnline,
       hasOnlineServers: () => multiServer.hasConnectedServers,
       serversChanged: multiServer,
@@ -122,9 +153,7 @@ Future<void> _launchPlayLink(BuildContext context, PlayLink link, {required bool
   );
 
   final resolution = await resolver.resolve(link);
-  if (!context.mounted) {
-    return;
-  }
+  if (!context.mounted || !ownerCurrent()) return;
   switch (resolution) {
     case PlayLinkFailure(:final reason):
       showMainSnackBar(switch (reason) {
@@ -140,9 +169,10 @@ Future<void> _launchPlayLink(BuildContext context, PlayLink link, {required bool
       unawaited(MediaListPlaybackLauncher.forItem(context, item).launchShuffledShow(metadata: item));
     case PlayLinkMusic(:final item, :final tracks, :final offline, :final shuffle):
       if (music == null || musicIntent == null || !music.isPlayIntentCurrent(musicIntent)) return;
-      final playable = offline && item.kind == MediaKind.album
-          ? downloads.getDownloadedTracksForAlbum(item.globalKey)
-          : tracks;
+      final scope = await MusicReadScope.forItem(context, item, offline: offline);
+      if (!context.mounted || !musicCurrent() || scope == null || !scope.current) return;
+      final playable = offline ? scope.offlineTracks : tracks;
+      if (!scope.ownsTracks(playable)) return;
       await music.playFromList(
         tracks: playable,
         offline: offline,
@@ -207,6 +237,8 @@ final class PlayLinkFailure extends PlayLinkResolution {
 }
 
 /// What resolving a [PlayLink] reads from the session.
+bool _linkSourceCurrent() => true;
+
 class PlayLinkSources {
   const PlayLinkSources({
     required this.clientFor,
@@ -216,8 +248,11 @@ class PlayLinkSources {
     required this.findCatalogCopies,
     required this.downloadedItem,
     this.resolvePlexHash,
+    this.current = _linkSourceCurrent,
   });
 
+  /// Captured profile and request authority; retires asynchronous music reads.
+  final bool Function() current;
   final MediaServerClient? Function(ServerId serverId) clientFor;
   final bool Function(ServerId serverId) isServerOnline;
   final bool Function() hasOnlineServers;
@@ -270,11 +305,20 @@ class PlayLinkResolver {
     if (!await waitForServers(sources.serversChanged, usable, timeout: serverWait)) {
       return const PlayLinkFailure(PlayLinkFailureReason.serverUnavailable);
     }
+    if (!sources.current()) return const PlayLinkFailure(PlayLinkFailureReason.serverUnavailable);
     final client = sources.clientFor(target.serverId)!;
+    final authentication = client.authenticationSessionId, account = musicAccountScope(client);
+    bool current() =>
+        sources.current() &&
+        sources.isServerOnline(target.serverId) &&
+        identical(sources.clientFor(target.serverId), client) &&
+        identical(client.authenticationSessionId, authentication) &&
+        musicAccountScope(client) == account;
     final MediaItem? item;
     try {
       item = await client.fetchItem(target.itemId);
     } catch (e, stackTrace) {
+      if (!current()) return const PlayLinkFailure(PlayLinkFailureReason.serverUnavailable);
       appLogger.w(
         'Play link: fetching ${target.itemId} on ${target.serverId} failed',
         error: e,
@@ -287,10 +331,11 @@ class PlayLinkResolver {
       }
       return const PlayLinkFailure(PlayLinkFailureReason.serverUnavailable);
     }
+    if (!current()) return const PlayLinkFailure(PlayLinkFailureReason.serverUnavailable);
     if (item == null) {
       return const PlayLinkFailure(PlayLinkFailureReason.notFound);
     }
-    return _forItem(client, _onServer(item, target.serverId), mode);
+    return _forItem(client, _onServer(item, target.serverId), mode, current: current);
   }
 
   Future<PlayLinkResolution> _resolveCatalog(CatalogPlayTarget target, PlayMode mode) async {
@@ -389,19 +434,29 @@ class PlayLinkResolver {
     }
   }
 
-  Future<PlayLinkResolution> _forItem(MediaServerClient client, MediaItem item, PlayMode mode) async {
+  Future<PlayLinkResolution> _forItem(
+    MediaServerClient client,
+    MediaItem item,
+    PlayMode mode, {
+    required bool Function() current,
+  }) async {
     switch (item.kind) {
       case MediaKind.track:
         return PlayLinkMusic(item, [item]);
       case MediaKind.album || MediaKind.artist:
         try {
-          final tracks = item.kind == MediaKind.album
-              ? await client.fetchAlbumTracks(item.id)
-              : await client.fetchPlayableDescendants(item.id);
-          final playable = tracks
-              .where((t) => t.kind == MediaKind.track)
-              .map((t) => _onServer(t, ServerId(item.serverId!)))
-              .toList();
+          final playable = await fetchMusicTracks(
+            client,
+            item.id,
+            kind: item.kind,
+            current: current,
+            acceptsItem: (track) =>
+                track.kind == MediaKind.track &&
+                track.backend == item.backend &&
+                track.serverId == item.serverId &&
+                (item.libraryId == null || track.libraryId == item.libraryId) &&
+                (item.kind != MediaKind.album || track.parentId == item.id),
+          );
           return playable.isEmpty
               ? const PlayLinkFailure(PlayLinkFailureReason.notFound)
               : PlayLinkMusic(item, playable, shuffle: mode == PlayMode.shuffle);

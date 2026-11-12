@@ -20,6 +20,17 @@ import 'package:plezy/providers/download_provider.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/services/music/music_car_host.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
+import 'package:plezy/services/music/music_queue_items.dart';
+import 'package:plezy/services/playback_launch_observer.dart';
+import 'package:plezy/media/media_backend.dart';
+import 'package:plezy/media/media_library.dart';
+import 'package:plezy/media/library_query.dart';
+import 'package:plezy/providers/hidden_libraries_provider.dart';
+import 'package:plezy/providers/libraries_provider.dart';
+import 'package:plezy/providers/multi_server_provider.dart';
+import 'package:plezy/utils/media_server_http_client.dart';
+import '../../test_helpers/music_experience_fakes.dart';
+import '../../test_helpers/multi_server_fixtures.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
 import 'package:plezy/screens/music/music_driving_screen.dart';
 import 'package:plezy/services/settings_service.dart';
@@ -30,6 +41,8 @@ import '../../test_helpers/prefs.dart';
 
 class Profiles extends ChangeNotifier implements ActiveProfileProvider {
   String id = 'one';
+  @override
+  int identityMutationGeneration = 1;
   @override
   String get activeId => id;
   bool binding = false, succeeded = true;
@@ -56,6 +69,21 @@ class Music extends StubMusicPlaybackService {
   ];
   int? jumped;
   int pauses = 0;
+  List<MediaItem>? started;
+  @override
+  Future<void> playFromList({
+    required List<MediaItem> tracks,
+    MediaItem? startTrack,
+    required MusicPlayContext playContext,
+    bool shuffle = false,
+    Duration? initialPosition,
+    bool offline = false,
+    PlaybackLaunchObserver? launchObserver,
+  }) async {
+    started = tracks;
+    await super.playFromList(tracks: tracks, playContext: playContext, offline: offline);
+  }
+
   @override
   List<MediaItem> get queue => tracks;
   @override
@@ -90,8 +118,58 @@ class WindowMusic extends Music {
   }
 }
 
+class CatalogHidden extends ChangeNotifier implements HiddenLibrariesProvider {
+  @override
+  final String profileId = 'one';
+  @override
+  bool isDisposed = false, isInitialized = true;
+  @override
+  Set<String> hiddenLibraryKeys = {};
+  @override
+  Future<void> ensureInitialized() async {}
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class CatalogLibraries extends ChangeNotifier implements LibrariesProvider {
+  @override
+  final libraries = [
+    const MediaLibrary(
+      id: 'library',
+      title: 'Music',
+      backend: MediaBackend.plex,
+      kind: MediaKind.artist,
+      serverId: 's',
+    ),
+  ];
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class CatalogClient extends ExperienceClient {
+  int reads = 0;
+  Future<LibraryPage<MediaItem>> Function(int start, int size)? tracksPage;
+  @override
+  Future<LibraryPage<MediaItem>> fetchMusicTracksPage(
+    String id, {
+    required MediaKind kind,
+    int? start,
+    int? size,
+    AbortController? abort,
+  }) async {
+    reads++;
+    return tracksPage!(start ?? 0, size ?? 200);
+  }
+}
+
 class CatalogDownloads extends ChangeNotifier implements DownloadProvider {
   List<MediaItem> tracks = [];
+  @override
+  String get activeProfileId => 'one';
+  @override
+  bool get isDisposed => false;
+  @override
+  bool isDownloaded(String key) => tracks.any((item) => item.globalKey == key);
   String? artworkPath;
   @override
   String? getArtworkLocalPath(ServerId serverId, String? artworkPath) => this.artworkPath;
@@ -133,6 +211,9 @@ void main() {
     Music music,
     Profiles profiles, {
     CatalogDownloads? downloads,
+    MultiServerProvider? servers,
+    CatalogHidden? hidden,
+    CatalogLibraries? libraries,
     MusicDrivingRoutes? drivingRoutes,
     void Function(MethodCall)? onNative,
   }) async {
@@ -147,6 +228,9 @@ void main() {
           ChangeNotifierProvider<MusicPlaybackService>.value(value: music),
           ChangeNotifierProvider<ActiveProfileProvider>.value(value: profiles),
           if (downloads != null) ChangeNotifierProvider<DownloadProvider>.value(value: downloads),
+          if (servers != null) ChangeNotifierProvider<MultiServerProvider>.value(value: servers),
+          if (hidden != null) ChangeNotifierProvider<HiddenLibrariesProvider>.value(value: hidden),
+          if (libraries != null) ChangeNotifierProvider<LibrariesProvider>.value(value: libraries),
           if (drivingRoutes != null) ChangeNotifierProvider<MusicExperience>(create: (_) => _Experience(drivingRoutes)),
         ],
         child: MaterialApp(
@@ -292,6 +376,104 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     music.dispose();
     profiles.dispose();
+  });
+
+  for (final retirement in ['none', 'account', 'authentication', 'profile', 'hidden', 'intent']) {
+    testWidgets('native artist admission retains its original source ($retirement)', (tester) async {
+      final music = Music(), profiles = Profiles(), downloads = CatalogDownloads();
+      final client = CatalogClient(), hidden = CatalogHidden(), libraries = CatalogLibraries();
+      final servers = testMultiServer(clients: [client]);
+      final artist = musicTrack('artist').copyWith(kind: MediaKind.artist);
+      client.page = (_) async => LibraryPage(items: [artist], totalCount: 1);
+      client.tracksPage = (start, size) async {
+        switch (retirement) {
+          case 'account':
+            client.scopedServerId = 's/other';
+          case 'authentication':
+            client.authenticationSessionId = Object();
+          case 'profile':
+            profiles.identityMutationGeneration++;
+          case 'hidden':
+            hidden.hiddenLibraryKeys = {'s:library'};
+          case 'intent':
+            music.beginPlayIntent();
+        }
+        return LibraryPage(
+          items: List.generate(size, (index) => musicTrack('t$start-$index')),
+          totalCount: 10000,
+          offset: start,
+        );
+      };
+      await mount(
+        tester,
+        music,
+        profiles,
+        downloads: downloads,
+        servers: servers.provider,
+        hidden: hidden,
+        libraries: libraries,
+      );
+      final rows = await native('browse', {'id': 'library:s:library'}) as List;
+      final play = native('playItem', {'id': (rows.single as Map)['id']});
+      if (retirement == 'none') {
+        await play;
+        expect(music.started, isA<MusicQueueItemsSnapshot>());
+        expect(music.started?.length, 10000);
+        expect(client.reads, 50);
+      } else {
+        await expectLater(play, throwsA(isA<PlatformException>()));
+        expect(music.started, isNull);
+        expect(client.reads, 1);
+      }
+      await tester.pumpWidget(const SizedBox());
+      music.dispose();
+      profiles.dispose();
+      downloads.dispose();
+      hidden.dispose();
+      libraries.dispose();
+    });
+  }
+
+  testWidgets('account replacement during native browse cannot rebind old rows to the new account', (tester) async {
+    final music = Music(), profiles = Profiles(), downloads = CatalogDownloads();
+    final client = CatalogClient(), hidden = CatalogHidden(), libraries = CatalogLibraries();
+    final servers = testMultiServer(clients: [client]);
+    client.page = (_) async {
+      client.scopedServerId = 's/other';
+      return LibraryPage(items: [musicTrack('artist').copyWith(kind: MediaKind.artist)], totalCount: 1);
+    };
+    await mount(
+      tester,
+      music,
+      profiles,
+      downloads: downloads,
+      servers: servers.provider,
+      hidden: hidden,
+      libraries: libraries,
+    );
+    expect(await native('browse', {'id': 'library:s:library'}), isEmpty);
+    expect(music.started, isNull);
+    await tester.pumpWidget(const SizedBox());
+    music.dispose();
+    profiles.dispose();
+    downloads.dispose();
+    hidden.dispose();
+    libraries.dispose();
+  });
+
+  testWidgets('an account change after native browse cannot reuse the old item', (tester) async {
+    final music = Music(), profiles = Profiles(), downloads = CatalogDownloads(), client = CatalogClient();
+    final servers = testMultiServer(clients: [client]);
+    downloads.tracks = [musicTrack('owned')];
+    await mount(tester, music, profiles, downloads: downloads, servers: servers.provider);
+    final rows = await native('browse', {'id': 'offline'}) as List;
+    client.scopedServerId = 's/other';
+    expect(await native('playItem', {'id': (rows.single as Map)['id']}), isFalse);
+    expect(music.started, isNull);
+    await tester.pumpWidget(const SizedBox());
+    music.dispose();
+    profiles.dispose();
+    downloads.dispose();
   });
 
   testWidgets('native queue rows contain no URLs and reject edits that changed their indices', (tester) async {

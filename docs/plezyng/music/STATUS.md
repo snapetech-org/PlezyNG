@@ -486,3 +486,26 @@ admission are being handled separately.
 Canonical integration passed **1,051 tests**, including the shared music player,
 native groups, Cast, car host, both backend HTTP contracts and the affected
 navigation/menu screens. Targeted analysis passes with fatal info diagnostics.
+
+
+### Native and music-link admission
+
+Native catalog actions now retain original client, authentication, music account
+and profile generation, including across browse/search reads. Account changes
+cannot rebind old metadata to new native row references. Album/artist actions
+and voice-selected playlists preserve the bounded metadata window through
+admission. Native playlists validate every occurrence and page instead of
+silently removing unauthorized rows.
+
+Music links pin client authentication/account across metadata lookup and paged
+album/artist expansion. Foreign descendants keep their original identity and
+are rejected. Profile, library visibility, current play intent and downloaded
+ownership are rechecked before the shared session adopts a resolved queue.
+
+The SSD qualification checkout passed 77 native catalog, playlist and link
+tests with clean fatal-info analysis. Cases include 10,000-track admission,
+duplicate occurrences, account/authentication/client replacement during metadata
+or page reads, profile/visibility/intent retirement, and stale native references.
+
+The canonical integrated music, native-group, Cast, link, navigation and queue-UI
+suites subsequently passed **805 tests**, with clean fatal-info analysis.

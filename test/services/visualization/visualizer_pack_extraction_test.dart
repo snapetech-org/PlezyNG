@@ -49,6 +49,13 @@ void main() {
     });
   }
 
+  test('bundled starter installs without sending store state to the extraction isolate', () async {
+    final store = VisualizerPackStore();
+    await store.ensureStarterPack();
+    final packs = await store.installedPacks();
+    expect(packs, contains(predicate((VisualizerInstalledPack pack) => pack.entry.bundledAsset != null)));
+  });
+
   test('underdeclared compressed size cannot publish a pack', () async {
     final bytes = archive(CompressionType.deflate);
     final data = ByteData.sublistView(bytes);

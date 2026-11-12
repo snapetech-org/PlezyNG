@@ -852,7 +852,7 @@ class VisualizerPackStore {
       await snapshot.writeAsBytes(await _readBounded(File(sourcePath), maxLocalPackArchiveBytes), flush: true);
       final contents = Directory(p.join(temporary.path, 'contents'));
       await contents.create();
-      await Isolate.run(() => _extractArchive(snapshot.path, contents.path, requireManifest: false));
+      await _extractArchiveIsolated(snapshot.path, contents.path, requireManifest: false);
       return await importPresetFolder(contents.path);
     } finally {
       if (await temporary.exists()) {
@@ -1070,7 +1070,7 @@ class VisualizerPackStore {
         throw const VisualizerPackException('The selected pack changed during import.');
       }
       await stage.create(recursive: true);
-      final extracted = await Isolate.run(() => _extractArchive(snapshot.path, stage.path));
+      final extracted = await _extractArchiveIsolated(snapshot.path, stage.path);
       final expandedBytes = extracted.values.fold<int>(0, (sum, size) => sum + size);
       if (expandedBytes > maxLocalPackExpandedBytes) {
         throw const VisualizerPackException('The expanded community pack exceeds its 64 MB limit.');
@@ -1252,7 +1252,7 @@ class VisualizerPackStore {
       }
 
       await stage.create(recursive: true);
-      final extracted = await Isolate.run(() => _extractArchive(download.path, stage.path));
+      final extracted = await _extractArchiveIsolated(download.path, stage.path);
       checkCancellation();
       if (extracted.values.fold<int>(0, (sum, size) => sum + size) != entry.expandedBytes) {
         throw const VisualizerPackException('The expanded pack size does not match its pinned catalog.');
@@ -1428,6 +1428,15 @@ class VisualizerPackStore {
     }
     return value;
   }
+
+  // Create the isolate callback in a static frame containing only sendable
+  // arguments. A callback created inside an install operation can capture its
+  // cancellation futures and catalog store even when it only reads file paths.
+  static Future<Map<String, int>> _extractArchiveIsolated(
+    String archivePath,
+    String destination, {
+    bool requireManifest = true,
+  }) => Isolate.run(() => _extractArchive(archivePath, destination, requireManifest: requireManifest));
 
   static Map<String, int> _extractArchive(String archivePath, String destination, {bool requireManifest = true}) {
     if (File(archivePath).lengthSync() > maxArchiveBytes) {

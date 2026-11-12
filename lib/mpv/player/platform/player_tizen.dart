@@ -79,6 +79,9 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   String? get subtitlePcmAudioTrackId => state.track.audio?.id;
 
   @override
+  String get subtitlePcmCaptureSourceName => 'Tizen';
+
+  @override
   Future<bool> subtitlePcmCaptureAvailable() async {
     final controller = _controller;
     if (audioOnly || isLivePlayback || controller == null || !_loaded || _failed) return false;

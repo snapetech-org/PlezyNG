@@ -12,6 +12,7 @@ abstract interface class SubtitlePcmCaptureSource {
   bool get isLivePlayback;
   bool get disposed;
   String? get subtitlePcmAudioTrackId;
+  String get subtitlePcmCaptureSourceName;
 
   Future<bool> subtitlePcmCaptureAvailable();
   Future<bool> setSubtitlePcmCaptureEnabled(bool enabled);

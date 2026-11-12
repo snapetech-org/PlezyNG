@@ -720,7 +720,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       cues: List.unmodifiable(_cues),
       durationMs: duration.clamp(1, SubtitleRetimer.maximumTimeMs).toInt(),
       requestedProvider: SubtitleInferenceProvider.cpu,
-      runtimeProvider: 'Android ExoPlayer decoded PCM; whisper.cpp CPU',
+      runtimeProvider: '${_player?.subtitlePcmCaptureSourceName ?? 'Unknown'} decoded PCM; whisper.cpp CPU',
       fellBackToCpu: false,
       detectedLanguage: _detectedLanguage,
       translatedToEnglish: false,

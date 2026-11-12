@@ -580,6 +580,9 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   String? get subtitlePcmAudioTrackId => state.track.audio?.id;
 
   @override
+  String get subtitlePcmCaptureSourceName => 'Android';
+
+  @override
   Future<bool> subtitlePcmCaptureAvailable() async {
     if (disposed) return false;
     try {

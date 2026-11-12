@@ -2018,6 +2018,9 @@ class PlayerNative extends PlayerBase
   }
 
   @override
+  String get subtitlePcmCaptureSourceName => 'MPV';
+
+  @override
   Future<bool> subtitlePcmCaptureAvailable() async {
     if (_nativeCoreUnavailable ||
         audioOnly ||

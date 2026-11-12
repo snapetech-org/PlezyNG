@@ -8,8 +8,10 @@ import '../../services/music/caldera_group.dart';
 import '../../services/music/caldera_audio_sink.dart';
 import '../../services/music/caldera_audio_source.dart';
 import '../../services/music/caldera_native_host.dart';
+import '../../services/music/caldera_mesh_equalizer.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
+import 'caldera_equalizer_screen.dart';
 
 /// Native players retain the audio, queue and synchronization clock. Selection
 /// here requests membership; it does not claim to measure acoustic sync.
@@ -189,7 +191,6 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
           if (widget.audio case final NativeMusicGroupAvailabilityControls availability)
             SwitchListTile.adaptive(
               title: Text(t.musicDevices.receive),
-              subtitle: Text(t.watchTogether.anyoneCanControl),
               value: availability.nativeMusicGroupAvailable,
               onChanged: _busy || !_current
                   ? null
@@ -199,6 +200,18 @@ class _CalderaGroupScreenState extends State<CalderaGroupScreen> {
                         if (mounted) setState(() {});
                       }),
                     ),
+            ),
+          if (widget.audio case final CalderaEqualizerControls equalizer)
+            ListTile(
+              leading: const AppIcon(Symbols.equalizer_rounded),
+              title: Text(t.musicExperience.equalizer),
+              subtitle: Text(equalizer.calderaEqualizer.enabled ? t.common.on : t.common.off),
+              enabled: !_busy && _current,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => CalderaEqualizerScreen(controls: equalizer, current: widget.current),
+                ),
+              ),
             ),
           DropdownButtonFormField<String>(
             key: ValueKey(_source),

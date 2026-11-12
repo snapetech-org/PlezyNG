@@ -8,6 +8,7 @@ import 'package:plezy/services/music/caldera_group.dart';
 import 'package:plezy/services/music/caldera_native_host.dart';
 import 'package:plezy/services/music/caldera_audio_source.dart';
 import 'package:plezy/services/music/caldera_audio_sink.dart';
+import 'package:plezy/services/music/caldera_mesh_equalizer.dart';
 import '../../test_helpers/theme.dart';
 
 class _Discovery extends CalderaDiscovery {
@@ -115,7 +116,59 @@ class _Audio implements NativeMusicGroupControls, NativeMusicGroupSourceControls
   }
 }
 
+class _EqualizerAudio extends _Audio implements CalderaEqualizerControls {
+  @override
+  PlayerParametricEqualizer calderaEqualizer = const PlayerParametricEqualizer();
+  final saved = <PlayerParametricEqualizer>[];
+
+  @override
+  Future<void> setCalderaEqualizer(PlayerParametricEqualizer value, {required bool Function() current}) async {
+    if (!current()) throw StateError('Profile changed');
+    saved.add(value);
+    calderaEqualizer = value;
+  }
+}
+
 void main() {
+  testWidgets('native group equalizer is editable and saved through the current profile', (tester) async {
+    final discovery = _Discovery(), audio = _EqualizerAudio();
+    var current = true;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testMonoTokens]),
+        home: CalderaGroupScreen(
+          current: () => current,
+          audio: audio,
+          discoveryFactory: () => discovery,
+          clientFactory: _Client.new,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final tile = find.widgetWithText(ListTile, t.musicExperience.equalizer);
+    await tester.ensureVisible(tile);
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.tap(find.text(t.common.createNew));
+    await tester.pumpAndSettle();
+    final save = find.widgetWithText(FilledButton, t.common.save);
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(audio.saved.single.enabled, isTrue);
+    expect(audio.saved.single.bands.single.frequency, 1000);
+    expect(find.byType(CalderaGroupScreen), findsOneWidget);
+
+    await tester.ensureVisible(tile);
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+    current = false;
+    await tester.tap(find.widgetWithText(FilledButton, t.common.save));
+    await tester.pump();
+    expect(audio.saved, hasLength(1));
+  });
+
   testWidgets('native availability is explicit and scoped to the active profile', (tester) async {
     final discovery = _Discovery(), audio = _Audio();
     var current = true;

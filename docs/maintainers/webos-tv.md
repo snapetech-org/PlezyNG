@@ -265,12 +265,16 @@ Plex Media Server on `kspls0` approved `Direct play OK` for the C6 at
 `192.168.50.87` and desktop at `192.168.50.148`. Both decisions named the same
 media and part IDs, with video width 1920 and height 1080. The C6 fetched the
 original `/library/parts/.../file.mkv` and Plex recorded no video transcode
-for that session. This rules out server downscaling in this comparison. It does
-not measure the TV's decoded frame, displayed resolution, picture processing,
-or the subjective softness. Pleazyng's webOS video widget currently maps the
-native video window to its full Flutter viewport; confirm the actual source
-and destination rectangles and TV output with captured device diagnostics
-before attributing the blur to a particular scaler.
+for that session. Plex's media database records the exact part as 1920×1080,
+23.976 fps AV1 in MKV, 280,263,271 bytes over 2,631,045 ms, with a total
+bitrate of 852,173 bits/s and six-channel Opus audio. This is a low-bitrate
+1080p source being enlarged for a 77-inch 4K display. It rules out server
+downscaling in this comparison and gives a plausible source of visible
+softness, but does not measure the TV's decoded frame, displayed resolution or
+picture processing. Pleazyng's webOS video widget currently maps the native
+video window to its full Flutter viewport; confirm the actual source and
+destination rectangles and TV output with captured device diagnostics before
+attributing any additional blur to a particular scaler.
 
 See [C6 lossless audio and client-rendered PGS research](webos-lossless-audio-and-pgs.md)
 for the eARC/native-app distinction, the C6's measured firmware fingerprints,

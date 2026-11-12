@@ -85,7 +85,7 @@ class KaraokeScreen extends StatefulWidget {
   State<KaraokeScreen> createState() => _KaraokeScreenState();
 }
 
-class _KaraokeScreenState extends State<KaraokeScreen> {
+class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserver {
   final _query = TextEditingController();
   String? _singer;
   String _genre = '', _language = '', _decade = '', _difficulty = '';
@@ -101,27 +101,57 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
   late final KaraokePreparation _preparation = KaraokePreparation(widget.session);
   late final KaraokeAudio _audio = KaraokeAudio(widget.session);
   late final KaraokeRoomServer _room = KaraokeRoomServer(widget.session);
+  bool _backgrounded = false;
   KaraokeSession get s => widget.session;
   String tr(String key) => karaokeText(context, key);
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _backgrounded = WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed;
+    s.addListener(_syncPreparationAvailability);
+    s.music.addListener(_syncPreparationAvailability);
     unawaited(_initialize());
   }
 
   Future<void> _initialize() async {
     await s.ready;
+    try {
+      await _preparation.restore();
+    } on Object {
+      // A broken companion setting must not block the karaoke screen.
+    }
     if (mounted) {
       setState(() => _singer = s.singers.firstOrNull?.id);
+      _syncPreparationAvailability();
     }
+  }
+
+  void _syncPreparationAvailability() {
+    unawaited(
+      _preparation
+          .setPerformanceActive(
+            s.hasPerformance || s.playing || s.music.isPlaying,
+            leaseSeconds: _backgrounded ? 6 * 60 * 60 : 45,
+          )
+          .catchError((Object _) {}),
+    );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _backgrounded = state != AppLifecycleState.resumed;
+    _syncPreparationAvailability();
   }
 
   @override
   void dispose() {
     _query.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    s.removeListener(_syncPreparationAvailability);
+    s.music.removeListener(_syncPreparationAvailability);
     _room.dispose();
     _audio.dispose();
-    _preparation.dispose();
     unawaited(
       s
           .stopPlayback()
@@ -129,7 +159,8 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
             await s.save();
             await s.restoreMusic();
           })
-          .catchError(s.report),
+          .catchError(s.report)
+          .whenComplete(_preparation.dispose),
     );
     super.dispose();
   }

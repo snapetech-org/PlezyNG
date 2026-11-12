@@ -1736,6 +1736,7 @@ class KaraokeSession extends ChangeNotifier {
     _usingFiller = true;
     PlaybackCoordinator.instance.registerKaraoke(stopPlayback);
     await _player!.open(Media(file.uri.toString()));
+    _notify();
   }
 
   Future<void> _advanceFiller(int generation) async {

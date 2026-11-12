@@ -17,8 +17,21 @@ import sys
 import threading
 import wave
 
-VERSION = "plezy-karaoke-worker-2"
+VERSION = "plezy-karaoke-worker-3"
 MEDIA_FORMATS = "aac,flac,mp3,mov,matroska,webm,ogg,wav"
+MEMORY_LIMIT_BYTES = 8 * 1024 * 1024 * 1024
+
+
+def enforce_memory_limit():
+    if os.name == "nt":
+        return
+    import resource
+    resource_limit = getattr(resource, "RLIMIT_AS", None)
+    if resource_limit is None:
+        raise RuntimeError("This platform cannot enforce the karaoke worker memory limit")
+    _, hard_limit = resource.getrlimit(resource_limit)
+    limit = MEMORY_LIMIT_BYTES if hard_limit == resource.RLIM_INFINITY else min(MEMORY_LIMIT_BYTES, hard_limit)
+    resource.setrlimit(resource_limit, (limit, limit))
 
 
 def run(args: list[str], *, capture=False, cwd=None):
@@ -294,6 +307,7 @@ def main():
     parser.add_argument("--models", type=Path)
     parser.add_argument("--soundfont", type=Path)
     args = parser.parse_args()
+    enforce_memory_limit()
     job = args.job.resolve()
     request = json.loads((job / "request.json").read_text())
     out = job / "output"; out.mkdir(exist_ok=True)

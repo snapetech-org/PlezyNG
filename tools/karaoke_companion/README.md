@@ -5,6 +5,17 @@ TorchCodec 0.17.0 and Setuptools 84.2.1. TorchAudio and TorchCodec support the
 newer Torch ABI; this combination is qualified on Linux CPU with Python 3.12
 and FFmpeg 9 shared libraries. The worker selects CPU execution explicitly.
 
+The authenticated job queue runs one task at a time and orders newly selected
+tracks ahead of older preparation requests. Pleazyng sends a short playback
+lease while a karaoke performance is active. Starting a performance stops the
+current worker, removes its partial output, and keeps its request queued; work
+restarts from the beginning after the last active playback lease ends. A lost
+foreground heartbeat expires after 45 seconds. Background playback uses a
+bounded six-hour lease, renewed while the app is running. The companion reports
+CPU-only capability and does not advertise GPU or NPU execution. Each worker
+has an enforced 8 GiB memory/address-space cap in addition to the existing
+input, output, runtime and total-storage bounds.
+
 For an isolated CPU environment, install the official CPU wheels first, then
 complete the pinned profile from the repository root:
 
@@ -21,7 +32,7 @@ server's existing model-directory and revision options. The worker does not
 download models. Its Demucs wrapper forces weights-only checkpoint loading
 with an explicit allowlist of Demucs constructor classes and version metadata;
 it rejects arbitrary checkpoint globals. Runtime versions below the qualified
-dependency floors disable separation capability. Worker version 2 invalidates the
+dependency floors disable separation capability. Worker version 3 invalidates the
 previous preparation fingerprint, and output provenance records the audio
 backend versions.
 

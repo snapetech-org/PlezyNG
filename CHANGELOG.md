@@ -4,6 +4,8 @@
 
 - Add per-rendition intro/outro trim markers, playhead editing, trimmed-range preview and a persisted host override for automatic trim and marked long-instrumental skips. Instrumental sections under eight seconds are preserved.
 
+- Pause and restart queued karaoke companion work around active music playback, and prioritize preparation for the track most recently selected by the host.
+
 - Save karaoke A–B practice loops per rendition and restore them with the profile session.
 
 - Compare a private karaoke take with its matching guide vocal or original audio at the recorded rendition position, key and tempo where supported.

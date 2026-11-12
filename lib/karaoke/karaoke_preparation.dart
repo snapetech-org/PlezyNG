@@ -21,12 +21,55 @@ class KaraokePreparation {
   Uri? endpoint;
   String? _token;
   Map<String, dynamic>? capabilities;
+  final String _availabilityClientId = const Uuid().v4();
+  Timer? _availabilityHeartbeat;
+  bool _performanceActive = false;
+  int _availabilitySequence = 0;
+  int _availabilityLeaseSeconds = 45;
+  bool _disposed = false;
   String get _secretKey => 'karaoke-companion-${sha256.convert(utf8.encode(session.store.profileId))}';
   Future<void> restore() async {
     final settings = await session.store.read('preparation');
     if (settings?['endpoint'] case final String url) {
       endpoint = _endpoint(url);
       _token = await _secure.read(key: _secretKey);
+    }
+    if (_performanceActive) {
+      unawaited(_sendPerformanceState());
+    }
+  }
+
+  Future<void> setPerformanceActive(bool active, {int leaseSeconds = 45}) async {
+    if (_disposed) return;
+    if (active && !{45, 6 * 60 * 60}.contains(leaseSeconds)) {
+      throw ArgumentError.value(leaseSeconds, 'leaseSeconds');
+    }
+    if (_performanceActive == active && (!active || _availabilityLeaseSeconds == leaseSeconds)) return;
+    _performanceActive = active;
+    _availabilityLeaseSeconds = active ? leaseSeconds : 0;
+    if (active) {
+      _availabilityHeartbeat ??= Timer.periodic(const Duration(seconds: 15), (_) {
+        unawaited(_sendPerformanceState());
+      });
+    } else {
+      _availabilityHeartbeat?.cancel();
+      _availabilityHeartbeat = null;
+    }
+    await _sendPerformanceState();
+  }
+
+  Future<void> _sendPerformanceState() async {
+    if (endpoint == null || _token == null || _availabilitySequence >= 0x7fffffff) return;
+    final sequence = ++_availabilitySequence;
+    try {
+      await jsonRequest('POST', '/v1/performance', {
+        'clientId': _availabilityClientId,
+        'sequence': sequence,
+        'active': _performanceActive,
+        'leaseSeconds': _availabilityLeaseSeconds,
+      });
+    } on Object {
+      // Scheduler connectivity must never interrupt local playback.
     }
   }
 
@@ -61,6 +104,9 @@ class KaraokePreparation {
     final settings = await session.store.read('preparation') ?? <String, dynamic>{};
     settings['endpoint'] = endpoint.toString();
     await session.store.write('preparation', settings);
+    if (_performanceActive) {
+      unawaited(_sendPerformanceState());
+    }
   }
 
   Future<HttpClientRequest> _request(String method, String path, {Map<String, String>? queryParameters}) async {
@@ -142,7 +188,7 @@ class KaraokePreparation {
       assets.add(await upload(file));
     }
     final id = const Uuid().v4();
-    final request = {'id': id, 'kind': kind, 'assets': assets, 'params': params};
+    final request = {'id': id, 'kind': kind, 'assets': assets, 'params': params, 'priority': 100};
     // Save the exact request before submission, so reconnect retries reuse it.
     jobs.add({'request': request, 'renditionId': renditionId, 'endpoint': endpoint.toString(), 'status': 'submitting'});
     settings['jobs'] = jobs;
@@ -391,5 +437,17 @@ class KaraokePreparation {
     return track;
   }
 
-  void dispose() => _client.close(force: true);
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    _availabilityHeartbeat?.cancel();
+    _availabilityHeartbeat = null;
+    if (endpoint == null || _token == null || _availabilitySequence >= 0x7fffffff) {
+      _client.close(force: true);
+      return;
+    }
+    _performanceActive = false;
+    _availabilityLeaseSeconds = 0;
+    unawaited(_sendPerformanceState().whenComplete(() => _client.close(force: true)));
+  }
 }

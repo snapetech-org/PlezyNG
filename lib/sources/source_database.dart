@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 
 import '../services/credential_vault.dart';
 import '../media/canonical_library.dart';
+import 'kavita_opds.dart';
 import 'publication_shelf.dart';
 import 'source_models.dart';
 
@@ -338,15 +339,67 @@ class SourceRepository {
     });
   }
 
-  Future<List<FileSource>> sources(String profile) async =>
-      (await database
-              .customSelect(
-                'SELECT config FROM sources WHERE profile = ? ORDER BY rowid',
-                variables: [Variable(profile)],
-              )
-              .get())
-          .map((r) => FileSource.fromJson(sourceMap(jsonDecode(r.read<String>('config')))))
-          .toList();
+  Future<List<FileSource>> sources(String profile) async {
+    final rows = await database
+        .customSelect(
+          'SELECT config,credentials FROM sources WHERE profile = ? ORDER BY rowid',
+          variables: [Variable(profile)],
+        )
+        .get();
+    final result = <FileSource>[];
+    for (final row in rows) {
+      final config = row.read<String>('config');
+      final source = FileSource.fromJson(sourceMap(jsonDecode(config)));
+      if (source.kind != FileSourceKind.opds) {
+        result.add(source);
+        continue;
+      }
+      final endpoint = secureKavitaOpdsEndpoint(Uri.parse(source.endpoint));
+      if (endpoint.authKey.isEmpty || endpoint.endpoint.toString() == source.endpoint) {
+        result.add(source);
+        continue;
+      }
+
+      // Older app versions stored a copied Kavita Auth Key URL as the public
+      // endpoint. Move it into the encrypted credential blob before returning
+      // any source list to the UI, in one profile-scoped update.
+      final credentialsBlob = row.read<String>('credentials');
+      final clear = await reveal(credentialsBlob);
+      if (clear == null) throw const SourceException(SourceFailure.authentication);
+      final credentials = sourceMap(jsonDecode(clear)).map((key, value) => MapEntry(key, '$value'));
+      final savedKey = credentials[kavitaOpdsAuthKeyCredential]?.trim() ?? '';
+      credentials[kavitaOpdsAuthKeyCredential] = savedKey.isNotEmpty ? savedKey : endpoint.authKey;
+      final sanitized = FileSource.fromJson({...source.toJson(), 'endpoint': endpoint.endpoint.toString()});
+      final protected = await protect(jsonEncode(credentials));
+      _writable(profile);
+      final updated = await database.transaction(() async {
+        _writable(profile);
+        return database.customUpdate(
+          'UPDATE sources SET config = ?, credentials = ? WHERE profile = ? AND id = ? AND config = ? AND credentials = ?',
+          variables: [
+            Variable(jsonEncode(sanitized.toJson())),
+            Variable(protected),
+            Variable(profile),
+            Variable(source.id),
+            Variable(config),
+            Variable(credentialsBlob),
+          ],
+        );
+      });
+      if (updated != 0) {
+        result.add(sanitized);
+      } else {
+        final current = await database
+            .customSelect(
+              'SELECT config FROM sources WHERE profile = ? AND id = ?',
+              variables: [Variable(profile), Variable(source.id)],
+            )
+            .getSingleOrNull();
+        if (current != null) result.add(FileSource.fromJson(sourceMap(jsonDecode(current.read<String>('config')))));
+      }
+    }
+    return result;
+  }
 
   Future<void> saveSource(FileSource source, Map<String, String> credentials) async {
     _validateSourceEndpoint(source);

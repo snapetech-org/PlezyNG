@@ -19,7 +19,7 @@ KavitaOpdsEndpoint secureKavitaOpdsEndpoint(Uri endpoint, {String authKey = ''})
   final opdsIndex = _opdsRouteIndex(segments);
   if (opdsIndex >= 0 && segments.length > opdsIndex + 2) {
     final routeKey = segments[opdsIndex + 2];
-    if (routeKey != kavitaOpdsAuthKeyMarker) {
+    if (routeKey != kavitaOpdsAuthKeyMarker && _isKavitaAuthKeySegment(routeKey)) {
       if (key.isNotEmpty && key != routeKey) {
         throw const SourceException(SourceFailure.invalidData);
       }
@@ -89,9 +89,12 @@ int _opdsRouteIndex(List<String> segments) {
 
 void _validateKavitaAuthKey(String key) {
   if (key.length > 1024 ||
+      key.isNotEmpty && key.length < 9 ||
       key.contains('/') ||
       key.contains('\\') ||
       key.codeUnits.any((unit) => unit < 0x20 || unit == 0x7f)) {
     throw const SourceException(SourceFailure.invalidData);
   }
 }
+
+bool _isKavitaAuthKeySegment(String segment) => segment.length >= 9 && segment.length <= 1024;

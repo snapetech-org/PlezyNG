@@ -33,8 +33,9 @@ warns that the key grants account access. Pleazyng setup accepts either the
 copied key-bearing URL or a token-free `/api/opds` endpoint with a separate Auth
 Key. The key is kept in encrypted source credentials; the saved endpoint and
 OPDS entry identifiers retain only a marker, and same-origin requests restore
-the key in Kavita's route. This reuses OPDS and OPDS-PSE behavior and does not
-claim direct Kavita API support.
+the key in Kavita's route. Existing copied key-bearing endpoints are migrated
+into encrypted credentials when the profile's source list loads. This reuses
+OPDS and OPDS-PSE behavior and does not claim direct Kavita API support.
 
 ## Dependencies and reproducibility
 

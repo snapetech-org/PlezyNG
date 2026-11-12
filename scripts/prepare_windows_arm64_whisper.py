@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -14,11 +13,7 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
-WHISPER_PLUGIN_CMAKE_SHA256 = "92b12bc35aec4925c3f7f9085992659ee5dd3d90098b8efbc6701ffb2dd65b08"
-# GitHub's Pub cache persists this exact rewrite between successful Windows
-# builds. Accepting only our deterministic output keeps repeat builds safe
-# while still rejecting any other dependency contents.
-WHISPER_PLUGIN_CMAKE_PATCHED_SHA256 = "965fedcffdb2e84048ce256752631a94b56ba0a120a9ca55bd2748213f652ecf"
+WHISPER_PATCH_MARKER = "# PLEAZYNG_WINDOWS_ARM64_WHISPER_PATCH_V1"
 WHISPER_ADD_SUBDIRECTORY = '''add_subdirectory(
   "${FLUTTER_WHISPER_CPP_DIR}"
   "${CMAKE_CURRENT_BINARY_DIR}/whisper_cpp"
@@ -47,53 +42,7 @@ WHISPER_MSVC_WARNING_BLOCK_PATCHED = '''if(MSVC)
     endif()
   endforeach()
 endif()'''
-
-
-def package_root(package_config: Path) -> Path:
-    config = json.loads(package_config.read_text(encoding="utf-8"))
-    packages = [entry for entry in config.get("packages", []) if entry.get("name") == "flutter_whisper_ggml"]
-    if len(packages) != 1:
-        raise ValueError("Flutter package configuration must contain exactly one flutter_whisper_ggml entry")
-
-    root_uri = urljoin(package_config.resolve().as_uri(), packages[0].get("rootUri", ""))
-    parsed = urlsplit(root_uri)
-    if parsed.scheme != "file" or parsed.query or parsed.fragment:
-        raise ValueError("flutter_whisper_ggml rootUri must be a local file URI")
-    path = unquote(parsed.path)
-    if parsed.netloc and parsed.netloc != "localhost":
-        path = f"//{parsed.netloc}{path}"
-    if os.name == "nt":
-        path = path.replace("/", "\\")
-        if re.match(r"^\\[A-Za-z]:\\", path):
-            path = path[1:]
-    return Path(path).resolve()
-
-
-def patch_plugin_cmake(
-    cmake_file: Path,
-    prebuilt_root: Path,
-    *,
-    expected_sha256: str = WHISPER_PLUGIN_CMAKE_SHA256,
-    expected_patched_sha256: str = WHISPER_PLUGIN_CMAKE_PATCHED_SHA256,
-) -> None:
-    original = cmake_file.read_bytes()
-    actual_sha256 = hashlib.sha256(original).hexdigest()
-    if actual_sha256 == expected_patched_sha256:
-        # The package cache can retain the output of a previous successful
-        # run because actions/cache saves it after this script completes.
-        return
-    if actual_sha256 != expected_sha256:
-        raise ValueError(
-            "Refusing to patch an unrecognized flutter_whisper_ggml Windows CMakeLists.txt "
-            f"(SHA-256 {actual_sha256})"
-        )
-
-    source = original.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
-    if source.count(WHISPER_ADD_SUBDIRECTORY) != 1:
-        raise ValueError("The pinned Whisper CMake file no longer has the expected add_subdirectory block")
-    if source.count(WHISPER_MSVC_WARNING_BLOCK) != 1:
-        raise ValueError("The pinned Whisper CMake file no longer has the expected MSVC warning-options block")
-    imported_targets = '''set(FLUTTER_WHISPER_PREBUILT_ROOT "$ENV{FLUTTER_WHISPER_PREBUILT_ROOT}")
+WHISPER_IMPORTED_TARGETS_BODY = '''set(FLUTTER_WHISPER_PREBUILT_ROOT "$ENV{FLUTTER_WHISPER_PREBUILT_ROOT}")
 if(FLUTTER_WHISPER_PREBUILT_ROOT STREQUAL "")
   add_subdirectory(
     "${FLUTTER_WHISPER_CPP_DIR}"
@@ -122,7 +71,74 @@ else()
   set_target_properties(ggml PROPERTIES
     INTERFACE_LINK_LIBRARIES "ggml-base;ggml-cpu")
 endif()'''
-    patched = source.replace(WHISPER_ADD_SUBDIRECTORY, imported_targets)
+WHISPER_IMPORTED_TARGETS = f"{WHISPER_PATCH_MARKER}\n{WHISPER_IMPORTED_TARGETS_BODY}"
+
+
+def package_root(package_config: Path) -> Path:
+    config = json.loads(package_config.read_text(encoding="utf-8"))
+    packages = [entry for entry in config.get("packages", []) if entry.get("name") == "flutter_whisper_ggml"]
+    if len(packages) != 1:
+        raise ValueError("Flutter package configuration must contain exactly one flutter_whisper_ggml entry")
+
+    root_uri = urljoin(package_config.resolve().as_uri(), packages[0].get("rootUri", ""))
+    parsed = urlsplit(root_uri)
+    if parsed.scheme != "file" or parsed.query or parsed.fragment:
+        raise ValueError("flutter_whisper_ggml rootUri must be a local file URI")
+    path = unquote(parsed.path)
+    if parsed.netloc and parsed.netloc != "localhost":
+        path = f"//{parsed.netloc}{path}"
+    if os.name == "nt":
+        path = path.replace("/", "\\")
+        if re.match(r"^\\[A-Za-z]:\\", path):
+            path = path[1:]
+    return Path(path).resolve()
+
+
+def patch_plugin_cmake(
+    cmake_file: Path,
+    prebuilt_root: Path,
+) -> None:
+    # Flutter resolves this dependency from the lockfile with
+    # --enforce-lockfile before this script runs. Anchor the rewrite to its
+    # CMake structure instead of an upstream file hash: the Pub cache retains
+    # this file between jobs, and a dependency update should not need a manual
+    # checksum edit when the relevant build blocks remain compatible.
+    source = cmake_file.read_bytes().decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
+    if (
+        source.count(WHISPER_IMPORTED_TARGETS) == 1
+        and source.count(WHISPER_PATCH_MARKER) == 1
+        and source.count(WHISPER_MSVC_WARNING_BLOCK_PATCHED) == 1
+        and source.count(WHISPER_MSVC_WARNING_BLOCK) == 0
+    ):
+        # The current marked output is already cached.
+        return
+
+    if (
+        source.count(WHISPER_IMPORTED_TARGETS_BODY) == 1
+        and source.count(WHISPER_IMPORTED_TARGETS) == 0
+        and source.count(WHISPER_PATCH_MARKER) == 0
+        and source.count(WHISPER_MSVC_WARNING_BLOCK_PATCHED) == 1
+        and source.count(WHISPER_MSVC_WARNING_BLOCK) == 0
+    ):
+        # Migrate the exact unmarked output written by earlier releases.
+        source = source.replace(WHISPER_IMPORTED_TARGETS_BODY, WHISPER_IMPORTED_TARGETS)
+        cmake_file.write_text(source, encoding="utf-8", newline="\n")
+        return
+
+    if source.count(WHISPER_ADD_SUBDIRECTORY) != 1:
+        raise ValueError(
+            "Refusing to patch an unrecognized flutter_whisper_ggml Windows CMakeLists.txt: "
+            "expected one Whisper add_subdirectory block or this script's marked rewrite"
+        )
+    if source.count(WHISPER_MSVC_WARNING_BLOCK) != 1:
+        raise ValueError("The pinned Whisper CMake file no longer has the expected MSVC warning-options block")
+    if (
+        source.count(WHISPER_IMPORTED_TARGETS_BODY)
+        or source.count(WHISPER_PATCH_MARKER)
+        or source.count(WHISPER_MSVC_WARNING_BLOCK_PATCHED)
+    ):
+        raise ValueError("Refusing to patch a mixed or partially rewritten Whisper CMake file")
+    patched = source.replace(WHISPER_ADD_SUBDIRECTORY, WHISPER_IMPORTED_TARGETS)
     patched = patched.replace(WHISPER_MSVC_WARNING_BLOCK, WHISPER_MSVC_WARNING_BLOCK_PATCHED)
     cmake_file.write_text(patched, encoding="utf-8", newline="\n")
 

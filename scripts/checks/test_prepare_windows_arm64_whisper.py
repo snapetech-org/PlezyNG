@@ -1,6 +1,5 @@
 """Test the pinned Whisper plugin CMake rewrite used by Windows ARM64 builds."""
 
-import hashlib
 from pathlib import Path
 import sys
 import tempfile
@@ -23,11 +22,10 @@ class WindowsArm64WhisperTest(unittest.TestCase):
             + whisper.WHISPER_MSVC_WARNING_BLOCK
             + '\nafter\n'
         )
-        expected = hashlib.sha256(source.encode()).hexdigest()
         with tempfile.TemporaryDirectory() as temporary:
             cmake_file = Path(temporary) / "CMakeLists.txt"
             cmake_file.write_text(source)
-            whisper.patch_plugin_cmake(cmake_file, Path(temporary) / "whisper-libraries", expected_sha256=expected)
+            whisper.patch_plugin_cmake(cmake_file, Path(temporary) / "whisper-libraries")
             patched = cmake_file.read_text()
 
         self.assertIn('FLUTTER_WHISPER_PREBUILT_ROOT "$ENV{FLUTTER_WHISPER_PREBUILT_ROOT}"', patched)
@@ -64,18 +62,13 @@ class WindowsArm64WhisperTest(unittest.TestCase):
             '  "${CMAKE_CURRENT_BINARY_DIR}/whisper_cpp"\n'
             '  EXCLUDE_FROM_ALL)\n'
         )
-        expected = hashlib.sha256(source.encode()).hexdigest()
         with tempfile.TemporaryDirectory() as temporary:
             cmake_file = Path(temporary) / "CMakeLists.txt"
             cmake_file.write_text(source)
             with self.assertRaisesRegex(ValueError, "expected MSVC warning-options block"):
-                whisper.patch_plugin_cmake(
-                    cmake_file,
-                    Path(temporary) / "whisper-libraries",
-                    expected_sha256=expected,
-                )
+                whisper.patch_plugin_cmake(cmake_file, Path(temporary) / "whisper-libraries")
 
-    def test_patch_accepts_its_exact_cached_output_on_a_repeat_build(self):
+    def test_patch_migrates_and_accepts_cached_output_on_repeat_builds(self):
         source = (
             'before\n'
             'add_subdirectory(\n'
@@ -85,21 +78,22 @@ class WindowsArm64WhisperTest(unittest.TestCase):
             + whisper.WHISPER_MSVC_WARNING_BLOCK
             + '\nafter\n'
         )
-        expected = hashlib.sha256(source.encode()).hexdigest()
         with tempfile.TemporaryDirectory() as temporary:
             cmake_file = Path(temporary) / "CMakeLists.txt"
             cmake_file.write_text(source)
-            whisper.patch_plugin_cmake(cmake_file, Path(temporary) / "whisper-libraries", expected_sha256=expected)
-            patched_sha256 = hashlib.sha256(cmake_file.read_bytes()).hexdigest()
+            whisper.patch_plugin_cmake(cmake_file, Path(temporary) / "whisper-libraries")
+            current = cmake_file.read_text()
+            self.assertIn(whisper.WHISPER_PATCH_MARKER, current)
 
-            whisper.patch_plugin_cmake(
-                cmake_file,
-                Path(temporary) / "whisper-libraries",
-                expected_sha256=expected,
-                expected_patched_sha256=patched_sha256,
-            )
+            legacy = current.replace(whisper.WHISPER_IMPORTED_TARGETS, whisper.WHISPER_IMPORTED_TARGETS_BODY)
+            cmake_file.write_text(legacy)
+            whisper.patch_plugin_cmake(cmake_file, Path(temporary) / "whisper-libraries")
+            migrated = cmake_file.read_bytes()
+            self.assertIn(whisper.WHISPER_PATCH_MARKER.encode(), migrated)
 
-            self.assertEqual(hashlib.sha256(cmake_file.read_bytes()).hexdigest(), patched_sha256)
+            whisper.patch_plugin_cmake(cmake_file, Path(temporary) / "whisper-libraries")
+
+            self.assertEqual(cmake_file.read_bytes(), migrated)
 
     def test_patch_rejects_an_unrecognized_dependency(self):
         with tempfile.TemporaryDirectory() as temporary:

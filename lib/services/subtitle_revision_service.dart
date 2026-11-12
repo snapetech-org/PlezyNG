@@ -46,35 +46,47 @@ final class SubtitleRevision {
   final List<SubtitleCue> cues;
   final List<SubtitleWordTiming> wordTimings;
 
-  Map<String, Object?> toJson() => {
-    'schema': 'plezyng.subtitle-revision.v2',
-    'id': id,
-    'createdAt': createdAt.toUtc().toIso8601String(),
-    'operation': operation,
-    'languageCode': languageCode,
-    'cues': cues
-        .map((cue) => {'index': cue.index, 'startMs': cue.startMs, 'endMs': cue.endMs, 'text': cue.text})
-        .toList(growable: false),
-    'wordTimings': wordTimings
-        .map(
-          (timing) => {
-            'startMs': timing.startMs,
-            'endMs': timing.endMs,
-            'text': timing.text,
-            if (timing.confidence != null) 'confidence': timing.confidence,
-            'unit': timing.unit.name,
-            'cueIndex': timing.cueIndex,
-          },
-        )
-        .toList(growable: false),
-  };
+  Map<String, Object?> toJson() {
+    final cuePositions = {for (var index = 0; index < cues.length; index++) cues[index].id: index + 1};
+    return {
+      'schema': 'plezyng.subtitle-revision.v3',
+      'id': id,
+      'createdAt': createdAt.toUtc().toIso8601String(),
+      'operation': operation,
+      'languageCode': languageCode,
+      'cues': cues
+          .map(
+            (cue) => {'id': cue.id, 'index': cue.index, 'startMs': cue.startMs, 'endMs': cue.endMs, 'text': cue.text},
+          )
+          .toList(growable: false),
+      'wordTimings': wordTimings
+          .map(
+            (timing) => {
+              'startMs': timing.startMs,
+              'endMs': timing.endMs,
+              'text': timing.text,
+              if (timing.confidence != null) 'confidence': timing.confidence,
+              'unit': timing.unit.name,
+              'cueId': timing.cueId,
+              'cueIndex': timing.cueId == null ? timing.cueIndex : cuePositions[timing.cueId],
+            },
+          )
+          .toList(growable: false),
+    };
+  }
 
   static SubtitleRevision fromJson(Object? value) {
     if (value is! Map<String, dynamic> ||
-        !{'plezyng.subtitle-revision.v1', 'plezyng.subtitle-revision.v2'}.contains(value['schema'])) {
+        !{
+          'plezyng.subtitle-revision.v1',
+          'plezyng.subtitle-revision.v2',
+          'plezyng.subtitle-revision.v3',
+        }.contains(value['schema'])) {
       throw const FormatException('Unsupported subtitle revision record.');
     }
-    final acceptsUnknownConfidence = value['schema'] == 'plezyng.subtitle-revision.v2';
+    final schema = value['schema'] as String;
+    final hasStableCueIds = schema == 'plezyng.subtitle-revision.v3';
+    final acceptsUnknownConfidence = schema != 'plezyng.subtitle-revision.v1';
     final id = value['id'];
     final createdAt = DateTime.tryParse(value['createdAt'] as String? ?? '');
     final operation = value['operation'];
@@ -97,6 +109,8 @@ final class SubtitleRevision {
     }
 
     final cues = <SubtitleCue>[];
+    final cueIds = <String>{};
+    final legacyCueIdsByIndex = <int, String>{};
     for (final row in rawCues) {
       if (row is! Map<String, dynamic>) {
         throw const FormatException('Subtitle revision cue is invalid.');
@@ -105,18 +119,28 @@ final class SubtitleRevision {
       final start = row['startMs'];
       final end = row['endMs'];
       final text = row['text'];
+      final cueId = hasStableCueIds ? row['id'] : SubtitleCue.idFor('revision:$id', cues.length + 1);
       if (index is! int ||
           start is! int ||
           end is! int ||
           text is! String ||
+          cueId is! String ||
+          !SubtitleCue.isValidId(cueId) ||
+          cueIds.contains(cueId) ||
           text.length > SubtitleRetimer.maximumInputBytes ||
           start < 0 ||
           end <= start ||
           end > SubtitleRetimer.maximumTimeMs) {
         throw const FormatException('Subtitle revision cue timing or text is invalid.');
       }
-      cues.add(SubtitleCue(index: index, startMs: start, endMs: end, text: text));
+      cueIds.add(cueId);
+      if (legacyCueIdsByIndex.containsKey(index)) {
+        throw const FormatException('Subtitle revision cue order indexes must be unique.');
+      }
+      legacyCueIdsByIndex[index] = cueId;
+      cues.add(SubtitleCue(id: cueId, index: index, startMs: start, endMs: end, text: text));
     }
+    final cuePositions = {for (var index = 0; index < cues.length; index++) cues[index].id: index};
 
     final wordTimings = <SubtitleWordTiming>[];
     for (final row in rawWords) {
@@ -129,11 +153,13 @@ final class SubtitleRevision {
       final confidence = row['confidence'];
       final unitName = row['unit'];
       final cueIndex = row['cueIndex'];
+      final rawCueId = hasStableCueIds ? row['cueId'] : null;
       if (start is! int ||
           end is! int ||
           text is! String ||
           (confidence is! num && !(acceptsUnknownConfidence && confidence == null)) ||
           unitName is! String ||
+          (rawCueId != null && rawCueId is! String) ||
           (cueIndex != null && cueIndex is! int) ||
           start < 0 ||
           end <= start ||
@@ -142,6 +168,22 @@ final class SubtitleRevision {
           (confidence is num && (confidence < 0 || confidence > 1)) ||
           (cueIndex != null && ((cueIndex as int) < 1 || cueIndex > cues.length))) {
         throw const FormatException('Subtitle revision word timing fields are invalid.');
+      }
+      String? cueId;
+      if (hasStableCueIds && rawCueId != null) {
+        cueId = rawCueId as String;
+        if (!cuePositions.containsKey(cueId)) {
+          throw const FormatException('Subtitle revision word timing references a missing cue identity.');
+        }
+        final matchingIndex = cuePositions[cueId]! + 1;
+        if (cueIndex != null && cueIndex != matchingIndex) {
+          throw const FormatException('Subtitle revision word timing cue identity and position disagree.');
+        }
+      } else if (cueIndex is int) {
+        cueId = hasStableCueIds ? cues[cueIndex - 1].id : legacyCueIdsByIndex[cueIndex];
+        if (cueId == null) {
+          throw const FormatException('Subtitle revision word timing references a missing legacy cue index.');
+        }
       }
       final unit = SubtitleWordTimingUnit.values.where((candidate) => candidate.name == unitName);
       if (unit.isEmpty) throw const FormatException('Subtitle revision timing unit is invalid.');
@@ -155,7 +197,8 @@ final class SubtitleRevision {
           text: text,
           confidence: (confidence as num?)?.toDouble(),
           unit: unit.first,
-          cueIndex: cueIndex as int?,
+          cueId: cueId,
+          cueIndex: cueId == null ? cueIndex as int? : cuePositions[cueId]! + 1,
         ),
       );
     }
@@ -243,14 +286,20 @@ abstract final class SubtitleRevisionService {
           throw const FormatException('Subtitle revision contains an invalid cue.');
         }
       }
-      for (final timing in wordTimings) {
+      if (cues.map((cue) => cue.id).toSet().length != cues.length ||
+          cues.any((cue) => !SubtitleCue.isValidId(cue.id))) {
+        throw const FormatException('Subtitle revision cue identities must be valid and unique.');
+      }
+      final referencedWordTimings = SubtitleWordTimingBuilder.attachCueReferences(wordTimings, cues);
+      for (final timing in referencedWordTimings) {
         final confidence = timing.confidence;
         if (timing.startMs < 0 ||
             timing.endMs <= timing.startMs ||
             timing.endMs > SubtitleRetimer.maximumTimeMs ||
             timing.text.length > 4096 ||
             (confidence != null && (!confidence.isFinite || confidence < 0 || confidence > 1)) ||
-            (timing.cueIndex != null && (timing.cueIndex! < 1 || timing.cueIndex! > cues.length))) {
+            (timing.cueIndex != null && (timing.cueIndex! < 1 || timing.cueIndex! > cues.length)) ||
+            (timing.cueId != null && !cues.any((cue) => cue.id == timing.cueId))) {
           throw const FormatException('Subtitle revision contains an invalid word timing.');
         }
       }
@@ -271,7 +320,7 @@ abstract final class SubtitleRevisionService {
         operation: operation.trim(),
         languageCode: languageCode?.trim().isEmpty == true ? null : languageCode?.trim(),
         cues: List<SubtitleCue>.unmodifiable(cues),
-        wordTimings: List<SubtitleWordTiming>.unmodifiable(wordTimings),
+        wordTimings: referencedWordTimings,
       );
       final bytes = utf8.encode(jsonEncode(revision.toJson()));
       if (bytes.length > maximumRevisionBytes) {

@@ -1,6 +1,6 @@
 # PlezyNG feature build-out handoff
 
-Status: 2026-10-28. PlezyNG is a fork of `edde746/plezy` intended to carry requested features that upstream declined or has not shipped, while keeping parity across Plex, Jellyfin, and Emby where the APIs allow it. The fork should retire as the corresponding capabilities converge upstream.
+Historical feature handoff, status **2026-10-28**. This records the implementation slice and qualification limits reviewed at that time; it is not a live inventory of `main`. The README feature comparison links here for detail. For current implementation and release evidence, use the [capability and qualification ledger](../maintainers/capability-manifest.json) and the feature-specific delivery records. PleazyNG is a fork of `edde746/plezy` intended to carry requested features that upstream declined or has not shipped, while keeping parity across Plex, Jellyfin, and Emby where the APIs allow it. The fork should retire as the corresponding capabilities converge upstream.
 
 ## Current audit remediation status
 
@@ -47,7 +47,7 @@ The 26 October engineering audit is pinned to main commit `c781dd83d69025c8596ac
 | Integrations | Notifications are foreground-polled only; they pause when the OS suspends Plezy. There is no background push source. Google Cast uses the default Cast media receiver and needs validation with physical receivers; the receiver must support the stream format and reach the server. |
 | Automation | Android intent links provide direct media launch, profile selection, and active-video controls. Plezy does not yet advertise itself as a native Plex Companion player to Home Assistant's Plex integration. |
 | Settings | HTTPS WebDAV backup of the portable settings export is implemented. Configure a file URL ending in `.json`, optionally with WebDAV credentials; local server connections, tokens, download locations, and history are excluded. |
-| webOS TV | An experimental ARM IPK was installed and launched on one LG C6; its app and native library hashes match the package. Plex login, artwork/cards, and playback were confirmed on an earlier build, and secure-store write/read/delete passed. The latest package's current UI frame, token persistence, Jellyfin/Emby, broader device coverage, and release packaging remain unverified; see [webOS port status](../maintainers/webos-tv.md). |
+| webOS TV | Published 3.0.33 ARM IPK was installed in place and launched on one LG C6; all 15 installed production binaries match the release package. The owner observed same-file 1080p playback that appeared softer than desktop. Captured output pixels and scaler path remain unmeasured. Plex login, artwork/cards and secure-store checks were confirmed on earlier builds; current token persistence, Jellyfin/Emby, and broader device coverage remain unverified. See [webOS port status](../maintainers/webos-tv.md). |
 
 ## Historical validation and cautions
 

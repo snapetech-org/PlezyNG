@@ -4,6 +4,7 @@
 
 - Reject untrusted browser origins at anonymous relay and upload endpoints, redact diagnostic uploads at the egress boundary, and restrict relay container filesystem access, privileges and resources.
 - Update locked Addressable to 2.9.1 to resolve three moderate dependency advisories in the Fastlane toolchain.
+- Add a documentation index, document webOS secure-storage behavior, and correct stale release guidance and broken repository links.
 
 - Allow a pinned-source release to run exact-source CI and create its stable tag through the authenticated release controller when the organization blocks Actions tag creation.
 - Route an explicit private Apple selection to macOS as well as iOS and tvOS, and bound the macOS compile and package job to 100 and 150 minutes.
@@ -13,6 +14,10 @@
 - Fail manual Snap, Launchpad PPA, COPR and AUR publication jobs when channel credentials or settings are missing, instead of reporting a successful skipped publish.
 
 - Report live-subtitle PCM provenance from the active Android, Tizen or MPV player instead of always labeling it Android ExoPlayer.
+
+- Give subtitle cues stable identities through editing, translation, synchronization, podcast transcript caches and revision history; migrate positional word timing references into revision schema v3.
+
+- Refresh webOS C6, rebrand link and aerynOS readiness records with current package evidence, preserving unresolved measurement, migration and official-acceptance gates.
 
 - Add per-rendition intro/outro trim markers, playhead editing, trimmed-range preview and a persisted host override for automatic trim and marked long-instrumental skips. Instrumental sections under eight seconds are preserved.
 

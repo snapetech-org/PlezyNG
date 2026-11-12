@@ -28,7 +28,7 @@ Observed findings:
 | A07 | No image in the inspected website tree has an identical Git blob hash to an upstream image. Several website brand exports match the current fork's canonical exports. | Retain the source-to-site hash verification. Inspect website composites visually: absence of an exact hash match does not exclude embedded or transformed upstream graphics. |
 | I01 | Android applicationId and iOS/macOS/Linux/webOS identities use org.snapetech.plezyng. Internal Android namespace remains com.edde746.plezy. | Move public package identities to org.snapetech.pleazyng with explicit migration handling. Keep necessary internal namespaces as documented compatibility exceptions. |
 | I02 | tvos/Runner/Info.plist still displays Plezy, and TopShelfExtension/Info.plist displays Plezy Top Shelf. | Correct all compiled/localized display names, including extensions and permission prompts. |
-| I03 | DeepLink.scheme is plezy. Android registers plezy, plezyng and plezxyng; Apple manifests also retain upstream/fork schemes. Source OAuth uses plezyng-source://oauth/callback. | Generate pleazyng:// links and use pleazyng-source://oauth/callback. Remove upstream plezy:// registration; provide explicit migration of old links without taking ownership of upstream's handler. |
+| I03 | **Implemented:** `DeepLink.scheme` is `pleazyng`; Android, Apple, Linux and Windows register the canonical scheme and fork-only compatibility aliases, while upstream `plezy://` is not registered. Android/iOS source OAuth uses `pleazyng-source://oauth/callback`. | Preserve the verified grammar and authorization behavior. A user-initiated converter for saved legacy links and a documented retirement window for the old fork-only aliases remain open; never register upstream `plezy://`. |
 | S01 | Discord RPC still contains upstream application ID 1453773470306402439. | Register a SnapeTech/Pleazyng Discord application and upload fork-owned Rich Presence assets. |
 | S02 | lib/services/plezy_server.dart defaults to https://ice.plezy.app for OAuth/logs/posters, with commerce and Watchmode URLs defaulting to the same service. | Provision and configure a fork-owned relay; eliminate upstream hosted-service fallbacks. Missing configuration must not route to upstream. |
 | S03 | The Trakt client constant is bundled in source. Other provider identities can live in relay configuration. Ownership of every provider registration was not verified. | Record ownership for all app registrations and replace upstream registrations, not merely their visible names. |
@@ -129,12 +129,14 @@ Exit: no upstream product logo or unreviewed upstream marketing screenshot is pr
 
 Link contract:
 
-- [ ] Set DeepLink.scheme to pleazyng and emit pleazyng:// from share sheets, QR/NFC generation, Home Assistant examples, source handoffs, external-player return links, game launchers and system shelves.
-- [ ] Register pleazyng:// and pleazyng-source://oauth/callback on the platforms that support them. Remove plezy:// from Android, iOS, macOS, tvOS, Linux desktop registrations and Windows installer/MSIX handlers; inspect any other native registration.
-- [ ] Preserve link grammar, IDs, parameters, profile/PIN handling and authorization checks. Existing content IDs such as plezy_<server>_<item> are data contracts, not new brand labels; migrate/alias them explicitly rather than breaking saved references.
+- [x] Set `DeepLink.scheme` to `pleazyng` and generate canonical links for app shares, QR/NFC, Android automation examples, source handoffs, external-player returns and system shelves.
+- [ ] Add the canonical link to a game-launcher surface if the app exposes one; otherwise record that no supported game-launch target exists.
+- [x] Register `pleazyng://` on Android, Apple, Linux and Windows; source inspection confirms `pleazyng-source://oauth/callback` on Android and iOS. The checker rejects upstream `plezy://` registration and verifies the fork-only compatibility aliases.
+- [x] Preserve the existing link grammar, IDs, parameters, profile/PIN handling and authorization checks. Existing content IDs such as `plezy_<server>_<item>` remain data contracts rather than brand labels.
 - [ ] Offer a paste/import converter for old plezy://, plezyng:// and plezxyng:// automations, NFC tags and saved links. Do not automatically register upstream's scheme to provide that compatibility.
 - [ ] Existing fork-only scheme aliases may remain only in an explicitly documented, time-bounded bridge build where ownership is clear. New canonical packages emit the new scheme. Document retirement conditions, not an unexplained permanent alias.
-- [ ] Cover Android intents, Apple URL handling, Linux desktop MIME registration, Windows protocol keys, OAuth return matching and all deep-link tests/checkers.
+- [x] Cover Android intents, Apple URL handling, Linux desktop MIME registration, Windows protocol keys, and core deep-link parsing and authorization behavior.
+- [ ] Extend the registration checker to validate the source OAuth callback scheme, then add target-platform callback dispatch coverage; it currently verifies only media-link schemes.
 
 Exit: all final compiled packages identify themselves as Pleazyng, and installing upstream alongside the fork does not give the fork ownership of plezy:// links.
 

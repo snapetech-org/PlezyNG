@@ -287,6 +287,7 @@ final class SubtitleAiService {
         .map((value) {
           final cue = value as Map<dynamic, dynamic>;
           return SubtitleCue(
+            id: SubtitleCue.idFor('sherpa:$wavPath', cue['index'] as int),
             index: cue['index'] as int,
             startMs: cue['startMs'] as int,
             endMs: cue['endMs'] as int,

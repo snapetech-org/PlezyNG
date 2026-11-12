@@ -699,6 +699,16 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
                       .where((l) => l.startMs != null && l.endMs != null && l.endMs! > l.startMs!)
                       .toList();
                   if (timed.isNotEmpty) {
+                    final revisionCues = [
+                      for (var i = 0; i < timed.length; i++)
+                        SubtitleCue(
+                          id: SubtitleCue.idFor('karaoke:${_track.id}', i + 1),
+                          index: i + 1,
+                          startMs: timed[i].startMs!,
+                          endMs: timed[i].endMs!,
+                          text: timed[i].text,
+                        ),
+                    ];
                     await SubtitleRevisionService.saveRevision(
                       identity: SubtitleRevisionIdentity(
                         profileId: widget.session.store.profileId,
@@ -708,15 +718,7 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
                       ),
                       operation: 'karaoke-editor',
                       languageCode: _track.language,
-                      cues: [
-                        for (var i = 0; i < timed.length; i++)
-                          SubtitleCue(
-                            index: i + 1,
-                            startMs: timed[i].startMs!,
-                            endMs: timed[i].endMs!,
-                            text: timed[i].text,
-                          ),
-                      ],
+                      cues: revisionCues,
                       wordTimings: [
                         for (var i = 0; i < timed.length; i++)
                           for (final span in timed[i].spans)
@@ -731,6 +733,7 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
                                   LyricUnit.syllable => SubtitleWordTimingUnit.syllable,
                                   LyricUnit.token => SubtitleWordTimingUnit.token,
                                 },
+                                cueId: revisionCues[i].id,
                                 cueIndex: i + 1,
                               ),
                       ],

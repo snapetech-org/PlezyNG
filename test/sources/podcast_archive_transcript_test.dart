@@ -78,12 +78,29 @@ void main() {
     final vtt = PodcastTranscript.parse('WEBVTT\n\n00:00:01.000 --> 00:00:02.000\n<v Speaker>Hello</v>\n', 'text/vtt');
     expect(vtt.cues.single.startMs, 1000);
     expect(vtt.cues.single.text, 'Hello');
+    expect(PodcastTranscript.fromJson(vtt.toJson()).cues.single.id, vtt.cues.single.id);
     final json = PodcastTranscript.parse(
       '{"segments":[{"startTime":1,"endTime":2,"speaker":"A","body":"Hello"}]}',
       'application/json',
     );
     expect(json.cues.single.text, 'A: Hello');
-    expect(PodcastTranscript.fromJson(json.toJson()).cues.single.endMs, 2000);
+    final restoredJson = PodcastTranscript.fromJson(json.toJson());
+    expect(restoredJson.cues.single.endMs, 2000);
+    expect(restoredJson.cues.single.id, json.cues.single.id);
+  });
+
+  test('legacy cached transcript cues receive stable IDs during migration', () {
+    final legacy = {
+      'text': 'hello',
+      'cues': [
+        {'start': 1000, 'end': 2000, 'text': 'hello'},
+      ],
+    };
+    final first = PodcastTranscript.fromJson(legacy);
+    final second = PodcastTranscript.fromJson(legacy);
+
+    expect(first.cues.single.id, second.cues.single.id);
+    expect(PodcastTranscript.fromJson(first.toJson()).cues.single.id, first.cues.single.id);
   });
   test('HTML transcripts remain inert text and long text is not cut to description size', () {
     final body = '<p>${List.filled(10000, 'word').join(' ')}</p><script>execute()</script>';

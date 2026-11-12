@@ -217,7 +217,8 @@ final class SubtitleWhisperCppService {
       );
       final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(result.segments, durationMs: durationMs);
       final cues = <SubtitleCue>[];
-      for (final segment in result.segments) {
+      for (var segmentOrdinal = 0; segmentOrdinal < result.segments.length; segmentOrdinal++) {
+        final segment = result.segments[segmentOrdinal];
         final text = segment.text.trim().replaceAll(RegExp(r'\s+'), ' ');
         final startRaw = segment.start.inMilliseconds;
         if (text.isEmpty || text.length > _maximumCueCharacters || startRaw >= durationMs) {
@@ -228,7 +229,15 @@ final class SubtitleWhisperCppService {
         if (endMs <= startMs) {
           continue;
         }
-        cues.add(SubtitleCue(index: cues.length + 1, startMs: startMs, endMs: endMs, text: text));
+        cues.add(
+          SubtitleCue(
+            id: SubtitleCue.idFor('whisper:$wavPath', segmentOrdinal + 1),
+            index: cues.length + 1,
+            startMs: startMs,
+            endMs: endMs,
+            text: text,
+          ),
+        );
         if (cues.length >= _maximumCues) {
           break;
         }

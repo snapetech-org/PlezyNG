@@ -15,6 +15,8 @@ Pleazyng is a downstream fork for feature requests that Plezy upstream has decli
 
 See [Files, books and listening](docs/FILES_AND_BOOKS.md) for standard/cloud sources, readers and offline behavior, and [Public-library setup](docs/LENDING_SETUP.md) for the staged OverDrive integration.
 
+Browse the [documentation index](docs/README.md) for product guides, feature records, maintainer runbooks, release evidence and historical snapshots.
+
 The [capability and qualification ledger](docs/maintainers/capability-manifest.json) tracks implementation evidence, release status, platform limits and remaining gates. Code being present does not imply device qualification or a published download.
 
 The [debrid, Stremio and remote-streaming guide](docs/plezyng/remote-streams/README.md) describes the implemented providers, shared playback and queue flows, architecture, native P2P status, and remaining validation limits.
@@ -512,7 +514,7 @@ This list covers the current Pleazyng codebase, including additions since the fo
 [^connect]: Requires connecting the service under Settings > Services.
 [^hdr]: In-app HDR toggle on Windows, macOS, iOS, tvOS, and Linux — Linux needs a colour-managed Wayland compositor. Dolby Vision on Android, macOS, and Apple TV.
 [^pass]: Desktop, Android TV, and Apple TV.
-[^mpv]: Requires MPV; Android defaults to ExoPlayer. Apple GLSL presets and ambient lighting use the AVFoundation shader stage, which skips Dolby Vision and composited picture-in-picture frames. See [playback compositor behavior](docs/plezyng/playback-compositor.md).
+[^mpv]: Requires MPV; Android defaults to mpv, with ExoPlayer available as an opt-in alternative. Apple GLSL presets and ambient lighting use the AVFoundation shader stage, which skips Dolby Vision and composited picture-in-picture frames. See [playback compositor behavior](docs/plezyng/playback-compositor.md).
 [^pip]: Android, iOS, and macOS — not on Android TV or Apple TV.
 [^rrm]: Windows, Android, tvOS, and fullscreen macOS playback where supported by the active display.
 [^android]: Progress sync on Android.

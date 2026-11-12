@@ -25,7 +25,9 @@ The app-owned adapter is `lib/mpv/player/platform/webos_soloud_player.dart`.
 
 ## Example
 
-See the [example application](example/lib/main.dart) for a complete usage demonstration.
+This package does not include a standalone example application. See Pleazyng's
+[webOS SoLoud player adapter](../../../lib/mpv/player/platform/webos_soloud_player.dart)
+for its in-app integration.
 
 ## API Reference
 

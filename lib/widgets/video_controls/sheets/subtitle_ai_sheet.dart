@@ -331,7 +331,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       aligned.cues,
       operationLabel: repairCuts ? 'Cut repair' : 'Automatic sync',
       operationLanguageCode: transcription.detectedLanguage,
-      wordTimings: transcription.wordTimings,
+      wordTimings: SubtitleWordTimingBuilder.detachCueReferences(transcription.wordTimings),
     )) {
       return;
     }
@@ -538,16 +538,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (aligned.cues.length != target.$1.length) {
       throw StateError('Cross-language alignment changed the target cue count.');
     }
-    final retimedOriginal = List<SubtitleCue>.generate(
-      target.$1.length,
-      (index) => SubtitleCue(
-        index: target.$1[index].index,
-        startMs: aligned.cues[index].startMs,
-        endMs: aligned.cues[index].endMs,
-        text: target.$1[index].text,
-      ),
-      growable: false,
-    );
+    final targetById = {for (final cue in target.$1) cue.id: cue};
+    final retimedOriginal = aligned.cues
+        .map((alignedCue) {
+          final source = targetById[alignedCue.id];
+          if (source == null) throw StateError('Cross-language alignment returned an unknown target cue identity.');
+          return SubtitleCue(
+            id: source.id,
+            index: source.index,
+            startMs: alignedCue.startMs,
+            endMs: alignedCue.endMs,
+            text: source.text,
+          );
+        })
+        .toList(growable: false);
     if (!await _writeAndApply(
       retimedOriginal,
       operationLabel: repairCuts ? 'Cross-language reference cut repair' : 'Cross-language subtitle sync',
@@ -653,7 +657,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       aligned.cues,
       operationLabel: repairCuts ? 'Captured-playback cut repair' : 'Captured-playback sync',
       operationLanguageCode: transcript.detectedLanguage,
-      wordTimings: transcript.wordTimings,
+      wordTimings: SubtitleWordTimingBuilder.detachCueReferences(transcript.wordTimings),
     )) {
       return;
     }
@@ -801,7 +805,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _storeUndoHistory({
     required List<SubtitleCue> cues,
-    required List<(int, SubtitleCue)> undoHistory,
+    required List<(String, SubtitleCue)> undoHistory,
     required String operation,
     String? languageCode,
     required List<SubtitleWordTiming> wordTimings,
@@ -820,17 +824,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       index >= 0 && saved < SubtitleRevisionService.maximumRevisionsPerItem - 1;
       index--
     ) {
-      final (cueIndex, previousCue) = undoHistory[index];
-      if (cueIndex < 0 || cueIndex >= snapshot.length) {
+      final (cueId, previousCue) = undoHistory[index];
+      final cuePosition = snapshot.indexWhere((cue) => cue.id == cueId);
+      if (cuePosition < 0) {
         continue;
       }
-      final currentCue = snapshot[cueIndex];
+      final currentCue = snapshot[cuePosition];
       if (currentCue.startMs == previousCue.startMs &&
           currentCue.endMs == previousCue.endMs &&
           currentCue.text == previousCue.text) {
         continue;
       }
-      snapshot[cueIndex] = previousCue;
+      snapshot[cuePosition] = previousCue;
       final persisted = await _storeUndoCheckpoint(
         cues: List<SubtitleCue>.unmodifiable(snapshot),
         operation: operation,
@@ -1272,7 +1277,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     });
                     return;
                   }
-                  edited = SubtitleCue(index: cue.index, startMs: startMs, endMs: endMs, text: text);
+                  edited = cue.copyWith(startMs: startMs, endMs: endMs, text: text);
                   Navigator.of(editorContext).pop(true);
                 },
                 child: Text(context.t.subtitleAiUi.saveCue),
@@ -1289,18 +1294,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
   }
 
-  void _rememberCueEdit(List<(int, SubtitleCue)> undoHistory, int index, SubtitleCue cue) {
+  void _rememberCueEdit(List<(String, SubtitleCue)> undoHistory, SubtitleCue cue) {
     if (undoHistory.length == 100) {
       undoHistory.removeAt(0);
     }
-    undoHistory.add((index, cue));
+    undoHistory.add((cue.id, cue));
   }
 
   Future<void> _showFullCueEditor(
     BuildContext dialogContext,
     List<SubtitleCue> cues, {
     List<SubtitleCue>? sourceCues,
-    required List<(int, SubtitleCue)> undoHistory,
+    required List<(String, SubtitleCue)> undoHistory,
     VoidCallback? onChanged,
   }) async {
     final searchController = TextEditingController();
@@ -1311,15 +1316,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         builder: (editorContext) => StatefulBuilder(
           builder: (context, setEditorState) {
             final normalizedQuery = query.trim().toLowerCase();
+            final sourceById = {for (final cue in sourceCues ?? const <SubtitleCue>[]) cue.id: cue};
             final visibleIndexes = List<int>.generate(cues.length, (index) => index)
                 .where((index) {
                   if (normalizedQuery.isEmpty) {
                     return true;
                   }
                   final output = cues[index].text.toLowerCase();
-                  final original = sourceCues != null && index < sourceCues.length
-                      ? sourceCues[index].text.toLowerCase()
-                      : '';
+                  final original = sourceById[cues[index].id]?.text.toLowerCase() ?? '';
                   return output.contains(normalizedQuery) || original.contains(normalizedQuery);
                 })
                 .toList(growable: false);
@@ -1360,13 +1364,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                               itemBuilder: (context, visibleIndex) {
                                 final cueIndex = visibleIndexes[visibleIndex];
                                 final cue = cues[cueIndex];
-                                final original = sourceCues != null && cueIndex < sourceCues.length
-                                    ? sourceCues[cueIndex].text
-                                    : null;
+                                final original = sourceById[cue.id]?.text;
                                 Future<void> editCue() async {
                                   final edited = await _editCueForReview(editorContext, cue);
                                   if (edited != null && mounted) {
-                                    _rememberCueEdit(undoHistory, cueIndex, cue);
+                                    _rememberCueEdit(undoHistory, cue);
                                     setEditorState(() => cues[cueIndex] = edited);
                                     onChanged?.call();
                                   }
@@ -1417,7 +1419,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                   TextButton.icon(
                     onPressed: () {
                       final previous = undoHistory.removeLast();
-                      setEditorState(() => cues[previous.$1] = previous.$2);
+                      final cuePosition = cues.indexWhere((cue) => cue.id == previous.$1);
+                      if (cuePosition >= 0) setEditorState(() => cues[cuePosition] = previous.$2);
                       onChanged?.call();
                     },
                     icon: const AppIcon(Symbols.undo_rounded),
@@ -1488,8 +1491,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       throw StateError('Source and output cue counts do not match; no subtitle was attached.');
     }
     final reviewedCues = List<SubtitleCue>.from(cues);
-    final reviewedWordTimings = SubtitleWordTimingBuilder.attachCueIndices(wordTimings, reviewedCues);
-    final undoHistory = <(int, SubtitleCue)>[];
+    final sourceById = {for (final cue in sourceCues ?? const <SubtitleCue>[]) cue.id: cue};
+    if (sourceCues != null &&
+        (sourceById.length != sourceCues.length ||
+            reviewedCues.map((cue) => cue.id).toSet().length != reviewedCues.length ||
+            reviewedCues.any((cue) => !sourceById.containsKey(cue.id)))) {
+      throw StateError('Source and output cue identities do not match; no subtitle was attached.');
+    }
+    final reviewedWordTimings = SubtitleWordTimingBuilder.attachCueReferences(wordTimings, reviewedCues);
+    final undoHistory = <(String, SubtitleCue)>[];
     _lastResultUploadedToServer = false;
     final uploadLanguage = _normalizedUploadLanguage(operationLanguageCode);
     final canUploadToServer =
@@ -1622,9 +1632,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                               style: Theme.of(context).textTheme.labelMedium,
                             ),
                             const SizedBox(height: 2),
-                            if (sourceCues != null && cueIndex < sourceCues.length) ...[
+                            if (sourceById.containsKey(cue.id)) ...[
                               Text(context.t.subtitleAiUi.original, style: Theme.of(context).textTheme.labelSmall),
-                              SelectableText(sourceCues[cueIndex].text),
+                              SelectableText(sourceById[cue.id]!.text),
                               const SizedBox(height: 2),
                             ],
                             SelectableText(cue.text),
@@ -1635,7 +1645,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                   final edited = await _editCueForReview(dialogContext, cue);
                                   if (edited != null && mounted) {
                                     setDialogState(() {
-                                      _rememberCueEdit(undoHistory, cueIndex, cue);
+                                      _rememberCueEdit(undoHistory, cue);
                                       reviewedCues[cueIndex] = edited;
                                     });
                                   }
@@ -1658,7 +1668,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
               TextButton.icon(
                 onPressed: () {
                   final previous = undoHistory.removeLast();
-                  setDialogState(() => reviewedCues[previous.$1] = previous.$2);
+                  final cuePosition = reviewedCues.indexWhere((cue) => cue.id == previous.$1);
+                  if (cuePosition >= 0) setDialogState(() => reviewedCues[cuePosition] = previous.$2);
                 },
                 icon: const AppIcon(Symbols.undo_rounded),
                 label: Text(context.t.subtitleAiUi.undo(undoHistoryUndohistoryCount: undoHistory.length)),
@@ -1732,17 +1743,28 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       return false;
     }
     if (choice == _SubtitleReviewChoice.exportJson) {
+      final cuePositions = {
+        for (var index = 0; index < reviewedCues.length; index++) reviewedCues[index].id: index + 1,
+      };
       final jsonBytes = Uint8List.fromList(
         utf8.encode(
           JsonEncoder.withIndent('  ').convert({
-            'schema': 'plezyng.subtitle-cues.v2',
+            'schema': 'plezyng.subtitle-cues.v3',
             'generatedBy': 'Pleazyng',
             'operation': operationLabel,
             'language': operationLanguageCode,
             'timebase': 'milliseconds',
             'createdAt': DateTime.now().toUtc().toIso8601String(),
             'cues': reviewedCues
-                .map((cue) => {'index': cue.index, 'startMs': cue.startMs, 'endMs': cue.endMs, 'text': cue.text})
+                .map(
+                  (cue) => {
+                    'id': cue.id,
+                    'index': cue.index,
+                    'startMs': cue.startMs,
+                    'endMs': cue.endMs,
+                    'text': cue.text,
+                  },
+                )
                 .toList(growable: false),
             'wordTimingAvailability': reviewedWordTimings.isEmpty
                 ? 'not-returned-by-backend'
@@ -1755,7 +1777,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     'text': word.text,
                     'unit': word.unit.name,
                     'probability': word.confidence,
-                    'cueIndex': word.cueIndex,
+                    'cueId': word.cueId,
+                    'cueIndex': word.cueId == null ? word.cueIndex : cuePositions[word.cueId],
                   },
                 )
                 .toList(growable: false),

@@ -107,7 +107,7 @@ class _Client extends ExperienceClient {
 
   @override
   Future<List<MediaItem>> fetchAlbumTracks(String id) async =>
-      album ?? [musicTrack('A track'), musicTrack('Next track'), musicTrack('Foreign', server: 'elsewhere')];
+      album ?? [musicTrack('A track'), musicTrack('Next track')];
 }
 
 class _Music extends ExperienceMusic {
@@ -202,6 +202,18 @@ void main() {
     expect(client.reads, 1);
     await close(tester);
   });
+  testWidgets('invalid album expansion falls back only to the authorized recommendation track', (tester) async {
+    await mount(tester);
+    await expand(tester);
+    client.album = Future.value([musicTrack('A track'), musicTrack('Foreign', server: 'elsewhere')]);
+    await tester.tap(find.text('A track'));
+    await tester.pumpAndSettle();
+    expect(music.started.map((row) => row.id), ['A track']);
+    expect(music.startedContext?.kind, MusicPlayContextKind.tracks);
+    expect(tester.takeException(), isNull);
+    await close(tester);
+  });
+
   testWidgets('retained row callbacks cannot start music after profile replacement', (tester) async {
     await mount(tester);
     await expand(tester);

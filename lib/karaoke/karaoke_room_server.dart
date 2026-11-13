@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import '../i18n/strings.g.dart' as l10n;
 import 'karaoke_models.dart';
 import 'karaoke_phone_input.dart';
 import 'karaoke_integrations.dart';
@@ -216,7 +217,26 @@ class KaraokeRoomServer extends ChangeNotifier {
       }
       if (r.method == 'GET' && path == '/') {
         response.headers.contentType = ContentType.html;
-        response.write(karaokeGuestHtml);
+        response.write(
+          karaokeGuestHtmlFor({
+            'phoneTitle': l10n.t.karaokeUi.phonePitchAndPrivateRecording,
+            'phoneHelp': l10n.t.karaokeUi.phoneMicrophoneInputHelp,
+            'recordPhoneLabel': l10n.t.karaokeUi.sendRawVocalAudioForPrivateTake,
+            'enablePhoneMicrophone': l10n.t.karaokeUi.enablePhoneMicrophone,
+            'muteAndSave': l10n.t.karaokeUi.muteAndSavePhoneInput,
+            'microphoneLevel': l10n.t.karaokeUi.microphoneLevel,
+            'noConfidentPitch': l10n.t.karaokeUi.noConfidentPitch,
+            'pitchMIDIPracticeOnly': l10n.t.karaokeUi.pitchMIDIPracticeOnly(value1: '__PITCH__'),
+            'phoneInputStopped': l10n.t.karaokeUi.phoneInputStopped(value1: '__ERROR__'),
+            'phoneInputNetworkFellBehind': l10n.t.karaokeUi.phoneInputNetworkFellBehind,
+            'phoneInputRequiresSecureContext': l10n.t.karaokeUi.phoneInputRequiresSecureContext,
+            'phoneInputRequires16kHzCapture': l10n.t.karaokeUi.phoneInputRequires16kHzCapture,
+            'phoneInputNeedsActivePerformance': l10n.t.karaokeUi.phoneInputNeedsActivePerformance,
+            'phoneCaptureRequiresTrustedHTTPS': l10n.t.karaokeUi.phoneCaptureRequiresTrustedHTTPS,
+            'phoneInputNeedsAssignedSinger': l10n.t.karaokeUi.phoneInputNeedsAssignedSinger,
+            'phoneInputUncalibratedPracticeOnly': l10n.t.karaokeUi.phoneInputUncalibratedPracticeOnly,
+          }),
+        );
         return;
       }
       response.headers.contentType = ContentType.json;

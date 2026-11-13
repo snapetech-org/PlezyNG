@@ -1,6 +1,6 @@
 {
-  "maximumKeys": 1268,
-  "maximumEntries": 45394,
-  "reviewedAt": "2026-11-12",
-  "status": "Untranslated backlog, not language qualification. The six host-stage karaoke analysis correction labels, four K23 trim/skip controls, two audiobook bedtime schedule labels, and fourteen Karaoke show-template labels use the existing English fallback until translation review. Reduce these ceilings as translations are reviewed."
+  "maximumKeys": 1298,
+  "maximumEntries": 46474,
+  "reviewedAt": "2026-11-13",
+  "status": "Untranslated backlog, not language qualification. The six host-stage karaoke analysis correction labels, thirty karaoke microphone/performance and phone-capture labels, four K23 trim/skip controls, two audiobook bedtime schedule labels, and fourteen Karaoke show-template labels use the existing English fallback until translation review. The ceilings match the current explicitly allowlisted fallback count; reduce them as translations are reviewed."
 }

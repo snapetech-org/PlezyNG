@@ -13882,6 +13882,48 @@ class Translations$karaokeUi$en {
 	/// en: 'No confident pitch'
 	String get noConfidentPitch => 'No confident pitch';
 
+	/// en: 'Phone pitch and private recording'
+	String get phonePitchAndPrivateRecording => 'Phone pitch and private recording';
+
+	/// en: 'Use headphones. This input provides pitch feedback and an optional private dry recording on the host. It does not amplify your voice through the stage speakers.'
+	String get phoneMicrophoneInputHelp => 'Use headphones. This input provides pitch feedback and an optional private dry recording on the host. It does not amplify your voice through the stage speakers.';
+
+	/// en: 'Send raw vocal audio to save a private take on the host'
+	String get sendRawVocalAudioForPrivateTake => 'Send raw vocal audio to save a private take on the host';
+
+	/// en: 'Enable phone microphone'
+	String get enablePhoneMicrophone => 'Enable phone microphone';
+
+	/// en: 'Mute and save'
+	String get muteAndSavePhoneInput => 'Mute and save';
+
+	/// en: 'Pitch MIDI ${value1} · practice only'
+	String pitchMIDIPracticeOnly({required Object value1}) => 'Pitch MIDI ${value1} · practice only';
+
+	/// en: 'Phone input stopped: ${value1}'
+	String phoneInputStopped({required Object value1}) => 'Phone input stopped: ${value1}';
+
+	/// en: 'Phone input stopped because the network fell behind.'
+	String get phoneInputNetworkFellBehind => 'Phone input stopped because the network fell behind.';
+
+	/// en: 'A trusted HTTPS connection is required.'
+	String get phoneInputRequiresSecureContext => 'A trusted HTTPS connection is required.';
+
+	/// en: 'This browser cannot supply the required 16 kHz capture path.'
+	String get phoneInputRequires16kHzCapture => 'This browser cannot supply the required 16 kHz capture path.';
+
+	/// en: 'Return to an active performance before enabling capture.'
+	String get phoneInputNeedsActivePerformance => 'Return to an active performance before enabling capture.';
+
+	/// en: 'Phone capture requires the host HTTPS room with a certificate trusted by this phone. The ordinary LAN songbook remains available.'
+	String get phoneCaptureRequiresTrustedHTTPS => 'Phone capture requires the host HTTPS room with a certificate trusted by this phone. The ordinary LAN songbook remains available.';
+
+	/// en: 'The host must start a request assigned to your singer before you enable input.'
+	String get phoneInputNeedsAssignedSinger => 'The host must start a request assigned to your singer before you enable input.';
+
+	/// en: 'Phone timing is uncalibrated. Feedback is for practice and does not enter competitive leaderboards.'
+	String get phoneInputUncalibratedPracticeOnly => 'Phone timing is uncalibrated. Feedback is for practice and does not enter competitive leaderboards.';
+
 	/// en: 'Pitch: MIDI ${value1}'
 	String pitchMIDI({required Object value1}) => 'Pitch: MIDI ${value1}';
 
@@ -22717,6 +22759,20 @@ extension on Translations {
 			'karaokeUi.savePrivateTake' => 'Save private take',
 			'karaokeUi.microphoneLevel' => 'Microphone level',
 			'karaokeUi.noConfidentPitch' => 'No confident pitch',
+			'karaokeUi.phonePitchAndPrivateRecording' => 'Phone pitch and private recording',
+			'karaokeUi.phoneMicrophoneInputHelp' => 'Use headphones. This input provides pitch feedback and an optional private dry recording on the host. It does not amplify your voice through the stage speakers.',
+			'karaokeUi.sendRawVocalAudioForPrivateTake' => 'Send raw vocal audio to save a private take on the host',
+			'karaokeUi.enablePhoneMicrophone' => 'Enable phone microphone',
+			'karaokeUi.muteAndSavePhoneInput' => 'Mute and save',
+			'karaokeUi.pitchMIDIPracticeOnly' => ({required Object value1}) => 'Pitch MIDI ${value1} · practice only',
+			'karaokeUi.phoneInputStopped' => ({required Object value1}) => 'Phone input stopped: ${value1}',
+			'karaokeUi.phoneInputNetworkFellBehind' => 'Phone input stopped because the network fell behind.',
+			'karaokeUi.phoneInputRequiresSecureContext' => 'A trusted HTTPS connection is required.',
+			'karaokeUi.phoneInputRequires16kHzCapture' => 'This browser cannot supply the required 16 kHz capture path.',
+			'karaokeUi.phoneInputNeedsActivePerformance' => 'Return to an active performance before enabling capture.',
+			'karaokeUi.phoneCaptureRequiresTrustedHTTPS' => 'Phone capture requires the host HTTPS room with a certificate trusted by this phone. The ordinary LAN songbook remains available.',
+			'karaokeUi.phoneInputNeedsAssignedSinger' => 'The host must start a request assigned to your singer before you enable input.',
+			'karaokeUi.phoneInputUncalibratedPracticeOnly' => 'Phone timing is uncalibrated. Feedback is for practice and does not enter competitive leaderboards.',
 			'karaokeUi.pitchMIDI' => ({required Object value1}) => 'Pitch: MIDI ${value1}',
 			'karaokeUi.performanceScore' => ({required Object value1, required Object value2}) => 'Score: ${value1} / 10000 · ${value2}',
 			'karaokeUi.practicePassCompetitiveScoringDisabled' => 'Practice pass: a seek or setting change disabled competitive scoring.',
@@ -22851,6 +22907,8 @@ extension on Translations {
 			'karaokeUi.guideVocals' => 'Guide vocals',
 			'karaokeUi.instrumental' => 'Instrumental',
 			'karaokeUi.bpmEstimated' => ({required Object value1, required Object value2, required Object value3}) => '${value1} · ${value2} BPM · ${value3} · estimated',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.correctAnalysis' => 'Correct song analysis',
 			'karaokeUi.analysisCorrectionsDoNotCertifyScoring' => 'Blank chord lists remove chord cues. Use estimates to discard all manual corrections. Manual corrections do not certify a singing score.',
 			'karaokeUi.analysisKey' => 'Key',
@@ -22865,8 +22923,6 @@ extension on Translations {
 			'karaokeUi.echoWet' => 'Echo wet',
 			'karaokeUi.noiseGate' => 'Noise gate',
 			'karaokeUi.noShowTemplates' => 'No show templates saved yet.',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.trimStartMs' => 'Trim start (ms)',
 			'karaokeUi.outputDurationMs' => 'Output duration (ms)',
 			'karaokeUi.mixApprovedResponse' => ({required Object value1}) => 'Mix approved response ${value1}',

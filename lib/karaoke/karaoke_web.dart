@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 /// Self-contained LAN songbook/display. No external scripts, analytics or media
 /// credentials. Mic access is a separate explicit action on a secure context.
 const karaokeGuestHtml = r'''<!doctype html>
@@ -12,11 +14,14 @@ const karaokeGuestHtml = r'''<!doctype html>
 <div id="myMissing" aria-live="polite"></div><details id="missingSuggestion"><summary>Can't find a song?</summary><form id="missingForm"><label>Song title <input id="missingTitle" maxlength="160" required></label><label>Artist <input id="missingArtist" maxlength="120"></label><label>Language <input id="missingLanguage" maxlength="32"></label><button>Suggest it to the host</button></form></details></section>
 <section id="waiting" hidden><div id="quiz"></div><h2>Singer rotation</h2><div id="queue"></div><section id="host" hidden><div class="row"><button data-command="pause">Pause</button><button data-command="resume">Resume</button><button data-command="restart">Restart</button><button data-command="finish">Finish song</button><button data-command="end">End performance</button></div><h3>Missing song suggestions</h3><div id="missingQueue"></div></section></section>
 <section id="stage" hidden><p id="banner"></p><p id="title" class="muted"></p><div id="lyric" dir="auto"></div><p id="next" dir="auto"></p><small id="pronunciation"></small><small id="translation"></small><progress id="progress" value="0" max="1" aria-label="Song progress"></progress><p><button id="fullscreen">Full screen</button></p></section>
-<section id="input" hidden><h2>Phone pitch and private recording</h2><p>Use headphones. This input provides pitch feedback and an optional private dry recording on the host. It does not amplify your voice through the stage speakers.</p><p id="inputReason"></p><label><input id="recordPhone" type="checkbox"> Send raw vocal audio to save a private take on the host</label><button id="microphone">Enable phone microphone</button><p id="pitch" role="status"></p><progress id="meter" max="1" value="0" aria-label="Microphone level"></progress></section>
+<section id="input" hidden><h2 id="inputTitle"></h2><p id="inputHelp"></p><p id="inputReason"></p><label><input id="recordPhone" type="checkbox"> <span id="recordPhoneLabel"></span></label><button id="microphone"></button><p id="pitch" role="status"></p><progress id="meter" max="1" value="0"></progress></section>
 <button id="retry" hidden>Retry last action</button></main>
 <script>
 'use strict';
+const micCopy=__KARAOKE_MIC_STRINGS__;
 const $=id=>document.getElementById(id), message=(text,error=false)=>{$('message').textContent=text;$('message').className=error?'error':'';};
+for(const [id,key] of [['inputTitle','phoneTitle'],['inputHelp','phoneHelp'],['recordPhoneLabel','recordPhoneLabel']])$(id).textContent=micCopy[key];
+$('microphone').textContent=micCopy.enablePhoneMicrophone;$('meter').setAttribute('aria-label',micCopy.microphoneLevel);
 const uuid=()=>{const b=new Uint8Array(16);crypto.getRandomValues(b);return Array.from(b,x=>x.toString(16).padStart(2,'0')).join('');};
 let credentials=null,state=null,pending=null,invite=location.hash.slice(1),lyrics=[],lyricKey='',anchor=0,anchorPosition=0,offset=0,view='book',busy=false;
 try{credentials=JSON.parse(sessionStorage.getItem('plezy-room'));pending=JSON.parse(sessionStorage.getItem('plezy-pending'));}catch{}
@@ -60,7 +65,7 @@ async function search(reset){try{if(reset){offset=0;$('songs').replaceChildren()
 $('search').onsubmit=e=>{e.preventDefault();search(true);};$('more').onclick=()=>search(false);
 $('missingForm').onsubmit=e=>{e.preventDefault();command('missingSong',{title:$('missingTitle').value,artist:$('missingArtist').value,language:$('missingLanguage').value});};
 async function refresh(){if(!credentials)return;try{const result=await api('/api/state');state=result.data;if(mic && (!state.playing || state.epoch!==mic.epoch || !state.phoneInput.activeSinger))await stopMic();
- $('inputReason').textContent=!window.isSecureContext || !state.phoneInput.available?'Phone capture requires the host HTTPS room with a certificate trusted by this phone. The ordinary LAN songbook remains available.':!state.phoneInput.activeSinger?'The host must start a request assigned to your singer before you enable input.':'Phone timing is uncalibrated. Feedback is for practice and does not enter competitive leaderboards.';
+ $('inputReason').textContent=!window.isSecureContext || !state.phoneInput.available?micCopy.phoneCaptureRequiresTrustedHTTPS:!state.phoneInput.activeSinger?micCopy.phoneInputNeedsAssignedSinger:micCopy.phoneInputUncalibratedPracticeOnly;
  $('microphone').disabled=!mic && (!window.isSecureContext || !state.phoneInput.available || !state.phoneInput.activeSinger);anchor=performance.now();anchorPosition=state.positionMs+(state.playing?result.rtt*.5*state.tempo:0);
  $('title').textContent=state.track?state.track.title+' · '+state.track.artist:'Waiting for the next singer';$('banner').textContent=state.banner;
  const key=(state.track?.id||'')+':'+state.revision;if(key!==lyricKey){lyricKey=key;lyrics=state.track?(await api('/api/lyrics')).data.lines:[];}
@@ -94,27 +99,27 @@ function estimate(samples){let mean=0,energy=0;for(const v of samples)mean+=v;me
 }
 async function stopMic(){const active=mic;mic=null;if(active){active.stopping=true;active.stream.getTracks().forEach(t=>t.stop());active.node.port.onmessage=null;active.node.port.close();active.source.disconnect();active.node.disconnect();await active.context.close().catch(()=>{});
  try{await active.sending;}catch{}try{await api('/api/microphone',{operation:'stop'});}catch{} }
- $('microphone').textContent='Enable phone microphone';$('recordPhone').disabled=false;$('meter').value=0;}
+ $('microphone').textContent=micCopy.enablePhoneMicrophone;$('recordPhone').disabled=false;$('meter').value=0;}
 async function sendFrames(active){if(active.sendingNow)return;active.sendingNow=true;try{while((mic===active||active.stopping)&&active.queue.length){const frame=active.queue.shift();
  try{await api('/api/microphone',frame);}catch(first){if(first.status)throw first;await api('/api/microphone',frame);} }}
- catch(e){message('Phone input stopped: '+e.message,true);setTimeout(()=>stopMic(),0);}finally{active.sendingNow=false;}}
+ catch(e){message(micCopy.phoneInputStopped.replace('__ERROR__',e.message),true);setTimeout(()=>stopMic(),0);}finally{active.sendingNow=false;}}
 $('microphone').onclick=async()=>{if(mic){await stopMic();return;}if(micStarting)return;micStarting=true;let stream=null,context=null;
- try{if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)throw new Error('A trusted HTTPS connection is required.');
+ try{if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)throw new Error(micCopy.phoneInputRequiresSecureContext);
  stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
- context=new AudioContext({sampleRate:16000});if(context.sampleRate!==16000||!context.audioWorklet)throw new Error('This browser cannot supply the required 16 kHz capture path.');
+ context=new AudioContext({sampleRate:16000});if(context.sampleRate!==16000||!context.audioWorklet)throw new Error(micCopy.phoneInputRequires16kHzCapture);
  await context.audioWorklet.addModule('/capture-worklet.js');await context.resume();
- if(document.hidden||!state?.playing)throw new Error('Return to an active performance before enabling capture.');
+ if(document.hidden||!state?.playing)throw new Error(micCopy.phoneInputNeedsActivePerformance);
  const record=$('recordPhone').checked,lease=(await api('/api/microphone',{operation:'start',record})).data;
  const source=context.createMediaStreamSource(stream),node=new AudioWorkletNode(context,'plezy-capture'),active={stream,context,source,node,id:lease.lease,sequence:lease.nextSequence,epoch:state.epoch,record,queue:[],sendingNow:false,sending:Promise.resolve()};mic=active;
- node.port.onmessage=e=>{if(mic!==active)return;if(active.queue.length>=4){message('Phone input stopped because the network fell behind.',true);stopMic();return;}
+ node.port.onmessage=e=>{if(mic!==active)return;if(active.queue.length>=4){message(micCopy.phoneInputNetworkFellBehind,true);stopMic();return;}
   const samples=e.data,pitch=estimate(samples.subarray(samples.length-2048)),sourceMs=Math.round(anchorPosition+(performance.now()-anchor)*state.tempo);
   const frame={operation:'frame',lease:active.id,sequence:active.sequence++,epoch:active.epoch,sourceMs,...pitch};
   if(record){const bytes=new Uint8Array(samples.length*2),view=new DataView(bytes.buffer);for(let i=0;i<samples.length;i++)view.setInt16(i*2,Math.round(Math.max(-1,Math.min(1,samples[i]))*32767),true);frame.pcm=btoa(String.fromCharCode(...bytes));}
-  $('meter').value=Math.min(1,pitch.rms*4);$('pitch').textContent=pitch.midi===null?'No confident pitch':'Pitch MIDI '+pitch.midi.toFixed(1)+' · practice only';
+  $('meter').value=Math.min(1,pitch.rms*4);$('pitch').textContent=pitch.midi===null?micCopy.noConfidentPitch:micCopy.pitchMIDIPracticeOnly.replace('__PITCH__',pitch.midi.toFixed(1));
   active.queue.push(frame);if(!active.sendingNow)active.sending=sendFrames(active);
  };
  stream.getAudioTracks()[0].onended=()=>stopMic();context.onstatechange=()=>{if(context.state!=='running'&&mic===active)stopMic();};
- source.connect(node);node.connect(context.destination);$('microphone').textContent='Mute and save';$('recordPhone').disabled=true;
+ source.connect(node);node.connect(context.destination);$('microphone').textContent=micCopy.muteAndSave;$('recordPhone').disabled=true;
  }catch(e){stream?.getTracks().forEach(t=>t.stop());if(context)await context.close().catch(()=>{});message(e.message,true);try{await api('/api/microphone',{operation:'stop'});}catch{}}
  finally{micStarting=false;}
 };
@@ -132,6 +137,16 @@ let lastFrame=0;function draw(now){requestAnimationFrame(draw);if(view!=='stage'
 requestAnimationFrame(draw);setInterval(()=>{if(!busy)refresh();},1000);
 if(credentials)enter().catch(e=>message(e.message,true));else if(!invite)message('Scan the QR invitation on the host.',true);
 </script></html>''';
+
+String karaokeGuestHtmlFor(Map<String, String> microphoneStrings) {
+  final encoded = jsonEncode(microphoneStrings)
+      .replaceAll('<', r'\u003c')
+      .replaceAll('>', r'\u003e')
+      .replaceAll('&', r'\u0026')
+      .replaceAll('\u2028', r'\u2028')
+      .replaceAll('\u2029', r'\u2029');
+  return karaokeGuestHtml.replaceFirst('__KARAOKE_MIC_STRINGS__', encoded);
+}
 
 /// Fixed 16 kHz context: the browser resamples native input before the worklet.
 /// Zero output prevents feedback. Raw data only leaves after explicit opt-in.

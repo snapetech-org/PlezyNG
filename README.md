@@ -18,8 +18,6 @@ The [capability and qualification ledger](docs/maintainers/capability-manifest.j
 
 The [debrid, Stremio and remote-streaming guide](docs/plezyng/remote-streams/README.md) describes the implemented providers, shared playback and queue flows, architecture, native P2P status, and remaining validation limits.
 
-The [Discord client and PiP feasibility plan](docs/plezyng/discord/README.md) preserves an optional future design, its research, architecture, and validation gates. It is deferred; no client implementation or delivery commitment is implied.
-
 ## Screenshots
 
 Select any thumbnail to open the full-resolution image.

@@ -14551,6 +14551,12 @@ class Translations$karaokeUi$en {
 	/// en: 'Count in on practice loops'
 	String get countInOnPracticeLoops => 'Count in on practice loops';
 
+	/// en: 'Play count-in ticks'
+	String get practiceCountInTickTitle => 'Play count-in ticks';
+
+	/// en: 'Use the device's short system click on each beat. Some devices or sound settings may suppress it.'
+	String get practiceCountInTickHelp => 'Use the device\'s short system click on each beat. Some devices or sound settings may suppress it.';
+
 	/// en: 'Mark intro end here'
 	String get setIntroTrimAtPlayhead => 'Mark intro end here';
 
@@ -22984,6 +22990,8 @@ extension on Translations {
 			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
 			'karaokeUi.searchSongs' => 'Search songs',
 			'karaokeUi.countInOnPracticeLoops' => 'Count in on practice loops',
+			'karaokeUi.practiceCountInTickTitle' => 'Play count-in ticks',
+			'karaokeUi.practiceCountInTickHelp' => 'Use the device\'s short system click on each beat. Some devices or sound settings may suppress it.',
 			'karaokeUi.setIntroTrimAtPlayhead' => 'Mark intro end here',
 			'karaokeUi.setOutroTrimAtPlayhead' => 'Mark outro start here',
 			'karaokeUi.previewTrimmedRange' => 'Play marked range',

@@ -5547,6 +5547,8 @@
     "chooseYourSingerName": "Choose your singer name",
     "searchSongs": "Search songs",
     "countInOnPracticeLoops": "Count in on practice loops",
+    "practiceCountInTickTitle": "Play count-in ticks",
+    "practiceCountInTickHelp": "Use the device's short system click on each beat. Some devices or sound settings may suppress it.",
     "setIntroTrimAtPlayhead": "Mark intro end here",
     "setOutroTrimAtPlayhead": "Mark outro start here",
     "previewTrimmedRange": "Play marked range",

@@ -1206,7 +1206,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
                     TextButton(onPressed: () => _run(() => s.setLoop(null, null)), child: Text(tr('clearLoop'))),
                   ],
                 ),
-                if (s.loopStartMs != null && s.loopEndMs != null)
+                if (s.loopStartMs != null && s.loopEndMs != null) ...[
                   SwitchListTile(
                     dense: true,
                     contentPadding: EdgeInsets.zero,
@@ -1214,6 +1214,17 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
                     value: s.practiceCountInEnabled,
                     onChanged: _busy ? null : (value) => _run(() => s.setPracticeCountInEnabled(value)),
                   ),
+                  SwitchListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.t.karaokeUi.practiceCountInTickTitle),
+                    subtitle: Text(l10n.t.karaokeUi.practiceCountInTickHelp),
+                    value: s.practiceCountInTickEnabled,
+                    onChanged: _busy || !s.practiceCountInEnabled
+                        ? null
+                        : (value) => _run(() => s.setPracticeCountInTickEnabled(value)),
+                  ),
+                ],
                 if (s.track case final track? when track.hasTrimMarkers || track.hasLongInstrumentalSkipMarkers)
                   SwitchListTile(
                     dense: true,

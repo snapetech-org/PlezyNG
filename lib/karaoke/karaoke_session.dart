@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
 import '../media/lyrics.dart';
@@ -88,6 +89,7 @@ class KaraokeSession extends ChangeNotifier {
   List<KaraokeSection> _instrumentalSkipMarkers = const [];
   bool fairRotation = true, allowExplicit = true, requireApproval = true, allowVotes = false, held = false;
   bool practiceCountInEnabled = false;
+  bool practiceCountInTickEnabled = false;
   bool autoSkipMarkersEnabled = false;
   bool _disposed = false, _loopSeeking = false, _finishing = false;
   bool _instrumentalSkipSeeking = false, _trimPreviewActive = false, _trimPreviewStopping = false;
@@ -209,6 +211,7 @@ class KaraokeSession extends ChangeNotifier {
       requireApproval = j['requireApproval'] != false;
       allowVotes = j['allowVotes'] == true;
       practiceCountInEnabled = j['practiceCountInEnabled'] == true;
+      practiceCountInTickEnabled = j['practiceCountInTickEnabled'] == true;
       autoSkipMarkersEnabled = j['autoSkipMarkersEnabled'] == true;
       banner = j['banner'] as String? ?? '';
       stageColor = j['stageColor'] as int? ?? stageColor;
@@ -259,6 +262,7 @@ class KaraokeSession extends ChangeNotifier {
     'requireApproval': requireApproval,
     'allowVotes': allowVotes,
     'practiceCountInEnabled': practiceCountInEnabled,
+    'practiceCountInTickEnabled': practiceCountInTickEnabled,
     'autoSkipMarkersEnabled': autoSkipMarkersEnabled,
     'party': party.toJson(),
     'duetInvitation': duetInvitation,
@@ -1523,6 +1527,12 @@ class KaraokeSession extends ChangeNotifier {
     await save();
   }
 
+  Future<void> setPracticeCountInTickEnabled(bool enabled) async {
+    practiceCountInTickEnabled = enabled;
+    _notify();
+    await save();
+  }
+
   Future<void> setAutoSkipMarkersEnabled(bool enabled) async {
     autoSkipMarkersEnabled = enabled;
     _notify();
@@ -1603,6 +1613,13 @@ class KaraokeSession extends ChangeNotifier {
         }
         countInBeat = beat;
         _notify();
+        if (practiceCountInTickEnabled) {
+          unawaited(
+            SystemSound.play(SystemSoundType.click).catchError((Object _) {
+              // The visual count-in remains useful when a platform has no click sound.
+            }),
+          );
+        }
         await Future<void>.delayed(beatDuration);
       }
       if (!isCurrent()) {

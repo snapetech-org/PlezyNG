@@ -18,6 +18,7 @@
 - Document both Kavita OPDS Auth Key setup options and how the credential is kept out of saved URLs and entry identifiers.
 - Localize karaoke microphone/performance feedback and explain unavailable TV capture with phone-companion and external-mixer options.
 - Localize phone-companion microphone controls, capture errors, HTTPS guidance and its accessible level label.
+- Add an optional persisted system click to each beat of the A–B practice-loop count-in.
 
 - Allow a pinned-source release to run exact-source CI and create its stable tag through the authenticated release controller when the organization blocks Actions tag creation.
 - Route an explicit private Apple selection to macOS as well as iOS and tvOS, and bound the macOS compile and package job to 100 and 150 minutes.

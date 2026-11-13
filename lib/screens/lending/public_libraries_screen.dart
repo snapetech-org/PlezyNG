@@ -549,10 +549,10 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
       final result = library == null
           ? _catalogProvider == 'libby'
                 ? await service.libbyTitleSearch(
-                      _search.text.trim(),
-                      creator: _creator.text.trim(),
-                      mediaType: _libbyMediaType,
-                    )
+                    _search.text.trim(),
+                    creator: _creator.text.trim(),
+                    mediaType: _libbyMediaType,
+                  )
                 : _catalogProvider == 'googleBooks'
                 ? await service.googleBooksSearch(
                     _search.text.trim(),
@@ -992,9 +992,7 @@ class _LendingDetailScreenState extends State<_LendingDetailScreen> {
             ],
           ),
         ),
-        actions: [
-          DialogActionButton(onPressed: () => Navigator.pop(dialogContext), label: t.common.close),
-        ],
+        actions: [DialogActionButton(onPressed: () => Navigator.pop(dialogContext), label: t.common.close)],
       ),
     );
   }
@@ -1195,9 +1193,7 @@ class _LendingDetailScreenState extends State<_LendingDetailScreen> {
                           ),
                         if (book.data['source'] == 'libbyTitleLink')
                           _focusedLendingButton(
-                            onPressed: _busy
-                                ? null
-                                : () => _showLibbyQr(book.page!),
+                            onPressed: _busy ? null : () => _showLibbyQr(book.page!),
                             buildButton: (onPressed) => TextButton.icon(
                               onPressed: onPressed,
                               icon: const AppIcon(Symbols.qr_code_rounded),

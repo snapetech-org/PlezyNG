@@ -16,6 +16,8 @@ Encrypted cloud sync and compatible provider-native progress/bookmark sync can r
 
 Local source browsing keeps up to 20,000 entries in memory. Larger sorted directory snapshots are spooled to temporary JSON pages for reuse across cursor requests, up to 100,000 recognized entries and 128 MiB total across at most 32 directories. Snapshots expire after one minute and are removed when the adapter closes. If a spool exceeds its byte budget, browsing remains functional but later pages may re-enumerate the directory. Initial enumeration, sort, and 10,000/100,000-entry latency, memory, and I/O budgets still require measurement on target devices and filesystems.
 
+Completed source scans reconcile stale entries in batches of 128 and query only completed-download fingerprints referenced by each batch. Reconciliation does not materialize the entire stale catalog or the full profile download ledger at once.
+
 ## Shared library identity
 
 A source can be assigned a public shared-library ID. Devices using the same ID derive the sync identity from that ID and the source entry ID. Editing the ID re-keys cached progress and annotation versions while retaining old cloud records as history. Every participating device must set the matching IDs before it can join the paired identity.

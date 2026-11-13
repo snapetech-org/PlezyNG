@@ -605,66 +605,99 @@ class SourceRepository {
         }
       });
 
-  Future<void> finishSourceScan(String profile, String source, int generation, {required bool Function() isCurrent}) =>
-      database.transaction(() async {
-        _writable(profile);
+  Future<void> finishSourceScan(
+    String profile,
+    String source,
+    int generation, {
+    required bool Function() isCurrent,
+  }) => database.transaction(() async {
+    _writable(profile);
+    if (!isCurrent()) {
+      throw const SourceException(SourceFailure.cancelled);
+    }
+    final active = await database
+        .customSelect(
+          'SELECT generation FROM source_scans WHERE profile=? AND source=?',
+          variables: [Variable(profile), Variable(source)],
+        )
+        .getSingleOrNull();
+    if (active?.read<int>('generation') != generation) {
+      throw const SourceException(SourceFailure.cancelled);
+    }
+    var afterRowId = 0;
+    while (true) {
+      if (!isCurrent()) {
+        throw const SourceException(SourceFailure.cancelled);
+      }
+      final stale = await database
+          .customSelect(
+            'SELECT rowid AS scan_row,id,payload FROM entries '
+            'WHERE profile=? AND source=? AND scan_generation<? AND rowid>? '
+            'ORDER BY rowid LIMIT 128',
+            variables: [Variable(profile), Variable(source), Variable(generation), Variable(afterRowId)],
+          )
+          .get();
+      if (stale.isEmpty) break;
+      afterRowId = stale.last.read<int>('scan_row');
+      final entries = [
+        for (final row in stale) SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('payload')))),
+      ];
+      final completed = await _completedDownloadFingerprints(profile, source, entries);
+      for (var index = 0; index < stale.length; index++) {
         if (!isCurrent()) {
           throw const SourceException(SourceFailure.cancelled);
         }
-        final active = await database
-            .customSelect(
-              'SELECT generation FROM source_scans WHERE profile=? AND source=?',
-              variables: [Variable(profile), Variable(source)],
-            )
-            .getSingleOrNull();
-        if (active?.read<int>('generation') != generation) {
-          throw const SourceException(SourceFailure.cancelled);
+        final row = stale[index];
+        final entry = entries[index];
+        final id = row.read<String>('id');
+        final retainedOffline = entry.files.any((file) => completed[sourceKey(source, file.id)] == file.fingerprint);
+        if (retainedOffline) {
+          await database.customStatement(
+            'UPDATE entries SET scan_generation=?,payload=? WHERE profile=? AND source=? AND id=?',
+            [generation, jsonEncode(entry.copyWith(unavailable: true).toJson()), profile, source, id],
+          );
+        } else {
+          await database.customStatement('DELETE FROM entry_shelves WHERE profile=? AND source=? AND id=?', [
+            profile,
+            source,
+            id,
+          ]);
+          await database.customStatement('DELETE FROM entries WHERE profile=? AND source=? AND id=?', [
+            profile,
+            source,
+            id,
+          ]);
         }
-        final stale = await database
-            .customSelect(
-              'SELECT id,payload FROM entries WHERE profile=? AND source=? AND scan_generation<?',
-              variables: [Variable(profile), Variable(source), Variable(generation)],
-            )
-            .get();
-        final completed = <String, String>{
-          for (final row
-              in await database
-                  .customSelect(
-                    'SELECT key,fingerprint FROM downloads WHERE profile=? AND complete=1',
-                    variables: [Variable(profile)],
-                  )
-                  .get())
-            row.read<String>('key'): row.read<String>('fingerprint'),
-        };
-        if (!isCurrent()) {
-          throw const SourceException(SourceFailure.cancelled);
-        }
-        for (final row in stale) {
-          if (!isCurrent()) {
-            throw const SourceException(SourceFailure.cancelled);
-          }
-          final id = row.read<String>('id');
-          final entry = SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('payload'))));
-          final retainedOffline = entry.files.any((file) => completed[sourceKey(source, file.id)] == file.fingerprint);
-          if (retainedOffline) {
-            await database.customStatement(
-              'UPDATE entries SET scan_generation=?,payload=? WHERE profile=? AND source=? AND id=?',
-              [generation, jsonEncode(entry.copyWith(unavailable: true).toJson()), profile, source, id],
-            );
-          } else {
-            await database.customStatement('DELETE FROM entry_shelves WHERE profile=? AND source=? AND id=?', [
-              profile,
-              source,
-              id,
-            ]);
-            await database.customStatement('DELETE FROM entries WHERE profile=? AND source=? AND id=?', [
-              profile,
-              source,
-              id,
-            ]);
-          }
-        }
-      });
+      }
+    }
+  });
+
+  Future<Map<String, String>> _completedDownloadFingerprints(
+    String profile,
+    String source,
+    List<SourceEntry> entries,
+  ) async {
+    final keys = <String>{
+      for (final entry in entries)
+        for (final file in entry.files) sourceKey(source, file.id),
+    }.toList(growable: false);
+    final fingerprints = <String, String>{};
+    for (var start = 0; start < keys.length; start += 400) {
+      final chunk = keys.skip(start).take(400).toList(growable: false);
+      final placeholders = List<String>.filled(chunk.length, '?').join(',');
+      final variables = <Variable<Object>>[Variable(profile), for (final key in chunk) Variable(key)];
+      final rows = await database
+          .customSelect(
+            'SELECT key,fingerprint FROM downloads WHERE profile=? AND complete=1 AND key IN ($placeholders)',
+            variables: variables,
+          )
+          .get();
+      for (final row in rows) {
+        fingerprints[row.read<String>('key')] = row.read<String>('fingerprint');
+      }
+    }
+    return fingerprints;
+  }
 
   /// Latest indexed episodes across RSS and Audiobookshelf, scoped before
   /// decoding so opening Podcasts never loads the entire media catalogue.

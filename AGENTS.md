@@ -23,9 +23,12 @@ widen trusted runner-group access to make untrusted code run.
 
 ## CodeQL
 
-CodeQL workflow execution remains disabled across Snapetech repositories under
-the owner's directive. Do not restore or reroute CodeQL workflows unless the
-owner explicitly reverses that directive.
+CodeQL default setup is enabled for this public repository while GitHub
+provides public code scanning at no charge. Use standard GitHub-hosted runners,
+which are free for public repositories; do not move CodeQL to larger or private
+runners. Keep analysis permissions minimal and do not expose secrets to
+untrusted pull-request code. Disable CodeQL only at the owner's explicit
+direction.
 
 ## Release coverage — owner directive, 2026-11-05
 

@@ -153,7 +153,7 @@ func (h *watchmodeAvailabilityHandler) serveHTTP(w http.ResponseWriter, r *http.
 		return
 	}
 	if !h.allowRequest(ip, h.now()) {
-		http.Error(w, "Too many requests", http.StatusTooManyRequests)
+		markRateLimit(w, "Too many requests", time.Second)
 		return
 	}
 

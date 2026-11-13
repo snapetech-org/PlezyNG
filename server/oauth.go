@@ -262,7 +262,7 @@ func (p *oauthProxy) handleStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !p.ipAllow(ip) {
-		http.Error(w, "Rate limited", http.StatusTooManyRequests)
+		markRateLimit(w, "Rate limited", time.Minute)
 		return
 	}
 
@@ -510,7 +510,7 @@ func (p *oauthProxy) handleResult(w http.ResponseWriter, r *http.Request) {
 		if seconds := int((retryAfter + time.Second - 1) / time.Second); seconds > 0 {
 			w.Header().Set("Retry-After", strconv.Itoa(seconds))
 		}
-		http.Error(w, "Rate limited", http.StatusTooManyRequests)
+		markRateLimit(w, "Rate limited", retryAfter)
 		return
 	}
 

@@ -123,8 +123,7 @@ func (p *oauthProxy) cloudRate(w http.ResponseWriter, r *http.Request) bool {
 		return false
 	}
 	if allowed, _ := p.pollAllow(ip); !allowed {
-		w.Header().Set("Retry-After", "30")
-		http.Error(w, "Try later", 429)
+		markRateLimit(w, "Try later", 30*time.Second)
 		return false
 	}
 	return true

@@ -67,6 +67,10 @@ func TestGeneratedRelayProtocolVersionsMatchSpec(t *testing.T) {
 // newTestServer builds a goroutine-free, network-free test server.
 func newTestServer(t *testing.T, stateFile string) *Server {
 	t.Helper()
+	abuse, err := newAbuseGuard(stateFile+".abuse.json", time.Now())
+	if err != nil {
+		t.Fatalf("create abuse guard: %v", err)
+	}
 	s := &Server{
 		rooms:         make(map[string]*Room),
 		logs:          newLogStore(t.TempDir()),
@@ -74,6 +78,7 @@ func newTestServer(t *testing.T, stateFile string) *Server {
 		posterUploads: newPosterUploadLimiter(posterPerIPRateBurst, posterPerIPRateSustained, posterGlobalRateBurst, posterGlobalRateSustained, maxConcurrentPosterUploads, maxConcurrentPosterUploadsPerIP, time.Now()),
 		posterFetches: newPosterUploadLimiter(posterFetchPerIPRateBurst, posterFetchPerIPRateSustained, posterFetchGlobalRateBurst, posterFetchGlobalRateSustained, maxConcurrentPosterFetches, maxConcurrentPosterFetchesPerIP, time.Now()),
 		conns:         newConnTracker(),
+		abuse:         abuse,
 		clientIPs:     newClientIPResolver(nil),
 	}
 	s.snap = newSnapshotter(stateFile, s.buildSnapshot)
@@ -1297,7 +1302,11 @@ func newRelayHarnessWithServer(t *testing.T, srv *Server, stopSnapshot bool) *re
 	mux.HandleFunc("/posters", srv.handlePostPosters)
 	mux.HandleFunc("/posters/", srv.handleGetPosters)
 
-	httpSrv := httptest.NewServer(mux)
+	var handler http.Handler = mux
+	if srv.abuse != nil {
+		handler = srv.abuse.middleware(mux, srv.clientIPs)
+	}
+	httpSrv := httptest.NewServer(handler)
 	t.Cleanup(func() {
 		httpSrv.Close()
 		if stopSnapshot {

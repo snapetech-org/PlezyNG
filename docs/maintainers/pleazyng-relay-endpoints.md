@@ -45,6 +45,39 @@ Party SDK, using its public relays or a user-configured Open Watch Party relay;
 that traffic does not use `PLEAZYNG_RELAY_BASE_URL` or this Go service's
 `/relay` path. See [`watch_party_relays.dart`](../../lib/watch_together/services/watch_party_relays.dart).
 
+## Shared request limits and abuse bans
+
+The Go service applies an HTTP token bucket to each resolved client address:
+120 requests of burst capacity, refilling at 30 requests per second. `/health`
+is exempt for local liveness checks. Existing route-specific limits remain in
+place. WebSocket handshakes share a per-address limit of five immediate
+connections and then one per second. The anonymous `/relay` WebSocket keeps its
+per-connection limit of 30 messages in a burst and 10 per second, plus a shared
+per-address budget of 150 burst messages and 50 per second across `/relay` and
+Music Connect. Steam's paired stream uses a shared per-address limit of 2,000
+frames in a burst and 1,000 per second, alongside its existing 8 MiB per
+second byte cap. Room lookups and room creation have additional per-address
+quotas.
+
+Shared service or room-capacity responses do not count as abuse signals; the
+ban policy applies only to source-controlled throttles and the explicit relay
+authentication/message violations above.
+
+Repeated source-controlled rate-limit responses, invalid Steam/Music relay
+credentials, or relay message-limit violations count toward one abuse record
+across the service. Ten signals inside 15 minutes cause a 15-minute ban. A new
+ban within 30 days escalates to one hour, then to a maximum of 24 hours. Active
+bans apply across the API routes, including WebSocket messages; the liveness
+route remains available. The service persists only keyed HMACs of normalized
+source addresses and ban expiry/level data. Both the hash key and state file
+must remain private in the service state directory. Source addresses and
+strike windows are held only in bounded memory.
+
+This is layered with Cloudflare's request-rate ceiling and the endpoint-level
+quotas. The counters are IP-based: users behind the same NAT or IPv6 `/64`
+share limits and can share a timed ban. The ban durations are finite; this is
+not a permanent blocklist or a defense against a distributed flood.
+
 ## OAuth, Steam account, and session-capability routes
 
 All following routes use the `/auth/` prefix. The Go service mounts them in

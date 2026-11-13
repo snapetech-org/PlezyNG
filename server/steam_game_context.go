@@ -89,8 +89,7 @@ func (p *oauthProxy) handleSteamGameContext(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	if allowed, _ := p.pollAllow(ip); !allowed {
-		w.Header().Set("Retry-After", "30")
-		http.Error(w, "Try later", http.StatusTooManyRequests)
+		markRateLimit(w, "Try later", 30*time.Second)
 		return
 	}
 	digest := sha256.Sum256([]byte(token))
@@ -101,9 +100,13 @@ func (p *oauthProxy) handleSteamGameContext(w http.ResponseWriter, r *http.Reque
 		http.Error(w, "Relink Steam", http.StatusUnauthorized)
 		return
 	}
-	if grant.contextLoading || p.steamContextActive >= 16 || time.Since(grant.contextFetched) < 5*time.Second {
+	if grant.contextLoading || time.Since(grant.contextFetched) < 5*time.Second {
 		p.mu.Unlock()
-		w.Header().Set("Retry-After", "5")
+		markRateLimit(w, "Try later", 5*time.Second)
+		return
+	}
+	if p.steamContextActive >= 16 {
+		p.mu.Unlock()
 		http.Error(w, "Try later", http.StatusTooManyRequests)
 		return
 	}

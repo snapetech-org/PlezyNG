@@ -1235,6 +1235,8 @@ type Server struct {
 	logLookups             chan struct{}
 	posterBodyReadTimeout  time.Duration
 	conns                  *connTracker
+	abuse                  *abuseGuard
+	startupErr             error
 	clientIPs              clientIPResolver
 	snap                   *snapshotter
 	oauth                  *oauthProxy // nil when OAUTH_BASE_URL is unset
@@ -1244,10 +1246,56 @@ type Server struct {
 	beforeTransferRoomLock func() // test-only transfer/admission ordering barrier
 	beforeLeaveRoomLock    func() // test-only mutation/capture ordering barrier
 	beforeTerminalDelivery func() // test-only post-persistence, pre-delivery barrier
+	wsMu                   sync.Mutex
+	wsClients              map[*Client]struct{}
+	wsStopping             bool
+	wsWG                   sync.WaitGroup
 	mu                     sync.RWMutex
 }
 
+func (s *Server) trackRelayClient(client *Client) bool {
+	s.wsMu.Lock()
+	defer s.wsMu.Unlock()
+	if s.wsStopping {
+		return false
+	}
+	if s.wsClients == nil {
+		s.wsClients = make(map[*Client]struct{})
+	}
+	s.wsClients[client] = struct{}{}
+	s.wsWG.Add(1)
+	return true
+}
+
+func (s *Server) untrackRelayClient(client *Client) {
+	s.wsMu.Lock()
+	delete(s.wsClients, client)
+	s.wsMu.Unlock()
+	s.wsWG.Done()
+}
+
+func (s *Server) stopRelayAdmissions() {
+	s.wsMu.Lock()
+	s.wsStopping = true
+	s.wsMu.Unlock()
+}
+
+func (s *Server) closeRelayClients() {
+	s.wsMu.Lock()
+	s.wsStopping = true
+	clients := make([]*Client, 0, len(s.wsClients))
+	for client := range s.wsClients {
+		clients = append(clients, client)
+	}
+	s.wsMu.Unlock()
+	for _, client := range clients {
+		client.close()
+	}
+	s.wsWG.Wait()
+}
+
 func newServer(logDir, stateFile, posterDir string, clientIPs clientIPResolver) *Server {
+	abuse, abuseErr := newAbuseGuard(stateFile+".abuse.json", time.Now())
 	s := &Server{
 		rooms:                 make(map[string]*Room),
 		logs:                  newLogStore(logDir),
@@ -1257,6 +1305,8 @@ func newServer(logDir, stateFile, posterDir string, clientIPs clientIPResolver) 
 		logLookups:            make(chan struct{}, maxConcurrentLogLookups),
 		posterBodyReadTimeout: posterUploadReadTimeout,
 		conns:                 newConnTracker(),
+		abuse:                 abuse,
+		startupErr:            abuseErr,
 		clientIPs:             clientIPs,
 	}
 	if s.logs.startupErr != nil {
@@ -1578,6 +1628,9 @@ func (s *Server) runCleanupStep(now time.Time) {
 	s.posterUploads.cleanup(now)
 	s.posterFetches.cleanup(now)
 	s.conns.cleanup(now)
+	if s.abuse != nil {
+		s.abuse.cleanup(now)
+	}
 	if s.oauth != nil {
 		s.oauth.cleanup()
 	}
@@ -1605,7 +1658,7 @@ func (s *Server) handlePostLogs(w http.ResponseWriter, r *http.Request) {
 	s.logs.mu.Lock()
 	if last, ok := s.logs.rateLimit[ip]; ok && time.Since(last) < logRateInterval {
 		s.logs.mu.Unlock()
-		http.Error(w, "Rate limited: 1 upload per minute", http.StatusTooManyRequests)
+		markRateLimit(w, "Rate limited: 1 upload per minute", logRateInterval-time.Since(last))
 		return
 	}
 	s.logs.rateLimit[ip] = time.Now()
@@ -1632,7 +1685,7 @@ func (s *Server) handlePostLogs(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if errors.Is(err, errLogSourceQuota) {
-			http.Error(w, "Too many stored logs from this address", http.StatusTooManyRequests)
+			markRateLimit(w, "Too many stored logs from this address", time.Minute)
 			return
 		}
 		var removalErr *artifactRemovalError
@@ -1715,6 +1768,10 @@ func (s *Server) handleGetLogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if lookup.status != 0 {
+		if lookup.status == http.StatusTooManyRequests && lookup.message == "Too many lookups" {
+			markRateLimit(w, lookup.message, time.Second)
+			return
+		}
 		http.Error(w, lookup.message, lookup.status)
 		return
 	}
@@ -1776,8 +1833,13 @@ func (s *Server) handlePostPosters(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid client address", http.StatusBadRequest)
 		return
 	}
-	if !s.posterUploads.tryStart(ip, time.Now()) {
-		http.Error(w, "Too many poster uploads", http.StatusTooManyRequests)
+	started, sourceLimited := s.posterUploads.tryStartWithReason(ip, time.Now())
+	if !started {
+		if sourceLimited {
+			markRateLimit(w, "Too many poster uploads", time.Second)
+		} else {
+			http.Error(w, "Too many poster uploads", http.StatusTooManyRequests)
+		}
 		return
 	}
 	defer s.posterUploads.finish(ip)
@@ -1849,8 +1911,13 @@ func (s *Server) handleGetPosters(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid client address", http.StatusBadRequest)
 		return
 	}
-	if !s.posterFetches.tryStart(ip, time.Now()) {
-		http.Error(w, "Too many poster requests", http.StatusTooManyRequests)
+	started, sourceLimited := s.posterFetches.tryStartWithReason(ip, time.Now())
+	if !started {
+		if sourceLimited {
+			markRateLimit(w, "Too many poster requests", time.Second)
+		} else {
+			http.Error(w, "Too many poster requests", http.StatusTooManyRequests)
+		}
 		return
 	}
 	defer s.posterFetches.finish(ip)
@@ -1896,11 +1963,27 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 	// Retained-room ownership uses the admission source key.
 	quotaOwnerKey := ip
 
-	if !s.conns.tryConnect(ip) {
-		http.Error(w, "Too many connections", http.StatusTooManyRequests)
+	connected, sourceLimited := s.conns.tryConnectWithReason(ip)
+	if !connected {
+		if sourceLimited {
+			markRateLimit(w, "Too many connections", time.Second)
+		} else {
+			http.Error(w, "Too many connections", http.StatusTooManyRequests)
+		}
 		return
 	}
 	defer s.conns.disconnect(ip)
+	if s.abuse != nil {
+		if !s.abuse.allowHandshake(ip, time.Now()) {
+			markRateLimit(w, "Too many relay connections", time.Second)
+			return
+		}
+		if !s.abuse.addRelayConnection(ip, time.Now()) {
+			http.Error(w, "Connection capacity temporarily unavailable", http.StatusTooManyRequests)
+			return
+		}
+		defer func() { s.abuse.removeRelayConnection(ip, time.Now()) }()
+	}
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -1917,6 +2000,11 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 	})
 
 	client := newClient(conn)
+	if !s.trackRelayClient(client) {
+		client.close()
+		return
+	}
+	defer s.untrackRelayClient(client)
 	defer client.close()
 
 	rl := newRateLimiter(rateBurst, rateSustained)
@@ -1971,9 +2059,21 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
+		if s.abuse != nil {
+			if until := s.abuse.bannedUntil(ip, time.Now()); !until.IsZero() {
+				_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.ClosePolicyViolation, "temporarily blocked after repeated rate-limit violations"), time.Now().Add(writeWait))
+				return
+			}
+		}
 
-		if !rl.allow() {
-			client.sendJSON(serverMsg{Type: relayTypeError, Code: relayErrorRateLimited, Message: "Too many messages"})
+		if !rl.allow() || (s.abuse != nil && !s.abuse.allowRelayMessage(ip, time.Now())) {
+			limited := serverMsg{Type: relayTypeError, Code: relayErrorRateLimited, Message: "Too many messages"}
+			if s.noteWSRateLimit(ip) {
+				client.sendJSONAndWait(limited)
+				writeAbuseClose(conn)
+				return
+			}
+			client.sendJSON(limited)
 			continue
 		}
 
@@ -2025,6 +2125,7 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 			}
 
 			var rejection *serverMsg
+			sourceRateLimited := false
 			var oldHostClient *Client
 			var hostWasAbsent bool
 			s.mu.Lock()
@@ -2090,6 +2191,7 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 			// Whether a code is taken is a room lookup like any join: only
 			// the proven host above skips the source's lookup budget.
 			if !s.conns.allowRoomLookup(quotaOwnerKey, time.Now()) {
+				sourceRateLimited = true
 				rejection = &serverMsg{Type: relayTypeError, Code: relayErrorRateLimited, Message: "Too many room lookups"}
 			}
 			if rejection == nil {
@@ -2100,11 +2202,17 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 					reserved = s.conns.tryCreateRoomReplacing(quotaOwnerKey, existing.quotaOwnerKey)
 				}
 				if !reserved {
+					sourceRateLimited = true
 					rejection = &serverMsg{Type: relayTypeError, Code: relayErrorRateLimited, Message: "Too many rooms created"}
 				}
 			}
 			if rejection != nil {
 				s.mu.Unlock()
+				if sourceRateLimited && s.noteWSRateLimit(ip) {
+					client.sendJSONAndWait(*rejection)
+					writeAbuseClose(conn)
+					return
+				}
 				client.sendJSON(*rejection)
 				continue
 			}
@@ -2197,7 +2305,13 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 				if room != nil {
 					room.mu.Unlock()
 				}
-				client.sendJSON(serverMsg{Type: relayTypeError, Code: relayErrorRateLimited, Message: "Too many room lookups"})
+				limited := serverMsg{Type: relayTypeError, Code: relayErrorRateLimited, Message: "Too many room lookups"}
+				if s.noteWSRateLimit(ip) {
+					client.sendJSONAndWait(limited)
+					writeAbuseClose(conn)
+					return
+				}
+				client.sendJSON(limited)
 				continue
 			}
 			if room == nil {
@@ -2663,6 +2777,17 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) noteWSRateLimit(ip string) bool {
+	if s.abuse == nil {
+		return false
+	}
+	return !s.abuse.recordViolation(ip, time.Now()).IsZero()
+}
+
+func writeAbuseClose(conn *websocket.Conn) {
+	_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.ClosePolicyViolation, "temporarily blocked after repeated rate-limit violations"), time.Now().Add(writeWait))
+}
+
 func newHTTPServer(addr string, handler http.Handler) *http.Server {
 	return &http.Server{
 		Addr:           addr,
@@ -2686,6 +2811,9 @@ func main() {
 	}
 	clientIPs := newClientIPResolver(trustedProxyCIDRs)
 	srv := newServer(*logDir, *stateFile, *posterDir, clientIPs)
+	if srv.startupErr != nil {
+		log.Fatalf("abuse guard unavailable: %v", srv.startupErr)
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/relay", srv.handleWS)
@@ -2700,16 +2828,14 @@ func main() {
 	registerOAuthRoutes(mux, srv.oauth)
 	registerComicCommerceRoutes(mux, clientIPs)
 	registerWatchmodeAvailabilityRoutes(mux, clientIPs)
-	musicRelay := registerMusicConnectRelay(mux, clientIPs)
-	defer musicRelay.close()
-	steamRelay := registerSteamRelay(mux, clientIPs, srv.oauth)
-	defer steamRelay.close()
+	musicRelay := registerMusicConnectRelay(mux, clientIPs, srv.abuse)
+	steamRelay := registerSteamRelay(mux, clientIPs, srv.oauth, srv.abuse)
 	if err := validateSteamStartup(srv.oauth, steamRelay); err != nil {
 		steamRelay.close()
 		log.Fatal(err)
 	}
 
-	httpSrv := newHTTPServer(*addr, mux)
+	httpSrv := newHTTPServer(*addr, srv.abuse.middleware(mux, clientIPs))
 
 	serveErr := make(chan error, 1)
 	go func() {
@@ -2723,17 +2849,23 @@ func main() {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
+	var listenErr error
 	select {
 	case err, ok := <-serveErr:
 		if ok {
-			log.Fatalf("listen: %v", err)
+			listenErr = err
+			log.Printf("listen: %v", err)
 		}
 	case s := <-sig:
 		log.Printf("shutdown signal received (%s), draining...", s)
 	}
-	// Relay sockets outlive HTTP shutdown, so rooms are still occupied here.
-	// Queue their activity now; the final flush below makes it durable.
+	srv.stopRelayAdmissions()
+	// Record activity before draining sockets; disconnect cleanup may queue a
+	// later snapshot mutation that the final snapshot flush must include.
 	srv.recordOccupiedRoomActivity()
+	if musicRelay != nil {
+		musicRelay.close()
+	}
 	steamRelay.close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -2741,11 +2873,21 @@ func main() {
 	if err := httpSrv.Shutdown(ctx); err != nil {
 		log.Printf("http shutdown: %v", err)
 	}
+	srv.closeRelayClients()
+	if srv.abuse != nil {
+		if err := srv.abuse.flush(); err != nil {
+			log.Printf("abuse guard flush: %v", err)
+		}
+	}
 	familyShutdown, familyCancel := context.WithTimeout(context.Background(), 3*time.Second)
 	srv.oauth.closeSteamFamilies(familyShutdown)
 	familyCancel()
 	if err := srv.snap.flushAndStop(snapshotFlushTimeout); err != nil {
 		log.Printf("snapshot flush: %v", err)
 	}
+	cancel()
 	log.Printf("shutdown complete")
+	if listenErr != nil {
+		os.Exit(1)
+	}
 }

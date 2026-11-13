@@ -2,7 +2,9 @@ FROM docker.io/library/ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7
 
 # Package versions are recorded in the output; the apt archive is not frozen.
 # This is a pinned-source experiment, not a claim of bit-identical rebuilds.
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get full-upgrade -y --no-install-recommends \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential git ca-certificates python3 meson ninja-build pkg-config zlib1g-dev \
     nasm xz-utils libass-dev libdav1d-dev libgnutls28-dev libdrm-dev libva-dev \
     libegl-dev libgl-dev libgles-dev libgbm-dev liblcms2-dev liblua5.2-dev \

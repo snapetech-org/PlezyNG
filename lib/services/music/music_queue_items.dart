@@ -47,6 +47,11 @@ class MusicQueueItems extends ListBase<MediaItem> {
     return _spool!.read(record.offset, record.size);
   }
 
+  int occurrenceAt(int index) {
+    RangeError.checkValidIndex(index, this);
+    return _index?.read(index).occurrenceId ?? _entries[index].key;
+  }
+
   @override
   void operator []=(int index, MediaItem value) {
     RangeError.checkValidIndex(index, this);

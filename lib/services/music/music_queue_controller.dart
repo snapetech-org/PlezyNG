@@ -88,6 +88,22 @@ class MusicQueueController {
   MediaItem? trackAt(int queueIndex) =>
       queueIndex >= 0 && queueIndex < _order.length ? _items[_order[queueIndex]] : null;
 
+  /// Stable identity of the occurrence at playback-order [queueIndex].
+  /// Media keys are not sufficient because a queue may contain the same
+  /// track more than once.
+  int? occurrenceAt(int queueIndex) =>
+      queueIndex >= 0 && queueIndex < _order.length ? _items.occurrenceAt(_order[queueIndex]) : null;
+
+  /// Playback-order index for a stable occurrence, or null after it was
+  /// removed. This reads the compact occurrence index without decoding track
+  /// metadata from a large queue.
+  int? indexOfOccurrence(int occurrenceId) {
+    for (var index = 0; index < _order.length; index++) {
+      if (_items.occurrenceAt(_order[index]) == occurrenceId) return index;
+    }
+    return null;
+  }
+
   bool isOrderedAlbum({required bool albumLaunch}) {
     if (_shuffled || isEmpty) return false;
     if (length == 1) return albumLaunch;

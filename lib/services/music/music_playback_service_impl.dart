@@ -1,7 +1,9 @@
 import 'server_music_radio.dart';
 import 'music_station.dart';
 import 'music_audio_output_inspection.dart';
+
 import 'package:uuid/uuid.dart';
+
 import 'music_discovery.dart';
 import 'music_account_scope.dart';
 import 'music_audio_policy.dart';
@@ -75,10 +77,11 @@ import 'music_playback_output.dart';
 class _ArmedTrack {
   final MediaItem track;
   final MusicSource source;
+  final int occurrenceId;
 
   final ReplayGainSettings replayGain;
 
-  const _ArmedTrack({required this.track, required this.source, required this.replayGain});
+  const _ArmedTrack({required this.track, required this.source, required this.occurrenceId, required this.replayGain});
 }
 
 class _MusicOverlap {
@@ -919,6 +922,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
             final cached = _ArmedTrack(
               track: armed.track,
               source: source.prefetched(file.uri.toString()),
+              occurrenceId: armed.occurrenceId,
               replayGain: armed.replayGain,
             );
             _rememberStaleArm();
@@ -2779,8 +2783,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
     final targetCursor = _sleepTimerEndOfTrack ? null : _queue.nextIndex();
     final target = targetCursor == null ? null : _queue.trackAt(targetCursor);
+    final targetOccurrence = targetCursor == null ? null : _queue.occurrenceAt(targetCursor);
 
-    if (target == null) {
+    if (target == null || targetOccurrence == null) {
       if (_armed == null) {
         return;
       }
@@ -2791,6 +2796,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
     final existing = _armed?.track.globalKey == target.globalKey ? _armed : null;
     if (existing != null && existing.replayGain == _replayGainFor(existing.source)) {
+      if (existing.occurrenceId != targetOccurrence) {
+        // The native source is still the desired file, but queue edits may
+        // have changed which repeated occurrence it represents.
+        _armed = _ArmedTrack(
+          track: target,
+          source: existing.source,
+          occurrenceId: targetOccurrence,
+          replayGain: existing.replayGain,
+        );
+      }
       return;
     }
 
@@ -2820,7 +2835,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (!_isCurrentArmRequest(player, generation, armRequest)) {
       return;
     }
-    final armed = _ArmedTrack(track: target, source: source, replayGain: _replayGainFor(source));
+    final armed = _ArmedTrack(
+      track: target,
+      source: source,
+      occurrenceId: targetOccurrence,
+      replayGain: _replayGainFor(source),
+    );
     _armed = armed;
     if (_sweetFadesEnabled) {
       unawaited(_loadLoudnessProfile(source, target));
@@ -3194,11 +3214,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     // Move the cursor to the armed entry: the expected natural-next when it
     // still matches, otherwise wherever the armed track now sits.
     final expected = _queue.nextIndex();
-    if (expected != null && _queue.trackAt(expected)?.globalKey == adopted.track.globalKey) {
+    if (expected != null && _queue.occurrenceAt(expected) == adopted.occurrenceId) {
       _queue.jumpTo(expected);
     } else {
-      final index = _queue.queue.indexWhere((t) => t.globalKey == adopted.track.globalKey);
-      if (index < 0) {
+      final index = _queue.indexOfOccurrence(adopted.occurrenceId);
+      if (index == null) {
         // The track mpv advanced into was removed from the queue at the
         // boundary: don't adopt it — play what the queue says comes next,
         // or park when nothing does.

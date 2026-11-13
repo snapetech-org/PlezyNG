@@ -8,6 +8,7 @@
 - Preserve Stremio add-on checkbox choices when a checked manifest default is turned off, including across reconfiguration.
 - Restrict Stremio add-on requests and redirect hops to validated public Internet addresses, pin native sockets to the checked DNS result, and refuse browser requests where that validation cannot be enforced.
 - Keep shared music queue edits atomic when a disk-backed scratch-index write fails, restoring the prior order, occurrences, cursor, and shuffle state.
+- Match gapless music transitions to queue occurrence IDs so repeated tracks remain distinct after reordering.
 - Bind standalone and recovery release CI checks to the required-job manifest at the exact release source SHA, so later workflow metadata cannot redefine historical qualification.
 - Add a one-touch karaoke venue emergency pause that preserves the session and queue while stopping local and paired-phone microphone capture; external mixer controls remain separate.
 - Preserve live-subtitle source timing across missing PCM by resetting inference windows when forward PTS gaps exceed the silence-padding range.

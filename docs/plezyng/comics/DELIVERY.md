@@ -51,14 +51,21 @@ contract. ZIP entry data streams to disk with 10,000-entry, 256 MiB-per-entry
 and 1 GiB-total limits. CBR total output is limited to 256 MiB because the RAR
 decoder retains decoded members from a solid run; 7z solid-folder decoding is
 limited to 256 MiB. The archive reader rejects duplicate paths, root escapes,
-links, special files, encrypted entries and size mismatches. The published
+links, special files, unsupported encryption and size mismatches. Password-
+protected comic archives prompt locally and allow up to three submissions per
+open attempt. The password is passed only to the bounded archive reader; it is
+not stored in source credentials, preferences, URLs, cached metadata or logs.
+ZIP strong encryption remains unsupported, and a 7z password failure can only
+be reported as an incorrect password or damaged archive. Multi-volume RAR is
+not supported. The published
 `koni_archive` 0.9.0 source archive was SHA-256 checked against pub.dev and its
 files matched the `v0.9.0` source tag (`e827474de5e7c4e5d309e2c9daa08c96f145d86c`).
 Its additional BSD and public-domain RAR notices are included in the app's
 Licenses screen; the package's MIT license is provided through Flutter's
 dependency license registry.
 The RAR and 7z codec support matrix still excludes some uncommon compression
-methods; encrypted local archives have no password-entry flow in the app.
+methods. Password-protected ZIP, RAR and 7z data can be opened when supported
+by the locked decoder; source implementation is not physical-device qualification.
 
 The integrated main snapshot also needed small Dart compatibility and merge
 repairs in the source adapters, metadata lookup, directional padding, semantics,

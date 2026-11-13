@@ -25,6 +25,8 @@ String sourceFailureText(Object error) => switch (error is SourceException ? err
   SourceFailure.quotaExceeded => t.fileSources.errorQuotaExceeded,
   SourceFailure.storageLow => t.fileSources.errorStorageLow,
   SourceFailure.storageUnavailable => t.fileSources.errorStorageUnavailable,
+  SourceFailure.passwordRequired => t.fileSources.errorPasswordRequired,
+  SourceFailure.passwordRejected => t.fileSources.errorPasswordRejected,
 };
 
 class SourceErrorMessage extends StatelessWidget {

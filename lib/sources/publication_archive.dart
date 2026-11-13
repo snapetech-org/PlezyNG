@@ -92,10 +92,10 @@ class PublicationArchive {
     }
   }
 
-  static Future<PublicationArchive> open(File file, Directory temporary, {bool comic = false}) async {
+  static Future<PublicationArchive> open(File file, Directory temporary, {bool comic = false, String? password}) async {
     final folder = await temporary.createTemp('publication-');
     try {
-      final files = await Isolate.run(() => extract(file.path, folder.path, comic: comic));
+      final files = await Isolate.run(() => extract(file.path, folder.path, comic: comic, password: password));
       final result = PublicationArchive._(folder, files, comic);
       if (comic) result.comicDocument = await ComicDocument.fromArchive(folder, files);
       return result;
@@ -106,19 +106,25 @@ class PublicationArchive {
     }
   }
 
-  static Future<Map<String, int>> extract(String path, String destination, {bool comic = false}) async {
+  static Future<Map<String, int>> extract(
+    String path,
+    String destination, {
+    bool comic = false,
+    String? password,
+  }) async {
     final source = await karchive.FileByteSource.open(path);
     karchive.Archive? archive;
     try {
       archive = await karchive.Archive.open(
         source,
-        options: const karchive.ArchiveReadOptions(
+        options: karchive.ArchiveReadOptions(
           verifyChecksums: true,
           maxEntryCount: _maxEntryCount,
           maxEntrySize: _maxEntrySize,
           // 7z decodes a solid folder as a unit. Keep that work bounded even
           // when the requested page is much smaller than its folder.
           maxContainerDecodeSize: _maxEntrySize,
+          password: password,
         ),
       );
       final format = archive.format.name;
@@ -141,10 +147,13 @@ class PublicationArchive {
         if (entry.pathEscapedRoot ||
             !names.add(name.toLowerCase()) ||
             entry.uncompressedSize < 0 ||
-            entry.isEncrypted ||
+            (entry.isEncrypted && !comic) ||
             entry.type == karchive.ArchiveEntryType.symlink ||
             entry.type == karchive.ArchiveEntryType.hardlink) {
           throw const SourceException(SourceFailure.invalidData);
+        }
+        if (entry.isEncrypted && password == null) {
+          throw const SourceException(SourceFailure.passwordRequired);
         }
         if (entry.isDirectory) {
           if (entry.uncompressedSize != 0) throw const SourceException(SourceFailure.invalidData);
@@ -170,15 +179,32 @@ class PublicationArchive {
         final output = await file.open(mode: FileMode.write);
         var extractedSize = 0;
         try {
-          await for (final chunk in archive.openRead(entry)) {
-            final nextEntrySize = extractedSize + chunk.length;
-            final nextTotalSize = extractedTotal + chunk.length;
-            if (nextEntrySize > entry.uncompressedSize || nextEntrySize > _maxEntrySize || nextTotalSize > totalLimit) {
-              throw const SourceException(SourceFailure.invalidData);
+          try {
+            await for (final chunk in archive.openRead(entry)) {
+              final nextEntrySize = extractedSize + chunk.length;
+              final nextTotalSize = extractedTotal + chunk.length;
+              if (nextEntrySize > entry.uncompressedSize ||
+                  nextEntrySize > _maxEntrySize ||
+                  nextTotalSize > totalLimit) {
+                throw const SourceException(SourceFailure.invalidData);
+              }
+              await output.writeFrom(chunk);
+              extractedSize = nextEntrySize;
+              extractedTotal = nextTotalSize;
             }
-            await output.writeFrom(chunk);
-            extractedSize = nextEntrySize;
-            extractedTotal = nextTotalSize;
+          } on karchive.InvalidPasswordException {
+            if (comic) throw const SourceException(SourceFailure.passwordRejected);
+            throw const SourceException(SourceFailure.invalidData);
+          } on karchive.EncryptedArchiveException {
+            if (comic && password == null) throw const SourceException(SourceFailure.passwordRequired);
+            if (comic) throw const SourceException(SourceFailure.unsupported);
+            throw const SourceException(SourceFailure.invalidData);
+          } on karchive.ChecksumMismatchException {
+            if (comic && password != null) throw const SourceException(SourceFailure.passwordRejected);
+            throw const SourceException(SourceFailure.invalidData);
+          } on karchive.CorruptArchiveException {
+            if (comic && password != null) throw const SourceException(SourceFailure.passwordRejected);
+            throw const SourceException(SourceFailure.invalidData);
           }
           if (extractedSize != entry.uncompressedSize) throw const SourceException(SourceFailure.invalidData);
         } finally {
@@ -201,6 +227,19 @@ class PublicationArchive {
         }
       }
       return extractedFiles;
+    } on karchive.InvalidPasswordException {
+      if (comic) throw const SourceException(SourceFailure.passwordRejected);
+      throw const SourceException(SourceFailure.invalidData);
+    } on karchive.EncryptedArchiveException {
+      if (comic && password == null) throw const SourceException(SourceFailure.passwordRequired);
+      if (comic) throw const SourceException(SourceFailure.unsupported);
+      throw const SourceException(SourceFailure.invalidData);
+    } on karchive.ChecksumMismatchException {
+      if (comic && password != null) throw const SourceException(SourceFailure.passwordRejected);
+      throw const SourceException(SourceFailure.invalidData);
+    } on karchive.CorruptArchiveException {
+      if (comic && password != null) throw const SourceException(SourceFailure.passwordRejected);
+      throw const SourceException(SourceFailure.invalidData);
     } finally {
       if (archive == null) {
         await source.close();

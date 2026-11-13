@@ -10126,6 +10126,12 @@ class Translations$fileSources$en {
 	/// en: 'This file or server response could not be read safely.'
 	String get errorInvalidData => 'This file or server response could not be read safely.';
 
+	/// en: 'This comic archive needs a password to open.'
+	String get errorPasswordRequired => 'This comic archive needs a password to open.';
+
+	/// en: 'The archive did not open after three password attempts. The password may be incorrect, or the archive may be damaged.'
+	String get errorPasswordRejected => 'The archive did not open after three password attempts. The password may be incorrect, or the archive may be damaged.';
+
 	/// en: 'The operation was cancelled.'
 	String get errorCancelled => 'The operation was cancelled.';
 
@@ -10170,6 +10176,21 @@ class Translations$fileSources$en {
 
 	/// en: 'Comics'
 	String get comics => 'Comics';
+
+	/// en: 'Archive password'
+	String get comicPasswordField => 'Archive password';
+
+	/// en: 'Open archive'
+	String get comicPasswordOpen => 'Open archive';
+
+	/// en: 'Unlock comic archive'
+	String get comicPasswordPromptTitle => 'Unlock comic archive';
+
+	/// en: 'Enter the password for this archive. Pleazyng will use it only to open the archive and will not save it.'
+	String get comicPasswordPromptHelp => 'Enter the password for this archive. Pleazyng will use it only to open the archive and will not save it.';
+
+	/// en: 'That password did not open the archive. It may be incorrect, or the archive may be damaged.'
+	String get comicPasswordRetryHelp => 'That password did not open the archive. It may be incorrect, or the archive may be damaged.';
 
 	/// en: 'Scan for books and media'
 	String get scan => 'Scan for books and media';
@@ -21565,6 +21586,8 @@ extension on Translations {
 			'fileSources.errorUnavailable' => 'The source is unavailable. Try again, or open an offline copy.',
 			'fileSources.errorUnsupported' => 'This format or connection is not supported on this device. Check the source setup guide.',
 			'fileSources.errorInvalidData' => 'This file or server response could not be read safely.',
+			'fileSources.errorPasswordRequired' => 'This comic archive needs a password to open.',
+			'fileSources.errorPasswordRejected' => 'The archive did not open after three password attempts. The password may be incorrect, or the archive may be damaged.',
 			'fileSources.errorCancelled' => 'The operation was cancelled.',
 			'fileSources.errorConflict' => 'The position changed in another session. Reopen the item to choose a position.',
 			'fileSources.signIn' => 'Sign in',
@@ -21580,6 +21603,11 @@ extension on Translations {
 			'fileSources.syncLocationHint' => 'A dedicated WebDAV folder for Pleazyng state. Uses conditional writes; media stays unchanged.',
 			'fileSources.audiobooks' => 'Audiobooks',
 			'fileSources.comics' => 'Comics',
+			'fileSources.comicPasswordField' => 'Archive password',
+			'fileSources.comicPasswordOpen' => 'Open archive',
+			'fileSources.comicPasswordPromptTitle' => 'Unlock comic archive',
+			'fileSources.comicPasswordPromptHelp' => 'Enter the password for this archive. Pleazyng will use it only to open the archive and will not save it.',
+			'fileSources.comicPasswordRetryHelp' => 'That password did not open the archive. It may be incorrect, or the archive may be damaged.',
 			'fileSources.scan' => 'Scan for books and media',
 			'fileSources.browserReader' => 'Open reader',
 			'fileSources.browserReaderHelp' => 'The reader is open in your browser. Keep Pleazyng open to save your place and notes.',
@@ -21878,6 +21906,8 @@ extension on Translations {
 			'games.save' => 'Save computer',
 			'games.invalidAddress' => 'Enter a valid hostname or IP address, without a URL, and a port from 1 to 65534.',
 			'games.pair' => 'Connect computer',
+			_ => null,
+		} ?? switch (path) {
 			'games.pairTitle' => 'Approve this device',
 			'games.pairInstructions' => 'Enter this code in the host’s pairing prompt. For Sunshine, use the PIN page below. Keep this screen open until the computer approves.',
 			'games.pairHelp' => 'Connect this computer again to approve or renew pairing.',
@@ -21885,8 +21915,6 @@ extension on Translations {
 			'games.qrHelp' => 'Scan to open the PIN page. The QR code contains only the computer address, never a password or pairing credential.',
 			'games.refreshGames' => 'Refresh games',
 			'games.play' => 'Play',
-			_ => null,
-		} ?? switch (path) {
 			'games.recent' => 'Recently played',
 			'games.favorites' => 'Favorites',
 			'games.allGames' => 'All games',
@@ -22392,6 +22420,8 @@ extension on Translations {
 			'subtitleAiUi.subtitleResultDiscardedTheCurrentTra_a846b389' => 'Subtitle result discarded; the current track and source file are unchanged.',
 			'subtitleAiUi.saveReviewedSubtitle' => 'Save reviewed subtitle',
 			'subtitleAiUi.sRTExportWasCancelledTheActiveTrackA_62f0bcfe' => 'SRT export was cancelled; the active track and source subtitle are unchanged.',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.reviewedSubtitleExportedAsSRT' => 'Reviewed subtitle exported as SRT.',
 			'subtitleAiUi.saveReviewedSubtitleCueJSON' => 'Save reviewed subtitle cue JSON',
 			'subtitleAiUi.jSONExportWasCancelledTheActiveTrack_9ae1948d' => 'JSON export was cancelled; the active track and source subtitle are unchanged.',
@@ -22399,8 +22429,6 @@ extension on Translations {
 			'subtitleAiUi.subtitleOperationFailed' => ({required Object error}) => 'Subtitle operation failed: ${error}',
 			'subtitleAiUi.speechLanguage' => 'Speech language',
 			'subtitleAiUi.autoDetect' => 'Auto-detect',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
 			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
 			'subtitleAiUi.inferenceBackend' => 'Inference backend',
@@ -22906,6 +22934,8 @@ extension on Translations {
 			'karaokeUi.dismissSuggestion' => 'Dismiss suggestion',
 			'karaokeUi.resolvedMissingSongSuggestions' => 'Resolved missing-song suggestions',
 			'karaokeUi.reopenSuggestion' => 'Reopen suggestion',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.restart' => 'Restart',
 			'karaokeUi.endPerformance' => 'End performance',
 			'karaokeUi.vocalMixer' => 'Vocal mixer',
@@ -22913,8 +22943,6 @@ extension on Translations {
 			'karaokeUi.guideVocals' => 'Guide vocals',
 			'karaokeUi.instrumental' => 'Instrumental',
 			'karaokeUi.bpmEstimated' => ({required Object value1, required Object value2, required Object value3}) => '${value1} · ${value2} BPM · ${value3} · estimated',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.correctAnalysis' => 'Correct song analysis',
 			'karaokeUi.analysisCorrectionsDoNotCertifyScoring' => 'Blank chord lists remove chord cues. Use estimates to discard all manual corrections. Manual corrections do not certify a singing score.',
 			'karaokeUi.analysisKey' => 'Key',

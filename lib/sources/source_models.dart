@@ -43,6 +43,8 @@ enum SourceFailure {
   quotaExceeded,
   storageLow,
   storageUnavailable,
+  passwordRequired,
+  passwordRejected,
 }
 
 /// Deliberately carries no URL, token or provider response into UI/logging.

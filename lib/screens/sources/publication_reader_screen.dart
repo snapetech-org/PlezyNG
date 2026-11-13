@@ -274,6 +274,74 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
     if (!enabled && _speaking) await _stopSpeech();
   }
 
+  Future<String?> _requestComicPassword({required bool rejected}) async {
+    final controller = TextEditingController();
+    try {
+      return await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(t.fileSources.comicPasswordPromptTitle),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(t.fileSources.comicPasswordPromptHelp),
+              if (rejected) ...[const SizedBox(height: 12), Text(t.fileSources.comicPasswordRetryHelp)],
+              const SizedBox(height: 12),
+              FocusableTextField(
+                controller: controller,
+                autofocus: true,
+                obscureText: true,
+                maxLines: 1,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => Navigator.of(dialogContext).pop(controller.text),
+                decoration: InputDecoration(labelText: t.fileSources.comicPasswordField),
+              ),
+            ],
+          ),
+          actions: [
+            DialogActionButton(onPressed: () => Navigator.of(dialogContext).pop(), label: t.common.cancel),
+            DialogActionButton(
+              onPressed: () => Navigator.of(dialogContext).pop(controller.text),
+              label: t.fileSources.comicPasswordOpen,
+              isPrimary: true,
+            ),
+          ],
+        ),
+      );
+    } finally {
+      controller.clear();
+      controller.dispose();
+    }
+  }
+
+  Future<PublicationArchive> _openLocalComicArchive(File file, Directory temporary) async {
+    const maxPasswordAttempts = 3;
+    String? password;
+    var submittedPasswords = 0;
+    try {
+      while (true) {
+        try {
+          return await PublicationArchive.open(file, temporary, comic: true, password: password);
+        } on SourceException catch (error) {
+          final needsPassword = error.reason == SourceFailure.passwordRequired;
+          final rejectedPassword = error.reason == SourceFailure.passwordRejected;
+          if (!needsPassword && !rejectedPassword) rethrow;
+          if (rejectedPassword && submittedPasswords >= maxPasswordAttempts) rethrow;
+          if (!valid) throw const SourceException(SourceFailure.cancelled);
+
+          final entered = await _requestComicPassword(rejected: rejectedPassword);
+          if (entered == null || !valid) throw const SourceException(SourceFailure.cancelled);
+          password = entered;
+          submittedPasswords++;
+        }
+      }
+    } finally {
+      // The archive reader receives the password only for this open attempt.
+      password = null;
+    }
+  }
+
   Future<void> _open() async {
     try {
       if (PlatformDetector.isTV()) throw const SourceException(SourceFailure.unsupported);
@@ -343,7 +411,9 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
       if (!pdf || pages != null) {
         final archive = pages != null
             ? await PublicationArchive.stream(pages, temp)
-            : await PublicationArchive.open(_file!, temp, comic: widget.file.kind == SourceItemKind.comic);
+            : widget.file.kind == SourceItemKind.comic
+            ? await _openLocalComicArchive(_file!, temp)
+            : await PublicationArchive.open(_file!, temp);
         if (!valid) {
           await archive.close();
           return;

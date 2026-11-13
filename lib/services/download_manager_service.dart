@@ -1,13 +1,17 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'dart:async';
+
 import '../media/ids.dart';
+
 import 'dart:io';
+
 import 'package:background_downloader/background_downloader.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart' show listEquals, visibleForTesting;
 import 'package:path/path.dart' as path;
 import 'package:plezy/utils/media_server_http_client.dart';
+
 import '../exceptions/media_server_exceptions.dart';
 import '../database/app_database.dart';
 import '../database/download_operations.dart';
@@ -28,7 +32,9 @@ import 'plex_api_cache.dart';
 import 'settings_service.dart';
 import '../models/transcode_quality_preset.dart';
 import 'saf_storage_service.dart';
+
 import 'package:saf_util/saf_util_platform_interface.dart' show SafDocumentFile;
+
 import '../models/download_models.dart';
 import '../services/offline_mode_source.dart';
 import '../services/download_storage_service.dart';
@@ -41,6 +47,7 @@ import '../utils/connectivity_link_type.dart';
 import '../utils/global_key_utils.dart';
 import '../utils/error_message_utils.dart';
 import '../utils/storage_failure.dart';
+
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 typedef MediaClientResolver = MediaServerClient? Function(ServerId serverId, {String? clientScopeId});
@@ -809,9 +816,8 @@ class DownloadManagerService {
     final backend = await _backendForServer(serverId);
     final live = _getClient(serverId, clientScopeId: clientScopeId);
     if (backend != null) {
-      return ApiCache.forBackend(
-        backend,
-      ).getMetadata(ServerId(clientScopeId ?? live?.cacheServerId ?? serverId), itemId);
+      return ApiCache.forBackend(backend)
+          .getMetadata(ServerId(clientScopeId ?? live?.cacheServerId ?? serverId), itemId);
     }
     appLogger.w('Cache lookup for $serverId:$itemId — backend unresolved; trying all registered backends');
     for (final candidate in MediaBackend.values) {
@@ -978,9 +984,8 @@ class DownloadManagerService {
     final backend = await _backendForServer(serverId);
     final live = _getClient(serverId, clientScopeId: clientScopeId);
     if (backend != null) {
-      await ApiCache.forBackend(
-        backend,
-      ).deleteForItem(ServerId(clientScopeId ?? live?.cacheServerId ?? serverId), itemId);
+      await ApiCache.forBackend(backend)
+          .deleteForItem(ServerId(clientScopeId ?? live?.cacheServerId ?? serverId), itemId);
       return;
     }
     // Backend unresolved — purge from every registered backend so a stale
@@ -1207,11 +1212,17 @@ class DownloadManagerService {
       }
       if (files.length != storedPaths.length) continue;
       try {
-        var missing = false;
-        for (final file in files) {
-          if (!await File(file).exists()) {
-            missing = true;
-            break;
+        // A completed stacked item must have a stored path for every part.
+        // `whereType<String>()` above keeps path/root classification simple,
+        // but would otherwise erase null placeholders and make a row with an
+        // undiscovered part look complete when its first file still exists.
+        var missing = row.nextMissingPartIndex != null;
+        if (!missing) {
+          for (final file in files) {
+            if (!await File(file).exists()) {
+              missing = true;
+              break;
+            }
           }
         }
         if (!missing) continue;

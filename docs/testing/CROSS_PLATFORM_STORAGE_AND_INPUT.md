@@ -32,9 +32,10 @@ tvOS downloads remain unavailable.
 - iOS retains its existing native policy. Custom download locations, recordings,
   settings, bookmarks and database metadata are not newly excluded.
 - Startup reconciles completed entries whose files are missing from the
-  app-managed download root. It retains their metadata, clears stale part/task
-  state, and marks them failed with the existing localized missing-file message
-  for retry. Reconciliation does not enqueue downloads or remove remaining files.
+  app-managed download root, including stacked entries with an unstored part
+  path. It retains their metadata, clears stale part/task state, and marks them
+  failed with the existing localized missing-file message for retry.
+  Reconciliation does not enqueue downloads or remove remaining files.
   External, custom and SAF paths are outside its scope.
 
 References: [Android Auto Backup](https://developer.android.com/identity/data/autobackup),

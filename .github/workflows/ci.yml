@@ -693,6 +693,7 @@ jobs:
   apple-native-test:
     name: Apple native reliability (${{ matrix.platform }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
+    timeout-minutes: 120
     # Native tests and their simulator dependencies build arm64 on every platform.
     runs-on: ${{ inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool != 'private' || matrix.platform != 'macOS') && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
@@ -1019,6 +1020,7 @@ jobs:
 
       - name: Run Apple native reliability tests
         if: matrix.platform != 'macOS'
+        timeout-minutes: 75
         run: |
           result_bundle="$APPLE_RESULT_BUNDLE"
           test_log="$(dirname "$result_bundle")/native-test-output.log"

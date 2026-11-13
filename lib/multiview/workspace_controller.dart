@@ -955,6 +955,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
             audible: registration.descriptor.id == previousId || registration.descriptor.id == previousMixedId,
             gain: audioGainFor(registration.descriptor.id),
             ownsFocus: registration.descriptor.id == previousId,
+            forceLegacyOwnership: true,
           );
         } on Object catch (restoreError, restoreStackTrace) {
           debugPrint('Multiview prior audio state restore failed: $restoreError\\n$restoreStackTrace');
@@ -978,6 +979,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     required bool audible,
     double? gain,
     required bool ownsFocus,
+    bool forceLegacyOwnership = false,
   }) async {
     final stateHandler = registration.onWorkspaceAudioStateChanged;
     if (stateHandler != null) {
@@ -991,7 +993,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     } else {
       final wasAudible =
           _audibleSessionId == registration.descriptor.id || _mixedAudibleSessionId == registration.descriptor.id;
-      if (wasAudible != audible) await registration.onAudioOwnershipChanged?.call(audible);
+      if (forceLegacyOwnership || wasAudible != audible) {
+        await registration.onAudioOwnershipChanged?.call(audible);
+      }
     }
   }
 

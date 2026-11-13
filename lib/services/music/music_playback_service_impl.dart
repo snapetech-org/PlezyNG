@@ -642,6 +642,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       final player = await _ensurePlayer();
       if (!owns() || !identical(_player, player)) return false;
       _workspaceAudioEnabled = !_coordinator.workspaceHasCompetingAudioOwner;
+      _workspaceAudioOwnsFocus = _workspaceAudioEnabled;
       await player.setWorkspaceAudioFocusEnabled(_workspaceAudioEnabled);
       if (!owns()) return false;
       _ensureMediaControls();
@@ -1973,7 +1974,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   double _musicGain = 1;
   bool _workspaceAudioEnabled = true;
   double _workspaceAudioGain = 1;
-  bool _workspaceAudioOwnsFocus = false;
+  bool _workspaceAudioOwnsFocus = true;
   Listenable? _sweetFadesSettingsListenable;
   Listenable? _audioSettingsListenable;
 
@@ -2627,6 +2628,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       // When video or another non-music surface owns workspace audio, keep a
       // newly started music session silent until the user assigns it focus.
       _workspaceAudioEnabled = !_coordinator.workspaceHasCompetingAudioOwner;
+      _workspaceAudioOwnsFocus = _workspaceAudioEnabled;
       // Settle the vehicle's answer before the opt-in below reads it: a cold
       // start would otherwise configure the session as if the car were mute and
       // leave background audio off until the next track.

@@ -1351,22 +1351,12 @@ class PublicationDownloads {
       }
       return existing.then<File>(
         (_) => download(profile, adapter, file, label: label, onProgress: onProgress),
-        onError: (Object _, StackTrace _) => download(profile, adapter, file, label: label, onProgress: onProgress),
-      );
-    }
-    final cached = await local(profile, adapter.source.id, file);
-    if (cached != null) {
-      return cached;
-    }
-    final pendingAfterLocalCheck = _pending[transferKey];
-    if (pendingAfterLocalCheck != null) {
-      final currentTask = _tasks[transferKey];
-      if (currentTask?.file.fingerprint == file.fingerprint) {
-        return pendingAfterLocalCheck;
-      }
-      return pendingAfterLocalCheck.then<File>(
-        (_) => download(profile, adapter, file, label: label, onProgress: onProgress),
-        onError: (Object _, StackTrace _) => download(profile, adapter, file, label: label, onProgress: onProgress),
+        onError: (Object error, StackTrace stackTrace) {
+          if (error is SourceException && error.reason == SourceFailure.cancelled) {
+            return Future<File>.error(error, stackTrace);
+          }
+          return download(profile, adapter, file, label: label, onProgress: onProgress);
+        },
       );
     }
     final cancellation = TransferCancellation();
@@ -1391,13 +1381,26 @@ class PublicationDownloads {
     _cancellations[transferKey] = cancellation;
     final partial = File('${_target(profile, adapter.source.id, file).path}.partial');
     try {
+      final cached = await local(profile, adapter.source.id, file);
+      if (cached != null) {
+        completer.complete(cached);
+        return cached;
+      }
+      cancellation.check();
       await reconcileProfile(profile);
+      cancellation.check();
       final previous = await repository.download(profile, key(adapter.source.id, file));
+      cancellation.check();
       if (previous != null && previous['fingerprint'] != file.fingerprint && previous['complete'] != 1) {
         await _discardSupersededJob(profile, previous);
+        cancellation.check();
       }
       await repository.retireDownloadForRevision(profile, key(adapter.source.id, file), file.fingerprint, partial.path);
-      final bytes = await partial.exists() ? await partial.length() : 0;
+      cancellation.check();
+      final partialExists = await partial.exists();
+      cancellation.check();
+      final bytes = partialExists ? await partial.length() : 0;
+      cancellation.check();
       await repository.reserveDownload(
         profile: profile,
         key: key(adapter.source.id, file),
@@ -1409,9 +1412,13 @@ class PublicationDownloads {
         state: 'queued',
         label: label,
       );
+      cancellation.check();
       _queue.addLast(task);
       _drainQueue();
     } on Object catch (error, stackTrace) {
+      if (error is SourceException && error.reason == SourceFailure.cancelled) {
+        await repository.setDownloadState(profile, key(adapter.source.id, file), 'paused').catchError((_) {});
+      }
       if (!completer.isCompleted) {
         completer.completeError(error, stackTrace);
       }

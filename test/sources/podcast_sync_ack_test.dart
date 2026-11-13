@@ -24,6 +24,7 @@ void main() {
     );
     await before.customStatement('DROP TABLE podcast_sync_ack');
     await before.customStatement('DROP INDEX entries_podcast_sync_identity');
+    await before.customStatement('DROP TABLE retired_downloads');
     await before.customStatement('INSERT INTO entries(profile,source,id,payload) VALUES (?,?,?,?)', [
       'profile',
       'bad',

@@ -27,6 +27,7 @@ class _Version8Database extends SourceDatabase {
         'remote_stream_state',
         'remote_preparation_claims',
         'remote_deleted_profiles',
+        'retired_downloads',
       ]) {
         await customStatement('DROP TABLE $table');
       }
@@ -81,6 +82,7 @@ void main() {
       'remote_stream_state',
       'remote_preparation_claims',
       'remote_deleted_profiles',
+      'retired_downloads',
     ]) {
       await old.customStatement('DROP TABLE $table');
     }

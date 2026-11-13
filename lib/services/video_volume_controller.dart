@@ -29,7 +29,8 @@ final class VideoVolumeController implements ValueListenable<double> {
        _confirmedLogicalVolume = _clampForSettings(settings, initialVolume),
        _preferredVolume = _initialPreferredVolume(settings),
        _lastPersistedVolume = _initialPreferredVolume(settings),
-       _workspaceAudioEnabled = initialWorkspaceAudioEnabled {
+       _workspaceAudioEnabled = initialWorkspaceAudioEnabled,
+       _workspaceAudioOwnsFocus = initialWorkspaceAudioEnabled {
     _volumeSubscription = player.streams.volume.listen(
       _handlePlayerVolume,
       onError: (Object error, StackTrace stackTrace) {
@@ -59,7 +60,7 @@ final class VideoVolumeController implements ValueListenable<double> {
   double _confirmedLogicalVolume;
   double _preferredVolume;
   bool _workspaceAudioEnabled;
-  bool _workspaceAudioOwnsFocus = false;
+  bool _workspaceAudioOwnsFocus;
   double _workspaceAudioGain = 1.0;
   double _lastPersistedVolume;
   bool _draining = false;

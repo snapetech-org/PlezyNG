@@ -8,7 +8,7 @@
 
 A cross-platform media client for Plex, Jellyfin, Emby, standalone files, books, music, and podcasts, maintained as a fork of [Plezy](https://github.com/edde746/plezy).
 
-Pleazyng started as a downstream fork for feature requests that Plezy upstream has declined, left open, or not yet shipped. The table below maps those upstream gaps to the corresponding downstream implementation.  Our app has evolved from those roots, to encompass other media domains and integrations.
+Pleazyng started as a downstream fork for feature requests that Plezy upstream had declined, left open, or not yet shipped. The table below maps those upstream gaps to the corresponding downstream implementation.  Our app has evolved from those roots, to encompass other media domains and integrations.
 
 See [Files, books and listening](docs/FILES_AND_BOOKS.md) for standard/cloud sources, readers and offline behavior, and [Public-library setup](docs/LENDING_SETUP.md) for the staged OverDrive integration.
 

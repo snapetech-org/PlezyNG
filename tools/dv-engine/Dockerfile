@@ -1,4 +1,4 @@
-FROM docker.io/library/ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517
+FROM docker.io/library/ubuntu:26.04@sha256:065aa8626841f16057b78b027b464cd59c4fac36c204c72dcbf48d66f5fa8a96
 
 # Package versions are recorded in the output; the apt archive is not frozen.
 # This is a pinned-source experiment, not a claim of bit-identical rebuilds.

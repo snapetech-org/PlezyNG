@@ -45,6 +45,8 @@ Prepared 2026-10-27 (America/Regina). The planning baseline was inspected at
   [`manifest.config`](https://github.com/Stremio/stremio-addon-sdk/blob/master/docs/api/responses/manifest.md#user-data)
   text, number, password, checkbox and select fields while adding an add-on or editing it later.
   Settings stay in the encrypted profile snapshot and configured endpoint.
+  Checkbox choices retain an explicit off state, including for fields whose manifest default is checked;
+  unchecked keys stay out of the configured endpoint.
   Provider-hosted custom configuration pages are not executed in the app.
 - Fetch add-on stream options for supported library and catalog movie/episode
   details, with show episodes listed and selectable inside the existing title

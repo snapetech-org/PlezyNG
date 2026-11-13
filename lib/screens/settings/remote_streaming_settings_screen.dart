@@ -130,6 +130,7 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
           title: configuration.manifest['name'] as String? ?? t.streaming.addons,
           fields: configuration.fields,
           initialValues: configuration.initialValues,
+          useCheckboxDefaults: !configuration.isConfiguredAddress,
         ),
       );
       if (configured == null) return null;
@@ -1279,11 +1280,17 @@ class _AddAddonDialogState extends State<_AddAddonDialog> {
 }
 
 class _StremioAddonConfigurationDialog extends StatefulWidget {
-  const _StremioAddonConfigurationDialog({required this.title, required this.fields, required this.initialValues});
+  const _StremioAddonConfigurationDialog({
+    required this.title,
+    required this.fields,
+    required this.initialValues,
+    this.useCheckboxDefaults = true,
+  });
 
   final String title;
   final List<StremioAddonConfigurationField> fields;
   final Map<String, String> initialValues;
+  final bool useCheckboxDefaults;
 
   @override
   State<_StremioAddonConfigurationDialog> createState() => _StremioAddonConfigurationDialogState();
@@ -1307,7 +1314,8 @@ class _StremioAddonConfigurationDialogState extends State<_StremioAddonConfigura
           _textValues[field.key] = TextEditingController(text: initial ?? field.defaultValue ?? '');
           break;
         case 'checkbox':
-          _checkboxValues[field.key] = initial == 'on' || (initial == null && field.defaultValue == 'checked');
+          _checkboxValues[field.key] =
+              initial == 'on' || (initial == null && widget.useCheckboxDefaults && field.defaultValue == 'checked');
           break;
         case 'select':
           _selectValues[field.key] = field.options.contains(initial)
@@ -1405,7 +1413,7 @@ class _StremioAddonConfigurationDialogState extends State<_StremioAddonConfigura
           if (value.isNotEmpty) result[field.key] = value;
           break;
         case 'checkbox':
-          if (_checkboxValues[field.key] == true) result[field.key] = 'on';
+          result[field.key] = _checkboxValues[field.key] == true ? 'on' : 'off';
           break;
         case 'select':
           final value = _selectValues[field.key];

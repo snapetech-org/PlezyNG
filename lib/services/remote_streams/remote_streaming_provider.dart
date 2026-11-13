@@ -927,6 +927,7 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         fields: fields,
         initialValues: imported?.values ?? const {},
         isRequired: StremioAddonClient.configurationRequired(manifest),
+        isConfiguredAddress: imported != null,
       );
     } finally {
       client.close();
@@ -955,12 +956,23 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       final requestedValues = configurationValues ?? imported?.values ?? const <String, String>{};
       final values = fields.isEmpty
           ? Map<String, String>.unmodifiable(imported?.values ?? const {})
-          : StremioAddonClient.normalizeConfiguration(fields, requestedValues);
+          : StremioAddonClient.normalizeConfiguration(
+              fields,
+              requestedValues,
+              applyCheckboxDefaults: configurationValues != null || imported == null,
+            );
       final configurationRequired = StremioAddonClient.configurationRequired(baseManifest);
-      if ((configurationRequired && fields.isEmpty && imported == null) || (configurationRequired && values.isEmpty)) {
+      if (configurationRequired &&
+          (fields.isEmpty ? imported == null : !StremioAddonClient.hasConfigurationValues(fields, values))) {
         throw const StremioAddonException(StremioAddonFailure.invalidResponse);
       }
-      final manifestUrl = fields.isEmpty ? address : StremioAddonClient.configuredManifestUrl(baseUrl, values);
+      final manifestUrl = fields.isEmpty
+          ? address
+          : StremioAddonClient.configuredManifestUrl(
+              baseUrl,
+              values,
+              checkboxKeys: fields.where((field) => field.type == 'checkbox').map((field) => field.key).toSet(),
+            );
       final manifest = manifestUrl == baseUrl
           ? baseManifest
           : await client.fetchManifest(manifestUrl, allowHttp: allowHttp);
@@ -1018,10 +1030,14 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       if (fields.isEmpty) throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
       final values = StremioAddonClient.normalizeConfiguration(fields, configurationValues);
       final configurationRequired = StremioAddonClient.configurationRequired(baseManifest);
-      if (configurationRequired && values.isEmpty) {
+      if (configurationRequired && !StremioAddonClient.hasConfigurationValues(fields, values)) {
         throw const StremioAddonException(StremioAddonFailure.invalidResponse);
       }
-      final manifestUrl = StremioAddonClient.configuredManifestUrl(baseUrl, values);
+      final manifestUrl = StremioAddonClient.configuredManifestUrl(
+        baseUrl,
+        values,
+        checkboxKeys: fields.where((field) => field.type == 'checkbox').map((field) => field.key).toSet(),
+      );
       final manifest = manifestUrl == baseUrl
           ? baseManifest
           : await client.fetchManifest(manifestUrl, allowHttp: installed.allowHttp);

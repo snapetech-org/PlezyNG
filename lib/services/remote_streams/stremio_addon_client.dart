@@ -52,6 +52,7 @@ class StremioAddonConfiguration {
     required this.fields,
     this.initialValues = const {},
     this.isRequired = false,
+    this.isConfiguredAddress = false,
   });
 
   final String baseUrl;
@@ -59,6 +60,7 @@ class StremioAddonConfiguration {
   final List<StremioAddonConfigurationField> fields;
   final Map<String, String> initialValues;
   final bool isRequired;
+  final bool isConfiguredAddress;
 }
 
 /// Bounded client for the Stremio add-on HTTP protocol. It never logs a
@@ -146,8 +148,9 @@ class StremioAddonClient {
 
   static Map<String, String> normalizeConfiguration(
     List<StremioAddonConfigurationField> fields,
-    Map<String, String> requested,
-  ) {
+    Map<String, String> requested, {
+    bool applyCheckboxDefaults = true,
+  }) {
     final fieldsByKey = {for (final field in fields) field.key: field};
     if (requested.length > fields.length || requested.keys.any((key) => !fieldsByKey.containsKey(key))) {
       throw const StremioAddonException(StremioAddonFailure.invalidResponse);
@@ -159,9 +162,13 @@ class StremioAddonClient {
         throw const StremioAddonException(StremioAddonFailure.invalidResponse);
       }
       if (field.type == 'checkbox') {
-        if (input == 'on' || (input == null && field.defaultValue == 'checked')) {
+        if (input == 'on' || (input == null && applyCheckboxDefaults && field.defaultValue == 'checked')) {
           result[field.key] = 'on';
-        } else if (input != null && input != 'off' && input != 'false' && input.isNotEmpty) {
+        } else if (input == null || input == 'off' || input == 'false' || input.isEmpty) {
+          // Keep an explicit off state in encrypted settings so later edits do
+          // not reapply a checked manifest default.
+          result[field.key] = 'off';
+        } else {
           throw const StremioAddonException(StremioAddonFailure.invalidResponse);
         }
         continue;
@@ -188,8 +195,18 @@ class StremioAddonClient {
     return Map.unmodifiable(result);
   }
 
-  static String configuredManifestUrl(String baseUrl, Map<String, String> values) {
-    if (values.isEmpty) return baseUrl;
+  static bool hasConfigurationValues(List<StremioAddonConfigurationField> fields, Map<String, String> values) =>
+      fields.any((field) => field.type == 'checkbox' ? values[field.key] == 'on' : values.containsKey(field.key));
+
+  static String configuredManifestUrl(
+    String baseUrl,
+    Map<String, String> values, {
+    Set<String> checkboxKeys = const {},
+  }) {
+    final endpointValues = Map<String, String>.fromEntries(
+      values.entries.where((entry) => !checkboxKeys.contains(entry.key) || entry.value == 'on'),
+    );
+    if (endpointValues.isEmpty) return baseUrl;
     final uri = Uri.tryParse(baseUrl);
     final queryIndex = baseUrl.indexOf('?');
     final end = queryIndex < 0 ? baseUrl.length : queryIndex;
@@ -202,7 +219,7 @@ class StremioAddonClient {
         !pathAndOrigin.endsWith(manifestSuffix)) {
       throw const StremioAddonException(StremioAddonFailure.invalidAddress);
     }
-    final encoded = Uri.encodeComponent(jsonEncode(values));
+    final encoded = Uri.encodeComponent(jsonEncode(endpointValues));
     final configured =
         '${pathAndOrigin.substring(0, pathAndOrigin.length - manifestSuffix.length)}/$encoded$manifestSuffix${baseUrl.substring(end)}';
     if (configured.length > 4096) throw const StremioAddonException(StremioAddonFailure.invalidAddress);

@@ -3,7 +3,7 @@
   "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "31bfd0e04b6656378f3abddcf17d2738cfdca8c3",
+    "auditedMainCommit": "f3345e7e5a644300492ee95109b714a71db3f1d6",
     "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
@@ -308,7 +308,7 @@
         "lib/sources/source_database.dart",
         "test/discovery/discovery_features_test.dart"
       ],
-      "qualification": "History appends then keeps the newest 500 actions within an atomic database read-modify-write. Focused tests cover the 500-history and 240-seen bounds, concurrent database updates, and failed/retried Undo at the 250-pick cap. Cross-device convergence and device or power-loss qualification remain open."
+      "qualification": "History appends then keeps the newest 500 actions within an atomic database read-modify-write. Focused tests cover the 500-history and 240-seen bounds, concurrent database updates, and failed/retried Undo at the 250-pick cap. Optional Saved-pick sync now has deterministic two-device coverage for an offline device applying a removal after rejoining; this does not establish all conflict or live-provider flows, or device and power-loss qualification. Undo and review history remain profile-local and are not replicated."
     },
     {
       "id": "F08",

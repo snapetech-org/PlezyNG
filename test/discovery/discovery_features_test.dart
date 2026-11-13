@@ -393,4 +393,38 @@ void main() {
     expect(serialized, isNot(contains('private-loan-identity')));
     expect(serialized, isNot(contains('private-server-')));
   });
+
+  test('an offline Saved-pick device converges after another device removes a pick', () async {
+    final firstRepository = _repository();
+    final secondRepository = _repository();
+    addTearDown(firstRepository.database.close);
+    addTearDown(secondRepository.database.close);
+    final pick = _choice(id: 'local-pick', title: 'Portable pick', portableIds: const {'isbn13': '9780306406157'});
+    final code = SyncCipher.newCode();
+    final cloud = _MemorySyncStore();
+    final first = DiscoverySync(firstRepository);
+    final second = DiscoverySync(secondRepository);
+    final firstLocal = DiscoveryStore(firstRepository);
+    final secondLocal = DiscoveryStore(secondRepository);
+
+    await firstLocal.decide('profile-first', pick, DiscoveryDecisionAction.save);
+    await first.run(profile: 'profile-first', code: code, store: cloud, check: () {});
+    await second.run(profile: 'profile-second', code: code, store: cloud, check: () {});
+    expect((await secondLocal.load('profile-second')).saved.single.portableKey, pick.portableKey);
+
+    await firstLocal.decide('profile-first', pick, DiscoveryDecisionAction.removeSaved);
+    await first.run(profile: 'profile-first', code: code, store: cloud, check: () {});
+    expect((await secondLocal.load('profile-second')).saved, hasLength(1));
+
+    // The second device rejoins with its old local snapshot and must apply the
+    // newer removal instead of republishing the stale saved pick.
+    await second.run(profile: 'profile-second', code: code, store: cloud, check: () {});
+    await first.run(profile: 'profile-first', code: code, store: cloud, check: () {});
+    await second.run(profile: 'profile-second', code: code, store: cloud, check: () {});
+
+    expect((await firstLocal.load('profile-first')).saved, isEmpty);
+    expect((await secondLocal.load('profile-second')).saved, isEmpty);
+    expect(first.conflicts, isEmpty);
+    expect(second.conflicts, isEmpty);
+  });
 }

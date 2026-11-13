@@ -386,17 +386,38 @@ class IptvXmltvParser {
     final match = RegExp(r'^(\d{14})(?:\s*([+-])(\d{2})(\d{2}))?$').firstMatch(value.trim());
     if (match == null) return null;
     final raw = match.group(1)!;
+    final year = int.parse(raw.substring(0, 4));
+    final month = int.parse(raw.substring(4, 6));
+    final day = int.parse(raw.substring(6, 8));
+    final hour = int.parse(raw.substring(8, 10));
+    final minute = int.parse(raw.substring(10, 12));
+    final second = int.parse(raw.substring(12, 14));
+    if (month < 1 ||
+        month > 12 ||
+        day < 1 ||
+        day > 31 ||
+        hour > 23 ||
+        minute > 59 ||
+        second > 59) {
+      return null;
+    }
     final wall = DateTime.utc(
-      int.parse(raw.substring(0, 4)),
-      int.parse(raw.substring(4, 6)),
-      int.parse(raw.substring(6, 8)),
-      int.parse(raw.substring(8, 10)),
-      int.parse(raw.substring(10, 12)),
-      int.parse(raw.substring(12, 14)),
+      year,
+      month,
+      day,
+      hour,
+      minute,
+      second,
     );
+    // DateTime normalizes overflow (for example, February 30 into March).
+    // That would silently place a malformed guide entry at a different time.
+    if (wall.year != year || wall.month != month || wall.day != day) return null;
     final sign = match.group(2);
     if (sign == null) return wall.millisecondsSinceEpoch ~/ 1000;
-    final offset = (int.parse(match.group(3)!) * 60 + int.parse(match.group(4)!)) * 60;
+    final offsetHours = int.parse(match.group(3)!);
+    final offsetMinutes = int.parse(match.group(4)!);
+    if (offsetHours > 23 || offsetMinutes > 59) return null;
+    final offset = (offsetHours * 60 + offsetMinutes) * 60;
     final seconds = wall.millisecondsSinceEpoch ~/ 1000;
     return seconds - (sign == '+' ? offset : -offset);
   }

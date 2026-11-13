@@ -1,6 +1,6 @@
 # IPTV implementation delivery
 
-Reconciled 2026-11-11 against the current `main` source tree. This tracker
+Reconciled 2026-11-12 against the current `main` source tree. This tracker
 supersedes the initial-branch status below in the original handoff. It records
 source presence separately from automated results, provider acceptance and
 device qualification.
@@ -19,6 +19,9 @@ device qualification.
   recording scheduling and scheduled stream capture have source implementations.
   Dispatcharr DVR and Xtream VOD also have dedicated clients and UI routes.
 - VOD progress synchronization has a profile-scoped service.
+- XMLTV timestamp parsing rejects invalid calendar dates, clock fields and
+  numeric timezone components so malformed guide entries are skipped instead
+  of being normalized into a different UTC interval.
 
 This is a static source inventory. It does not claim that every one of the 240
 requirements in `PLAN.md` is implemented, that every backend is compatible, or

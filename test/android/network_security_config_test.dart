@@ -13,6 +13,7 @@ const _expectedDomains = <String>{
   'anilist.co',
   'simkl.com',
   'simkl.in',
+  'pleazyng-api.snape.tech',
   'mdblist.com',
   'jsdelivr.net',
   'github.com',
@@ -115,7 +116,7 @@ void main() {
     // silently fall through to base-config and its user certificate authorities.
     // Retain system-only trust for the legacy namespace even though the fork
     // now rejects it before constructing optional service requests.
-    for (final host in ['plezy.app', 'ice.plezy.app', 'ICE.PLEZY.APP']) {
+    for (final host in ['plezy.app', 'plezy.app.', 'ice.plezy.app', 'ICE.PLEZY.APP']) {
       expect(() => requirePleazyngServiceUrl('https://$host'), throwsStateError);
     }
     final unobservedDomains = _expectedDomains

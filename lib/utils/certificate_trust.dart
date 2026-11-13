@@ -43,6 +43,7 @@ abstract final class CertificateTrust {
     'anilist.co',
     'simkl.com',
     'simkl.in',
+    'pleazyng-api.snape.tech',
     'mdblist.com',
     'jsdelivr.net',
     'github.com',

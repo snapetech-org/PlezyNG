@@ -43,6 +43,8 @@
         <domain includeSubdomains="true">simkl.com</domain>
         <!-- data.simkl.in (lib/services/trackers/simkl/simkl_constants.dart:22). -->
         <domain includeSubdomains="true">simkl.in</domain>
+        <!-- First-party MAL OAuth broker (lib/services/plezy_server.dart:7). -->
+        <domain includeSubdomains="true">pleazyng-api.snape.tech</domain>
         <domain includeSubdomains="true">mdblist.com</domain>
         <!-- cdn.jsdelivr.net: anime-list mappings (anime_lists_mapping_store.dart:37,
              fribb_mapping_store.dart:49). -->

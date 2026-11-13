@@ -41,6 +41,12 @@ String normalizeUserRelayBaseUrl(String value) {
       uri.hasFragment) {
     throw const FormatException('Enter an HTTPS base URL for a relay you operate.');
   }
+  // Never send this fork's optional-service traffic to upstream Plezy-owned
+  // infrastructure, even when a user explicitly enters the old host.
+  final host = uri.host.toLowerCase().replaceFirst(RegExp(r'\.+$'), '');
+  if (host == 'plezy.app' || host.endsWith('.plezy.app')) {
+    throw const FormatException('Plezy upstream service hosts are not allowed.');
+  }
   return uri.toString().replaceFirst(RegExp(r'/+$'), '');
 }
 

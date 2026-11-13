@@ -36,6 +36,19 @@ class MemorySyncStore implements SyncStore {
   }
 }
 
+class PagingOnlySourceRepository extends SourceRepository {
+  PagingOnlySourceRepository(super.database, {required super.protect, required super.reveal});
+
+  @override
+  Future<List<SourceEntry>> entries(
+    String profile, {
+    String? source,
+    String? parent,
+    String? query,
+    bool filterParent = false,
+  }) async => throw StateError('Publication sync must not materialize the full source catalog.');
+}
+
 void main() {
   const audio = PublicationFile(
     id: 'audio-id',
@@ -122,8 +135,11 @@ void main() {
   Future<void> runB() =>
       b.run(profile: 'profile-B', sources: [sourceB], config: config, store: store, activeKeys: {}, check: () {});
   setUp(() async {
-    SourceRepository repo() =>
-        SourceRepository(SourceDatabase(NativeDatabase.memory()), protect: (s) async => s, reveal: (s) async => s);
+    SourceRepository repo() => PagingOnlySourceRepository(
+      SourceDatabase(NativeDatabase.memory()),
+      protect: (s) async => s,
+      reveal: (s) async => s,
+    );
     repoA = repo();
     repoB = repo();
     a = PublicationSync(repoA);
@@ -146,6 +162,40 @@ void main() {
     expect(await at(repoB, 'profile-B', entryB), 60000);
     expect(await repoB.allProgress('profile-A'), isEmpty);
     expect(store.files.values.join(), isNot(contains('same-provider-book')));
+  });
+  test('remote sync resolves an entry beyond the first catalog page', () async {
+    final fillerEntries = List.generate(
+      550,
+      (index) => SourceEntry(
+        sourceId: sourceA.id,
+        id: 'filler-$index',
+        title: 'Filler $index',
+        kind: SourceItemKind.video,
+        files: [PublicationFile(id: 'filler-$index.mp4', name: 'Filler $index.mp4', mimeType: 'video/mp4')],
+      ),
+    );
+    final lateEntryA = SourceEntry(
+      sourceId: sourceA.id,
+      id: 'late-provider-book',
+      title: 'Late Book',
+      kind: SourceItemKind.audiobook,
+      files: [audio, ebook],
+    );
+    final lateEntryB = SourceEntry(
+      sourceId: sourceB.id,
+      id: 'late-provider-book',
+      title: 'Late Book',
+      kind: SourceItemKind.audiobook,
+      files: [audio, ebook],
+    );
+    await repoA.cacheEntries('profile-A', [...fillerEntries, lateEntryA]);
+    await repoB.cacheEntries('profile-B', [lateEntryB]);
+    await position(repoB, 'profile-B', lateEntryB, 90000);
+
+    await runB();
+    await runA();
+
+    expect(await at(repoA, 'profile-A', lateEntryA), 90000);
   });
   test('fresh device imports without manufacturing a competing zero position', () async {
     await position(repoA, 'profile-A', entryA, 100000);

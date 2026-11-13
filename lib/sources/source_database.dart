@@ -789,6 +789,26 @@ class SourceRepository {
         .toList();
   }
 
+  /// Loads only entries referenced by local progress or annotations. The
+  /// bounded variable groups keep this useful when a profile has many saved
+  /// publication states without scanning or materializing its whole catalog.
+  Future<List<SourceEntry>> entriesByKeys(String profile, Iterable<String> entryKeys) async {
+    final keys = entryKeys.where((key) => key.isNotEmpty).toSet().toList(growable: false);
+    if (keys.isEmpty) return const [];
+    final result = <SourceEntry>[];
+    for (var start = 0; start < keys.length; start += 400) {
+      final chunk = keys.skip(start).take(400).toList(growable: false);
+      final rows = await database
+          .customSelect(
+            'SELECT payload FROM entries WHERE profile=? AND entry_key IN (${List.filled(chunk.length, '?').join(',')})',
+            variables: [Variable(profile), ...chunk.map((key) => Variable<Object>(key))],
+          )
+          .get();
+      result.addAll(rows.map((row) => SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('payload'))))));
+    }
+    return result;
+  }
+
   /// Finds locally indexed entries that carry one of the supplied public
   /// identifiers. The JSON query narrows the candidate set in SQLite; callers
   /// still compare the decoded identifiers exactly before opening anything.

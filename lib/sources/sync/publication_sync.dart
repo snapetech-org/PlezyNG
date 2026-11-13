@@ -169,7 +169,6 @@ class PublicationSync {
         if (envelope['discoveryName'] != discoveryName) throw const SourceException(SourceFailure.invalidData);
         discoveryIncoming = await cipher.open(envelope['discoveryEncrypted'] as String, discoveryName);
       }
-      final entries = await repository.entries(profile);
       final device = (await repository.preference(profile, 'publication-sync-device-v1'))['id'] as String?;
       final entryMappings = await sharedEntryMappings(profile);
       final cacheKey = _cacheKey(cipher.namespace);
@@ -178,7 +177,7 @@ class PublicationSync {
         cache.document.merge(incoming);
         cache.document.compactSafe(actor: device);
         cache.published = '';
-        await _apply(profile, cache, _identities(sources, entries, entryMappings), entryMappings, activeKeys);
+        await _apply(profile, cache, sources, entryMappings, activeKeys);
         await repository.savePreference(profile, cacheKey, cache.toJson());
       });
       if (discoveryIncoming != null && discoverySync != null) {
@@ -519,17 +518,33 @@ class PublicationSync {
   Future<Map<String, _LocalValue>> _locals(
     String profile,
     List<FileSource> sources,
-    List<SourceEntry> entries,
     Map<String, String> entryMappings,
   ) async {
+    final progressRows = await repository.allProgress(profile);
+    final annotationRows = await repository.database
+        .customSelect('SELECT payload FROM annotations WHERE profile=?', variables: [Variable(profile)])
+        .get();
+    final annotations = annotationRows
+        .map((row) => BookAnnotation.fromJson(sourceMap(jsonDecode(row.read<String>('payload')))))
+        .toList(growable: false);
+    final byKey = {
+      for (final entry in await repository.entriesByKeys(profile, [
+        ...progressRows.map((progress) => progress.entryKey),
+        ...annotations.map((annotation) => annotation.entryKey),
+      ]))
+        entry.key: entry,
+    };
+    final sourceById = <String, FileSource>{};
+    for (final source in sources) {
+      sourceById.putIfAbsent(source.id, () => source);
+    }
     final identities = <String, String>{};
-    for (final entry in entries) {
-      final source = sources.where((s) => s.id == entry.sourceId).firstOrNull;
+    for (final entry in byKey.values) {
+      final source = sourceById[entry.sourceId];
       if (source != null) identities[entry.key] = entryIdentity(source, entry, sharedEntryId: entryMappings[entry.key]);
     }
-    final byKey = {for (final e in entries) e.key: e};
     final values = <String, _LocalValue>{};
-    for (final p in await repository.allProgress(profile)) {
+    for (final p in progressRows) {
       final identity = identities[p.entryKey];
       if (identity != null) {
         final entry = byKey[p.entryKey]!;
@@ -544,11 +559,7 @@ class PublicationSync {
         );
       }
     }
-    final rows = await repository.database
-        .customSelect('SELECT payload FROM annotations WHERE profile=?', variables: [Variable(profile)])
-        .get();
-    for (final row in rows) {
-      final a = BookAnnotation.fromJson(sourceMap(jsonDecode(row.read<String>('payload'))));
+    for (final a in annotations) {
       final identity = identities[a.entryKey];
       if (identity != null) {
         final entry = byKey[a.entryKey]!;
@@ -576,15 +587,38 @@ class PublicationSync {
     }
   }
 
-  Map<String, SourceEntry> _identities(
+  Future<Map<String, SourceEntry>> _identitiesForDocument(
+    String profile,
     List<FileSource> sources,
-    List<SourceEntry> entries,
+    SyncDocument document,
     Map<String, String> entryMappings,
-  ) => {
-    for (final e in entries)
-      if (sources.any((s) => s.id == e.sourceId))
-        entryIdentity(sources.firstWhere((s) => s.id == e.sourceId), e, sharedEntryId: entryMappings[e.key]): e,
-  };
+  ) async {
+    final wanted = <String>{};
+    for (final versions in document.records.values) {
+      if (versions.isEmpty) continue;
+      final identity = versions.first.value['entry'];
+      if (identity is String) wanted.add(identity);
+    }
+    if (wanted.isEmpty) return {};
+
+    final sourceById = <String, FileSource>{};
+    for (final source in sources) {
+      sourceById.putIfAbsent(source.id, () => source);
+    }
+    final identities = <String, SourceEntry>{};
+    String? cursor;
+    do {
+      final page = await repository.entriesPage(profile, cursor: cursor, limit: 500);
+      for (final entry in page.items) {
+        final source = sourceById[entry.sourceId];
+        if (source == null) continue;
+        final identity = entryIdentity(source, entry, sharedEntryId: entryMappings[entry.key]);
+        if (wanted.contains(identity)) identities[identity] = entry;
+      }
+      cursor = page.cursor;
+    } while (cursor != null);
+    return identities;
+  }
 
   bool _compatible(SourceEntry entry, Map<String, dynamic> data, {String? sharedEntryId}) {
     final edition = data['edition'], mode = data['mode'];
@@ -598,11 +632,12 @@ class PublicationSync {
   Future<void> _apply(
     String profile,
     _SyncCache cache,
-    Map<String, SourceEntry> identities,
+    List<FileSource> sources,
     Map<String, String> entryMappings,
     Set<String> activeKeys,
   ) async {
     conflicts.clear();
+    final identities = await _identitiesForDocument(profile, sources, cache.document, entryMappings);
     for (final record in cache.document.records.entries) {
       final values = record.value;
       final first = values.first.value;
@@ -713,13 +748,12 @@ class PublicationSync {
       final device = deviceConfig['id'] as String? ?? const Uuid().v4().replaceAll('-', '');
       check();
       await repository.savePreference(profile, 'publication-sync-device-v1', {'id': device});
-      final entries = await repository.entries(profile);
       final entryMappings = await sharedEntryMappings(profile);
       // Persist new local edits BEFORE any network access. Retry retains the
       // same causal context even if a pull, upload or application crashes.
       await repository.database.transaction(() async {
         check();
-        _capture(cache, device, await _locals(profile, sources, entries, entryMappings));
+        _capture(cache, device, await _locals(profile, sources, entryMappings));
         cache.document.compactSafe(actor: device);
         await repository.savePreference(profile, cacheKey, cache.toJson());
       });
@@ -742,11 +776,11 @@ class PublicationSync {
       late Map<String, _LocalValue> publishedLocals;
       await repository.database.transaction(() async {
         check();
-        publishedLocals = await _locals(profile, sources, entries, entryMappings);
+        publishedLocals = await _locals(profile, sources, entryMappings);
         _capture(cache, device, publishedLocals);
         cache.document.merge(remote);
         cache.document.compactSafe(actor: device);
-        await _apply(profile, cache, _identities(sources, entries, entryMappings), entryMappings, activeKeys);
+        await _apply(profile, cache, sources, entryMappings, activeKeys);
         check();
         await repository.savePreference(profile, cacheKey, cache.toJson());
       });
@@ -832,13 +866,7 @@ class PublicationSync {
       cache.document.edit(key, device, selected.value, joinedClock(current));
       cache.observed.remove(key);
       final entryMappings = await sharedEntryMappings(profile);
-      await _apply(
-        profile,
-        cache,
-        _identities(sources, await repository.entries(profile), entryMappings),
-        entryMappings,
-        activeKeys,
-      );
+      await _apply(profile, cache, sources, entryMappings, activeKeys);
       check();
       await repository.savePreference(profile, cacheKey, cache.toJson());
     });

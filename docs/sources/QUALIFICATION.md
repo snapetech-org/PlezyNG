@@ -18,7 +18,9 @@ Publication and Saved-pick generation cleanup is retried on every successful syn
 
 ## Large local directory paging
 
-Local source browsing keeps up to 20,000 entries in memory. Larger sorted directory snapshots are spooled to temporary JSON pages for reuse across cursor requests, up to 100,000 recognized entries and 128 MiB total across at most 32 directories. Snapshots expire after one minute and are removed when the adapter closes. If a spool exceeds its byte budget, browsing remains functional but later pages may re-enumerate the directory. Initial enumeration, sort, and 10,000/100,000-entry latency, memory, and I/O budgets still require measurement on target devices and filesystems.
+Local source browsing keeps up to 20,000 entries in memory. Larger directories are sorted in bounded runs of at most 20,000 entries and merged into temporary JSON pages, up to 100,000 recognized entries. Reusable snapshots are retained for up to one minute and remain limited to 128 MiB across at most 32 directories; an over-budget snapshot is read for the current page and removed, so later pages re-enumerate and sort the directory. The adapter removes run files after merging and removes retained snapshots when it closes. Initial enumeration, sort, and 10,000/100,000-entry latency, memory, and I/O budgets still require measurement on target devices and filesystems.
+
+Publication sync scans the source catalog with stable rowid pages inside its database transaction when resolving remote identities. Local progress and annotations load only the source entries they reference. This avoids decoding and retaining the entire profile catalog during sync, recovery import, and conflict resolution.
 
 Completed source scans reconcile stale entries in batches of 128 and query only completed-download fingerprints referenced by each batch. Reconciliation does not materialize the entire stale catalog or the full profile download ledger at once.
 

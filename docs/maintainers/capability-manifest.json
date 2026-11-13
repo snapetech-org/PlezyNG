@@ -340,9 +340,11 @@
         "lib/utils/external_ids.dart",
         "test/media/canonical_library_test.dart",
         "test/utils/external_ids_test.dart",
-        "test/sources/source_database_migration_test.dart"
+        "test/sources/source_database_migration_test.dart",
+        "test/sources/local_source_adapter_test.dart",
+        "test/sources/sync/publication_sync_test.dart"
       ],
-      "qualification": "UI retrieval is SQL-paged. Merged server-library scans mark visited copies by generation in SQL and reconcile stale copies with a single database delete; their only per-scan external-ID cache retains at most 128 shows. Local directory snapshots remain bounded in memory and on disk. Target-device latency, memory, and I/O budgets have not been measured."
+      "qualification": "UI retrieval is SQL-paged. Merged server-library scans mark visited copies by generation in SQL and reconcile stale copies with a single database delete; their only per-scan external-ID cache retains at most 128 shows. Publication sync reads the local catalog with stable rowid pages inside its database transaction and loads only entries referenced by local progress or annotations. Local directory enumeration sorts through runs of at most 20,000 entries and merges them into paged temporary snapshots, retaining no full large-directory list in memory. Target-device latency, memory, and I/O budgets have not been measured."
     },
     {
       "id": "F10",

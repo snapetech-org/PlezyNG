@@ -191,7 +191,8 @@ def complete_native_artifacts() -> dict:
 
         package["capabilities"] = {
             "artifactSha256": package["checksum"], "orderedSubtitlePcmAbi": 1,
-            "inspectionSchema": 4, "motionPlatform": group, "executionQualified": False,
+            "inspectionSchema": 5 if group in ("android", "linux", "windows") else 4,
+            "motionPlatform": group, "executionQualified": False,
             "requiredSymbols": ["mpv_plezy_audio_tap_version", "mpv_plezy_audio_tap_enable",
                                 "mpv_plezy_audio_tap_read", "mpv_plezy_audio_tap_read_next"],
             "binaries": sorted(architectures), "binaryArchitectures": architectures,
@@ -199,6 +200,8 @@ def complete_native_artifacts() -> dict:
             "neuralFilters": {name: {arch: features(arch) for arch in arches} for name, arches in architectures.items()},
             "appleSlices": slices or [],
         }
+        if group in ("android", "linux", "windows"):
+            package["capabilities"]["felEngineId"] = "plezyng-dv-fel-v1"
         if group in ("linux", "windows"):
             package["capabilities"]["pmeVulkan"] = True
 
@@ -777,13 +780,22 @@ class SetNativeRevisionTest(unittest.TestCase):
             for package in group.values():
                 self.assertEqual(package["checksum"], package["capabilities"]["artifactSha256"])
                 self.assertIs(package["capabilities"]["executionQualified"], False)
+        for group in ("android", "linux", "windows"):
+            for package in lock["nativePackages"][group].values():
+                self.assertEqual(package["capabilities"]["inspectionSchema"], 5)
+                self.assertEqual(package["capabilities"]["felEngineId"], "plezyng-dv-fel-v1")
+        for package in lock["nativePackages"]["apple"].values():
+            self.assertEqual(package["capabilities"]["inspectionSchema"], 4)
+            self.assertNotIn("felEngineId", package["capabilities"])
         second = self._run(commit, "--repo", str(repo))
         self.assertEqual(second.returncode, 0, second.stderr)
         self.assertIn("unchanged", second.stdout)
 
     def test_partial_or_mismatched_fork_receipts_never_change_any_pin(self) -> None:
         for index, case in enumerate(("missing-windows", "missing-arch", "old-schema", "wrong-checksum",
-                                      "wrong-machine", "missing-neural", "missing-apple-slice", "swapped-android-abis")):
+                                      "wrong-machine", "missing-neural", "missing-fel-engine",
+                                      "missing-fel-engine-android", "missing-fel-engine-linux",
+                                      "wrong-fel-engine", "missing-apple-slice", "swapped-android-abis")):
             with self.subTest(case=case):
                 artifacts = complete_native_artifacts()
                 platforms = artifacts["platforms"]
@@ -794,7 +806,7 @@ class SetNativeRevisionTest(unittest.TestCase):
                 elif case == "missing-arch":
                     del windows["aarch64"]
                 elif case == "old-schema":
-                    receipt["inspectionSchema"] = 3
+                    receipt["inspectionSchema"] = 4
                 elif case == "wrong-checksum":
                     receipt["artifactSha256"] = "0" * 64
                 elif case == "wrong-machine":
@@ -802,6 +814,14 @@ class SetNativeRevisionTest(unittest.TestCase):
                     receipt["neuralFilters"]["libmpv-2.dll"] = {"x86_64": ["pme"]}
                 elif case == "missing-neural":
                     receipt["neuralFilters"]["libmpv-2.dll"]["arm64"] = []
+                elif case == "missing-fel-engine":
+                    del receipt["felEngineId"]
+                elif case == "missing-fel-engine-android":
+                    del platforms["android"]["libraries"]["mpv-android"]["capabilities"]["felEngineId"]
+                elif case == "missing-fel-engine-linux":
+                    del platforms["linux"]["libraries"]["libmpv-linux"]["prebuilt"]["x86_64"]["capabilities"]["felEngineId"]
+                elif case == "wrong-fel-engine":
+                    receipt["felEngineId"] = "some-other-engine"
                 elif case == "missing-apple-slice":
                     platforms["apple"]["libraries"]["libmpv"]["frameworks"]["Libmpv"]["capabilities"]["appleSlices"].pop()
                 else:

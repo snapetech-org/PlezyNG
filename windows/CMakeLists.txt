@@ -85,6 +85,18 @@ endif()
 string(JSON MPV_ASSET_BASE GET "${MPV_LOCK}" artifacts windows assetBase)
 string(JSON MPV_ASSET GET "${MPV_LOCK}" artifacts windows assets "${MPV_ARCH}" asset)
 string(JSON MPV_SHA256 GET "${MPV_LOCK}" artifacts windows assets "${MPV_ARCH}" checksum)
+string(JSON FEL_RECEIPT_ASSET GET "${MPV_LOCK}" nativePackages windows "${MPV_ARCH}" asset)
+string(JSON FEL_RECEIPT_SHA256 GET "${MPV_LOCK}" nativePackages windows "${MPV_ARCH}" checksum)
+string(JSON FEL_RECEIPT_SCHEMA GET "${MPV_LOCK}" nativePackages windows "${MPV_ARCH}" capabilities inspectionSchema)
+string(JSON FEL_ENGINE_ID GET "${MPV_LOCK}" nativePackages windows "${MPV_ARCH}" capabilities felEngineId)
+string(JSON FEL_ARTIFACT_SHA256 GET "${MPV_LOCK}" nativePackages windows "${MPV_ARCH}" capabilities artifactSha256)
+if(NOT "${FEL_RECEIPT_ASSET}" STREQUAL "${MPV_ASSET}" OR
+   NOT "${FEL_RECEIPT_SHA256}" STREQUAL "${MPV_SHA256}" OR
+   NOT "${FEL_RECEIPT_SCHEMA}" STREQUAL "5" OR
+   NOT "${FEL_ENGINE_ID}" STREQUAL "plezyng-dv-fel-v1" OR
+   NOT "${FEL_ARTIFACT_SHA256}" STREQUAL "${MPV_SHA256}")
+  message(FATAL_ERROR "Windows MPV package receipt must attest plezyng-dv-fel-v1 and bind to the locked archive checksum")
+endif()
 set(MPV_DOWNLOAD_URL "${MPV_ASSET_BASE}/${MPV_ASSET}")
 
 # Explicit development-only FEL engine selection. Never infer an engine from

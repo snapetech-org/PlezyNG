@@ -19,6 +19,25 @@ if ($null -eq $assetProperty) {
 
 $asset = [string]$assetProperty.Value.asset
 $expectedHash = [string]$assetProperty.Value.checksum
+$nativeWindows = $lock.nativePackages.windows
+if ($null -eq $nativeWindows) {
+    throw 'The Windows MPV lock has no nativePackages.windows FEL receipts.'
+}
+$receiptProperty = $nativeWindows.PSObject.Properties[$assetArchitecture]
+if ($null -eq $receiptProperty) {
+    throw "The Windows MPV lock has no FEL receipt for $assetArchitecture."
+}
+$packageReceipt = $receiptProperty.Value
+$capabilities = $packageReceipt.capabilities
+if (
+    [string]$packageReceipt.asset -cne $asset -or
+    [string]$packageReceipt.checksum -cne $expectedHash -or
+    [int]$capabilities.inspectionSchema -ne 5 -or
+    [string]$capabilities.felEngineId -cne 'plezyng-dv-fel-v1' -or
+    [string]$capabilities.artifactSha256 -cne $expectedHash
+) {
+    throw 'The Windows MPV package receipt does not attest plezyng-dv-fel-v1 for the locked archive checksum.'
+}
 $base = [Uri][string]$mpv.assetBase
 $expectedAssetBase = "https://github.com/$repo/releases/download/binaries-windows"
 if (

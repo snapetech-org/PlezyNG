@@ -28,6 +28,8 @@ WINDOWS_CMAKE = WORKFLOW.parents[2] / "windows/CMakeLists.txt"
 STEAM_CMAKE = WORKFLOW.parents[2] / "native/games/steam/CMakeLists.txt"
 WINDOWS_MPV_DOWNLOADER = WORKFLOW.parents[2] / "windows/tool/download-pinned-mpv.ps1"
 MPV_BUILD_LOCK = WORKFLOW.parents[2] / "mpv-build.lock.json"
+MPV_LINUX_FETCHER = ROOT / "scripts/fetch_linux_libmpv.py"
+ANDROID_GRADLE = ROOT / "android/app/build.gradle.kts"
 WINDOWS_SIMDUTF_DOWNLOADER = (
     WORKFLOW.parents[2] / "windows/tool/download-pinned-simdutf.ps1"
 )
@@ -362,6 +364,16 @@ windows_mpv_downloader = (
     if WINDOWS_MPV_DOWNLOADER.is_file()
     else ""
 )
+mpv_linux_fetcher = (
+    MPV_LINUX_FETCHER.read_text(encoding="utf-8")
+    if MPV_LINUX_FETCHER.is_file()
+    else ""
+)
+android_gradle = (
+    ANDROID_GRADLE.read_text(encoding="utf-8")
+    if ANDROID_GRADLE.is_file()
+    else ""
+)
 mpv_build_lock = (
     json.loads(MPV_BUILD_LOCK.read_text(encoding="utf-8"))
     if MPV_BUILD_LOCK.is_file()
@@ -421,6 +433,35 @@ require(
     and "set(MPV_DOWNLOAD_URL" in windows_mpv_block
     and "URL_HASH SHA256=${MPV_SHA256}" in windows_mpv_block,
     "Windows CMake must use a predownloaded MPV archive without dropping lockfile hash verification",
+)
+require(
+    all(token in windows_mpv_block for token in (
+        "nativePackages windows", "felEngineId", "FEL_RECEIPT_SHA256",
+        "FEL_ARTIFACT_SHA256", "FEL_RECEIPT_SCHEMA",
+    )),
+    "Windows CMake must require a FEL identity receipt bound to the locked archive checksum",
+)
+require(
+    all(token in windows_mpv_downloader for token in (
+        "$lock.nativePackages.windows", "felEngineId", "artifactSha256", "inspectionSchema",
+    )),
+    "Windows MPV downloader must require the matching FEL identity receipt",
+)
+require(
+    all(token in android_gradle for token in (
+        'mpvLock["nativePackages"]', 'androidPackageReceipt["checksum"]',
+        'androidFelCapabilities["felEngineId"]', 'androidFelCapabilities["artifactSha256"]',
+        "Pinned Android AAR is missing required FEL engine metadata",
+        'metadata["engine_id"] != "plezyng-dv-fel-v1"',
+    )),
+    "Android normal AAR consumer must require its matching FEL receipt and package metadata",
+)
+require(
+    all(token in mpv_linux_fetcher for token in (
+        'lock.get("nativePackages")', 'capabilities.get("felEngineId")',
+        'capabilities.get("artifactSha256")', 'validate_fel_receipt(lock, machine, entry)',
+    )),
+    "Linux libmpv fetcher must require the matching FEL identity receipt",
 )
 require(
     "PLEZYNG_WINDOWS_CURL_PATH" in windows_cmake

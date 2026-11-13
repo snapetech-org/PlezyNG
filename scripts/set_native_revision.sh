@@ -74,10 +74,12 @@
 # Serialization is deterministic: two-space indent, sorted keys, trailing
 # newline. Consumers must fail when their group is missing rather than fall
 # back to an unpinned source.
-# Snapetech production revisions additionally require every platform's schema-4
-# package capability receipt: ordered PCM and the implemented neural filters,
-# bound to the exact archive checksum and real binary architectures. Partial or
-# mixed-generation producer manifests must not replace any application pin.
+# Snapetech production revisions require schema-5 FEL package receipts for
+# Android, Linux and Windows, plus the existing schema-4 Apple receipt. All
+# receipts cover ordered PCM and the implemented neural filters, bind to the
+# exact archive checksum and real binary architectures, and assert FEL identity
+# where the normal package includes that engine. Partial or mixed-generation
+# producer manifests must not replace any application pin.
 #
 # Usage:
 #   scripts/set_native_revision.sh <full-40-char-commit-sha> [--repo <path-or-url>]
@@ -546,12 +548,15 @@ def native_package_receipts(platforms: dict) -> dict:
                     not isinstance(checksum, str) or not CHECKSUM_RE.fullmatch(checksum) or
                     receipt.get("artifactSha256") != checksum):
                 errors.append(f"{label}: capability receipt does not match the archive checksum")
-            if (type(receipt.get("inspectionSchema")) is not int or receipt["inspectionSchema"] != 4 or
+            expected_schema = 5 if group in ("android", "linux", "windows") else 4
+            if (type(receipt.get("inspectionSchema")) is not int or receipt["inspectionSchema"] != expected_schema or
                     type(receipt.get("orderedSubtitlePcmAbi")) is not int or receipt["orderedSubtitlePcmAbi"] != 1 or
                     receipt.get("motionPlatform") != group or
                     not isinstance(receipt.get("requiredSymbols"), list) or
                     not required_symbols.issubset(x for x in receipt["requiredSymbols"] if isinstance(x, str))):
-                errors.append(f"{label}: requires schema-4 ordered-PCM and neural inspection")
+                errors.append(f"{label}: requires schema-{expected_schema} ordered-PCM and neural inspection")
+            if group in ("android", "linux", "windows") and receipt.get("felEngineId") != "plezyng-dv-fel-v1":
+                errors.append(f"{label}: requires packaged FEL engine identity plezyng-dv-fel-v1")
             if group in ("linux", "windows") and receipt.get("pmeVulkan") is not True:
                 errors.append(f"{label}: requires compiled PME Vulkan reconstruction evidence")
             binaries = receipt.get("binaries")

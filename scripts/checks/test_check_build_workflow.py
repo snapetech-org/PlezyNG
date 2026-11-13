@@ -725,6 +725,31 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("not a literal", result.stderr)
 
+    def test_windows_cmake_without_fel_receipt_is_rejected(self) -> None:
+        cmake = self._cmake().replace(
+            'string(JSON FEL_ENGINE_ID GET "${MPV_LOCK}" nativePackages windows "${MPV_ARCH}" capabilities felEngineId)\n',
+            "",
+            1,
+        )
+        self.assertNotEqual(cmake, self._cmake())
+
+        result = self._run(self._workflow(), cmake=cmake)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Windows CMake must require a FEL identity receipt", result.stderr)
+
+    def test_windows_downloader_without_fel_receipt_is_rejected(self) -> None:
+        downloader = WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8").replace(
+            "felEngineId",
+            "engineIdentity",
+        )
+        self.assertNotEqual(downloader, WINDOWS_MPV_DOWNLOADER.read_text(encoding="utf-8"))
+
+        result = self._run(self._workflow(), mpv_downloader=downloader)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Windows MPV downloader must require the matching FEL identity receipt", result.stderr)
+
     def test_linux_fetch_without_shared_script_is_rejected(self) -> None:
         workflow = self._workflow().replace(
             "python3 scripts/fetch_linux_libmpv.py --dest libmpv-prefix",

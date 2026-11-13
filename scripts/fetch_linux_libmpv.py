@@ -25,6 +25,7 @@ except ModuleNotFoundError:
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LOCK = ROOT / "mpv-build.lock.json"
 DOWNLOAD_CHUNK_SIZE = 1024 * 1024
+FEL_ENGINE_ID = "plezyng-dv-fel-v1"
 
 
 def configure_shared_client_sdk(prefix: Path) -> None:
@@ -51,6 +52,26 @@ def configure_shared_client_sdk(prefix: Path) -> None:
     if not found_libs:
         raise ValueError('shared libmpv client SDK has no library declaration')
     pc.write_text('\n'.join(lines) + '\n')
+
+
+def validate_fel_receipt(lock: dict, variant: str, artifact: dict) -> None:
+    """Require the package inspection receipt to bind FEL identity to this asset."""
+    native_packages = lock.get("nativePackages")
+    linux_packages = native_packages.get("linux") if isinstance(native_packages, dict) else None
+    package = linux_packages.get(variant) if isinstance(linux_packages, dict) else None
+    if not isinstance(package, dict):
+        raise ValueError(f"missing nativePackages.linux.{variant} FEL receipt")
+    checksum = artifact.get("checksum")
+    if package.get("asset") != artifact.get("asset") or package.get("checksum") != checksum:
+        raise ValueError(f"nativePackages.linux.{variant} asset/checksum differs from artifacts.linux")
+    capabilities = package.get("capabilities")
+    if not isinstance(capabilities, dict):
+        raise ValueError(f"nativePackages.linux.{variant} has no capability receipt")
+    if (type(capabilities.get("inspectionSchema")) is not int or
+            capabilities["inspectionSchema"] != 5 or
+            capabilities.get("felEngineId") != FEL_ENGINE_ID or
+            capabilities.get("artifactSha256") != checksum):
+        raise ValueError(f"nativePackages.linux.{variant} lacks schema-5 FEL identity bound to its archive checksum")
 
 
 def main() -> int:
@@ -89,6 +110,12 @@ def main() -> int:
             f"(locked: {', '.join(sorted(group['assets']))})",
             file=sys.stderr,
         )
+        return 1
+
+    try:
+        validate_fel_receipt(lock, machine, entry)
+    except ValueError as error:
+        print(f"Error: {args.lock}: {error}", file=sys.stderr)
         return 1
 
     url = f"{group['assetBase']}/{entry['asset']}"

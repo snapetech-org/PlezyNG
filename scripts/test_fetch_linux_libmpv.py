@@ -14,6 +14,7 @@ from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parent / "fetch_linux_libmpv.py"
 HAS_ZSTD = shutil.which("zstd") is not None
+FEL_ENGINE_ID = "plezyng-dv-fel-v1"
 
 
 class FetchLinuxLibmpvTest(unittest.TestCase):
@@ -51,6 +52,15 @@ class FetchLinuxLibmpvTest(unittest.TestCase):
 
     def _write_lock(self, checksum: str, machine: str = platform.machine()) -> Path:
         lock = self.root / "mpv-build.lock.json"
+        package = {
+            "asset": self.asset.name,
+            "checksum": checksum,
+            "capabilities": {
+                "inspectionSchema": 5,
+                "felEngineId": FEL_ENGINE_ID,
+                "artifactSha256": checksum,
+            },
+        }
         lock.write_text(
             json.dumps(
                 {
@@ -59,7 +69,8 @@ class FetchLinuxLibmpvTest(unittest.TestCase):
                             "assetBase": self.asset_base,
                             "assets": {machine: {"asset": self.asset.name, "checksum": checksum}},
                         }
-                    }
+                    },
+                    "nativePackages": {"linux": {machine: package}},
                 }
             ),
             encoding="utf-8",
@@ -99,6 +110,37 @@ class FetchLinuxLibmpvTest(unittest.TestCase):
             (self.dest / "lib/pkgconfig/mpv.pc").read_text(encoding="utf-8"),
             "Name: mpv\nLibs: -L${libdir} -lmpv -Wl,-rpath-link,${prefix}/lib -Wl,-rpath-link,${libdir}\n",
         )
+
+    @unittest.skipUnless(HAS_ZSTD, "zstd not installed")
+    def test_missing_fel_receipt_fails_before_extraction(self) -> None:
+        lock = self._write_lock(self._digest())
+        data = json.loads(lock.read_text(encoding="utf-8"))
+        del data["nativePackages"]
+        lock.write_text(json.dumps(data), encoding="utf-8")
+
+        result = self._run(lock)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("missing nativePackages.linux", result.stderr)
+        self.assertFalse(self.dest.exists())
+
+    @unittest.skipUnless(HAS_ZSTD, "zstd not installed")
+    def test_wrong_fel_identity_or_checksum_binding_fails_before_extraction(self) -> None:
+        for field, value in (("felEngineId", "other-engine"),
+                             ("artifactSha256", "0" * 64),
+                             ("inspectionSchema", 4)):
+            with self.subTest(field=field):
+                lock = self._write_lock(self._digest())
+                data = json.loads(lock.read_text(encoding="utf-8"))
+                package = data["nativePackages"]["linux"][platform.machine()]
+                package["capabilities"][field] = value
+                lock.write_text(json.dumps(data), encoding="utf-8")
+
+                result = self._run(lock)
+
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("lacks schema-5 FEL identity", result.stderr)
+                self.assertFalse(self.dest.exists())
 
     @unittest.skipUnless(HAS_ZSTD, "zstd not installed")
     def test_unsupported_machine_is_a_clear_error(self) -> None:

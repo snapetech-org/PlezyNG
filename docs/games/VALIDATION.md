@@ -24,23 +24,34 @@ path in workflow code; the new archive generation, attestation, and release
 assembly have not yet run on this workflow revision. See
 [MOONLIGHT_SOURCE.md](MOONLIGHT_SOURCE.md).
 
-Surface detach/reattach, decoder recovery, physical input, audio routing, HDR,
-and device behavior remain unqualified. The source archive records what was
-built; it does not replace that platform evidence.
+Surface detach/reattach recovery is now implemented in the app-owned adapter
+and pinned source-preparation recipe. The adapter suspends input while the
+surface is absent, rebinds an active MediaCodec to the recreated valid
+SurfaceView surface, and stops the session if rebinding fails or no surface
+returns within eight seconds. Source preparation verifies the patch anchor and
+generated method; it does not prove Android compilation or codec behavior.
+Physical surface recovery, decoder recovery, input, audio routing, HDR, and
+device behavior remain unqualified. The source archive records what was built;
+it does not replace that platform evidence.
 
-### Planned, not yet shipped: Moonlight surface recreation
+### Moonlight surface recreation implementation
 
-`MoonlightStreamView.surfaceDestroyed` currently has no recovery action.
-`surfaceChanged` updates the receiver's `SurfaceHolder`, but starts the
-connection only once. In the pinned receiver, `MediaCodecDecoderRenderer`
-stores that holder and configures MediaCodec with its current `getSurface()`;
-the app adapter has no active-codec output-surface rebind or explicit retained
-surface strategy. A recreated Android surface therefore has no source-level
-proof that the running decoder is redirected to it. Keep detach/reattach and
-decoder recovery open until the adapter has a bounded lifecycle path and the
-target device scenarios pass. The [pinned receiver source](https://github.com/moonlight-stream/moonlight-android/blob/b48494cb96bff23d8886c4775cc4f39a1075495d/app/src/main/java/com/limelight/binding/video/MediaCodecDecoderRenderer.java)
-and [Android `SurfaceHolder` lifecycle contract](https://developer.android.com/reference/android/view/SurfaceHolder)
-inform this disposition; no new recovery behavior is claimed as shipped.
+`MoonlightStreamView.surfaceDestroyed` now disables active input, shows the
+existing connecting state, and starts an eight-second recovery deadline. The
+next valid `surfaceChanged` asks the patched `MediaCodecDecoderRenderer` to
+rebind its active codec with `MediaCodec.setOutputSurface`. A failed rebind or
+expired deadline stops the session so it cannot remain silently audio-only.
+The source-preparation recipe injects this method into the exact pinned
+receiver and fails closed if its API anchor changes. Android documents
+`setOutputSurface` from API 23; Pleazyng's Android application minimum is 25.
+Compile, codec-vendor behavior, detach/reattach, and physical-device recovery
+remain unqualified. The [pinned receiver source](https://github.com/moonlight-stream/moonlight-android/blob/b48494cb96bff23d8886c4775cc4f39a1075495d/app/src/main/java/com/limelight/binding/video/MediaCodecDecoderRenderer.java)
+and [Android `MediaCodec` API](https://developer.android.com/reference/android/media/MediaCodec#setOutputSurface(android.view.Surface))
+inform this implementation.
+
+#### Upstream sources
+
+The patched decoder API is from Moonlight Android [commit `b48494cb`](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d), authored by [@cgutman](https://github.com/cgutman) for the upstream Moonlight project. Pleazyng independently adapted its decoder lifecycle for retained workspace surfaces; this source record does not imply a contribution to or endorsement of Pleazyng. See [UPSTREAM_ATTRIBUTION.md](../../UPSTREAM_ATTRIBUTION.md#credited-moonlight-android-source).
 
 ## Account Cloud host bridge — 2026-10-29
 

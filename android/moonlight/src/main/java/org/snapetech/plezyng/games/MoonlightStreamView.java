@@ -69,6 +69,11 @@ public final class MoonlightStreamView extends FrameLayout
   private final AtomicBoolean stopStarted = new AtomicBoolean();
   private final AtomicBoolean decoderStopping = new AtomicBoolean();
   private final CountDownLatch stopped = new CountDownLatch(1);
+  private static final long SURFACE_RECOVERY_TIMEOUT_MS = 8000;
+  private final Runnable surfaceRecoveryTimeout = () -> {
+    if (closed || !surfaceLost) return;
+    failSurfaceRecovery();
+  };
   private final Map<Integer, Short> heldKeys = new HashMap<>();
   private final TouchContext[] touchContexts = new TouchContext[2];
   private int lastMouseButtonState;
@@ -87,8 +92,10 @@ public final class MoonlightStreamView extends FrameLayout
   private volatile boolean inputLeaseGranted;
   private volatile boolean closed;
   private volatile boolean audioEnabled;
+  private volatile boolean connectionReady;
   private volatile Runnable onStateChanged;
   private volatile String errorLabel = "The stream could not start.";
+  private volatile boolean surfaceLost;
   private Map<String, Object> labels = java.util.Collections.emptyMap();
 
   public MoonlightStreamView(Context context, Map<?, ?> rawArguments) {
@@ -551,6 +558,8 @@ public final class MoonlightStreamView extends FrameLayout
   @Override
   public void stageFailed(String stage, int portFlags, int errorCode) {
     if (closed) return;
+    connectionReady = false;
+    clearSurfaceRecovery();
     sessionState = "failed";
     setStatus("failed", errorLabel);
     main.post(() -> setInputEnabled(false));
@@ -560,7 +569,9 @@ public final class MoonlightStreamView extends FrameLayout
 
   @Override
   public void connectionStarted() {
-    if (closed) return;
+    if (closed || stopStarted.get()) return;
+    connectionReady = true;
+    if (surfaceLost) return;
     sessionState = "playing";
     setStatus("playing", "");
     main.post(() -> setInputEnabled(inputLeaseGranted));
@@ -569,6 +580,8 @@ public final class MoonlightStreamView extends FrameLayout
   @Override
   public void connectionTerminated(int errorCode) {
     if (closed) return;
+    connectionReady = false;
+    clearSurfaceRecovery();
     String state = errorCode == MoonBridge.ML_ERROR_GRACEFUL_TERMINATION ? "disconnected" : "failed";
     sessionState = state;
     setStatus(state, errorLabel);
@@ -616,27 +629,77 @@ public final class MoonlightStreamView extends FrameLayout
 
   @Override
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    if (decoder == null || connection == null || closed || width <= 0 || height <= 0) return;
-    decoder.setRenderTarget(holder);
+    if (decoder == null || connection == null || closed || stopStarted.get() ||
+        width <= 0 || height <= 0) return;
+    if (!holder.getSurface().isValid()) return;
+    boolean restoringSurface = surfaceLost;
+    if (restoringSurface) {
+      if (!decoder.rebindRenderTarget(holder)) {
+        failSurfaceRecovery();
+        return;
+      }
+      clearSurfaceRecovery();
+    } else {
+      decoder.setRenderTarget(holder);
+    }
+    setSurfaceFrameRate(holder);
     if (connectionStarted.compareAndSet(false, true)) {
       acquireWifiLocks();
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        holder.getSurface().setFrameRate(preferences.fps, Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE,
-            Surface.CHANGE_FRAME_RATE_ALWAYS);
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        holder.getSurface().setFrameRate(preferences.fps, Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE);
-      }
       audio.setVolume(audioEnabled ? 1.0f : 0.0f);
       connection.start(audio, decoder, this);
+    } else if (restoringSurface && connectionReady) {
+      setStatus("playing", "");
+      main.post(() -> setInputEnabled(inputLeaseGranted));
     }
   }
 
   @Override
-  public void surfaceDestroyed(SurfaceHolder holder) {}
+  public void surfaceDestroyed(SurfaceHolder holder) {
+    if (closed || !connectionStarted.get() || "failed".equals(sessionState) ||
+        "disconnected".equals(sessionState)) return;
+    surfaceLost = true;
+    main.removeCallbacks(surfaceRecoveryTimeout);
+    main.post(() -> {
+      if (closed || !surfaceLost) return;
+      boolean preserveInputLease = inputLeaseGranted;
+      setInputEnabled(false);
+      inputLeaseGranted = preserveInputLease;
+      setStatus("connecting", label("connectingLabel", "Connecting…"));
+      main.postDelayed(surfaceRecoveryTimeout, SURFACE_RECOVERY_TIMEOUT_MS);
+    });
+  }
+
+  private void setSurfaceFrameRate(SurfaceHolder holder) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      holder.getSurface().setFrameRate(
+          preferences.fps,
+          Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE,
+          Surface.CHANGE_FRAME_RATE_ALWAYS);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      holder.getSurface().setFrameRate(preferences.fps, Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE);
+    }
+  }
+
+  private void clearSurfaceRecovery() {
+    surfaceLost = false;
+    main.removeCallbacks(surfaceRecoveryTimeout);
+  }
+
+  private void failSurfaceRecovery() {
+    if (closed) return;
+    clearSurfaceRecovery();
+    connectionReady = false;
+    sessionState = "failed";
+    setStatus("failed", errorLabel);
+    main.post(() -> setInputEnabled(false));
+    prepareDecoderForStop();
+    stopNativeAsync();
+  }
 
   public void close() {
     if (closed) return;
     closed = true;
+    clearSurfaceRecovery();
     setInputEnabled(false);
     streamView.getHolder().removeCallback(this);
     if (inputManager != null && keyboardTranslator != null) {

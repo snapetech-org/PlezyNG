@@ -95,6 +95,45 @@ def patch_audio(path: Path) -> None:
     path.write_text(source)
 
 
+def patch_decoder_surface(path: Path) -> None:
+    source = path.read_text()
+    anchor = """    public void setRenderTarget(SurfaceHolder renderTarget) {
+        this.renderTarget = renderTarget;
+    }
+"""
+    replacement = anchor + """
+    // Pleazyng: a retained workspace surface can be recreated while the codec is running.
+    // Rebind only to another valid SurfaceView-backed target; callers handle a failed switch.
+    public boolean rebindRenderTarget(SurfaceHolder renderTarget) {
+        if (renderTarget == null || renderTarget.getSurface() == null ||
+                !renderTarget.getSurface().isValid()) {
+            LimeLog.warning("Cannot rebind Moonlight decoder to an invalid surface");
+            return false;
+        }
+
+        if (videoDecoder != null) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                LimeLog.warning("Moonlight decoder surface rebinding requires Android 6.0 or newer");
+                return false;
+            }
+            try {
+                videoDecoder.setOutputSurface(renderTarget.getSurface());
+            } catch (IllegalArgumentException | IllegalStateException error) {
+                LimeLog.warning("Moonlight decoder surface rebind failed: " + error.getMessage());
+                return false;
+            }
+        }
+
+        this.renderTarget = renderTarget;
+        return true;
+    }
+"""
+    if source.count(anchor) != 1:
+        raise ValueError("MediaCodecDecoderRenderer changed; review retained-surface rebind")
+    source = source.replace(anchor, replacement, 1)
+    path.write_text(source)
+
+
 def patch_connection(path: Path) -> None:
     source = path.read_text()
     anchor = "    private final Context appContext;"
@@ -278,6 +317,7 @@ def prepare(destination: Path) -> None:
         patch_http(checkout / "app/src/main/java/com/limelight/nvstream/http/NvHTTP.java")
         patch_connection(checkout / "app/src/main/java/com/limelight/nvstream/NvConnection.java")
         patch_audio(checkout / "app/src/main/java/com/limelight/binding/audio/AndroidAudioRenderer.java")
+        patch_decoder_surface(checkout / "app/src/main/java/com/limelight/binding/video/MediaCodecDecoderRenderer.java")
         (checkout / ".plezy-recipe").write_text(recipe)
         shutil.move(str(checkout), destination)
 

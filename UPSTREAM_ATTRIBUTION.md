@@ -8,7 +8,7 @@ The PR list comes from explicit “Squash of upstream” commit records and the 
 
 ## Credited Moonlight Android source
 
-- [Moonlight Android commit `b48494cb`](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d) — pinned receiver revision (v12.2), authored upstream by [@cgutman](https://github.com/cgutman). The author contributed this receiver implementation to the upstream Moonlight project. Pleazyng independently adapted its connection, decoder, audio-renderer and input lifecycle for a retained Android workspace surface; this record does not claim that the author contributed to, endorsed, or participated in Pleazyng.
+- [Moonlight Android commit `b48494cb`](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d) — pinned receiver revision (v12.2), authored upstream by [@cgutman](https://github.com/cgutman). The author contributed this receiver implementation to the upstream Moonlight project. Pleazyng independently adapted its connection, decoder, audio-renderer, input lifecycle, and retained-surface recovery for a workspace surface; this record does not claim that the author contributed to, endorsed, or participated in Pleazyng.
 
 ## Credited dependency compatibility fix
 

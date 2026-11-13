@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/services/plezy_server.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/utils/certificate_trust.dart';
 import 'package:plezy/utils/happy_eyeballs.dart';
@@ -67,17 +68,19 @@ void main() {
   });
 
   group('contextFor', () {
-    test('uses only the explicitly configured user relay as an additional fixed endpoint', () async {
+    test('keeps the first-party broker fixed and user-configured relays owner-trusted', () async {
       resetSharedPreferencesForTest();
-      expect(CertificateTrust.isFixedEndpoint('relay.example.test'), isFalse);
-
       final settings = await SettingsService.getInstance();
       await settings.write(SettingsService.userRelayBaseUrl, 'https://relay.example.test/api');
-      CertificateTrust.debugSetUserAuthoritiesForTesting(SecurityContext());
+      final ownerAuthorities = SecurityContext();
+      CertificateTrust.debugSetUserAuthoritiesForTesting(ownerAuthorities);
 
-      expect(CertificateTrust.isFixedEndpoint('relay.example.test'), isTrue);
-      expect(CertificateTrust.contextFor('relay.example.test'), isNull);
-      expect(CertificateTrust.isFixedEndpoint('sub.relay.example.test'), isFalse);
+      final brokerHost = Uri.parse(pleazyngOAuthBrokerBaseUrl).host;
+      expect(CertificateTrust.isFixedEndpoint(brokerHost), isTrue);
+      expect(CertificateTrust.contextFor(brokerHost), isNull);
+      expect(CertificateTrust.isFixedEndpoint('sub.$brokerHost'), isFalse);
+      expect(CertificateTrust.isFixedEndpoint('relay.example.test'), isFalse);
+      expect(CertificateTrust.contextFor('relay.example.test'), same(ownerAuthorities));
       expect(CertificateTrust.isFixedEndpoint('unrelated.example.test'), isFalse);
     });
 

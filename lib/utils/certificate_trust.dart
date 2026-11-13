@@ -54,12 +54,12 @@ abstract final class CertificateTrust {
 
   static SecurityContext? _userAuthorities;
 
-  /// Whether [host] is a fixed provider or an exact build-configured service
-  /// host. Configured services need the same system-only trust even though
-  /// their URLs are not hard-coded in the Android XML resource.
+  /// Whether [host] is a fixed provider or an exact first-party service host.
+  /// The user-configured relay remains owner-controlled and can use owner-
+  /// installed authorities; the first-party broker keeps system-only trust.
   static bool isFixedEndpoint(String host, {Iterable<String>? serviceUrls}) {
     final candidate = host.toLowerCase();
-    final configuredUrls = serviceUrls ?? [configuredUserRelayBaseUrl].whereType<String>();
+    final configuredUrls = serviceUrls ?? const [pleazyngOAuthBrokerBaseUrl];
     for (final value in configuredUrls) {
       if (value.trim().isEmpty) continue;
       try {

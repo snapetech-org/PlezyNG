@@ -45,7 +45,7 @@ const { chromium } = require(process.env.PLEZY_PLAYWRIGHT_PATH || '../../../tool
       if(await page.locator('dialog').isVisible())throw Error('Arabic page number was rejected');
       await page.evaluate(()=>publication.page(1));
     }
-    const result = await page.evaluate(async(comic)=>{
+    const result = await page.evaluate(async({comic,fixed})=>{
       if(comic){
         const reader=document.querySelector('comic-view');
         const nextFrame=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -96,6 +96,25 @@ const { chromium } = require(process.env.PLEZY_PLAYWRIGHT_PATH || '../../../tool
       const initial=view.lastLocation.cfi;
       const search=await publication.search('lighthouse');
       if(!search.length)throw Error('Search did not find fixture text');
+      if(fixed){
+        await publication.goTo(search[0].cfi);
+        await new Promise(resolve=>setTimeout(resolve,0));
+        const contents=view.renderer.getContents();
+        const indices=contents.map(x=>x.index).sort((a,b)=>a-b);
+        if(indices.join(',')!=='1,2')throw Error('Fixed-layout spread did not expose both section indexes: '+indices);
+        const target=contents.find(x=>x.index===2);
+        if(!target?.overlayer||target.overlayer.element.parentElement!==target.doc.body)throw Error('Fixed-layout page did not attach its annotation overlay');
+        const searchOverlays=target.overlayer.element.children.length;
+        if(searchOverlays<1||!target.overlayer.element.children[0].children.length)throw Error('Fixed-layout search result was not highlighted');
+        await publication.annotate({value:search[0].cfi,color:'#c9b77e',note:'Fixture note'});
+        const noteOverlay=target.overlayer.element.lastElementChild;
+        if(target.overlayer.element.children.length!==searchOverlays+1||!noteOverlay.children.length)throw Error('Fixed-layout note highlight was not drawn');
+        await publication.remove(search[0].cfi);
+        if(target.overlayer.element.children.length!==searchOverlays)throw Error('Removing a note also removed the search result');
+        await view.select(search[0].cfi);
+        if(!target.doc.getSelection()?.toString().toLowerCase().includes('lighthouse'))throw Error('Fixed-layout CFI selection did not select its text range');
+        return {search:search.length,initial,second:view.lastLocation.cfi};
+      }
       await publication.goTo('EPUB/two.xhtml');
       const second=view.lastLocation.cfi;
       if(initial===second)throw Error('Chapter navigation did not move');
@@ -109,7 +128,7 @@ const { chromium } = require(process.env.PLEZY_PLAYWRIGHT_PATH || '../../../tool
       if(typography.fontSize!=='32px'||typography.lineHeight!=='64px'||typography.color!=='rgb(237, 237, 237)')throw Error('Publisher CSS overrode accessible typography: '+typography.cssText);
       await publication.settings({background:'#0E0F12',foreground:'#EDEDED',dark:true,fontSize:22,columns:2});
       return {search:search.length,initial,second};
-    },process.argv[3]==='comic');
+    },{comic:process.argv[3]==='comic',fixed:process.argv[3]==='fixed'});
     if(process.argv[3]==='comic') {
       await page.setViewportSize({width:390,height:844});
       await page.waitForFunction(()=>document.querySelector('comic-view').stage.children.length===1);

@@ -261,8 +261,11 @@ export class View extends HTMLElement {
         this.renderer.setAttribute('exportparts', 'head,foot,filter')
         this.renderer.addEventListener('load', e => this.#onLoad(e.detail))
         this.renderer.addEventListener('relocate', e => this.#onRelocate(e.detail))
-        this.renderer.addEventListener('create-overlayer', e =>
-            e.detail.attach(this.#createOverlayer(e.detail)))
+        this.renderer.addEventListener('create-overlayer', e => {
+            const overlayer = this.#createOverlayer(e.detail)
+            e.detail.attach(overlayer)
+            e.detail.ready = overlayer.ready
+        })
         this.renderer.open(book)
         this.#root.append(this.renderer)
 
@@ -276,7 +279,7 @@ export class View extends HTMLElement {
                 this.renderer.goTo(resolved)
                     .then(() => {
                         const { doc } = this.renderer.getContents()
-                            .find(x => x.index = resolved.index)
+                            .find(x => x.index === resolved.index)
                         const el = resolved.anchor(doc)
                         el.classList.add(activeClass)
                         if (playbackActiveClass) el.ownerDocument
@@ -413,7 +416,7 @@ export class View extends HTMLElement {
         }, false)
 
         const list = this.#searchResults.get(index)
-        if (list) for (const item of list) this.addAnnotation(item)
+        if (list) overlayer.ready = Promise.all(list.map(item => this.addAnnotation(item)))
 
         this.#emit('create-overlay', { index })
         return overlayer

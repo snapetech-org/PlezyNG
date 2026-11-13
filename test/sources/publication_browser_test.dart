@@ -9,9 +9,16 @@ import 'package:plezy/sources/publication_archive.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  for (final (comic, rtl) in [(false, false), (true, false), (true, true)]) {
+  for (final (comic, rtl, fixedLayout) in [
+    (false, false, false),
+    (true, false, false),
+    (true, true, false),
+    (false, false, true),
+  ]) {
     test(
-      rtl
+      fixedLayout
+          ? 'fixed-layout EPUB exposes indexed search and note overlays across a spread'
+          : rtl
           ? 'Arabic reader chrome accepts localized page digits and preserves book direction'
           : comic
           ? 'real comic reader renders spreads, split halves, thumbnails, scrolling, zoom and resume'
@@ -19,17 +26,32 @@ void main() {
       () async {
         final temporary = await Directory.systemTemp.createTemp('plezy-reader-browser-');
         final zip = Archive();
+        final renditionMetadata = fixedLayout
+            ? '<meta property="rendition:layout">pre-paginated</meta><meta property="rendition:spread">auto</meta>'
+            : '';
+        final thirdItem = fixedLayout ? '<item id="three" href="three.xhtml" media-type="application/xhtml+xml"/>' : '';
+        final thirdNavigation = fixedLayout ? '<li><a href="three.xhtml">The beacon</a></li>' : '';
+        final spineItems = fixedLayout
+            ? '<itemref idref="one" properties="page-spread-right"/><itemref idref="two" properties="page-spread-left"/><itemref idref="three" properties="page-spread-right"/>'
+            : '<itemref idref="one"/><itemref idref="two"/>';
+        final viewport = fixedLayout ? '<meta name="viewport" content="width=800,height=1200"/>' : '';
+        final firstPageText = fixedLayout
+            ? 'A lantern burned above the quiet harbor.'
+            : 'A lighthouse stood above the quiet bay.';
         final files = {
           'META-INF/container.xml':
               '<container xmlns="urn:oasis:names:tc:opendocument:xmlns:container" version="1.0"><rootfiles><rootfile full-path="EPUB/package.opf" media-type="application/oebps-package+xml"/></rootfiles></container>',
           'EPUB/package.opf':
-              '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="id"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="id">fixture</dc:identifier><dc:title>Reading fixture</dc:title><dc:language>en</dc:language></metadata><manifest><item id="one" href="one.xhtml" media-type="application/xhtml+xml"/><item id="two" href="two.xhtml" media-type="application/xhtml+xml"/><item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/></manifest><spine><itemref idref="one"/><itemref idref="two"/></spine></package>',
+              '<package xmlns="http://www.idpf.org/2007/opf" prefix="rendition: http://www.idpf.org/vocab/rendition/#" version="3.0" unique-identifier="id"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="id">fixture</dc:identifier><dc:title>Reading fixture</dc:title><dc:language>en</dc:language>$renditionMetadata</metadata><manifest><item id="one" href="one.xhtml" media-type="application/xhtml+xml"/><item id="two" href="two.xhtml" media-type="application/xhtml+xml"/>$thirdItem<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/></manifest><spine>$spineItems</spine></package>',
           'EPUB/nav.xhtml':
-              '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><body><nav epub:type="toc"><ol><li><a href="one.xhtml">The shore</a></li><li><a href="two.xhtml">The crossing</a></li></ol></nav></body></html>',
+              '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><body><nav epub:type="toc"><ol><li><a href="one.xhtml">The shore</a></li><li><a href="two.xhtml">The crossing</a></li>$thirdNavigation</ol></nav></body></html>',
           'EPUB/one.xhtml':
-              '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>The shore</title><script>parent.publisherScriptRan=true;</script><style>p{font:12px monospace;color:black;background:white}p span{font-size:9px}</style></head><body><h1>The shore</h1><p onclick="alert(1)">A lighthouse stood above the quiet bay.</p><p>${List.filled(35, 'We followed the path beside the sea, watching the light move across the water.').join(' ')}</p><form><input/></form><iframe src="https://example.invalid"/></body></html>',
+              '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>The shore</title>$viewport<script>parent.publisherScriptRan=true;</script><style>p{font:12px monospace;color:black;background:white}p span{font-size:9px}</style></head><body><h1>The shore</h1><p onclick="alert(1)">$firstPageText</p><p>${List.filled(35, 'We followed the path beside the sea, watching the light move across the water.').join(' ')}</p><form><input/></form><iframe src="https://example.invalid"/></body></html>',
           'EPUB/two.xhtml':
-              '<html xmlns="http://www.w3.org/1999/xhtml"><body><h1>The crossing</h1><p>At dawn we left the harbour.</p></body></html>',
+              '<html xmlns="http://www.w3.org/1999/xhtml"><head>$viewport</head><body><h1>The crossing</h1><p>At dawn we left the harbour.</p></body></html>',
+          if (fixedLayout)
+            'EPUB/three.xhtml':
+                '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta name="viewport" content="width=800,height=1200"/></head><body><h1>The beacon</h1><p>A lighthouse marks the narrow passage.</p></body></html>',
         };
         if (comic) {
           files.clear();
@@ -145,7 +167,11 @@ void main() {
           final result = await Process.run('node', [
             'test/sources/fixtures/reader_browser.cjs',
             url.toString(),
-            comic ? 'comic' : 'epub',
+            comic
+                ? 'comic'
+                : fixedLayout
+                ? 'fixed'
+                : 'epub',
             rtl ? 'rtl' : 'ltr',
           ]);
           expect(result.exitCode, 0, reason: '${result.stderr}; bridge: $failure');

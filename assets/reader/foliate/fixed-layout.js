@@ -87,18 +87,19 @@ export class FixedLayout extends HTMLElement {
         iframe.setAttribute('scrolling', 'no')
         iframe.setAttribute('part', 'filter')
         this.#root.append(element)
-        if (!src) return { blank: true, element, iframe }
+        const frame = { index, element, iframe, overlayer: null }
+        if (!src) return { ...frame, blank: true }
         return new Promise(resolve => {
             iframe.addEventListener('load', () => {
                 const doc = iframe.contentDocument
                 this.dispatchEvent(new CustomEvent('load', { detail: { doc, index } }))
                 const { width, height } = getViewport(doc, this.defaultViewport)
-                resolve({
-                    element, iframe,
+                Object.assign(frame, {
                     width: parseFloat(width),
                     height: parseFloat(height),
                     onZoom,
                 })
+                resolve(frame)
             }, { once: true })
             iframe.src = src
         })
@@ -172,13 +173,31 @@ export class FixedLayout extends HTMLElement {
             this.#center = await this.#createFrame(center)
             this.#side = 'center'
             this.#render()
+            await this.#attachOverlayer(this.#center)
         } else {
             this.#left = await this.#createFrame(left)
             this.#right = await this.#createFrame(right)
             this.#side = this.#left.blank ? 'right'
                 : this.#right.blank ? 'left' : side
             this.#render()
+            await Promise.all([this.#left, this.#right]
+                .map(frame => this.#attachOverlayer(frame)))
         }
+    }
+    async #attachOverlayer(frame) {
+        if (!frame || frame.blank || !frame.iframe.contentDocument) return
+        const doc = frame.iframe.contentDocument
+        const detail = {
+            doc,
+            index: frame.index,
+            attach: overlayer => {
+                frame.overlayer = overlayer
+                const root = doc.body ?? doc.documentElement
+                root?.append(overlayer.element)
+            },
+        }
+        this.dispatchEvent(new CustomEvent('create-overlayer', { detail }))
+        await detail.ready
     }
     #goLeft() {
         if (this.#center || this.#left?.blank) return
@@ -286,8 +305,8 @@ export class FixedLayout extends HTMLElement {
         this.#reportLocation(reason)
     }
     async select(target) {
-        await this.goTo(target)
-        // TODO
+        const resolved = await target
+        await this.goTo({ ...resolved, select: true })
     }
     async goTo(target) {
         const { book } = this
@@ -296,6 +315,16 @@ export class FixedLayout extends HTMLElement {
         if (!section) return
         const { index, side } = this.getSpreadOf(section)
         await this.goToSpread(index, side)
+        if (resolved.select) {
+            const content = this.getContents().find(x => x.index === resolved.index)
+            const range = typeof resolved.anchor === 'function'
+                ? resolved.anchor(content?.doc) : resolved.anchor
+            const selection = content?.doc?.getSelection()
+            if (range && selection) {
+                selection.removeAllRanges()
+                selection.addRange(range)
+            }
+        }
     }
     async next() {
         const s = this.rtl ? this.#goLeft() : this.#goRight()
@@ -306,10 +335,14 @@ export class FixedLayout extends HTMLElement {
         if (!s) return this.goToSpread(this.#index - 1, this.rtl ? 'left' : 'right', 'page')
     }
     getContents() {
-        return Array.from(this.#root.querySelectorAll('iframe'), frame => ({
-            doc: frame.contentDocument,
-            // TODO: index, overlayer
-        }))
+        const frames = this.#center ? [this.#center] : [this.#left, this.#right]
+        return frames
+            .filter(frame => frame && !frame.blank && frame.iframe.contentDocument)
+            .map(frame => ({
+                index: frame.index,
+                overlayer: frame.overlayer,
+                doc: frame.iframe.contentDocument,
+            }))
     }
     destroy() {
         this.#observer.unobserve(this)

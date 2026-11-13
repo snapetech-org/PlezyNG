@@ -971,7 +971,12 @@ class KaraokeSession extends ChangeNotifier {
           }
           await _start(r, resumeMs: payload['resume'] == true ? positionMs.value : 0);
         case 'pause':
-          await pause();
+          try {
+            await pause();
+          } catch (error) {
+            response['pauseError'] = error.toString();
+            report(error);
+          }
           held = true;
           _resumeAfterQuiz = false;
         case 'resume':
@@ -1310,14 +1315,34 @@ class KaraokeSession extends ChangeNotifier {
   Future<void> pause() async {
     _cancelTrimPreview();
     _cancelPracticeCountIn();
-    await stopCapture?.call();
-    epoch++;
-    if (_usingMusic) {
-      await music.pause();
-    } else {
-      await _player?.pause();
+    Object? failure;
+    StackTrace? failureStack;
+    Future<void> attempt(Future<void> Function() action) async {
+      try {
+        await action();
+      } catch (error, stackTrace) {
+        failure ??= error;
+        failureStack ??= stackTrace;
+      }
     }
+
+    await Future.wait([
+      attempt(() async {
+        await stopCapture?.call();
+      }),
+      attempt(() async {
+        if (_usingMusic) {
+          await music.pause();
+        } else {
+          await _player?.pause();
+        }
+      }),
+    ]);
+    epoch++;
     _notify();
+    if (failure case final error?) {
+      Error.throwWithStackTrace(error, failureStack ?? StackTrace.current);
+    }
   }
 
   Future<void> resume() async {

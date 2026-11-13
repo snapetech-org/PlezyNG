@@ -67,6 +67,11 @@ const karaokeTranslations = <String, Map<String, String>>{
     'verify': 'Check offline assets',
     'remove': 'Remove local package',
     'error': 'Karaoke could not complete the action',
+    'emergencyPauseTitle': 'Emergency show control',
+    'emergencyPauseHelp':
+        'Pauses playback and stops local and paired phone microphone capture. The session and queue stay saved; capture will not restart automatically. External mixer microphones remain under their own controls.',
+    'emergencyPauseAndMute': 'Emergency pause and mute app microphones',
+    'emergencyPauseComplete': 'Show paused. App microphone capture stopped.',
   },
   'de': {
     'title': 'Karaoke',
@@ -96,6 +101,11 @@ const karaokeTranslations = <String, Map<String, String>>{
     'close': 'Schließen',
     'settings': 'Raumeinstellungen',
     'guest': 'Gäste-Liederbuch',
+    'emergencyPauseTitle': 'Notfallsteuerung',
+    'emergencyPauseHelp':
+        'Pausiert die Wiedergabe und stoppt die lokale sowie die gekoppelte Smartphone-Mikrofonaufnahme. Sitzung und Warteschlange bleiben gespeichert. Die Aufnahme startet nicht automatisch erneut. Externe Mischpultmikrofone werden separat gesteuert.',
+    'emergencyPauseAndMute': 'Notfallpause und App-Mikrofone stummschalten',
+    'emergencyPauseComplete': 'Auftritt pausiert. App-Mikrofonaufnahme gestoppt.',
   },
   'es': {
     'title': 'Karaoke',
@@ -125,6 +135,11 @@ const karaokeTranslations = <String, Map<String, String>>{
     'close': 'Cerrar',
     'settings': 'Ajustes de la sala',
     'guest': 'Cancionero para invitados',
+    'emergencyPauseTitle': 'Control de emergencia',
+    'emergencyPauseHelp':
+        'Pausa la reproducción y detiene la captura del micrófono local y de los teléfonos vinculados. La sesión y la cola quedan guardadas; la captura no se reanudará automáticamente. Los micrófonos de una mesa de mezclas externa se controlan por separado.',
+    'emergencyPauseAndMute': 'Pausar y silenciar los micrófonos de la app',
+    'emergencyPauseComplete': 'Actuación pausada. Captura de micrófono de la app detenida.',
   },
   'fr': {
     'title': 'Karaoké',
@@ -154,5 +169,10 @@ const karaokeTranslations = <String, Map<String, String>>{
     'close': 'Fermer',
     'settings': 'Réglages de la salle',
     'guest': 'Catalogue des invités',
+    'emergencyPauseTitle': 'Commande d’urgence',
+    'emergencyPauseHelp':
+        'Met la lecture en pause et arrête la capture du micro local et des téléphones associés. La session et la file restent enregistrées ; la capture ne redémarre pas automatiquement. Les micros d’une table de mixage externe restent contrôlés séparément.',
+    'emergencyPauseAndMute': 'Pause d’urgence et coupure des micros de l’app',
+    'emergencyPauseComplete': 'Prestation en pause. Capture micro de l’app arrêtée.',
   },
 };

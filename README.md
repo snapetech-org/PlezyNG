@@ -423,7 +423,7 @@ This list covers the current Pleazyng codebase, including additions since the fo
 - Audio/video enclosures, show notes, publication/season/episode metadata, Podlove and Podcasting 2.0 chapters
 - Audiobookshelf podcast shows and episode-specific playback/progress; shared-player resume, speed, sleep timer, bookmarks and manual offline downloads
 - Per-show automatic downloads and retention, archive pagination, transcript search/seek and opt-in gpodder synchronization are implemented in source. See the [podcast implementation and limits](docs/plezyng/podcasts/IMPLEMENTATION.md) for protocol and device qualification limits
-- Dedicated karaoke host/songbook, singer rotation, open rendition packages, timed lyrics/CD+G, practice and optional microphone/private-take workflows are integrated in source. Licensed catalogs, hosted sharing and native microphone monitoring remain open; see the [karaoke ledger](docs/plezyng/karaoke/PLAN.md)
+- Dedicated karaoke host/songbook, singer rotation, open rendition packages, timed lyrics/CD+G, practice and optional microphone/private-take workflows are integrated in source. Venue controls include a one-touch emergency pause that stops local and paired-phone app capture while preserving the session and queue. OS/MDM kiosk hardening, room reservations, licensed catalogs, hosted sharing and native microphone monitoring remain open; see the [karaoke ledger](docs/plezyng/karaoke/PLAN.md)
 
 ### <img src="assets/readme_icons/live-tv.svg" height="20" alt="" align="center" /> Live TV & DVR
 
@@ -599,7 +599,7 @@ lacks music, subtitles, recommendations or file playback in general.
 | [OpenSubsonic/Subsonic music-server browsing and playback](docs/FILES_AND_BOOKS.md) | **Plex music servers only** | **—** | **Yes**<br>*(configured server; local resume, no provider-side scrobbling)* |
 | [RSS/Atom podcasts, directory discovery, OPML and podcast chapters](docs/plezyng/podcasts/IMPLEMENTATION.md) | **Native podcast service retired** | **—** | **Yes**<br>*(Apple Podcasts / optional Podcast Index / Audiobookshelf)* |
 | [Podcast auto-download/retention and optional gpodder sync](docs/plezyng/podcasts/CLIENT_CONTRACT.md) | **—** | **—** | **Implemented**<br>*(protocol/device qualification limits apply)* |
-| [Karaoke songbook, singer rotation and CD+G/timed-lyric workflows](docs/plezyng/karaoke/PLAN.md) | **—** | **—** | **Partial**<br>*(licensed catalogs and native microphone monitoring remain open)* |
+| [Karaoke songbook, singer rotation and CD+G/timed-lyric workflows](docs/plezyng/karaoke/PLAN.md) | **—** | **—** | **Partial**<br>*(licensed catalogs, OS kiosk hardening, room reservations and native microphone monitoring remain open)* |
 | [Profile-owned M3U/XMLTV, Xtream, Tunerr, Dispatcharr and Stalker IPTV](docs/plezyng/iptv/PLAN.md) | **Tuner/DVR support is a different workflow** | **—** | **Partial**<br>*(source adapters exist; plan reconciliation, provider and device acceptance remain open)* |
 | [Universal network inputs, radio playlists, ISO/disc inputs and source queues](docs/UNIVERSAL_MEDIA.md) | **Some apps open local video**<br>*(no equivalent universal input workflow)* | **—** | **Yes**<br>*(HTTP(S), HLS, RTSP/RTMP, UDP/RTP and supported file/disc paths)* |
 | [Desktop folder queues and sibling-relative M3U export](docs/UNIVERSAL_MEDIA.md) | **—** | **—** | **Yes**<br>*(explicit local inputs and bounded scans)* |

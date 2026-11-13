@@ -489,7 +489,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
                 final page = switch (value) {
                   'takes' => KaraokeTakesScreen(session: s, client: _preparation),
                   'party' => KaraokePartyScreen(session: s),
-                  _ => KaraokeVenueScreen(session: s),
+                  _ => KaraokeVenueScreen(session: s, room: _room),
                 };
                 await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => page));
               },

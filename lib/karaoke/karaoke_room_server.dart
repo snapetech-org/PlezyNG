@@ -120,6 +120,53 @@ class KaraokeRoomServer extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Pauses the persisted host session and immediately revokes every paired
+  /// phone-capture lease. Local capture is stopped by the session pause path.
+  Future<void> emergencyPauseAndMute() async {
+    Object? inputFailure, commandFailure;
+    Map<String, dynamic>? pauseResult;
+    final phoneStop = phoneInputs.expire({}, stopAll: true);
+    final pause = () async {
+      for (var attempt = 0; ; attempt++) {
+        try {
+          return await session.host('pause');
+        } on KaraokeConflict {
+          if (attempt >= 2) {
+            rethrow;
+          }
+        }
+      }
+    }();
+    await Future.wait([
+      () async {
+        try {
+          await phoneStop;
+        } catch (error) {
+          inputFailure = error;
+        }
+      }(),
+      () async {
+        try {
+          pauseResult = await pause;
+        } catch (error) {
+          commandFailure = error;
+        }
+      }(),
+    ]);
+    if (session.playing) {
+      throw StateError('Playback is still active after the pause request');
+    }
+    if (commandFailure case final error?) {
+      Error.throwWithStackTrace(error, StackTrace.current);
+    }
+    if (pauseResult?['pauseError'] case final String error) {
+      throw StateError(error);
+    }
+    if (inputFailure case final error?) {
+      Error.throwWithStackTrace(error, StackTrace.current);
+    }
+  }
+
   Future<void> stop() async {
     _expiry?.cancel();
     _expiry = null;

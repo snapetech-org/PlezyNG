@@ -13,12 +13,15 @@ import 'package:flutter/material.dart';
 import '../utils/platform_detector.dart';
 import 'karaoke_collections.dart';
 import 'karaoke_models.dart';
+import 'karaoke_room_server.dart';
 import 'karaoke_show_templates.dart';
 import 'karaoke_session.dart';
+import 'karaoke_strings.dart';
 
 class KaraokeVenueScreen extends StatefulWidget {
-  const KaraokeVenueScreen({super.key, required this.session});
+  const KaraokeVenueScreen({super.key, required this.session, required this.room});
   final KaraokeSession session;
+  final KaraokeRoomServer room;
   @override
   State<KaraokeVenueScreen> createState() => _KaraokeVenueScreenState();
 }
@@ -29,6 +32,7 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
   late final templateLibrary = KaraokeShowTemplateLibrary(s.store);
   List<KaraokeShowTemplate> showTemplates = const [];
   bool busy = false;
+  bool emergencyStopping = false;
   String? message;
 
   @override
@@ -197,6 +201,21 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
     await run(() => s.applyShowTemplate(template));
   }
 
+  Future<void> emergencyPauseAndMute() async {
+    if (emergencyStopping) {
+      return;
+    }
+    setState(() => emergencyStopping = true);
+    try {
+      await widget.room.emergencyPauseAndMute();
+      if (mounted) setState(() => message = karaokeText(context, 'emergencyPauseComplete'));
+    } catch (error) {
+      if (mounted) setState(() => message = error.toString());
+    } finally {
+      if (mounted) setState(() => emergencyStopping = false);
+    }
+  }
+
   Widget _showTemplateTile(KaraokeShowTemplate template) {
     final unavailable = template.unavailableRenditionCount(s.catalog);
     final renditionCount = template.renditionCount;
@@ -338,8 +357,35 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          if (busy) const LinearProgressIndicator(),
-          if (message != null) SelectableText(message!),
+          if (busy || emergencyStopping) const LinearProgressIndicator(),
+          if (message != null) Semantics(liveRegion: true, child: SelectableText(message!)),
+          Card(
+            color: Theme.of(context).colorScheme.errorContainer,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(karaokeText(context, 'emergencyPauseTitle'), style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  Text(karaokeText(context, 'emergencyPauseHelp')),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                        foregroundColor: Theme.of(context).colorScheme.onError,
+                      ),
+                      onPressed: emergencyStopping ? null : emergencyPauseAndMute,
+                      icon: const AppIcon(Symbols.pause_rounded),
+                      label: Text(karaokeText(context, 'emergencyPauseAndMute')),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           ListTile(
             title: Text(l10n.t.karaokeUi.stageBanner),
             subtitle: Text(s.banner),

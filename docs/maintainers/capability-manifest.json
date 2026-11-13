@@ -114,6 +114,18 @@
       "open": "Comic reader and import code are integrated on main. Reader interoperability and device qualification remain open; an old conflicted PR is not a current integration blocker."
     },
     {
+      "area": "Karaoke venue operations",
+      "status": "partial",
+      "evidence": [
+        "lib/karaoke/karaoke_venue_screen.dart",
+        "lib/karaoke/karaoke_room_server.dart",
+        "lib/karaoke/karaoke_phone_input.dart",
+        "lib/karaoke/karaoke_session.dart",
+        "docs/plezyng/karaoke/PLAN.md"
+      ],
+      "open": "Venue controls now provide a one-touch host pause that persists the held session and stops local and paired-phone app capture without resuming microphones. It does not control external mixers. OS/MDM kiosk hardening and room reservations require platform configuration or a real scheduling provider and remain unavailable; singers/history remain profile-scoped, and device qualification is open."
+    },
+    {
       "area": "Games",
       "status": "gated",
       "evidence": [

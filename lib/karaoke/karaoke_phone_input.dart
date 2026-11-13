@@ -185,10 +185,18 @@ class KaraokePhoneInputs {
 
   Future<void> expire(Set<String> validTokens, {bool stopAll = false}) {
     final result = _serial.then((_) async {
+      Object? failure;
       for (final e in _leases.entries.toList()) {
         if (stopAll || !validTokens.contains(e.key) || DateTime.now().millisecondsSinceEpoch - e.value.lastMs > 5000) {
-          await _stop(e.key);
+          try {
+            await _stop(e.key);
+          } catch (error) {
+            failure ??= error;
+          }
         }
+      }
+      if (failure case final error?) {
+        Error.throwWithStackTrace(error, StackTrace.current);
       }
     });
     _serial = result.catchError((Object _) {});

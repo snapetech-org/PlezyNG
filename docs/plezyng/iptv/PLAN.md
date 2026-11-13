@@ -9,9 +9,7 @@ Prepared 27 October 2026 in America/Regina. Repository baseline: `snapetech-org/
 
 Build IPTV into the existing Live TV experience through a typed source registry. Keep direct playlist/provider playback self-sufficient; use an optional durable service for shared streams and unattended recording. Reuse PlezyNG's guide, player, search, libraries, profile boundaries, themes, icons, menus and focus behavior. Advanced features belong in contextual actions and source details.
 
-This report contains the complete research, design, feature inventory and implementation handoff. The accompanying **PlezyNG-IPTV-Luna-Handoff.zip** contains the same modular documents plus machine-readable requirements and dependencies. Begin implementation with PR00 and PR01 after reconciling the current repository; no application code was changed for this planning request.
-
-That statement records the state when this plan was prepared. Implementation began afterward; the current delivery status is tracked in [DELIVERY.md](DELIVERY.md).
+This report is the IPTV research, design, requirement inventory and implementation roadmap. The referenced **PlezyNG-IPTV-Luna-Handoff.zip** and machine-readable requirements/dependencies map are not present in this repository and are not maintained. Application work has continued since this plan was prepared; [DELIVERY.md](DELIVERY.md) records a current source inventory, not requirement-by-requirement completion, so reconcile it before claiming a requirement is complete.
 
 **Confidence:** high in the integration architecture and static repository findings; moderate in qualitative demand ordering; low in effort estimates and unmeasured comparative advantages. Runtime and competitive claims have explicit validation gates.
 
@@ -401,13 +399,13 @@ M0–M3 totals roughly **18–31 engineering weeks**. M0–M6 totals roughly **4
 
 ### Repository layout and ownership
 
-Recommended handoff placement is `docs/plezyng/iptv/`, alongside existing feature documents. These files are currently a planning package; no code branch or repository changes were made for this request.
+The plan and current delivery record live in `docs/plezyng/iptv/`, alongside the feature documents. Application implementation has continued on `main`; this roadmap does not describe the current tree by itself.
 
 Use new `lib/iptv/` packages for adapters, catalog/import, guide storage, playback policies, archives, buffer, recording facade and optional sync. Keep visible UI in the current screen owners where practical; a few source-setup/repair sheets can live in `lib/screens/iptv/`. Avoid pushing the entire feature into `LiveTvScreen` or another large manager.
 
 Tunerr changes belong in its own repository and must carry a pinned API/version compatibility test. A PlezyNG release cannot assume a matching unreleased server has reached the user. Standard M3U/XMLTV operation remains available when the extended API is missing.
 
-Use the dependency order and numbered acceptance conditions in this plan's delivery sequence and requirement inventory. The old handoff JSON files are not maintained in this repository; `DELIVERY.md` records current source and qualification evidence. Reuse files and interfaces identified in the baseline; proposed filenames may change after M0, but ownership and acceptance conditions should remain stable.
+Use the dependency order and acceptance conditions in this roadmap when implementing its slices. No handoff ZIP, handoff JSON, or machine-readable requirement map is maintained here. `DELIVERY.md` records a current source inventory and qualification evidence, not requirement-by-requirement completion. Reconcile proposed files and interfaces against the current tree before implementation.
 
 ### Hard release gates
 
@@ -546,7 +544,7 @@ These defaults are sufficient to start implementation. Only a genuinely blocking
 
 ### Ordered implementation slices
 
-These are dependency-ordered review units, not a promise that every unit fits one small PR. Split native/backend work further when a review would span unrelated ownership. A requirement has one lead slice in the machine-readable map; cross-cutting gates continue to apply to every later change. All paths marked new are proposals. No listed PR has been opened by this planning task.
+These are dependency-ordered roadmap slices, not a promise that every unit fits one small PR. Split native/backend work further when a review would span unrelated ownership. The requirement numbers identify their lead slice in this document; there is no separate machine-readable map. Cross-cutting gates continue to apply to every change. All paths marked new are proposals. No listed PR was opened by the original planning task.
 
 #### PR00 Pin baseline and measure current behavior
 
@@ -898,7 +896,7 @@ Implement IPTV as an extension of PlezyNG's existing Live TV and media experienc
 
 ### Start with PR00 and PR01
 
-Inspect the current default branch and working tree. Create an isolated feature branch/worktree so unrelated work remains intact. Record the exact starting SHA and reconcile changes since the planning baseline. Do not overwrite a newer implementation to match this plan mechanically.
+Inspect the current `main` and working tree. Keep `main` as the steady-state branch and use a detached worktree at its exact starting SHA for isolated work. Reconcile changes since the planning baseline before editing; do not overwrite newer implementation to match this plan mechanically.
 
 Check whether source, IPTV or live-session refactors already exist. Inspect the current multiview implementation and reconcile its delivery ledger: the planning baseline contained two-video slot code while its documentation still referenced an earlier draft branch and pending device qualification. Code presence is not proof that every target is released or verified.
 
@@ -921,9 +919,9 @@ Then land protected persistence and bounded ingestion. The current connection mo
 
 ### Work and reporting discipline
 
-Implement the slices in dependency order, splitting a large native or backend slice into smaller reviewable changes when needed. Keep an evolving `docs/plezyng/iptv/DELIVERY.md` with requirement IDs and the states designed, implemented, automated-tested, device-qualified and released. Do not mark a whole feature complete from its happy-path UI.
+Work in dependency order and split large native/backend changes into reviewable milestones. Update `docs/plezyng/iptv/DELIVERY.md` with source and evidence for the affected requirements. Do not mark a whole feature complete from its happy-path UI. The current page is a source inventory, not a claim that every roadmap requirement is complete.
 
-For every slice, record the concrete before/after behavior, affected source/platform scope, tests actually run, remaining device evidence and rollback behavior. Update the machine-readable requirement status only when the corresponding acceptance condition is met. If a requirement is deferred, give its reason and prerequisite; do not erase it from the inventory.
+For every slice, record the concrete before/after behavior, affected source/platform scope, validation actually performed, remaining device evidence and rollback behavior. The plan's requirement numbers and lead slices are maintained in this document; no separate machine-readable status map exists. Create and maintain a per-requirement status ledger before claiming the full inventory complete. If a requirement is deferred, retain its reason and prerequisite in the roadmap.
 
 Reuse current test infrastructure and run the meaningful affected tests, analyzer and required checks. Existing tests such as `live_tv_capability_contract_test.dart`, `live_tv_playback_session_test.dart`, `live_tv_program_guide_test.dart`, backend favorites/program/DVR tests and multiview coordinator tests are regression anchors. Confirm current paths before invoking them. Do not claim this planning task ran those application tests.
 

@@ -24,6 +24,11 @@ This is a static source inventory. It does not claim that every one of the 240
 requirements in `PLAN.md` is implemented, that every backend is compatible, or
 that a platform has passed device qualification.
 
+`PLAN.md` is a research roadmap rather than an accepted commitment to ship all
+240 proposals. No handoff ZIP, handoff JSON, or machine-readable requirement
+status map is maintained. This page records source presence and evidence limits;
+it is not a requirement-by-requirement completion ledger.
+
 ## Verification inventory
 
 The repository currently contains 26 Live TV/IPTV-related test files under

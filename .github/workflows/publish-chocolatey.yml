@@ -214,6 +214,9 @@ jobs:
           if ($descriptionNode.InnerText -notmatch [regex]::Escape('https://github.com/edde746/plezy')) {
             throw 'Chocolatey package description must link to the upstream Plezy project.'
           }
+          if ($descriptionNode.InnerText -notmatch [regex]::Escape('The upstream Plezy project was created by edde746; Pleazyng is maintained by SnapeTech.')) {
+            throw 'Chocolatey package description must distinguish the upstream Plezy author from the Pleazyng maintainer.'
+          }
 
       - name: Retain the corrected Chocolatey package
         if: inputs.rebuild_package == true

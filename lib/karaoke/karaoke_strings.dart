@@ -47,6 +47,7 @@ const karaokeTranslations = <String, Map<String, String>>{
     'untimed': 'Untimed lyrics',
     'countIn': 'Get ready',
     'upNext': 'Up next',
+    'instrumentalInterlude': 'Instrumental interlude',
     'fair': 'Fair singer rotation',
     'approval': 'Approve guest requests',
     'explicit': 'Allow explicit songs',
@@ -101,6 +102,7 @@ const karaokeTranslations = <String, Map<String, String>>{
     'close': 'Schließen',
     'settings': 'Raumeinstellungen',
     'guest': 'Gäste-Liederbuch',
+    'instrumentalInterlude': 'Instrumentales Zwischenspiel',
     'emergencyPauseTitle': 'Notfallsteuerung',
     'emergencyPauseHelp':
         'Pausiert die Wiedergabe und stoppt die lokale sowie die gekoppelte Smartphone-Mikrofonaufnahme. Sitzung und Warteschlange bleiben gespeichert. Die Aufnahme startet nicht automatisch erneut. Externe Mischpultmikrofone werden separat gesteuert.',
@@ -135,6 +137,7 @@ const karaokeTranslations = <String, Map<String, String>>{
     'close': 'Cerrar',
     'settings': 'Ajustes de la sala',
     'guest': 'Cancionero para invitados',
+    'instrumentalInterlude': 'Interludio instrumental',
     'emergencyPauseTitle': 'Control de emergencia',
     'emergencyPauseHelp':
         'Pausa la reproducción y detiene la captura del micrófono local y de los teléfonos vinculados. La sesión y la cola quedan guardadas; la captura no se reanudará automáticamente. Los micrófonos de una mesa de mezclas externa se controlan por separado.',
@@ -169,6 +172,7 @@ const karaokeTranslations = <String, Map<String, String>>{
     'close': 'Fermer',
     'settings': 'Réglages de la salle',
     'guest': 'Catalogue des invités',
+    'instrumentalInterlude': 'Interlude instrumental',
     'emergencyPauseTitle': 'Commande d’urgence',
     'emergencyPauseHelp':
         'Met la lecture en pause et arrête la capture du micro local et des téléphones associés. La session et la file restent enregistrées ; la capture ne redémarre pas automatiquement. Les micros d’une table de mixage externe restent contrôlés séparément.',

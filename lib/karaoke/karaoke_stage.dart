@@ -1,8 +1,11 @@
 import '../i18n/strings.g.dart' as l10n;
+
 import 'dart:async';
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+
 import '../widgets/app_icon.dart';
 import '../media/lyrics.dart';
 import '../mpv/video.dart';
@@ -242,7 +245,7 @@ class _KaraokeStageState extends State<KaraokeStage> {
                                     if (song == null)
                                       Text(
                                         s.playing
-                                            ? 'Instrumental interlude'
+                                            ? karaokeText(context, 'instrumentalInterlude')
                                             : s.rotation.isEmpty
                                             ? karaokeText(context, 'noQueue')
                                             : s.catalog[s.rotation.first.trackId]?.title ?? '',

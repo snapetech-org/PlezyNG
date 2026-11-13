@@ -7,6 +7,7 @@
 - Reject untrusted browser origins at anonymous relay and upload endpoints, preserve redaction markers when diagnostic uploads are sanitized again at the egress boundary, and restrict relay container filesystem access, privileges and resources.
 - Update locked Addressable to 2.9.1 to resolve three moderate dependency advisories in the Fastlane toolchain.
 - Add a documentation index, document webOS secure-storage behavior, and correct stale release guidance and broken repository links.
+- Reconcile the localization capability ledger with its generated 37-locale coverage report and enforce count consistency.
 
 - Allow a pinned-source release to run exact-source CI and create its stable tag through the authenticated release controller when the organization blocks Actions tag creation.
 - Route an explicit private Apple selection to macOS as well as iOS and tvOS, and bound the macOS compile and package job to 100 and 150 minutes.

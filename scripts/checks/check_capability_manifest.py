@@ -198,6 +198,57 @@ def check_manifest(data: dict) -> None:
         require(f"Localized across {locale_count} locale choices" in readme, "README locale count differs from the manifest")
         require(bool(localization.get("qualityStatus")), "localization must distinguish coverage from language QA")
 
+        coverage_name = localization.get("coverageReport")
+        if not isinstance(coverage_name, str):
+            ERRORS.append("localization.coverageReport must name the canonical coverage report")
+        else:
+            _validate_paths([coverage_name], "localization.coverageReport")
+            try:
+                coverage = json.loads((ROOT / coverage_name).read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as error:
+                ERRORS.append(f"localization coverage report is unreadable: {error}")
+            else:
+                coverage_locales = coverage.get("locales")
+                if not isinstance(coverage_locales, dict) or not coverage_locales:
+                    ERRORS.append("localization coverage report must contain locale records")
+                else:
+                    require(len(coverage_locales) == locale_count,
+                            "coverage report locale count differs from the manifest")
+                    message_counts = {
+                        entry.get("messages") for entry in coverage_locales.values()
+                        if isinstance(entry, dict) and isinstance(entry.get("messages"), int)
+                    }
+                    require(len(message_counts) == 1,
+                            "coverage report must contain one consistent message count")
+                    message_count = next(iter(message_counts)) if len(message_counts) == 1 else None
+                    if message_count is not None:
+                        require(localization.get("messagesPerLocale") == message_count,
+                                "manifest message count differs from the coverage report")
+                    fallback_entries = sum(
+                        entry.get("englishFallbacks", 0) for entry in coverage_locales.values()
+                        if isinstance(entry, dict) and isinstance(entry.get("englishFallbacks"), int)
+                    )
+                    require(localization.get("englishFallbackEntries") == fallback_entries,
+                            "manifest fallback-entry count differs from the coverage report")
+                    quality = str(localization.get("qualityStatus", ""))
+                    if message_count is not None:
+                        require(f"{message_count:,} messages across {len(coverage_locales)} locales" in quality,
+                                "localization qualityStatus message count differs from the coverage report")
+                    require(f"{fallback_entries:,} explicitly allowlisted English-fallback entries" in quality,
+                            "localization qualityStatus fallback count differs from the coverage report")
+
+        fallback_manifest_path = locale_directory / "english_fallbacks.json"
+        try:
+            fallback_manifest = json.loads(fallback_manifest_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            ERRORS.append(f"English fallback manifest is unreadable: {error}")
+        else:
+            fallback_keys = fallback_manifest.get("keys") if isinstance(fallback_manifest, dict) else None
+            require(isinstance(fallback_keys, list), "English fallback manifest must contain a key list")
+            if isinstance(fallback_keys, list):
+                require(localization.get("englishFallbackKeys") == len(fallback_keys),
+                        "manifest fallback-key count differs from the English fallback manifest")
+
     releases_page = release.get("releasesPage")
     public_latest = release.get("publicLatestAvailable")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")

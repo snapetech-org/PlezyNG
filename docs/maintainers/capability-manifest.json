@@ -81,10 +81,10 @@
     "localeChoices": 37,
     "directory": "lib/i18n",
     "filePattern": "*.i18n.json",
-    "qualityStatus": "Structural locale coverage is present: 5,347 messages across 37 locales and 44,674 explicitly allowlisted English-fallback entries. Native-speaker fluency review is not established by key counts or generated-file checks.",
-    "messagesPerLocale": 5347,
-    "englishFallbackKeys": 1248,
-    "englishFallbackEntries": 44674,
+    "qualityStatus": "Structural locale coverage is present: 5,369 messages across 37 locales and 45,394 explicitly allowlisted English-fallback entries. Native-speaker fluency review is not established by key counts or generated-file checks.",
+    "messagesPerLocale": 5369,
+    "englishFallbackKeys": 1268,
+    "englishFallbackEntries": 45394,
     "coverageReport": "docs/localization/coverage.json",
     "coverageReviewedOn": "2026-11-12"
   },
@@ -364,7 +364,7 @@
         "PRIVACY.md",
         "docs/FILES_AND_BOOKS.md"
       ],
-      "qualification": "The capability ledger and repository guard cover the current findings, privacy disclosure, and release facts. GitHub lists v3.0.33 as the latest published release (source commit 240994590dd3e5411ee3b02c2bcfc0a1fd51a431); its recorded platform coverage is complete. Structural localization coverage is 5,344 messages across 37 locales, with 44,458 explicitly allowlisted English-fallback entries; native-speaker fluency review is still not established. See docs/maintainers/releases/v3.0.33.json and docs/localization/coverage.json."
+      "qualification": "The capability ledger and repository guard cover the current findings, privacy disclosure, and release facts. GitHub lists v3.0.33 as the latest published release (source commit 240994590dd3e5411ee3b02c2bcfc0a1fd51a431); its recorded platform coverage is complete. Structural localization totals are summarized in the canonical coverage report and checked against this manifest; native-speaker fluency review is still not established. See docs/maintainers/releases/v3.0.33.json and docs/localization/coverage.json."
     },
     {
       "id": "F16",

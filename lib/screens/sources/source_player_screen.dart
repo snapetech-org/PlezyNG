@@ -463,9 +463,30 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
       },
       onWorkspaceAudioStateChanged: playback.setWorkspaceAudioState,
       onHidden: () async {
-        if (mounted && _session == playback && playback.video && !playback.isLiveInput && playback.playing) {
-          await playback.pause();
+        final expectedPlayer = playback.player;
+        final expectedEntry = playback.entry;
+        final expectedFileIndex = playback.fileIndex;
+        final expectedWorkspaceSessionId = _workspaceSessionId;
+        if (!mounted ||
+            _session != playback ||
+            expectedPlayer == null ||
+            expectedEntry == null ||
+            expectedWorkspaceSessionId == null ||
+            !playback.video ||
+            playback.isLiveInput ||
+            !playback.playing) {
+          return;
         }
+        await playback.pauseIfCurrent(
+          expectedPlayer: expectedPlayer,
+          isCurrent: () =>
+              mounted &&
+              _session == playback &&
+              _workspaceSessionId == expectedWorkspaceSessionId &&
+              playback.player == expectedPlayer &&
+              playback.entry == expectedEntry &&
+              playback.fileIndex == expectedFileIndex,
+        );
       },
       readWorkspaceAudioCapabilities: playback.workspaceAudioCapabilities,
     );

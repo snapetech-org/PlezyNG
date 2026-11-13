@@ -2623,13 +2623,33 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     _cancelDailySleepFade(restoreVolume: false);
     return _serialize(() async {
       await player?.pause();
-      _pausedAt = DateTime.now();
-      await _persist();
-      if (_persistProgress) {
-        sources.scheduleSync();
-      }
-      _notify();
+      await _finishPause();
     });
+  }
+
+  /// Pause only while the route that requested it still owns this source.
+  /// The command may wait behind another native operation, so ownership and
+  /// playback intent are checked both when it starts and after native pause.
+  Future<void> pauseIfCurrent({required Player expectedPlayer, required bool Function() isCurrent}) =>
+      _serialize(() async {
+        if (player != expectedPlayer || !isCurrent() || !playing) {
+          return;
+        }
+        _cancelDailySleepFade(restoreVolume: false);
+        await expectedPlayer.pause();
+        if (player != expectedPlayer || !isCurrent()) {
+          return;
+        }
+        await _finishPause();
+      });
+
+  Future<void> _finishPause() async {
+    _pausedAt = DateTime.now();
+    await _persist();
+    if (_persistProgress) {
+      sources.scheduleSync();
+    }
+    _notify();
   }
 
   Future<void> toggle() => playing ? pause() : play();

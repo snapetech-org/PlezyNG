@@ -81,6 +81,7 @@ Use the repo's current toolchain and CI commands. Suggested focused additions ar
 | V62 | Screenshot/app-switcher/profile privacy | Hidden/profile-protected surfaces and titles obey existing privacy policy |
 | V63 | Feature flag off after saved workspace | Safe migration to one-session mode; checkpoints preserved, no orphan windows |
 | V64 | Optional helper if implemented | Explicit pairing, source authorization, actual composition, disconnect/recovery and measured latency |
+| V65 | Hidden source video with queued pause and route replacement | A stale pause cannot affect the replacement source or persist against it; an intervening manual pause is preserved |
 
 ## Device matrix
 

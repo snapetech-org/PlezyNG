@@ -86,6 +86,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   final Map<String, String> _glossaryDrafts = <String, String>{};
   bool _playbackCaptureSupported = false;
   bool _lastResultUploadedToServer = false;
+  int? _operationPlayerGeneration;
   String? _status;
   SubtitleSpeechProgress? _speechProgress;
   SubtitleCaptureStatus? _captureStatus;
@@ -159,6 +160,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       _revisionStatus = null;
     });
     try {
+      _operationPlayerGeneration = _capturePlayerGeneration();
       await operation();
     } catch (error) {
       if (mounted) {
@@ -171,6 +173,25 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           _speechProgress = null;
         });
       }
+      _operationPlayerGeneration = null;
+    }
+  }
+
+  int? _capturePlayerGeneration() {
+    final player = widget.player;
+    if (player is! SubtitlePcmCaptureSource) return null;
+    final captureSource = player as SubtitlePcmCaptureSource;
+    if (captureSource.disposed) throw StateError('Playback has ended. Reopen subtitle controls for the current item.');
+    return captureSource.mediaSessionGeneration;
+  }
+
+  void _ensurePlayerSessionCurrent({int? expectedGeneration}) {
+    final player = widget.player;
+    if (player is! SubtitlePcmCaptureSource) return;
+    final captureSource = player as SubtitlePcmCaptureSource;
+    final expected = expectedGeneration ?? _operationPlayerGeneration;
+    if (captureSource.disposed || (expected != null && captureSource.mediaSessionGeneration != expected)) {
+      throw StateError('Playback changed while the subtitle operation was running. Start again for the current item.');
     }
   }
 
@@ -1073,12 +1094,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
   }
 
-  Future<void> _restoreSubtitleRevision(SubtitleRevision revision) async {
+  Future<void> _restoreSubtitleRevision(SubtitleRevision revision, {required int? expectedPlayerGeneration}) async {
+    _ensurePlayerSessionCurrent(expectedGeneration: expectedPlayerGeneration);
     final bytes = SubtitleSyncService.writeSrt(revision.cues);
     final directory = await getTemporaryDirectory();
     final path = p.join(directory.path, 'plezyng_revision_${revision.id}.srt');
-    await File(path).writeAsBytes(bytes, flush: true);
-    await widget.player.command(['sub-add', path, 'select']);
+    try {
+      await File(path).writeAsBytes(bytes, flush: true);
+      _ensurePlayerSessionCurrent(expectedGeneration: expectedPlayerGeneration);
+      await widget.player.command(['sub-add', path, 'select']);
+    } on Object {
+      await _deleteTemporarySubtitle(path);
+      rethrow;
+    }
     if (mounted) {
       setState(
         () => _status = context.t.subtitleAiUi.attachedReviewedRevisionFrom(
@@ -1115,6 +1143,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       return;
     }
     try {
+      final playerGeneration = _capturePlayerGeneration();
       var revisions = await SubtitleRevisionService.loadRevisions(identity);
       if (!mounted) {
         return;
@@ -1164,7 +1193,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                     TextButton.icon(
                                       onPressed: () {
                                         Navigator.of(dialogContext).pop();
-                                        unawaited(_run(() => _restoreSubtitleRevision(revision)));
+                                        unawaited(
+                                          _run(
+                                            () => _restoreSubtitleRevision(
+                                              revision,
+                                              expectedPlayerGeneration: playerGeneration,
+                                            ),
+                                          ),
+                                        );
                                       },
                                       icon: AppIcon(
                                         revision.operation.startsWith(_subtitleUndoCheckpointPrefix)
@@ -1708,6 +1744,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     List<String> reviewWarnings = const [],
     List<SubtitleWordTiming> wordTimings = const <SubtitleWordTiming>[],
   }) async {
+    _ensurePlayerSessionCurrent();
     if (cues.isEmpty || cues.length > SubtitleRetimer.maximumCueCount) {
       throw const FormatException('Subtitle result has no cues or exceeds the 50000 cue processing bound.');
     }
@@ -1931,6 +1968,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       }
       return false;
     }
+    _ensurePlayerSessionCurrent();
     final bytes = SubtitleSyncService.writeSrt(reviewedCues);
     final originToken = _originTokenForOperation(operationLabel);
     if (choice == _SubtitleReviewChoice.exportSrt) {
@@ -2046,6 +2084,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       if (languageCode == null) {
         throw StateError('The result language could not be identified for server upload.');
       }
+      _ensurePlayerSessionCurrent();
       await _uploadSubtitleToServer(bytes, languageCode, originToken);
       _lastResultUploadedToServer = true;
     }
@@ -2053,8 +2092,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final path = p.join(directory.path, 'plezyng_ai_${originToken}_${DateTime.now().microsecondsSinceEpoch}.srt');
     try {
       await File(path).writeAsBytes(bytes, flush: true);
+      _ensurePlayerSessionCurrent();
       await widget.player.command(['sub-add', path, 'select']);
     } catch (error) {
+      await _deleteTemporarySubtitle(path);
       if (_lastResultUploadedToServer) {
         await _storeReviewedRevision(
           cues: reviewedCues,
@@ -2087,6 +2128,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       wordTimings: reviewedWordTimings,
     );
     return true;
+  }
+
+  Future<void> _deleteTemporarySubtitle(String path) async {
+    try {
+      final file = File(path);
+      if (await file.exists()) await file.delete();
+    } on FileSystemException {
+      // Temporary storage cleanup is best-effort; the OS can reclaim the file later.
+    }
   }
 
   String _formatCueTime(int milliseconds) {

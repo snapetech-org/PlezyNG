@@ -68,6 +68,7 @@
 - Gate the optional Microsoft Store build on all required identity values, and require/report its MSIX bundle when the release is configured for Partner Center handoff.
 
 - Report live-subtitle PCM provenance from the active Android, Tizen or MPV player instead of always labeling it Android ExoPlayer.
+- Prevent subtitle AI results and revision restores from attaching after playback changes, and remove staged SRTs when track attachment fails.
 
 - Give subtitle cues stable identities through editing, translation, synchronization, podcast transcript caches and revision history; migrate positional word timing references into revision schema v3.
 

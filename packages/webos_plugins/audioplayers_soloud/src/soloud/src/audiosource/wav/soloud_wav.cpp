@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits>
 #include "soloud.h"
 #include "soloud_wav.h"
 #include "soloud_file.h"
@@ -175,6 +176,12 @@ namespace SoLoud
 		mBaseSamplerate = (float)info.sample_rate;
         int samples = stb_vorbis_stream_length_in_samples(vorbis);
 
+        if (samples <= 0 || info.channels == 0)
+        {
+            stb_vorbis_close(vorbis);
+            return FILE_LOAD_FAILED;
+        }
+
 		if (info.channels > MAX_CHANNELS)
 		{
 			mChannels = MAX_CHANNELS;
@@ -183,8 +190,17 @@ namespace SoLoud
 		{
 			mChannels = info.channels;
 		}
-		mData = new float[samples * mChannels];
-		memset(mData, 0, samples * mChannels * sizeof(float));
+		const size_t channelCount = static_cast<size_t>(mChannels);
+		const size_t frameCount = static_cast<size_t>(samples);
+		const size_t maxSampleCount = std::numeric_limits<size_t>::max() / sizeof(float);
+		if (channelCount == 0 || frameCount > maxSampleCount / channelCount)
+		{
+			stb_vorbis_close(vorbis);
+			return FILE_LOAD_FAILED;
+		}
+		const size_t sampleCount = frameCount * channelCount;
+		mData = new float[sampleCount];
+		memset(mData, 0, sampleCount * sizeof(float));
 		mSampleCount = samples;
 		samples = 0;
 		while(1)
@@ -195,10 +211,19 @@ namespace SoLoud
             {
 				break;
             }
+			if (n < 0 || n > mSampleCount - samples)
+			{
+				stb_vorbis_close(vorbis);
+				delete[] mData;
+				mData = NULL;
+				mSampleCount = 0;
+				return FILE_LOAD_FAILED;
+			}
 
 			unsigned int ch;
 			for (ch = 0; ch < mChannels; ch++)
-				memcpy(mData + samples + mSampleCount * ch, outputs[ch], sizeof(float) * n);
+				memcpy(mData + static_cast<size_t>(samples) + static_cast<size_t>(mSampleCount) * ch,
+				       outputs[ch], sizeof(float) * static_cast<size_t>(n));
 
 			samples += n;
 		}

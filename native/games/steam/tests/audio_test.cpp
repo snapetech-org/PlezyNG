@@ -16,7 +16,7 @@ int main() {
       int error = 0;
       OpusDecoder* decoder = opus_decoder_create(rate, channels, &error);
       assert(decoder && error == OPUS_OK);
-      std::vector<int16_t> input(rate / 100 * channels, 2000), output(input.size());
+      std::vector<int16_t> input(static_cast<size_t>(rate / 100) * channels, 2000), output(input.size());
       unsigned packets = 0;
       auto send = [&](const uint8_t* bytes, size_t count) {
         assert(count > 0 && count <= 1275);

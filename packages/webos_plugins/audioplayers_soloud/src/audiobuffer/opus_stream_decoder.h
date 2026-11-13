@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 #include <cstring>
 
@@ -62,7 +63,7 @@ public:
         // Read and process pages
         bool headerParsed = false;
         int packetCount = 0;
-        unsigned int offset = 0;
+        size_t offset = 0;
         while (ogg_sync_pageout(&oy, &og) == 1)
         {
             if (!mPacketsInitialized)
@@ -99,10 +100,16 @@ public:
                }
 
                mSamplesPerFrame = count;
+               if (op.bytes < 0) {
+                   throw std::runtime_error("Invalid Ogg packet size");
+               }
+               if (static_cast<unsigned int>(count) > std::numeric_limits<unsigned int>::max() - sampleCount) {
+                   throw std::runtime_error("Decoded Opus stream is too long");
+               }
                mOffsets.push_back(offset);
                mPackets.insert(mPackets.end(), op.packet, op.packet + op.bytes);
 
-               offset += op.bytes;
+               offset += static_cast<size_t>(op.bytes);
                sampleCount += count;
             }
         }
@@ -115,10 +122,14 @@ public:
     {
         std::vector<float> packetPcm;
         const int maxFrameSize = mSampleRate;
-        std::vector<float> outputBuffer(maxFrameSize * mChannels);
+        if (mSamplesPerFrame == 0 || mOffsets.size() < 2 || mChannels <= 0) {
+            return packetPcm;
+        }
+        const size_t outputSampleCount = static_cast<size_t>(maxFrameSize) * static_cast<size_t>(mChannels);
+        std::vector<float> outputBuffer(outputSampleCount);
 
         size_t indx = sampleIndx / mSamplesPerFrame;
-        if (indx >= mPackets.size())
+        if (indx >= mOffsets.size() - 1)
         {
             std::vector<float> packetPcm;
             return packetPcm;
@@ -131,7 +142,7 @@ public:
         size_t* endOffset = mOffsets.data();
         endOffset += mOffsets.size() - 1;
 
-        unsigned int readSamples = 0;
+        size_t readSamples = 0;
         while (true) {
             size_t size = offset[1] - offset[0];
             int samples = opus_decode_float(mDecoder,
@@ -149,7 +160,7 @@ public:
             {
                 packetPcm.insert(packetPcm.end(),
                                  outputBuffer.begin(),
-                                 outputBuffer.begin() + samples * mChannels);
+                                 outputBuffer.begin() + static_cast<size_t>(samples) * static_cast<size_t>(mChannels));
             }
             readSamples += samples;
             if (readSamples >= samplesToRead) {
@@ -185,7 +196,7 @@ private:
 
     unsigned int mSamplesPerFrame = 0;
     std::vector<unsigned char> mPackets;
-    std::vector<unsigned int> mOffsets;
+    std::vector<size_t> mOffsets;
 };
 
 #endif // OPUS_STREAM_DECODER_H

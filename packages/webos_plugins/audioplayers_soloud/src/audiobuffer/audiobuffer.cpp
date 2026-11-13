@@ -67,7 +67,8 @@ namespace SoLoud
         }
 
         // erase mBuffer
-        mParent->mBuffer.removeData(samplesToRead * mChannels * sizeof(float));
+        mParent->mBuffer.removeData(
+            static_cast<size_t>(samplesToRead) * static_cast<size_t>(mChannels) * sizeof(float));
 
         // Update stream position
         mOffset += samplesToRead;

@@ -124,7 +124,8 @@ inline bool PrepareMusicPcm(mpv_plezy_audio_block* block) {
       canonical[frame * block->channels + channel] = std::clamp(value, -1.0f, 1.0f);
     }
   }
-  std::memcpy(block->samples, canonical.data(), block->frames * block->channels * sizeof(float));
+  const size_t sampleCount = static_cast<size_t>(block->frames) * block->channels;
+  std::memcpy(block->samples, canonical.data(), sampleCount * sizeof(float));
   std::copy(speakers.begin(), speakers.begin() + block->channels, block->speaker_ids);
   return true;
 }

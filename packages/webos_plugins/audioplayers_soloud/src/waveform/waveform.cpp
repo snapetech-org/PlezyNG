@@ -63,7 +63,7 @@ namespace Waveform
                 for (int j = 0; j < framesRead * channels; j++)
                 {
                     // Square the sample value
-                    sum += tempBuffer[j] * tempBuffer[j];
+                    sum += static_cast<double>(tempBuffer[j]) * tempBuffer[j];
                 }
                 // Calculate RMS (Root Mean Square)
                 pSamples[id] = sqrtf(sum / (framesRead * channels));

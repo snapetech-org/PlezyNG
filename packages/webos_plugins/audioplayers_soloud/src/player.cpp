@@ -8,7 +8,9 @@
 
 #include <algorithm>
 #include <cstdarg>
+#include <cstdint>
 #include <cstring>
+#include <limits>
 #include <random>
 
 #ifdef _IS_WIN_
@@ -339,7 +341,14 @@ PlayerErrors Player::setBufferStream(
     PCMformat pcmFormat,
     unsigned int &hash)
 {
-    const unsigned long maxBufferSize = 5 * 60 * pcmFormat.sampleRate * pcmFormat.channels * sizeof(float);
+    constexpr std::uint64_t bufferWindowBytes = std::uint64_t{5} * 60 * sizeof(float);
+    const std::uint64_t samplesPerSecond =
+        static_cast<std::uint64_t>(pcmFormat.sampleRate) * pcmFormat.channels;
+    if (pcmFormat.sampleRate == 0 || pcmFormat.channels == 0 || pcmFormat.channels > 2 ||
+        samplesPerSecond > std::numeric_limits<unsigned int>::max() / bufferWindowBytes) {
+        return invalidParameter;
+    }
+    const unsigned int maxBufferSize = static_cast<unsigned int>(samplesPerSecond * bufferWindowBytes);
     const BufferingType bufferingType = RELEASED;
     const SoLoud::time bufferingTimeNeeds = 0;
     const dartOnBufferingCallback_t onBufferingCallback = nullptr;

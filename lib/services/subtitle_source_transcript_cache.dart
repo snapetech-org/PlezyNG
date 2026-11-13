@@ -139,6 +139,28 @@ final class SubtitleSourceTranscriptCacheIdentity {
   }
 }
 
+/// A bounded temporary WAV copy whose digest and inference input are the same
+/// byte sequence. The caller must dispose it after cache lookup/transcription.
+final class SubtitleSourceTranscriptWavSnapshot {
+  const SubtitleSourceTranscriptWavSnapshot({
+    required this.path,
+    required this.audioSha256,
+    required this.stagingDirectory,
+  });
+
+  final String path;
+  final String audioSha256;
+  final Directory stagingDirectory;
+
+  Future<void> dispose() async {
+    try {
+      if (await stagingDirectory.exists()) await stagingDirectory.delete(recursive: true);
+    } on FileSystemException {
+      // The operating system can reclaim app temporary files later.
+    }
+  }
+}
+
 /// Bounded, profile-local cache for source transcripts made from WAV files.
 /// Cache reads verify identity and schema; writes are atomic and old entries
 /// are evicted by last-use time. Without an active profile, only one bounded
@@ -164,7 +186,74 @@ abstract final class SubtitleSourceTranscriptCacheService {
     if (stat.type != FileSystemEntityType.file || stat.size <= 0 || stat.size > maximumAudioBytes) {
       throw const FormatException('WAV input must be a non-empty regular file no larger than 1 GiB.');
     }
-    return (await sha256.bind(file.openRead()).first).toString();
+    final digestSink = _SubtitleDigestOutput();
+    final digestInput = sha256.startChunkedConversion(digestSink);
+    var totalBytes = 0;
+    await for (final chunk in file.openRead()) {
+      totalBytes += chunk.length;
+      if (totalBytes > maximumAudioBytes) {
+        throw const FormatException('WAV input grew beyond the 1 GiB processing limit.');
+      }
+      digestInput.add(chunk);
+    }
+    digestInput.close();
+    if (totalBytes <= 0) throw const FormatException('WAV input is empty.');
+    return digestSink.value.toString();
+  }
+
+  /// Copies a WAV into temporary app storage while hashing the copied bytes.
+  /// Path-based inference must consume this snapshot so a changing source file
+  /// cannot be cached under the digest of different bytes.
+  static Future<SubtitleSourceTranscriptWavSnapshot> snapshotWav(String wavPath) async {
+    final source = File(wavPath);
+    final stat = await source.stat();
+    if (stat.type != FileSystemEntityType.file || stat.size <= 0 || stat.size > maximumAudioBytes) {
+      throw const FormatException('WAV input must be a non-empty regular file no larger than 1 GiB.');
+    }
+    final temporaryRoot = await getTemporaryDirectory();
+    final stagingRoot = Directory(p.join(temporaryRoot.path, 'pleazyng-subtitle-transcription'));
+    await stagingRoot.create(recursive: true);
+    final stagingDirectory = await stagingRoot.createTemp('wav-');
+    final snapshot = File(p.join(stagingDirectory.path, 'source.wav'));
+    RandomAccessFile? output;
+    try {
+      output = await snapshot.open(mode: FileMode.write);
+      final digestSink = _SubtitleDigestOutput();
+      final digestInput = sha256.startChunkedConversion(digestSink);
+      var totalBytes = 0;
+      await for (final chunk in source.openRead()) {
+        totalBytes += chunk.length;
+        if (totalBytes > maximumAudioBytes) {
+          throw const FormatException('WAV input grew beyond the 1 GiB processing limit.');
+        }
+        digestInput.add(chunk);
+        await output.writeFrom(chunk);
+      }
+      digestInput.close();
+      await output.flush();
+      await output.close();
+      output = null;
+      if (totalBytes <= 0) throw const FormatException('WAV input is empty.');
+      return SubtitleSourceTranscriptWavSnapshot(
+        path: snapshot.path,
+        audioSha256: digestSink.value.toString(),
+        stagingDirectory: stagingDirectory,
+      );
+    } on Object {
+      if (output != null) {
+        try {
+          await output.close();
+        } on Object {
+          // Preserve the original copy or hashing error.
+        }
+      }
+      try {
+        await stagingDirectory.delete(recursive: true);
+      } on FileSystemException {
+        // Best-effort cleanup after a failed staging operation.
+      }
+      rethrow;
+    }
   }
 
   static Future<SubtitleSourceTranscriptCacheIdentity> identify({
@@ -178,9 +267,6 @@ abstract final class SubtitleSourceTranscriptCacheService {
     provider: provider,
     languageCode: languageCode,
   );
-
-  static Future<bool> audioStillMatches(String wavPath, SubtitleSourceTranscriptCacheIdentity identity) async =>
-      await audioSha256(wavPath) == identity.audioSha256;
 
   static Future<SubtitleCachedSourceTranscript?> load({
     required String? profileId,
@@ -256,7 +342,10 @@ abstract final class SubtitleSourceTranscriptCacheService {
         final file = await _entryFile(profileId, identity.key, createDirectory: true);
         if (file == null) return;
         if (!await _removePendingEntries(file.parent.parent)) {
-          throw FileSystemException('Cannot remove abandoned subtitle transcript cache writes.', file.parent.parent.path);
+          throw FileSystemException(
+            'Cannot remove abandoned subtitle transcript cache writes.',
+            file.parent.parent.path,
+          );
         }
         final temporary = File('${file.path}.pending');
         try {
@@ -651,4 +740,19 @@ abstract final class SubtitleSourceTranscriptCacheService {
     cacheHit: cacheHit,
     persisted: persisted,
   );
+}
+
+final class _SubtitleDigestOutput implements Sink<Digest> {
+  Digest? _value;
+
+  Digest get value => _value ?? (throw StateError('WAV snapshot digest was not finalized.'));
+
+  @override
+  void add(Digest digest) {
+    if (_value != null) throw StateError('WAV snapshot digest was finalized more than once.');
+    _value = digest;
+  }
+
+  @override
+  void close() {}
 }

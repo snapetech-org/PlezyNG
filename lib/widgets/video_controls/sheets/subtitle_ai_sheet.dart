@@ -4,7 +4,7 @@ import '../../../services/subtitle_speech_progress.dart';
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show File, Platform;
+import 'dart:io' show File, FileSystemException, Platform;
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
@@ -81,6 +81,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   bool _requestTranslationCuda = false;
   bool _bilingualTranslation = false;
   bool _useSeriesGlossary = false;
+  final Set<String> _temporaryWavPaths = <String>{};
   final TextEditingController _glossaryController = TextEditingController();
   final Map<String, String> _glossaryDrafts = <String, String>{};
   bool _playbackCaptureSupported = false;
@@ -97,6 +98,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   @override
   void dispose() {
+    for (final path in _temporaryWavPaths.toList(growable: false)) {
+      unawaited(_discardTemporaryWav(path));
+    }
     _glossaryController.dispose();
     super.dispose();
   }
@@ -191,37 +195,74 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<SubtitleCachedSourceTranscript> _sourceTranscriptForWav(String wavPath) async {
+    try {
+      return await _loadSourceTranscriptForWav(wavPath);
+    } finally {
+      await _discardTemporaryWav(wavPath);
+    }
+  }
+
+  Future<void> _discardTemporaryWav(String path) async {
+    if (!_temporaryWavPaths.remove(path)) return;
+    try {
+      final file = File(path);
+      if (await file.exists()) await file.delete();
+    } on FileSystemException {
+      // Temporary storage cleanup is best-effort; the OS can reclaim the file later.
+    }
+  }
+
+  Future<SubtitleCachedSourceTranscript> _loadSourceTranscriptForWav(String wavPath) async {
     if (!SubtitleAiService.supportedPlatform) {
       throw UnsupportedError('Local speech generation is unavailable on this platform.');
     }
     final languageCode = _speechLanguageCode == 'auto' ? null : _speechLanguageCode;
     final profileId = _activeProfileId;
+    final provider = _provider;
     final identity = await SubtitleSourceTranscriptCacheService.identify(
       profileId: profileId,
       wavPath: wavPath,
-      provider: _provider,
+      provider: provider,
       languageCode: languageCode,
     );
     final cached = await SubtitleSourceTranscriptCacheService.load(profileId: profileId, identity: identity);
     if (cached != null) return cached;
 
     await _ensureSpeechModel();
-    final result = await SubtitleAiService.instance.transcribeWav(
-      wavPath,
-      provider: _provider,
-      languageCode: languageCode,
-      onProgress: (phase, received, total) {
-        if (!mounted) return;
-        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
-      },
-    );
-    if (result.translatedToEnglish) {
-      throw StateError('A translated-English result cannot be reused as a source-language transcript.');
+    final snapshot = await SubtitleSourceTranscriptCacheService.snapshotWav(wavPath);
+    try {
+      final stableIdentity = SubtitleSourceTranscriptCacheIdentity.create(
+        profileId: profileId,
+        audioSha256: snapshot.audioSha256,
+        provider: provider,
+        languageCode: languageCode,
+      );
+      final stableCached = await SubtitleSourceTranscriptCacheService.load(
+        profileId: profileId,
+        identity: stableIdentity,
+      );
+      if (stableCached != null) return stableCached;
+
+      final result = await SubtitleAiService.instance.transcribeWav(
+        snapshot.path,
+        provider: provider,
+        languageCode: languageCode,
+        onProgress: (phase, received, total) {
+          if (!mounted) return;
+          setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
+        },
+      );
+      if (result.translatedToEnglish) {
+        throw StateError('A translated-English result cannot be reused as a source-language transcript.');
+      }
+      return await SubtitleSourceTranscriptCacheService.store(
+        profileId: profileId,
+        identity: stableIdentity,
+        result: result,
+      );
+    } finally {
+      await snapshot.dispose();
     }
-    if (!await SubtitleSourceTranscriptCacheService.audioStillMatches(wavPath, identity)) {
-      throw StateError('The WAV changed during transcription. Choose the unchanged audio file and retry.');
-    }
-    return SubtitleSourceTranscriptCacheService.store(profileId: profileId, identity: identity, result: result);
   }
 
   Future<String?> _pickWav() async {
@@ -242,8 +283,19 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
     final directory = await getTemporaryDirectory();
     final path = p.join(directory.path, 'subtitle_audio_${DateTime.now().microsecondsSinceEpoch}.wav');
-    await File(path).writeAsBytes(bytes, flush: true);
-    return path;
+    try {
+      await File(path).writeAsBytes(bytes, flush: true);
+      _temporaryWavPaths.add(path);
+      return path;
+    } on Object {
+      try {
+        final temporary = File(path);
+        if (await temporary.exists()) await temporary.delete();
+      } on FileSystemException {
+        // Best-effort cleanup after a failed picker copy.
+      }
+      rethrow;
+    }
   }
 
   Future<(List<SubtitleCue>, String)?> _pickSubtitleCues() async {
@@ -300,18 +352,23 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final bool fromCache;
     final bool persisted;
     if (translateToEnglish) {
-      await _ensureSpeechModel();
-      setState(() => _speechProgress = const SubtitleSpeechProgress(SubtitleSpeechPhase.translating));
-      final result = await SubtitleAiService.instance.transcribeWav(
-        wavPath,
-        provider: _provider,
-        translateToEnglish: true,
-        languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
-        onProgress: (phase, received, total) {
-          if (!mounted) return;
-          setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
-        },
-      );
+      late final SubtitleTranscriptionResult result;
+      try {
+        await _ensureSpeechModel();
+        setState(() => _speechProgress = const SubtitleSpeechProgress(SubtitleSpeechPhase.translating));
+        result = await SubtitleAiService.instance.transcribeWav(
+          wavPath,
+          provider: _provider,
+          translateToEnglish: true,
+          languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
+          onProgress: (phase, received, total) {
+            if (!mounted) return;
+            setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
+          },
+        );
+      } finally {
+        await _discardTemporaryWav(wavPath);
+      }
       cues = result.cues;
       wordTimings = result.wordTimings;
       durationMs = result.durationMs;
@@ -471,8 +528,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (wavPath == null || !mounted) {
       return;
     }
-    final selected = await _pickSubtitleCues();
-    if (selected == null || !mounted) {
+    final (List<SubtitleCue>, String)? selected;
+    try {
+      selected = await _pickSubtitleCues();
+    } on Object {
+      await _discardTemporaryWav(wavPath);
+      rethrow;
+    }
+    final selectedSubtitle = selected;
+    if (selectedSubtitle == null || !mounted) {
+      await _discardTemporaryWav(wavPath);
       return;
     }
     final transcription = await _sourceTranscriptForWav(wavPath);
@@ -482,7 +547,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           : context.t.subtitleAiUi.transcribingAudioAndAligningSubtitleText,
     );
     final aligned = SubtitleSyncService.synchronize(
-      subtitleCues: selected.$1,
+      subtitleCues: selectedSubtitle.$1,
       speechCues: transcription.cues,
       mediaDurationMs: transcription.durationMs,
       repairCuts: repairCuts,
@@ -508,7 +573,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         discontinuityCount: aligned.discontinuityCount,
         rate: aligned.appliedRate.toStringAsFixed(4),
         baseOffset: aligned.globalOffsetMs,
-        source: selected.$2,
+        source: selectedSubtitle.$2,
         uploadedNote: _lastResultUploadedToServer ? context.t.subtitleAiUi.uploadedToServerLibraryNote : '',
       );
     });

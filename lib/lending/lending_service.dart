@@ -126,10 +126,12 @@ class LendingService {
     required this.valid,
     SourceTransport? transport,
     Future<bool> Function(Uri)? launch,
+    Future<bool> Function(Uri)? browserLaunch,
     this.enableOverdrive = overdriveEnabled,
     this.titleLinkGateway = defaultTitleLinkGateway,
   }) : transport = transport ?? SourceTransport(),
-       launch = launch ?? ((uri) => launchUrl(uri, mode: LaunchMode.externalApplication));
+       launch = launch ?? ((uri) => launchUrl(uri, mode: LaunchMode.externalApplication)),
+       browserLaunch = browserLaunch ?? ((uri) => launchUrl(uri, mode: LaunchMode.inAppBrowserView));
   final SourceRepository repository;
   final String profile;
   final bool Function() valid;
@@ -152,6 +154,7 @@ class LendingService {
   }
 
   final Future<bool> Function(Uri) launch;
+  final Future<bool> Function(Uri) browserLaunch;
   final Map<String, Future<Map<String, dynamic>>> _refreshing = {};
   final Map<String, Map<String, dynamic>> _patrons = {};
   static DateTime _lastSearch = DateTime.fromMillisecondsSinceEpoch(0);
@@ -194,6 +197,39 @@ class LendingService {
     check();
     lendingHttps(uri.toString());
     if (!await launch(uri)) throw const SourceException(SourceFailure.unavailable);
+  }
+
+  bool _isLibbyShareLink(Uri uri) {
+    try {
+      final safe = lendingHttps(uri.toString());
+      return safe.host == 'link.overdrive.com' &&
+          safe.port == 443 &&
+          safe.path == '/share' &&
+          safe.queryParameters['q']?.isNotEmpty == true;
+    } on Object {
+      return false;
+    }
+  }
+
+  Future<bool> _tryLaunch(Future<bool> Function(Uri) launcher, Uri uri) async {
+    try {
+      return await launcher(uri);
+    } on Exception {
+      return false;
+    }
+  }
+
+  /// Opens the official OverDrive share URL using the preferred app/browser
+  /// route, then tries the other route if this platform has no handler.
+  /// Returns false so the UI can offer a QR handoff when neither route exists.
+  Future<bool> openLibbyShare(Uri uri, {bool preferBrowser = false}) async {
+    check();
+    if (!_isLibbyShareLink(uri)) throw const SourceException(SourceFailure.permission);
+    final first = preferBrowser ? browserLaunch : launch;
+    final second = preferBrowser ? launch : browserLaunch;
+    if (await _tryLaunch(first, uri)) return true;
+    check();
+    return _tryLaunch(second, uri);
   }
 
   Future<LendingPage> openLibrarySearch(String query, {int page = 1}) async {

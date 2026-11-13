@@ -816,8 +816,9 @@ class DownloadManagerService {
     final backend = await _backendForServer(serverId);
     final live = _getClient(serverId, clientScopeId: clientScopeId);
     if (backend != null) {
-      return ApiCache.forBackend(backend)
-          .getMetadata(ServerId(clientScopeId ?? live?.cacheServerId ?? serverId), itemId);
+      return ApiCache.forBackend(
+        backend,
+      ).getMetadata(ServerId(clientScopeId ?? live?.cacheServerId ?? serverId), itemId);
     }
     appLogger.w('Cache lookup for $serverId:$itemId — backend unresolved; trying all registered backends');
     for (final candidate in MediaBackend.values) {
@@ -984,8 +985,9 @@ class DownloadManagerService {
     final backend = await _backendForServer(serverId);
     final live = _getClient(serverId, clientScopeId: clientScopeId);
     if (backend != null) {
-      await ApiCache.forBackend(backend)
-          .deleteForItem(ServerId(clientScopeId ?? live?.cacheServerId ?? serverId), itemId);
+      await ApiCache.forBackend(
+        backend,
+      ).deleteForItem(ServerId(clientScopeId ?? live?.cacheServerId ?? serverId), itemId);
       return;
     }
     // Backend unresolved — purge from every registered backend so a stale

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../utils/public_internet_http_client.dart';
 import 'remote_stream_models.dart';
 
 class StremioAddonException implements Exception {
@@ -66,7 +67,7 @@ class StremioAddonConfiguration {
 /// Bounded client for the Stremio add-on HTTP protocol. It never logs a
 /// manifest or resource URL because either may carry the add-on's secret.
 class StremioAddonClient {
-  StremioAddonClient({http.Client? client}) : _client = client ?? http.Client();
+  StremioAddonClient({http.Client? client}) : _client = client ?? createPublicInternetHttpClient();
 
   static const _maxResponseBytes = 2 * 1024 * 1024;
   static const _maxManifestBytes = 256 * 1024;

@@ -6,6 +6,7 @@
 - Correct podcast implementation notes to reflect completed gPodder-compatible synchronization and the 10,000-episode RSS parsing limit.
 - Keep Find your next live-TV picks bound to the selected DVR lineup and exact airing, and make Watch live tune at the live edge without offering a recording-history restart.
 - Preserve Stremio add-on checkbox choices when a checked manifest default is turned off, including across reconfiguration.
+- Restrict Stremio add-on requests and redirect hops to validated public Internet addresses, pin native sockets to the checked DNS result, and refuse browser requests where that validation cannot be enforced.
 - Keep shared music queue edits atomic when a disk-backed scratch-index write fails, restoring the prior order, occurrences, cursor, and shuffle state.
 - Bind standalone and recovery release CI checks to the required-job manifest at the exact release source SHA, so later workflow metadata cannot redefine historical qualification.
 - Add a one-touch karaoke venue emergency pause that preserves the session and queue while stopping local and paired-phone microphone capture; external mixer controls remain separate.

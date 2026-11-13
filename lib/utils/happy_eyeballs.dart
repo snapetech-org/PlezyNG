@@ -23,6 +23,73 @@ Future<ConnectionTask<Socket>> happyEyeballsConnectionFactory(Uri url, String? p
   return Future.value(startHappyEyeballsConnect(url.host, port, secure: secure));
 }
 
+/// Opens an Internet-only connection after validating both DNS families.
+///
+/// DNS is resolved once for the request and the winning socket connects to the
+/// validated address directly. This prevents a second resolver lookup between
+/// validation and connect, and rejects mixed public/private answers instead
+/// of racing into whichever address happens to win. Proxy connections are
+/// rejected because the proxy, rather than this process, would resolve the
+/// destination.
+Future<ConnectionTask<Socket>> publicInternetConnectionFactory(Uri url, String? proxyHost, int? proxyPort) {
+  if (proxyHost != null) {
+    return Future.error(const SocketException('Proxied public-address validation is unavailable'));
+  }
+  if (!const {'http', 'https'}.contains(url.scheme) || url.host.isEmpty) {
+    return Future.error(const SocketException('Unsupported Internet destination'));
+  }
+  final secure = url.isScheme('https');
+  final port = url.port == 0 ? (secure ? HttpClient.defaultHttpsPort : HttpClient.defaultHttpPort) : url.port;
+  late final Future<({List<InternetAddress> ipv4, List<InternetAddress> ipv6})> resolved;
+  resolved = _lookupPublicInternetAddresses(url.host);
+
+  Future<List<InternetAddress>> lookup(String _, {required InternetAddressType type}) async {
+    final addresses = await resolved;
+    return type == InternetAddressType.IPv6 ? addresses.ipv6 : addresses.ipv4;
+  }
+
+  return Future.value(startHappyEyeballsConnect(url.host, port, secure: secure, lookup: lookup));
+}
+
+Future<({List<InternetAddress> ipv4, List<InternetAddress> ipv6})> _lookupPublicInternetAddresses(String host) async {
+  final results = await Future.wait([
+    InternetAddress.lookup(host, type: InternetAddressType.IPv4),
+    InternetAddress.lookup(host, type: InternetAddressType.IPv6),
+  ]);
+  final ipv4 = results[0], ipv6 = results[1];
+  final addresses = [...ipv4, ...ipv6];
+  if (addresses.isEmpty || addresses.any((address) => !_isPublicInternetAddress(address))) {
+    throw const SocketException('Destination does not resolve exclusively to public Internet addresses');
+  }
+  return (ipv4: ipv4, ipv6: ipv6);
+}
+
+bool _isPublicInternetAddress(InternetAddress address) {
+  final bytes = address.rawAddress;
+  if (address.type == InternetAddressType.IPv4) {
+    final a = bytes[0], b = bytes[1], c = bytes[2];
+    if (a == 0 || a == 10 || a == 127 || a >= 224) return false;
+    if (a == 100 && b >= 64 && b <= 127) return false;
+    if (a == 169 && b == 254) return false;
+    if (a == 172 && b >= 16 && b <= 31) return false;
+    if (a == 192 && ((b == 0 && c == 0) || b == 168 || (b == 88 && c == 99))) return false;
+    if (a == 192 && b == 0 && c == 2) return false;
+    if (a == 198 && (b == 18 || b == 19 || (b == 51 && c == 100))) return false;
+    if (a == 203 && b == 0 && c == 113) return false;
+    return true;
+  }
+
+  if (address.type != InternetAddressType.IPv6 || (bytes[0] & 0xe0) != 0x20) return false;
+  // IETF protocol assignments (2001::/23), documentation (2001:db8::/32),
+  // 6to4 (2002::/16), and the current documentation prefix (3fff::/20) are
+  // not public service destinations for an add-on client.
+  if (bytes[0] == 0x20 && bytes[1] == 0x01 && (bytes[2] & 0xfe) == 0) return false;
+  if (bytes[0] == 0x20 && bytes[1] == 0x01 && bytes[2] == 0x0d && bytes[3] == 0xb8) return false;
+  if (bytes[0] == 0x20 && bytes[1] == 0x02) return false;
+  if (bytes[0] == 0x3f && (bytes[1] & 0xf0) == 0xf0) return false;
+  return true;
+}
+
 const Duration defaultAttemptDelay = Duration(milliseconds: 250);
 const Duration defaultResolutionDelay = Duration(milliseconds: 50);
 

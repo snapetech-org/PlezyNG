@@ -177,6 +177,21 @@ No new top-level navigation entry is added.
 
 ## Verification performed
 
+### Stremio destination-address enforcement (2026-11-13)
+
+The default native Stremio HTTP client resolves IPv4 and IPv6 together, rejects
+the request if any returned address is outside the public Internet ranges, and
+connects directly to the validated address while retaining the hostname for
+TLS. Each manually followed redirect repeats this validation, so rebinding or
+a redirect cannot route the add-on client to loopback, private, link-local or
+reserved destinations. Proxies are rejected because the proxy would resolve
+the destination itself. Browser builds refuse Stremio HTTP requests because
+their fetch transport cannot enforce this address-pinning contract.
+
+Source inspection and `git diff --check` cover this change; no tests or network
+qualification were run for this follow-up. The existing S01 matrix still
+requires dedicated IPv4/IPv6, DNS-rebinding and redirect qualification.
+
 | Check | Result |
 | --- | --- |
 | Focused Flutter tests | 109 passed: encrypted/concurrent state, expired-owner fencing, idle cleanup, profile tombstones, schema migration, canonical search/visibility/reconciliation/restart/episode identity, ranges, provider/catalog fixtures, offline multi-file video/progress, gateways, downloads, source-player lifecycle, lease cleanup and mixed/shared-player queue navigation/repeat |

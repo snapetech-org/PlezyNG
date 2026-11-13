@@ -20,7 +20,9 @@ Prepared 2026-10-27 (America/Regina). The planning baseline was inspected at
   add-ons, and select which secure HTTPS add-ons to import. PlezyNG does not
   ask for the Stremio password, persist the account authorization key, or
   change the remote add-on collection. Add-ons can also be connected by
-  manifest URL.
+  manifest URL. Native add-on requests validate both DNS families and connect
+  only to public Internet addresses; browser builds currently refuse these
+  requests because their transport cannot pin the checked destination address.
 - Open Files and books from the existing library picker or its single nested
   Libraries rail row. Connected accounts live together in the screen's Cloud
   & add-on streaming group. Browse ready video files with the focused list,

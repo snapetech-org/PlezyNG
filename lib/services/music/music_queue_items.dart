@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+
 import '../../media/media_item.dart';
 import 'music_queue_order.dart';
 
@@ -501,6 +502,22 @@ class MusicQueueItemsSnapshot extends ListBase<MediaItem> {
   final _Spool? _spool;
   final int _length;
   final int _liveEncodedBytes;
+  bool _released = false;
+
+  /// Release this snapshot's scratch-file leases when its owner no longer
+  /// needs the immutable view.
+  void release() {
+    if (_released) return;
+    _released = true;
+    if (_index != null) {
+      _indexLeases.detach(this);
+      _index!.release();
+    }
+    if (_spool != null) {
+      _spoolLeases.detach(this);
+      _spool!.release();
+    }
+  }
 
   int occurrenceAt(int index) {
     RangeError.checkValidIndex(index, this);

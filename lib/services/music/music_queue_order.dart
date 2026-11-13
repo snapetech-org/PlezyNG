@@ -357,7 +357,19 @@ class MusicQueueOrderSnapshot extends ListBase<int> {
   final List<int>? _memory;
   final _OrderSpool? _spool;
   final bool _validatedPermutation;
+  bool _released = false;
   bool get isValidatedPermutation => _validatedPermutation;
+
+  /// Release this snapshot's scratch-file lease when its owner no longer
+  /// needs the immutable view.
+  void release() {
+    if (_released) return;
+    _released = true;
+    if (_spool != null) {
+      _leases.detach(this);
+      _spool!.release();
+    }
+  }
 
   @override
   int get length => _length;
@@ -473,15 +485,24 @@ class _OrderSpool {
   }
 
   void appendRange(int start, int count) {
-    var appended = 0;
-    while (appended < count) {
-      final size = min(_entriesPerBlock, count - appended);
-      final values = Uint32List(size);
-      for (var i = 0; i < size; i++) {
-        values[i] = start + appended + i;
+    final originalLength = length;
+    try {
+      var appended = 0;
+      while (appended < count) {
+        final size = min(_entriesPerBlock, count - appended);
+        final values = Uint32List(size);
+        for (var i = 0; i < size; i++) {
+          values[i] = start + appended + i;
+        }
+        _appendBlock(values);
+        appended += size;
       }
-      _appendBlock(values);
-      appended += size;
+    } catch (_) {
+      _handle.truncateSync(originalLength * 4);
+      _handle.setPositionSync(originalLength * 4);
+      length = originalLength;
+      _cache.clear();
+      rethrow;
     }
   }
 

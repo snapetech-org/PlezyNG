@@ -7,6 +7,20 @@ qualification remain incomplete.
 “Existing” means retained application behavior, not a new reference comparison.
 “Partial” identifies concrete remaining implementation, not just testing.
 
+## Shared queue scratch-write rollback, 2026-11-13
+
+Shared queue edits now retain snapshots of the storage they mutate. Disk-backed
+copy-on-write indexes isolate partial file shifts; if a later scratch write
+fails, the controller restores the previous occurrences, playback order,
+cursor, repeat mode and shuffle state before propagating the error. Tail
+appends keep the incremental path and roll back only the appended rows. The
+temporary rollback snapshots release their leases after the edit completes.
+
+Validation: the configured Dart formatter and focused static analysis pass.
+No tests, builds or CI were run for this audit change. Existing P06/P07 test
+evidence remains documented below; physical offline startup, live provider,
+receiver and vehicle qualification remain separate.
+
 ## Transferred playlist occurrence selection, 2026-11-12
 
 Starting a repeated track on an already transferred device now uses the same

@@ -157,6 +157,19 @@
       "open": "ABI v2 native host/process helpers and runtime/source/notice packaging hooks are integrated for desktop, Android, Apple and TV routes. The canonical sample-only catalog is published with GitHub OIDC/Sigstore identity and verified client-side, with rollback and expiry enforcement. Empty Ed25519 keys keep schema-v1 envelopes closed; the separate upstream MilkRust Ed25519 root remains unprovisioned. Ordered PCM artifacts are promoted in the app lock, but their receipts mark native execution unqualified. Beyond the exact Linux x64 package UI-path qualification recorded in IMPLEMENTATION_STATUS.md, runtime/app qualification across release targets, driver/render fidelity, broader licensed catalog assets and physical-device qualification remain open."
     },
     {
+      "area": "Shared music playback and persistent queues",
+      "status": "partial",
+      "evidence": [
+        "lib/services/music/music_playback_service_impl.dart",
+        "lib/services/music/music_queue_controller.dart",
+        "lib/services/music/music_queue_items.dart",
+        "lib/services/music/music_queue_order.dart",
+        "lib/services/music/music_session_store.dart",
+        "docs/plezyng/music/STATUS.md"
+      ],
+      "open": "Shared playback and 10,000-track durable queue behavior are implemented with bounded pages, leased scratch indexes and occurrence identity. Multi-index edits retain rollback leases; tail appends keep the incremental path. This change passes formatting and focused static analysis; no tests/builds/CI were run. Existing P06/P07 regressions are recorded in music STATUS. Physical offline cold start, live provider and receiver/vehicle qualification remain open."
+    },
+    {
       "area": "Dolby Vision and FEL",
       "status": "gated",
       "evidence": [

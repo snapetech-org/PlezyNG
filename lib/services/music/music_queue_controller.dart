@@ -135,13 +135,10 @@ class MusicQueueController {
   /// half-valid session.
   bool restoreState(MusicQueueState state) {
     if (!state.isValid) return false;
-    _queueSnapshot = null;
-    _items.replaceWith(state.items);
-    _order.replaceWith(state.order);
-    _cursor = state.cursor;
-    _shuffled = state.shuffled;
-    repeatMode = state.repeatMode;
-    return true;
+    return _withStorageRollback(() {
+      _restoreCapturedState(state);
+      return true;
+    });
   }
 
   /// Replace the queue with [tracks], starting at [startIndex]. A null
@@ -154,17 +151,19 @@ class MusicQueueController {
   /// included. Collapsing "no start track" into index 0 is what pinned every
   /// shuffled playlist to its first track (#1811).
   void load(List<MediaItem> tracks, {int? startIndex, bool shuffle = false}) {
-    _queueSnapshot = null;
-    _items.replaceWith(tracks);
-    _order.resetIdentity(tracks.length);
-    _shuffled = false;
-    _cursor = tracks.isEmpty ? -1 : (startIndex ?? 0).clamp(0, tracks.length - 1);
-    if (!shuffle || tracks.isEmpty) return;
-    if (startIndex == null) {
-      _shuffleAll();
-    } else {
-      _shuffleAnchoringCurrent();
-    }
+    _withStorageRollback(() {
+      _queueSnapshot = null;
+      _items.replaceWith(tracks);
+      _order.resetIdentity(tracks.length);
+      _shuffled = false;
+      _cursor = tracks.isEmpty ? -1 : (startIndex ?? 0).clamp(0, tracks.length - 1);
+      if (!shuffle || tracks.isEmpty) return;
+      if (startIndex == null) {
+        _shuffleAll();
+      } else {
+        _shuffleAnchoringCurrent();
+      }
+    });
   }
 
   MusicQueueItemsSnapshot prepareItems(Iterable<MediaItem> items) => _items.prepareSnapshot(items);
@@ -208,20 +207,29 @@ class MusicQueueController {
   /// Insert [tracks] directly after the current entry.
   void addNext(List<MediaItem> tracks) {
     if (tracks.isEmpty) return;
-    _queueSnapshot = null;
-    final first = _items.length;
-    _items.addAll(tracks);
-    _order.insertRange(_cursor < 0 ? 0 : _cursor + 1, first, tracks.length);
-    if (_cursor < 0) _cursor = 0;
+    _withOrderRollback(() {
+      _queueSnapshot = null;
+      final first = _items.length;
+      _order.insertRange(_cursor < 0 ? 0 : _cursor + 1, first, tracks.length);
+      _items.addAll(tracks);
+      if (_cursor < 0) _cursor = 0;
+    });
   }
 
   void addToEnd(List<MediaItem> tracks) {
     if (tracks.isEmpty) return;
-    _queueSnapshot = null;
     final first = _items.length;
+    _queueSnapshot = null;
     _items.addAll(tracks);
-    _order.appendRange(first, tracks.length);
-    if (_cursor < 0) _cursor = 0;
+    try {
+      // Tail append in the order index is independently rollback-safe; if it
+      // fails, remove only the newly appended canonical occurrences.
+      _order.appendRange(first, tracks.length);
+      if (_cursor < 0) _cursor = 0;
+    } catch (_) {
+      _items.removeRange(first, _items.length);
+      rethrow;
+    }
   }
 
   /// Remove the queue entry at playback-order [queueIndex]. Returns true
@@ -231,17 +239,19 @@ class MusicQueueController {
   /// decides whether to open it.
   bool removeAt(int queueIndex) {
     if (queueIndex < 0 || queueIndex >= _order.length) return false;
-    _queueSnapshot = null;
-    final wasCurrent = queueIndex == _cursor;
-    final itemIndex = _order.removeAt(queueIndex);
-    _items.removeAt(itemIndex);
-    _order.decrementAbove(itemIndex);
-    if (queueIndex < _cursor) {
-      _cursor--;
-    } else if (_cursor >= _order.length) {
-      _cursor = _order.length - 1;
-    }
-    return wasCurrent;
+    return _withStorageRollback(() {
+      _queueSnapshot = null;
+      final wasCurrent = queueIndex == _cursor;
+      final itemIndex = _order.removeAt(queueIndex);
+      _items.removeAt(itemIndex);
+      _order.decrementAbove(itemIndex);
+      if (queueIndex < _cursor) {
+        _cursor--;
+      } else if (_cursor >= _order.length) {
+        _cursor = _order.length - 1;
+      }
+      return wasCurrent;
+    });
   }
 
   /// Reorder the playback queue: move the entry at [from] to [to] (both
@@ -250,16 +260,18 @@ class MusicQueueController {
     if (from < 0 || from >= _order.length || to < 0 || to >= _order.length || from == to) {
       return;
     }
-    _queueSnapshot = null;
-    final entry = _order.removeAt(from);
-    _order.insert(to, entry);
-    if (from == _cursor) {
-      _cursor = to;
-    } else if (from < _cursor && to >= _cursor) {
-      _cursor--;
-    } else if (from > _cursor && to <= _cursor) {
-      _cursor++;
-    }
+    _withOrderRollback(() {
+      _queueSnapshot = null;
+      final entry = _order.removeAt(from);
+      _order.insert(to, entry);
+      if (from == _cursor) {
+        _cursor = to;
+      } else if (from < _cursor && to >= _cursor) {
+        _cursor--;
+      } else if (from > _cursor && to <= _cursor) {
+        _cursor++;
+      }
+    });
   }
 
   /// Toggle shuffle. Turning it on anchors the current track first and
@@ -267,15 +279,17 @@ class MusicQueueController {
   /// with the cursor following the current track.
   void toggleShuffle() {
     if (_items.isEmpty) return;
-    _queueSnapshot = null;
-    if (_shuffled) {
-      final currentItem = _order[_cursor];
-      _order.resetIdentity(_items.length);
-      _cursor = currentItem;
-      _shuffled = false;
-    } else {
-      _shuffleAnchoringCurrent();
-    }
+    _withOrderRollback(() {
+      _queueSnapshot = null;
+      if (_shuffled) {
+        final currentItem = _order[_cursor];
+        _order.resetIdentity(_items.length);
+        _cursor = currentItem;
+        _shuffled = false;
+      } else {
+        _shuffleAnchoringCurrent();
+      }
+    });
   }
 
   /// Shuffle complete album blocks, preserving disc/track sequence within each
@@ -283,6 +297,10 @@ class MusicQueueController {
   /// remain separate entries inside their block.
   void shuffleAlbums() {
     if (_items.isEmpty) return;
+    _withOrderRollback(_shuffleAlbums);
+  }
+
+  void _shuffleAlbums() {
     _queueSnapshot = null;
     final currentItem = _order[_cursor];
     if (_order.spill && _items.length > 4096) {
@@ -358,9 +376,57 @@ class MusicQueueController {
   /// the underlying canonical items.
   void clearUpcoming() {
     if (_cursor < 0 || _cursor >= _order.length - 1) return;
+    _withStorageRollback(() {
+      _queueSnapshot = null;
+      _order.removeRange(_cursor + 1, _order.length);
+      _items.retainInPlaybackOrder(_order);
+    });
+  }
+
+  T _withStorageRollback<T>(T Function() change) {
+    // Retaining both indexes forces copy-on-write while a multi-index edit is
+    // in flight, so rollback can restore the exact pre-edit queue on failure.
+    final previous = captureState();
+    try {
+      return change();
+    } catch (_) {
+      _restoreCapturedState(previous);
+      rethrow;
+    } finally {
+      if (previous.items is MusicQueueItemsSnapshot) {
+        (previous.items as MusicQueueItemsSnapshot).release();
+      }
+      if (previous.order is MusicQueueOrderSnapshot) {
+        (previous.order as MusicQueueOrderSnapshot).release();
+      }
+    }
+  }
+
+  T _withOrderRollback<T>(T Function() change) {
+    // Order-only edits avoid copying the canonical metadata index.
+    final previous = _order.snapshot(validatedPermutation: true);
+    final cursor = _cursor;
+    final shuffled = _shuffled;
+    try {
+      return change();
+    } catch (_) {
+      _queueSnapshot = null;
+      _order.replaceWith(previous);
+      _cursor = cursor;
+      _shuffled = shuffled;
+      rethrow;
+    } finally {
+      previous.release();
+    }
+  }
+
+  void _restoreCapturedState(MusicQueueState state) {
     _queueSnapshot = null;
-    _order.removeRange(_cursor + 1, _order.length);
-    _items.retainInPlaybackOrder(_order);
+    _items.replaceWith(state.items);
+    _order.replaceWith(state.order);
+    _cursor = state.cursor;
+    _shuffled = state.shuffled;
+    repeatMode = state.repeatMode;
   }
 }
 

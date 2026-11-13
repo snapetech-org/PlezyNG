@@ -12,6 +12,9 @@ import 'sync_path.dart';
 
 class SyncFile {
   const SyncFile(this.name, this.id);
+  static const maxNamespaceFiles = 2048;
+  // Read one legacy overflow entry so the publisher can prune its own history.
+  static const maxRecoverableNamespaceFiles = maxNamespaceFiles + 1;
   final String name;
   final String id;
   static final pattern = RegExp(r'^plezyng-state-v1-([a-f0-9]{24})-([a-f0-9]{32})-([0-9]{16})\.json$');
@@ -139,7 +142,7 @@ class ProviderSyncStore implements SyncStore {
 
   void _add(List<SyncFile> files, String namespace, String name, String id) {
     if (!name.startsWith(_prefix(namespace)) || !SyncFile.pattern.hasMatch(name)) return;
-    if (files.length >= 2048) throw const SourceException(SourceFailure.invalidData);
+    if (files.length >= SyncFile.maxRecoverableNamespaceFiles) throw const SourceException(SourceFailure.invalidData);
     _listed.putIfAbsent(name, () => {}).add(id);
     files.add(SyncFile(name, id));
   }

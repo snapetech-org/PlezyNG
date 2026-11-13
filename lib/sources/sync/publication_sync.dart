@@ -85,6 +85,31 @@ class PublicationSync {
   static const configKey = 'publication-sync-config-v1';
   static const entryMappingsKey = 'publication-sync-entry-mappings-v1';
   static String _cacheKey(String namespace) => 'publication-sync-cache-v1:$namespace';
+  static String _syncFileKey(SyncFile file) => canonicalSyncJson([file.name, file.id]);
+
+  Future<void> _pruneOwnedGenerations({
+    required SyncStore store,
+    required Iterable<SyncFile> files,
+    required String device,
+    required int keep,
+    required void Function() check,
+    required Set<String> deleted,
+  }) async {
+    final owned = files.where((file) => file.device == device).toList()
+      ..sort((a, b) => b.sequence.compareTo(a.sequence));
+    for (final old in owned.skip(keep)) {
+      if (deleted.contains(_syncFileKey(old))) continue;
+      check();
+      try {
+        await store.delete(old);
+        deleted.add(_syncFileKey(old));
+      } on SourceException catch (e) {
+        if (e.reason == SourceFailure.cancelled) rethrow;
+        // Cleanup is retried on later syncs; it does not undo a committed generation.
+      }
+    }
+  }
+
   void resetStatus() {
     conflicts.clear();
     failure = null;
@@ -751,7 +776,26 @@ class PublicationSync {
         await repository.savePreference(profile, cacheKey, cache.toJson());
       });
       final digest = _hash(cache.document.toJson());
-      if (digest != cache.published || !latest.containsKey(device)) {
+      final needsPublish = digest != cache.published || !latest.containsKey(device);
+      final deleted = <String>{};
+      if (needsPublish && listed.length >= SyncFile.maxNamespaceFiles) {
+        // Keep both current recovery generations while making room. If this
+        // target cannot prune any owned history, do not create an unlistable
+        // generation beyond the provider's bounded namespace listing.
+        await _pruneOwnedGenerations(
+          store: store,
+          files: listed,
+          device: device,
+          keep: 2,
+          check: check,
+          deleted: deleted,
+        );
+        if (listed.length - deleted.length >= SyncFile.maxNamespaceFiles) {
+          throw const SourceException(SourceFailure.quotaExceeded);
+        }
+      }
+      var publishedGeneration = false;
+      if (needsPublish) {
         cache.sequence++;
         if (cache.sequence > 9999999999999999) throw const SourceException(SourceFailure.invalidData);
         check();
@@ -763,20 +807,19 @@ class PublicationSync {
         check();
         cache.published = digest;
         await repository.savePreference(profile, cacheKey, cache.toJson());
-        // Keep the previous successful snapshot as a recovery copy. No other
-        // device's files, books or unrelated JSON are ever removed.
-        final owned = listed.where((f) => f.device == device).toList()
-          ..sort((a, b) => b.sequence.compareTo(a.sequence));
-        for (final old in owned.skip(1)) {
-          check();
-          try {
-            await store.delete(old);
-          } on SourceException catch (e) {
-            if (e.reason == SourceFailure.cancelled) rethrow;
-            // Retention failure does not invalidate the committed generation.
-          }
-        }
+        publishedGeneration = true;
       }
+      // Keep the previous successful snapshot after a publish, or the latest
+      // two snapshots when there was no new state. A failed deletion is retried
+      // even when a later sync has nothing new to upload.
+      await _pruneOwnedGenerations(
+        store: store,
+        files: listed,
+        device: device,
+        keep: publishedGeneration ? 1 : 2,
+        check: check,
+        deleted: deleted,
+      );
       check();
       // The encrypted generation has its own durable publication baseline.
       // Provider event acknowledgements stay independent so a successful

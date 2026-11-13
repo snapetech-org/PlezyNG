@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Enforce the four-request NFS READ limit across read-ahead, metadata, and cover reads.
+- Prevent stale store-history responses from overriding a newer purchase or revocation event.
 - Reject malformed IPTV XMLTV calendar, clock, and numeric timezone fields instead of normalizing them into shifted guide times.
 - Add per-session Multiview gain controls without changing saved player volume, plus an explicit two-session decoded MPV mix on matching non-exclusive desktop output routes where runtime capabilities allow it. Other backends keep single-session audio; physical-device qualification remains open.
 - Gate Homebrew Cask handoff on an attested candidate and publisher credentials; record missing-candidate skips, preserve the core Sparkle appcast, and clarify automatic post-release lanes in GitHub-only help.

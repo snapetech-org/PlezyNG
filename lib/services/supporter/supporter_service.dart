@@ -179,8 +179,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
   bool _ready = false;
 
   /// Bumped by every confirmed purchase or revocation from the purchase
-  /// stream, so a history query that started earlier cannot revoke a purchase
-  /// that completed while it ran.
+  /// stream, so an older history query cannot overwrite a newer store event.
   int _entitlementGeneration = 0;
 
   bool _purchased;
@@ -610,6 +609,9 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
     try {
       final purchases = await store.queryHistory();
       if (isDisposed) return null;
+      if (generation != _entitlementGeneration) {
+        return _purchased ? SupporterOwnership.owned : SupporterOwnership.unknown;
+      }
       final amazonPurchases = purchases.where(_isAmazonPurchase).toList();
       final lifetimePurchases = amazonPurchases.where((purchase) => purchase.productId == lifetimeUnlockProductId);
       if (lifetimePurchases.any((purchase) => purchase.purchaseState == openiap.PurchaseState.Purchased)) {
@@ -704,14 +706,24 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
   }
 
   Future<void> _handleLifetimeUnlockPurchase(SupporterStore store, PurchaseDetails purchase) async {
+    final generation = _entitlementGeneration;
     final status = purchase.status;
+    var transactionVerified = false;
     if (status == PurchaseStatus.purchased || status == PurchaseStatus.restored) {
       try {
-        if (!await store.verifyPurchase(purchase)) {
+        transactionVerified = await store.verifyPurchase(purchase);
+        if (generation != _entitlementGeneration) {
+          if (transactionVerified && purchase.pendingCompletePurchase) {
+            await _complete(store, purchase);
+          }
+          return;
+        }
+        if (!transactionVerified) {
           _failPurchase(store);
           return;
         }
       } on Object {
+        if (generation != _entitlementGeneration) return;
         _failPurchase(store);
         return;
       }
@@ -724,11 +736,23 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
       // Transaction.all before persisting a new entitlement.
       try {
         final history = await store.queryHistory();
+        if (generation != _entitlementGeneration) {
+          if (transactionVerified && purchase.pendingCompletePurchase) {
+            await _complete(store, purchase);
+          }
+          return;
+        }
         if (history.ownership != SupporterOwnership.owned) {
           _failPurchase(store);
           return;
         }
       } on Object {
+        if (generation != _entitlementGeneration) {
+          if (transactionVerified && purchase.pendingCompletePurchase) {
+            await _complete(store, purchase);
+          }
+          return;
+        }
         _failPurchase(store);
         return;
       }
@@ -809,6 +833,9 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
       return null;
     }
     if (isDisposed) return null;
+    if (generation != _entitlementGeneration) {
+      return _purchased ? SupporterOwnership.owned : SupporterOwnership.unknown;
+    }
     switch (history.ownership) {
       case SupporterOwnership.owned:
         _setPurchased(true);

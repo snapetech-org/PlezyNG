@@ -209,7 +209,7 @@
         "lib/services/supporter/supporter_store.dart",
         "lib/services/supporter/supporter_service.dart"
       ],
-      "qualification": "A StoreKit purchase event cannot grant a new entitlement until verified transaction history confirms ownership; empty history is treated as unknown, and revocation is handled separately. StoreKit configuration and sandbox replay, restore, invalid, refund, and offline cases remain unqualified."
+      "qualification": "A StoreKit purchase event cannot grant a new entitlement until verified transaction history confirms ownership; empty history is treated as unknown, revocation is handled separately, and history responses cannot overwrite a newer purchase-stream event. StoreKit configuration and sandbox replay, restore, invalid, refund, and offline cases remain unqualified."
     },
     {
       "id": "F04",

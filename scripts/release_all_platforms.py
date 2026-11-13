@@ -2368,12 +2368,16 @@ def publish_configured_channels(
             "assets": {f"pleazyng-winget-manifests-{version}.zip", "pleazyng-windows-installer.exe", "SHA256SUMS.txt"},
         },
         {
-            "name": "GitHub Container Registry and Docker Hub",
+            "name": "GitHub Container Registry",
             "workflow": "release-containers.yml",
             "title": f"action:publish-containers:pool:public:tag:{tag}",
             "fields": {"action": "publish-containers", "runner_pool": "public", "release_tag": tag},
             "secrets": set(), "variables": set(),
             "assets": {"SHA256SUMS.txt"},
+            "optional_mirror": {
+                "name": "Docker Hub",
+                "secrets": {"DOCKERHUB_USERNAME", "DOCKERHUB_TOKEN"},
+            },
         },
         {
             "name": "Sparkle appcast (Homebrew when configured)",
@@ -2473,6 +2477,23 @@ def publish_configured_channels(
                 release_sha=release_sha,
             )
             completed.append({"channel": spec["name"], "run_id": result["databaseId"], "url": result.get("url")})
+            optional_mirror = spec.get("optional_mirror")
+            if optional_mirror:
+                missing_mirror_secrets = sorted(optional_mirror["secrets"] - secrets)
+                if missing_mirror_secrets:
+                    skipped.append({
+                        "channel": optional_mirror["name"],
+                        "reason": (
+                            "The GHCR publication completed; the optional Docker Hub mirror was skipped "
+                            f"because these credentials are not configured: {missing_mirror_secrets}."
+                        ),
+                    })
+                else:
+                    completed.append({
+                        "channel": optional_mirror["name"],
+                        "run_id": result["databaseId"],
+                        "url": result.get("url"),
+                    })
         except ReleaseError as error:
             failures.append(f"{spec['name']}: {error}")
     return completed, skipped, failures

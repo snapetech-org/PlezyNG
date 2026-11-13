@@ -77,6 +77,7 @@ class LogRedactionManager {
   );
 
   static final RegExp _authorizationSchemePattern = RegExp(r'(?:Bearer|Basic)[ \t]+', caseSensitive: false);
+  static const List<String> _redactionMarkers = ['[REDACTED]', '[REDACTED_TOKEN]', '[REDACTED_URL]'];
 
   /// Credentials embedded before the host in an absolute URL.
   static final RegExp _urlUserInfoPattern = RegExp(r'\b([a-z][a-z0-9+.-]*://)([^/@\s]+)@', caseSensitive: false);
@@ -214,7 +215,11 @@ class LogRedactionManager {
 
       final key = match.group(3)!.toLowerCase();
       final valueStart = match.end;
-      if (message.startsWith('[REDACTED]', valueStart)) continue;
+      if (_startsWithRedactionMarker(message, valueStart)) continue;
+      if (key == 'authorization' || key == 'proxy-authorization') {
+        final scheme = _authorizationSchemePattern.matchAsPrefix(message, valueStart);
+        if (scheme != null && _startsWithRedactionMarker(message, scheme.end)) continue;
+      }
 
       while (structureCursor < valueStart) {
         final character = message.codeUnitAt(structureCursor);
@@ -301,6 +306,9 @@ class LogRedactionManager {
     if (start + value.length > message.length) return false;
     return message.substring(start, start + value.length).toLowerCase() == value;
   }
+
+  static bool _startsWithRedactionMarker(String message, int start) =>
+      _redactionMarkers.any((marker) => message.startsWith(marker, start));
 
   static int _quotedValueEnd(String message, int start, int quote) {
     var escaped = false;

@@ -158,7 +158,7 @@ void main() {
     );
     final duplicate = valid.toJson();
     final duplicateCues = duplicate['cues'] as List<Map<String, Object?>>;
-    duplicateCues[1] = {...duplicateCues[1], 'id': duplicateCues[0]['id']};
+    duplicateCues[1]['id'] = duplicateCues[0]['id'] as String;
     expect(() => SubtitleRevision.fromJson(duplicate), throwsFormatException);
 
     final dangling = valid.toJson();

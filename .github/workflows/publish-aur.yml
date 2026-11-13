@@ -141,7 +141,7 @@ jobs:
           cp linux/packaging/aur/pleazyng.desktop "$aur_repo/pleazyng.desktop"
           cp LICENSE "$aur_repo/LICENSE"
           cp linux/packaging/install-webkit-helpers.py linux/packaging/webkit-runtime.json linux/packaging/rebuild-pixbuf-cache.py "$aur_repo/"
-          sed -i "s/^pkgver=.*/pkgver=${RELEASE_VERSION}/" "$aur_repo/PKGBUILD"
+          python3 scripts/update_aur_pkgbuild_version.py "$aur_repo/PKGBUILD" "$RELEASE_VERSION"
           python3 - "$aur_repo/PKGBUILD" "$RELEASE_TAG" <<'PY'
           import re
           import sys

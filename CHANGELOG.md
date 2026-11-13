@@ -4,6 +4,7 @@
 
 - Move the MAL OAuth broker to a code-only handoff and require users to configure their own HTTPS relay for relay-backed integrations. See the [relay endpoint inventory](docs/maintainers/pleazyng-relay-endpoints.md) and [security review](server/cloudflare-oauth/security-review-20261113.md).
 - Add approved-only OverDrive Title Link search and Libby handoff, plus indexed audiobook playback through the existing Android Auto and CarPlay controls. See [LENDING_SETUP.md](docs/LENDING_SETUP.md) and the [car integration guide](docs/plezyng/music/CAR_INTEGRATION.md).
+- Reset the AUR package release number when publishing a new Pleazyng version while preserving same-version maintainer revisions.
 - Keep the theme preview’s illustrative save/cancel controls out of pointer, keyboard-focus, and accessibility interaction until they have real actions.
 - Keep the download-queue source formatted with the repository Dart formatter so the release CI formatting gate passes.
 - Declare Moonlight surface-recovery state before its timeout callback so Android Java compilation succeeds.

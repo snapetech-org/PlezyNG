@@ -4944,6 +4944,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "شروع زیرنویس زنده",
+    "liveCaptureStop": "توقف زیرنویس زنده",
+    "inferenceProviderNotice": "CPU گزینهٔ پایه است. انتخاب GPU، Core ML، QNN و RKNN درخواست استفاده از محیط‌های نصب‌شده است و اجرای سخت‌افزاری را ثابت نمی‌کند. درخواست‌های پشتیبانی‌نشده یا ناموفق با CPU دوباره امتحان می‌شوند؛ ممکن است اجرای سخت‌افزاری هر عملیات قابل‌تأیید نباشد.",
+    "translationProviderNotice": "Argos اجرای سخت‌افزاری هر زیرنویس را گزارش نمی‌کند و ML Kit انتخاب CPU یا GPU را نشان نمی‌دهد.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -5009,11 +5013,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "شروع زیرنویس زنده",
-    "liveCaptureStop": "توقف زیرنویس زنده",
-    "inferenceProviderNotice": "CPU گزینهٔ پایه است. انتخاب GPU، Core ML، QNN و RKNN درخواست استفاده از محیط‌های نصب‌شده است و اجرای سخت‌افزاری را ثابت نمی‌کند. درخواست‌های پشتیبانی‌نشده یا ناموفق با CPU دوباره امتحان می‌شوند؛ ممکن است اجرای سخت‌افزاری هر عملیات قابل‌تأیید نباشد.",
-    "translationProviderNotice": "Argos اجرای سخت‌افزاری هر زیرنویس را گزارش نمی‌کند و ML Kit انتخاب CPU یا GPU را نشان نمی‌دهد."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

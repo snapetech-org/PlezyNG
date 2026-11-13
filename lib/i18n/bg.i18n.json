@@ -4944,6 +4944,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Стартиране на субтитри на живо",
+    "liveCaptureStop": "Спиране на субтитри на живо",
+    "inferenceProviderNotice": "CPU е основният вариант. Изборът на GPU, Core ML, QNN или RKNN заявява използването на инсталирана среда, но не доказва изпълнение на хардуера. При липса на поддръжка или грешка се прави повторен опит с CPU; изпълнението за всяка операция може да остане непотвърдено.",
+    "translationProviderNotice": "Argos не отчита хардуерното изпълнение за всеки субтитър, а ML Kit не показва избора между CPU и GPU.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -5009,11 +5013,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Стартиране на субтитри на живо",
-    "liveCaptureStop": "Спиране на субтитри на живо",
-    "inferenceProviderNotice": "CPU е основният вариант. Изборът на GPU, Core ML, QNN или RKNN заявява използването на инсталирана среда, но не доказва изпълнение на хардуера. При липса на поддръжка или грешка се прави повторен опит с CPU; изпълнението за всяка операция може да остане непотвърдено.",
-    "translationProviderNotice": "Argos не отчита хардуерното изпълнение за всеки субтитър, а ML Kit не показва избора между CPU и GPU."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

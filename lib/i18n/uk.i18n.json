@@ -4992,6 +4992,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Запустити субтитри наживо",
+    "liveCaptureStop": "Зупинити субтитри наживо",
+    "inferenceProviderNotice": "Основний варіант — CPU. Вибір GPU, Core ML, QNN або RKNN запитує встановлене середовище, але не доводить виконання на обладнанні. Непідтримувані або невдалі запити повторюються на CPU; місце виконання кожної операції може бути не підтверджене.",
+    "translationProviderNotice": "Argos не повідомляє про апаратне виконання для кожного рядка субтитрів, а ML Kit не показує вибір CPU/GPU.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -5057,11 +5061,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Запустити субтитри наживо",
-    "liveCaptureStop": "Зупинити субтитри наживо",
-    "inferenceProviderNotice": "Основний варіант — CPU. Вибір GPU, Core ML, QNN або RKNN запитує встановлене середовище, але не доводить виконання на обладнанні. Непідтримувані або невдалі запити повторюються на CPU; місце виконання кожної операції може бути не підтверджене.",
-    "translationProviderNotice": "Argos не повідомляє про апаратне виконання для кожного рядка субтитрів, а ML Kit не показує вибір CPU/GPU."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

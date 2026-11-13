@@ -4944,6 +4944,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Тікелей субтитрлерді бастау",
+    "liveCaptureStop": "Тікелей субтитрлерді тоқтату",
+    "inferenceProviderNotice": "Негізгі нұсқа — CPU. GPU, Core ML, QNN және RKNN таңдау орнатылған орындау ортасына сұрау жібереді, бірақ аппараттық орындауды дәлелдемейді. Қолдау көрсетілмеген не сәтсіз сұраулар CPU арқылы қайта орындалады; әр операцияның орындалу ортасы расталмауы мүмкін.",
+    "translationProviderNotice": "Argos әр субтитр бойынша аппараттық орындауды көрсетпейді, ал ML Kit CPU/GPU таңдауын ашпайды.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -5009,11 +5013,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Тікелей субтитрлерді бастау",
-    "liveCaptureStop": "Тікелей субтитрлерді тоқтату",
-    "inferenceProviderNotice": "Негізгі нұсқа — CPU. GPU, Core ML, QNN және RKNN таңдау орнатылған орындау ортасына сұрау жібереді, бірақ аппараттық орындауды дәлелдемейді. Қолдау көрсетілмеген не сәтсіз сұраулар CPU арқылы қайта орындалады; әр операцияның орындалу ортасы расталмауы мүмкін.",
-    "translationProviderNotice": "Argos әр субтитр бойынша аппараттық орындауды көрсетпейді, ал ML Kit CPU/GPU таңдауын ашпайды."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

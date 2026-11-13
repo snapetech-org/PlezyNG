@@ -4917,6 +4917,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Mulai subtitel langsung",
+    "liveCaptureStop": "Hentikan subtitel langsung",
+    "inferenceProviderNotice": "CPU adalah pilihan dasar. GPU, Core ML, QNN, dan RKNN meminta runtime yang terpasang, tetapi tidak membuktikan pemrosesan berjalan di perangkat keras. Permintaan yang tidak didukung atau gagal dicoba ulang di CPU; penggunaan akselerator per operasi mungkin tidak terverifikasi.",
+    "translationProviderNotice": "Argos tidak melaporkan penggunaan perangkat keras per teks, dan ML Kit tidak menampilkan pilihan CPU/GPU.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -4982,11 +4986,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Mulai subtitel langsung",
-    "liveCaptureStop": "Hentikan subtitel langsung",
-    "inferenceProviderNotice": "CPU adalah pilihan dasar. GPU, Core ML, QNN, dan RKNN meminta runtime yang terpasang, tetapi tidak membuktikan pemrosesan berjalan di perangkat keras. Permintaan yang tidak didukung atau gagal dicoba ulang di CPU; penggunaan akselerator per operasi mungkin tidak terverifikasi.",
-    "translationProviderNotice": "Argos tidak melaporkan penggunaan perangkat keras per teks, dan ML Kit tidak menampilkan pilihan CPU/GPU."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

@@ -4944,6 +4944,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Start direkteteksting",
+    "liveCaptureStop": "Stopp direkteteksting",
+    "inferenceProviderNotice": "CPU er grunnvalget. GPU, Core ML, QNN og RKNN ber om installerte kjøremiljøer, men beviser ikke maskinvarekjøring. Forespørsler som ikke støttes eller mislykkes, prøves på nytt med CPU; plasseringen for hver operasjon kan være ubekreftet.",
+    "translationProviderNotice": "Argos rapporterer ikke maskinvareplassering for hvert tekstsegment, og ML Kit viser ikke CPU/GPU-valget.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -5009,11 +5013,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Start direkteteksting",
-    "liveCaptureStop": "Stopp direkteteksting",
-    "inferenceProviderNotice": "CPU er grunnvalget. GPU, Core ML, QNN og RKNN ber om installerte kjøremiljøer, men beviser ikke maskinvarekjøring. Forespørsler som ikke støttes eller mislykkes, prøves på nytt med CPU; plasseringen for hver operasjon kan være ubekreftet.",
-    "translationProviderNotice": "Argos rapporterer ikke maskinvareplassering for hvert tekstsegment, og ML Kit viser ikke CPU/GPU-valget."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

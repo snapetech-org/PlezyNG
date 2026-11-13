@@ -4917,6 +4917,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Mulakan sari kata langsung",
+    "liveCaptureStop": "Hentikan sari kata langsung",
+    "inferenceProviderNotice": "CPU ialah pilihan asas. GPU, Core ML, QNN dan RKNN meminta penggunaan masa jalan yang dipasang, tetapi tidak membuktikan pemprosesan perkakasan. Permintaan yang tidak disokong atau gagal dicuba semula pada CPU; penggunaan bagi setiap operasi mungkin tidak disahkan.",
+    "translationProviderNotice": "Argos tidak melaporkan penggunaan perkakasan bagi setiap sari kata, dan ML Kit tidak mendedahkan pilihan CPU/GPU.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -4982,11 +4986,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Mulakan sari kata langsung",
-    "liveCaptureStop": "Hentikan sari kata langsung",
-    "inferenceProviderNotice": "CPU ialah pilihan asas. GPU, Core ML, QNN dan RKNN meminta penggunaan masa jalan yang dipasang, tetapi tidak membuktikan pemprosesan perkakasan. Permintaan yang tidak disokong atau gagal dicuba semula pada CPU; penggunaan bagi setiap operasi mungkin tidak disahkan.",
-    "translationProviderNotice": "Argos tidak melaporkan penggunaan perkakasan bagi setiap sari kata, dan ML Kit tidak mendedahkan pilihan CPU/GPU."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

@@ -4944,6 +4944,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Live-Untertitel starten",
+    "liveCaptureStop": "Live-Untertitel stoppen",
+    "inferenceProviderNotice": "CPU ist die Basis. GPU, Core ML, QNN und RKNN fordern installierte Laufzeitumgebungen an, belegen aber keine Hardwareausführung. Nicht unterstützte oder fehlgeschlagene Anforderungen werden auf der CPU wiederholt; die Ausführung einzelner Vorgänge ist möglicherweise nicht bestätigt.",
+    "translationProviderNotice": "Argos meldet die Hardwareausführung nicht für jede Untertitelzeile; ML Kit gibt die CPU/GPU-Auswahl nicht an.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -5009,11 +5013,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Live-Untertitel starten",
-    "liveCaptureStop": "Live-Untertitel stoppen",
-    "inferenceProviderNotice": "CPU ist die Basis. GPU, Core ML, QNN und RKNN fordern installierte Laufzeitumgebungen an, belegen aber keine Hardwareausführung. Nicht unterstützte oder fehlgeschlagene Anforderungen werden auf der CPU wiederholt; die Ausführung einzelner Vorgänge ist möglicherweise nicht bestätigt.",
-    "translationProviderNotice": "Argos meldet die Hardwareausführung nicht für jede Untertitelzeile; ML Kit gibt die CPU/GPU-Auswahl nicht an."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

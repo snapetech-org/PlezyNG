@@ -4944,6 +4944,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Jonli subtitrlarni boshlash",
+    "liveCaptureStop": "Jonli subtitrlarni to‘xtatish",
+    "inferenceProviderNotice": "Asosiy variant — CPU. GPU, Core ML, QNN va RKNN o‘rnatilgan bajarish muhitidan foydalanish so‘rovidir, ammo apparatda bajarilganini isbotlamaydi. Qo‘llab-quvvatlanmagan yoki muvaffaqiyatsiz so‘rovlar CPU’da qayta uriniladi; har bir amalning bajarilish joyi tasdiqlanmasligi mumkin.",
+    "translationProviderNotice": "Argos har bir subtitr satri uchun apparat ishlatilishini bildirmaydi, ML Kit esa CPU/GPU tanlovini ko‘rsatmaydi.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -5009,11 +5013,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Jonli subtitrlarni boshlash",
-    "liveCaptureStop": "Jonli subtitrlarni to‘xtatish",
-    "inferenceProviderNotice": "Asosiy variant — CPU. GPU, Core ML, QNN va RKNN o‘rnatilgan bajarish muhitidan foydalanish so‘rovidir, ammo apparatda bajarilganini isbotlamaydi. Qo‘llab-quvvatlanmagan yoki muvaffaqiyatsiz so‘rovlar CPU’da qayta uriniladi; har bir amalning bajarilish joyi tasdiqlanmasligi mumkin.",
-    "translationProviderNotice": "Argos har bir subtitr satri uchun apparat ishlatilishini bildirmaydi, ML Kit esa CPU/GPU tanlovini ko‘rsatmaydi."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

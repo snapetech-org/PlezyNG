@@ -4944,6 +4944,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Canlı subtitrləri başlat",
+    "liveCaptureStop": "Canlı subtitrləri dayandır",
+    "inferenceProviderNotice": "CPU əsas seçimdir. GPU, Core ML, QNN və RKNN quraşdırılmış icra mühitlərindən istifadə sorğusudur, aparat icrasının sübutu deyil. Dəstəklənməyən və ya uğursuz sorğular CPU ilə yenidən sınanır; hər əməliyyat üzrə icranı təsdiqləmək mümkün olmaya bilər.",
+    "translationProviderNotice": "Argos hər subtitr sətri üzrə aparat icrasını bildirmir; ML Kit CPU və ya GPU seçimini göstərmir.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -5009,11 +5013,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Canlı subtitrləri başlat",
-    "liveCaptureStop": "Canlı subtitrləri dayandır",
-    "inferenceProviderNotice": "CPU əsas seçimdir. GPU, Core ML, QNN və RKNN quraşdırılmış icra mühitlərindən istifadə sorğusudur, aparat icrasının sübutu deyil. Dəstəklənməyən və ya uğursuz sorğular CPU ilə yenidən sınanır; hər əməliyyat üzrə icranı təsdiqləmək mümkün olmaya bilər.",
-    "translationProviderNotice": "Argos hər subtitr sətri üzrə aparat icrasını bildirmir; ML Kit CPU və ya GPU seçimini göstərmir."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

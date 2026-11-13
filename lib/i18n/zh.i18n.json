@@ -4939,6 +4939,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "开始实时字幕",
+    "liveCaptureStop": "停止实时字幕",
+    "inferenceProviderNotice": "CPU 是基础选项。选择 GPU、Core ML、QNN 或 RKNN 只是请求使用已安装的运行环境，并不能证明由硬件执行。不受支持或失败的请求会改用 CPU 重试；每项操作的实际执行位置可能无法确认。",
+    "translationProviderNotice": "Argos 不会报告每条字幕的硬件执行位置，ML Kit 也不会公开 CPU/GPU 选择。",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -5004,11 +5008,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "开始实时字幕",
-    "liveCaptureStop": "停止实时字幕",
-    "inferenceProviderNotice": "CPU 是基础选项。选择 GPU、Core ML、QNN 或 RKNN 只是请求使用已安装的运行环境，并不能证明由硬件执行。不受支持或失败的请求会改用 CPU 重试；每项操作的实际执行位置可能无法确认。",
-    "translationProviderNotice": "Argos 不会报告每条字幕的硬件执行位置，ML Kit 也不会公开 CPU/GPU 选择。"
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

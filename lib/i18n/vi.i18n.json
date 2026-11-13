@@ -4917,6 +4917,10 @@
     "theSelectedAcceleratorUsesAnEnglishO_8735cf91": "",
     "wAVTranscriptionAndAudioSyncUseA16Bi_31205915": "",
     "inferenceBackend": "",
+    "liveCaptureStart": "Bắt đầu phụ đề trực tiếp",
+    "liveCaptureStop": "Dừng phụ đề trực tiếp",
+    "inferenceProviderNotice": "CPU là lựa chọn cơ bản. GPU, Core ML, QNN và RKNN là yêu cầu sử dụng môi trường đã cài đặt, không phải bằng chứng xử lý bằng phần cứng. Yêu cầu không được hỗ trợ hoặc thất bại sẽ thử lại bằng CPU; vị trí chạy của từng thao tác có thể chưa được xác minh.",
+    "translationProviderNotice": "Argos không báo cáo xử lý phần cứng cho từng dòng phụ đề và ML Kit không cho biết lựa chọn CPU/GPU.",
     "restoreExportOrDeleteReviewedVersion_e84dffb9": "",
     "liveCaptionsFromPlayback": "",
     "theActivePlayerCopiesBoundedDecodedP_1bef0371": "",
@@ -4982,11 +4986,7 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": "",
-    "liveCaptureStart": "Bắt đầu phụ đề trực tiếp",
-    "liveCaptureStop": "Dừng phụ đề trực tiếp",
-    "inferenceProviderNotice": "CPU là lựa chọn cơ bản. GPU, Core ML, QNN và RKNN là yêu cầu sử dụng môi trường đã cài đặt, không phải bằng chứng xử lý bằng phần cứng. Yêu cầu không được hỗ trợ hoặc thất bại sẽ thử lại bằng CPU; vị trí chạy của từng thao tác có thể chưa được xác minh.",
-    "translationProviderNotice": "Argos không báo cáo xử lý phần cứng cho từng dòng phụ đề và ML Kit không cho biết lựa chọn CPU/GPU."
+    "seekingUnavailableNote": ""
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

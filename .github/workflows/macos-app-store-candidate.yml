@@ -1,0 +1,116 @@
+name: macOS App Store Candidate
+run-name: macos-app-store-candidate:${{ github.sha }}
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  attestations: write
+  contents: read
+  id-token: write
+
+concurrency:
+  group: pleazyng-macos-app-store-candidate
+  cancel-in-progress: false
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  PUB_CACHE: ${{ github.workspace }}/.cache/plezy-pub-cache
+  FLUTTER_SUPPRESS_ANALYTICS: "true"
+  DASH__SUPPRESS_ANALYTICS: "true"
+  TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
+
+jobs:
+  candidate:
+    name: Build unsigned App Store candidate
+    if: github.repository == 'snapetech-org/pleazyng' && github.ref == 'refs/heads/main'
+    runs-on: macos-26-intel
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Load pinned Flutter SDK
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup-flutter-apple
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Cache Pub dependencies
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ github.workspace }}/.cache/plezy-pub-cache
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
+
+      - name: Install native build tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+          command -v cmake >/dev/null || brew install cmake
+          command -v xcodegen >/dev/null || brew install xcodegen
+          command -v git-lfs >/dev/null || brew install git-lfs
+          cmake --version
+
+      - name: Install CocoaPods
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="/opt/homebrew/bin:$PATH"
+          gem install cocoapods --version 1.17.0 --no-document \
+            --install-dir "$RUNNER_TEMP/cocoapods-gems" \
+            --bindir "$RUNNER_TEMP/cocoapods-bin"
+          gem_path="$RUNNER_TEMP/cocoapods-gems:$(gem env gempath)"
+          {
+            echo "GEM_HOME=$RUNNER_TEMP/cocoapods-gems"
+            echo "GEM_PATH=$gem_path"
+          } >> "$GITHUB_ENV"
+          echo "/opt/homebrew/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/cocoapods-bin" >> "$GITHUB_PATH"
+          export GEM_HOME="$RUNNER_TEMP/cocoapods-gems"
+          export GEM_PATH="$gem_path"
+          export PATH="$RUNNER_TEMP/cocoapods-bin:/opt/homebrew/bin:$PATH"
+          pod --version
+
+      - name: Install locked Flutter dependencies
+        run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Prefetch checksum-pinned macOS native downloads
+        run: python3 scripts/prepare_native_downloads.py --sqlite-platform macos
+
+      - name: Prepare run-local Swift package checkout
+        run: mkdir -p "$GITHUB_WORKSPACE/build/macos/SourcePackages"
+
+      - name: Refresh pinned mpv Swift packages
+        run: scripts/refresh_apple_spm.sh macos
+
+      - name: Build and package the unsigned candidate
+        env:
+          PLEAZYNG_RELAY_BASE_URL: ${{ vars.PLEAZYNG_RELAY_BASE_URL }}
+          PLEAZYNG_DISCORD_APPLICATION_ID: ${{ vars.PLEAZYNG_DISCORD_APPLICATION_ID }}
+        run: |
+          set -euo pipefail
+          python3 scripts/build_macos_app_store_candidate.py \
+            --source-sha "$GITHUB_SHA" \
+            --output-dir "$RUNNER_TEMP/macos-app-store-candidate" \
+            --derived-data-dir "$RUNNER_TEMP/macos-app-store-derived-data" \
+            --relay-base-url "$PLEAZYNG_RELAY_BASE_URL" \
+            --discord-application-id "$PLEAZYNG_DISCORD_APPLICATION_ID"
+
+      - name: Attest candidate package provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: ${{ runner.temp }}/macos-app-store-candidate/pleazyng-macos-appstore-candidate.pkg
+
+      - name: Retain candidate package and qualification receipt
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: pleazyng-macos-app-store-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/macos-app-store-candidate/
+          if-no-files-found: error
+          retention-days: 30

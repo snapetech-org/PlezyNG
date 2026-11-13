@@ -62,6 +62,28 @@ final class _OpenTrackingInterceptor extends QueryInterceptor {
 }
 
 void main() {
+  testWidgets('runs pre-initialize preparation in the app context before initialization', (tester) async {
+    final steps = <String>[];
+
+    await tester.pumpWidget(
+      StartupBootstrap<int>(
+        beforeInitialize: (context) async {
+          expect(Navigator.maybeOf(context), isNotNull);
+          steps.add('prepare');
+        },
+        initialize: () async {
+          steps.add('initialize');
+          return 42;
+        },
+        buildApp: (_, value) => MaterialApp(home: Text('ready $value')),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(steps, ['prepare', 'initialize']);
+    expect(find.text('ready 42'), findsOneWidget);
+  });
+
   testWidgets('renders a Flutter frame before starting the initialization gate', (tester) async {
     final completion = Completer<int>();
     var bootstrapWasMounted = false;

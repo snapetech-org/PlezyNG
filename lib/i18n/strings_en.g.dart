@@ -5186,6 +5186,69 @@ class Translations$startup$en {
 
 	/// en: 'Pleazyng failed to start last time'
 	String get previousFailureTitle => 'Pleazyng failed to start last time';
+
+	/// en: 'Import an existing media library?'
+	String get legacyImportTitle => 'Import an existing media library?';
+
+	/// en: 'If you have a database from a previous Pleazyng or Plezy installation, you can choose it here. Pleazyng never searches for databases or imports one based on its filename.'
+	String get legacyImportBody => 'If you have a database from a previous Pleazyng or Plezy installation, you can choose it here. Pleazyng never searches for databases or imports one based on its filename.';
+
+	/// en: 'Choose a database'
+	String get legacyImportChoose => 'Choose a database';
+
+	/// en: 'Start fresh'
+	String get legacyImportStartFresh => 'Start fresh';
+
+	/// en: 'Choose a database file to preview'
+	String get legacyImportPickTitle => 'Choose a database file to preview';
+
+	/// en: 'Checking the selected file on a temporary copy. Your original file will not be changed.'
+	String get legacyImportChecking => 'Checking the selected file on a temporary copy. Your original file will not be changed.';
+
+	/// en: 'Review this database'
+	String get legacyImportReviewTitle => 'Review this database';
+
+	/// en: 'File: ${name}'
+	String legacyImportFile({required Object name}) => 'File: ${name}';
+
+	/// en: 'File size: ${size}'
+	String legacyImportSize({required Object size}) => 'File size: ${size}';
+
+	/// en: 'Database schema: ${version}'
+	String legacyImportSchemaVersion({required Object version}) => 'Database schema: ${version}';
+
+	/// en: 'Profiles: ${count}'
+	String legacyImportProfiles({required Object count}) => 'Profiles: ${count}';
+
+	/// en: 'Server connections: ${count}'
+	String legacyImportConnections({required Object count}) => 'Server connections: ${count}';
+
+	/// en: 'Saved download records: ${count}'
+	String legacyImportDownloads({required Object count}) => 'Saved download records: ${count}';
+
+	/// en: 'The database has no app identity marker. Its name and schema cannot tell whether it came from Pleazyng or upstream Plezy.'
+	String get legacyImportIdentityWarning => 'The database has no app identity marker. Its name and schema cannot tell whether it came from Pleazyng or upstream Plezy.';
+
+	/// en: 'Server credentials are stored separately and won't transfer. You'll need to sign in again.'
+	String get legacyImportCredentialsWarning => 'Server credentials are stored separately and won\'t transfer. You\'ll need to sign in again.';
+
+	/// en: 'Downloaded media files aren't copied. Existing paths may not work on this device; you may need to choose storage folders again or download media again.'
+	String get legacyImportPathsWarning => 'Downloaded media files aren\'t copied. Existing paths may not work on this device; you may need to choose storage folders again or download media again.';
+
+	/// en: 'The selected file stays unchanged as your rollback copy. This option appears only when Pleazyng has no database; an existing Pleazyng database is never replaced.'
+	String get legacyImportBackup => 'The selected file stays unchanged as your rollback copy. This option appears only when Pleazyng has no database; an existing Pleazyng database is never replaced.';
+
+	/// en: 'Import this database'
+	String get legacyImportConfirm => 'Import this database';
+
+	/// en: 'This file couldn't be validated'
+	String get legacyImportInvalidTitle => 'This file couldn\'t be validated';
+
+	/// en: 'Pleazyng couldn't verify that the selected file is a supported database. Nothing was imported or changed.'
+	String get legacyImportInvalidBody => 'Pleazyng couldn\'t verify that the selected file is a supported database. Nothing was imported or changed.';
+
+	/// en: 'Choose another file'
+	String get legacyImportTryAnother => 'Choose another file';
 }
 
 // Path: licenses
@@ -19803,6 +19866,27 @@ extension on Translations {
 			'startup.deleteBackup' => 'Delete copy',
 			'startup.backupDeleted' => 'Copy deleted.',
 			'startup.previousFailureTitle' => 'Pleazyng failed to start last time',
+			'startup.legacyImportTitle' => 'Import an existing media library?',
+			'startup.legacyImportBody' => 'If you have a database from a previous Pleazyng or Plezy installation, you can choose it here. Pleazyng never searches for databases or imports one based on its filename.',
+			'startup.legacyImportChoose' => 'Choose a database',
+			'startup.legacyImportStartFresh' => 'Start fresh',
+			'startup.legacyImportPickTitle' => 'Choose a database file to preview',
+			'startup.legacyImportChecking' => 'Checking the selected file on a temporary copy. Your original file will not be changed.',
+			'startup.legacyImportReviewTitle' => 'Review this database',
+			'startup.legacyImportFile' => ({required Object name}) => 'File: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'File size: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Database schema: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profiles: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Server connections: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Saved download records: ${count}',
+			'startup.legacyImportIdentityWarning' => 'The database has no app identity marker. Its name and schema cannot tell whether it came from Pleazyng or upstream Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'Server credentials are stored separately and won\'t transfer. You\'ll need to sign in again.',
+			'startup.legacyImportPathsWarning' => 'Downloaded media files aren\'t copied. Existing paths may not work on this device; you may need to choose storage folders again or download media again.',
+			'startup.legacyImportBackup' => 'The selected file stays unchanged as your rollback copy. This option appears only when Pleazyng has no database; an existing Pleazyng database is never replaced.',
+			'startup.legacyImportConfirm' => 'Import this database',
+			'startup.legacyImportInvalidTitle' => 'This file couldn\'t be validated',
+			'startup.legacyImportInvalidBody' => 'Pleazyng couldn\'t verify that the selected file is a supported database. Nothing was imported or changed.',
+			'startup.legacyImportTryAnother' => 'Choose another file',
 			'licenses.relatedPackages' => 'Related Packages',
 			'licenses.license' => 'License',
 			'licenses.licenseNumber' => ({required Object number}) => 'License ${number}',
@@ -19904,6 +19988,8 @@ extension on Translations {
 			'explore.stats.completed' => ({required Object n}) => '${n} completed',
 			'explore.stats.onHold' => ({required Object n}) => '${n} on hold',
 			'explore.stats.dropped' => ({required Object n}) => '${n} dropped',
+			_ => null,
+		} ?? switch (path) {
 			'explore.season.winter' => 'Winter',
 			'explore.season.spring' => 'Spring',
 			'explore.season.summer' => 'Summer',
@@ -19925,8 +20011,6 @@ extension on Translations {
 			'explore.sourceMaterial.game' => 'Game',
 			'explore.sourceMaterial.webComic' => 'Web comic',
 			'explore.sourceMaterial.musicRelease' => 'Music',
-			_ => null,
-		} ?? switch (path) {
 			'explore.sourceMaterial.otherMedia' => 'Other',
 			'explore.creditRole.actor' => 'Actor',
 			'explore.creditRole.director' => 'Director',
@@ -20418,6 +20502,8 @@ extension on Translations {
 			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android has put Pleazyng in a restricted standby state. Set its battery usage to "Unrestricted".',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'Download notifications are turned off, so progress and controls may be unavailable.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Notifications are turned off. On Android 13 or newer, they are required for long background downloads.',
+			_ => null,
+		} ?? switch (path) {
 			'downloads.backgroundWarning.reasonDataSaver' => 'Data Saver is on, which blocks background downloads on mobile data. Downloads should still run on Wi-Fi.',
 			'downloads.backgroundWarning.reasonOemUnknown' => 'Downloads repeatedly stopped while Pleazyng was in the background. Check Pleazyng\'s battery or background usage settings.',
 			'downloads.backgroundWarning.openSettings' => 'Open settings',
@@ -20439,8 +20525,6 @@ extension on Translations {
 			'downloads.unknownLibrary' => 'Unknown library',
 			'downloads.unknownShow' => 'Unknown Show',
 			'downloads.unknownSeason' => 'Unknown Season',
-			_ => null,
-		} ?? switch (path) {
 			'downloads.unknownAlbum' => 'Unknown Album',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} completed',
 			'downloads.storageUsed' => ({required Object size}) => 'Storage used: ${size}',
@@ -20932,6 +21016,8 @@ extension on Translations {
 			'seerr.notificationsEnabled4k' => 'We\'ll notify you when the 4K version is available',
 			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'We\'ll notify you when season ${season} is available',
 			'seerr.notificationsDisabled' => 'Availability alert turned off',
+			_ => null,
+		} ?? switch (path) {
 			'seerr.notificationFailed' => 'Couldn\'t update the availability alert',
 			'seerr.seasons' => 'Seasons',
 			'seerr.requestSheetHint' => 'Seerr handles approval and tracks your request.',
@@ -20953,8 +21039,6 @@ extension on Translations {
 			'seerr.statusPartiallyAvailable' => 'Partially available',
 			'seerr.statusRequested' => 'Requested',
 			'seerr.statusProcessing' => 'Processing',
-			_ => null,
-		} ?? switch (path) {
 			'seerr.statusBlocklisted' => 'Blocklisted',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Could not reach ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'No Seerr instance at ${url} (HTTP ${status})',
@@ -21446,6 +21530,8 @@ extension on Translations {
 			'universalMedia.discHelp' => 'Open a disc in this computer’s optical drive. You can also open an ISO image from Device files.',
 			'universalMedia.discs' => 'Optical disc',
 			'universalMedia.editionOrTitle' => 'Edition or disc title',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.dvd' => 'DVD',
 			'universalMedia.bluray' => 'Blu-ray',
 			'universalMedia.audioCd' => 'Audio CD',
@@ -21467,8 +21553,6 @@ extension on Translations {
 			'universalMedia.converterLocalOnly' => 'The selected file is not available as a local device path.',
 			'universalMedia.converterReplaceTitle' => 'Replace this file?',
 			'universalMedia.converterReplaceHelp' => 'Pleazyng backs up the existing file until the converted copy is saved.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.converterStarting' => 'Starting FFmpeg…',
 			'universalMedia.converterProgress' => 'Converting on this computer…',
 			'universalMedia.converterComplete' => 'Conversion complete. The new file is ready.',
@@ -21960,6 +22044,8 @@ extension on Translations {
 			'sourceSetup.sharedLibraryId' => 'Shared library ID (optional)',
 			'sourceSetup.sharedLibraryHelp' => 'Use the same ID on devices that open the same library. This public ID helps carry reading progress and notes across different source connections; it is not a password. When providers use different item IDs, pair those items from their detail screens.',
 			'sourceSetup.sharedLibraryInvalid' => 'Use 8–100 letters, numbers, dots, underscores or hyphens.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.generateSharedLibraryId' => 'Generate a shared library ID',
 			'sourceSetup.nfsReadAhead' => 'NFS read-ahead requests',
 			'sourceSetup.nfsReadAheadHelp' => 'More parallel reads can improve throughput on a fast NAS or network. Use 1 if the server limits concurrent requests.',
@@ -21981,8 +22067,6 @@ extension on Translations {
 			'comics.controlsHelp' => 'Swipe to turn pages. Double-tap to change fit. In continuous scroll, swipe vertically or use Page Up and Page Down.',
 			'comics.savedForComic' => 'Display settings are remembered for this comic in this profile.',
 			'comics.readLists' => 'Reading lists',
-			_ => null,
-		} ?? switch (path) {
 			'comics.collections' => 'Collections',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
@@ -22474,6 +22558,8 @@ extension on Translations {
 			'subtitleAiUi.revisionHistoryNeedsAStableProfileAndMediaItem' => 'Revision history needs a stable profile and media item.',
 			'subtitleAiUi.subtitleRevisionHistory' => 'Subtitle revision history',
 			'subtitleAiUi.noReviewedRevisionsHaveBeenSavedForThisItemYet' => 'No reviewed revisions have been saved for this item yet.',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.cues' => ({required Object revisionDate, required Object revisionCueCount, required Object language}) => '${revisionDate} · ${revisionCueCount} cues${language}',
 			'subtitleAiUi.tokenDerivedTimingSpansRetained' => ({required Object revisionWordtimingCount}) => '${revisionWordtimingCount} token-derived timing spans retained',
 			'subtitleAiUi.export' => 'Export',
@@ -22495,8 +22581,6 @@ extension on Translations {
 			'subtitleAiUi.noCuesMatchThisSearch' => 'No cues match this search.',
 			'subtitleAiUi.cue' => ({required Object cueIndex, required Object startTime, required Object endTime}) => 'Cue ${cueIndex} · ${startTime} – ${endTime}',
 			'subtitleAiUi.original' => 'Original',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.output' => 'Output',
 			'subtitleAiUi.editCue' => 'Edit cue',
 			'subtitleAiUi.undo' => ({required Object undoHistoryUndohistoryCount}) => 'Undo (${undoHistoryUndohistoryCount})',
@@ -22988,6 +23072,8 @@ extension on Translations {
 			'karaokeUi.recentPrivateScores' => 'Recent private scores',
 			'karaokeUi.keyTempo' => ({required Object value1, required Object value2, required Object value3, required Object value4}) => '${value1} · ${value2} · key ${value3} · tempo ${value4}',
 			'karaokeUi.preparationCompanion' => 'Preparation companion',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.',
 			'karaokeUi.companionURL' => 'Companion URL',
 			'karaokeUi.confirmDeleteShowTemplate' => ({required Object value1}) => 'Delete the show template ‘${value1}’?',
@@ -23009,8 +23095,6 @@ extension on Translations {
 			'karaokeUi.selectPrivatePEMKey' => 'Select private PEM key',
 			'karaokeUi.thisInvitationExpiresIn30MinutesConnectedGuestsCan' => 'This invitation expires in 30 minutes. Connected guests can request songs for 8 hours, until revoked or the room closes.',
 			'karaokeUi.copyInvitation' => 'Copy invitation',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.createReadOnlyStageLink' => 'Create read-only stage link',
 			'karaokeUi.createOneUseHostHandoverLink' => 'Create one-use host handover link',
 			'karaokeUi.revokeGuestsAndReplaceInvitation' => 'Revoke guests and replace invitation',

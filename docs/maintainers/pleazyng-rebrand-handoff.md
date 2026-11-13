@@ -66,12 +66,14 @@ unverified.
 | --- | --- | --- |
 | Android / Fire TV | New application ID; separate sandbox | Register/sign new app, export supported settings from old fork and import explicitly; downloads and credentials need a signed bridge or reauthentication. Verify old purchase recovery with the real store. |
 | iOS / tvOS | New bundle IDs/group; separate containers | Register IDs, profiles and entitlements; validate old-data export and new import on devices. New app group does not read the old group automatically. |
-| macOS | New bundle ID/product | Verify same-team signing, keychain ACLs, old app support discovery/import and updater bridge. Do not assume a bundle rename transfers data. |
-| Windows direct | Existing installer GUID retained | Verify old-to-new executable/shortcut/update and uninstall behavior. Credential vault target keys remain stable. |
-| MSIX | Assigned Partner Center identity required | Keep authoritative identity variables; reconcile actual listing, package family and data before submission. |
-| Linux direct | New command/package | Preserve old config/data. Test explicit fork-only import and launcher coexistence. No ownership claim over upstream plezy packages. |
-| Flatpak / Snap | New application IDs/names; separate confinement | Register/review new packages and document/test export/import through supported boundaries. |
+| macOS | New bundle ID/product | Verify same-team signing, keychain ACLs, explicit first-run database import and updater bridge. Do not assume a bundle rename transfers data. |
+| Windows direct | Existing installer GUID retained | Verify old-to-new executable/shortcut/update and uninstall behavior, plus the native picker, explicit first-run import and source-file rollback. Credential vault target keys remain stable. |
+| MSIX | Assigned Partner Center identity required | Keep authoritative identity variables; reconcile actual listing, package family, picker access and data before submission. |
+| Linux direct | New command/package | Preserve old config/data. Qualify explicit first-run import and launcher coexistence. No ownership claim over upstream plezy packages. |
+| Flatpak / Snap | New application IDs/names; separate confinement | Register/review new packages and qualify picker portals, explicit import and rollback within their confinement boundaries. |
 | Tizen / webOS | New public IDs and executable | Validate store identifiers, signing, device install, data path and redistribution requirements. |
+
+On first desktop startup, when no Pleazyng database exists, the owner can choose a file, review a staged validation/count preview, and confirm import. The app does not search by basename; it migrates and publishes a validated temporary copy and leaves the selected file unchanged for rollback. The preview explains that no app identity marker distinguishes Pleazyng from upstream Plezy, credentials require reauthentication, and stored download paths may need repair. A current Pleazyng database is never replaced. Windows, macOS and Linux package/device qualification remains open; no Android, Apple mobile/TV, Tizen, webOS or web sandbox migration flow is implemented.
 
 Existing credential-vault names, Dart package plezy, JNI/Kotlin namespaces,
 method channels, content IDs, serialized formats, docs/plezyng paths and

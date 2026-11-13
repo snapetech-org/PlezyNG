@@ -101,6 +101,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'services/jellyfin_api_cache.dart';
 import 'services/plex_api_cache.dart';
 import 'database/app_database.dart';
+import 'database/legacy_desktop_database_onboarding.dart';
 import 'iptv/iptv_source_repository.dart';
 import 'iptv/iptv_recording_scheduler.dart';
 import 'database/download_operations.dart';
@@ -248,10 +249,27 @@ void _bootstrapApp() {
   // Off the critical path: the version label only decorates a diagnostic.
   unawaited(_primeDiagnosticsVersion());
 
+  File? legacyDesktopDatabaseSource;
   AndroidExitDiagnostics.markStartupPhase(AndroidStartupPhase.runApp);
   runApp(
     StartupBootstrap<_StartupDependencies>(
-      initialize: _initializeApplication,
+      beforeInitialize: (context) async {
+        await _gatePhase(StartupPhase.preferences, SettingsService.getInstance);
+        await _optionalGatePhase(StartupPhase.locale, LocalePreferences.apply);
+        if (!context.mounted) return;
+        try {
+          final targetDatabase = await AppDatabase.resolveProductionDatabaseFile();
+          if (!await targetDatabase.exists() && context.mounted) {
+            legacyDesktopDatabaseSource = await showLegacyDesktopDatabaseOnboarding(context);
+          } else {
+            legacyDesktopDatabaseSource = null;
+          }
+        } catch (error, stackTrace) {
+          appLogger.w('Legacy database onboarding could not inspect app storage', error: error, stackTrace: stackTrace);
+          legacyDesktopDatabaseSource = null;
+        }
+      },
+      initialize: () => _initializeApplication(legacyDesktopDatabaseSource: legacyDesktopDatabaseSource),
       buildApp: (context, dependencies) => MainApp(
         settings: dependencies.settings,
         storage: dependencies.storage,
@@ -356,7 +374,7 @@ Future<void> _startNativeTvDiagnostics() async {
   }
 }
 
-Future<_StartupDependencies> _initializeApplication() async {
+Future<_StartupDependencies> _initializeApplication({File? legacyDesktopDatabaseSource}) async {
   final settings = await _gatePhase(StartupPhase.preferences, SettingsService.getInstance);
   setLoggerLevel(settings.read(SettingsService.enableDebugLogging));
   if (PlatformDetector.usesNativeTvMedia()) unawaited(_startNativeTvDiagnostics());
@@ -411,7 +429,7 @@ Future<_StartupDependencies> _initializeApplication() async {
   StartupDiagnosticsStore.holdForFlush(flushPendingStartupFailure());
 
   AndroidExitDiagnostics.markTelemetryReady();
-  return _initializeStartup(settings);
+  return _initializeStartup(settings, legacyDesktopDatabaseSource: legacyDesktopDatabaseSource);
 }
 
 /// Release identifier for Sentry.
@@ -751,6 +769,7 @@ class StartupBootstrap<T> extends StatefulWidget {
     super.key,
     required this.initialize,
     required this.buildApp,
+    this.beforeInitialize,
     this.discard,
     this.onCommitted,
     this.describeFailure = describeStartupFailure,
@@ -763,6 +782,7 @@ class StartupBootstrap<T> extends StatefulWidget {
   });
 
   final Future<T> Function() initialize;
+  final Future<void> Function(BuildContext context)? beforeInitialize;
   final Widget Function(BuildContext context, T value) buildApp;
   final FutureOr<void> Function(T value)? discard;
   final FutureOr<void> Function(T value)? onCommitted;
@@ -805,6 +825,7 @@ class StartupBootstrap<T> extends StatefulWidget {
 }
 
 class _StartupBootstrapState<T> extends State<StartupBootstrap<T>> {
+  BuildContext? _bootstrapHomeContext;
   T? _value;
   StartupFailureRecord? _failure;
 
@@ -870,6 +891,11 @@ class _StartupBootstrapState<T> extends State<StartupBootstrap<T>> {
     });
 
     try {
+      final beforeInitialize = widget.beforeInitialize;
+      final bootstrapHomeContext = _bootstrapHomeContext;
+      if (beforeInitialize != null && bootstrapHomeContext != null && bootstrapHomeContext.mounted) {
+        await beforeInitialize(bootstrapHomeContext);
+      }
       final value = await widget.initialize();
       if (!mounted || generation != _generation) {
         await _discard(value);
@@ -988,6 +1014,7 @@ class _StartupBootstrapState<T> extends State<StartupBootstrap<T>> {
   }
 
   Widget _buildBootstrapHome(BuildContext context) {
+    _bootstrapHomeContext = context;
     final failure = _failure;
     if (failure != null) {
       return Scaffold(
@@ -1059,7 +1086,7 @@ Future<AppDatabaseBootstrap> openAppDatabaseWithDownloadRecovery({
   }
 }
 
-Future<_StartupDependencies> _initializeStartup(SettingsService settings) async {
+Future<_StartupDependencies> _initializeStartup(SettingsService settings, {File? legacyDesktopDatabaseSource}) async {
   final startupWatch = Stopwatch()..start();
   var lastStartupMarkMs = 0;
   void markStartupPhase(String phase) {
@@ -1123,7 +1150,10 @@ Future<_StartupDependencies> _initializeStartup(SettingsService settings) async 
     final databaseBootstrap = await _gatePhase(
       StartupPhase.database,
       () => openAppDatabaseWithDownloadRecovery(
-        openDatabase: () => AppDatabase.open(isTvos: PlatformDetector.isAppleTV()),
+        openDatabase: () => AppDatabase.open(
+          isTvos: PlatformDetector.isAppleTV(),
+          legacyDesktopDatabaseSource: legacyDesktopDatabaseSource,
+        ),
         recoverNativeDownloads: DownloadManagerService.discardInterruptedNativeDownloadsAfterStorageFailure,
         storageFullMessage: t.downloads.storageFull,
       ),

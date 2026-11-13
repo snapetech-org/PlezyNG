@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/io_client.dart';
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/database/download_collection_operations.dart';
 import 'package:plezy/database/download_operations.dart';
@@ -19,7 +19,6 @@ import 'package:plezy/services/download_storage_service.dart';
 import 'package:plezy/services/plex_api_cache.dart';
 import 'package:plezy/utils/active_client_scope.dart';
 import 'package:plezy/utils/media_server_http_client.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../test_helpers/download_fixtures.dart';
 import '../test_helpers/prefs.dart';
@@ -40,6 +39,16 @@ final class _EnsureOpenTrackingInterceptor extends QueryInterceptor {
 void main() {
   final suite = _AppDatabaseTestSuite();
   suite.registerTests();
+}
+
+Future<void> _createLegacyDatabase(File file) async {
+  await file.parent.create(recursive: true);
+  final database = AppDatabase.forTesting(NativeDatabase(file));
+  try {
+    await database.customSelect('SELECT 1').get();
+  } finally {
+    await database.close();
+  }
 }
 
 class _AppDatabaseTestSuite {
@@ -1246,86 +1255,168 @@ class _AppDatabaseTestSuite {
   void _registerLegacyDesktopMigrationTests() {
     group('legacy desktop DB migration', () {
       late Directory tempDir;
+      AppDatabase? opened;
 
       setUp(() async {
         tempDir = await Directory.systemTemp.createTemp('plezy_legacy_migration_test_');
       });
 
       tearDown(() async {
+        await opened?.close();
+        opened = null;
         if (await tempDir.exists()) {
           await tempDir.delete(recursive: true);
         }
       });
 
-      test('no-op when source does not exist', () async {
+      test('AppDatabase.open imports only the explicitly selected source', () async {
+        await db.close();
+        db = AppDatabase.forTesting(NativeDatabase.memory());
+        resetSharedPreferencesForTest();
+        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
+        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
+        await _createLegacyDatabase(source);
+        final originalBytes = await source.readAsBytes();
+        await target.parent.create(recursive: true);
+        await File('${target.path}-wal').writeAsBytes([1, 2, 3]);
+        await File('${target.path}-shm').writeAsBytes([4, 5, 6]);
+        final prefs = await BaseSharedPreferencesService.sharedCache();
+
+        final bootstrap = await AppDatabase.open(
+          isTvos: false,
+          databaseFile: target,
+          legacyDesktopDatabaseSource: source,
+          preferences: prefs,
+        );
+        opened = bootstrap.database;
+
+        expect(await target.exists(), isTrue);
+        expect(await source.readAsBytes(), originalBytes);
+        final wal = File('${target.path}-wal');
+        final shm = File('${target.path}-shm');
+        if (await wal.exists()) expect(await wal.readAsBytes(), isNot([1, 2, 3]));
+        if (await shm.exists()) expect(await shm.readAsBytes(), isNot([4, 5, 6]));
+        final version = await opened!.customSelect('PRAGMA user_version').getSingle();
+        expect(version.read<int>('user_version'), AppDatabase.currentSchemaVersion);
+      });
+
+      test('rejects a missing selected source', () async {
         final source = File('${tempDir.path}/Documents/plezy_downloads.db');
         final target = File('${tempDir.path}/AppData/plezy_downloads.db');
         await target.parent.create(recursive: true);
 
-        await migrateLegacyDesktopDatabase(sourceOverride: source, target: target);
+        await expectLater(
+          migrateLegacyDesktopDatabase(source: source, target: target),
+          throwsA(isA<FileSystemException>()),
+        );
 
         expect(await source.exists(), isFalse);
         expect(await target.exists(), isFalse);
       });
 
-      test('rename happy path moves the file and preserves content', () async {
-        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
+      test('never replaces an existing application database', () async {
+        final source = File('${tempDir.path}/Documents/selected.db');
         final target = File('${tempDir.path}/AppData/plezy_downloads.db');
-        await source.parent.create(recursive: true);
+        await _createLegacyDatabase(source);
         await target.parent.create(recursive: true);
-        await source.writeAsBytes([1, 2, 3, 4, 5]);
+        const currentDatabaseBytes = [0x50, 0x4c, 0x45, 0x41, 0x5a, 0x59];
+        await target.writeAsBytes(currentDatabaseBytes);
+        final sourceBytes = await source.readAsBytes();
 
-        await migrateLegacyDesktopDatabase(sourceOverride: source, target: target);
+        await migrateLegacyDesktopDatabase(source: source, target: target);
 
-        expect(await source.exists(), isFalse);
-        expect(await target.exists(), isTrue);
-        expect(await target.readAsBytes(), [1, 2, 3, 4, 5]);
+        expect(await target.readAsBytes(), currentDatabaseBytes);
+        expect(await source.readAsBytes(), sourceBytes);
       });
 
-      test('cross-drive rename failure falls back to copy + delete', () async {
-        // Simulate Windows ERROR_NOT_SAME_DEVICE by throwing the same
-        // exception shape `File.rename` would emit when source and target
-        // live on different volumes.
-        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
-        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
-        await source.parent.create(recursive: true);
-        await target.parent.create(recursive: true);
-        await source.writeAsBytes([9, 8, 7]);
+      test('previews a selected database on a temporary copy without changing its source', () async {
+        final source = File('${tempDir.path}/Documents/renamed-media-library.sqlite');
+        await _createLegacyDatabase(source);
+        final originalBytes = await source.readAsBytes();
 
-        await migrateLegacyDesktopDatabase(
-          sourceOverride: source,
-          target: target,
-          renameOverride: (_, _) => throw const FileSystemException(
-            'Cannot rename file across drives',
-            '',
-            OSError('The system cannot move the file to a different disk drive', 17),
-          ),
-        );
+        final preview = await inspectLegacyDesktopDatabase(source);
 
-        expect(await source.exists(), isFalse, reason: 'source should be deleted after successful copy');
-        expect(await target.exists(), isTrue);
-        expect(await target.readAsBytes(), [9, 8, 7]);
+        expect(preview.fileName, 'renamed-media-library.sqlite');
+        expect(preview.fileSizeBytes, originalBytes.length);
+        expect(preview.schemaVersion, AppDatabase.currentSchemaVersion);
+        expect(preview.downloadedMediaCount, 0);
+        expect(preview.profileCount, 0);
+        expect(preview.connectionCount, 0);
+        expect(await source.readAsBytes(), originalBytes);
       });
 
-      test('interrupted fallback copy leaves no canonical partial file and retry succeeds', () async {
+      test('copies, validates and migrates a selected database while retaining the source', () async {
         final source = File('${tempDir.path}/Documents/plezy_downloads.db');
         final target = File('${tempDir.path}/AppData/plezy_downloads.db');
-        const sourceBytes = [0xAA, 0xBB, 0xCC, 0xDD];
+        await _createLegacyDatabase(source);
+        final originalBytes = await source.readAsBytes();
+
+        await migrateLegacyDesktopDatabase(source: source, target: target);
+
+        expect(await source.exists(), isTrue);
+        expect(await source.readAsBytes(), originalBytes, reason: 'the source database must remain byte-identical');
+        expect(await target.exists(), isTrue);
+        final migrated = AppDatabase.forTesting(NativeDatabase(target));
+        try {
+          await migrated.select(migrated.connections).get();
+          final version = await migrated.customSelect('PRAGMA user_version').getSingle();
+          expect(version.read<int>('user_version'), AppDatabase.currentSchemaVersion);
+        } finally {
+          await migrated.close();
+        }
+      });
+
+      test('rejects malformed and future-version databases without publishing', () async {
+        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
+        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
         await source.parent.create(recursive: true);
         await target.parent.create(recursive: true);
-        await source.writeAsBytes(sourceBytes);
+        await source.writeAsBytes([0xAA, 0xBB, 0xCC, 0xDD]);
+        final malformedBytes = await source.readAsBytes();
+
+        await expectLater(migrateLegacyDesktopDatabase(source: source, target: target), throwsA(anything));
+        expect(await target.exists(), isFalse);
+        expect(await source.readAsBytes(), malformedBytes);
+
+        await source.delete();
+        await _createLegacyDatabase(source);
+        final malformedStructure = AppDatabase.forTesting(NativeDatabase(source));
+        await malformedStructure.customStatement('DROP TABLE download_queue');
+        await malformedStructure.close();
+        final malformedStructureBytes = await source.readAsBytes();
+
+        await expectLater(migrateLegacyDesktopDatabase(source: source, target: target), throwsA(anything));
+        expect(await target.exists(), isFalse);
+        expect(await source.readAsBytes(), malformedStructureBytes);
+
+        await source.delete();
+        await _createLegacyDatabase(source);
+        final current = AppDatabase.forTesting(NativeDatabase(source));
+        await current.customStatement('PRAGMA user_version = ${AppDatabase.currentSchemaVersion + 1}');
+        await current.close();
+        final futureVersionBytes = await source.readAsBytes();
+
+        await expectLater(migrateLegacyDesktopDatabase(source: source, target: target), throwsA(anything));
+        expect(await target.exists(), isFalse);
+        expect(await source.readAsBytes(), futureVersionBytes);
+      });
+
+      test('interrupted copy leaves the source intact and retry can publish', () async {
+        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
+        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
+        await _createLegacyDatabase(source);
+        final sourceBytes = await source.readAsBytes();
 
         File? partialTemporary;
         await expectLater(
           migrateLegacyDesktopDatabase(
-            sourceOverride: source,
+            source: source,
             target: target,
-            renameOverride: (_, _) => throw const FileSystemException('cross-drive', ''),
             copyOverride: (_, temporary) async {
               partialTemporary = temporary;
               final output = await temporary.open(mode: FileMode.writeOnly);
               try {
-                await output.writeFrom(sourceBytes, 0, 2);
+                await output.writeFrom(sourceBytes, 0, sourceBytes.length ~/ 2);
                 await output.flush();
               } finally {
                 await output.close();
@@ -1333,36 +1424,26 @@ class _AppDatabaseTestSuite {
               throw const FileSystemException('interrupted copy', '');
             },
           ),
-          completes,
+          throwsA(isA<FileSystemException>()),
         );
 
-        expect(await source.exists(), isTrue, reason: 'the intact legacy database must remain retryable');
         expect(await source.readAsBytes(), sourceBytes);
-        expect(await target.exists(), isFalse, reason: 'a partial copy must never become canonical');
+        expect(await target.exists(), isFalse);
         expect(partialTemporary, isNotNull);
-        expect(await partialTemporary!.exists(), isFalse, reason: 'failed temporary copies must be cleaned');
+        expect(await partialTemporary!.exists(), isFalse);
 
-        await migrateLegacyDesktopDatabase(
-          sourceOverride: source,
-          target: target,
-          renameOverride: (_, _) => throw const FileSystemException('cross-drive', ''),
-        );
-
-        expect(await source.exists(), isFalse, reason: 'successful retry removes the legacy database');
-        expect(await target.readAsBytes(), sourceBytes);
+        await migrateLegacyDesktopDatabase(source: source, target: target);
+        expect(await source.readAsBytes(), sourceBytes);
+        expect(await target.exists(), isTrue);
       });
 
-      test('overlapping fallback publisher cannot replace canonical updates with its stale copy', () async {
+      test('overlapping publishers cannot replace the first canonical database', () async {
         final staleSource = File('${tempDir.path}/Documents/stale.db');
         final winnerSource = File('${tempDir.path}/Documents/winner.db');
         final target = File('${tempDir.path}/AppData/plezy_downloads.db');
-        const staleBytes = [0x10, 0x20, 0x30];
-        const winnerBytes = [0x40, 0x50, 0x60];
-        const updatedCanonicalBytes = [0x70, 0x80, 0x90];
-        await staleSource.parent.create(recursive: true);
-        await target.parent.create(recursive: true);
-        await staleSource.writeAsBytes(staleBytes);
-        await winnerSource.writeAsBytes(winnerBytes);
+        await _createLegacyDatabase(staleSource);
+        await _createLegacyDatabase(winnerSource);
+        final staleBytes = await staleSource.readAsBytes();
 
         final staleCopyReady = Completer<void>();
         final releaseStaleCopy = Completer<void>();
@@ -1370,14 +1451,9 @@ class _AppDatabaseTestSuite {
         final winnerPublished = Completer<void>();
         var stalePublishAttempted = false;
 
-        Future<void> failCrossDriveRename(File _, String _) async {
-          throw const FileSystemException('cross-drive', '');
-        }
-
         final staleMigration = migrateLegacyDesktopDatabase(
-          sourceOverride: staleSource,
+          source: staleSource,
           target: target,
-          renameOverride: failCrossDriveRename,
           copyOverride: (source, temporary) async {
             await temporary.writeAsBytes(await source.readAsBytes(), flush: true);
             staleCopyReady.complete();
@@ -1392,14 +1468,12 @@ class _AppDatabaseTestSuite {
         await staleCopyReady.future;
 
         final winnerMigration = migrateLegacyDesktopDatabase(
-          sourceOverride: winnerSource,
+          source: winnerSource,
           target: target,
-          renameOverride: failCrossDriveRename,
           publishOverride: (temporary, canonical) async {
             await temporary.rename(canonical.path);
             winnerPublished.complete();
             await staleCopyReleased.future;
-            await canonical.writeAsBytes(updatedCanonicalBytes, flush: true);
           },
         );
         await winnerPublished.future;
@@ -1408,27 +1482,20 @@ class _AppDatabaseTestSuite {
         await Future.wait([winnerMigration, staleMigration]);
 
         expect(stalePublishAttempted, isFalse);
-        expect(await target.readAsBytes(), updatedCanonicalBytes);
-        expect(await winnerSource.exists(), isFalse, reason: 'the winning source is removed after publication');
-        expect(await staleSource.readAsBytes(), staleBytes, reason: 'the skipped stale source remains retryable');
+        expect(await winnerSource.exists(), isTrue, reason: 'the selected source remains untouched after publication');
+        expect(await staleSource.readAsBytes(), staleBytes, reason: 'the skipped source remains untouched');
+        final published = AppDatabase.forTesting(NativeDatabase(target));
+        try {
+          await published.select(published.connections).get();
+          final version = await published.customSelect('PRAGMA user_version').getSingle();
+          expect(version.read<int>('user_version'), AppDatabase.currentSchemaVersion);
+        } finally {
+          await published.close();
+        }
         final leakedTemporaries = target.parent.listSync().whereType<File>().where(
           (file) => file.path.endsWith('.tmp'),
         );
         expect(leakedTemporaries, isEmpty, reason: 'both publishers clean their sibling temporary copies');
-      });
-
-      test('documents directory lookup failure is a silent no-op', () async {
-        final previousPathProvider = PathProviderPlatform.instance;
-        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
-        PathProviderPlatform.instance = _ThrowingDocumentsPathProvider();
-
-        try {
-          await expectLater(migrateLegacyDesktopDatabase(target: target), completes);
-        } finally {
-          PathProviderPlatform.instance = previousPathProvider;
-        }
-
-        expect(await target.exists(), isFalse);
       });
     });
   }
@@ -2611,9 +2678,4 @@ Set<String> _recursiveJsonKeys(Object? value) {
     return {for (final nested in value) ..._recursiveJsonKeys(nested)};
   }
   return const {};
-}
-
-class _ThrowingDocumentsPathProvider extends PathProviderPlatform with MockPlatformInterfaceMixin {
-  @override
-  Future<String?> getApplicationDocumentsPath() async => throw Exception('documents unavailable');
 }

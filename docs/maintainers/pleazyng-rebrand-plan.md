@@ -182,6 +182,7 @@ Exit: all final compiled packages identify themselves as Pleazyng, and installin
 A new Android applicationId or Apple bundle ID generally means a different application identity. Do not promise automatic access to the old sandbox, purchase history or keychain. This is a migration work package, not a search/replace.
 
 - [ ] Implement a schema-versioned, user-initiated migration/export/import path with integrity checking, path validation, explicit sensitive-data treatment and a backup before the first write.
+- [x] On desktop, offer a first-run database import only when the Pleazyng database is absent. The owner chooses a file explicitly, reviews a staged schema/integrity and row-count preview, and confirms separately. The source remains unchanged as the rollback copy; publication uses a separately validated temporary copy and never replaces an existing Pleazyng database.
 - [ ] Preserve profiles, server configuration, reading/watch progress, downloads and their ownership records, playlists, queues, custom themes, icon selection, subtitle settings, game pairings and locally saved work where technically transferable.
 - [ ] Never move another application's data by directory-name resemblance. Discover only known fork-owned legacy locations under the current user's control.
 - [ ] Make desktop migration idempotent and atomic. Validate a copied database before activating it; keep the source intact; avoid running old and new apps against the same mutable database.
@@ -197,6 +198,10 @@ A new Android applicationId or Apple bundle ID generally means a different appli
 Windows installer GUID 4213385e-f7be-4f2b-95f9-54082a28bb8f is currently used by the fork installer. Verify its provenance/ownership before deciding to preserve it for an upgrade or replace it for side-by-side installs. A GUID does not need a spelling change. Renaming plezy.exe requires coordinating all installer/elevation/shortcut/uninstaller references.
 
 Exit: clean installation, supported legacy-fork migration and upstream side-by-side installation have independent evidence; unsupported automatic transfers are plainly documented with a usable manual route.
+
+**Desktop database gates:** startup offers an explicit native file picker only on Windows, macOS and Linux, and only before a Pleazyng database exists. The preview and import path never selects by filename, keeps the chosen source unchanged, and rejects unsupported schemas or SQLite integrity failures before publishing. The file has no identity marker, so the owner must decide whether the selected database is theirs; the preview states that it may be from Pleazyng or upstream Plezy. Credentials live outside this database and require sign-in again. Download records retain their old paths, which may need storage reselection or redownload. Keep the old application closed during preview/import.
+
+Before promotion, qualify the native picker and rollback on Windows direct and MSIX, macOS signed/notarized builds, and Linux packages including portal/confinement builds. Cover cancel/start-fresh, valid and invalid databases, a database from each supported legacy schema range, interrupted import, external/removable source files, and recovery from the preserved original after removing the newly created app-support database. Store/app-ID ownership and purchase recovery are separate gates. This onboarding does not migrate Android, iOS, tvOS, Tizen, webOS or web sandbox data.
 
 ### R4 — Own services and provider registrations
 

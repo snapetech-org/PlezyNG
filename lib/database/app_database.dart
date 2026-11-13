@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import '../media/ids.dart';
+
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
@@ -47,6 +49,25 @@ final class AppDatabaseBootstrap {
   final TvosDatabaseRecoveryOutcome recoveryOutcome;
 }
 
+/// Non-sensitive facts shown before importing a selected desktop database.
+final class LegacyDesktopDatabasePreview {
+  const LegacyDesktopDatabasePreview({
+    required this.fileName,
+    required this.fileSizeBytes,
+    required this.schemaVersion,
+    required this.downloadedMediaCount,
+    required this.profileCount,
+    required this.connectionCount,
+  });
+
+  final String fileName;
+  final int fileSizeBytes;
+  final int schemaVersion;
+  final int downloadedMediaCount;
+  final int? profileCount;
+  final int? connectionCount;
+}
+
 @DriftDatabase(
   tables: [
     DownloadedMedia,
@@ -69,6 +90,12 @@ final class AppDatabaseBootstrap {
   ],
 )
 class AppDatabase extends _$AppDatabase {
+  static const int currentSchemaVersion = 37;
+
+  /// Resolves the current app-owned database path for first-run migration UI.
+  /// This never scans or adopts another application's files.
+  static Future<File> resolveProductionDatabaseFile() => _resolveProductionDatabaseFile();
+
   AppDatabase._(QueryExecutor executor, {TvosDatabaseRecoveryStore? recoveryStore})
     : this._withRecovery(executor, recoveryStore);
 
@@ -83,6 +110,94 @@ class AppDatabase extends _$AppDatabase {
   static final Object _durabilityZoneKey = Object();
   static final SerialFutureQueue _tvosRecoveryQueue = SerialFutureQueue();
 
+  /// Opens a copied legacy database without touching app-level recovery state.
+  /// The setup callback runs before Drift applies migrations, so an unrelated,
+  /// malformed, or future-version SQLite file cannot be initialized as this
+  /// application's database by Drift's normal onCreate path.
+  static AppDatabase _openLegacyDatabaseForValidation(File file, {bool enableMigrations = true}) => AppDatabase._(
+    NativeDatabase.createInBackground(
+      file,
+      enableMigrations: enableMigrations,
+      setup: (database) {
+        final versionValue = database.select('PRAGMA user_version').single['user_version'];
+        if (versionValue is! int || versionValue < 1 || versionValue > currentSchemaVersion) {
+          throw FormatException('Unsupported legacy database schema version: $versionValue');
+        }
+
+        final tables = database
+            .select("SELECT name FROM sqlite_master WHERE type='table'")
+            .map((row) => row['name'])
+            .whereType<String>()
+            .toSet();
+        final required = <String>{'downloaded_media', 'download_queue', 'api_cache'};
+        if (versionValue >= 7) required.add('offline_watch_progress');
+        if (versionValue >= 10) required.add('sync_rules');
+        if (versionValue >= 14) {
+          required.addAll({'connections', 'profiles', 'profile_connections', 'download_owners'});
+        }
+        if (versionValue >= 22) required.add('music_sessions');
+        if (versionValue >= 29) {
+          required.addAll({'iptv_sources', 'iptv_channels', 'iptv_programmes', 'iptv_channel_overrides'});
+        }
+        if (versionValue >= 30) {
+          required.addAll({'iptv_vod_categories', 'iptv_vod_items', 'iptv_vod_progress', 'iptv_recordings'});
+        }
+        if (versionValue >= 33) required.add('iptv_group_locks');
+        if (versionValue >= 34) required.add('iptv_recording_schedules');
+        if (versionValue >= 36) required.addAll({'music_queue_entries', 'music_recipes'});
+        if (versionValue >= 37) required.addAll({'music_listens', 'music_documents'});
+        if (!tables.containsAll(required)) {
+          final missing = required.difference(tables).toList()..sort();
+          throw FormatException('Legacy database is missing expected tables: ${missing.join(', ')}');
+        }
+
+        final integrity = database.select('PRAGMA integrity_check');
+        if (integrity.length != 1 || integrity.single.values.single != 'ok') {
+          throw const FormatException('Legacy database failed SQLite integrity_check');
+        }
+
+        // The staged copy is private to this operation. Use rollback-journal
+        // mode so that the verified database can be atomically published as a
+        // single file after Drift has applied any supported schema migrations.
+        final journalMode = database.select('PRAGMA journal_mode = DELETE').single.values.single;
+        if (journalMode != 'delete') {
+          throw FormatException('Could not prepare legacy database for safe publication: $journalMode');
+        }
+        database.execute('PRAGMA foreign_keys = ON');
+      },
+    ),
+  );
+
+  static const List<String> _currentLegacyTables = [
+    'downloaded_media',
+    'download_owners',
+    'download_queue',
+    'api_cache',
+    'offline_watch_progress',
+    'sync_rules',
+    'sync_rule_downloads',
+    'download_collections',
+    'download_collection_syncs',
+    'connections',
+    'profiles',
+    'profile_connections',
+    'music_sessions',
+    'iptv_sources',
+    'iptv_channels',
+    'iptv_programmes',
+    'iptv_channel_overrides',
+    'iptv_group_locks',
+    'iptv_recording_schedules',
+    'iptv_vod_categories',
+    'iptv_vod_items',
+    'iptv_recordings',
+    'iptv_vod_progress',
+    'music_queue_entries',
+    'music_recipes',
+    'music_listens',
+    'music_documents',
+  ];
+
   /// Resolves and opens the production database, removing orphaned WAL/SHM
   /// sidecars when the main database is absent (#1732), then eagerly completing
   /// Drift setup and migrations on non-tvOS. tvOS recovery retains ownership
@@ -90,23 +205,31 @@ class AppDatabase extends _$AppDatabase {
   static Future<AppDatabaseBootstrap> open({
     bool isTvos = const bool.fromEnvironment('TVOS_BUILD'),
     File? databaseFile,
+    File? legacyDesktopDatabaseSource,
     SharedPreferencesWithCache? preferences,
     QueryExecutor Function(File file)? executorFactory,
     TvosDatabaseRecoveryStore? recoveryStore,
     TvosDatabaseRecoveryPriorInstallEvidence? priorInstallEvidence,
   }) async {
-    final file = databaseFile ?? await _resolveProductionDatabaseFile();
+    if (legacyDesktopDatabaseSource != null && (Platform.isAndroid || Platform.isIOS)) {
+      throw ArgumentError.value(
+        legacyDesktopDatabaseSource,
+        'legacyDesktopDatabaseSource',
+        'Legacy desktop database selection is supported only on desktop platforms',
+      );
+    }
+    final file = databaseFile ?? await resolveProductionDatabaseFile();
     if (!await file.parent.exists()) {
       await file.parent.create(recursive: true);
     }
-    if (databaseFile == null && !Platform.isAndroid && !Platform.isIOS && !await file.exists()) {
-      await migrateLegacyDesktopDatabase(target: file);
+    if (!await file.exists()) {
+      await _removeOrphanedDatabaseSidecars(file);
+    }
+    if (legacyDesktopDatabaseSource != null && !await file.exists()) {
+      await migrateLegacyDesktopDatabase(source: legacyDesktopDatabaseSource, target: file);
     }
 
     final databaseExisted = await file.exists();
-    if (!databaseExisted) {
-      await _removeOrphanedDatabaseSidecars(file);
-    }
 
     final prefs = preferences ?? await BaseSharedPreferencesService.sharedCache();
     final store = recoveryStore ?? TvosDatabaseRecoveryStore(prefs, isTvos: isTvos);
@@ -807,7 +930,7 @@ class AppDatabase extends _$AppDatabase {
   static const FormatException _invalidRecoveryImage = FormatException('Invalid tvOS database recovery image');
 
   @override
-  int get schemaVersion => 37;
+  int get schemaVersion => currentSchemaVersion;
 
   @override
   MigrationStrategy get migration {
@@ -2252,59 +2375,80 @@ QueryExecutor _createNativeDatabase(File file) {
   );
 }
 
-/// Move the legacy desktop DB from `Documents/` to `ApplicationSupport/`.
-/// `File.rename` only works within a single volume — Windows users with
-/// OneDrive-redirected Documents (or any cross-drive setup) hit
-/// `ERROR_NOT_SAME_DEVICE` (errno 17), and the uncaught throw used to
-/// strand the splash on "Loading servers..." forever (#1022). Falls back
-/// to a synced sibling temporary copy followed by an atomic rename on any
-/// [FileSystemException], and swallows all errors so a failed migration
-/// never propagates fatally. The canonical-path lock file is intentionally
-/// retained: deleting it could let a new process lock a different inode while
-/// an existing waiter still holds the old one.
+/// Validates a selected legacy database on a disposable copy for a preview.
+/// The user's source file and its sidecars are never opened by SQLite here.
+Future<LegacyDesktopDatabasePreview> inspectLegacyDesktopDatabase(File source) async {
+  if (!await source.exists()) {
+    throw FileSystemException('The selected legacy database does not exist', source.path);
+  }
+
+  final previewDirectory = await Directory.systemTemp.createTemp('pleazyng_legacy_db_preview_');
+  final stagedFile = File(p.join(previewDirectory.path, 'selected.sqlite'));
+  try {
+    final sourceMetadata = await _copyLegacyDatabaseSnapshot(source, stagedFile);
+    final staged = AppDatabase._openLegacyDatabaseForValidation(stagedFile, enableMigrations: false);
+    try {
+      // Opening triggers only the preflight validator; migrations are disabled
+      // so the preview describes the source schema and cannot publish changes.
+      await staged.customSelect('SELECT 1').get();
+      final version = await staged.customSelect('PRAGMA user_version').getSingle();
+      final tables = (await staged.customSelect("SELECT name FROM sqlite_master WHERE type='table'").get())
+          .map((row) => row.read<String>('name'))
+          .toSet();
+
+      Future<int?> rowCountIfPresent(String table) async {
+        if (!tables.contains(table)) return null;
+        final count = await staged.customSelect('SELECT COUNT(*) AS row_count FROM $table').getSingle();
+        return count.read<int>('row_count');
+      }
+
+      return LegacyDesktopDatabasePreview(
+        fileName: p.basename(source.path),
+        fileSizeBytes: sourceMetadata.size,
+        schemaVersion: version.read<int>('user_version'),
+        downloadedMediaCount: (await rowCountIfPresent('downloaded_media'))!,
+        profileCount: await rowCountIfPresent('profiles'),
+        connectionCount: await rowCountIfPresent('connections'),
+      );
+    } finally {
+      await staged.close();
+    }
+  } finally {
+    try {
+      await previewDirectory.delete(recursive: true);
+    } on FileSystemException catch (error, stackTrace) {
+      appLogger.w('Failed to clean legacy database preview copy', error: error, stackTrace: stackTrace);
+    }
+  }
+}
+
+/// Imports a user-selected legacy desktop database into [target]. The source
+/// must be selected explicitly: old installations and upstream Plezy can use
+/// the same database filename and overlapping Drift schemas, so neither the
+/// basename nor schema version proves which application owns a candidate.
 ///
-/// [sourceOverride], [renameOverride], [copyOverride], and [publishOverride]
-/// are test seams — production callers leave them null.
+/// The source and its SQLite sidecars are copied to a private sibling file.
+/// SQLite integrity, known application tables, and the supported Drift schema
+/// range are checked before Drift migrates the copy. The fully migrated copy is
+/// checked again before atomic publication. The original database is never
+/// renamed or deleted. Close the source application before selecting its file;
+/// metadata checks detect ordinary changes during the copy but cannot make a
+/// live, concurrently written database safe to snapshot.
+///
+/// [copyOverride] and [publishOverride] are test seams.
 Future<void> migrateLegacyDesktopDatabase({
+  required File source,
   required File target,
-  File? sourceOverride,
-  Future<void> Function(File source, String targetPath)? renameOverride,
   Future<void> Function(File source, File temporary)? copyOverride,
   Future<void> Function(File temporary, File target)? publishOverride,
 }) async {
-  final File oldFile;
-  try {
-    if (sourceOverride != null) {
-      oldFile = sourceOverride;
-    } else {
-      final oldFolder = await getApplicationDocumentsDirectory();
-      oldFile = File(p.join(oldFolder.path, 'plezy_downloads.db'));
-    }
-    if (!await oldFile.exists()) return;
-  } catch (e, st) {
-    appLogger.w('Legacy DB migration skipped before source lookup completed', error: e, stackTrace: st);
-    return;
+  if (!await source.exists()) {
+    throw FileSystemException('The selected legacy database does not exist', source.path);
   }
-
-  try {
-    final moved = await _withLegacyDatabasePublishLock(target, () async {
-      if (await target.exists()) {
-        appLogger.w('Legacy DB migration skipped because ${target.path} now exists');
-        return false;
-      }
-      if (renameOverride != null) {
-        await renameOverride(oldFile, target.path);
-      } else {
-        await oldFile.rename(target.path);
-      }
-      return true;
-    });
-    if (!moved) return;
-    appLogger.i('Moved legacy DB from ${oldFile.path} → ${target.path}');
-    return;
-  } on FileSystemException catch (e) {
-    appLogger.w('Legacy DB rename failed (osError=${e.osError?.errorCode}); falling back to copy', error: e);
+  if (!await target.parent.exists()) {
+    await target.parent.create(recursive: true);
   }
+  if (await target.exists()) return;
 
   final temporary = File(
     p.join(
@@ -2313,23 +2457,37 @@ Future<void> migrateLegacyDesktopDatabase({
     ),
   );
   try {
-    if (copyOverride != null) {
-      await copyOverride(oldFile, temporary);
-    } else {
-      await _copyFileAndSync(oldFile, temporary);
+    await _copyLegacyDatabaseSnapshot(source, temporary, copyOverride: copyOverride);
+
+    final staged = AppDatabase._openLegacyDatabaseForValidation(temporary);
+    try {
+      // Triggers the pre-migration validator and then applies this build's
+      // normal, versioned Drift migrations to the staged copy only.
+      await staged.customSelect('SELECT 1').get();
+      final schemaVersion = await staged.customSelect('PRAGMA user_version').getSingle();
+      if (schemaVersion.read<int>('user_version') != AppDatabase.currentSchemaVersion) {
+        throw FormatException('Staged database did not migrate to schema ${AppDatabase.currentSchemaVersion}');
+      }
+      for (final table in AppDatabase._currentLegacyTables) {
+        await staged.customSelect('SELECT * FROM $table LIMIT 0').get();
+      }
+      final integrity = await staged.customSelect('PRAGMA integrity_check').get();
+      if (integrity.length != 1 || integrity.single.read<String>('integrity_check') != 'ok') {
+        throw const FormatException('Migrated database failed SQLite integrity_check');
+      }
+      final foreignKeyViolations = await staged.customSelect('PRAGMA foreign_key_check').get();
+      if (foreignKeyViolations.isNotEmpty) {
+        throw const FormatException('Migrated database contains foreign-key violations');
+      }
+    } finally {
+      await staged.close();
     }
 
     final published = await _withLegacyDatabasePublishLock(target, () async {
-      // Recheck only while holding the inter-process lock. On POSIX, rename
-      // replaces an existing destination, so an unlocked check can race a
-      // concurrent publisher and overwrite its now-canonical database.
       if (await target.exists()) {
         appLogger.w('Legacy DB migration skipped because ${target.path} now exists');
         return false;
       }
-
-      // The temporary file is a sibling, so this rename stays on one volume
-      // and publishes the complete, synced copy atomically.
       if (publishOverride != null) {
         await publishOverride(temporary, target);
       } else {
@@ -2337,25 +2495,73 @@ Future<void> migrateLegacyDesktopDatabase({
       }
       return true;
     });
-    if (!published) return;
-    try {
-      await oldFile.delete();
-    } catch (e) {
-      // Leaving the source behind is non-fatal — the new file is canonical.
-      appLogger.w('Legacy DB copied but old file delete failed: $e');
+    if (published) {
+      appLogger.i('Imported selected legacy DB from ${source.path} → ${target.path}; source retained');
     }
-    appLogger.i('Copied legacy DB from ${oldFile.path} → ${target.path}');
-  } catch (e, st) {
-    // A failed copy or final rename never touches the canonical path. Keep
-    // the legacy source so a future launch can retry.
-    appLogger.e('Legacy DB migration failed entirely', error: e, stackTrace: st);
+  } catch (error, stackTrace) {
+    appLogger.e('Selected legacy DB migration failed; source retained', error: error, stackTrace: stackTrace);
+    rethrow;
   } finally {
-    try {
-      if (await temporary.exists()) await temporary.delete();
-    } catch (e, st) {
-      appLogger.w('Failed to clean legacy DB migration temporary file', error: e, stackTrace: st);
+    for (final suffix in const ['', '-wal', '-shm', '-journal']) {
+      final stagedFile = File('${temporary.path}$suffix');
+      try {
+        if (await stagedFile.exists()) await stagedFile.delete();
+      } catch (error, stackTrace) {
+        appLogger.w('Failed to clean staged legacy DB file ${stagedFile.path}', error: error, stackTrace: stackTrace);
+      }
     }
   }
+}
+
+Future<
+  ({int size, DateTime modified, int? walSize, DateTime? walModified, int? journalSize, DateTime? journalModified})
+>
+_legacySnapshotMetadata(File source) async {
+  final main = await source.stat();
+  final wal = await _optionalFileStat(File('${source.path}-wal'));
+  final journal = await _optionalFileStat(File('${source.path}-journal'));
+  return (
+    size: main.size,
+    modified: main.modified,
+    walSize: wal?.size,
+    walModified: wal?.modified,
+    journalSize: journal?.size,
+    journalModified: journal?.modified,
+  );
+}
+
+Future<
+  ({int size, DateTime modified, int? walSize, DateTime? walModified, int? journalSize, DateTime? journalModified})
+>
+_copyLegacyDatabaseSnapshot(File source, File temporary, {Future<void> Function(File, File)? copyOverride}) async {
+  final before = await _legacySnapshotMetadata(source);
+  if (copyOverride != null) {
+    await copyOverride(source, temporary);
+  } else {
+    await _copyFileAndSync(source, temporary);
+  }
+  await _copyLegacySqliteSidecar(source, temporary, '-wal');
+  await _copyLegacySqliteSidecar(source, temporary, '-journal');
+  final after = await _legacySnapshotMetadata(source);
+  if (before != after) {
+    throw const FileSystemException('The selected database changed while it was being copied');
+  }
+  return before;
+}
+
+Future<FileStat?> _optionalFileStat(File file) async {
+  if (!await file.exists()) return null;
+  try {
+    return await file.stat();
+  } on FileSystemException {
+    return null;
+  }
+}
+
+Future<void> _copyLegacySqliteSidecar(File source, File temporary, String suffix) async {
+  final sidecar = File('${source.path}$suffix');
+  if (!await sidecar.exists()) return;
+  await _copyFileAndSync(sidecar, File('${temporary.path}$suffix'));
 }
 
 Future<T> _withLegacyDatabasePublishLock<T>(File target, Future<T> Function() action) async {

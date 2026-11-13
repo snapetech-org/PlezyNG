@@ -34,14 +34,14 @@ permissions:
 jobs:
   qualify:
     name: Native aerynOS install and release-app QA
-    if: github.repository == 'snapetech-org/pleazyng' && github.ref == 'refs/heads/main'
+    if: (github.repository == 'snapetech-org/pleazyng' || github.repository == 'snapetech-org/pleazyng-aerynos') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: snapetech-org/pleazyng
-          ref: ${{ github.sha }}
+          ref: main
           path: tooling
           fetch-depth: 0
           persist-credentials: false

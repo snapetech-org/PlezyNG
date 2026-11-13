@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Allow native aerynOS qualification to run from the trusted downstream main workflow and resolve its QA tooling from canonical main, with source and tooling ancestry checks.
 - Rebind the active Moonlight decoder to a recreated workspace surface, suspend input during surface loss, and stop cleanly when the target cannot be restored. The receiver API was contributed upstream by [@cgutman](https://github.com/cgutman) in [Moonlight Android commit `b48494cb`](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d); Pleazyng independently adapted it. See [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md#credited-moonlight-android-source).
 - Add a persisted practice-loop metronome that follows playback position and BPM, pauses during microphone capture, and keeps count-in available when capture is idle.
 - Generate, attest and attach a matching corresponding-source archive for Android releases that bundle the pinned Moonlight receiver and Pleazyng's retained-view adapter. The receiver revision was contributed upstream by [@cgutman](https://github.com/cgutman) in [Moonlight Android commit `b48494cb`](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d); Pleazyng independently adapts and packages it. See [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md#credited-moonlight-android-source).

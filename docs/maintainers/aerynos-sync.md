@@ -64,8 +64,15 @@ repeat publication; failed deliveries back off for thirty minutes.
    Linux job, retained artifact identity, trusted repository/workflow and exact
    certificate-bound source/invocation. No cross-repository Actions archive
    credential, Flutter setup or application recompilation is needed.
-3. `aerynos-qualify.yml` boots a disposable KVM guest from the checksum-pinned
-   official aerynOS image, builds the Stone, and upgrades the last-good package.
+3. The reusable `aerynos-qualify.yml` accepts calls from canonical Pleazyng
+   `main` and the trusted aerynOS consumer repository's `main` only. It checks
+   out canonical `main` for QA tooling and verifies the candidate source and
+   tooling revisions are ancestors of that branch. It then boots a disposable
+   KVM guest from the checksum-pinned official aerynOS image, builds the Stone,
+   and upgrades the last-good package. The consumer pins the reusable workflow
+   by commit SHA; its current pin remains the previously qualified revision
+   `8441d8fa534cd81f99e15b753beb15ecdf33dbe0` until the corrected entrypoint is
+   validated on its selected runner.
    Dependency checks, fresh sign-in, default settings, visible H.264 and authored
    audio, pause/seek/fullscreen, playing and paused background return, route
    resume and bookmark resume must pass. Playing phases require moving authored

@@ -23,12 +23,11 @@ widen trusted runner-group access to make untrusted code run.
 
 ## CodeQL
 
-CodeQL default setup is enabled for this public repository while GitHub
-provides public code scanning at no charge. Use standard GitHub-hosted runners,
-which are free for public repositories; do not move CodeQL to larger or private
-runners. Keep analysis permissions minimal and do not expose secrets to
-untrusted pull-request code. Disable CodeQL only at the owner's explicit
-direction.
+The owner-directed organization policy dated 2026-10-30 disables CodeQL across
+all `snapetech-org` repositories, including this public fork. Do not enable
+CodeQL default setup or add or restore CodeQL workflow invocations unless the
+owner explicitly reverses that direction. Keep the other approved security
+scans and checks in place; this instruction applies specifically to CodeQL.
 
 ## Release coverage — owner directive, 2026-11-05
 

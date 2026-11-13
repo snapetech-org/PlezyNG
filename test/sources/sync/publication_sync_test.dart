@@ -269,6 +269,69 @@ void main() {
     expect(await repoB.annotations('profile-B', entryB.key), isEmpty);
     expect(a.conflicts, isEmpty);
   });
+  test('a third offline device converges after another device deletes a bookmark', () async {
+    const sourceC = FileSource(
+      id: 'connection-C',
+      profileId: 'profile-C',
+      kind: FileSourceKind.googleDrive,
+      name: 'Archive Drive',
+    );
+    const entryC = SourceEntry(
+      sourceId: 'connection-C',
+      id: 'same-provider-book',
+      title: 'Book',
+      kind: SourceItemKind.audiobook,
+      files: [audio, ebook],
+    );
+    final repoC = SourceRepository(
+      SourceDatabase(NativeDatabase.memory()),
+      protect: (value) async => value,
+      reveal: (value) async => value,
+    );
+    final c = PublicationSync(repoC);
+    Future<void> runC() =>
+        c.run(profile: 'profile-C', sources: [sourceC], config: config, store: store, activeKeys: {}, check: () {});
+    await repoC.cacheEntries('profile-C', [entryC]);
+    addTearDown(repoC.database.close);
+
+    BookAnnotation note(bool deleted) => BookAnnotation(
+      id: 'offline-note',
+      entryKey: entryA.key,
+      edition: edition,
+      mode: PublicationMode.listening,
+      positionMs: 10000,
+      fileIndex: 0,
+      filePositionMs: 10000,
+      note: 'Keep this passage',
+      updatedAt: 1,
+      deleted: deleted,
+    );
+
+    await repoA.saveAnnotation('profile-A', note(false));
+    await runA();
+    await runB();
+    await runC();
+    expect(await repoB.annotations('profile-B', entryB.key), hasLength(1));
+    expect(await repoC.annotations('profile-C', entryC.key), hasLength(1));
+
+    await repoA.saveAnnotation('profile-A', note(true));
+    await runA();
+    await runB();
+    expect(await repoB.annotations('profile-B', entryB.key), isEmpty);
+    expect(await repoC.annotations('profile-C', entryC.key), hasLength(1));
+
+    await runC();
+    expect(await repoC.annotations('profile-C', entryC.key), isEmpty);
+    await runA();
+    await runB();
+    await runC();
+    expect(await repoA.annotations('profile-A', entryA.key), isEmpty);
+    expect(await repoB.annotations('profile-B', entryB.key), isEmpty);
+    expect(await repoC.annotations('profile-C', entryC.key), isEmpty);
+    expect(a.conflicts, isEmpty);
+    expect(b.conflicts, isEmpty);
+    expect(c.conflicts, isEmpty);
+  });
   test('offline bookmark edits coalesce while cloud publication retains provider writes', () async {
     BookAnnotation note(String text, int updatedAt) => BookAnnotation(
       id: 'note-queued',

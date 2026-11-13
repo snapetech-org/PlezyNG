@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -517,6 +518,7 @@ class LibraryCatalogueScreen extends StatefulWidget {
 
 class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
   final _search = TextEditingController();
+  final _creator = TextEditingController();
   List<LendingBook> _books = [];
   String _shelf = 'catalogue';
   String _catalogProvider = 'openLibrary';
@@ -546,7 +548,11 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
       final page = more ? _page + 1 : 1, service = widget.service, library = widget.library;
       final result = library == null
           ? _catalogProvider == 'libby'
-                ? await service.libbyTitleSearch(_search.text.trim(), mediaType: _libbyMediaType)
+                ? await service.libbyTitleSearch(
+                      _search.text.trim(),
+                      creator: _creator.text.trim(),
+                      mediaType: _libbyMediaType,
+                    )
                 : _catalogProvider == 'googleBooks'
                 ? await service.googleBooksSearch(
                     _search.text.trim(),
@@ -587,6 +593,7 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
   @override
   void dispose() {
     _search.dispose();
+    _creator.dispose();
     super.dispose();
   }
 
@@ -703,6 +710,19 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
                             ? Symbols.arrow_back_rounded
                             : Symbols.arrow_forward_rounded,
                       ),
+                    ),
+                  ),
+                ),
+              if (widget.library == null && _catalogProvider == 'libby')
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: FocusableTextField(
+                    controller: _creator,
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (_) => _load(),
+                    decoration: InputDecoration(
+                      hintText: t.explore.creditRole.creator,
+                      prefixIcon: const AppIcon(Symbols.person_rounded),
                     ),
                   ),
                 ),
@@ -947,6 +967,46 @@ class _LendingDetailScreenState extends State<_LendingDetailScreen> {
     await _act(() => widget.service.borrow(widget.library!, widget.book, holdEmail: email));
   }
 
+  Future<void> _showLibbyQr(Uri uri) async {
+    if (!mounted) return;
+    await showScopedDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(t.auth.showQRCode),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 340),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(t.auth.scanQRToSignIn, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              QrImageView(
+                data: uri.toString(),
+                version: QrVersions.auto,
+                size: 220,
+                backgroundColor: Colors.white,
+                semanticsLabel: t.auth.scanQRToSignIn,
+              ),
+              const SizedBox(height: 12),
+              SelectableText(uri.toString(), textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+        actions: [
+          DialogActionButton(onPressed: () => Navigator.pop(dialogContext), label: t.common.close),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _continueToLibby({bool browser = false}) async {
+    final uri = widget.book.page;
+    if (uri == null) return;
+    final opened = await widget.service.openLibbyShare(uri, preferBrowser: browser);
+    if (opened || !mounted) return;
+    await _showLibbyQr(uri);
+  }
+
   @override
   Widget build(BuildContext context) {
     final book = widget.book, library = widget.library;
@@ -1109,12 +1169,39 @@ class _LendingDetailScreenState extends State<_LendingDetailScreen> {
                           _focusedLendingButton(
                             onPressed: _busy
                                 ? null
-                                : () => sourceAction(context, () => widget.service.openPage(book.page!)),
+                                : () => sourceAction(
+                                    context,
+                                    () => book.data['source'] == 'libbyTitleLink'
+                                        ? _continueToLibby()
+                                        : widget.service.openPage(book.page!),
+                                  ),
                             primary: true,
                             buildButton: (onPressed) => FilledButton.icon(
                               onPressed: onPressed,
                               icon: const AppIcon(Symbols.open_in_new_rounded),
                               label: Text(t.lending.continueService),
+                            ),
+                          ),
+                        if (book.data['source'] == 'libbyTitleLink')
+                          _focusedLendingButton(
+                            onPressed: _busy
+                                ? null
+                                : () => sourceAction(context, () => _continueToLibby(browser: true)),
+                            buildButton: (onPressed) => OutlinedButton.icon(
+                              onPressed: onPressed,
+                              icon: const AppIcon(Symbols.language_rounded),
+                              label: Text(t.explore.detail.openOn(site: 'Libby web')),
+                            ),
+                          ),
+                        if (book.data['source'] == 'libbyTitleLink')
+                          _focusedLendingButton(
+                            onPressed: _busy
+                                ? null
+                                : () => _showLibbyQr(book.page!),
+                            buildButton: (onPressed) => TextButton.icon(
+                              onPressed: onPressed,
+                              icon: const AppIcon(Symbols.qr_code_rounded),
+                              label: Text(t.auth.showQRCode),
                             ),
                           ),
                         if (book.purchaseLink != null)

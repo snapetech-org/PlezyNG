@@ -20,6 +20,7 @@
 - Scope Live TV channel-picker selection and recent history by source, DVR and channel so equal backend keys remain distinct and IPTV recents appear correctly.
 - Ignore IPTV refresh failures from an older source revision or lineup generation so they cannot overwrite the current source status.
 - Add per-session Multiview gain controls without changing saved player volume, plus an explicit two-session decoded MPV mix on matching non-exclusive desktop output routes where runtime capabilities allow it. Other backends keep single-session audio; physical-device qualification remains open.
+- Keep the latest Multiview audio selection when an older native audio callback finishes or fails late.
 - Pause hidden Multiview video sessions through their current owner when panes are parked or another pane is promoted; preserve manual pauses and explicit background-audio ownership.
 - Fix cross-platform builds for Multiview's optional per-session audio capabilities while retaining single-session fallback on unsupported backends.
 - Gate Homebrew Cask handoff on an attested candidate and publisher credentials; record missing-candidate skips, preserve the core Sparkle appcast, and clarify automatic post-release lanes in GitHub-only help.

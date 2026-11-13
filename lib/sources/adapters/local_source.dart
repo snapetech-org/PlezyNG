@@ -89,7 +89,14 @@ class LocalSourceAdapter extends SourceAdapter {
 
     if (start < 0 || start > snapshot.count) throw const SourceException(SourceFailure.invalidData);
     final end = (start + _pageSize).clamp(0, snapshot.count).toInt();
-    final entries = await _page(snapshot, start, end);
+    late final List<SourceEntry> entries;
+    try {
+      entries = await _page(snapshot, start, end);
+    } finally {
+      if (!snapshot.cached && snapshot.spool != null && await snapshot.spool!.exists()) {
+        await snapshot.spool!.delete();
+      }
+    }
     final next = end < snapshot.count
         ? snapshot.cached
               ? 's${snapshot.generation}:$queryKey:$end'
@@ -107,94 +114,119 @@ class LocalSourceAdapter extends SourceAdapter {
     String query,
   ) async {
     final entries = <SourceEntry>[];
+    final runFiles = <File>[];
     var recognizedEntries = 0;
-    await for (final entity in Directory(directory).list(followLinks: false)) {
-      if (entity is Link) continue;
-      final id = p.relative(entity.path, from: root);
-      final name = p.basename(entity.path);
-      if (name.startsWith('.')) continue;
-      final folder = entity is Directory;
-      final kind = folder ? SourceItemKind.folder : classifySourceFile(name);
-      if (kind == SourceItemKind.unknown) continue;
-      if (recognizedEntries >= _maxSpooledEntries) throw const SourceException(SourceFailure.invalidData);
-      recognizedEntries++;
-      if (query.isNotEmpty && !name.toLowerCase().contains(query)) continue;
-      final stat = await entity.stat();
-      entries.add(
-        SourceEntry(
-          sourceId: source.id,
-          id: id,
-          title: name,
-          kind: kind,
-          parentId: relative,
-          files: folder
-              ? []
-              : [
-                  PublicationFile(
-                    id: id,
-                    name: name,
-                    mimeType: '',
-                    size: stat.size,
-                    revision: '${stat.modified.microsecondsSinceEpoch}:${stat.size}',
-                  ),
-                ],
-        ),
-      );
-    }
-    // Large snapshots can be re-enumerated for each page. Break case-folded
-    // title ties by stable path so those pages keep the same total ordering.
-    entries.sort((a, b) {
-      if (a.isFolder != b.isFolder) return a.isFolder ? -1 : 1;
-      final titleOrder = a.title.toLowerCase().compareTo(b.title.toLowerCase());
-      return titleOrder == 0 ? a.id.compareTo(b.id) : titleOrder;
-    });
-    final currentStamp = (await Directory(directory).stat()).modified.microsecondsSinceEpoch;
-    if (currentStamp != initialStamp) throw const SourceException(SourceFailure.cancelled);
-    final cached = entries.length <= _maxCachedEntries;
     final generation = ++_nextSnapshotId;
-    final createdAt = DateTime.now();
-    if (cached) {
-      final result = _LocalDirectorySnapshot(
-        entries: List.unmodifiable(entries),
-        count: entries.length,
-        modified: currentStamp,
-        generation: generation,
-        createdAt: createdAt,
-        cached: true,
-      );
-      _rememberSnapshot(snapshotKey, result);
-      return result;
-    } else {
-      final spooled = await _spool(entries, directory, currentStamp, generation);
-      if (spooled != null) {
-        final diskResult = _LocalDirectorySnapshot(
-          entries: const [],
+
+    Future<void> flushRun() async {
+      if (entries.isEmpty) return;
+      entries.sort(_compareLocalEntries);
+      final tempDirectory = await (_temporaryDirectory ??= Directory.systemTemp.createTemp('plezyng-local-'));
+      final file = File(p.join(tempDirectory.path, 'run-$generation-${runFiles.length}.jsonl'));
+      runFiles.add(file);
+      final sink = file.openWrite();
+      try {
+        for (final entry in entries) {
+          sink.writeln(jsonEncode(entry.toJson()));
+        }
+        await sink.flush();
+        await sink.close();
+      } catch (_) {
+        await sink.close();
+        rethrow;
+      }
+      entries.clear();
+    }
+
+    try {
+      await for (final entity in Directory(directory).list(followLinks: false)) {
+        if (entity is Link) continue;
+        final id = p.relative(entity.path, from: root);
+        final name = p.basename(entity.path);
+        if (name.startsWith('.')) continue;
+        final folder = entity is Directory;
+        final kind = folder ? SourceItemKind.folder : classifySourceFile(name);
+        if (kind == SourceItemKind.unknown) continue;
+        if (recognizedEntries >= _maxSpooledEntries) throw const SourceException(SourceFailure.invalidData);
+        recognizedEntries++;
+        if (query.isNotEmpty && !name.toLowerCase().contains(query)) continue;
+        final stat = await entity.stat();
+        if (entries.length == _maxCachedEntries) await flushRun();
+        entries.add(
+          SourceEntry(
+            sourceId: source.id,
+            id: id,
+            title: name,
+            kind: kind,
+            parentId: relative,
+            files: folder
+                ? []
+                : [
+                    PublicationFile(
+                      id: id,
+                      name: name,
+                      mimeType: '',
+                      size: stat.size,
+                      revision: '${stat.modified.microsecondsSinceEpoch}:${stat.size}',
+                    ),
+                  ],
+          ),
+        );
+      }
+      final currentStamp = (await Directory(directory).stat()).modified.microsecondsSinceEpoch;
+      if (currentStamp != initialStamp) throw const SourceException(SourceFailure.cancelled);
+      final createdAt = DateTime.now();
+      if (runFiles.isEmpty) {
+        // Small snapshots stay in memory; larger snapshots sort through bounded
+        // runs so enumeration never retains more than one 20,000-entry chunk.
+        entries.sort(_compareLocalEntries);
+        final result = _LocalDirectorySnapshot(
+          entries: List.unmodifiable(entries),
           count: entries.length,
           modified: currentStamp,
           generation: generation,
           createdAt: createdAt,
           cached: true,
+        );
+        _rememberSnapshot(snapshotKey, result);
+        return result;
+      }
+
+      if (entries.isNotEmpty) await flushRun();
+      final spooled = await _mergeRuns(runFiles, directory, currentStamp, generation);
+      try {
+        final finalStamp = (await Directory(directory).stat()).modified.microsecondsSinceEpoch;
+        if (finalStamp != initialStamp) throw const SourceException(SourceFailure.cancelled);
+        final cached = spooled.bytes <= _maxSpooledBytes;
+        final result = _LocalDirectorySnapshot(
+          entries: const [],
+          count: spooled.count,
+          modified: currentStamp,
+          generation: generation,
+          createdAt: createdAt,
+          cached: cached,
           spool: spooled.file,
           pageOffsets: spooled.offsets,
           pageLengths: spooled.lengths,
-          spoolBytes: spooled.bytes,
+          spoolBytes: cached ? spooled.bytes : 0,
         );
-        _rememberSnapshot(snapshotKey, diskResult);
-        return diskResult;
+        if (cached) {
+          _rememberSnapshot(snapshotKey, result);
+        }
+        return result;
+      } catch (_) {
+        if (await spooled.file.exists()) await spooled.file.delete();
+        rethrow;
+      }
+    } finally {
+      for (final file in runFiles) {
+        if (await file.exists()) await file.delete();
       }
     }
-    return _LocalDirectorySnapshot(
-      entries: entries,
-      count: entries.length,
-      modified: currentStamp,
-      generation: generation,
-      createdAt: createdAt,
-      cached: false,
-    );
   }
 
-  Future<({File file, List<int> offsets, List<int> lengths, int bytes})?> _spool(
-    List<SourceEntry> entries,
+  Future<({File file, List<int> offsets, List<int> lengths, int bytes, int count})> _mergeRuns(
+    List<File> runFiles,
     String directory,
     int stamp,
     int generation,
@@ -202,25 +234,43 @@ class LocalSourceAdapter extends SourceAdapter {
     final temporaryDirectory = await (_temporaryDirectory ??= Directory.systemTemp.createTemp('plezyng-local-'));
     final file = File(p.join(temporaryDirectory.path, 'snapshot-$generation.json'));
     final handle = await file.open(mode: FileMode.write);
+    final readers = <_LocalEntryRunReader>[];
     final offsets = <int>[];
     final lengths = <int>[];
     var byteOffset = 0;
+    var count = 0;
     var closed = false;
     try {
-      for (var start = 0; start < entries.length; start += _pageSize) {
-        final end = (start + _pageSize).clamp(0, entries.length);
-        final bytes = utf8.encode(jsonEncode(entries.sublist(start, end).map((entry) => entry.toJson()).toList()));
-        if (byteOffset + bytes.length > _maxSpooledBytes) {
-          await handle.close();
-          closed = true;
-          await file.delete();
-          return null;
-        }
+      final page = <Map<String, dynamic>>[];
+      Future<void> writePage() async {
+        final bytes = utf8.encode(jsonEncode(page));
         offsets.add(byteOffset);
         lengths.add(bytes.length);
         await handle.writeFrom(bytes);
         byteOffset += bytes.length;
+        page.clear();
       }
+
+      for (final run in runFiles) {
+        final reader = _LocalEntryRunReader(run);
+        readers.add(reader);
+        await reader.advance();
+      }
+      while (true) {
+        _LocalEntryRunReader? smallest;
+        for (final reader in readers) {
+          if (reader.current == null) continue;
+          if (smallest == null || _compareLocalEntries(reader.current!, smallest.current!) < 0) {
+            smallest = reader;
+          }
+        }
+        if (smallest == null) break;
+        page.add(smallest.current!.toJson());
+        count++;
+        await smallest.advance();
+        if (page.length == _pageSize) await writePage();
+      }
+      if (page.isNotEmpty) await writePage();
       await handle.flush();
       await handle.close();
       closed = true;
@@ -229,7 +279,7 @@ class LocalSourceAdapter extends SourceAdapter {
         await file.delete();
         throw const SourceException(SourceFailure.cancelled);
       }
-      return (file: file, offsets: offsets, lengths: lengths, bytes: byteOffset);
+      return (file: file, offsets: offsets, lengths: lengths, bytes: byteOffset, count: count);
     } catch (_) {
       if (!closed) {
         await handle.close();
@@ -238,6 +288,9 @@ class LocalSourceAdapter extends SourceAdapter {
       if (await file.exists()) await file.delete();
       rethrow;
     } finally {
+      for (final reader in readers) {
+        await reader.close();
+      }
       if (!closed) await handle.close();
     }
   }
@@ -451,4 +504,24 @@ class _LocalDirectorySnapshot {
   final List<int> pageOffsets;
   final List<int> pageLengths;
   final int spoolBytes;
+}
+
+int _compareLocalEntries(SourceEntry a, SourceEntry b) {
+  if (a.isFolder != b.isFolder) return a.isFolder ? -1 : 1;
+  final titleOrder = a.title.toLowerCase().compareTo(b.title.toLowerCase());
+  return titleOrder == 0 ? a.id.compareTo(b.id) : titleOrder;
+}
+
+class _LocalEntryRunReader {
+  _LocalEntryRunReader(File file)
+    : _lines = StreamIterator<String>(file.openRead().transform(utf8.decoder).transform(const LineSplitter()));
+
+  final StreamIterator<String> _lines;
+  SourceEntry? current;
+
+  Future<void> advance() async {
+    current = await _lines.moveNext() ? SourceEntry.fromJson(sourceMap(jsonDecode(_lines.current))) : null;
+  }
+
+  Future<void> close() => _lines.cancel();
 }

@@ -34,6 +34,8 @@ Compaction merges concurrent versions only when their values are identical. Dele
 
 Recovery export contains the encrypted sync document and its authenticated filename. The sync code remains separate. Import verifies the code and filename, merges state through the causal rules, and retains current history. Export after a successful sync to include the newest provider snapshot.
 
+There is no remote device roster or device-retirement/revocation operation. Generation cleanup only removes snapshots owned by the currently syncing device; it cannot revoke a lost device that still has the sync code. A device that reconnects can merge current tombstones and state, as covered by the three-device regression test. If device revocation is required, its authorization and stale-device rules need a defined protocol before implementation; local generation pruning is not device retirement.
+
 ## NFS read performance
 
 NFSv3 reads use a bounded read-ahead window, configurable from one to four requests. Four is the hard limit for concurrent NFS READ RPCs per adapter, including metadata and cover reads. A source detail action reads at most 64 MiB from the largest file and reports the bytes read, elapsed throughput, request count, and configured window. A short or interrupted sample fails qualification instead of reporting throughput for an incomplete read.

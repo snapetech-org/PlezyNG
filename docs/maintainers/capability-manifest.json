@@ -3,7 +3,7 @@
   "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "3b73b384f6368890d31ea5f57ab2e6abeb17e24f",
+    "auditedMainCommit": "31bfd0e04b6656378f3abddcf17d2738cfdca8c3",
     "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
@@ -395,7 +395,7 @@
         "lib/sources/sync/sync_store.dart",
         "test/sources/sync/publication_sync_test.dart"
       ],
-      "qualification": "Per-target retry, bounded state, causal annotation tombstones, compaction, and encrypted recovery exist. A deterministic three-device test verifies a stale offline device applies a deletion tombstone and converges after rejoining. Multi-device retirement convergence and live-provider behavior remain unqualified."
+      "qualification": "Per-target retry, bounded state, causal annotation tombstones, compaction, and encrypted recovery exist. A deterministic three-device test verifies a stale offline device applies a deletion tombstone and converges after rejoining. No remote device roster or retirement/revocation operation exists; generation pruning is local to the syncing device. Live-provider behavior remains unqualified."
     },
     {
       "id": "F14",

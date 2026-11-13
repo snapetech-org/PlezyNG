@@ -279,7 +279,7 @@ void main() {
       LogRedactionManager.registerToken('abc-secret-XYZ');
       final result = LogRedactionManager.redact('Authorization: Bearer abc-secret-XYZ');
       expect(result.contains('abc-secret-XYZ'), isFalse);
-      expect(result.contains('[REDACTED]'), isTrue);
+      expect(result, 'Authorization: Bearer [REDACTED_TOKEN]');
     });
 
     test('redacts URL-encoded form of a token', () {

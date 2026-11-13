@@ -32,10 +32,9 @@ abstract final class CertificateTrust {
   /// OpenSSL playback on Android needs both the platform and owner roots.
   static Future<String?> allAndroidAuthoritiesPem() => channel.invokeMethod<String>('getAllAuthoritiesPem');
 
-  /// Parent domains of every hard-coded HTTPS endpoint, matched together with
-  /// their subdomains. Kept equal to the `<domain-config>` in
-  /// `android/app/src/main/res/xml/network_security_config.xml`;
-  /// `test/android/network_security_config_test.dart` pins both to the sources.
+  /// Provider domains that use system-only trust, matched together with their
+  /// subdomains. Exact first-party service hosts are matched separately from
+  /// [pleazyngOAuthBrokerBaseUrl] in [isFixedEndpoint].
   static const Set<String> fixedEndpointDomains = {
     'plex.tv',
     'trakt.tv',
@@ -43,7 +42,6 @@ abstract final class CertificateTrust {
     'anilist.co',
     'simkl.com',
     'simkl.in',
-    'pleazyng-api.snape.tech',
     'mdblist.com',
     'jsdelivr.net',
     'github.com',

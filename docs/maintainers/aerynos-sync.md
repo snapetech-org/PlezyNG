@@ -70,9 +70,16 @@ repeat publication; failed deliveries back off for thirty minutes.
    tooling revisions are ancestors of that branch. It then boots a disposable
    KVM guest from the checksum-pinned official aerynOS image, builds the Stone,
    and upgrades the last-good package. The consumer pins the reusable workflow
-   by commit SHA; its current pin remains the previously qualified revision
-   `8441d8fa534cd81f99e15b753beb15ecdf33dbe0` until the corrected entrypoint is
-   validated on its selected runner.
+   by commit SHA. Its `main` now pins
+   `6579ae8ce8447b84dad4dc9539eebe5094f61746` (updated on 2026-11-13), but the
+   latest successful delivery run,
+   [43146075189](https://github.com/snapetech-org/pleazyng-aerynos/actions/runs/43146075189),
+   ran on 2026-11-12 with the previous pin
+   `8441d8fa534cd81f99e15b753beb15ecdf33dbe0`. The updated entrypoint has not
+   yet been exercised by a downstream run on its selected runner, so the
+   existing 3.0.33-5 qualification does not validate that revision. Validate the
+   new pin before treating a later delivery as evidence for the corrected
+   entrypoint.
    Dependency checks, fresh sign-in, default settings, visible H.264 and authored
    audio, pause/seek/fullscreen, playing and paused background return, route
    resume and bookmark resume must pass. Playing phases require moving authored

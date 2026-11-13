@@ -58,11 +58,15 @@ not installed in this workspace, so their suites have not executed here.
 Implementation and platform handoff are documented in [ROMM_INTEGRATION.md](ROMM_INTEGRATION.md).
 The native host is wired into platform build recipes; core binary staging and
 Apple signing remain explicit release inputs. The default core recipe excludes
-Snes9x and Genesis Plus GX pending distribution-license review. This is a
-source delivery, not a claim of tested device playback. Every native route requires an OS-isolated worker. iOS/tvOS/webOS/Tizen
-native play is unavailable until containment is implemented, including on TVs
-without an embedded browser. See [the current policy](../security/native-emulator-isolation.md). Browser netplay remains
-unadvertised because device tokens do not establish its session cookie.
+Snes9x and Genesis Plus GX pending distribution-license review. Every native
+route requires an OS-isolated worker. Desktop, Android, webOS and Tizen have
+worker implementations; iOS 26 and later use the Enhanced Security extension.
+The iOS extension has passed hosted packaging validation, while signed-device
+acceptance remains open. Native play is unavailable on earlier iOS and tvOS.
+webOS and Tizen signed packages and physical-device qualification also remain
+open. See [the current policy](../security/native-emulator-isolation.md).
+Browser netplay remains unadvertised because device tokens do not establish its
+session cookie.
 
 ## Acceptance handoff
 

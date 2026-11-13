@@ -136,10 +136,11 @@ source pin set. No emulator executable is downloaded at runtime.
 | --- | --- |
 | Android / Android TV | Proxy, isolated-service worker and three core libraries built for each APK/AAB ABI; matching source/notices packaged as variant-specific assets |
 | macOS | Proxy and three core XCFrameworks plus a separately signed sandboxed helper; source/notices in the pod resource bundle |
-| iOS / tvOS | Native emulation unavailable pending an OS-isolated helper; bundled libraries do not enable a route |
+| iOS 26 and later | Enhanced Security extension worker and three core XCFrameworks; hosted packaging validation passed; signed-device acceptance remains open |
+| Earlier iOS / tvOS | Native emulation unavailable; earlier iOS lacks the required extension runtime and tvOS does not support this Enhanced Security extension |
 | Windows | Host and three matching core DLLs beside the executable; source/notices under `data/romm-notices` |
 | Linux | Host and three matching core shared libraries under `lib/`; source/notices under `data/romm-notices` |
-| Tizen / webOS | Native emulation unavailable pending an OS-isolated helper; the host never loads a core |
+| Tizen / webOS | Descriptor-only worker, read-only ROM/firmware descriptors and default-deny syscall filter; hosted containment passed on x64 and ARM64, with ARMv7 cross-compilation; signed packages and physical-device qualification remain open |
 
 Apple builds stage the entire host/core/source set before replacing the previous
 set, and verify the cache's file contents, permissions and framework symlinks.
@@ -148,7 +149,7 @@ interfaces, alignment and dependencies, and the matching source receipts. The pr
 The desktop install steps run after Flutter's bundle cleanup so the cleanup
 cannot delete the just-installed host.
 
-Native availability is fail-closed on every platform; see [containment policy](../security/native-emulator-isolation.md). Downloads and existing saves remain intact when native play is unavailable.
+Native availability is fail-closed on every platform; see [containment policy](../security/native-emulator-isolation.md) for the platform boundaries and qualification evidence. Downloads and existing saves remain intact when native play is unavailable.
 
 Each package retains the exact default-core source archives, tracked license
 files, host implementation/header notices and the application build recipe.

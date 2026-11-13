@@ -25,9 +25,11 @@ from release_all_platforms import (  # noqa: E402
     ensure_candidate_build,
     ensure_ci,
     ensure_tag,
+    failed_preflight_ci_run,
     hosted_tvos_workflow_drained,
     select_apple_runner_pool,
     timed_out_unassigned_hosted_tvos_job,
+    trusted_preflight_ci_run,
     trusted_release_workflow_run,
     release_ci_source,
     run_has_successful_step,
@@ -146,6 +148,84 @@ class AppleRunnerRoutingTests(unittest.TestCase):
     def test_explicit_route_override_skips_private_capacity_probe(self, private_busy) -> None:
         self.assertEqual(select_apple_runner_pool("hosted"), "hosted")
         private_busy.assert_not_called()
+
+
+class PreflightCIFastFailTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.run = {
+            "id": 7,
+            "event": "workflow_dispatch",
+            "head_branch": "main",
+            "head_repository": {"full_name": "snapetech-org/pleazyng"},
+            "path": ".github/workflows/ci.yml@refs/heads/main",
+            "display_title": "action:ci:pool:private",
+        }
+
+    def test_only_trusted_main_preflight_ci_is_fast_fail_cancellable(self) -> None:
+        self.assertTrue(trusted_preflight_ci_run(self.run, "snapetech-org/pleazyng"))
+        for changes in (
+            {"event": "pull_request"},
+            {"head_branch": "feature/untrusted"},
+            {"head_repository": {"full_name": "other/repository"}},
+            {"path": ".github/workflows/build.yml@refs/heads/main"},
+            {"display_title": "action:release:pool:private:tag:v3.0.0"},
+        ):
+            with self.subTest(changes=changes):
+                self.assertFalse(trusted_preflight_ci_run({**self.run, **changes}, "snapetech-org/pleazyng"))
+
+    def test_requires_a_completed_failing_job(self) -> None:
+        active = {"name": "Apple native reliability (macOS)", "status": "in_progress"}
+        passed = {"name": "Code Analysis", "status": "completed", "conclusion": "success"}
+        failed = {"name": "Unit Tests", "status": "completed", "conclusion": "failure"}
+        self.assertFalse(failed_preflight_ci_run(self.run, [active, passed]))
+        self.assertTrue(failed_preflight_ci_run(self.run, [active, passed, failed]))
+        self.assertFalse(failed_preflight_ci_run(
+            {**self.run, "path": ".github/workflows/build.yml"}, [failed]
+        ))
+
+    @patch("release_all_platforms.time.sleep")
+    @patch("release_all_platforms.time.monotonic", return_value=0.0)
+    @patch("release_all_platforms.command")
+    @patch("release_all_platforms.gh_json")
+    @patch("release_all_platforms.subprocess.Popen")
+    def test_cancels_failed_preflight_while_private_apple_job_is_active(
+        self, popen, gh_json, command, _monotonic, _sleep,
+    ) -> None:
+        apple_controller = Mock()
+        apple_controller.poll.return_value = None
+        apple_controller.wait.return_value = 1
+        watcher = Mock()
+        watcher.poll.side_effect = [None, 0]
+        watcher.wait.return_value = 1
+        popen.side_effect = [apple_controller, watcher]
+        jobs = [
+            {"name": "Unit Tests", "status": "completed", "conclusion": "failure"},
+            {"name": "Apple native reliability (macOS)", "status": "in_progress", "conclusion": None},
+        ]
+        completed_cancelled = {"id": 7, "status": "completed", "conclusion": "cancelled"}
+        gh_json.side_effect = [
+            self.run | {"status": "in_progress"},
+            {"jobs": jobs, "total_count": len(jobs)},
+            self.run | {"status": "in_progress"},
+            {"jobs": jobs, "total_count": len(jobs)},
+            completed_cancelled,
+            {"databaseId": 7, "status": "completed", "conclusion": "cancelled", "jobs": []},
+        ]
+
+        with tempfile.TemporaryDirectory() as evidence:
+            with patch("release_all_platforms.APPLE_JIT_EVIDENCE_ROOT", Path(evidence)):
+                result = wait_for_run(
+                    "snapetech-org/pleazyng",
+                    {"databaseId": 7},
+                    "Pleazyng CI",
+                    private_apple=True,
+                    allow_failure=True,
+                    cancel_failed_preflight=True,
+                )
+
+        self.assertEqual(result["conclusion"], "cancelled")
+        command.assert_called_once_with(["gh", "run", "cancel", "7", "--repo", "snapetech-org/pleazyng"])
+        apple_controller.wait.assert_called_once()
 
 class ReleaseCIGateManifestTests(unittest.TestCase):
     def test_reads_release_gate_from_capability_manifest(self) -> None:

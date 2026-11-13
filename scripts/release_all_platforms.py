@@ -285,6 +285,34 @@ def failed_build_has_drained(run: dict, jobs: list[dict]) -> bool:
     )
 
 
+def trusted_preflight_ci_run(run: dict, repository: str) -> bool:
+    """Limit fast-fail cancellation to this repo's trusted main-branch CI gate."""
+    head_repository = run.get("head_repository")
+    path = run.get("path")
+    return (
+        run.get("event") == "workflow_dispatch"
+        and run.get("head_branch") == "main"
+        and isinstance(head_repository, dict)
+        and head_repository.get("full_name") == repository
+        and isinstance(path, str)
+        and path.split("@", 1)[0] == ".github/workflows/ci.yml"
+        and run.get("display_title") == "action:ci:pool:private"
+    )
+
+
+def failed_preflight_ci_run(run: dict, jobs: list[dict], repository: str = PLEZY_REPO) -> bool:
+    """Stop costly preflight jobs once a trusted CI job has definitively failed."""
+    if not trusted_preflight_ci_run(run, repository) or not jobs:
+        return False
+    if any(not isinstance(job, dict) or not isinstance(job.get("name"), str)
+           or not isinstance(job.get("status"), str) for job in jobs):
+        return False
+    return any(
+        job.get("status") == "completed" and job.get("conclusion") in {"failure", "timed_out"}
+        for job in jobs
+    )
+
+
 def timed_out_unassigned_hosted_tvos_job(jobs: list[dict], *, now_utc=None) -> int | None:
     """Return a tvOS job ID only after ten minutes queued without a runner or steps."""
     matches = [job for job in jobs if job.get("name") == "Build tvOS developer package (arm64)"]
@@ -357,7 +385,8 @@ def trusted_release_workflow_run(run: dict, repository: str) -> bool:
 
 
 def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = True,
-                 allow_failure: bool = False, watch_hosted_tvos: bool = False) -> dict:
+                 allow_failure: bool = False, watch_hosted_tvos: bool = False,
+                 cancel_failed_preflight: bool = False) -> dict:
     run_id = str(run["databaseId"])
     print(f"\n{purpose}: {run.get('url', f'https://github.com/{repo}/actions/runs/{run_id}')}", flush=True)
     apple_controller: subprocess.Popen[bytes] | None = None
@@ -375,6 +404,8 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
 
     next_drain_check = 0.0
     cancellation_requested = False
+    preflight_cancel_requested = False
+    next_preflight_check = 0.0
     hosted_tvos_cancel_requested = False
     next_hosted_queue_check = 0.0
     watch_failures = 0
@@ -384,6 +415,45 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
             cwd=ROOT,
         )
         while watcher.poll() is None:
+            preflight_check_time = time.monotonic() if cancel_failed_preflight else 0.0
+            if (cancel_failed_preflight and not preflight_cancel_requested
+                    and preflight_check_time >= next_preflight_check):
+                next_preflight_check = preflight_check_time + 15
+                try:
+                    overview = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
+                    if (overview.get("id") == int(run_id)
+                            and overview.get("status") != "completed"
+                            and trusted_preflight_ci_run(overview, repo)):
+                        inventory = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100")
+                        jobs = inventory.get("jobs", [])
+                        complete = (isinstance(jobs, list) and all(isinstance(job, dict) for job in jobs)
+                                    and inventory.get("total_count", len(jobs)) <= len(jobs))
+                        if complete and failed_preflight_ci_run(overview, jobs, repo):
+                            confirmation = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
+                            if (confirmation.get("id") == int(run_id)
+                                    and confirmation.get("status") != "completed"
+                                    and trusted_preflight_ci_run(confirmation, repo)):
+                                confirmed = gh_json(
+                                    "api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100"
+                                )
+                                confirmed_jobs = confirmed.get("jobs", [])
+                                confirmed_complete = (
+                                    isinstance(confirmed_jobs, list)
+                                    and all(isinstance(job, dict) for job in confirmed_jobs)
+                                    and confirmed.get("total_count", len(confirmed_jobs)) <= len(confirmed_jobs)
+                                )
+                                if (confirmed_complete
+                                        and failed_preflight_ci_run(confirmation, confirmed_jobs, repo)):
+                                    print(
+                                        "Trusted preflight CI has a completed failing job; canceling remaining "
+                                        "checks now. Release build and publication runs are never fast-canceled.",
+                                        flush=True,
+                                    )
+                                    command(["gh", "run", "cancel", run_id, "--repo", repo])
+                                    preflight_cancel_requested = True
+                except ReleaseError as error:
+                    print(f"Could not confirm preflight CI failure; preserving the run and retrying: {error}",
+                          flush=True)
             if watch_hosted_tvos and not hosted_tvos_cancel_requested and time.monotonic() >= next_hosted_queue_check:
                 next_hosted_queue_check = time.monotonic() + 30
                 try:
@@ -433,7 +503,7 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
                           flush=True)
             if apple_controller is not None:
                 controller_code = apple_controller.poll()
-                if controller_code not in (None, 0):
+                if controller_code not in (None, 0) and not preflight_cancel_requested:
                     watcher.terminate()
                     watcher.wait(timeout=30)
                     raise ReleaseError(
@@ -480,7 +550,7 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
         time.sleep(10)
     if apple_controller is not None:
         controller_code = apple_controller.wait()
-        if controller_code:
+        if controller_code and not preflight_cancel_requested:
             raise ReleaseError(
                 f"Apple JIT queue controller failed with exit code {controller_code}; "
                 "inspect its per-run evidence before retrying."
@@ -1076,8 +1146,13 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref:
         if existing.get("status") == "completed" and existing.get("conclusion") != "success":
             raise ReleaseError(f"CI for release commit {commit_sha[:12]} failed; refusing to tag it.")
         if existing.get("status") != "completed":
-            existing = wait_for_run(PLEZY_REPO, existing, "Pleazyng CI",
-                                    private_apple=execution_profile != "hybrid" or apple_runner_pool == "private")
+            existing = wait_for_run(
+                PLEZY_REPO,
+                existing,
+                "Pleazyng CI",
+                private_apple=execution_profile != "hybrid" or apple_runner_pool == "private",
+                cancel_failed_preflight=True,
+            )
         if execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Windows native reliability (arm64)"
         ):

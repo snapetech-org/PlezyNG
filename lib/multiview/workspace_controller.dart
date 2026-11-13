@@ -441,8 +441,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     final index = _sessions.length;
     _sessions[descriptor.id] = registration;
     final restoredGain = _pendingSnapshot?.audioGains[descriptor.id];
-    if (restoredGain != null && restoredGain.isFinite)
+    if (restoredGain != null && restoredGain.isFinite) {
       _audioGains[descriptor.id] = restoredGain.clamp(0.0, 1.0).toDouble();
+    }
     final restoredPlacement = _placements[descriptor.id] ?? _pendingSnapshot?.placements[descriptor.id];
     _placements.remove(descriptor.id);
     _placements[descriptor.id] =
@@ -880,7 +881,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     final targetHandler = target?.onAudioOwnershipChanged;
     final revision = ++_audioRevision;
     try {
-      final selected = <String>{if (targetId != null) targetId, if (mixedId != null) mixedId};
+      final selected = <String>{?targetId, ?mixedId};
       // Silence every former owner before activating a new one. The two
       // selected outputs are then applied in order, with system focus held by
       // the primary only.

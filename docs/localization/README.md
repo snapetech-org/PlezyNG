@@ -77,9 +77,9 @@ limits for those drafts.
 Steam connected-experience, service-integration, cross-media discovery,
 cloud-sync privacy, Trakt export, host-stage karaoke analysis, karaoke
 microphone/performance and phone-capture, A-B count-in tick, K23 trim/skip,
-audiobook bedtime, karaoke show-template and comic archive password messages
-currently use the documented English fallback for non-English catalogs until
-reviewed translations are available. They are listed in
+audiobook bedtime, karaoke show-template, comic archive password, and subtitle
+WAV transcript reuse/cache disclosure messages currently use the documented
+English fallback for non-English catalogs until reviewed translations are available. They are listed in
 `lib/i18n/english_fallbacks.json`; this fallback is not a claim of translation
 or native-speaker review.
 

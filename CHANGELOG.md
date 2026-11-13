@@ -9,6 +9,7 @@
 - Retry cleanup of old publication and Saved-pick sync generations on unchanged syncs, and stop publishing before retained state exceeds the bounded provider listing capacity.
 - Reject malformed IPTV XMLTV calendar, clock, and numeric timezone fields instead of normalizing them into shifted guide times.
 - Add per-session Multiview gain controls without changing saved player volume, plus an explicit two-session decoded MPV mix on matching non-exclusive desktop output routes where runtime capabilities allow it. Other backends keep single-session audio; physical-device qualification remains open.
+- Fix cross-platform builds for Multiview's optional per-session audio capabilities while retaining single-session fallback on unsupported backends.
 - Gate Homebrew Cask handoff on an attested candidate and publisher credentials; record missing-candidate skips, preserve the core Sparkle appcast, and clarify automatic post-release lanes in GitHub-only help.
 - Add a profile-scoped daily audiobook bedtime with a ten-second fade, independently adapting the certain-hours sleep-timer idea suggested upstream by [@GeorgeHahn](https://github.com/GeorgeHahn) in [Audiobookshelf app issue #260](https://github.com/advplyr/audiobookshelf-app/issues/260).
 - Add shared HTTP and WebSocket rate limits with escalating, persisted bans for repeated relay abuse.

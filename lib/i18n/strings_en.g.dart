@@ -12532,6 +12532,15 @@ class Translations$subtitleAiUi$en {
 	/// en: 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}'
 	String generatedCueCountAndDuration({required Object cueCount, required Object durationMinutes, required Object speechStatus, required Object providerLabel, required Object placementEvidence, required Object uploadedNote}) => 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}';
 
+	/// en: 'Source transcript is reusable in this session; an active profile is needed for persistent caching.'
+	String get sourceTranscriptReusableInSessionProfileNeededForPersistentCache => 'Source transcript is reusable in this session; an active profile is needed for persistent caching.';
+
+	/// en: 'Translate speech from WAV'
+	String get translateSpeechFromWav => 'Translate speech from WAV';
+
+	/// en: 'Transcribes a WAV once and reuses its source transcript for other target languages.'
+	String get transcribesWavOnceAndReusesSourceTranscript => 'Transcribes a WAV once and reuses its source transcript for other target languages.';
+
 	/// en: 'Transcribing audio and aligning subtitle text…'
 	String get transcribingAudioAndAligningSubtitleText => 'Transcribing audio and aligning subtitle text…';
 
@@ -22379,6 +22388,9 @@ extension on Translations {
 			'subtitleAiUi.glossaryMismatchOne' => ({required Object count}) => 'Glossary check found ${count} possible mismatch. Review these cues before attaching.',
 			'subtitleAiUi.glossaryMismatchMany' => ({required Object count}) => 'Glossary check found ${count} possible mismatches. Review these cues before attaching.',
 			'subtitleAiUi.generatedCueCountAndDuration' => ({required Object cueCount, required Object durationMinutes, required Object speechStatus, required Object providerLabel, required Object placementEvidence, required Object uploadedNote}) => 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}',
+			'subtitleAiUi.sourceTranscriptReusableInSessionProfileNeededForPersistentCache' => 'Source transcript is reusable in this session; an active profile is needed for persistent caching.',
+			'subtitleAiUi.translateSpeechFromWav' => 'Translate speech from WAV',
+			'subtitleAiUi.transcribesWavOnceAndReusesSourceTranscript' => 'Transcribes a WAV once and reuses its source transcript for other target languages.',
 			'subtitleAiUi.transcribingAudioAndAligningSubtitleText' => 'Transcribing audio and aligning subtitle text…',
 			'subtitleAiUi.synchronizationOperationApplied' => ({required Object operation, required Object matchedCueCount, required Object totalCueCount, required Object confidence, required Object discontinuityCount, required Object rate, required Object baseOffset, required Object source, required Object uploadedNote}) => '${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected; rate ${rate}×, base offset ${baseOffset} ms. Original: ${source}.${uploadedNote}',
 			'subtitleAiUi.subtitleLanguagesForMatching' => 'Subtitle languages for matching',
@@ -22438,11 +22450,11 @@ extension on Translations {
 			'subtitleAiUi.saveSRTOrJSONExportsTheReviewedResul_b960b84b' => 'Save SRT or JSON exports the reviewed result without changing the active track or source subtitle.',
 			'subtitleAiUi.editAllCues_8771718b' => 'Edit all cues',
 			'subtitleAiUi.theCurrentlySelectedCaptionsAreBurne_9904ad02' => 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.uploadAttachStoresThisSRTOnTheActive_3e49fa27' => 'Upload + attach stores this SRT on the active library item when the server allows it.',
 			'subtitleAiUi.editSampleCue' => 'Edit sample cue',
 			'subtitleAiUi.saveSRT' => 'Save SRT',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.saveJSON' => 'Save JSON',
 			'subtitleAiUi.discard' => 'Discard',
 			'subtitleAiUi.uploadAttach' => 'Upload + attach',
@@ -22952,11 +22964,11 @@ extension on Translations {
 			'karaokeUi.allGenres' => 'All genres',
 			'karaokeUi.allLanguages' => 'All languages',
 			'karaokeUi.allDecades' => 'All decades',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.allDifficultyLevels' => 'All difficulty levels',
 			'karaokeUi.difficulty5' => ({required Object value1}) => 'Difficulty ${value1} / 5',
 			'karaokeUi.requestDuetGroup' => 'Request duet / group',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.prepareBackingTimingAndGuidance' => 'Prepare backing, timing and guidance',
 			'karaokeUi.exportPrivateDuetInvitation' => 'Export private duet invitation',
 			'karaokeUi.allowGuestVotesOnWaitingSongs' => 'Allow guest votes on waiting songs',

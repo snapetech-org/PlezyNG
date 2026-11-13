@@ -33,7 +33,6 @@ import '../../models/companion_remote/remote_command.dart';
 import '../../mpv/models.dart';
 import '../../mpv/player/audio_spectrum.dart';
 import '../../mpv/player/player.dart';
-import '../../mpv/player/player_base.dart';
 import '../../mpv/player/player_native.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/notification_permission.dart';
@@ -4594,7 +4593,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       try {
         if (hadFocus) await player.setWorkspaceAudioFocusEnabled(false);
       } catch (error, stackTrace) {
-        appLogger.w('Music workspace audio focus release failed', error, stackTrace: stackTrace);
+        appLogger.w('Music workspace audio focus release failed', error: error, stackTrace: stackTrace);
       }
     }
   }

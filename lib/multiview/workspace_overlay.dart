@@ -906,7 +906,7 @@ class _WorkspaceAudioControlsSheetState extends State<_WorkspaceAudioControlsShe
                         alignment: AlignmentDirectional.centerEnd,
                         child: TextButton.icon(
                           onPressed: () => unawaited(controller.setMixedAudioSession(null)),
-                          icon: const Icon(Icons.stop_circle_outlined),
+                          icon: const AppIcon(Symbols.stop_circle_rounded),
                           label: Text(t.common.workspaceAudioStopMix),
                         ),
                       )
@@ -919,7 +919,7 @@ class _WorkspaceAudioControlsSheetState extends State<_WorkspaceAudioControlsShe
                                 child: TextButton.icon(
                                   onPressed: () =>
                                       unawaited(controller.setMixedAudioSession(registration.descriptor.id)),
-                                  icon: const Icon(Icons.graphic_eq_rounded),
+                                  icon: const AppIcon(Symbols.graphic_eq_rounded),
                                   label: Text(t.common.workspaceAudioMix),
                                 ),
                               )

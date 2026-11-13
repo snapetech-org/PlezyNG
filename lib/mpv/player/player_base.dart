@@ -105,12 +105,12 @@ extension PlayerAudioFocusOwnership on Player {
 
 extension PlayerWorkspaceAudioSupport on Player {
   bool get supportsWorkspaceAudioGain {
-    final current = this;
+    final Object current = this;
     return current is PlayerWorkspaceAudioCapabilitySource && current.supportsPerSessionAudioGain;
   }
 
   Future<PlayerWorkspaceAudioCapabilities> queryWorkspaceAudioCapabilities() async {
-    final current = this;
+    final Object current = this;
     if (current is PlayerWorkspaceAudioCapabilitySource) {
       return current.workspaceAudioCapabilities();
     }

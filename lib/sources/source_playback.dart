@@ -10,7 +10,6 @@ import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
 import '../mpv/mpv.dart';
-import '../mpv/player/player_base.dart';
 import '../multiview/native_video_window.dart';
 import '../services/media_control_router.dart';
 import '../services/media_controls_manager.dart';

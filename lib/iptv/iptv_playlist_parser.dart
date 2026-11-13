@@ -392,23 +392,10 @@ class IptvXmltvParser {
     final hour = int.parse(raw.substring(8, 10));
     final minute = int.parse(raw.substring(10, 12));
     final second = int.parse(raw.substring(12, 14));
-    if (month < 1 ||
-        month > 12 ||
-        day < 1 ||
-        day > 31 ||
-        hour > 23 ||
-        minute > 59 ||
-        second > 59) {
+    if (month < 1 || month > 12 || day < 1 || day > 31 || hour > 23 || minute > 59 || second > 59) {
       return null;
     }
-    final wall = DateTime.utc(
-      year,
-      month,
-      day,
-      hour,
-      minute,
-      second,
-    );
+    final wall = DateTime.utc(year, month, day, hour, minute, second);
     // DateTime normalizes overflow (for example, February 30 into March).
     // That would silently place a malformed guide entry at a different time.
     if (wall.year != year || wall.month != month || wall.day != day) return null;

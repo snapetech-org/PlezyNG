@@ -127,15 +127,15 @@ extension _VideoPlayerPipMethods on VideoPlayerScreenState {
   /// calls this before playback starts, so sessions can be composed without a
   /// second Player owner or a route restart.
   bool _registerVideoWorkspaceSession([MultiviewWorkspaceController? workspaceOverride]) {
-    if (!mounted || player == null || _workspaceSessionId != null) return false;
+    if (!mounted || _workspaceSessionId != null) return false;
+    final windowPlayer = player;
+    if (windowPlayer == null) return false;
     final workspace = workspaceOverride ?? context.read<MultiviewWorkspaceController>();
     final mediaNavigator = Navigator.of(context);
     final mediaRoute = ModalRoute.of(context);
     final stableMediaId = _currentMetadata.globalKey;
     final sessionId = 'video:$stableMediaId';
     final title = _currentMetadata.title;
-    final windowPlayer = player;
-
     _workspaceSessionId = sessionId;
     _workspaceController = workspace;
     _workspaceSurfaceDetached = true;

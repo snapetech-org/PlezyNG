@@ -420,8 +420,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         uploadedNote: _lastResultUploadedToServer ? context.t.subtitleAiUi.uploadedToServerLibraryNote : '',
       );
       if (!translateToEnglish && !fromCache && !persisted) {
-        _status =
-            '$_status Source transcript is reusable in this session; an active profile is needed for persistent caching.';
+        _status = '$_status ${context.t.subtitleAiUi.sourceTranscriptReusableInSessionProfileNeededForPersistentCache}';
       }
     });
     await _showApplied();
@@ -2388,10 +2387,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           if (_translationSupported)
             FocusableListTile(
               leading: const AppIcon(Symbols.translate_rounded),
-              title: const Text('Translate speech from WAV'),
-              subtitle: const Text(
-                'Transcribes a WAV once and reuses its source transcript for other target languages.',
-              ),
+              title: Text(context.t.subtitleAiUi.translateSpeechFromWav),
+              subtitle: Text(context.t.subtitleAiUi.transcribesWavOnceAndReusesSourceTranscript),
               onTap: _busy ? null : () => unawaited(_translateSpeechFromWav()),
             ),
           FocusableListTile(

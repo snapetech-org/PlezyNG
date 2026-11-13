@@ -91,9 +91,9 @@ require(
 )
 require(
     tvos_pool_input is not None
-    and "options: [hosted, private]" in tvos_pool_input.group("body")
+    and "options: [hosted, private, split]" in tvos_pool_input.group("body")
     and "default: hosted" in tvos_pool_input.group("body"),
-    "Apple release builds must default to compatible hosted macOS",
+    "Apple release builds must default hosted and support the split mobile-hosted/Mac-private route",
 )
 require(
     "inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos"
@@ -108,8 +108,9 @@ require(
     "the release controller must cancel only a drained workflow after a bounded unassigned hosted tvOS wait",
 )
 require(
-    "apple_runner_pool: ${{ inputs.tvos_runner_pool }}" in job("release-ci"),
-    "Release CI Apple reliability checks must share the release's selected Apple route",
+    "apple_runner_pool: ${{ (inputs.tvos_runner_pool == 'private' || inputs.tvos_runner_pool == 'split') && 'private' || 'hosted' }}"
+    in job("release-ci"),
+    "Release CI must route only its macOS reliability job privately when the release Apple route is split",
 )
 require(
     "inputs.action == 'release' && 'pleazyng-versioned-release-v2'" in text
@@ -145,8 +146,9 @@ require(
     and "runner-retry-of" in release_driver_text
     and "recovery:source:" in release_driver_text
     and "apple_runner_pool=apple_pool" in release_driver_text
+    and "apple_workflow_route(tvos_runner_pool, macos_runner_pool)" in release_driver_text
     and "private Apple JIT route" in release_driver_text,
-    "release driver must use hosted Apple first and retry privately only after verified non-acquisition",
+    "release driver must support hosted mobile Apple jobs alongside a private macOS job",
 )
 
 
@@ -1491,7 +1493,7 @@ for apple_job_name in ("build-ios", "build-tvos"):
         f"{apple_job_name} signing archives and DerivedData must stay on local APFS",
     )
 require(
-    "inputs.execution_profile == 'hybrid' && inputs.apple_runner_pool != 'private' && 'macos-26' || fromJSON(format(" in apple_native
+    "inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool != 'private' || matrix.platform != 'macOS') && 'macos-26' || fromJSON(format(" in apple_native
     and "hosted-xcode-version: '26.5'" in apple_native
     and 'test "$(uname -m)" = arm64' in named_step(apple_native, "Require native Apple Silicon host")
     and "ARCHS=arm64" in apple_native,
@@ -1860,7 +1862,7 @@ require(
     "tvOS AOT recovery requires a compatible ARM host and a successful fresh artifact",
 )
 require(
-    "inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format(" in job("build-macos")
+    "inputs.tvos_runner_pool == 'hosted' && 'macos-26-intel' || fromJSON(format(" in job("build-macos")
     and '"group":"private-apple-builds"' in job("build-macos")
     and '"gha-{0}-build-macos"' in job("build-macos"),
     "the explicit private Apple route must include macOS on the run-scoped ARM JIT runner",

@@ -22,6 +22,8 @@ from verify_tvos_runner_acquisition import RunnerAcquisitionError  # noqa: E402
 from release_all_platforms import (  # noqa: E402
     HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS,
     ReleaseError,
+    apple_workflow_route,
+    dispatch,
     ensure_candidate_build,
     ensure_ci,
     ensure_tag,
@@ -40,6 +42,54 @@ from release_all_platforms import (  # noqa: E402
 class AppleRunnerRoutingTests(unittest.TestCase):
     def test_automatic_route_uses_compatible_hosted_apple_first(self) -> None:
         self.assertEqual(select_apple_runner_pool("auto"), "hosted")
+
+    def test_mobile_hosted_macos_private_route_is_split(self) -> None:
+        self.assertEqual(apple_workflow_route("hosted", "private"), "split")
+        self.assertEqual(apple_workflow_route("private", "private"), "private")
+        self.assertEqual(apple_workflow_route("hosted", "hosted"), "hosted")
+
+    @patch("release_all_platforms.wait_for_run")
+    @patch("release_all_platforms.workflow_runs")
+    @patch("release_all_platforms.command")
+    def test_split_dispatch_keeps_mac_private_and_mobile_queue_watch_enabled(
+        self, _command, workflow_runs, wait_for_run_mock,
+    ) -> None:
+        run = {
+            "databaseId": 17,
+            "event": "workflow_dispatch",
+            "createdAt": dt.datetime.now(dt.timezone.utc).isoformat(),
+        }
+        workflow_runs.return_value = [run]
+        wait_for_run_mock.return_value = {"databaseId": 17, "conclusion": "success"}
+
+        dispatch(
+            "snapetech-org/pleazyng", "build.yml", "main",
+            {"execution_profile": "hybrid", "tvos_runner_pool": "split"},
+            "split Apple route", watch_hosted_tvos=True,
+        )
+
+        wait_for_run_mock.assert_called_once_with(
+            "snapetech-org/pleazyng", run, "split Apple route", private_apple=True,
+            allow_failure=False, watch_hosted_tvos=True,
+        )
+
+    @patch("release_all_platforms.ensure_remote_main_sha")
+    @patch("release_all_platforms.dispatch", return_value={
+        "databaseId": 18, "status": "completed", "conclusion": "success",
+        "jobs": [{"name": "Build Windows (arm64)", "status": "completed", "conclusion": "success"}],
+    })
+    @patch("release_all_platforms.active_run", return_value=None)
+    @patch("release_all_platforms.matching_run", return_value=None)
+    def test_candidate_dispatch_routes_mobile_hosted_and_mac_private(
+        self, _matching_run, _active_run, dispatch_mock, _ensure_main,
+    ) -> None:
+        ensure_candidate_build(
+            "3.0.34", "a" * 40, tvos_runner_pool="auto", macos_runner_pool="private",
+        )
+
+        fields = dispatch_mock.call_args.args[3]
+        self.assertEqual(fields["tvos_runner_pool"], "split")
+        self.assertTrue(dispatch_mock.call_args.kwargs["watch_hosted_tvos"])
 
     def test_hosted_tvos_queue_timeout_requires_ten_minutes_without_a_runner(self) -> None:
         now = dt.datetime(2026, 11, 12, 18, 0, tzinfo=dt.timezone.utc)
@@ -158,7 +208,7 @@ class PreflightCIFastFailTests(unittest.TestCase):
             "head_branch": "main",
             "head_repository": {"full_name": "snapetech-org/pleazyng"},
             "path": ".github/workflows/ci.yml@refs/heads/main",
-            "display_title": "action:ci:pool:private",
+            "display_title": "action:ci:pool:private:macos:private",
         }
 
     def test_only_trusted_main_preflight_ci_is_fast_fail_cancellable(self) -> None:
@@ -256,7 +306,7 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
                 "apple_runner_pool": "hosted",
             },
             "Pleazyng CI",
-            expected_title="action:ci:pool:private",
+            expected_title="action:ci:pool:private:macos:hosted",
             expected_sha=commit_sha,
         )
 
@@ -280,7 +330,7 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
                 "apple_runner_pool": "hosted",
             },
             "Pleazyng CI",
-            expected_title="action:ci:pool:private",
+            expected_title="action:ci:pool:private:macos:hosted",
             expected_sha=commit_sha,
         )
 

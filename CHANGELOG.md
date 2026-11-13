@@ -15,6 +15,7 @@
 
 - Allow a pinned-source release to run exact-source CI and create its stable tag through the authenticated release controller when the organization blocks Actions tag creation.
 - Route an explicit private Apple selection to macOS as well as iOS and tvOS, and bound the macOS compile and package job to 100 and 150 minutes.
+- Split Apple release routing so iOS/tvOS can build concurrently on hosted Macs while macOS uses the private Apple runner.
 
 - Export multi-page PDF karaoke songbooks with embedded Unicode fonts, alongside CSV/XML catalogs and print-ready HTML.
 

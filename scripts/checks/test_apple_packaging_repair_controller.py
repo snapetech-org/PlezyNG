@@ -330,7 +330,7 @@ class PackagingRepairControllerTests(unittest.TestCase):
             args = ['release', '--version', '3.0.31', '--source-commit', self.repair,
                     '--reuse-platform-run', '42', '--reuse-android-run', '42', '--reuse-webos-run', '42',
                     '--rebuild-ios', '--rebuild-tvos', '--include-apple-store-build',
-                    '--apple-arm-runner-pool', 'private',
+                    '--macos-runner-pool', 'private',
                     '--prepare-homebrew-cask', '--publish', '--scratch', str(scratch)]
             if reuse_tvos:
                 args.remove('--rebuild-tvos')
@@ -356,7 +356,8 @@ class PackagingRepairControllerTests(unittest.TestCase):
             self.assertEqual(build.call_args.args[1], self.repair)
             self.assertEqual(build.call_args.kwargs['workflow_source_sha'], self.workflow)
             self.assertTrue(build.call_args.kwargs['include_apple_store_build'])
-            self.assertEqual(build.call_args.kwargs['tvos_runner_pool'], 'private')
+            self.assertEqual(build.call_args.kwargs['tvos_runner_pool'], 'auto')
+            self.assertEqual(build.call_args.kwargs['macos_runner_pool'], 'private')
             self.assertNotIn('candidate_ref', build.call_args.kwargs)
             if reuse_tvos:
                 self.assertEqual(build.call_args.kwargs['reuse_tvos_run_id'], 84)

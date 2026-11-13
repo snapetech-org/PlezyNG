@@ -289,7 +289,7 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
         ci_path = ROOT / '.github/workflows/ci.yml'
         original = Path.read_text
         ci = original(ci_path, encoding='utf-8')
-        selection = "inputs.execution_profile == 'hybrid' && inputs.apple_runner_pool != 'private' && 'macos-26' || fromJSON(format("
+        selection = "inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool != 'private' || matrix.platform != 'macOS') && 'macos-26' || fromJSON(format("
         self.assertIn(selection, ci)
         changes = [
             ("'macos-26'", "'macos-26-intel'"),
@@ -410,13 +410,13 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
         start = workflow.index("  build-macos:\n")
         end = workflow.index("  build-windows:\n", start)
         macos = workflow[start:end]
-        self.assertIn("inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format(", macos)
+        self.assertIn("inputs.tvos_runner_pool == 'hosted' && 'macos-26-intel' || fromJSON(format(", macos)
         self.assertIn("timeout-minutes: 150", macos)
         self.assertIn("timeout-minutes: 100", macos)
 
         mutations = (
             (
-                "inputs.tvos_runner_pool != 'private' && 'macos-26-intel' ||",
+                "inputs.tvos_runner_pool == 'hosted' && 'macos-26-intel' ||",
                 "inputs.execution_profile == 'hybrid' && 'macos-26-intel' ||",
                 "the explicit private Apple route must include macOS",
             ),

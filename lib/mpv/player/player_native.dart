@@ -1558,6 +1558,69 @@ class PlayerNative extends PlayerBase
   @override
   bool get audioPassthroughActive => _passthroughActive;
 
+  @override
+  bool get supportsPerSessionAudioGain => true;
+
+  @override
+  Future<PlayerWorkspaceAudioCapabilities> workspaceAudioCapabilities() async {
+    if (audioPassthroughActive) {
+      return const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: false,
+        reason: 'audio passthrough is active',
+      );
+    }
+    if (Platform.isAndroid) {
+      return const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: true,
+        reason: 'Android audio focus is owned by each native player core',
+      );
+    }
+    if (Platform.isIOS) {
+      return const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: true,
+        reason: 'iOS and tvOS use one app-wide audio session',
+      );
+    }
+    if (!(Platform.isLinux || Platform.isMacOS || Platform.isWindows)) {
+      return const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: true,
+        reason: 'this platform does not expose a qualified shared audio output',
+      );
+    }
+
+    try {
+      final exclusive = (await getProperty('audio-exclusive'))?.trim().toLowerCase();
+      final route = (await getProperty('audio-device'))?.trim();
+      if (exclusive == null ||
+          route == null ||
+          route.isEmpty ||
+          const {'auto', 'auto-safe'}.contains(route.toLowerCase())) {
+        return const PlayerWorkspaceAudioCapabilities.unavailable(
+          supportsGain: true,
+          reason: 'the active output mode or explicit device route is unknown',
+        );
+      }
+      if (exclusive != 'no') {
+        return const PlayerWorkspaceAudioCapabilities.unavailable(
+          supportsGain: true,
+          reason: 'the active output is exclusive',
+        );
+      }
+      return PlayerWorkspaceAudioCapabilities(
+        supportsGain: true,
+        supportsDecodedMix: true,
+        decodedPcm: true,
+        exclusiveOutput: false,
+        outputRouteId: route,
+      );
+    } on Object {
+      return const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: true,
+        reason: 'the active output mode could not be read',
+      );
+    }
+  }
+
   /// Codecs the platform can take as a bitstream. On macOS compressed audio
   /// goes through the system Dolby decoder ([usesAppleAudioOutput]), which
   /// only handles Dolby Digital (Plus); a DTS or TrueHD entry would just cost

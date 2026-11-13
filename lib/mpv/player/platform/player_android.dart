@@ -111,6 +111,13 @@ class PlayerAndroid extends PlayerBase implements VideoRectSupport, PlayerAudioF
   bool get audioPassthroughActive => _audioPassthroughEnabled;
 
   @override
+  Future<PlayerWorkspaceAudioCapabilities> workspaceAudioCapabilities() async =>
+      const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: true,
+        reason: 'Android audio focus is owned by each native player core',
+      );
+
+  @override
   Future<void> setVideoRect({
     required int left,
     required int top,

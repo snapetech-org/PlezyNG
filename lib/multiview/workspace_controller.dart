@@ -8,12 +8,15 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '../mpv/player/player_base.dart';
 import '../services/playback_coordinator.dart';
 import 'desktop_workspace_views.dart';
 import 'workspace_models.dart';
 import 'workspace_persistence.dart';
 
 typedef WorkspaceOwnershipHandler = FutureOr<void> Function(bool enabled);
+typedef WorkspaceAudioStateHandler = FutureOr<void> Function(PlayerWorkspaceAudioState state);
+typedef WorkspaceAudioCapabilitiesReader = Future<PlayerWorkspaceAudioCapabilities> Function();
 
 /// A live bridge between a safe-to-store descriptor and its existing owner.
 ///
@@ -28,6 +31,8 @@ class WorkspaceSurfaceRegistration {
     required this.onRestore,
     this.onClose,
     this.onAudioOwnershipChanged,
+    this.onWorkspaceAudioStateChanged,
+    this.readWorkspaceAudioCapabilities,
     this.onInputOwnershipChanged,
     this.videoPlayerSlot,
     this.onDetachWindow,
@@ -44,6 +49,8 @@ class WorkspaceSurfaceRegistration {
   /// End the underlying session using its existing close policy.
   final VoidCallback? onClose;
   final WorkspaceOwnershipHandler? onAudioOwnershipChanged;
+  final WorkspaceAudioStateHandler? onWorkspaceAudioStateChanged;
+  final WorkspaceAudioCapabilitiesReader? readWorkspaceAudioCapabilities;
   final WorkspaceOwnershipHandler? onInputOwnershipChanged;
   final VideoPlayerSlot? videoPlayerSlot;
   final Future<bool> Function()? onDetachWindow;
@@ -206,6 +213,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   String? _audibleSessionId;
   WorkspaceOwnershipHandler? _audibleHandler;
   String? _requestedAudibleSessionId;
+  String? _mixedAudibleSessionId;
+  String? _requestedMixedAudibleSessionId;
+  final Map<String, double> _audioGains = <String, double>{};
   bool _hasExplicitAudioSelection = false;
   String? _inputSessionId;
   WorkspaceOwnershipHandler? _inputHandler;
@@ -240,13 +250,17 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   );
   bool get hasVisibleSessions => visibleSessions.isNotEmpty || _sessionTrayVisible;
   bool hasSessionOfKind(MultiviewMediaKind kind) => _sessions.values.any((session) => session.descriptor.kind == kind);
-  bool get hasAudioSelection => _hasExplicitAudioSelection || _requestedAudibleSessionId != null;
+  bool get hasAudioSelection =>
+      _hasExplicitAudioSelection || _requestedAudibleSessionId != null || _requestedMixedAudibleSessionId != null;
   bool get hasCompetingAudioOwner {
     if (_hasExplicitAudioSelection && _requestedAudibleSessionId == null) {
       return true;
     }
     final owner = _requestedAudibleSessionId == null ? null : _sessions[_requestedAudibleSessionId!];
-    return owner != null && owner.descriptor.kind != MultiviewMediaKind.music;
+    final mixed = _requestedMixedAudibleSessionId == null ? null : _sessions[_requestedMixedAudibleSessionId!];
+    return _requestedMixedAudibleSessionId != null ||
+        (owner != null && owner.descriptor.kind != MultiviewMediaKind.music) ||
+        (mixed != null && mixed.descriptor.kind != MultiviewMediaKind.music);
   }
 
   String? get fullscreenSessionId => _fullscreenSessionId;
@@ -262,6 +276,12 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       .length;
   String? get focusedSessionId => _focusedSessionId;
   String? get audibleSessionId => _audibleSessionId;
+
+  String? get mixedAudibleSessionId => _mixedAudibleSessionId;
+
+  bool isSessionAudible(String id) => _audibleSessionId == id || _mixedAudibleSessionId == id;
+
+  double audioGainFor(String id) => _audioGains[id] ?? 1.0;
   String? get inputSessionId => _inputSessionId;
   String? get requestedAudibleSessionId => _requestedAudibleSessionId;
   String? get requestedInputSessionId => _requestedInputSessionId;
@@ -399,7 +419,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
         descriptor.title.trim().isEmpty) {
       return false;
     }
-    if (descriptor.hasAudio && registration.onAudioOwnershipChanged == null) {
+    if (descriptor.hasAudio &&
+        registration.onAudioOwnershipChanged == null &&
+        registration.onWorkspaceAudioStateChanged == null) {
       return false;
     }
     if (descriptor.acceptsInput && registration.onInputOwnershipChanged == null) {
@@ -418,6 +440,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
 
     final index = _sessions.length;
     _sessions[descriptor.id] = registration;
+    final restoredGain = _pendingSnapshot?.audioGains[descriptor.id];
+    if (restoredGain != null && restoredGain.isFinite)
+      _audioGains[descriptor.id] = restoredGain.clamp(0.0, 1.0).toDouble();
     final restoredPlacement = _placements[descriptor.id] ?? _pendingSnapshot?.placements[descriptor.id];
     _placements.remove(descriptor.id);
     _placements[descriptor.id] =
@@ -437,12 +462,13 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       if (_requestedAudibleSessionId == descriptor.id) {
         unawaited(_enqueueAudioReconcile());
       } else if (_requestedAudibleSessionId == null &&
+          _requestedMixedAudibleSessionId == null &&
           !_hasExplicitAudioSelection &&
           (registration.videoPlayerSlot == null || registration.videoPlayerSlot == VideoPlayerSlot.primary)) {
         _requestedAudibleSessionId = descriptor.id;
         unawaited(_enqueueAudioReconcile());
       } else {
-        _queueAudioMute(descriptor.id, registration.onAudioOwnershipChanged);
+        _queueAudioMute(descriptor.id, registration);
       }
     }
     if (descriptor.acceptsInput) {
@@ -470,7 +496,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (existing == null ||
         descriptor.id.trim().isEmpty ||
         descriptor.title.trim().isEmpty ||
-        (descriptor.hasAudio && existing.onAudioOwnershipChanged == null) ||
+        (descriptor.hasAudio &&
+            existing.onAudioOwnershipChanged == null &&
+            existing.onWorkspaceAudioStateChanged == null) ||
         (descriptor.acceptsInput && existing.onInputOwnershipChanged == null)) {
       return false;
     }
@@ -494,13 +522,20 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       onRestore: existing.onRestore,
       onClose: existing.onClose,
       onAudioOwnershipChanged: existing.onAudioOwnershipChanged,
+      onWorkspaceAudioStateChanged: existing.onWorkspaceAudioStateChanged,
+      readWorkspaceAudioCapabilities: existing.readWorkspaceAudioCapabilities,
       onInputOwnershipChanged: existing.onInputOwnershipChanged,
       videoPlayerSlot: nextVideoPlayerSlot,
       onDetachWindow: existing.onDetachWindow,
       onAttachWindow: existing.onAttachWindow,
       isWindowDetached: existing.isWindowDetached,
     );
-    if ((!descriptor.hasAudio && (_requestedAudibleSessionId == descriptor.id || _audibleSessionId == descriptor.id))) {
+    if (!descriptor.hasAudio &&
+        (_requestedAudibleSessionId == descriptor.id ||
+            _requestedMixedAudibleSessionId == descriptor.id ||
+            _audibleSessionId == descriptor.id ||
+            _mixedAudibleSessionId == descriptor.id)) {
+      if (_requestedMixedAudibleSessionId == descriptor.id) _requestedMixedAudibleSessionId = null;
       _requestedAudibleSessionId = _firstSessionIdWhere(
         (session) => session.descriptor.hasAudio && session.descriptor.id != descriptor.id,
       );
@@ -531,6 +566,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (registration == null) {
       return false;
     }
+    _queueRemovedAudioMute(id, registration);
     _reconcileOwnershipAfterRemoval(id);
     _publish();
     return true;
@@ -606,6 +642,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (registration == null) {
       return false;
     }
+    _queueRemovedAudioMute(id, registration);
     _reconcileOwnershipAfterRemoval(id);
     _publish();
     final onClose = registration.onClose;
@@ -623,6 +660,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (registration == null) {
       return null;
     }
+    _audioGains.remove(id);
     _focusedInputSurfaceIds.remove(id);
     _parkedSessionIds.remove(id);
     _restoredSessionIds.remove(id);
@@ -699,15 +737,99 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (id != null && _sessions[id]?.descriptor.hasAudio != true) {
       return Future<bool>.value(false);
     }
-    final selectionChanged = _requestedAudibleSessionId != id || !_hasExplicitAudioSelection;
+    final selectionChanged =
+        _requestedAudibleSessionId != id || _requestedMixedAudibleSessionId != null || !_hasExplicitAudioSelection;
     _hasExplicitAudioSelection = true;
     _requestedAudibleSessionId = id;
+    _requestedMixedAudibleSessionId = null;
     if (selectionChanged) {
       _publish();
     }
-    if (!selectionChanged && _audibleSessionId == id) {
+    if (!selectionChanged && _audibleSessionId == id && _mixedAudibleSessionId == null) {
       return Future<bool>.value(false);
     }
+    return _enqueueAudioReconcile();
+  }
+
+  /// Sets the second audible session. Mixing is opt-in and requires both live
+  /// adapters to report decoded, non-exclusive output on the same route.
+  Future<bool> setMixedAudioSession(String? id) async {
+    if (_disposed) return false;
+    if (id == null) {
+      if (_requestedMixedAudibleSessionId == null && _mixedAudibleSessionId == null) return false;
+      _requestedMixedAudibleSessionId = null;
+      _hasExplicitAudioSelection = true;
+      _publish();
+      return _enqueueAudioReconcile();
+    }
+    final primaryId = _requestedAudibleSessionId;
+    if (primaryId == null || id == primaryId || !await canMixSessions(primaryId, id)) return false;
+    if (_disposed || _requestedAudibleSessionId != primaryId) return false;
+    if (_requestedMixedAudibleSessionId == id && _mixedAudibleSessionId == id) return false;
+    _requestedMixedAudibleSessionId = id;
+    _hasExplicitAudioSelection = true;
+    _publish();
+    return _enqueueAudioReconcile();
+  }
+
+  /// Runtime capability check used both by the audio controls and by the
+  /// mutation path, so a stale UI cannot enable an unsupported mix.
+  Future<bool> canMixSessions(String firstId, String secondId) async {
+    if (_disposed || firstId == secondId) return false;
+    final first = _sessions[firstId];
+    final second = _sessions[secondId];
+    if (first == null ||
+        second == null ||
+        !first.descriptor.hasAudio ||
+        !second.descriptor.hasAudio ||
+        first.onWorkspaceAudioStateChanged == null ||
+        second.onWorkspaceAudioStateChanged == null ||
+        first.readWorkspaceAudioCapabilities == null ||
+        second.readWorkspaceAudioCapabilities == null) {
+      return false;
+    }
+    try {
+      final capabilities = await Future.wait([
+        first.readWorkspaceAudioCapabilities!(),
+        second.readWorkspaceAudioCapabilities!(),
+      ]);
+      if (_disposed || _sessions[firstId] != first || _sessions[secondId] != second) return false;
+      final a = capabilities[0];
+      final b = capabilities[1];
+      return a.supportsGain &&
+          b.supportsGain &&
+          a.supportsDecodedMix &&
+          b.supportsDecodedMix &&
+          a.decodedPcm &&
+          b.decodedPcm &&
+          !a.exclusiveOutput &&
+          !b.exclusiveOutput &&
+          a.outputRouteId != null &&
+          a.outputRouteId!.isNotEmpty &&
+          a.outputRouteId == b.outputRouteId;
+    } on Object {
+      return false;
+    }
+  }
+
+  /// Applies a per-workspace multiplier. It is deliberately stored separately
+  /// from each player's persisted volume preference.
+  Future<bool> setSessionAudioGain(String id, double gain) async {
+    if (_disposed || !gain.isFinite) return false;
+    final registration = _sessions[id];
+    final readCapabilities = registration?.readWorkspaceAudioCapabilities;
+    final applyState = registration?.onWorkspaceAudioStateChanged;
+    if (registration?.descriptor.hasAudio != true || readCapabilities == null || applyState == null) return false;
+    try {
+      final capabilities = await readCapabilities();
+      if (_disposed || _sessions[id] != registration || !capabilities.supportsGain) return false;
+    } on Object {
+      return false;
+    }
+    final next = gain.clamp(0.0, 1.0).toDouble();
+    if (_audioGains[id] == next) return false;
+    _audioGains[id] = next;
+    _publish();
     return _enqueueAudioReconcile();
   }
 
@@ -741,80 +863,96 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     }
     final targetId = _requestedAudibleSessionId;
     final target = targetId == null ? null : _sessions[targetId];
-    if (targetId != null && (target?.descriptor.hasAudio != true || target?.onAudioOwnershipChanged == null)) {
+    final mixedId = _requestedMixedAudibleSessionId;
+    final mixed = mixedId == null ? null : _sessions[mixedId];
+    if (targetId != null &&
+        (target?.descriptor.hasAudio != true ||
+            (target?.onAudioOwnershipChanged == null && target?.onWorkspaceAudioStateChanged == null))) {
       return false;
     }
-    final targetHandler = target?.onAudioOwnershipChanged;
-    if (_audibleSessionId == targetId && identical(_audibleHandler, targetHandler)) {
+    if (mixedId != null &&
+        (targetId == null || mixed?.descriptor.hasAudio != true || mixed?.onWorkspaceAudioStateChanged == null)) {
       return false;
     }
-
     final previousId = _audibleSessionId;
+    final previousMixedId = _mixedAudibleSessionId;
     final previousHandler = _audibleHandler;
+    final targetHandler = target?.onAudioOwnershipChanged;
     final revision = ++_audioRevision;
     try {
-      if (previousHandler != null) {
-        await previousHandler(false);
+      final selected = <String>{if (targetId != null) targetId, if (mixedId != null) mixedId};
+      // Silence every former owner before activating a new one. The two
+      // selected outputs are then applied in order, with system focus held by
+      // the primary only.
+      for (final registration in _sessions.values) {
+        if (selected.contains(registration.descriptor.id)) continue;
+        await _applyWorkspaceAudioState(registration, audible: false, ownsFocus: false);
+        if (_disposed || revision != _audioRevision) return false;
       }
-      if (_disposed || revision != _audioRevision) {
+      if (target != null) {
+        await _applyWorkspaceAudioState(target, audible: true, gain: audioGainFor(targetId!), ownsFocus: true);
+      }
+      if (_disposed || revision != _audioRevision) return false;
+      if (_requestedAudibleSessionId != targetId || _requestedMixedAudibleSessionId != mixedId) {
         return false;
       }
-      if (_requestedAudibleSessionId != targetId) {
-        await _applyOwnershipSafely(targetHandler, false);
-        await _restorePreviousAudioOwner(previousId, previousHandler);
-        return false;
+      if (mixed != null) {
+        await _applyWorkspaceAudioState(mixed, audible: true, gain: audioGainFor(mixedId!), ownsFocus: false);
       }
-      if (targetHandler != null) {
-        await targetHandler(true);
-      }
-      if (_disposed || revision != _audioRevision) {
-        await _applyOwnershipSafely(targetHandler, false);
-        return false;
-      }
-      if (_requestedAudibleSessionId != targetId) {
-        await _applyOwnershipSafely(targetHandler, false);
-        await _restorePreviousAudioOwner(previousId, previousHandler);
-        return false;
-      }
+      if (_disposed || revision != _audioRevision) return false;
+      if (_requestedAudibleSessionId != targetId || _requestedMixedAudibleSessionId != mixedId) return false;
       _audibleSessionId = targetId;
+      _mixedAudibleSessionId = mixedId;
       _audibleHandler = targetHandler;
       _publish();
       return true;
     } catch (error, stackTrace) {
-      await _applyOwnershipSafely(targetHandler, false);
-      final restored = await _restorePreviousAudioOwner(previousId, previousHandler);
+      _requestedAudibleSessionId = previousId;
+      _requestedMixedAudibleSessionId = previousMixedId;
+      for (final registration in _sessions.values) {
+        try {
+          await _applyWorkspaceAudioState(
+            registration,
+            audible: registration.descriptor.id == previousId || registration.descriptor.id == previousMixedId,
+            gain: audioGainFor(registration.descriptor.id),
+            ownsFocus: registration.descriptor.id == previousId,
+          );
+        } on Object catch (restoreError, restoreStackTrace) {
+          debugPrint('Multiview prior audio state restore failed: $restoreError\\n$restoreStackTrace');
+        }
+      }
       if (_disposed) {
         return false;
       }
-      if (_requestedAudibleSessionId == targetId) {
-        final fallbackId = restored && previousId != null
-            ? previousId
-            : _firstSessionIdWhere((session) => session.descriptor.hasAudio && session.descriptor.id != targetId);
-        _requestedAudibleSessionId = fallbackId;
-        if (fallbackId != null) {
-          unawaited(_enqueueAudioReconcile());
-        }
-      }
+      _audibleSessionId = previousId;
+      _mixedAudibleSessionId = previousMixedId;
+      _audibleHandler = previousHandler;
       debugPrint('Multiview audio ownership change failed: $error\\n$stackTrace');
       _publish();
       return false;
     }
   }
 
-  Future<bool> _restorePreviousAudioOwner(String? previousId, WorkspaceOwnershipHandler? previousHandler) async {
-    final previousStillAvailable =
-        previousId != null && _sessions[previousId]?.descriptor.hasAudio == true && previousHandler != null;
-    if (previousStillAvailable) {
-      final enabled = await _applyOwnershipSafely(previousHandler, true);
-      if (enabled) {
-        _audibleSessionId = previousId;
-        _audibleHandler = previousHandler;
-        return true;
-      }
+  Future<void> _applyWorkspaceAudioState(
+    WorkspaceSurfaceRegistration registration, {
+    required bool audible,
+    double? gain,
+    required bool ownsFocus,
+  }) async {
+    final stateHandler = registration.onWorkspaceAudioStateChanged;
+    if (stateHandler != null) {
+      await stateHandler(
+        PlayerWorkspaceAudioState(
+          audible: audible,
+          gain: (gain ?? audioGainFor(registration.descriptor.id)),
+          ownsFocus: ownsFocus,
+        ),
+      );
+    } else {
+      final wasAudible =
+          _audibleSessionId == registration.descriptor.id || _mixedAudibleSessionId == registration.descriptor.id;
+      if (wasAudible != audible) await registration.onAudioOwnershipChanged?.call(audible);
     }
-    _audibleSessionId = null;
-    _audibleHandler = null;
-    return previousId == null;
   }
 
   Future<bool> setInputSession(String? id) {
@@ -978,32 +1116,60 @@ class MultiviewWorkspaceController extends ChangeNotifier {
         });
   }
 
-  void _queueAudioMute(String id, WorkspaceOwnershipHandler? handler) {
-    if (handler == null) {
+  void _queueAudioMute(String id, WorkspaceSurfaceRegistration registration) {
+    if (registration.onAudioOwnershipChanged == null && registration.onWorkspaceAudioStateChanged == null) {
       return;
     }
     _audioQueue = _audioQueue
         .then((_) async {
-          if (_disposed || _requestedAudibleSessionId == id || _audibleSessionId == id) {
+          if (_disposed ||
+              _requestedAudibleSessionId == id ||
+              _requestedMixedAudibleSessionId == id ||
+              isSessionAudible(id)) {
             return;
           }
-          await _applyOwnershipSafely(handler, false);
+          final stateHandler = registration.onWorkspaceAudioStateChanged;
+          if (stateHandler != null) {
+            await stateHandler(PlayerWorkspaceAudioState(audible: false, gain: audioGainFor(id), ownsFocus: false));
+          } else {
+            await _applyOwnershipSafely(registration.onAudioOwnershipChanged, false);
+          }
         })
         .catchError((Object error, StackTrace stackTrace) {
           debugPrint('Multiview audio mute queue failed: $error\\n$stackTrace');
         });
   }
 
+  void _queueRemovedAudioMute(String id, WorkspaceSurfaceRegistration registration) {
+    if (_requestedAudibleSessionId != id &&
+        _requestedMixedAudibleSessionId != id &&
+        _audibleSessionId != id &&
+        _mixedAudibleSessionId != id) {
+      return;
+    }
+    _audioQueue = _audioQueue
+        .then((_) async {
+          await _applyWorkspaceAudioState(registration, audible: false, ownsFocus: false);
+        })
+        .catchError((Object error, StackTrace stackTrace) {
+          debugPrint('Multiview removed audio owner release failed: $error\\n$stackTrace');
+        });
+  }
+
   void _reconcileOwnershipAfterRemoval(String id) {
     final priorAudioRequest = _requestedAudibleSessionId;
-    if (priorAudioRequest == id) {
+    if (_requestedMixedAudibleSessionId == id) _requestedMixedAudibleSessionId = null;
+    if (priorAudioRequest == id && _requestedMixedAudibleSessionId != null) {
+      _requestedAudibleSessionId = _requestedMixedAudibleSessionId;
+      _requestedMixedAudibleSessionId = null;
+    } else if (priorAudioRequest == id) {
       _requestedAudibleSessionId = _firstSessionIdWhere((session) => session.descriptor.hasAudio);
     }
     final hasAudioSession = _firstSessionIdWhere((session) => session.descriptor.hasAudio) != null;
     if (!hasAudioSession && _requestedAudibleSessionId == null) {
       _hasExplicitAudioSelection = false;
     }
-    if (_audibleSessionId == id || priorAudioRequest != _requestedAudibleSessionId) {
+    if (_audibleSessionId == id || _mixedAudibleSessionId == id || priorAudioRequest != _requestedAudibleSessionId) {
       unawaited(_enqueueAudioReconcile());
     }
 
@@ -1331,6 +1497,10 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       layoutMode: _layoutMode,
       focusedSessionId: _focusedSessionId,
       audibleSessionId: _hasExplicitAudioSelection ? _requestedAudibleSessionId : null,
+      audioGains: Map<String, double>.unmodifiable({
+        for (final entry in _audioGains.entries)
+          if (descriptors.containsKey(entry.key)) entry.key: entry.value,
+      }),
       inputSessionId: _requestedInputSessionId,
       audioSelectionExplicit: _hasExplicitAudioSelection,
     );
@@ -1352,6 +1522,10 @@ class MultiviewWorkspaceController extends ChangeNotifier {
         ? savedFocusId
         : _firstVisibleSessionId();
     _requestedAudibleSessionId = snapshot.audibleSessionId;
+    _requestedMixedAudibleSessionId = null;
+    _audioGains
+      ..clear()
+      ..addAll(snapshot.audioGains);
     _hasExplicitAudioSelection = snapshot.audioSelectionExplicit;
     _requestedInputSessionId = snapshot.inputSessionId;
     if (_focusedSessionId == null &&
@@ -1388,15 +1562,33 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     _recoveryOperations.clear();
     ++_audioRevision;
     ++_inputRevision;
-    final audibleHandler = _audibleHandler;
     final inputHandler = _inputHandler;
+    final audioRegistrations = List<WorkspaceSurfaceRegistration>.of(_sessions.values);
     _audioQueue = _audioQueue.then((_) async {
-      await _applyOwnershipSafely(audibleHandler, false);
+      for (final registration in audioRegistrations) {
+        final stateHandler = registration.onWorkspaceAudioStateChanged;
+        if (stateHandler != null) {
+          try {
+            await stateHandler(
+              PlayerWorkspaceAudioState(
+                audible: false,
+                gain: audioGainFor(registration.descriptor.id),
+                ownsFocus: false,
+              ),
+            );
+          } catch (_) {
+            // The profile route owns final player disposal.
+          }
+        } else {
+          await _applyOwnershipSafely(registration.onAudioOwnershipChanged, false);
+        }
+      }
     });
     _inputQueue = _inputQueue.then((_) async {
       await _applyOwnershipSafely(inputHandler, false);
     });
     _audibleSessionId = null;
+    _mixedAudibleSessionId = null;
     _audibleHandler = null;
     _inputSessionId = null;
     _inputHandler = null;

@@ -199,10 +199,17 @@ extension _VideoPlayerPipMethods on VideoPlayerScreenState {
         });
       },
       onClose: () => unawaited(_handleBackButton()),
-      onAudioOwnershipChanged: (enabled) async {
+      onWorkspaceAudioStateChanged: (state) async {
         final volumeController = _volumeController;
-        if (volumeController != null) await volumeController.setWorkspaceAudioEnabled(enabled);
+        if (volumeController != null) {
+          await volumeController.setWorkspaceAudioState(
+            audible: state.audible,
+            gain: state.gain,
+            ownsFocus: state.ownsFocus,
+          );
+        }
       },
+      readWorkspaceAudioCapabilities: () => windowPlayer.queryWorkspaceAudioCapabilities(),
     );
 
     if (!workspace.register(registration)) {

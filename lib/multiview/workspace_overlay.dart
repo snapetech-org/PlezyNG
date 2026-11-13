@@ -9,6 +9,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../focus/focusable_button.dart';
 import '../focus/focusable_wrapper.dart';
+import '../mpv/player/player_base.dart' show PlayerWorkspaceAudioCapabilities;
 import '../i18n/presentation_formats.dart';
 import '../i18n/strings.g.dart';
 import '../theme/mono_motion.dart';
@@ -662,9 +663,24 @@ class _WorkspaceTitleBar extends StatelessWidget {
               ),
             if (registration.descriptor.hasAudio)
               _workspaceIconButton(
-                tooltip: controller.audibleSessionId == id ? t.videoControls.muteButton : t.videoControls.unmuteButton,
-                icon: controller.audibleSessionId == id ? Symbols.volume_up_rounded : Symbols.volume_off_rounded,
-                onPressed: () => controller.setAudibleSession(controller.audibleSessionId == id ? null : id),
+                tooltip: controller.isSessionAudible(id) ? t.videoControls.muteButton : t.videoControls.unmuteButton,
+                icon: controller.isSessionAudible(id) ? Symbols.volume_up_rounded : Symbols.volume_off_rounded,
+                onPressed: () {
+                  if (controller.audibleSessionId == id) {
+                    controller.setAudibleSession(null);
+                  } else if (controller.mixedAudibleSessionId == id) {
+                    controller.setMixedAudioSession(null);
+                  } else {
+                    controller.setAudibleSession(id);
+                  }
+                },
+                iconSize: 19,
+              ),
+            if (registration.descriptor.hasAudio)
+              _workspaceIconButton(
+                tooltip: t.common.workspaceAudioControls,
+                icon: Symbols.graphic_eq_rounded,
+                onPressed: () => _showWorkspaceAudioControls(context, controller),
                 iconSize: 19,
               ),
             _workspaceIconButton(
@@ -773,6 +789,148 @@ class _WorkspaceDock extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+Future<void> _showWorkspaceAudioControls(BuildContext context, MultiviewWorkspaceController controller) async {
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => _WorkspaceAudioControlsSheet(controller: controller),
+  );
+}
+
+class _WorkspaceAudioControlsSheet extends StatefulWidget {
+  const _WorkspaceAudioControlsSheet({required this.controller});
+
+  final MultiviewWorkspaceController controller;
+
+  @override
+  State<_WorkspaceAudioControlsSheet> createState() => _WorkspaceAudioControlsSheetState();
+}
+
+class _WorkspaceAudioControlsSheetState extends State<_WorkspaceAudioControlsSheet> {
+  final Map<String, Future<PlayerWorkspaceAudioCapabilities>> _capabilities = {};
+  final Map<(String, String), Future<bool>> _mixCapabilities = {};
+
+  Future<PlayerWorkspaceAudioCapabilities>? _capabilityFor(WorkspaceSurfaceRegistration registration) {
+    final reader = registration.readWorkspaceAudioCapabilities;
+    if (reader == null) return null;
+    return _capabilities.putIfAbsent(registration.descriptor.id, reader);
+  }
+
+  Future<bool> _canMix(String firstId, String secondId) =>
+      _mixCapabilities.putIfAbsent((firstId, secondId), () => widget.controller.canMixSessions(firstId, secondId));
+
+  @override
+  Widget build(BuildContext context) {
+    final tk = tokens(context);
+    return SafeArea(
+      child: AnimatedBuilder(
+        animation: widget.controller,
+        builder: (context, _) {
+          final controller = widget.controller;
+          final sessions = controller.sessions.where((session) => session.descriptor.hasAudio).toList(growable: false);
+          final primaryId = controller.audibleSessionId;
+          return ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.76),
+            child: ListView(
+              shrinkWrap: true,
+              padding: EdgeInsetsDirectional.fromSTEB(tk.space * 2, tk.space, tk.space * 2, tk.space * 2),
+              children: [
+                Padding(
+                  padding: EdgeInsetsDirectional.only(bottom: tk.space),
+                  child: Text(t.common.workspaceAudioTitle, style: Theme.of(context).textTheme.titleLarge),
+                ),
+                for (final registration in sessions) ...[
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(registration.descriptor.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    subtitle: Text(
+                      controller.isSessionAudible(registration.descriptor.id)
+                          ? t.common.workspaceAudioPlaying
+                          : t.common.workspaceAudioMuted,
+                    ),
+                    trailing: FilledButton.tonal(
+                      onPressed: () {
+                        if (controller.audibleSessionId == registration.descriptor.id) {
+                          unawaited(controller.setAudibleSession(null));
+                        } else if (controller.mixedAudibleSessionId == registration.descriptor.id) {
+                          unawaited(controller.setMixedAudioSession(null));
+                        } else {
+                          unawaited(controller.setAudibleSession(registration.descriptor.id));
+                        }
+                      },
+                      child: Text(
+                        controller.isSessionAudible(registration.descriptor.id)
+                            ? t.videoControls.muteButton
+                            : t.videoControls.unmuteButton,
+                      ),
+                    ),
+                  ),
+                  if (_capabilityFor(registration) case final capability?)
+                    FutureBuilder<PlayerWorkspaceAudioCapabilities>(
+                      future: capability,
+                      builder: (context, snapshot) {
+                        if (snapshot.data?.supportsGain != true) return const SizedBox.shrink();
+                        final gain = controller.audioGainFor(registration.descriptor.id);
+                        return Padding(
+                          padding: EdgeInsetsDirectional.only(start: tk.space, end: tk.space, bottom: tk.space * 0.5),
+                          child: Row(
+                            children: [
+                              Expanded(child: Text(t.common.workspaceAudioGain)),
+                              SizedBox(
+                                width: 180,
+                                child: Slider(
+                                  min: 0,
+                                  max: 1,
+                                  divisions: 20,
+                                  value: gain.clamp(0.0, 1.0).toDouble(),
+                                  label: '${(gain * 100).round()}%',
+                                  onChanged: (value) =>
+                                      unawaited(controller.setSessionAudioGain(registration.descriptor.id, value)),
+                                ),
+                              ),
+                              SizedBox(width: 44, child: Text('${(gain * 100).round()}%')),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  if (primaryId != null && primaryId != registration.descriptor.id)
+                    if (controller.mixedAudibleSessionId == registration.descriptor.id)
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: TextButton.icon(
+                          onPressed: () => unawaited(controller.setMixedAudioSession(null)),
+                          icon: const Icon(Icons.stop_circle_outlined),
+                          label: Text(t.common.workspaceAudioStopMix),
+                        ),
+                      )
+                    else
+                      FutureBuilder<bool>(
+                        future: _canMix(primaryId, registration.descriptor.id),
+                        builder: (context, snapshot) => snapshot.data == true
+                            ? Align(
+                                alignment: AlignmentDirectional.centerEnd,
+                                child: TextButton.icon(
+                                  onPressed: () =>
+                                      unawaited(controller.setMixedAudioSession(registration.descriptor.id)),
+                                  icon: const Icon(Icons.graphic_eq_rounded),
+                                  label: Text(t.common.workspaceAudioMix),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                  const Divider(height: 1),
+                ],
+              ],
+            ),
+          );
+        },
       ),
     );
   }

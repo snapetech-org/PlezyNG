@@ -94,6 +94,18 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   bool get hasVideoSurface => !audioOnly && _controller != null;
 
   @override
+  bool get supportsPerSessionAudioGain => _audioPlayer != null;
+
+  @override
+  Future<PlayerWorkspaceAudioCapabilities> workspaceAudioCapabilities() async =>
+      PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: supportsPerSessionAudioGain,
+        reason: _audioPlayer == null
+            ? 'the LG video output does not expose per-session gain'
+            : 'the webOS output does not expose a shared decoded mix capability',
+      );
+
+  @override
   bool get nativeVisualizationAudioReady =>
       audioOnly &&
       _usingSoLoud &&

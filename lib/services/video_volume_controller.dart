@@ -59,6 +59,8 @@ final class VideoVolumeController implements ValueListenable<double> {
   double _confirmedLogicalVolume;
   double _preferredVolume;
   bool _workspaceAudioEnabled;
+  bool _workspaceAudioOwnsFocus = false;
+  double _workspaceAudioGain = 1.0;
   double _lastPersistedVolume;
   bool _draining = false;
   bool _disposed = false;
@@ -90,9 +92,20 @@ final class VideoVolumeController implements ValueListenable<double> {
   /// Mutes this output for workspace audio focus without changing the user's
   /// volume preference or mute state.
   Future<void> setWorkspaceAudioEnabled(bool enabled) async {
-    if (_disposed || _workspaceAudioEnabled == enabled) return;
-    _workspaceAudioEnabled = enabled;
-    if (enabled) {
+    await setWorkspaceAudioState(audible: enabled, gain: _workspaceAudioGain, ownsFocus: enabled);
+  }
+
+  Future<void> setWorkspaceAudioState({required bool audible, required double gain, required bool ownsFocus}) async {
+    if (_disposed || !gain.isFinite) return;
+    final nextGain = gain.clamp(0.0, 1.0).toDouble();
+    final wasAudible = _workspaceAudioEnabled;
+    final hadFocus = _workspaceAudioOwnsFocus;
+    final changed = wasAudible != audible || _workspaceAudioGain != nextGain;
+    _workspaceAudioEnabled = audible;
+    _workspaceAudioGain = nextGain;
+    _workspaceAudioOwnsFocus = ownsFocus;
+    if (!changed && hadFocus == ownsFocus) return;
+    if (audible && ownsFocus && (!wasAudible || !hadFocus)) {
       try {
         await player.setWorkspaceAudioFocusEnabled(true);
         if (player.state.isActive) await player.requestAudioFocus();
@@ -105,11 +118,9 @@ final class VideoVolumeController implements ValueListenable<double> {
     }
 
     _schedule(value, persistedVolume: null);
-    // Finish muting before releasing system focus; the next pane may request
-    // focus as soon as this ownership callback completes.
     await idle;
     try {
-      await player.setWorkspaceAudioFocusEnabled(false);
+      if (hadFocus && !ownsFocus) await player.setWorkspaceAudioFocusEnabled(false);
     } catch (error, stackTrace) {
       appLogger.w('Video workspace audio focus release failed', error: error, stackTrace: stackTrace);
     }
@@ -161,7 +172,7 @@ final class VideoVolumeController implements ValueListenable<double> {
   void _schedule(double logicalVolume, {required double? persistedVolume}) {
     if (_disposed) return;
     final desired = _clamp(logicalVolume);
-    final outputVolume = _workspaceAudioEnabled ? desired : 0.0;
+    final outputVolume = _workspaceAudioEnabled ? desired * _workspaceAudioGain : 0.0;
     final persisted = persistedVolume == null ? null : _clamp(persistedVolume);
     if (persisted != null) _preferredVolume = persisted;
 
@@ -239,7 +250,8 @@ final class VideoVolumeController implements ValueListenable<double> {
 
   void _handlePlayerVolume(double volume) {
     if (_disposed || _draining || !_workspaceAudioEnabled || !volume.isFinite) return;
-    final observed = _clamp(volume);
+    if (_workspaceAudioGain <= 0) return;
+    final observed = _clamp(volume / _workspaceAudioGain);
     _confirmedLogicalVolume = observed;
     _setDesiredVolume(observed);
   }

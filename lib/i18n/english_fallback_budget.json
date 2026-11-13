@@ -1,6 +1,6 @@
 {
-  "maximumKeys": 1307,
-  "maximumEntries": 46798,
+  "maximumKeys": 1314,
+  "maximumEntries": 47050,
   "reviewedAt": "2026-11-13",
-  "status": "Untranslated backlog, not language qualification. The six host-stage karaoke analysis correction labels, thirty karaoke microphone/performance and phone-capture labels and two A-B count-in tick labels, four K23 trim/skip controls, two audiobook bedtime schedule labels, fourteen Karaoke show-template labels, and seven comic archive password labels use the existing English fallback until translation review. The ceilings match the current explicitly allowlisted fallback count; reduce them as translations are reviewed."
+  "status": "Untranslated backlog, not language qualification. The six host-stage karaoke analysis correction labels, thirty karaoke microphone/performance and phone-capture labels and two A-B count-in tick labels, four K23 trim/skip controls, two audiobook bedtime schedule labels, fourteen Karaoke show-template labels, and seven comic archive password labels use the existing English fallback until translation review. The ceilings match the current explicitly allowlisted fallback count; reduce them as translations are reviewed. The seven workspace audio controls use the existing English fallback until translation review."
 }

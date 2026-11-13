@@ -301,11 +301,12 @@ class WorkspaceSnapshot {
     required this.layoutMode,
     this.focusedSessionId,
     this.audibleSessionId,
+    this.audioGains = const <String, double>{},
     this.inputSessionId,
     this.audioSelectionExplicit = false,
   }) : assert(schemaVersion == currentSchemaVersion);
 
-  static const int currentSchemaVersion = 2;
+  static const int currentSchemaVersion = 3;
   static const int maxSessions = 64;
   static const int maxSerializedBytes = 1024 * 1024;
 
@@ -315,6 +316,7 @@ class WorkspaceSnapshot {
   final MultiviewLayoutMode layoutMode;
   final String? focusedSessionId;
   final String? audibleSessionId;
+  final Map<String, double> audioGains;
   final String? inputSessionId;
   final bool audioSelectionExplicit;
 
@@ -325,13 +327,14 @@ class WorkspaceSnapshot {
     'layoutMode': layoutMode.name,
     if (focusedSessionId != null) 'focusedSessionId': focusedSessionId,
     if (audibleSessionId != null) 'audibleSessionId': audibleSessionId,
+    if (audioGains.isNotEmpty) 'audioGains': audioGains,
     if (inputSessionId != null) 'inputSessionId': inputSessionId,
     'audioSelectionExplicit': audioSelectionExplicit,
   };
 
   factory WorkspaceSnapshot.fromJson(Map<String, Object?> json) {
     final version = json['schemaVersion'];
-    if (version is! int || (version != 1 && version != currentSchemaVersion)) {
+    if (version is! int || (version != 1 && version != 2 && version != currentSchemaVersion)) {
       throw FormatException('Unsupported workspace snapshot version: $version');
     }
 
@@ -378,6 +381,22 @@ class WorkspaceSnapshot {
       throw const FormatException('Invalid workspace audio selection');
     }
 
+    final rawAudioGains = json['audioGains'];
+    if (rawAudioGains != null && (rawAudioGains is! Map || rawAudioGains.length > maxSessions)) {
+      throw const FormatException('Invalid workspace audio gains');
+    }
+    final audioGains = <String, double>{};
+    if (rawAudioGains is Map) {
+      for (final entry in rawAudioGains.entries) {
+        final id = entry.key;
+        final value = entry.value;
+        if (id is! String || id.length > 4096 || value is! num || !value.isFinite || value < 0 || value > 1) {
+          throw const FormatException('Invalid workspace audio gain');
+        }
+        if (ids.contains(id)) audioGains[id] = value.toDouble();
+      }
+    }
+
     return WorkspaceSnapshot(
       schemaVersion: currentSchemaVersion,
       sessions: sessions,
@@ -385,6 +404,7 @@ class WorkspaceSnapshot {
       layoutMode: layout.first,
       focusedSessionId: optionalSessionId('focusedSessionId'),
       audibleSessionId: optionalSessionId('audibleSessionId'),
+      audioGains: Map<String, double>.unmodifiable(audioGains),
       inputSessionId: optionalSessionId('inputSessionId'),
       audioSelectionExplicit: audioSelectionExplicit as bool? ?? optionalSessionId('audibleSessionId') != null,
     );

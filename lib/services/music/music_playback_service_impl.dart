@@ -33,6 +33,7 @@ import '../../models/companion_remote/remote_command.dart';
 import '../../mpv/models.dart';
 import '../../mpv/player/audio_spectrum.dart';
 import '../../mpv/player/player.dart';
+import '../../mpv/player/player_base.dart';
 import '../../mpv/player/player_native.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/notification_permission.dart';
@@ -463,7 +464,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     // User volume belongs to this independent physical renderer.
     // Only the physical output correction and its headroom belong here.
     await player.setVolume(
-      musicVolumeForGain(_volume, _workspaceAudioEnabled ? eq?.gain ?? 1 : 0, nativeCubic: player.playerType == 'mpv'),
+      musicVolumeForGain(
+        _volume,
+        _workspaceAudioEnabled ? (eq?.gain ?? 1) * _workspaceAudioGain : 0,
+        nativeCubic: player.playerType == 'mpv',
+      ),
     );
   }
 
@@ -476,7 +481,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   double _musicVolume(Player player, {double? volume, double? gain}) => musicVolumeForGain(
     volume ?? _volume,
-    _workspaceAudioEnabled ? gain ?? _musicGain * _outputGain : 0,
+    _workspaceAudioEnabled ? (gain ?? _musicGain * _outputGain) * _workspaceAudioGain : 0,
     nativeCubic: player.playerType == 'mpv',
   );
 
@@ -484,13 +489,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (!_workspaceAudioEnabled) return 0;
     // The tap is before AO volume/mute. Carry the shared fade/headroom only:
     // every speaker, including this source, applies its user volume locally.
-    if (primary) return _musicGain * _outputGain;
+    if (primary) return _musicGain * _outputGain * _workspaceAudioGain;
     final overlap = _overlap;
     if (overlap == null || !identical(overlap.player, player)) return 0;
     final remaining = (duration ?? Duration.zero) - (_player?.currentPosition ?? Duration.zero);
     const fadeDuration = Duration(milliseconds: 1800);
     final progress = (1 - remaining.inMicroseconds / fadeDuration.inMicroseconds).clamp(0.0, 1.0).toDouble();
-    return _outputGain * sin(progress * pi / 2);
+    return _outputGain * sin(progress * pi / 2) * _workspaceAudioGain;
   }
 
   CalderaPcmFeed _nativePcmFeed(Player player, CalderaAudioSource source, {required bool primary}) {
@@ -1964,6 +1969,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   bool _albumGapless = false;
   double _musicGain = 1;
   bool _workspaceAudioEnabled = true;
+  double _workspaceAudioGain = 1;
+  bool _workspaceAudioOwnsFocus = false;
   Listenable? _sweetFadesSettingsListenable;
   Listenable? _audioSettingsListenable;
 
@@ -4519,17 +4526,46 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> setWorkspaceAudioEnabled(bool enabled) async {
-    if (_workspaceAudioEnabled == enabled) {
-      return;
+    await setWorkspaceAudioState(
+      PlayerWorkspaceAudioState(audible: enabled, gain: _workspaceAudioGain, ownsFocus: enabled),
+    );
+  }
+
+  @override
+  Future<PlayerWorkspaceAudioCapabilities> workspaceAudioCapabilities() async {
+    if (_musicDeviceOutput != null) {
+      return const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: false,
+        reason: 'remote device output does not expose independent app-session gain',
+      );
     }
-    _workspaceAudioEnabled = enabled;
+    final player = _player;
+    if (player == null || player.disposed || !player.supportsWorkspaceAudioGain) {
+      return const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: false,
+        reason: 'the active music backend does not expose per-session gain',
+      );
+    }
+    return player.queryWorkspaceAudioCapabilities();
+  }
+
+  @override
+  Future<void> setWorkspaceAudioState(PlayerWorkspaceAudioState state) async {
+    final wasAudible = _workspaceAudioEnabled;
+    final hadFocus = _workspaceAudioOwnsFocus;
+    final oldGain = _workspaceAudioGain;
+    if (state.gain.isFinite) _workspaceAudioGain = state.gain.clamp(0.0, 1.0).toDouble();
+    final changed = wasAudible != state.audible;
+    final gainChanged = oldGain != _workspaceAudioGain;
+    _workspaceAudioEnabled = state.audible;
+    _workspaceAudioOwnsFocus = state.ownsFocus;
     await _refreshNativeGroupOutput();
-    if (!enabled) _cancelOverlap();
+    if (!state.audible) _cancelOverlap();
     final player = _player;
     if (player == null || player.disposed) {
       return;
     }
-    if (enabled) {
+    if (state.audible && state.ownsFocus && (!wasAudible || !hadFocus)) {
       try {
         await player.setWorkspaceAudioFocusEnabled(true);
         if (player.state.isActive) {
@@ -4542,13 +4578,23 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
 
+    if (state.audible) {
+      if (changed || gainChanged) await player.setVolume(_musicVolume(player));
+      try {
+        if (hadFocus && !state.ownsFocus) await player.setWorkspaceAudioFocusEnabled(false);
+      } catch (error, stackTrace) {
+        appLogger.w('Music workspace audio focus release failed', error: error, stackTrace: stackTrace);
+      }
+      return;
+    }
+
     try {
       await player.setVolume(0);
     } finally {
       try {
-        await player.setWorkspaceAudioFocusEnabled(false);
+        if (hadFocus) await player.setWorkspaceAudioFocusEnabled(false);
       } catch (error, stackTrace) {
-        appLogger.w('Music workspace audio focus release failed', error: error, stackTrace: stackTrace);
+        appLogger.w('Music workspace audio focus release failed', error, stackTrace: stackTrace);
       }
     }
   }

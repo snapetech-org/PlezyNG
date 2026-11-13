@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
 import '../mpv/mpv.dart';
+import '../mpv/player/player_base.dart';
 import '../multiview/native_video_window.dart';
 import '../services/media_control_router.dart';
 import '../services/media_controls_manager.dart';
@@ -104,6 +105,8 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   bool _pictureAdjustmentTouched = false;
   bool _disposed = false;
   bool _workspaceAudioEnabled = true;
+  bool _workspaceAudioOwnsFocus = false;
+  double _workspaceAudioGain = 1;
   bool _userMuted = false;
   int _subtitleMuteGeneration = 0;
   Future<void> _subtitleMuteQueue = Future<void>.value();
@@ -418,15 +421,34 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> setWorkspaceAudioEnabled(bool enabled) async {
-    if (_disposed || _workspaceAudioEnabled == enabled) {
-      return;
+    await setWorkspaceAudioState(
+      PlayerWorkspaceAudioState(audible: enabled, gain: _workspaceAudioGain, ownsFocus: enabled),
+    );
+  }
+
+  Future<PlayerWorkspaceAudioCapabilities> workspaceAudioCapabilities() async {
+    final native = player;
+    if (native == null || native.disposed || !native.supportsWorkspaceAudioGain) {
+      return const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: false,
+        reason: 'the active source backend does not expose per-session gain',
+      );
     }
-    _workspaceAudioEnabled = enabled;
+    return native.queryWorkspaceAudioCapabilities();
+  }
+
+  Future<void> setWorkspaceAudioState(PlayerWorkspaceAudioState state) async {
+    if (_disposed || !state.gain.isFinite) return;
+    final hadFocus = _workspaceAudioOwnsFocus;
+    final wasAudible = _workspaceAudioEnabled;
+    _workspaceAudioEnabled = state.audible;
+    _workspaceAudioGain = state.gain.clamp(0.0, 1.0).toDouble();
+    _workspaceAudioOwnsFocus = state.ownsFocus;
     final native = player;
     if (native == null || native.disposed) {
       return;
     }
-    if (enabled) {
+    if (state.audible && state.ownsFocus && (!wasAudible || !hadFocus)) {
       try {
         await native.setWorkspaceAudioFocusEnabled(true);
         if (native.state.isActive) {
@@ -443,7 +465,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       await _applyOutputVolume();
     } finally {
       try {
-        await native.setWorkspaceAudioFocusEnabled(false);
+        if (hadFocus && !state.ownsFocus) await native.setWorkspaceAudioFocusEnabled(false);
       } catch (error, stackTrace) {
         appLogger.w('Source workspace audio focus release failed', error: error, stackTrace: stackTrace);
       }
@@ -473,7 +495,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   double get _effectiveOutputVolume =>
-      _workspaceAudioEnabled && !_userMuted ? (100.0 * _sleepFadeGain).toDouble() : 0.0;
+      _workspaceAudioEnabled && !_userMuted ? (100.0 * _sleepFadeGain * _workspaceAudioGain).toDouble() : 0.0;
 
   Future<void> _applyOutputVolume() {
     final generation = ++_volumeWriteGeneration;

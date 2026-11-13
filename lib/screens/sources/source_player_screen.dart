@@ -461,7 +461,8 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
           }
         }());
       },
-      onAudioOwnershipChanged: playback.setWorkspaceAudioEnabled,
+      onWorkspaceAudioStateChanged: playback.setWorkspaceAudioState,
+      readWorkspaceAudioCapabilities: playback.workspaceAudioCapabilities,
     );
 
     _workspace = controller;

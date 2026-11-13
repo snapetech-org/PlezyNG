@@ -6,6 +6,7 @@ import '../../media/lyrics.dart';
 import '../../media/media_item.dart';
 import '../../media/media_source_info.dart';
 import '../../mpv/player/audio_spectrum.dart';
+import '../../mpv/player/player_base.dart';
 import '../playback_launch_observer.dart';
 import 'music_discovery.dart';
 
@@ -213,6 +214,18 @@ abstract class MusicPlaybackService extends ChangeNotifier {
   /// Routes this live music output through the workspace's explicit audio owner
   /// without changing the user's saved volume preference.
   Future<void> setWorkspaceAudioEnabled(bool enabled) async {}
+
+  /// Applies transient per-session workspace gain and focus state. Services
+  /// that do not expose a player-backed output retain the legacy mute behavior.
+  Future<void> setWorkspaceAudioState(PlayerWorkspaceAudioState state) async {
+    await setWorkspaceAudioEnabled(state.audible);
+  }
+
+  Future<PlayerWorkspaceAudioCapabilities> workspaceAudioCapabilities() async =>
+      const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: false,
+        reason: 'music output does not expose per-session audio controls',
+      );
 
   void setRepeatMode(MusicRepeatMode mode);
   void toggleShuffle();

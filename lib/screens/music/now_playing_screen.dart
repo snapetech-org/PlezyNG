@@ -297,7 +297,8 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
           });
         },
         onClose: () => unawaited(service.stop()),
-        onAudioOwnershipChanged: service.setWorkspaceAudioEnabled,
+        onWorkspaceAudioStateChanged: service.setWorkspaceAudioState,
+        readWorkspaceAudioCapabilities: service.workspaceAudioCapabilities,
       ),
     );
     if (!registered) {

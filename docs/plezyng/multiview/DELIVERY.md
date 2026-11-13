@@ -1,6 +1,6 @@
 # Multiview delivery ledger
 
-Current source: main, assessed and remediated through 2026-11-12. Earlier draft-branch
+Current source: main, assessed and remediated through 2026-11-13. Earlier draft-branch
 instructions and completion claims in this file have been superseded by the
 owner's direct-to-main remediation request. This ledger distinguishes source
 implementation from executed platform qualification.
@@ -8,6 +8,7 @@ implementation from executed platform qualification.
 | Area | Current implementation |
 | --- | --- |
 | Workspace | Profile-scoped live adapters, floating/split/fullscreen layouts, placement history, restore/park/tray actions, one selected audible owner and exclusive gamepad-input leases. Existing routes/services own auth, progress, players and teardown. |
+| Workspace audio | Single audible session remains the default. Player-backed video, local source and local music adapters can apply a transient per-session gain multiplier without changing their saved player volume. The workspace exposes an explicit second-stream Mix action only when both live MPV adapters report decoded non-exclusive output on the same nonempty device route; the primary retains focus and the mix is capped at two sessions. Android, iOS/tvOS, Tizen, webOS, remote cast, reader narration and game outputs do not advertise mixing. webOS gain is available only for its app-owned SoLoud audio route; LG video output has no per-session gain. Android/iOS/Tizen gain availability follows their player `setVolume` path. These are source capability gates, not device qualification. Audio ducking, interruption recovery, TTS gain and shared media-control routing remain open MV11 work. |
 | Video admission | Four native player slots are reserved before asynchronous teardown and retained through native disposal. MPV and Android ExoPlayer have isolated channels for each slot across their supported app targets; Tizen and webOS controllers use their own native player IDs. A fifth session is rejected before player construction. |
 | Detached desktop video | macOS lends the retained AVFoundation video and OSD layers to a public AppKit window. Windows reparents the retained mpv video HWND. Linux/Wayland recreates only the existing producer surface's subsurface relationship; render context, decoder and colour objects remain owned. Presents/HDR transactions must drain before reparenting. No media URL or credential is copied to argv, disk or another process. |
 | Detached controls | Localized native buttons delegate play/pause and skip intent to the original video/source route. Watch Together, relative-seek accumulation and live capture-buffer policy remain in those owners. Closing the native window returns the plane to its pane; explicit full-route restore waits for successful native attachment. Tokens reject delayed controls; at most 32 intents queue. |
@@ -34,6 +35,12 @@ change profiles during pending commands, and confirm uninterrupted progress with
 one audible owner. Linux must also cover in-flight render/HDR transactions and
 compositor-driven resize/placement. Release claims require these results at the
 packaged source revision.
+
+The Multiview audio-control source change has not been physically qualified on
+any platform. In particular, the MPV desktop capability check proves only that
+the active source reports decoded audio, `audio-exclusive=no` and a matching
+`audio-device` property; it does not prove acoustic output, drift behavior,
+route-change handling, focus behavior or packaged-device compatibility.
 
 Wayland reparenting follows the core protocol's rule allowing another
 `wl_subsurface` for the same `wl_surface` after its old subsurface object is

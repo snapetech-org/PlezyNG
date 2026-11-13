@@ -3,7 +3,7 @@ import 'dart:io' show Platform;
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart' show listEquals, protected, visibleForTesting;
+import 'package:flutter/foundation.dart' show immutable, listEquals, protected, visibleForTesting;
 import 'package:flutter/services.dart';
 
 import '../../models/audio_channel_limit.dart';
@@ -41,6 +41,55 @@ abstract interface class PlayerAudioFocusControl {
   Future<void> setAudioFocusEnabled(bool enabled);
 }
 
+/// The per-session audio state requested by the Multiview owner. [gain] is a
+/// workspace multiplier and must not replace the user's saved player volume.
+@immutable
+class PlayerWorkspaceAudioState {
+  const PlayerWorkspaceAudioState({required this.audible, required this.gain, required this.ownsFocus});
+
+  final bool audible;
+  final double gain;
+  final bool ownsFocus;
+}
+
+/// Runtime output facts used to decide whether two player-backed sessions can
+/// be mixed without changing either session's output mode.
+@immutable
+class PlayerWorkspaceAudioCapabilities {
+  const PlayerWorkspaceAudioCapabilities({
+    required this.supportsGain,
+    required this.supportsDecodedMix,
+    required this.decodedPcm,
+    required this.exclusiveOutput,
+    required this.outputRouteId,
+    this.unavailableReason,
+  });
+
+  const PlayerWorkspaceAudioCapabilities.unavailable({required this.supportsGain, required String reason})
+    : supportsDecodedMix = false,
+      decodedPcm = false,
+      exclusiveOutput = false,
+      outputRouteId = null,
+      unavailableReason = reason;
+
+  final bool supportsGain;
+  final bool supportsDecodedMix;
+  final bool decodedPcm;
+  final bool exclusiveOutput;
+
+  /// A backend-provided route identity. It is used only in memory and is
+  /// never persisted or logged.
+  final String? outputRouteId;
+  final String? unavailableReason;
+}
+
+/// Optional capability contract for players whose per-session output can be
+/// inspected by the workspace before applying gain or enabling a mix.
+abstract interface class PlayerWorkspaceAudioCapabilitySource {
+  bool get supportsPerSessionAudioGain;
+  Future<PlayerWorkspaceAudioCapabilities> workspaceAudioCapabilities();
+}
+
 /// A player whose exact music output can be bound to the native preset host.
 /// Renderer and codec availability are negotiated separately by that host.
 abstract interface class NativeVisualizationAudioSource {
@@ -51,6 +100,24 @@ extension PlayerAudioFocusOwnership on Player {
   Future<void> setWorkspaceAudioFocusEnabled(bool enabled) async {
     final current = this;
     if (current is PlayerAudioFocusControl) await (current as PlayerAudioFocusControl).setAudioFocusEnabled(enabled);
+  }
+}
+
+extension PlayerWorkspaceAudioSupport on Player {
+  bool get supportsWorkspaceAudioGain {
+    final current = this;
+    return current is PlayerWorkspaceAudioCapabilitySource && current.supportsPerSessionAudioGain;
+  }
+
+  Future<PlayerWorkspaceAudioCapabilities> queryWorkspaceAudioCapabilities() async {
+    final current = this;
+    if (current is PlayerWorkspaceAudioCapabilitySource) {
+      return current.workspaceAudioCapabilities();
+    }
+    return const PlayerWorkspaceAudioCapabilities.unavailable(
+      supportsGain: false,
+      reason: 'backend does not report workspace audio capabilities',
+    );
   }
 }
 
@@ -68,6 +135,7 @@ abstract class PlayerBase
     with PlayerStreamControllersMixin
     implements
         Player,
+        PlayerWorkspaceAudioCapabilitySource,
         AudioEqualizerCapable,
         ParametricEqualizerCapable,
         AudioEffectsCapable,
@@ -88,6 +156,16 @@ abstract class PlayerBase
 
   @override
   bool get audioPassthroughActive => false;
+
+  @override
+  bool get supportsPerSessionAudioGain => true;
+
+  @override
+  Future<PlayerWorkspaceAudioCapabilities> workspaceAudioCapabilities() async =>
+      const PlayerWorkspaceAudioCapabilities.unavailable(
+        supportsGain: true,
+        reason: 'backend does not report decoded shared-output mixing',
+      );
 
   /// Gapless-audio arming — meaningful only on the audio players, which
   /// override this. Video backends ignore it.

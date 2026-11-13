@@ -1,6 +1,6 @@
 {
   "baseLocale": "en",
-  "reason": "Product-specific karaoke host-stage analysis corrections, microphone and private-take controls, local and phone capture status and guidance, A-B count-in tick guidance, and K23 trim/skip controls; curated extras, Steam, service integration, required Trakt attribution, discovery, podcast, library genre, privacy, store review access, IPTV, motion processing, subtitle, visualizer and playback copy, plus profile-scoped audiobook bedtime controls, use Slang’s base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback.",
+  "reason": "Product-specific karaoke host-stage analysis corrections, microphone and private-take controls, local and phone capture status and guidance, A-B count-in tick guidance, and K23 trim/skip controls; curated extras, Steam, service integration, required Trakt attribution, discovery, podcast, library genre, privacy, store review access, IPTV, motion processing, subtitle, visualizer and playback copy, plus profile-scoped audiobook bedtime controls, use Slang’s base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback. Workspace audio controls, per-session gain and explicit decoded mixing currently use the English fallback until translation review.",
   "keys": [
     "about.traktAttribution",
     "appAccess.activateReviewAccess",
@@ -89,6 +89,13 @@
     "common.compare",
     "common.on",
     "common.preview",
+    "common.workspaceAudioControls",
+    "common.workspaceAudioGain",
+    "common.workspaceAudioMix",
+    "common.workspaceAudioMuted",
+    "common.workspaceAudioPlaying",
+    "common.workspaceAudioStopMix",
+    "common.workspaceAudioTitle",
     "discover.findNext.aiApiKey",
     "discover.findNext.aiClearKey",
     "discover.findNext.aiConsentBody",

@@ -322,6 +322,27 @@ class Translations$common$en {
 	/// en: 'Select to focus. Drag the title bar to move; use the fullscreen button to expand.'
 	String get workspaceTitleHint => 'Select to focus. Drag the title bar to move; use the fullscreen button to expand.';
 
+	/// en: 'Workspace audio controls'
+	String get workspaceAudioControls => 'Workspace audio controls';
+
+	/// en: 'Session gain'
+	String get workspaceAudioGain => 'Session gain';
+
+	/// en: 'Mix with current'
+	String get workspaceAudioMix => 'Mix with current';
+
+	/// en: 'Muted'
+	String get workspaceAudioMuted => 'Muted';
+
+	/// en: 'Playing'
+	String get workspaceAudioPlaying => 'Playing';
+
+	/// en: 'Stop mixing'
+	String get workspaceAudioStopMix => 'Stop mixing';
+
+	/// en: 'Workspace audio'
+	String get workspaceAudioTitle => 'Workspace audio';
+
 	/// en: 'Move to session tray'
 	String get moveToSessionTray => 'Move to session tray';
 
@@ -17871,6 +17892,13 @@ extension on Translations {
 			'common.workspacePaneHint' => 'Select this pane to focus it. Use its fullscreen control to expand.',
 			'common.workspaceWindowLabel' => ({required Object title}) => 'Session window: ${title}',
 			'common.workspaceTitleHint' => 'Select to focus. Drag the title bar to move; use the fullscreen button to expand.',
+			'common.workspaceAudioControls' => 'Workspace audio controls',
+			'common.workspaceAudioGain' => 'Session gain',
+			'common.workspaceAudioMix' => 'Mix with current',
+			'common.workspaceAudioMuted' => 'Muted',
+			'common.workspaceAudioPlaying' => 'Playing',
+			'common.workspaceAudioStopMix' => 'Stop mixing',
+			'common.workspaceAudioTitle' => 'Workspace audio',
 			'common.moveToSessionTray' => 'Move to session tray',
 			'common.moveToSessionTrayHint' => 'Keeps this session available without showing its window.',
 			'common.closeSessionHint' => 'Closes this window and ends its session.',
@@ -18301,6 +18329,8 @@ extension on Translations {
 			'settings.audioPassthroughOverriddenByNormalization' => 'Off while loudness normalization is on',
 			'settings.audioChannelLimit' => 'Audio Channels',
 			'settings.audioChannelLimitDescription' => 'Mix decoded audio down for speakers, headphones, or HDMI setups that cannot play every channel',
+			_ => null,
+		} ?? switch (path) {
 			'settings.audioChannelLimitOriginal' => 'Original',
 			'settings.audioChannelLimitOriginalDescription' => 'Play every channel in the track',
 			'settings.audioChannelLimitSurround51' => 'Up to 5.1',
@@ -18308,8 +18338,6 @@ extension on Translations {
 			'settings.audioChannelLimitStereo' => 'Stereo',
 			'settings.audioChannelLimitStereoDescription' => 'Mix down to two channels for stereo speakers or headphones. Turns passthrough off.',
 			'settings.downmixCenterBoost' => 'Center Channel Boost',
-			_ => null,
-		} ?? switch (path) {
 			'settings.downmixCenterBoostValue' => ({required Object db}) => '${db} dB',
 			'settings.downmixCenterBoostLabel' => 'Boost (dB)',
 			'settings.downmixCenterBoostShort' => 'dB',
@@ -18815,6 +18843,8 @@ extension on Translations {
 			'videoControls.addTime' => ({required Object amount, required Object unit}) => '+${amount}${unit}',
 			'videoControls.letterbox' => 'Letterbox',
 			'videoControls.fillScreen' => 'Fill screen',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.lockRotation' => 'Lock rotation',
 			'videoControls.unlockRotation' => 'Unlock rotation',
 			'videoControls.timerActive' => 'Timer Active',
@@ -18822,8 +18852,6 @@ extension on Translations {
 			'videoControls.sleepTimerEndOfVideo' => 'End of current video',
 			'videoControls.sleepTimerStopAtHeader' => 'Stop at',
 			'videoControls.sleepTimerDurationHeader' => 'Timer',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
 			'videoControls.stillWatching' => 'Still watching?',
 			'videoControls.pausingIn' => ({required Object seconds}) => 'Pausing in ${seconds}s',
@@ -19329,6 +19357,8 @@ extension on Translations {
 			'accountPreferences.subtitleAccessibilityOptions.preferNonSdh' => 'Prefer non-SDH subtitles',
 			'accountPreferences.subtitleAccessibilityOptions.preferSdh' => 'Prefer SDH subtitles',
 			'accountPreferences.subtitleAccessibilityOptions.onlySdh' => 'Only SDH subtitles',
+			_ => null,
+		} ?? switch (path) {
 			'accountPreferences.subtitleAccessibilityOptions.onlyNonSdh' => 'Only non-SDH subtitles',
 			'accountPreferences.subtitleAccessibilityOptions.preferNonSdhDescription' => 'Prefer standard subtitles when both standard and SDH versions are available.',
 			'accountPreferences.subtitleAccessibilityOptions.preferSdhDescription' => 'Prefer SDH subtitles when available, but allow standard subtitles as a fallback.',
@@ -19336,8 +19366,6 @@ extension on Translations {
 			'accountPreferences.subtitleAccessibilityOptions.onlyNonSdhDescription' => 'Use standard subtitles only; exclude SDH subtitles.',
 			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
-			_ => null,
-		} ?? switch (path) {
 			'accountPreferences.forcedSubtitleOptions.preferForced' => 'Prefer forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyForced' => 'Only forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForced' => 'Only non-forced subtitles',
@@ -19843,6 +19871,8 @@ extension on Translations {
 			'explore.sourceMaterial.game' => 'Game',
 			'explore.sourceMaterial.webComic' => 'Web comic',
 			'explore.sourceMaterial.musicRelease' => 'Music',
+			_ => null,
+		} ?? switch (path) {
 			'explore.sourceMaterial.otherMedia' => 'Other',
 			'explore.creditRole.actor' => 'Actor',
 			'explore.creditRole.director' => 'Director',
@@ -19850,8 +19880,6 @@ extension on Translations {
 			'explore.creditRole.producer' => 'Producer',
 			'explore.creditRole.creator' => 'Creator',
 			'explore.creditRole.composer' => 'Composer',
-			_ => null,
-		} ?? switch (path) {
 			'explore.relation.prequel' => 'Prequel',
 			'explore.relation.sequel' => 'Sequel',
 			'explore.relation.sideStory' => 'Side story',
@@ -20357,6 +20385,8 @@ extension on Translations {
 			'downloads.unknownLibrary' => 'Unknown library',
 			'downloads.unknownShow' => 'Unknown Show',
 			'downloads.unknownSeason' => 'Unknown Season',
+			_ => null,
+		} ?? switch (path) {
 			'downloads.unknownAlbum' => 'Unknown Album',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} completed',
 			'downloads.storageUsed' => ({required Object size}) => 'Storage used: ${size}',
@@ -20364,8 +20394,6 @@ extension on Translations {
 			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} show', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} shows', ), 
 			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ), 
 			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ), 
-			_ => null,
-		} ?? switch (path) {
 			'downloads.errorFileNotFound' => 'File not found (404)',
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
@@ -20871,6 +20899,8 @@ extension on Translations {
 			'seerr.statusPartiallyAvailable' => 'Partially available',
 			'seerr.statusRequested' => 'Requested',
 			'seerr.statusProcessing' => 'Processing',
+			_ => null,
+		} ?? switch (path) {
 			'seerr.statusBlocklisted' => 'Blocklisted',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Could not reach ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'No Seerr instance at ${url} (HTTP ${status})',
@@ -20878,8 +20908,6 @@ extension on Translations {
 			'seerr.invalidUrl' => 'Enter a server address like https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'This Seerr instance does not support Quick Connect. It needs Seerr 3.4 or newer.',
 			'seerr.notInitialized' => 'This Seerr instance has not completed first-run setup',
-			_ => null,
-		} ?? switch (path) {
 			'seerr.noPlexTokenForReauth' => 'No Plex token is available to sign in again',
 			'seerr.noStoredCredentials' => 'No stored credentials are available to sign in again',
 			'seerr.signInRejected' => 'Sign-in was rejected',
@@ -21385,6 +21413,8 @@ extension on Translations {
 			'universalMedia.converterFailed' => 'Conversion failed. Check that the source file can be read and the destination has enough free space.',
 			'universalMedia.converterCancelled' => 'Conversion cancelled. The incomplete output was removed.',
 			'universalMedia.converterDesktopOnly' => 'Local conversion is available on desktop computers with FFmpeg installed.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.converterStart' => 'Convert file',
 			'universalMedia.mediaToolsTitle' => 'Media tools',
 			'universalMedia.mediaToolsShortcut' => 'Capture or share media, add search extensions, or use the command line.',
@@ -21392,8 +21422,6 @@ extension on Translations {
 			'universalMedia.mediaToolsAccessibility' => 'Tool choices and controls work with touch, pointer, keyboard, and D-pad focus. Recording, sharing, and search status changes are announced.',
 			'universalMedia.mediaTool' => 'Media tool',
 			'universalMedia.captureIntro' => 'Record your screen or a camera to an MP4 file, or preview a live input in the player. FFmpeg must be installed and include the H.264 encoder for recording.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
 			'universalMedia.captureSource' => 'Screen or camera',
 			'universalMedia.captureScreen' => 'Screen',
@@ -21899,6 +21927,8 @@ extension on Translations {
 			'games.addComputer' => 'Add computer',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
+			_ => null,
+		} ?? switch (path) {
 			'games.port' => 'Service port',
 			'games.protocol' => 'Streaming service',
 			'games.moonlight' => 'Sunshine / Moonlight',
@@ -21906,8 +21936,6 @@ extension on Translations {
 			'games.save' => 'Save computer',
 			'games.invalidAddress' => 'Enter a valid hostname or IP address, without a URL, and a port from 1 to 65534.',
 			'games.pair' => 'Connect computer',
-			_ => null,
-		} ?? switch (path) {
 			'games.pairTitle' => 'Approve this device',
 			'games.pairInstructions' => 'Enter this code in the host’s pairing prompt. For Sunshine, use the PIN page below. Keep this screen open until the computer approves.',
 			'games.pairHelp' => 'Connect this computer again to approve or renew pairing.',
@@ -22413,6 +22441,8 @@ extension on Translations {
 			'subtitleAiUi.uploadAttachStoresThisSRTOnTheActive_3e49fa27' => 'Upload + attach stores this SRT on the active library item when the server allows it.',
 			'subtitleAiUi.editSampleCue' => 'Edit sample cue',
 			'subtitleAiUi.saveSRT' => 'Save SRT',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.saveJSON' => 'Save JSON',
 			'subtitleAiUi.discard' => 'Discard',
 			'subtitleAiUi.uploadAttach' => 'Upload + attach',
@@ -22420,8 +22450,6 @@ extension on Translations {
 			'subtitleAiUi.subtitleResultDiscardedTheCurrentTra_a846b389' => 'Subtitle result discarded; the current track and source file are unchanged.',
 			'subtitleAiUi.saveReviewedSubtitle' => 'Save reviewed subtitle',
 			'subtitleAiUi.sRTExportWasCancelledTheActiveTrackA_62f0bcfe' => 'SRT export was cancelled; the active track and source subtitle are unchanged.',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.reviewedSubtitleExportedAsSRT' => 'Reviewed subtitle exported as SRT.',
 			'subtitleAiUi.saveReviewedSubtitleCueJSON' => 'Save reviewed subtitle cue JSON',
 			'subtitleAiUi.jSONExportWasCancelledTheActiveTrack_9ae1948d' => 'JSON export was cancelled; the active track and source subtitle are unchanged.',
@@ -22927,6 +22955,8 @@ extension on Translations {
 			'karaokeUi.allDifficultyLevels' => 'All difficulty levels',
 			'karaokeUi.difficulty5' => ({required Object value1}) => 'Difficulty ${value1} / 5',
 			'karaokeUi.requestDuetGroup' => 'Request duet / group',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.prepareBackingTimingAndGuidance' => 'Prepare backing, timing and guidance',
 			'karaokeUi.exportPrivateDuetInvitation' => 'Export private duet invitation',
 			'karaokeUi.allowGuestVotesOnWaitingSongs' => 'Allow guest votes on waiting songs',
@@ -22934,8 +22964,6 @@ extension on Translations {
 			'karaokeUi.dismissSuggestion' => 'Dismiss suggestion',
 			'karaokeUi.resolvedMissingSongSuggestions' => 'Resolved missing-song suggestions',
 			'karaokeUi.reopenSuggestion' => 'Reopen suggestion',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.restart' => 'Restart',
 			'karaokeUi.endPerformance' => 'End performance',
 			'karaokeUi.vocalMixer' => 'Vocal mixer',

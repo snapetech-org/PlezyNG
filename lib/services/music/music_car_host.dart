@@ -329,7 +329,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   }
 
   Map<String, Object?> _audiobookItem(SourceEntry entry) {
-    final id = 'audiobook:' + _itemScope + ':' + (++_audiobookSequence).toString();
+    final id = 'audiobook:$_itemScope:${++_audiobookSequence}';
     if (_audiobookEntries.length >= 2000) {
       _audiobookEntries.remove(_audiobookEntries.keys.first);
     }
@@ -483,9 +483,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
 
   Future<bool> _carTransport(String command) async {
     final sourcePlayback = context.read<SourcePlayback?>();
-    if (sourcePlayback != null &&
-        sourcePlayback.active &&
-        sourcePlayback.entry?.kind == SourceItemKind.audiobook) {
+    if (sourcePlayback != null && sourcePlayback.active && sourcePlayback.entry?.kind == SourceItemKind.audiobook) {
       switch (command) {
         case 'play':
           await sourcePlayback.play();
@@ -611,7 +609,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           final entry = _audiobookEntries[id];
           final sources = _sourceController;
           final playback = context.read<SourcePlayback?>();
-          if (entry == null || sources == null || playback == null || _profileId == null) {
+          if (entry == null || sources == null || playback == null) {
             throw PlatformException(code: 'stale_audiobook');
           }
           if (args['queue'] == 'next' || args['queue'] == 'later') {
@@ -1013,7 +1011,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     if (id == 'continueAudiobooks') {
       final sources = _sourceController;
       if (sources == null || sources.blocked || _profileId == null || sources.profileId != _profileId) return [];
-      final recent = await sources.repository.recentProgressEntries(_profileId!, limit: 100);
+      final recent = await sources.repository.recentProgressEntries(_profileId, limit: 100);
       if (!mounted || !_current || sources.profileId != _profileId || sources.blocked) return [];
       final configured = sources.sources.map((source) => source.id).toSet();
       final seen = <String>{};
@@ -1041,7 +1039,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         cursor = value;
       }
       final page = await sources.repository.entriesPage(
-        _profileId!,
+        _profileId,
         shelf: PublicationShelf.audiobooks,
         cursor: cursor,
         limit: _pageSize,
@@ -1055,7 +1053,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
               !entry.unavailable &&
               configured.contains(entry.sourceId))
             _audiobookItem(entry),
-        if (page.cursor != null) _folder('audiobookPage:' + page.cursor!, t.fileSources.loadMore),
+        if (page.cursor case final cursor?) _folder('audiobookPage:$cursor', t.fileSources.loadMore),
       ];
       return rows;
     }
@@ -1324,7 +1322,7 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     }
     try {
       final page = await sources.repository.entriesPage(
-        _profileId!,
+        _profileId,
         shelf: PublicationShelf.audiobooks,
         query: normalized,
         limit: 100,

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:clock/clock.dart';
 import 'package:http/http.dart' as http;
 
+import 'mal/mal_constants.dart';
 import '../../utils/abortable_http_request.dart';
 import '../../games/steam_game_activity.dart';
 import '../../utils/app_logger.dart';

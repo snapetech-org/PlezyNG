@@ -145,6 +145,7 @@ class LendingService {
       return false;
     }
   }
+
   void _native() {
     check();
     if (!enableOverdrive) throw const SourceException(SourceFailure.unsupported);
@@ -316,11 +317,12 @@ class LendingService {
     if (endpoint.path.isNotEmpty || endpoint.hasQuery || endpoint.hasFragment) {
       throw const SourceException(SourceFailure.permission);
     }
-    final result = await _post(endpoint.replace(path: '/v1/title-links'), {
+    final payload = <String, Object?>{
       if (isIsbn) 'isbn': compact else 'title': input,
       if (author.isNotEmpty && !isIsbn) 'creator': author,
-      if (mediaType != null) 'mediaType': mediaType,
-    });
+    };
+    if (mediaType != null) payload['mediaType'] = mediaType;
+    final result = await _post(endpoint.replace(path: '/v1/title-links'), payload);
     check();
     if (result['found'] == false) return const LendingPage([]);
     final foundTitle = result['title'];
@@ -343,7 +345,7 @@ class LendingService {
     final creators = rawCreators.whereType<String>().map((value) => value.trim()).where((value) => value.isNotEmpty);
     return LendingPage([
       LendingBook(
-        id: 'libby-title:' + (share.queryParameters['q'] ?? ''),
+        id: 'libby-title:${share.queryParameters['q'] ?? ''}',
         title: foundTitle.trim(),
         author: creators.join(', '),
         page: share,

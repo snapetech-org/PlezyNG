@@ -2853,7 +2853,9 @@ class DownloadManagerService {
       update.task.taskId,
       event: 'status ${update.status}',
       cancelStale: _isNativeTaskActiveStatus(update.status),
-      requiredStatus: DownloadStatus.downloading,
+      // A matching task may finish after pauseDownload has committed the
+      // paused state. Completion is terminal and must still record that file.
+      requiredStatus: update.status == TaskStatus.complete ? null : DownloadStatus.downloading,
     );
     if (existing == null) return;
 
@@ -3179,13 +3181,10 @@ class DownloadManagerService {
     _DownloadContext? nextPartContext;
     try {
       // Fresh DB check — bail if already completed (guards against race with orphan scan)
-      final existingCheck = await _downloadForCurrentTaskSession(
-        globalKey,
-        task.taskId,
-        event: 'completion',
-        requiredStatus: DownloadStatus.downloading,
-      );
-      if (_cancellingKeys.contains(globalKey) || existingCheck == null) {
+      final existingCheck = await _downloadForCurrentTaskSession(globalKey, task.taskId, event: 'completion');
+      if (_cancellingKeys.contains(globalKey) ||
+          existingCheck == null ||
+          !{DownloadStatus.downloading.index, DownloadStatus.paused.index}.contains(existingCheck.status)) {
         appLogger.d('Download no longer active for $globalKey, skipping completion');
         return;
       }
@@ -3782,9 +3781,18 @@ class DownloadManagerService {
       } else if (bgTaskId != null) {
         await _database.updateBgTaskId(globalKey, null);
       }
-      _pendingDownloadContext.remove(globalKey);
-      await _transitionStatus(globalKey, DownloadStatus.paused);
-      await _database.removeFromQueue(globalKey);
+      final didPause = await _database.updateDownloadStatusIfIn(
+        globalKey,
+        DownloadStatus.paused.index,
+        fromStatuses: [DownloadStatus.queued.index, DownloadStatus.downloading.index],
+      );
+      if (didPause) {
+        _pendingDownloadContext.remove(globalKey);
+        _emitProgress(globalKey, DownloadStatus.paused, 0);
+        await _database.removeFromQueue(globalKey);
+      } else {
+        appLogger.d('Download $globalKey changed state while pausing; keeping the committed state');
+      }
     } finally {
       _pausingKeys.remove(globalKey);
     }

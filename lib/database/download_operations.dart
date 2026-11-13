@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
+
 import '../media/ids.dart';
 import '../media/media_backend.dart';
 
@@ -454,9 +455,8 @@ extension DownloadDatabaseOperations on AppDatabase {
   /// [excludedGlobalKeys] filters out heads the caller already tried and could
   /// not resolve, so one stale row cannot starve the rest of the queue.
   Future<DownloadQueueItem?> getNextQueueItem({Set<String> excludedGlobalKeys = const {}}) async {
-    final query = select(
-      downloadQueue,
-    ).join([innerJoin(downloadedMedia, downloadedMedia.globalKey.equalsExp(downloadQueue.mediaGlobalKey))]);
+    final query = select(downloadQueue)
+        .join([innerJoin(downloadedMedia, downloadedMedia.globalKey.equalsExp(downloadQueue.mediaGlobalKey))]);
 
     query.where(downloadedMedia.status.equals(DownloadStatus.queued.index));
     if (excludedGlobalKeys.isNotEmpty) {
@@ -476,9 +476,8 @@ extension DownloadDatabaseOperations on AppDatabase {
   /// Completed videos whose retained queue row records unsettled
   /// supplementary download intent.
   Future<List<DownloadQueueItem>> getPendingSupplementaryQueueItems() async {
-    final query = select(
-      downloadQueue,
-    ).join([innerJoin(downloadedMedia, downloadedMedia.globalKey.equalsExp(downloadQueue.mediaGlobalKey))]);
+    final query = select(downloadQueue)
+        .join([innerJoin(downloadedMedia, downloadedMedia.globalKey.equalsExp(downloadQueue.mediaGlobalKey))]);
     query
       ..where(downloadedMedia.status.equals(DownloadStatus.completed.index) & downloadedMedia.videoFilePath.isNotNull())
       ..orderBy([OrderingTerm(expression: downloadQueue.addedAt)]);
@@ -514,6 +513,18 @@ extension DownloadDatabaseOperations on AppDatabase {
     await (update(
       downloadedMedia,
     )..where((t) => t.globalKey.equals(globalKey))).write(DownloadedMediaCompanion(status: Value(status)));
+  }
+
+  /// Change status only while the row is still in one of [fromStatuses].
+  /// Queue actions can overlap native terminal callbacks, so callers must not
+  /// overwrite a completion or failure that committed while they were awaiting
+  /// the downloader.
+  Future<bool> updateDownloadStatusIfIn(String globalKey, int status, {required List<int> fromStatuses}) async {
+    if (fromStatuses.isEmpty) return false;
+    final changed =
+        await (update(downloadedMedia)..where((row) => row.globalKey.equals(globalKey) & row.status.isIn(fromStatuses)))
+            .write(DownloadedMediaCompanion(status: Value(status)));
+    return changed > 0;
   }
 
   Future<void> updateDownloadMediaSource(String globalKey, String? mediaSourceId) async {

@@ -9,6 +9,7 @@
 - Preserve Stremio add-on checkbox choices when a checked manifest default is turned off, including across reconfiguration.
 - Restrict Stremio add-on requests and redirect hops to validated public Internet addresses, pin native sockets to the checked DNS result, and refuse browser requests where that validation cannot be enforced.
 - Reject private and reserved Stremio IP-literal destinations before opening a socket, including when the HTTP stack would otherwise skip DNS lookup.
+- Preserve completed offline media when a native download finishes during a pause request.
 - Keep shared music queue edits atomic when a disk-backed scratch-index write fails, restoring the prior order, occurrences, cursor, and shuffle state.
 - Match gapless music transitions to queue occurrence IDs so repeated tracks remain distinct after reordering.
 - Bind standalone and recovery release CI checks to the required-job manifest at the exact release source SHA, so later workflow metadata cannot redefine historical qualification.

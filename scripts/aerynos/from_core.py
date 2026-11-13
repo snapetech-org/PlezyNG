@@ -83,13 +83,13 @@ def inspect_bundle(path):
             raise ValueError('Core artifact must contain the Linux x86_64 executable')
 
 
-def stage(source, source_sha, producer_run_id, bundle, output):
+def stage(tooling, source_sha, producer_run_id, bundle, output):
     if not re.fullmatch('[0-9a-f]{40}', source_sha) or producer_run_id < 1:
         raise ValueError('Full immutable source SHA and core producer run ID are required')
-    source, bundle, output = source.resolve(), bundle.resolve(), output.resolve()
-    actual = run(['git', '-C', source, 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
-    if actual != source_sha:
-        raise ValueError('Checked-out source does not match the approved core source')
+    tooling_path, bundle, output = tooling.resolve(), bundle.resolve(), output.resolve()
+    tooling_sha = run(['git', '-C', tooling_path, 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
+    run(['git', '-C', tooling_path, 'cat-file', '-e', source_sha + '^{commit}'])
+    run(['git', '-C', tooling_path, 'merge-base', '--is-ancestor', source_sha, tooling_sha])
     require_repository_identity(REPOSITORY)
     comparison = api(f'repos/{REPOSITORY}/compare/{source_sha}...main')
     if comparison['status'] not in ('ahead', 'identical'):
@@ -103,19 +103,18 @@ def stage(source, source_sha, producer_run_id, bundle, output):
                     '--signer-workflow', SIGNER, '--source-digest', source_sha, '--format', 'json'],
                    capture_output=True, text=True)
     verify_run_binding(json.loads(verified.stdout), source_sha, producer_run_id)
-    pubspec = run(['git', '-C', source, 'show', source_sha + ':pubspec.yaml'], capture_output=True, text=True).stdout
+    pubspec = run(['git', '-C', tooling_path, 'show', source_sha + ':pubspec.yaml'], capture_output=True, text=True).stdout
     version = re.search(r'^version:\s*(\d+\.\d+\.\d+\+\d+)\s*$', pubspec, re.M)
     if version is None:
         raise ValueError('Core source has no stable application version/build')
     output.mkdir(parents=True, exist_ok=False)
     shutil.copyfile(bundle, output / 'pleazyng-linux-x64.tar.gz')
-    run(['git', '-C', source, 'archive', '--format=tar.gz', '--prefix=pleazyng-source/',
+    run(['git', '-C', tooling_path, 'archive', '--format=tar.gz', '--prefix=pleazyng-source/',
          '--output=' + str(output / 'pleazyng-source.tar.gz'), source_sha])
     verification = output / 'attestation-verification.json'
     verification.write_text(verified.stdout)
     assets = {name: digest(output / name) for name in ('pleazyng-linux-x64.tar.gz', 'pleazyng-source.tar.gz')}
-    tooling = run(['git', '-C', HERE, 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
-    build = {'source_sha': source_sha, 'version': version.group(1), 'tooling_sha': tooling, 'assets': assets,
+    build = {'source_sha': source_sha, 'version': version.group(1), 'tooling_sha': tooling_sha, 'assets': assets,
              'provenance': {'kind': 'attested-core-linux-artifact', 'repository': REPOSITORY,
                             'producer_run_id': producer_run_id, 'producer_run_url': producer['html_url'],
                             'artifact_id': artifact['id'], 'artifact_name': artifact['name'],
@@ -128,10 +127,10 @@ def stage(source, source_sha, producer_run_id, bundle, output):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--source', type=Path, required=True)
+    parser.add_argument('--tooling', type=Path, required=True)
     parser.add_argument('--source-sha', required=True)
     parser.add_argument('--producer-run-id', type=int, required=True)
     parser.add_argument('--bundle', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    stage(args.source, args.source_sha, args.producer_run_id, args.bundle, args.output)
+    stage(args.tooling, args.source_sha, args.producer_run_id, args.bundle, args.output)

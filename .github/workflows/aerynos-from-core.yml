@@ -24,20 +24,16 @@ permissions:
   attestations: read
 jobs:
   stage:
+    if: github.repository == 'snapetech-org/pleazyng' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: snapetech-org/pleazyng
-          ref: ${{ inputs.source_sha }}
-          path: source
-          persist-credentials: false
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          repository: snapetech-org/pleazyng
-          ref: main
+          ref: ${{ github.sha }}
           path: tooling
+          fetch-depth: 0
           persist-credentials: false
           sparse-checkout: scripts
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
@@ -54,7 +50,7 @@ jobs:
           PRODUCER_RUN_ID: ${{ inputs.producer_run_id }}
         run: |
           python3 tooling/scripts/aerynos/from_core.py \
-            --source source --source-sha "$SOURCE_SHA" \
+            --tooling tooling --source-sha "$SOURCE_SHA" \
             --producer-run-id "$PRODUCER_RUN_ID" \
             --bundle "$RUNNER_TEMP/core-linux/pleazyng-linux-x64.tar.gz" \
             --output "$RUNNER_TEMP/candidate"

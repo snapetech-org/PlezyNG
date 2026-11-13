@@ -1,7 +1,7 @@
 {
   "locale": "uz",
   "inherits": null,
-  "catalogSha256": "860e13e1a58d8081c700e64c7b101644adafc22eeebb795a3641040cf3b5d5a8",
+  "catalogSha256": "e1495cf7c1e27016519d89842e58d8ec204d7d55af6c2a9e475ce1db7dcdf55c",
   "nativeSpeakerReviewed": false,
   "messages": {
     "app.title": "nonlinguistic",
@@ -3651,7 +3651,28 @@
     "games.streamAudio": "english-fallback",
     "games.streamAudioHelp": "english-fallback",
     "karaokeUi.practiceMetronomeTitle": "assistant-generated-draft",
-    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft"
+    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft",
+    "startup.legacyImportTitle": "assistant-generated-draft",
+    "startup.legacyImportBody": "assistant-generated-draft",
+    "startup.legacyImportChoose": "assistant-generated-draft",
+    "startup.legacyImportStartFresh": "assistant-generated-draft",
+    "startup.legacyImportPickTitle": "assistant-generated-draft",
+    "startup.legacyImportChecking": "assistant-generated-draft",
+    "startup.legacyImportReviewTitle": "assistant-generated-draft",
+    "startup.legacyImportFile": "assistant-generated-draft",
+    "startup.legacyImportSize": "assistant-generated-draft",
+    "startup.legacyImportSchemaVersion": "assistant-generated-draft",
+    "startup.legacyImportProfiles": "assistant-generated-draft",
+    "startup.legacyImportConnections": "assistant-generated-draft",
+    "startup.legacyImportDownloads": "assistant-generated-draft",
+    "startup.legacyImportIdentityWarning": "assistant-generated-draft",
+    "startup.legacyImportCredentialsWarning": "assistant-generated-draft",
+    "startup.legacyImportPathsWarning": "assistant-generated-draft",
+    "startup.legacyImportBackup": "assistant-generated-draft",
+    "startup.legacyImportConfirm": "assistant-generated-draft",
+    "startup.legacyImportInvalidTitle": "assistant-generated-draft",
+    "startup.legacyImportInvalidBody": "assistant-generated-draft",
+    "startup.legacyImportTryAnother": "assistant-generated-draft"
   },
   "beforeIndependentQaCorrection": {
     "collections.deleteConfirm": "existing",

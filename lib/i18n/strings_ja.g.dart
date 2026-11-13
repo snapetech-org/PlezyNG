@@ -1828,6 +1828,27 @@ class _Translations$startup$ja extends Translations$startup$en {
 	@override String get deleteBackup => 'コピーを削除';
 	@override String get backupDeleted => 'コピーを削除しました。';
 	@override String get previousFailureTitle => '前回、Plezyは起動に失敗しました';
+	@override String get legacyImportTitle => '既存のメディアライブラリをインポートしますか？';
+	@override String get legacyImportBody => '以前のPleazyngまたはPlezyのインストールで使っていたデータベースがあれば、ここで選択できます。Pleazyngはデータベースを検索したり、ファイル名をもとにインポートしたりしません。';
+	@override String get legacyImportChoose => 'データベースを選択';
+	@override String get legacyImportStartFresh => '新しく始める';
+	@override String get legacyImportPickTitle => 'プレビューするデータベースファイルを選択してください';
+	@override String get legacyImportChecking => '選択したファイルの一時コピーを確認しています。元のファイルは変更されません。';
+	@override String get legacyImportReviewTitle => 'このデータベースを確認';
+	@override String legacyImportFile({required Object name}) => 'ファイル: ${name}';
+	@override String legacyImportSize({required Object size}) => 'ファイルサイズ: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'データベーススキーマ: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'プロフィール: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'サーバー接続: ${count}';
+	@override String legacyImportDownloads({required Object count}) => '保存済みダウンロード記録: ${count}';
+	@override String get legacyImportIdentityWarning => 'このデータベースにはアプリの識別情報がありません。名前やスキーマからPleazyng由来か、上流のPlezy由来かを判別できません。';
+	@override String get legacyImportCredentialsWarning => 'サーバーの認証情報は別に保存されているため、移行されません。もう一度サインインする必要があります。';
+	@override String get legacyImportPathsWarning => 'ダウンロード済みのメディアファイルはコピーされません。既存のパスはこのデバイスで使えない場合があります。保存先フォルダーを再選択するか、メディアを再度ダウンロードしてください。';
+	@override String get legacyImportBackup => '選択したファイルは復元用のコピーとして変更せずに残します。この選択肢はPleazyngのデータベースがない場合のみ表示され、既存のPleazyngデータベースが置き換えられることはありません。';
+	@override String get legacyImportConfirm => 'このデータベースをインポート';
+	@override String get legacyImportInvalidTitle => 'このファイルを検証できませんでした';
+	@override String get legacyImportInvalidBody => '選択したファイルが対応するデータベースか確認できませんでした。インポートも変更も行われていません。';
+	@override String get legacyImportTryAnother => '別のファイルを選択';
 }
 
 // Path: licenses
@@ -7233,6 +7254,27 @@ extension on TranslationsJa {
 			'startup.deleteBackup' => 'コピーを削除',
 			'startup.backupDeleted' => 'コピーを削除しました。',
 			'startup.previousFailureTitle' => '前回、Plezyは起動に失敗しました',
+			'startup.legacyImportTitle' => '既存のメディアライブラリをインポートしますか？',
+			'startup.legacyImportBody' => '以前のPleazyngまたはPlezyのインストールで使っていたデータベースがあれば、ここで選択できます。Pleazyngはデータベースを検索したり、ファイル名をもとにインポートしたりしません。',
+			'startup.legacyImportChoose' => 'データベースを選択',
+			'startup.legacyImportStartFresh' => '新しく始める',
+			'startup.legacyImportPickTitle' => 'プレビューするデータベースファイルを選択してください',
+			'startup.legacyImportChecking' => '選択したファイルの一時コピーを確認しています。元のファイルは変更されません。',
+			'startup.legacyImportReviewTitle' => 'このデータベースを確認',
+			'startup.legacyImportFile' => ({required Object name}) => 'ファイル: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'ファイルサイズ: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'データベーススキーマ: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'プロフィール: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'サーバー接続: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => '保存済みダウンロード記録: ${count}',
+			'startup.legacyImportIdentityWarning' => 'このデータベースにはアプリの識別情報がありません。名前やスキーマからPleazyng由来か、上流のPlezy由来かを判別できません。',
+			'startup.legacyImportCredentialsWarning' => 'サーバーの認証情報は別に保存されているため、移行されません。もう一度サインインする必要があります。',
+			'startup.legacyImportPathsWarning' => 'ダウンロード済みのメディアファイルはコピーされません。既存のパスはこのデバイスで使えない場合があります。保存先フォルダーを再選択するか、メディアを再度ダウンロードしてください。',
+			'startup.legacyImportBackup' => '選択したファイルは復元用のコピーとして変更せずに残します。この選択肢はPleazyngのデータベースがない場合のみ表示され、既存のPleazyngデータベースが置き換えられることはありません。',
+			'startup.legacyImportConfirm' => 'このデータベースをインポート',
+			'startup.legacyImportInvalidTitle' => 'このファイルを検証できませんでした',
+			'startup.legacyImportInvalidBody' => '選択したファイルが対応するデータベースか確認できませんでした。インポートも変更も行われていません。',
+			'startup.legacyImportTryAnother' => '別のファイルを選択',
 			'licenses.relatedPackages' => '関連パッケージ',
 			'licenses.license' => 'ライセンス',
 			'licenses.licenseNumber' => ({required Object number}) => 'ライセンス ${number}',
@@ -7590,6 +7632,8 @@ extension on TranslationsJa {
 			'music.noAudioUrl' => ({required Object track}) => '${track}で利用可能な音声URLがありません',
 			'music.discography.singlesAndEps' => 'シングル・EP',
 			'music.discography.live' => 'ライブ',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'コンピレーション',
 			'music.backTo' => '再生済み',
 			'music.upNext' => '次に再生',
@@ -7611,8 +7655,6 @@ extension on TranslationsJa {
 			'watchTogether.paste' => '貼り付け',
 			'watchTogether.noCodeInClipboard' => 'クリップボードにルームコードがありません',
 			'watchTogether.copyCode' => 'コードをコピー',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'ルームコードをコピーしました',
 			'watchTogether.shareInvite' => '招待を共有',
 			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
@@ -8104,6 +8146,8 @@ extension on TranslationsJa {
 			'metadataEdit.editMetadata' => '編集…',
 			'metadataEdit.screenTitle' => 'メタデータを編集',
 			'metadataEdit.basicInfo' => '基本情報',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'アートワーク',
 			'metadataEdit.advancedSettings' => '詳細設定',
 			'metadataEdit.title' => 'タイトル',
@@ -8125,8 +8169,6 @@ extension on TranslationsJa {
 			'metadataEdit.fromUrl' => 'URLから',
 			'metadataEdit.uploadFile' => 'ファイルをアップロード',
 			'metadataEdit.enterImageUrl' => '画像URLを入力',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => '画像URL',
 			'metadataEdit.metadataUpdated' => 'メタデータを更新しました',
 			'metadataEdit.metadataUpdateFailed' => 'メタデータの更新に失敗しました',
@@ -8618,6 +8660,8 @@ extension on TranslationsJa {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => '非表示',
 			'homeLayout.remove' => '削除',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'この図書館のリセットライン',
 			'homeLayout.pressAgainToDelete' => '再度削除するために押す',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8639,8 +8683,6 @@ extension on TranslationsJa {
 			'universalMedia.files' => 'デバイスファイル',
 			'universalMedia.favorites' => 'お気に入りのSave Stream',
 			'universalMedia.address' => 'メディアアドレス',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => '認定認証またはサインパラメーターを持つURLは、このセッションのみに使用され、お気に入りとして保存することはできません。',
 			'universalMedia.displayName' => 'ディスプレイ名(オプション)',
 			'universalMedia.displayNameHelp' => 'プレイヤーとシステムメディアコントロールのための短い名前を選択します。',
@@ -9132,6 +9174,8 @@ extension on TranslationsJa {
 			'sourceSetup.passwordOrKey' => 'パスワードを入力するか、下に秘密鍵を追加してください。',
 			'sourceSetup.sshFingerprint' => 'SSH ホスト鍵の SHA256 フィンガープリント',
 			'sourceSetup.sshFingerprintHelp' => 'サーバー管理者に確認してください。サーバーで ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub を実行し、表示された SHA256 値を使用します。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => '現在固定されているフィンガープリントを維持するには空欄にします。変更する場合は新しいサーバーのフィンガープリントを入力してください。',
 			'sourceSetup.sshAuthentication' => 'SSH 公開鍵認証',
 			'sourceSetup.sshAuthenticationHelp' => '任意です。パスワード認証も利用できます。',
@@ -9153,8 +9197,6 @@ extension on TranslationsJa {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS は通常の NFS およびマウントサービスのポートを使用し、NAS の RFC 9289 対応が必要です。TLS 1.3 が必須です。ホスト名または IP アドレスは証明書と一致する必要があります。暗号化された通信でも AUTH_SYS UID/GID は引き続き適用されます。',
 			'sourceSetup.clientCertificate' => 'クライアント証明書（任意）',
 			'sourceSetup.clientCertificateHelp' => 'NAS がこのクライアントを認証できるようにします。AUTH_SYS ID は引き続き NAS のエクスポートポリシーに従います。',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => '保存済みのクライアント認証情報を使用します。',
 			'sourceSetup.replaceIdentity' => '保存済みのクライアント認証情報を置き換え',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 クライアント認証情報を選択',
@@ -9646,6 +9688,8 @@ extension on TranslationsJa {
 			'musicTools.playlistRecipient' => 'Plexユーザー名またはメール',
 			'musicTools.playlistSharingHint' => 'このプレイリストと曲へのアクセスを許可します。受信者による招待の承諾が必要な場合があります。',
 			'musicTools.playlistSharingFailed' => 'プレイリストへのアクセスをリクエストできませんでした。',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plexがアクセスのリクエストを受け付けました。',
 			'musicTools.playlistAccessList' => '現在のアクセス権',
 			'musicTools.playlistAccessNone' => 'プレイリストのアクセス権は付与されていません',
@@ -9667,8 +9711,6 @@ extension on TranslationsJa {
 			'musicTools.continueStation' => 'このステーションを再生し続ける',
 			'musicDevices.playOn' => '再生先',
 			'musicDevices.thisDevice' => 'このデバイス',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => '${device} で再生中',
 			'musicDevices.remembered' => '保存済みデバイス',
 			'musicDevices.forget' => 'デバイスを削除',

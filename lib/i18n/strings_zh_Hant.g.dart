@@ -1829,6 +1829,27 @@ class _Translations$startup$zh_Hant extends Translations$startup$zh {
 	@override String get deleteBackup => '刪除副本';
 	@override String get backupDeleted => '副本已刪除。';
 	@override String get previousFailureTitle => 'Pleazyng 上次啟動失敗';
+	@override String get legacyImportTitle => '要匯入現有媒體庫嗎？';
+	@override String get legacyImportBody => '如果你有先前安裝的 Pleazyng 或 Plezy 資料庫，可以在此選取。Pleazyng 不會搜尋資料庫，也不會只根據檔案名稱匯入資料庫。';
+	@override String get legacyImportChoose => '選取資料庫';
+	@override String get legacyImportStartFresh => '重新開始';
+	@override String get legacyImportPickTitle => '選取要預覽的資料庫檔案';
+	@override String get legacyImportChecking => '正在檢查所選檔案的暫存副本。原始檔案不會變更。';
+	@override String get legacyImportReviewTitle => '檢視此資料庫';
+	@override String legacyImportFile({required Object name}) => '檔案：${name}';
+	@override String legacyImportSize({required Object size}) => '檔案大小：${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => '資料庫結構描述：${version}';
+	@override String legacyImportProfiles({required Object count}) => '設定檔：${count}';
+	@override String legacyImportConnections({required Object count}) => '伺服器連線：${count}';
+	@override String legacyImportDownloads({required Object count}) => '已儲存的下載記錄：${count}';
+	@override String get legacyImportIdentityWarning => '此資料庫沒有應用程式身分標記。無法根據名稱和結構描述判斷它來自 Pleazyng 還是上游專案 Plezy。';
+	@override String get legacyImportCredentialsWarning => '伺服器憑證會分開儲存，不會隨資料庫移轉。你需要重新登入。';
+	@override String get legacyImportPathsWarning => '已下載的媒體檔案不會複製。現有路徑可能無法在此裝置上使用；你可能需要重新選取儲存資料夾或再次下載媒體。';
+	@override String get legacyImportBackup => '所選檔案會保持不變，作為復原副本。只有在 Pleazyng 尚無資料庫時才會顯示此選項；現有的 Pleazyng 資料庫絕不會被取代。';
+	@override String get legacyImportConfirm => '匯入此資料庫';
+	@override String get legacyImportInvalidTitle => '無法驗證此檔案';
+	@override String get legacyImportInvalidBody => 'Pleazyng 無法確認所選檔案是受支援的資料庫。未匯入或變更任何內容。';
+	@override String get legacyImportTryAnother => '選取其他檔案';
 }
 
 // Path: licenses
@@ -7234,6 +7255,27 @@ extension on TranslationsZhHant {
 			'startup.deleteBackup' => '刪除副本',
 			'startup.backupDeleted' => '副本已刪除。',
 			'startup.previousFailureTitle' => 'Pleazyng 上次啟動失敗',
+			'startup.legacyImportTitle' => '要匯入現有媒體庫嗎？',
+			'startup.legacyImportBody' => '如果你有先前安裝的 Pleazyng 或 Plezy 資料庫，可以在此選取。Pleazyng 不會搜尋資料庫，也不會只根據檔案名稱匯入資料庫。',
+			'startup.legacyImportChoose' => '選取資料庫',
+			'startup.legacyImportStartFresh' => '重新開始',
+			'startup.legacyImportPickTitle' => '選取要預覽的資料庫檔案',
+			'startup.legacyImportChecking' => '正在檢查所選檔案的暫存副本。原始檔案不會變更。',
+			'startup.legacyImportReviewTitle' => '檢視此資料庫',
+			'startup.legacyImportFile' => ({required Object name}) => '檔案：${name}',
+			'startup.legacyImportSize' => ({required Object size}) => '檔案大小：${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => '資料庫結構描述：${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => '設定檔：${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => '伺服器連線：${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => '已儲存的下載記錄：${count}',
+			'startup.legacyImportIdentityWarning' => '此資料庫沒有應用程式身分標記。無法根據名稱和結構描述判斷它來自 Pleazyng 還是上游專案 Plezy。',
+			'startup.legacyImportCredentialsWarning' => '伺服器憑證會分開儲存，不會隨資料庫移轉。你需要重新登入。',
+			'startup.legacyImportPathsWarning' => '已下載的媒體檔案不會複製。現有路徑可能無法在此裝置上使用；你可能需要重新選取儲存資料夾或再次下載媒體。',
+			'startup.legacyImportBackup' => '所選檔案會保持不變，作為復原副本。只有在 Pleazyng 尚無資料庫時才會顯示此選項；現有的 Pleazyng 資料庫絕不會被取代。',
+			'startup.legacyImportConfirm' => '匯入此資料庫',
+			'startup.legacyImportInvalidTitle' => '無法驗證此檔案',
+			'startup.legacyImportInvalidBody' => 'Pleazyng 無法確認所選檔案是受支援的資料庫。未匯入或變更任何內容。',
+			'startup.legacyImportTryAnother' => '選取其他檔案',
 			'licenses.relatedPackages' => '相關套件',
 			'licenses.license' => '授權',
 			'licenses.licenseNumber' => ({required Object number}) => '授權條款 ${number}',
@@ -7591,6 +7633,8 @@ extension on TranslationsZhHant {
 			'music.noAudioUrl' => ({required Object track}) => '${track} 沒有可用的音訊 URL',
 			'music.discography.singlesAndEps' => '單曲與 EP',
 			'music.discography.live' => '現場',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => '合輯',
 			'music.backTo' => '回到已播放',
 			'music.upNext' => '即將播放',
@@ -7612,8 +7656,6 @@ extension on TranslationsZhHant {
 			'watchTogether.paste' => '貼上',
 			'watchTogether.noCodeInClipboard' => '剪貼簿中沒有房間代碼',
 			'watchTogether.copyCode' => '複製代碼',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => '房間代碼已複製',
 			'watchTogether.shareInvite' => '分享邀請',
 			'watchTogether.inviteCopied' => '已複製邀請。請將其貼到訊息中。',
@@ -8105,6 +8147,8 @@ extension on TranslationsZhHant {
 			'metadataEdit.editMetadata' => '編輯…',
 			'metadataEdit.screenTitle' => '編輯中繼資料',
 			'metadataEdit.basicInfo' => '基本資訊',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => '海報與背景',
 			'metadataEdit.advancedSettings' => '進階設定',
 			'metadataEdit.title' => '標題',
@@ -8126,8 +8170,6 @@ extension on TranslationsZhHant {
 			'metadataEdit.fromUrl' => '自訂網址',
 			'metadataEdit.uploadFile' => '上傳檔案',
 			'metadataEdit.enterImageUrl' => '輸入圖片 URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => '圖片 URL',
 			'metadataEdit.metadataUpdated' => '中繼資料已更新',
 			'metadataEdit.metadataUpdateFailed' => '中繼資料更新失敗',
@@ -8619,6 +8661,8 @@ extension on TranslationsZhHant {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => '隱藏',
 			'homeLayout.remove' => '移除',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => '圖書館的重複順序',
 			'homeLayout.pressAgainToDelete' => '再次按下刪除',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8640,8 +8684,6 @@ extension on TranslationsZhHant {
 			'universalMedia.files' => '裝置檔案',
 			'universalMedia.favorites' => '儲存流喜愛',
 			'universalMedia.address' => '媒體地址',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS 是優先的. 有認可或簽名引數的 URL 僅用於此會議,並且不能儲存為喜愛。',
 			'universalMedia.displayName' => '顯示名稱(可選)',
 			'universalMedia.displayNameHelp' => '選擇玩家和系統媒體控制器的簡稱。',
@@ -9133,6 +9175,8 @@ extension on TranslationsZhHant {
 			'sourceSetup.passwordOrKey' => '請輸入密碼，或在下方新增私密金鑰。',
 			'sourceSetup.sshFingerprint' => 'SSH 主機金鑰 SHA256 指紋',
 			'sourceSetup.sshFingerprintHelp' => '請向伺服器管理員核實。在伺服器執行 ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub，並使用顯示的 SHA256 值。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => '留空以保留目前固定的指紋，或輸入新的伺服器指紋。',
 			'sourceSetup.sshAuthentication' => 'SSH 公開金鑰驗證',
 			'sourceSetup.sshAuthenticationHelp' => '選填；也支援密碼驗證。',
@@ -9154,8 +9198,6 @@ extension on TranslationsZhHant {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用一般的 NFS 和掛載服務連接埠，並要求 NAS 支援 RFC 9289。必須使用 TLS 1.3。主機名稱或 IP 位址必須與憑證相符。加密通道內仍須使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '用戶端憑證（選填）',
 			'sourceSetup.clientCertificateHelp' => '讓 NAS 驗證此用戶端的身分；AUTH_SYS ID 仍受 NAS 匯出原則約束。',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => '將使用已儲存的用戶端身分憑證。',
 			'sourceSetup.replaceIdentity' => '取代已儲存的用戶端身分憑證',
 			'sourceSetup.chooseIdentity' => '選擇 PKCS#12 用戶端身分憑證',
@@ -9647,6 +9689,8 @@ extension on TranslationsZhHant {
 			'musicTools.playlistRecipient' => 'Plex 使用者名稱或電子郵件',
 			'musicTools.playlistSharingHint' => '授予此播放清單及其曲目的存取權。收件者可能需要接受邀請。',
 			'musicTools.playlistSharingFailed' => '無法請求播放清單存取權。',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex 已接受存取請求。',
 			'musicTools.playlistAccessList' => '目前的存取權',
 			'musicTools.playlistAccessNone' => '尚未授予播放清單存取權',
@@ -9668,8 +9712,6 @@ extension on TranslationsZhHant {
 			'musicTools.continueStation' => '繼續播放此電台',
 			'musicDevices.playOn' => '播放裝置',
 			'musicDevices.thisDevice' => '此裝置',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
 			'musicDevices.remembered' => '已儲存的裝置',
 			'musicDevices.forget' => '忘記裝置',

@@ -1830,6 +1830,27 @@ class _Translations$startup$fa extends Translations$startup$en {
 	@override String get deleteBackup => 'حذف کپی';
 	@override String get backupDeleted => 'کپی حذف شده';
 	@override String get previousFailureTitle => 'Pleazyng آخرین بار شروع نشد';
+	@override String get legacyImportTitle => 'کتابخانهٔ رسانهٔ موجود وارد شود؟';
+	@override String get legacyImportBody => 'اگر پایگاه‌داده‌ای از نصب قبلی Pleazyng یا Plezy دارید، می‌توانید آن را اینجا انتخاب کنید. Pleazyng هرگز پایگاه‌داده‌ها را جست‌وجو نمی‌کند و بر اساس نام فایل چیزی وارد نمی‌کند.';
+	@override String get legacyImportChoose => 'انتخاب پایگاه‌داده';
+	@override String get legacyImportStartFresh => 'شروع تازه';
+	@override String get legacyImportPickTitle => 'یک فایل پایگاه‌داده برای پیش‌نمایش انتخاب کنید';
+	@override String get legacyImportChecking => 'نسخه‌ای موقت از فایل انتخاب‌شده بررسی می‌شود. فایل اصلی شما تغییر نخواهد کرد.';
+	@override String get legacyImportReviewTitle => 'بازبینی این پایگاه‌داده';
+	@override String legacyImportFile({required Object name}) => 'فایل: ${name}';
+	@override String legacyImportSize({required Object size}) => 'اندازهٔ فایل: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'طرح‌وارهٔ پایگاه‌داده: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'نمایه‌ها: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'اتصال‌های سرور: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'رکوردهای دانلود ذخیره‌شده: ${count}';
+	@override String get legacyImportIdentityWarning => 'این پایگاه‌داده نشانگر هویت برنامه را ندارد. از روی نام و طرح‌وارهٔ آن نمی‌توان فهمید که از Pleazyng آمده یا از پروژهٔ بالادستی Plezy.';
+	@override String get legacyImportCredentialsWarning => 'اطلاعات ورود به سرور جداگانه ذخیره می‌شوند و منتقل نخواهند شد. باید دوباره وارد حساب شوید.';
+	@override String get legacyImportPathsWarning => 'فایل‌های رسانهٔ دانلودشده کپی نمی‌شوند. ممکن است مسیرهای فعلی در این دستگاه کار نکنند؛ شاید لازم باشد پوشه‌های ذخیره‌سازی را دوباره انتخاب کنید یا رسانه‌ها را دوباره دانلود کنید.';
+	@override String get legacyImportBackup => 'فایل انتخاب‌شده برای بازگشت به نسخهٔ قبلی بدون تغییر می‌ماند. این گزینه فقط وقتی نمایش داده می‌شود که پایگاه‌دادهٔ Pleazyng وجود نداشته باشد؛ پایگاه‌دادهٔ موجود Pleazyng هرگز جایگزین نمی‌شود.';
+	@override String get legacyImportConfirm => 'وارد کردن این پایگاه‌داده';
+	@override String get legacyImportInvalidTitle => 'اعتبارسنجی این فایل ممکن نشد';
+	@override String get legacyImportInvalidBody => 'Pleazyng نتوانست تأیید کند که فایل انتخاب‌شده یک پایگاه‌دادهٔ پشتیبانی‌شده است. چیزی وارد یا تغییر داده نشد.';
+	@override String get legacyImportTryAnother => 'انتخاب فایل دیگر';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsFa {
 			'startup.deleteBackup' => 'حذف کپی',
 			'startup.backupDeleted' => 'کپی حذف شده',
 			'startup.previousFailureTitle' => 'Pleazyng آخرین بار شروع نشد',
+			'startup.legacyImportTitle' => 'کتابخانهٔ رسانهٔ موجود وارد شود؟',
+			'startup.legacyImportBody' => 'اگر پایگاه‌داده‌ای از نصب قبلی Pleazyng یا Plezy دارید، می‌توانید آن را اینجا انتخاب کنید. Pleazyng هرگز پایگاه‌داده‌ها را جست‌وجو نمی‌کند و بر اساس نام فایل چیزی وارد نمی‌کند.',
+			'startup.legacyImportChoose' => 'انتخاب پایگاه‌داده',
+			'startup.legacyImportStartFresh' => 'شروع تازه',
+			'startup.legacyImportPickTitle' => 'یک فایل پایگاه‌داده برای پیش‌نمایش انتخاب کنید',
+			'startup.legacyImportChecking' => 'نسخه‌ای موقت از فایل انتخاب‌شده بررسی می‌شود. فایل اصلی شما تغییر نخواهد کرد.',
+			'startup.legacyImportReviewTitle' => 'بازبینی این پایگاه‌داده',
+			'startup.legacyImportFile' => ({required Object name}) => 'فایل: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'اندازهٔ فایل: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'طرح‌وارهٔ پایگاه‌داده: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'نمایه‌ها: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'اتصال‌های سرور: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'رکوردهای دانلود ذخیره‌شده: ${count}',
+			'startup.legacyImportIdentityWarning' => 'این پایگاه‌داده نشانگر هویت برنامه را ندارد. از روی نام و طرح‌وارهٔ آن نمی‌توان فهمید که از Pleazyng آمده یا از پروژهٔ بالادستی Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'اطلاعات ورود به سرور جداگانه ذخیره می‌شوند و منتقل نخواهند شد. باید دوباره وارد حساب شوید.',
+			'startup.legacyImportPathsWarning' => 'فایل‌های رسانهٔ دانلودشده کپی نمی‌شوند. ممکن است مسیرهای فعلی در این دستگاه کار نکنند؛ شاید لازم باشد پوشه‌های ذخیره‌سازی را دوباره انتخاب کنید یا رسانه‌ها را دوباره دانلود کنید.',
+			'startup.legacyImportBackup' => 'فایل انتخاب‌شده برای بازگشت به نسخهٔ قبلی بدون تغییر می‌ماند. این گزینه فقط وقتی نمایش داده می‌شود که پایگاه‌دادهٔ Pleazyng وجود نداشته باشد؛ پایگاه‌دادهٔ موجود Pleazyng هرگز جایگزین نمی‌شود.',
+			'startup.legacyImportConfirm' => 'وارد کردن این پایگاه‌داده',
+			'startup.legacyImportInvalidTitle' => 'اعتبارسنجی این فایل ممکن نشد',
+			'startup.legacyImportInvalidBody' => 'Pleazyng نتوانست تأیید کند که فایل انتخاب‌شده یک پایگاه‌دادهٔ پشتیبانی‌شده است. چیزی وارد یا تغییر داده نشد.',
+			'startup.legacyImportTryAnother' => 'انتخاب فایل دیگر',
 			'licenses.relatedPackages' => 'بسته های مرتبط',
 			'licenses.license' => 'مجوز',
 			'licenses.licenseNumber' => ({required Object number}) => 'مجوز ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsFa {
 			'music.noAudioUrl' => ({required Object track}) => 'هیچ URL صوتی در دسترس نیست برای ${track}',
 			'music.discography.singlesAndEps' => 'تک آهنگ ها و EPs',
 			'music.discography.live' => 'پخش زنده',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'جمع آوری',
 			'music.backTo' => 'بازگشت به',
 			'music.upNext' => 'بعدی',
@@ -7616,8 +7660,6 @@ extension on TranslationsFa {
 			'watchTogether.paste' => 'پستی',
 			'watchTogether.noCodeInClipboard' => 'این صفحه شامل کد اتاق نیست.',
 			'watchTogether.copyCode' => 'کپی کد',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
 			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
 			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
@@ -8109,6 +8151,8 @@ extension on TranslationsFa {
 			'metadataEdit.editMetadata' => 'ویرایش',
 			'metadataEdit.screenTitle' => 'ویرایش فراداده',
 			'metadataEdit.basicInfo' => 'اطلاعات پایه',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'هنری',
 			'metadataEdit.advancedSettings' => 'تنظیمات پیشرفته',
 			'metadataEdit.title' => 'عنوان',
@@ -8130,8 +8174,6 @@ extension on TranslationsFa {
 			'metadataEdit.fromUrl' => 'از URL',
 			'metadataEdit.uploadFile' => 'دانلود فایل',
 			'metadataEdit.enterImageUrl' => 'URL تصویر را وارد کنید',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'تصویر URL',
 			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
 			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
@@ -8623,6 +8665,8 @@ extension on TranslationsFa {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'پنهان کردن',
 			'homeLayout.remove' => 'حذف',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'این کتابخانه به صورت مجدد',
 			'homeLayout.pressAgainToDelete' => 'فشار دوباره برای حذف',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsFa {
 			'universalMedia.files' => 'فایل های دستگاه',
 			'universalMedia.favorites' => 'ذخیره جریان مورد علاقه',
 			'universalMedia.address' => 'آدرس رسانه ها',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL ها با پارامترهای اعتباربخشی یا امضای شناخته شده تنها برای این جلسه مورد استفاده قرار می گیرند و نمی توانند به عنوان محبوب ذخیره شوند.',
 			'universalMedia.displayName' => 'نام نمایش (اختیاری)',
 			'universalMedia.displayNameHelp' => 'یک نام کوتاه برای بازیکن و کنترل های رسانه سیستم را انتخاب کنید.',
@@ -9137,6 +9179,8 @@ extension on TranslationsFa {
 			'sourceSetup.passwordOrKey' => 'گذرواژه وارد کنید یا در پایین یک کلید خصوصی اضافه کنید.',
 			'sourceSetup.sshFingerprint' => 'اثر انگشت SHA256 کلید میزبان SSH',
 			'sourceSetup.sshFingerprintHelp' => 'با مدیر سرور تأیید کنید. روی سرور، دستور ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub را اجرا کنید و از مقدار SHA256 آن استفاده کنید.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'برای حفظ اثر انگشت تثبیت‌شدهٔ فعلی خالی بگذارید، یا اثر انگشت جدید سرور را وارد کنید.',
 			'sourceSetup.sshAuthentication' => 'احراز هویت با کلید عمومی SSH',
 			'sourceSetup.sshAuthenticationHelp' => 'اختیاری است؛ احراز هویت با گذرواژه نیز پشتیبانی می‌شود.',
@@ -9158,8 +9202,6 @@ extension on TranslationsFa {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS از درگاه‌های معمول NFS و سرویس mount استفاده می‌کند و به پشتیبانی NAS از RFC 9289 نیاز دارد. TLS 1.3 الزامی است. نام میزبان یا IP باید با گواهی مطابقت داشته باشد. AUTH_SYS UID/GID در کانال رمزگذاری‌شده نیز اعمال می‌شوند.',
 			'sourceSetup.clientCertificate' => 'گواهی کارخواه (اختیاری)',
 			'sourceSetup.clientCertificateHelp' => 'به NAS اجازه می‌دهد هویت این کارخواه را تأیید کند؛ شناسه‌های AUTH_SYS همچنان تابع سیاست اشتراک‌گذاری NAS هستند.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'از هویت ذخیره‌شدهٔ کارخواه استفاده می‌شود.',
 			'sourceSetup.replaceIdentity' => 'جایگزینی هویت ذخیره‌شدهٔ کارخواه',
 			'sourceSetup.chooseIdentity' => 'انتخاب هویت کارخواه PKCS#12',
@@ -9651,6 +9693,8 @@ extension on TranslationsFa {
 			'musicTools.playlistRecipient' => 'نام کاربری Plex یا ایمیل',
 			'musicTools.playlistSharingHint' => 'به این فهرست پخش و آهنگ‌های آن دسترسی بدهید. گیرنده ممکن است لازم باشد دعوتی را بپذیرد.',
 			'musicTools.playlistSharingFailed' => 'درخواست دسترسی به فهرست پخش ممکن نشد.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex درخواست دسترسی را پذیرفت.',
 			'musicTools.playlistAccessList' => 'دسترسی فعلی',
 			'musicTools.playlistAccessNone' => 'هیچ دسترسی به فهرست پخش داده نشده است',
@@ -9672,8 +9716,6 @@ extension on TranslationsFa {
 			'musicTools.continueStation' => 'ادامهٔ پخش این ایستگاه',
 			'musicDevices.playOn' => 'پخش در',
 			'musicDevices.thisDevice' => 'این دستگاه',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',
 			'musicDevices.remembered' => 'دستگاه‌های ذخیره‌شده',
 			'musicDevices.forget' => 'فراموش کردن دستگاه',

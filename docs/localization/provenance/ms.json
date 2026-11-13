@@ -1,7 +1,7 @@
 {
   "locale": "ms",
   "inherits": null,
-  "catalogSha256": "82f036260a3fe59e4a9000fd9b113f293e266abb53165c3a8fdf1768b2167261",
+  "catalogSha256": "9273fc417e16afa7f676c2320f2c0bdd2ea4afafd3dd4a400ea5e18cb352fd33",
   "nativeSpeakerReviewed": false,
   "messages": {
     "app.title": "nonlinguistic",
@@ -3657,7 +3657,28 @@
     "games.streamAudio": "english-fallback",
     "games.streamAudioHelp": "english-fallback",
     "karaokeUi.practiceMetronomeTitle": "assistant-generated-draft",
-    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft"
+    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft",
+    "startup.legacyImportTitle": "assistant-generated-draft",
+    "startup.legacyImportBody": "assistant-generated-draft",
+    "startup.legacyImportChoose": "assistant-generated-draft",
+    "startup.legacyImportStartFresh": "assistant-generated-draft",
+    "startup.legacyImportPickTitle": "assistant-generated-draft",
+    "startup.legacyImportChecking": "assistant-generated-draft",
+    "startup.legacyImportReviewTitle": "assistant-generated-draft",
+    "startup.legacyImportFile": "assistant-generated-draft",
+    "startup.legacyImportSize": "assistant-generated-draft",
+    "startup.legacyImportSchemaVersion": "assistant-generated-draft",
+    "startup.legacyImportProfiles": "assistant-generated-draft",
+    "startup.legacyImportConnections": "assistant-generated-draft",
+    "startup.legacyImportDownloads": "assistant-generated-draft",
+    "startup.legacyImportIdentityWarning": "assistant-generated-draft",
+    "startup.legacyImportCredentialsWarning": "assistant-generated-draft",
+    "startup.legacyImportPathsWarning": "assistant-generated-draft",
+    "startup.legacyImportBackup": "assistant-generated-draft",
+    "startup.legacyImportConfirm": "assistant-generated-draft",
+    "startup.legacyImportInvalidTitle": "assistant-generated-draft",
+    "startup.legacyImportInvalidBody": "assistant-generated-draft",
+    "startup.legacyImportTryAnother": "assistant-generated-draft"
   },
   "beforeIndependentQaCorrection": {
     "common.yes": "m2m100-draft",

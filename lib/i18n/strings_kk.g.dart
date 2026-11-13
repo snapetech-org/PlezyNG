@@ -1830,6 +1830,27 @@ class _Translations$startup$kk extends Translations$startup$en {
 	@override String get deleteBackup => 'Көшірмені өшіру';
 	@override String get backupDeleted => 'Көшірме өшірілді.';
 	@override String get previousFailureTitle => 'Pleazyng соңғы рет іске қосыла алмады';
+	@override String get legacyImportTitle => 'Бар медиа кітапханасын импорттау керек пе?';
+	@override String get legacyImportBody => 'Егер сізде Pleazyng немесе Plezy бағдарламасының бұрынғы орнатылымынан қалған дерекқор болса, оны осы жерден таңдауға болады. Pleazyng дерекқорларды өздігінен іздемейді және файл атауына қарап импорттамайды.';
+	@override String get legacyImportChoose => 'Дерекқорды таңдау';
+	@override String get legacyImportStartFresh => 'Жаңадан бастау';
+	@override String get legacyImportPickTitle => 'Алдын ала қарау үшін дерекқор файлын таңдаңыз';
+	@override String get legacyImportChecking => 'Таңдалған файлдың уақытша көшірмесі тексеріліп жатыр. Бастапқы файл өзгертілмейді.';
+	@override String get legacyImportReviewTitle => 'Осы дерекқорды қарап шығу';
+	@override String legacyImportFile({required Object name}) => 'Файл: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Файл өлшемі: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Дерекқор схемасы: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Профильдер: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Сервер қосылымдары: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Сақталған жүктеп алу жазбалары: ${count}';
+	@override String get legacyImportIdentityWarning => 'Дерекқорда қолданбаның сәйкестендіргіші жоқ. Атауы мен схемасы оның Pleazyng-тен бе, әлде upstream Plezy-ден бе екенін көрсетпейді.';
+	@override String get legacyImportCredentialsWarning => 'Сервер тіркелгі деректері бөлек сақталады және көшірілмейді. Қайта кіруіңіз керек.';
+	@override String get legacyImportPathsWarning => 'Жүктеп алынған медиа файлдары көшірілмейді. Бұрынғы жолдар бұл құрылғыда жұмыс істемеуі мүмкін; сақтау қалталарын қайта таңдауға немесе медианы қайта жүктеуге тура келуі мүмкін.';
+	@override String get legacyImportBackup => 'Таңдалған файл кері қайтару көшірмесі ретінде өзгеріссіз қалады. Бұл опция Pleazyng дерекқоры жоқ кезде ғана көрсетіледі; бар Pleazyng дерекқоры ешқашан алмастырылмайды.';
+	@override String get legacyImportConfirm => 'Осы дерекқорды импорттау';
+	@override String get legacyImportInvalidTitle => 'Бұл файлды тексеру мүмкін болмады';
+	@override String get legacyImportInvalidBody => 'Pleazyng таңдалған файлдың қолдау көрсетілетін дерекқор екенін растай алмады. Ештеңе импортталған немесе өзгертілген жоқ.';
+	@override String get legacyImportTryAnother => 'Басқа файлды таңдау';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsKk {
 			'startup.deleteBackup' => 'Көшірмені өшіру',
 			'startup.backupDeleted' => 'Көшірме өшірілді.',
 			'startup.previousFailureTitle' => 'Pleazyng соңғы рет іске қосыла алмады',
+			'startup.legacyImportTitle' => 'Бар медиа кітапханасын импорттау керек пе?',
+			'startup.legacyImportBody' => 'Егер сізде Pleazyng немесе Plezy бағдарламасының бұрынғы орнатылымынан қалған дерекқор болса, оны осы жерден таңдауға болады. Pleazyng дерекқорларды өздігінен іздемейді және файл атауына қарап импорттамайды.',
+			'startup.legacyImportChoose' => 'Дерекқорды таңдау',
+			'startup.legacyImportStartFresh' => 'Жаңадан бастау',
+			'startup.legacyImportPickTitle' => 'Алдын ала қарау үшін дерекқор файлын таңдаңыз',
+			'startup.legacyImportChecking' => 'Таңдалған файлдың уақытша көшірмесі тексеріліп жатыр. Бастапқы файл өзгертілмейді.',
+			'startup.legacyImportReviewTitle' => 'Осы дерекқорды қарап шығу',
+			'startup.legacyImportFile' => ({required Object name}) => 'Файл: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Файл өлшемі: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Дерекқор схемасы: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Профильдер: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Сервер қосылымдары: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Сақталған жүктеп алу жазбалары: ${count}',
+			'startup.legacyImportIdentityWarning' => 'Дерекқорда қолданбаның сәйкестендіргіші жоқ. Атауы мен схемасы оның Pleazyng-тен бе, әлде upstream Plezy-ден бе екенін көрсетпейді.',
+			'startup.legacyImportCredentialsWarning' => 'Сервер тіркелгі деректері бөлек сақталады және көшірілмейді. Қайта кіруіңіз керек.',
+			'startup.legacyImportPathsWarning' => 'Жүктеп алынған медиа файлдары көшірілмейді. Бұрынғы жолдар бұл құрылғыда жұмыс істемеуі мүмкін; сақтау қалталарын қайта таңдауға немесе медианы қайта жүктеуге тура келуі мүмкін.',
+			'startup.legacyImportBackup' => 'Таңдалған файл кері қайтару көшірмесі ретінде өзгеріссіз қалады. Бұл опция Pleazyng дерекқоры жоқ кезде ғана көрсетіледі; бар Pleazyng дерекқоры ешқашан алмастырылмайды.',
+			'startup.legacyImportConfirm' => 'Осы дерекқорды импорттау',
+			'startup.legacyImportInvalidTitle' => 'Бұл файлды тексеру мүмкін болмады',
+			'startup.legacyImportInvalidBody' => 'Pleazyng таңдалған файлдың қолдау көрсетілетін дерекқор екенін растай алмады. Ештеңе импортталған немесе өзгертілген жоқ.',
+			'startup.legacyImportTryAnother' => 'Басқа файлды таңдау',
 			'licenses.relatedPackages' => 'Байланысты пакеттер',
 			'licenses.license' => 'Лицензия',
 			'licenses.licenseNumber' => ({required Object number}) => 'Лицензия ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsKk {
 			'music.noAudioUrl' => ({required Object track}) => '${track} үшін аудио URL-і қолжетімді емес',
 			'music.discography.singlesAndEps' => 'Синглдер және EP',
 			'music.discography.live' => 'Жанды',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Жинақтар',
 			'music.backTo' => 'Алдыңғы ойнатылғандар',
 			'music.upNext' => 'Келесі',
@@ -7616,8 +7660,6 @@ extension on TranslationsKk {
 			'watchTogether.paste' => 'Қою',
 			'watchTogether.noCodeInClipboard' => 'Алмасу буферінде бөлме коды жоқ',
 			'watchTogether.copyCode' => 'Кодты көшіру',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
 			'watchTogether.shareInvite' => 'Шақыру жіберу',
 			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
@@ -8109,6 +8151,8 @@ extension on TranslationsKk {
 			'metadataEdit.editMetadata' => 'Өңдеу...',
 			'metadataEdit.screenTitle' => 'Метадеректерді өңдеу',
 			'metadataEdit.basicInfo' => 'Негізгі ақпарат',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Суреттер/Постерлер',
 			'metadataEdit.advancedSettings' => 'Кеңейтілген баптаулар',
 			'metadataEdit.title' => 'Атауы',
@@ -8130,8 +8174,6 @@ extension on TranslationsKk {
 			'metadataEdit.fromUrl' => 'URL арқылы',
 			'metadataEdit.uploadFile' => 'Файлды жүктеу',
 			'metadataEdit.enterImageUrl' => 'Сурет URL-ін енгізіңіз',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'Сурет URL-і',
 			'metadataEdit.metadataUpdated' => 'Метадеректер жаңартылды',
 			'metadataEdit.metadataUpdateFailed' => 'Метадеректерді жаңарту мүмкін болмады',
@@ -8623,6 +8665,8 @@ extension on TranslationsKk {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Жасыру',
 			'homeLayout.remove' => 'Өшіру',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'Бібліотеканың ең айқын көрмесі',
 			'homeLayout.pressAgainToDelete' => 'Көпiнiң өнерінен өнеріне',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsKk {
 			'universalMedia.files' => 'Файлы',
 			'universalMedia.favorites' => 'Алдыңғы ең айқын көргенде',
 			'universalMedia.address' => 'Медыялық адресы',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'Өзі сүйікті жабдықтардан тұрып қара сөздерін, аудармаларын жазды.',
 			'universalMedia.displayName' => 'Алдыңғы қағидалар (опциональ)',
 			'universalMedia.displayNameHelp' => 'Қаланың ең айқын көрмесі ержеткен балалардың бір-бірімен танымал.',
@@ -9137,6 +9179,8 @@ extension on TranslationsKk {
 			'sourceSetup.passwordOrKey' => 'Құпиясөз енгізіңіз немесе төменде жеке кілт қосыңыз.',
 			'sourceSetup.sshFingerprint' => 'SSH хост кілтінің SHA256 ізі',
 			'sourceSetup.sshFingerprintHelp' => 'Оны сервер әкімшісімен тексеріңіз. Серверде ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub пәрменін орындап, SHA256 мәнін пайдаланыңыз.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Қазір бекітілген ізді сақтау үшін бос қалдырыңыз немесе сервердің жаңа ізін енгізіңіз.',
 			'sourceSetup.sshAuthentication' => 'Ашық кілтпен SSH аутентификациясы',
 			'sourceSetup.sshAuthenticationHelp' => 'Міндетті емес; құпиясөзбен аутентификация да қолданылады.',
@@ -9158,8 +9202,6 @@ extension on TranslationsKk {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS әдеттегі NFS және mount қызметінің порттарын пайдаланады және NAS-та RFC 9289 қолдауын талап етеді. TLS 1.3 қажет. Хост атауы немесе IP мекенжайы сертификатқа сәйкес болуы керек. Шифрланған арнада да AUTH_SYS UID/GID қолданылады.',
 			'sourceSetup.clientCertificate' => 'Клиент сертификаты (міндетті емес)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-қа осы клиентті аутентификациялауға мүмкіндік береді; AUTH_SYS ID мәндері әлі де NAS-тағы NFS ортақ ресурсының ережелеріне тәуелді.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Сақталған клиенттің сәйкестендіру деректері пайдаланылады.',
 			'sourceSetup.replaceIdentity' => 'Сақталған клиенттің сәйкестендіру деректерін ауыстыру',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 клиент сәйкестендіру деректерін таңдау',
@@ -9651,6 +9693,8 @@ extension on TranslationsKk {
 			'musicTools.playlistRecipient' => 'Plex пайдаланушы аты немесе электрондық пошта',
 			'musicTools.playlistSharingHint' => 'Осы тізімге және оның тректеріне қатынау беріңіз. Алушы шақыруды қабылдауы қажет болуы мүмкін.',
 			'musicTools.playlistSharingFailed' => 'Тізімге қатынау сұрауын жіберу мүмкін болмады.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex қатынау сұрауын қабылдады.',
 			'musicTools.playlistAccessList' => 'Ағымдағы қатынау',
 			'musicTools.playlistAccessNone' => 'Ойнату тізіміне қатынау берілмеген',
@@ -9672,8 +9716,6 @@ extension on TranslationsKk {
 			'musicTools.continueStation' => 'Осы станцияны ойнатуды жалғастыру',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',
 			'musicDevices.remembered' => 'Сақталған құрылғылар',
 			'musicDevices.forget' => 'Құрылғыны ұмыту',

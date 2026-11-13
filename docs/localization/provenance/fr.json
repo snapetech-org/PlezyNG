@@ -1,7 +1,7 @@
 {
   "locale": "fr",
   "inherits": null,
-  "catalogSha256": "a9cdd02897633b4ca71ee5d27f06da9ad9c5955ec20838428a9016f5e177fde9",
+  "catalogSha256": "9a41616d47603db5ff52cf643a6f7ec01b2dde97292ade33636a23f07f4979f8",
   "nativeSpeakerReviewed": false,
   "messages": {
     "app.title": "nonlinguistic",
@@ -3676,7 +3676,28 @@
     "podcasts.syncConsent": "assistant-semantic-review-2026-11-09",
     "podcasts.syncPrivacy": "assistant-semantic-review-2026-11-09",
     "karaokeUi.practiceMetronomeTitle": "assistant-generated-draft",
-    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft"
+    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft",
+    "startup.legacyImportTitle": "assistant-generated-draft",
+    "startup.legacyImportBody": "assistant-generated-draft",
+    "startup.legacyImportChoose": "assistant-generated-draft",
+    "startup.legacyImportStartFresh": "assistant-generated-draft",
+    "startup.legacyImportPickTitle": "assistant-generated-draft",
+    "startup.legacyImportChecking": "assistant-generated-draft",
+    "startup.legacyImportReviewTitle": "assistant-generated-draft",
+    "startup.legacyImportFile": "assistant-generated-draft",
+    "startup.legacyImportSize": "assistant-generated-draft",
+    "startup.legacyImportSchemaVersion": "assistant-generated-draft",
+    "startup.legacyImportProfiles": "assistant-generated-draft",
+    "startup.legacyImportConnections": "assistant-generated-draft",
+    "startup.legacyImportDownloads": "assistant-generated-draft",
+    "startup.legacyImportIdentityWarning": "assistant-generated-draft",
+    "startup.legacyImportCredentialsWarning": "assistant-generated-draft",
+    "startup.legacyImportPathsWarning": "assistant-generated-draft",
+    "startup.legacyImportBackup": "assistant-generated-draft",
+    "startup.legacyImportConfirm": "assistant-generated-draft",
+    "startup.legacyImportInvalidTitle": "assistant-generated-draft",
+    "startup.legacyImportInvalidBody": "assistant-generated-draft",
+    "startup.legacyImportTryAnother": "assistant-generated-draft"
   },
   "beforeIndependentQaCorrection": {
     "accessibility.reduceMotionHint": "m2m100-draft",

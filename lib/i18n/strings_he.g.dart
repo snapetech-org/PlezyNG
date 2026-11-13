@@ -1832,6 +1832,27 @@ class _Translations$startup$he extends Translations$startup$en {
 	@override String get deleteBackup => 'הורד עותק';
 	@override String get backupDeleted => 'עותק מוחלף';
 	@override String get previousFailureTitle => 'Pleazyng לא התחיל בפעם האחרונה';
+	@override String get legacyImportTitle => 'לייבא ספריית מדיה קיימת?';
+	@override String get legacyImportBody => 'אם יש לך מסד נתונים מהתקנה קודמת של Pleazyng או Plezy, אפשר לבחור אותו כאן. Pleazyng לעולם לא מחפשת מסדי נתונים ולא מייבאת מסד לפי שם הקובץ.';
+	@override String get legacyImportChoose => 'בחירת מסד נתונים';
+	@override String get legacyImportStartFresh => 'התחלה מחדש';
+	@override String get legacyImportPickTitle => 'בחרו קובץ מסד נתונים לתצוגה מקדימה';
+	@override String get legacyImportChecking => 'הקובץ שנבחר נבדק בעותק זמני. הקובץ המקורי לא ישתנה.';
+	@override String get legacyImportReviewTitle => 'סקירת מסד הנתונים הזה';
+	@override String legacyImportFile({required Object name}) => 'קובץ: ${name}';
+	@override String legacyImportSize({required Object size}) => 'גודל הקובץ: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'סכמת מסד הנתונים: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'פרופילים: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'חיבורי שרת: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'רשומות הורדה שמורות: ${count}';
+	@override String get legacyImportIdentityWarning => 'במסד הנתונים אין סמן שמזהה את האפליקציה. אי אפשר לדעת מהשם ומהסכמה אם הוא הגיע מ-Pleazyng או מ-Plezy המקורי.';
+	@override String get legacyImportCredentialsWarning => 'פרטי ההתחברות לשרת נשמרים בנפרד ולא יועברו. יהיה צורך להתחבר מחדש.';
+	@override String get legacyImportPathsWarning => 'קובצי המדיה שהורדו לא מועתקים. ייתכן שהנתיבים הקיימים לא יפעלו במכשיר הזה; ייתכן שיהיה צורך לבחור מחדש תיקיות אחסון או להוריד את המדיה שוב.';
+	@override String get legacyImportBackup => 'הקובץ שנבחר נשאר ללא שינוי כעותק לשחזור. האפשרות מופיעה רק כשאין מסד נתונים של Pleazyng; מסד נתונים קיים של Pleazyng לעולם לא מוחלף.';
+	@override String get legacyImportConfirm => 'ייבוא מסד הנתונים הזה';
+	@override String get legacyImportInvalidTitle => 'אי אפשר לאמת את הקובץ הזה';
+	@override String get legacyImportInvalidBody => 'Pleazyng לא הצליחה לוודא שהקובץ שנבחר הוא מסד נתונים נתמך. שום דבר לא יובא או שונה.';
+	@override String get legacyImportTryAnother => 'בחירת קובץ אחר';
 }
 
 // Path: licenses
@@ -7246,6 +7267,27 @@ extension on TranslationsHe {
 			'startup.deleteBackup' => 'הורד עותק',
 			'startup.backupDeleted' => 'עותק מוחלף',
 			'startup.previousFailureTitle' => 'Pleazyng לא התחיל בפעם האחרונה',
+			'startup.legacyImportTitle' => 'לייבא ספריית מדיה קיימת?',
+			'startup.legacyImportBody' => 'אם יש לך מסד נתונים מהתקנה קודמת של Pleazyng או Plezy, אפשר לבחור אותו כאן. Pleazyng לעולם לא מחפשת מסדי נתונים ולא מייבאת מסד לפי שם הקובץ.',
+			'startup.legacyImportChoose' => 'בחירת מסד נתונים',
+			'startup.legacyImportStartFresh' => 'התחלה מחדש',
+			'startup.legacyImportPickTitle' => 'בחרו קובץ מסד נתונים לתצוגה מקדימה',
+			'startup.legacyImportChecking' => 'הקובץ שנבחר נבדק בעותק זמני. הקובץ המקורי לא ישתנה.',
+			'startup.legacyImportReviewTitle' => 'סקירת מסד הנתונים הזה',
+			'startup.legacyImportFile' => ({required Object name}) => 'קובץ: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'גודל הקובץ: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'סכמת מסד הנתונים: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'פרופילים: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'חיבורי שרת: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'רשומות הורדה שמורות: ${count}',
+			'startup.legacyImportIdentityWarning' => 'במסד הנתונים אין סמן שמזהה את האפליקציה. אי אפשר לדעת מהשם ומהסכמה אם הוא הגיע מ-Pleazyng או מ-Plezy המקורי.',
+			'startup.legacyImportCredentialsWarning' => 'פרטי ההתחברות לשרת נשמרים בנפרד ולא יועברו. יהיה צורך להתחבר מחדש.',
+			'startup.legacyImportPathsWarning' => 'קובצי המדיה שהורדו לא מועתקים. ייתכן שהנתיבים הקיימים לא יפעלו במכשיר הזה; ייתכן שיהיה צורך לבחור מחדש תיקיות אחסון או להוריד את המדיה שוב.',
+			'startup.legacyImportBackup' => 'הקובץ שנבחר נשאר ללא שינוי כעותק לשחזור. האפשרות מופיעה רק כשאין מסד נתונים של Pleazyng; מסד נתונים קיים של Pleazyng לעולם לא מוחלף.',
+			'startup.legacyImportConfirm' => 'ייבוא מסד הנתונים הזה',
+			'startup.legacyImportInvalidTitle' => 'אי אפשר לאמת את הקובץ הזה',
+			'startup.legacyImportInvalidBody' => 'Pleazyng לא הצליחה לוודא שהקובץ שנבחר הוא מסד נתונים נתמך. שום דבר לא יובא או שונה.',
+			'startup.legacyImportTryAnother' => 'בחירת קובץ אחר',
 			'licenses.relatedPackages' => 'חבילות קשורות',
 			'licenses.license' => 'רישיון',
 			'licenses.licenseNumber' => ({required Object number}) => 'רישיון ${number}',
@@ -7603,6 +7645,8 @@ extension on TranslationsHe {
 			'music.noAudioUrl' => ({required Object track}) => 'אין כתובת אודיו זמינה עבור ${track}',
 			'music.discography.singlesAndEps' => 'סינגלים & EPs',
 			'music.discography.live' => 'שידור חי',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'קומפוזיציה',
 			'music.backTo' => 'חזרה אל',
 			'music.upNext' => 'הבאים בתור',
@@ -7624,8 +7668,6 @@ extension on TranslationsHe {
 			'watchTogether.paste' => 'פסטה',
 			'watchTogether.noCodeInClipboard' => 'הקליפ לא מכיל קוד חדר',
 			'watchTogether.copyCode' => 'עותק קוד',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'קוד חדר עותק',
 			'watchTogether.shareInvite' => 'שיתוף הזמנה',
 			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
@@ -8117,6 +8159,8 @@ extension on TranslationsHe {
 			'metadataEdit.editMetadata' => 'ערוך',
 			'metadataEdit.screenTitle' => 'ערוך מטא-דאטה',
 			'metadataEdit.basicInfo' => 'מידע בסיסי',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'אמנות',
 			'metadataEdit.advancedSettings' => 'הגדרות מתקדמות',
 			'metadataEdit.title' => 'כותרת',
@@ -8138,8 +8182,6 @@ extension on TranslationsHe {
 			'metadataEdit.fromUrl' => 'מתוך URL',
 			'metadataEdit.uploadFile' => 'להעלות קובץ',
 			'metadataEdit.enterImageUrl' => 'כניסת תמונה URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'תמונה URL',
 			'metadataEdit.metadataUpdated' => 'נתונים מתעדכנים',
 			'metadataEdit.metadataUpdateFailed' => 'לא הצלחתי לעדכן את הנתונים',
@@ -8631,6 +8673,8 @@ extension on TranslationsHe {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'הסתרה',
 			'homeLayout.remove' => 'הסר',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'הספרייה מחדש של הספרייה',
 			'homeLayout.pressAgainToDelete' => 'לחץ שוב כדי למחוק',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8652,8 +8696,6 @@ extension on TranslationsHe {
 			'universalMedia.files' => 'מכשיר קבצים',
 			'universalMedia.favorites' => 'זרם אחסון האהובים',
 			'universalMedia.address' => 'כתובת התקשורת',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'כתובות URL עם פרמטרים של זיהוי או חתימה מוכרים משמשים רק עבור הפגישה הזו ולא ניתן לשמור אותם כפופולריים.',
 			'universalMedia.displayName' => 'שם התצוגה (אופציונלי)',
 			'universalMedia.displayNameHelp' => 'בחר שם קצר עבור השחקן ואת בקרת מדיה המערכת.',
@@ -9145,6 +9187,8 @@ extension on TranslationsHe {
 			'sourceSetup.passwordOrKey' => 'יש להזין סיסמה או להוסיף מפתח פרטי למטה.',
 			'sourceSetup.sshFingerprint' => 'טביעת אצבע SHA256 של מפתח מארח SSH',
 			'sourceSetup.sshFingerprintHelp' => 'יש לאמת מול מנהל השרת. בשרת, יש להריץ ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub ולהשתמש בערך SHA256 שמתקבל.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'יש להשאיר ריק כדי לשמור על טביעת האצבע המקובעת הנוכחית, או להזין טביעת אצבע חדשה של השרת.',
 			'sourceSetup.sshAuthentication' => 'אימות באמצעות מפתח ציבורי של SSH',
 			'sourceSetup.sshAuthenticationHelp' => 'לא חובה; אפשר גם לבצע אימות באמצעות סיסמה.',
@@ -9166,8 +9210,6 @@ extension on TranslationsHe {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS משתמש ביציאות הרגילות של NFS ושירות ה־mount, ודורש תמיכה ב־RFC 9289 מצד ה־NAS. נדרש TLS 1.3. שם המארח או כתובת ה־IP חייבים להתאים לאישור. מזהי AUTH_SYS UID/GID עדיין חלים בתוך הערוץ המוצפן.',
 			'sourceSetup.clientCertificate' => 'אישור לקוח (רשות)',
 			'sourceSetup.clientCertificateHelp' => 'מאפשר ל־NAS לאמת את הלקוח הזה; מזהי AUTH_SYS עדיין כפופים למדיניות הייצוא של ה־NAS.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'ייעשה שימוש בפרטי הזיהוי השמורים של הלקוח.',
 			'sourceSetup.replaceIdentity' => 'החלפת פרטי הזיהוי השמורים של הלקוח',
 			'sourceSetup.chooseIdentity' => 'בחירת פרטי זיהוי לקוח בפורמט PKCS#12',
@@ -9659,6 +9701,8 @@ extension on TranslationsHe {
 			'musicTools.playlistRecipient' => 'שם משתמש Plex או דוא״ל',
 			'musicTools.playlistSharingHint' => 'הענקת גישה לרשימה זו ולרצועות שלה. ייתכן שהנמען יצטרך לאשר הזמנה.',
 			'musicTools.playlistSharingFailed' => 'לא ניתן לבקש גישה לרשימת ההשמעה.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex קיבל את בקשת הגישה.',
 			'musicTools.playlistAccessList' => 'גישה נוכחית',
 			'musicTools.playlistAccessNone' => 'לא הוענקו הרשאות גישה לרשימת ההשמעה',
@@ -9680,8 +9724,6 @@ extension on TranslationsHe {
 			'musicTools.continueStation' => 'המשך לנגן תחנה זו',
 			'musicDevices.playOn' => 'ניגון באמצעות',
 			'musicDevices.thisDevice' => 'מכשיר זה',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',
 			'musicDevices.remembered' => 'מכשירים שמורים',
 			'musicDevices.forget' => 'שכח מכשיר',

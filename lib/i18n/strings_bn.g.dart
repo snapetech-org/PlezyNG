@@ -1830,6 +1830,27 @@ class _Translations$startup$bn extends Translations$startup$en {
 	@override String get deleteBackup => 'কপি মুছে ফেলুন';
 	@override String get backupDeleted => 'কপি মুছে ফেলুন';
 	@override String get previousFailureTitle => 'Pleazyng শেষবার শুরু করতে পারিনি';
+	@override String get legacyImportTitle => 'আগের মিডিয়া লাইব্রেরি আমদানি করবেন?';
+	@override String get legacyImportBody => 'আগের Pleazyng বা Plezy ইনস্টলেশনের ডেটাবেস থাকলে এখানে সেটি বেছে নিতে পারেন। Pleazyng কখনো ডেটাবেস খোঁজে না বা ফাইলের নাম দেখে আমদানি করে না।';
+	@override String get legacyImportChoose => 'ডেটাবেস বেছে নিন';
+	@override String get legacyImportStartFresh => 'নতুন করে শুরু করুন';
+	@override String get legacyImportPickTitle => 'প্রিভিউ করার জন্য একটি ডেটাবেস ফাইল বেছে নিন';
+	@override String get legacyImportChecking => 'নির্বাচিত ফাইলটি একটি অস্থায়ী কপিতে পরীক্ষা করা হচ্ছে। আপনার আসল ফাইলটি পরিবর্তন করা হবে না।';
+	@override String get legacyImportReviewTitle => 'এই ডেটাবেসটি পর্যালোচনা করুন';
+	@override String legacyImportFile({required Object name}) => 'ফাইল: ${name}';
+	@override String legacyImportSize({required Object size}) => 'ফাইলের আকার: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'ডেটাবেস স্কিমা: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'প্রোফাইল: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'সার্ভার সংযোগ: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'সংরক্ষিত ডাউনলোড রেকর্ড: ${count}';
+	@override String get legacyImportIdentityWarning => 'ডেটাবেসে অ্যাপের পরিচয়চিহ্ন নেই। নাম বা স্কিমা দেখে এটি Pleazyng থেকে এসেছে নাকি upstream Plezy থেকে, বোঝা যায় না।';
+	@override String get legacyImportCredentialsWarning => 'সার্ভারের পরিচয়পত্র আলাদাভাবে রাখা হয়, তাই সেগুলো স্থানান্তরিত হবে না। আপনাকে আবার সাইন ইন করতে হবে।';
+	@override String get legacyImportPathsWarning => 'ডাউনলোড করা মিডিয়া ফাইল কপি করা হয় না। এই ডিভাইসে আগের পথগুলো কাজ নাও করতে পারে; স্টোরেজ ফোল্ডার আবার বেছে নিতে বা মিডিয়া আবার ডাউনলোড করতে হতে পারে।';
+	@override String get legacyImportBackup => 'নির্বাচিত ফাইলটি ফেরত যাওয়ার কপি হিসেবে অপরিবর্তিত থাকবে। Pleazyng ডেটাবেস না থাকলেই এই বিকল্প দেখা যায়; আগে থেকে থাকা Pleazyng ডেটাবেস কখনো প্রতিস্থাপন করা হয় না।';
+	@override String get legacyImportConfirm => 'এই ডেটাবেস আমদানি করুন';
+	@override String get legacyImportInvalidTitle => 'ফাইলটি যাচাই করা যায়নি';
+	@override String get legacyImportInvalidBody => 'নির্বাচিত ফাইলটি সমর্থিত ডেটাবেস কি না Pleazyng যাচাই করতে পারেনি। কিছুই আমদানি বা পরিবর্তন করা হয়নি।';
+	@override String get legacyImportTryAnother => 'অন্য ফাইল বেছে নিন';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsBn {
 			'startup.deleteBackup' => 'কপি মুছে ফেলুন',
 			'startup.backupDeleted' => 'কপি মুছে ফেলুন',
 			'startup.previousFailureTitle' => 'Pleazyng শেষবার শুরু করতে পারিনি',
+			'startup.legacyImportTitle' => 'আগের মিডিয়া লাইব্রেরি আমদানি করবেন?',
+			'startup.legacyImportBody' => 'আগের Pleazyng বা Plezy ইনস্টলেশনের ডেটাবেস থাকলে এখানে সেটি বেছে নিতে পারেন। Pleazyng কখনো ডেটাবেস খোঁজে না বা ফাইলের নাম দেখে আমদানি করে না।',
+			'startup.legacyImportChoose' => 'ডেটাবেস বেছে নিন',
+			'startup.legacyImportStartFresh' => 'নতুন করে শুরু করুন',
+			'startup.legacyImportPickTitle' => 'প্রিভিউ করার জন্য একটি ডেটাবেস ফাইল বেছে নিন',
+			'startup.legacyImportChecking' => 'নির্বাচিত ফাইলটি একটি অস্থায়ী কপিতে পরীক্ষা করা হচ্ছে। আপনার আসল ফাইলটি পরিবর্তন করা হবে না।',
+			'startup.legacyImportReviewTitle' => 'এই ডেটাবেসটি পর্যালোচনা করুন',
+			'startup.legacyImportFile' => ({required Object name}) => 'ফাইল: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'ফাইলের আকার: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'ডেটাবেস স্কিমা: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'প্রোফাইল: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'সার্ভার সংযোগ: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'সংরক্ষিত ডাউনলোড রেকর্ড: ${count}',
+			'startup.legacyImportIdentityWarning' => 'ডেটাবেসে অ্যাপের পরিচয়চিহ্ন নেই। নাম বা স্কিমা দেখে এটি Pleazyng থেকে এসেছে নাকি upstream Plezy থেকে, বোঝা যায় না।',
+			'startup.legacyImportCredentialsWarning' => 'সার্ভারের পরিচয়পত্র আলাদাভাবে রাখা হয়, তাই সেগুলো স্থানান্তরিত হবে না। আপনাকে আবার সাইন ইন করতে হবে।',
+			'startup.legacyImportPathsWarning' => 'ডাউনলোড করা মিডিয়া ফাইল কপি করা হয় না। এই ডিভাইসে আগের পথগুলো কাজ নাও করতে পারে; স্টোরেজ ফোল্ডার আবার বেছে নিতে বা মিডিয়া আবার ডাউনলোড করতে হতে পারে।',
+			'startup.legacyImportBackup' => 'নির্বাচিত ফাইলটি ফেরত যাওয়ার কপি হিসেবে অপরিবর্তিত থাকবে। Pleazyng ডেটাবেস না থাকলেই এই বিকল্প দেখা যায়; আগে থেকে থাকা Pleazyng ডেটাবেস কখনো প্রতিস্থাপন করা হয় না।',
+			'startup.legacyImportConfirm' => 'এই ডেটাবেস আমদানি করুন',
+			'startup.legacyImportInvalidTitle' => 'ফাইলটি যাচাই করা যায়নি',
+			'startup.legacyImportInvalidBody' => 'নির্বাচিত ফাইলটি সমর্থিত ডেটাবেস কি না Pleazyng যাচাই করতে পারেনি। কিছুই আমদানি বা পরিবর্তন করা হয়নি।',
+			'startup.legacyImportTryAnother' => 'অন্য ফাইল বেছে নিন',
 			'licenses.relatedPackages' => 'সম্পর্কিত প্যাকেজ',
 			'licenses.license' => 'লাইসেন্স',
 			'licenses.licenseNumber' => ({required Object number}) => 'লাইসেন্স ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsBn {
 			'music.noAudioUrl' => ({required Object track}) => 'কোন অডিও ইউরলি পাওয়া যায় না ${track}',
 			'music.discography.singlesAndEps' => 'Singles ও EPs',
 			'music.discography.live' => 'জীবনযাপন',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'কম্পিউটার',
 			'music.backTo' => 'আগে শোনা',
 			'music.upNext' => 'এরপরে',
@@ -7616,8 +7660,6 @@ extension on TranslationsBn {
 			'watchTogether.paste' => 'পেস্ট',
 			'watchTogether.noCodeInClipboard' => 'ক্লাববের কোডে রুম কোড নেই।',
 			'watchTogether.copyCode' => 'কপি কোড',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'রুম কোড কপি',
 			'watchTogether.shareInvite' => 'বিতর্ক invitaciones',
 			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
@@ -8109,6 +8151,8 @@ extension on TranslationsBn {
 			'metadataEdit.editMetadata' => 'এডিট',
 			'metadataEdit.screenTitle' => 'মেটাডেটা এডিট করুন',
 			'metadataEdit.basicInfo' => 'মৌলিক তথ্য',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'শিল্প',
 			'metadataEdit.advancedSettings' => 'উন্নত সিস্টেম',
 			'metadataEdit.title' => 'Title নাম',
@@ -8130,8 +8174,6 @@ extension on TranslationsBn {
 			'metadataEdit.fromUrl' => 'URL থেকে',
 			'metadataEdit.uploadFile' => 'ফাইল আপলোড',
 			'metadataEdit.enterImageUrl' => 'ইমেজ URL লিখুন',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'ইমেজ URL',
 			'metadataEdit.metadataUpdated' => 'মেটাদাডেট আপডেট',
 			'metadataEdit.metadataUpdateFailed' => 'মেটাদাটা আপডেট করতে পারেনি',
@@ -8623,6 +8665,8 @@ extension on TranslationsBn {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'লুকিয়ে',
 			'homeLayout.remove' => 'সরান',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'এই লাইব্রেরি রেজিস্ট্রেশন',
 			'homeLayout.pressAgainToDelete' => 'আবারও চাপ করুন মুছে ফেলুন',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsBn {
 			'universalMedia.files' => 'ডিভাইস ফাইল',
 			'universalMedia.favorites' => 'সুরক্ষিত প্রদর্শন পছন্দ',
 			'universalMedia.address' => 'মিডিয়া ঠিকানা',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS preferred. recognized credential বা signature parameters সঙ্গে URLs শুধুমাত্র এই session জন্য ব্যবহার করা হয় এবং পছন্দ হিসাবে সংরক্ষণ করা যাবে না।',
 			'universalMedia.displayName' => 'ডাউনলোড নাম (অ্যাপ্লিকেশন)',
 			'universalMedia.displayNameHelp' => 'খেলোয়াড় এবং সিস্টেম মিডিয়া কন্ট্রোলগুলির জন্য একটি ছোট নাম নির্বাচন করুন।',
@@ -9137,6 +9179,8 @@ extension on TranslationsBn {
 			'sourceSetup.passwordOrKey' => 'পাসওয়ার্ড লিখুন অথবা নিচে একটি ব্যক্তিগত কী যোগ করুন।',
 			'sourceSetup.sshFingerprint' => 'SSH হোস্ট কী-এর SHA256 ফিঙ্গারপ্রিন্ট',
 			'sourceSetup.sshFingerprintHelp' => 'সার্ভারের প্রশাসকের কাছে যাচাই করুন। সার্ভারে ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub চালিয়ে পাওয়া SHA256 মানটি ব্যবহার করুন।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'বর্তমানে পিন করা ফিঙ্গারপ্রিন্ট রাখতে ফাঁকা রাখুন, অথবা সার্ভারের নতুন ফিঙ্গারপ্রিন্ট লিখুন।',
 			'sourceSetup.sshAuthentication' => 'SSH পাবলিক কী দিয়ে পরিচয় যাচাই',
 			'sourceSetup.sshAuthenticationHelp' => 'ঐচ্ছিক; পাসওয়ার্ড দিয়েও পরিচয় যাচাই করা যায়।',
@@ -9158,8 +9202,6 @@ extension on TranslationsBn {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS সাধারণ NFS ও মাউন্ট সেবার পোর্ট ব্যবহার করে এবং NAS-এ RFC 9289 সমর্থন থাকা প্রয়োজন। TLS 1.3 বাধ্যতামূলক। হোস্টের নাম বা IP সার্টিফিকেটের সঙ্গে মিলতে হবে। এনক্রিপ্ট করা চ্যানেলের ভেতরেও AUTH_SYS UID/GID প্রযোজ্য থাকে।',
 			'sourceSetup.clientCertificate' => 'ক্লায়েন্ট সার্টিফিকেট (ঐচ্ছিক)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-কে এই ক্লায়েন্টের পরিচয় যাচাই করতে দেয়; AUTH_SYS ID এখনো NAS এক্সপোর্টের নীতির ওপর নির্ভর করে।',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র ব্যবহার করা হবে।',
 			'sourceSetup.replaceIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র প্রতিস্থাপন করুন',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 ক্লায়েন্ট পরিচয়পত্র বেছে নিন',
@@ -9651,6 +9693,8 @@ extension on TranslationsBn {
 			'musicTools.playlistRecipient' => 'Plex ব্যবহারকারীর নাম বা ইমেইল',
 			'musicTools.playlistSharingHint' => 'এই প্লেলিস্ট ও এর ট্র্যাকগুলোতে প্রবেশাধিকার দিন। প্রাপককে আমন্ত্রণ গ্রহণ করতে হতে পারে।',
 			'musicTools.playlistSharingFailed' => 'প্লেলিস্টে প্রবেশাধিকারের অনুরোধ করা যায়নি।',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex প্রবেশাধিকারের অনুরোধ গ্রহণ করেছে।',
 			'musicTools.playlistAccessList' => 'বর্তমান প্রবেশাধিকার',
 			'musicTools.playlistAccessNone' => 'প্লেলিস্টে কাউকে প্রবেশাধিকার দেওয়া হয়নি',
@@ -9672,8 +9716,6 @@ extension on TranslationsBn {
 			'musicTools.continueStation' => 'এই স্টেশন চালানো চালিয়ে যান',
 			'musicDevices.playOn' => 'এখানে চালান',
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',
 			'musicDevices.remembered' => 'মনে রাখা ডিভাইস',
 			'musicDevices.forget' => 'ডিভাইস ভুলে যান',

@@ -1,7 +1,7 @@
 {
   "locale": "th",
   "inherits": null,
-  "catalogSha256": "b6f77e4cf2a0d6ad20e43881b7764721ecadee77b07848303bcc2d4c03a77bde",
+  "catalogSha256": "1b26820a8199cd287dfdea69f72b4f98c78655a5012813632cf91e02dc737a6c",
   "nativeSpeakerReviewed": false,
   "messages": {
     "app.title": "nonlinguistic",
@@ -3651,7 +3651,28 @@
     "games.streamAudio": "english-fallback",
     "games.streamAudioHelp": "english-fallback",
     "karaokeUi.practiceMetronomeTitle": "assistant-generated-draft",
-    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft"
+    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft",
+    "startup.legacyImportTitle": "assistant-generated-draft",
+    "startup.legacyImportBody": "assistant-generated-draft",
+    "startup.legacyImportChoose": "assistant-generated-draft",
+    "startup.legacyImportStartFresh": "assistant-generated-draft",
+    "startup.legacyImportPickTitle": "assistant-generated-draft",
+    "startup.legacyImportChecking": "assistant-generated-draft",
+    "startup.legacyImportReviewTitle": "assistant-generated-draft",
+    "startup.legacyImportFile": "assistant-generated-draft",
+    "startup.legacyImportSize": "assistant-generated-draft",
+    "startup.legacyImportSchemaVersion": "assistant-generated-draft",
+    "startup.legacyImportProfiles": "assistant-generated-draft",
+    "startup.legacyImportConnections": "assistant-generated-draft",
+    "startup.legacyImportDownloads": "assistant-generated-draft",
+    "startup.legacyImportIdentityWarning": "assistant-generated-draft",
+    "startup.legacyImportCredentialsWarning": "assistant-generated-draft",
+    "startup.legacyImportPathsWarning": "assistant-generated-draft",
+    "startup.legacyImportBackup": "assistant-generated-draft",
+    "startup.legacyImportConfirm": "assistant-generated-draft",
+    "startup.legacyImportInvalidTitle": "assistant-generated-draft",
+    "startup.legacyImportInvalidBody": "assistant-generated-draft",
+    "startup.legacyImportTryAnother": "assistant-generated-draft"
   },
   "beforeIndependentQaCorrection": {
     "themeEditor.discardMessage": "m2m100-draft",

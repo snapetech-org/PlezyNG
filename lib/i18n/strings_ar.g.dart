@@ -1862,6 +1862,27 @@ class _Translations$startup$ar extends Translations$startup$en {
 	@override String get deleteBackup => 'حذف النسخة';
 	@override String get backupDeleted => 'نسخة حذف';
 	@override String get previousFailureTitle => 'Pleazyng فشل في البدء للمرة الأخيرة';
+	@override String get legacyImportTitle => 'استيراد مكتبة وسائط موجودة؟';
+	@override String get legacyImportBody => 'إذا كان لديك ملف قاعدة بيانات من تثبيت سابق لـ Pleazyng أو Plezy، يمكنك اختياره هنا. لا يبحث Pleazyng عن قواعد البيانات ولا يستوردها اعتمادًا على اسم الملف مطلقًا.';
+	@override String get legacyImportChoose => 'اختيار قاعدة بيانات';
+	@override String get legacyImportStartFresh => 'البدء من جديد';
+	@override String get legacyImportPickTitle => 'اختر ملف قاعدة بيانات لمعاينته';
+	@override String get legacyImportChecking => 'جارٍ التحقق من الملف المحدد على نسخة مؤقتة. لن يتغير ملفك الأصلي.';
+	@override String get legacyImportReviewTitle => 'مراجعة قاعدة البيانات';
+	@override String legacyImportFile({required Object name}) => 'الملف: ${name}';
+	@override String legacyImportSize({required Object size}) => 'حجم الملف: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'مخطط قاعدة البيانات: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'الملفات الشخصية: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'اتصالات الخادم: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'سجلات التنزيلات المحفوظة: ${count}';
+	@override String get legacyImportIdentityWarning => 'لا تحتوي قاعدة البيانات على علامة تحدد التطبيق. لا يمكن لاسمها أو مخططها تحديد ما إذا كانت من Pleazyng أم من Plezy.';
+	@override String get legacyImportCredentialsWarning => 'تُخزَّن بيانات اعتماد الخادم بشكل منفصل ولن تنتقل. ستحتاج إلى تسجيل الدخول مجددًا.';
+	@override String get legacyImportPathsWarning => 'لن تُنسخ ملفات الوسائط المنزَّلة. قد لا تعمل المسارات الحالية على هذا الجهاز؛ وقد تحتاج إلى اختيار مجلدات التخزين مجددًا أو تنزيل الوسائط مرة أخرى.';
+	@override String get legacyImportBackup => 'سيظل الملف المحدد دون تغيير بوصفه نسخة للرجوع إليها. يظهر هذا الخيار فقط عند عدم وجود قاعدة بيانات لـ Pleazyng؛ ولا تُستبدل قاعدة بيانات موجودة أبدًا.';
+	@override String get legacyImportConfirm => 'استيراد قاعدة البيانات هذه';
+	@override String get legacyImportInvalidTitle => 'تعذر التحقق من هذا الملف';
+	@override String get legacyImportInvalidBody => 'تعذر على Pleazyng التحقق من أن الملف المحدد قاعدة بيانات مدعومة. لم يتم استيراد أي شيء أو تغييره.';
+	@override String get legacyImportTryAnother => 'اختيار ملف آخر';
 }
 
 // Path: licenses
@@ -7338,6 +7359,27 @@ extension on TranslationsAr {
 			'startup.deleteBackup' => 'حذف النسخة',
 			'startup.backupDeleted' => 'نسخة حذف',
 			'startup.previousFailureTitle' => 'Pleazyng فشل في البدء للمرة الأخيرة',
+			'startup.legacyImportTitle' => 'استيراد مكتبة وسائط موجودة؟',
+			'startup.legacyImportBody' => 'إذا كان لديك ملف قاعدة بيانات من تثبيت سابق لـ Pleazyng أو Plezy، يمكنك اختياره هنا. لا يبحث Pleazyng عن قواعد البيانات ولا يستوردها اعتمادًا على اسم الملف مطلقًا.',
+			'startup.legacyImportChoose' => 'اختيار قاعدة بيانات',
+			'startup.legacyImportStartFresh' => 'البدء من جديد',
+			'startup.legacyImportPickTitle' => 'اختر ملف قاعدة بيانات لمعاينته',
+			'startup.legacyImportChecking' => 'جارٍ التحقق من الملف المحدد على نسخة مؤقتة. لن يتغير ملفك الأصلي.',
+			'startup.legacyImportReviewTitle' => 'مراجعة قاعدة البيانات',
+			'startup.legacyImportFile' => ({required Object name}) => 'الملف: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'حجم الملف: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'مخطط قاعدة البيانات: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'الملفات الشخصية: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'اتصالات الخادم: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'سجلات التنزيلات المحفوظة: ${count}',
+			'startup.legacyImportIdentityWarning' => 'لا تحتوي قاعدة البيانات على علامة تحدد التطبيق. لا يمكن لاسمها أو مخططها تحديد ما إذا كانت من Pleazyng أم من Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'تُخزَّن بيانات اعتماد الخادم بشكل منفصل ولن تنتقل. ستحتاج إلى تسجيل الدخول مجددًا.',
+			'startup.legacyImportPathsWarning' => 'لن تُنسخ ملفات الوسائط المنزَّلة. قد لا تعمل المسارات الحالية على هذا الجهاز؛ وقد تحتاج إلى اختيار مجلدات التخزين مجددًا أو تنزيل الوسائط مرة أخرى.',
+			'startup.legacyImportBackup' => 'سيظل الملف المحدد دون تغيير بوصفه نسخة للرجوع إليها. يظهر هذا الخيار فقط عند عدم وجود قاعدة بيانات لـ Pleazyng؛ ولا تُستبدل قاعدة بيانات موجودة أبدًا.',
+			'startup.legacyImportConfirm' => 'استيراد قاعدة البيانات هذه',
+			'startup.legacyImportInvalidTitle' => 'تعذر التحقق من هذا الملف',
+			'startup.legacyImportInvalidBody' => 'تعذر على Pleazyng التحقق من أن الملف المحدد قاعدة بيانات مدعومة. لم يتم استيراد أي شيء أو تغييره.',
+			'startup.legacyImportTryAnother' => 'اختيار ملف آخر',
 			'licenses.relatedPackages' => 'الحزم ذات الصلة',
 			'licenses.license' => 'الترخيص',
 			'licenses.licenseNumber' => ({required Object number}) => 'الترخيص ${number}',
@@ -7695,6 +7737,8 @@ extension on TranslationsAr {
 			'music.noAudioUrl' => ({required Object track}) => 'لا توجد عناوين URL الصوتية متوفرة على ${track}',
 			'music.discography.singlesAndEps' => 'مجلدات & EPs',
 			'music.discography.live' => 'مباشر',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'المجموعات',
 			'music.backTo' => 'العودة إلى',
 			'music.upNext' => 'التالي',
@@ -7716,8 +7760,6 @@ extension on TranslationsAr {
 			'watchTogether.paste' => 'كعكة',
 			'watchTogether.noCodeInClipboard' => 'لا يحتوي الكليب على رمز غرفة',
 			'watchTogether.copyCode' => 'نسخ الرمز',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'رمز الغرفة نسخة',
 			'watchTogether.shareInvite' => 'مشاركة دعوة',
 			'watchTogether.inviteCopied' => 'إرسال الرسالة - إرسال الرسالة إلى الرسالة',
@@ -8209,6 +8251,8 @@ extension on TranslationsAr {
 			'metadataEdit.editMetadata' => 'تعديل',
 			'metadataEdit.screenTitle' => 'تعديل البيانات الوصفية',
 			'metadataEdit.basicInfo' => 'معلومات أساسية',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'الفن',
 			'metadataEdit.advancedSettings' => 'الإعدادات المتقدمة',
 			'metadataEdit.title' => 'العنوان',
@@ -8230,8 +8274,6 @@ extension on TranslationsAr {
 			'metadataEdit.fromUrl' => 'من URL',
 			'metadataEdit.uploadFile' => 'تحميل الملفات',
 			'metadataEdit.enterImageUrl' => 'إدخال صورة URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'صورة URL',
 			'metadataEdit.metadataUpdated' => 'متاجدات تحديثات',
 			'metadataEdit.metadataUpdateFailed' => 'فشل في تحديث البيانات الميتا',
@@ -8723,6 +8765,8 @@ extension on TranslationsAr {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'إخفاء',
 			'homeLayout.remove' => 'إزالة',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'صف استئناف المشاهدة الخاص بهذه المكتبة',
 			'homeLayout.pressAgainToDelete' => 'اضغط مرة أخرى للحذف',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8744,8 +8788,6 @@ extension on TranslationsAr {
 			'universalMedia.files' => 'أجهزة الملفات',
 			'universalMedia.favorites' => 'المفضلة التي تم إنقاذها',
 			'universalMedia.address' => 'عناوين وسائل الإعلام',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'يتم استخدام عناوين URL مع المعلمات الاعتمادية أو التوقيع المعترف بها فقط لهذا الجلسة ولا يمكن حفظها على أنها المفضلة.',
 			'universalMedia.displayName' => 'اسم العرض (اختياري )',
 			'universalMedia.displayNameHelp' => 'اختر اسمًا قصيرًا لللاعب ومراقب وسائل الإعلام في النظام.',
@@ -9237,6 +9279,8 @@ extension on TranslationsAr {
 			'sourceSetup.passwordOrKey' => 'أدخل كلمة مرور أو أضف مفتاحًا خاصًا أدناه.',
 			'sourceSetup.sshFingerprint' => 'بصمة SHA256 لمفتاح مضيف SSH',
 			'sourceSetup.sshFingerprintHelp' => 'تحقّق منها مع مسؤول الخادم. شغّل على الخادم الأمر ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub واستخدم قيمة SHA256 التي يعرضها.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'اتركه فارغًا للاحتفاظ بالبصمة المثبّتة حاليًا، أو أدخل بصمة خادم جديدة.',
 			'sourceSetup.sshAuthentication' => 'المصادقة بمفتاح SSH عام',
 			'sourceSetup.sshAuthenticationHelp' => 'اختياري؛ تُدعم المصادقة بكلمة مرور أيضًا.',
@@ -9258,8 +9302,6 @@ extension on TranslationsAr {
 			'sourceSetup.nfsTlsHelp' => 'يستخدم RPC-with-TLS منافذ NFS وخدمة التركيب المعتادة، ويتطلب دعم NAS للمعيار RFC 9289. يلزم TLS 1.3. يجب أن يطابق اسم المضيف أو عنوان IP الشهادة. تظل معرّفات AUTH_SYS UID/GID سارية داخل القناة المشفّرة.',
 			'sourceSetup.clientCertificate' => 'شهادة العميل (اختيارية)',
 			'sourceSetup.clientCertificateHelp' => 'تتيح لـ NAS التحقّق من هوية هذا العميل؛ تظل معرّفات AUTH_SYS خاضعة لسياسة تصدير NAS.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'ستُستخدم هوية العميل المحفوظة.',
 			'sourceSetup.replaceIdentity' => 'استبدال هوية العميل المحفوظة',
 			'sourceSetup.chooseIdentity' => 'اختيار هوية عميل PKCS#12',
@@ -9751,6 +9793,8 @@ extension on TranslationsAr {
 			'musicTools.playlistRecipient' => 'اسم مستخدم Plex أو البريد الإلكتروني',
 			'musicTools.playlistSharingHint' => 'امنح الوصول إلى قائمة التشغيل هذه ومقاطعها. قد يحتاج المستلم إلى قبول دعوة.',
 			'musicTools.playlistSharingFailed' => 'تعذر طلب الوصول إلى قائمة التشغيل.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'قبل Plex طلب الوصول.',
 			'musicTools.playlistAccessList' => 'الوصول الحالي',
 			'musicTools.playlistAccessNone' => 'لا توجد أذونات للوصول إلى قائمة التشغيل',
@@ -9772,8 +9816,6 @@ extension on TranslationsAr {
 			'musicTools.continueStation' => 'متابعة تشغيل هذه المحطة',
 			'musicDevices.playOn' => 'التشغيل على',
 			'musicDevices.thisDevice' => 'هذا الجهاز',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',
 			'musicDevices.remembered' => 'الأجهزة المحفوظة',
 			'musicDevices.forget' => 'نسيان الجهاز',

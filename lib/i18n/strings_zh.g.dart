@@ -1828,6 +1828,27 @@ class Translations$startup$zh extends Translations$startup$en {
 	@override String get deleteBackup => '删除副本';
 	@override String get backupDeleted => '副本已删除。';
 	@override String get previousFailureTitle => 'Pleazyng 上次启动失败';
+	@override String get legacyImportTitle => '要导入现有媒体库吗？';
+	@override String get legacyImportBody => '如果你有之前安装的 Pleazyng 或 Plezy 数据库，可以在此选择。Pleazyng 不会搜索数据库，也不会仅凭文件名导入数据库。';
+	@override String get legacyImportChoose => '选择数据库';
+	@override String get legacyImportStartFresh => '重新开始';
+	@override String get legacyImportPickTitle => '选择要预览的数据库文件';
+	@override String get legacyImportChecking => '正在检查所选文件的临时副本。原始文件不会被更改。';
+	@override String get legacyImportReviewTitle => '查看此数据库';
+	@override String legacyImportFile({required Object name}) => '文件：${name}';
+	@override String legacyImportSize({required Object size}) => '文件大小：${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => '数据库架构：${version}';
+	@override String legacyImportProfiles({required Object count}) => '配置文件：${count}';
+	@override String legacyImportConnections({required Object count}) => '服务器连接：${count}';
+	@override String legacyImportDownloads({required Object count}) => '已保存的下载记录：${count}';
+	@override String get legacyImportIdentityWarning => '此数据库没有应用身份标记。无法根据名称和架构判断它来自 Pleazyng 还是上游项目 Plezy。';
+	@override String get legacyImportCredentialsWarning => '服务器凭据单独存储，不会随数据库迁移。你需要重新登录。';
+	@override String get legacyImportPathsWarning => '已下载的媒体文件不会被复制。现有路径可能无法在此设备上使用；你可能需要重新选择存储文件夹或再次下载媒体。';
+	@override String get legacyImportBackup => '所选文件会保持不变，作为回滚副本。只有在 Pleazyng 尚无数据库时才会显示此选项；现有 Pleazyng 数据库绝不会被替换。';
+	@override String get legacyImportConfirm => '导入此数据库';
+	@override String get legacyImportInvalidTitle => '无法验证此文件';
+	@override String get legacyImportInvalidBody => 'Pleazyng 无法确认所选文件是受支持的数据库。未导入或更改任何内容。';
+	@override String get legacyImportTryAnother => '选择其他文件';
 }
 
 // Path: licenses
@@ -7233,6 +7254,27 @@ extension on TranslationsZh {
 			'startup.deleteBackup' => '删除副本',
 			'startup.backupDeleted' => '副本已删除。',
 			'startup.previousFailureTitle' => 'Pleazyng 上次启动失败',
+			'startup.legacyImportTitle' => '要导入现有媒体库吗？',
+			'startup.legacyImportBody' => '如果你有之前安装的 Pleazyng 或 Plezy 数据库，可以在此选择。Pleazyng 不会搜索数据库，也不会仅凭文件名导入数据库。',
+			'startup.legacyImportChoose' => '选择数据库',
+			'startup.legacyImportStartFresh' => '重新开始',
+			'startup.legacyImportPickTitle' => '选择要预览的数据库文件',
+			'startup.legacyImportChecking' => '正在检查所选文件的临时副本。原始文件不会被更改。',
+			'startup.legacyImportReviewTitle' => '查看此数据库',
+			'startup.legacyImportFile' => ({required Object name}) => '文件：${name}',
+			'startup.legacyImportSize' => ({required Object size}) => '文件大小：${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => '数据库架构：${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => '配置文件：${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => '服务器连接：${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => '已保存的下载记录：${count}',
+			'startup.legacyImportIdentityWarning' => '此数据库没有应用身份标记。无法根据名称和架构判断它来自 Pleazyng 还是上游项目 Plezy。',
+			'startup.legacyImportCredentialsWarning' => '服务器凭据单独存储，不会随数据库迁移。你需要重新登录。',
+			'startup.legacyImportPathsWarning' => '已下载的媒体文件不会被复制。现有路径可能无法在此设备上使用；你可能需要重新选择存储文件夹或再次下载媒体。',
+			'startup.legacyImportBackup' => '所选文件会保持不变，作为回滚副本。只有在 Pleazyng 尚无数据库时才会显示此选项；现有 Pleazyng 数据库绝不会被替换。',
+			'startup.legacyImportConfirm' => '导入此数据库',
+			'startup.legacyImportInvalidTitle' => '无法验证此文件',
+			'startup.legacyImportInvalidBody' => 'Pleazyng 无法确认所选文件是受支持的数据库。未导入或更改任何内容。',
+			'startup.legacyImportTryAnother' => '选择其他文件',
 			'licenses.relatedPackages' => '相关软件包',
 			'licenses.license' => '许可证',
 			'licenses.licenseNumber' => ({required Object number}) => '许可证 ${number}',
@@ -7590,6 +7632,8 @@ extension on TranslationsZh {
 			'music.noAudioUrl' => ({required Object track}) => '没有可供 ${track} 使用的音频 URL',
 			'music.discography.singlesAndEps' => '单曲和 EP',
 			'music.discography.live' => '现场',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => '合集',
 			'music.backTo' => '回到已播放',
 			'music.upNext' => '即将播放',
@@ -7611,8 +7655,6 @@ extension on TranslationsZh {
 			'watchTogether.paste' => '粘贴',
 			'watchTogether.noCodeInClipboard' => '剪贴板中没有房间代码',
 			'watchTogether.copyCode' => '复制代码',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => '房间代码已复制',
 			'watchTogether.shareInvite' => '分享邀请',
 			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
@@ -8104,6 +8146,8 @@ extension on TranslationsZh {
 			'metadataEdit.editMetadata' => '编辑…',
 			'metadataEdit.screenTitle' => '编辑元数据',
 			'metadataEdit.basicInfo' => '基本信息',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => '封面图片',
 			'metadataEdit.advancedSettings' => '高级设置',
 			'metadataEdit.title' => '标题',
@@ -8125,8 +8169,6 @@ extension on TranslationsZh {
 			'metadataEdit.fromUrl' => '通过 URL',
 			'metadataEdit.uploadFile' => '上传文件',
 			'metadataEdit.enterImageUrl' => '输入图片 URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => '图片 URL',
 			'metadataEdit.metadataUpdated' => '元数据已更新',
 			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
@@ -8618,6 +8660,8 @@ extension on TranslationsZh {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => '隐藏',
 			'homeLayout.remove' => '移除',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => '图书馆的重复顺序',
 			'homeLayout.pressAgainToDelete' => '再次按下删除',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8639,8 +8683,6 @@ extension on TranslationsZh {
 			'universalMedia.files' => '设备文件',
 			'universalMedia.favorites' => '保存流喜爱',
 			'universalMedia.address' => '媒體地址',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS 是优先的. 有认可或签名参数的 URL 仅用于此会议,并且不能保存为喜爱。',
 			'universalMedia.displayName' => '显示名称(可选)',
 			'universalMedia.displayNameHelp' => '选择玩家和系统媒体控制器的简称。',
@@ -9132,6 +9174,8 @@ extension on TranslationsZh {
 			'sourceSetup.passwordOrKey' => '请输入密码，或在下方添加私钥。',
 			'sourceSetup.sshFingerprint' => 'SSH 主机密钥 SHA256 指纹',
 			'sourceSetup.sshFingerprintHelp' => '请向服务器管理员核实。在服务器上运行 ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub，并使用显示的 SHA256 值。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => '留空以保留当前固定的指纹，或输入新的服务器指纹。',
 			'sourceSetup.sshAuthentication' => 'SSH 公钥认证',
 			'sourceSetup.sshAuthenticationHelp' => '可选；也支持密码认证。',
@@ -9153,8 +9197,6 @@ extension on TranslationsZh {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用常规 NFS 和挂载服务端口，并要求 NAS 支持 RFC 9289。必须使用 TLS 1.3。主机名或 IP 地址必须与证书匹配。加密通道内仍需使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '客户端证书（可选）',
 			'sourceSetup.clientCertificateHelp' => '允许 NAS 验证此客户端的身份；AUTH_SYS ID 仍受 NAS 导出策略约束。',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => '将使用已保存的客户端身份凭据。',
 			'sourceSetup.replaceIdentity' => '替换已保存的客户端身份凭据',
 			'sourceSetup.chooseIdentity' => '选择 PKCS#12 客户端身份凭据',
@@ -9646,6 +9688,8 @@ extension on TranslationsZh {
 			'musicTools.playlistRecipient' => 'Plex 用户名或电子邮件',
 			'musicTools.playlistSharingHint' => '授予对此播放列表及其曲目的访问权限。接收者可能需要接受邀请。',
 			'musicTools.playlistSharingFailed' => '无法请求播放列表访问权限。',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex 已接受访问请求。',
 			'musicTools.playlistAccessList' => '当前访问权限',
 			'musicTools.playlistAccessNone' => '尚未授予播放列表访问权限',
@@ -9667,8 +9711,6 @@ extension on TranslationsZh {
 			'musicTools.continueStation' => '继续播放此电台',
 			'musicDevices.playOn' => '播放设备',
 			'musicDevices.thisDevice' => '此设备',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
 			'musicDevices.remembered' => '已保存的设备',
 			'musicDevices.forget' => '忘记设备',

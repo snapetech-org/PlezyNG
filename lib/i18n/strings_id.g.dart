@@ -1822,6 +1822,27 @@ class _Translations$startup$id extends Translations$startup$en {
 	@override String get deleteBackup => 'Menghapus Kopi';
 	@override String get backupDeleted => 'Kopi yang dihapus.';
 	@override String get previousFailureTitle => 'Pleazyng gagal memulai kali terakhir';
+	@override String get legacyImportTitle => 'Impor pustaka media yang sudah ada?';
+	@override String get legacyImportBody => 'Jika Anda memiliki basis data dari instalasi Pleazyng atau Plezy sebelumnya, Anda dapat memilihnya di sini. Pleazyng tidak pernah mencari basis data atau mengimpornya berdasarkan nama file.';
+	@override String get legacyImportChoose => 'Pilih basis data';
+	@override String get legacyImportStartFresh => 'Mulai dari awal';
+	@override String get legacyImportPickTitle => 'Pilih file basis data untuk ditinjau';
+	@override String get legacyImportChecking => 'Memeriksa salinan sementara dari file yang dipilih. File asli Anda tidak akan diubah.';
+	@override String get legacyImportReviewTitle => 'Tinjau basis data ini';
+	@override String legacyImportFile({required Object name}) => 'File: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Ukuran file: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Skema basis data: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Profil: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Koneksi server: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Catatan unduhan tersimpan: ${count}';
+	@override String get legacyImportIdentityWarning => 'Basis data ini tidak memiliki penanda identitas aplikasi. Nama dan skemanya tidak dapat menunjukkan apakah basis data berasal dari Pleazyng atau Plezy upstream.';
+	@override String get legacyImportCredentialsWarning => 'Kredensial server disimpan terpisah dan tidak akan dipindahkan. Anda perlu masuk lagi.';
+	@override String get legacyImportPathsWarning => 'File media yang diunduh tidak disalin. Jalur yang ada mungkin tidak berfungsi di perangkat ini; Anda mungkin perlu memilih ulang folder penyimpanan atau mengunduh media lagi.';
+	@override String get legacyImportBackup => 'File yang dipilih tetap utuh sebagai salinan untuk pemulihan. Opsi ini hanya muncul jika Pleazyng belum memiliki basis data; basis data Pleazyng yang sudah ada tidak pernah diganti.';
+	@override String get legacyImportConfirm => 'Impor basis data ini';
+	@override String get legacyImportInvalidTitle => 'File ini tidak dapat divalidasi';
+	@override String get legacyImportInvalidBody => 'Pleazyng tidak dapat memastikan bahwa file yang dipilih adalah basis data yang didukung. Tidak ada yang diimpor atau diubah.';
+	@override String get legacyImportTryAnother => 'Pilih file lain';
 }
 
 // Path: licenses
@@ -7213,6 +7234,27 @@ extension on TranslationsId {
 			'startup.deleteBackup' => 'Menghapus Kopi',
 			'startup.backupDeleted' => 'Kopi yang dihapus.',
 			'startup.previousFailureTitle' => 'Pleazyng gagal memulai kali terakhir',
+			'startup.legacyImportTitle' => 'Impor pustaka media yang sudah ada?',
+			'startup.legacyImportBody' => 'Jika Anda memiliki basis data dari instalasi Pleazyng atau Plezy sebelumnya, Anda dapat memilihnya di sini. Pleazyng tidak pernah mencari basis data atau mengimpornya berdasarkan nama file.',
+			'startup.legacyImportChoose' => 'Pilih basis data',
+			'startup.legacyImportStartFresh' => 'Mulai dari awal',
+			'startup.legacyImportPickTitle' => 'Pilih file basis data untuk ditinjau',
+			'startup.legacyImportChecking' => 'Memeriksa salinan sementara dari file yang dipilih. File asli Anda tidak akan diubah.',
+			'startup.legacyImportReviewTitle' => 'Tinjau basis data ini',
+			'startup.legacyImportFile' => ({required Object name}) => 'File: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Ukuran file: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Skema basis data: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profil: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Koneksi server: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Catatan unduhan tersimpan: ${count}',
+			'startup.legacyImportIdentityWarning' => 'Basis data ini tidak memiliki penanda identitas aplikasi. Nama dan skemanya tidak dapat menunjukkan apakah basis data berasal dari Pleazyng atau Plezy upstream.',
+			'startup.legacyImportCredentialsWarning' => 'Kredensial server disimpan terpisah dan tidak akan dipindahkan. Anda perlu masuk lagi.',
+			'startup.legacyImportPathsWarning' => 'File media yang diunduh tidak disalin. Jalur yang ada mungkin tidak berfungsi di perangkat ini; Anda mungkin perlu memilih ulang folder penyimpanan atau mengunduh media lagi.',
+			'startup.legacyImportBackup' => 'File yang dipilih tetap utuh sebagai salinan untuk pemulihan. Opsi ini hanya muncul jika Pleazyng belum memiliki basis data; basis data Pleazyng yang sudah ada tidak pernah diganti.',
+			'startup.legacyImportConfirm' => 'Impor basis data ini',
+			'startup.legacyImportInvalidTitle' => 'File ini tidak dapat divalidasi',
+			'startup.legacyImportInvalidBody' => 'Pleazyng tidak dapat memastikan bahwa file yang dipilih adalah basis data yang didukung. Tidak ada yang diimpor atau diubah.',
+			'startup.legacyImportTryAnother' => 'Pilih file lain',
 			'licenses.relatedPackages' => 'Paket terkait',
 			'licenses.license' => 'Lisensi',
 			'licenses.licenseNumber' => ({required Object number}) => 'Lisensi ${number}',
@@ -7570,6 +7612,8 @@ extension on TranslationsId {
 			'music.noAudioUrl' => ({required Object track}) => 'Tidak ada URL audio yang tersedia untuk ${track}',
 			'music.discography.singlesAndEps' => 'Singles dan EPs',
 			'music.discography.live' => 'Langsung',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Kompilasi',
 			'music.backTo' => 'Kembali ke',
 			'music.upNext' => 'Berikutnya',
@@ -7591,8 +7635,6 @@ extension on TranslationsId {
 			'watchTogether.paste' => 'Tempel',
 			'watchTogether.noCodeInClipboard' => 'Clipboard tidak mengandung kode kamar',
 			'watchTogether.copyCode' => 'Kopi kode',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Kode kamar disalin',
 			'watchTogether.shareInvite' => 'Membagi Jemputan',
 			'watchTogether.inviteCopied' => 'Tuliskan pesan, masukkan ke dalam pesan.',
@@ -8084,6 +8126,8 @@ extension on TranslationsId {
 			'metadataEdit.editMetadata' => 'Sunting',
 			'metadataEdit.screenTitle' => 'Sunting metadata',
 			'metadataEdit.basicInfo' => 'Informasi dasar',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'seni',
 			'metadataEdit.advancedSettings' => 'Pengaturan Lanjutan',
 			'metadataEdit.title' => 'Judul',
@@ -8105,8 +8149,6 @@ extension on TranslationsId {
 			'metadataEdit.fromUrl' => 'dari URL',
 			'metadataEdit.uploadFile' => 'Upload file',
 			'metadataEdit.enterImageUrl' => 'Masukkan URL gambar',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'Gambar URL',
 			'metadataEdit.metadataUpdated' => 'Metadata yang diperbarui',
 			'metadataEdit.metadataUpdateFailed' => 'Tidak dapat mengemas kini metadata',
@@ -8598,6 +8640,8 @@ extension on TranslationsId {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Sembunyikan',
 			'homeLayout.remove' => 'Hapus',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'Perpustakaan ini kembali',
 			'homeLayout.pressAgainToDelete' => 'Tekan lagi untuk menghapus',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8619,8 +8663,6 @@ extension on TranslationsId {
 			'universalMedia.files' => 'perangkat file',
 			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diakui hanya digunakan untuk sesi ini dan tidak dapat disimpan sebagai favorit.',
 			'universalMedia.displayName' => 'Nama Pameran (Optional)',
 			'universalMedia.displayNameHelp' => 'Pilih nama singkat untuk pemain dan kontrol media sistem.',
@@ -9112,6 +9154,8 @@ extension on TranslationsId {
 			'sourceSetup.passwordOrKey' => 'Masukkan kata sandi atau tambahkan kunci privat di bawah.',
 			'sourceSetup.sshFingerprint' => 'Sidik jari SHA256 kunci host SSH',
 			'sourceSetup.sshFingerprintHelp' => 'Verifikasi dengan administrator server. Di server, jalankan ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub dan gunakan nilai SHA256-nya.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Kosongkan untuk mempertahankan sidik jari yang disematkan saat ini, atau masukkan sidik jari server yang baru.',
 			'sourceSetup.sshAuthentication' => 'Autentikasi SSH dengan kunci publik',
 			'sourceSetup.sshAuthenticationHelp' => 'Opsional; autentikasi kata sandi juga didukung.',
@@ -9133,8 +9177,6 @@ extension on TranslationsId {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan layanan mount biasa serta memerlukan dukungan RFC 9289 pada NAS. TLS 1.3 wajib digunakan. Nama host atau IP harus cocok dengan sertifikat. AUTH_SYS UID/GID tetap berlaku di dalam saluran terenkripsi.',
 			'sourceSetup.clientCertificate' => 'Sertifikat klien (opsional)',
 			'sourceSetup.clientCertificateHelp' => 'Memungkinkan NAS mengautentikasi klien ini; ID AUTH_SYS tetap bergantung pada kebijakan ekspor NFS di NAS.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Identitas klien yang tersimpan akan digunakan.',
 			'sourceSetup.replaceIdentity' => 'Ganti identitas klien yang tersimpan',
 			'sourceSetup.chooseIdentity' => 'Pilih identitas klien PKCS#12',
@@ -9626,6 +9668,8 @@ extension on TranslationsId {
 			'musicTools.playlistRecipient' => 'Nama pengguna Plex atau email',
 			'musicTools.playlistSharingHint' => 'Berikan akses ke daftar putar ini dan lagunya. Penerima mungkin perlu menerima undangan.',
 			'musicTools.playlistSharingFailed' => 'Tidak dapat meminta akses daftar putar.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex menerima permintaan akses.',
 			'musicTools.playlistAccessList' => 'Akses saat ini',
 			'musicTools.playlistAccessNone' => 'Belum ada akses daftar putar yang diberikan',
@@ -9647,8 +9691,6 @@ extension on TranslationsId {
 			'musicTools.continueStation' => 'Terus putar stasiun ini',
 			'musicDevices.playOn' => 'Putar di',
 			'musicDevices.thisDevice' => 'Perangkat ini',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',
 			'musicDevices.remembered' => 'Perangkat tersimpan',
 			'musicDevices.forget' => 'Lupakan perangkat',

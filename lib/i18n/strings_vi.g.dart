@@ -1822,6 +1822,27 @@ class _Translations$startup$vi extends Translations$startup$en {
 	@override String get deleteBackup => 'xóa copy';
 	@override String get backupDeleted => 'Bản sao bị xóa';
 	@override String get previousFailureTitle => 'Pleazyng không bắt đầu lần cuối';
+	@override String get legacyImportTitle => 'Nhập thư viện đa phương tiện hiện có?';
+	@override String get legacyImportBody => 'Nếu bạn có cơ sở dữ liệu từ lần cài đặt Pleazyng hoặc Plezy trước đây, bạn có thể chọn tại đây. Pleazyng không bao giờ tự tìm cơ sở dữ liệu hoặc nhập dựa trên tên tệp.';
+	@override String get legacyImportChoose => 'Chọn cơ sở dữ liệu';
+	@override String get legacyImportStartFresh => 'Bắt đầu mới';
+	@override String get legacyImportPickTitle => 'Chọn tệp cơ sở dữ liệu để xem trước';
+	@override String get legacyImportChecking => 'Đang kiểm tra bản sao tạm thời của tệp đã chọn. Tệp gốc sẽ không bị thay đổi.';
+	@override String get legacyImportReviewTitle => 'Xem lại cơ sở dữ liệu này';
+	@override String legacyImportFile({required Object name}) => 'Tệp: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Kích thước tệp: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Lược đồ cơ sở dữ liệu: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Hồ sơ: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Kết nối máy chủ: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Bản ghi tải xuống đã lưu: ${count}';
+	@override String get legacyImportIdentityWarning => 'Cơ sở dữ liệu không có dấu nhận diện ứng dụng. Tên và lược đồ không cho biết dữ liệu đến từ Pleazyng hay dự án upstream Plezy.';
+	@override String get legacyImportCredentialsWarning => 'Thông tin đăng nhập máy chủ được lưu riêng và sẽ không được chuyển. Bạn cần đăng nhập lại.';
+	@override String get legacyImportPathsWarning => 'Các tệp đa phương tiện đã tải xuống không được sao chép. Đường dẫn hiện có có thể không hoạt động trên thiết bị này; bạn có thể phải chọn lại thư mục lưu trữ hoặc tải nội dung xuống lần nữa.';
+	@override String get legacyImportBackup => 'Tệp đã chọn được giữ nguyên làm bản sao để khôi phục. Tùy chọn này chỉ xuất hiện khi Pleazyng chưa có cơ sở dữ liệu; cơ sở dữ liệu Pleazyng hiện có sẽ không bao giờ bị thay thế.';
+	@override String get legacyImportConfirm => 'Nhập cơ sở dữ liệu này';
+	@override String get legacyImportInvalidTitle => 'Không thể xác thực tệp này';
+	@override String get legacyImportInvalidBody => 'Pleazyng không thể xác nhận tệp đã chọn là cơ sở dữ liệu được hỗ trợ. Không có dữ liệu nào được nhập hoặc thay đổi.';
+	@override String get legacyImportTryAnother => 'Chọn tệp khác';
 }
 
 // Path: licenses
@@ -7213,6 +7234,27 @@ extension on TranslationsVi {
 			'startup.deleteBackup' => 'xóa copy',
 			'startup.backupDeleted' => 'Bản sao bị xóa',
 			'startup.previousFailureTitle' => 'Pleazyng không bắt đầu lần cuối',
+			'startup.legacyImportTitle' => 'Nhập thư viện đa phương tiện hiện có?',
+			'startup.legacyImportBody' => 'Nếu bạn có cơ sở dữ liệu từ lần cài đặt Pleazyng hoặc Plezy trước đây, bạn có thể chọn tại đây. Pleazyng không bao giờ tự tìm cơ sở dữ liệu hoặc nhập dựa trên tên tệp.',
+			'startup.legacyImportChoose' => 'Chọn cơ sở dữ liệu',
+			'startup.legacyImportStartFresh' => 'Bắt đầu mới',
+			'startup.legacyImportPickTitle' => 'Chọn tệp cơ sở dữ liệu để xem trước',
+			'startup.legacyImportChecking' => 'Đang kiểm tra bản sao tạm thời của tệp đã chọn. Tệp gốc sẽ không bị thay đổi.',
+			'startup.legacyImportReviewTitle' => 'Xem lại cơ sở dữ liệu này',
+			'startup.legacyImportFile' => ({required Object name}) => 'Tệp: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Kích thước tệp: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Lược đồ cơ sở dữ liệu: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Hồ sơ: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Kết nối máy chủ: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Bản ghi tải xuống đã lưu: ${count}',
+			'startup.legacyImportIdentityWarning' => 'Cơ sở dữ liệu không có dấu nhận diện ứng dụng. Tên và lược đồ không cho biết dữ liệu đến từ Pleazyng hay dự án upstream Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'Thông tin đăng nhập máy chủ được lưu riêng và sẽ không được chuyển. Bạn cần đăng nhập lại.',
+			'startup.legacyImportPathsWarning' => 'Các tệp đa phương tiện đã tải xuống không được sao chép. Đường dẫn hiện có có thể không hoạt động trên thiết bị này; bạn có thể phải chọn lại thư mục lưu trữ hoặc tải nội dung xuống lần nữa.',
+			'startup.legacyImportBackup' => 'Tệp đã chọn được giữ nguyên làm bản sao để khôi phục. Tùy chọn này chỉ xuất hiện khi Pleazyng chưa có cơ sở dữ liệu; cơ sở dữ liệu Pleazyng hiện có sẽ không bao giờ bị thay thế.',
+			'startup.legacyImportConfirm' => 'Nhập cơ sở dữ liệu này',
+			'startup.legacyImportInvalidTitle' => 'Không thể xác thực tệp này',
+			'startup.legacyImportInvalidBody' => 'Pleazyng không thể xác nhận tệp đã chọn là cơ sở dữ liệu được hỗ trợ. Không có dữ liệu nào được nhập hoặc thay đổi.',
+			'startup.legacyImportTryAnother' => 'Chọn tệp khác',
 			'licenses.relatedPackages' => 'Các gói liên quan',
 			'licenses.license' => 'Giấy phép',
 			'licenses.licenseNumber' => ({required Object number}) => 'Giấy phép ${number}',
@@ -7570,6 +7612,8 @@ extension on TranslationsVi {
 			'music.noAudioUrl' => ({required Object track}) => 'Không có URL âm thanh có sẵn cho ${track}',
 			'music.discography.singlesAndEps' => 'Đĩa đơn và EP',
 			'music.discography.live' => 'Trực tiếp',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Tuyển tập',
 			'music.backTo' => 'Quay lại',
 			'music.upNext' => 'Tiếp theo',
@@ -7591,8 +7635,6 @@ extension on TranslationsVi {
 			'watchTogether.paste' => 'Ăn bánh',
 			'watchTogether.noCodeInClipboard' => 'Clipboard không chứa mã phòng',
 			'watchTogether.copyCode' => 'Copy mã',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Mã phòng copy',
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
@@ -8084,6 +8126,8 @@ extension on TranslationsVi {
 			'metadataEdit.editMetadata' => 'Sửa',
 			'metadataEdit.screenTitle' => 'Sửa dữ liệu mô tả',
 			'metadataEdit.basicInfo' => 'Thông tin cơ bản',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Nghệ thuật',
 			'metadataEdit.advancedSettings' => 'Cài đặt Advanced',
 			'metadataEdit.title' => 'Tiêu đề',
@@ -8105,8 +8149,6 @@ extension on TranslationsVi {
 			'metadataEdit.fromUrl' => 'Từ URL',
 			'metadataEdit.uploadFile' => 'tải file',
 			'metadataEdit.enterImageUrl' => 'Nhập hình ảnh URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'Ảnh URL',
 			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
@@ -8598,6 +8640,8 @@ extension on TranslationsVi {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Ẩn',
 			'homeLayout.remove' => 'Gỡ bỏ',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'Thư viện của thư viện này',
 			'homeLayout.pressAgainToDelete' => 'Nhấn lại để xóa',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8619,8 +8663,6 @@ extension on TranslationsVi {
 			'universalMedia.files' => 'Thiết bị file',
 			'universalMedia.favorites' => 'Save Stream yêu thích',
 			'universalMedia.address' => 'Địa chỉ Media',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL với các thông số xác nhận hoặc ký tự được công nhận chỉ được sử dụng cho phiên này và không thể được lưu như là yêu thích.',
 			'universalMedia.displayName' => 'Tên hiển thị (tùy chọn)',
 			'universalMedia.displayNameHelp' => 'Chọn tên ngắn cho người chơi và hệ thống điều khiển phương tiện truyền thông.',
@@ -9112,6 +9154,8 @@ extension on TranslationsVi {
 			'sourceSetup.passwordOrKey' => 'Nhập mật khẩu hoặc thêm khóa riêng bên dưới.',
 			'sourceSetup.sshFingerprint' => 'Dấu vân tay SHA256 của khóa máy chủ SSH',
 			'sourceSetup.sshFingerprintHelp' => 'Xác minh với quản trị viên máy chủ. Trên máy chủ, chạy ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub và dùng giá trị SHA256.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Để trống để giữ dấu vân tay đang được ghim, hoặc nhập dấu vân tay máy chủ mới.',
 			'sourceSetup.sshAuthentication' => 'Xác thực SSH bằng khóa công khai',
 			'sourceSetup.sshAuthenticationHelp' => 'Không bắt buộc; cũng hỗ trợ xác thực bằng mật khẩu.',
@@ -9133,8 +9177,6 @@ extension on TranslationsVi {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS dùng các cổng thông thường của NFS và dịch vụ gắn kết, đồng thời yêu cầu NAS hỗ trợ RFC 9289. Bắt buộc dùng TLS 1.3. Tên máy chủ hoặc địa chỉ IP phải khớp với chứng chỉ. AUTH_SYS UID/GID vẫn áp dụng trong kênh được mã hóa.',
 			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
 			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Sẽ dùng danh tính máy khách đã lưu.',
 			'sourceSetup.replaceIdentity' => 'Thay danh tính máy khách đã lưu',
 			'sourceSetup.chooseIdentity' => 'Chọn danh tính máy khách PKCS#12',
@@ -9626,6 +9668,8 @@ extension on TranslationsVi {
 			'musicTools.playlistRecipient' => 'Tên người dùng Plex hoặc email',
 			'musicTools.playlistSharingHint' => 'Cấp quyền truy cập danh sách phát này và các bản nhạc. Người nhận có thể cần chấp nhận lời mời.',
 			'musicTools.playlistSharingFailed' => 'Không thể yêu cầu truy cập danh sách phát.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex đã tiếp nhận yêu cầu truy cập.',
 			'musicTools.playlistAccessList' => 'Quyền truy cập hiện tại',
 			'musicTools.playlistAccessNone' => 'Chưa cấp quyền truy cập danh sách phát',
@@ -9647,8 +9691,6 @@ extension on TranslationsVi {
 			'musicTools.continueStation' => 'Tiếp tục phát đài này',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',
 			'musicDevices.remembered' => 'Thiết bị đã lưu',
 			'musicDevices.forget' => 'Quên thiết bị',

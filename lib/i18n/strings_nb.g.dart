@@ -1830,6 +1830,27 @@ class _Translations$startup$nb extends Translations$startup$en {
 	@override String get deleteBackup => 'Slett kopi';
 	@override String get backupDeleted => 'Kopi slettet.';
 	@override String get previousFailureTitle => 'Pleazyng mislyktes i å starte forrige gang';
+	@override String get legacyImportTitle => 'Importere et eksisterende mediebibliotek?';
+	@override String get legacyImportBody => 'Hvis du har en database fra en tidligere Pleazyng- eller Plezy-installasjon, kan du velge den her. Pleazyng søker aldri etter databaser eller importerer basert på filnavnet.';
+	@override String get legacyImportChoose => 'Velg en database';
+	@override String get legacyImportStartFresh => 'Start på nytt';
+	@override String get legacyImportPickTitle => 'Velg en databasefil for forhåndsvisning';
+	@override String get legacyImportChecking => 'Kontrollerer en midlertidig kopi av den valgte filen. Originalfilen blir ikke endret.';
+	@override String get legacyImportReviewTitle => 'Se gjennom denne databasen';
+	@override String legacyImportFile({required Object name}) => 'Fil: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Filstørrelse: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Databaseskjema: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Profiler: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Serverforbindelser: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Lagrede nedlastingsoppføringer: ${count}';
+	@override String get legacyImportIdentityWarning => 'Databasen har ingen markør for appidentitet. Navnet og skjemaet viser ikke om den kommer fra Pleazyng eller oppstrømsprosjektet Plezy.';
+	@override String get legacyImportCredentialsWarning => 'Påloggingsinformasjon for tjenere lagres separat og overføres ikke. Du må logge inn igjen.';
+	@override String get legacyImportPathsWarning => 'Nedlastede mediefiler kopieres ikke. De eksisterende banene fungerer kanskje ikke på denne enheten; du må kanskje velge lagringsmapper på nytt eller laste ned mediene igjen.';
+	@override String get legacyImportBackup => 'Den valgte filen forblir uendret som en sikkerhetskopi for tilbakerulling. Dette valget vises bare når Pleazyng ikke har en database; en eksisterende Pleazyng-database erstattes aldri.';
+	@override String get legacyImportConfirm => 'Importer denne databasen';
+	@override String get legacyImportInvalidTitle => 'Filen kunne ikke valideres';
+	@override String get legacyImportInvalidBody => 'Pleazyng kunne ikke bekrefte at den valgte filen er en støttet database. Ingenting ble importert eller endret.';
+	@override String get legacyImportTryAnother => 'Velg en annen fil';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsNb {
 			'startup.deleteBackup' => 'Slett kopi',
 			'startup.backupDeleted' => 'Kopi slettet.',
 			'startup.previousFailureTitle' => 'Pleazyng mislyktes i å starte forrige gang',
+			'startup.legacyImportTitle' => 'Importere et eksisterende mediebibliotek?',
+			'startup.legacyImportBody' => 'Hvis du har en database fra en tidligere Pleazyng- eller Plezy-installasjon, kan du velge den her. Pleazyng søker aldri etter databaser eller importerer basert på filnavnet.',
+			'startup.legacyImportChoose' => 'Velg en database',
+			'startup.legacyImportStartFresh' => 'Start på nytt',
+			'startup.legacyImportPickTitle' => 'Velg en databasefil for forhåndsvisning',
+			'startup.legacyImportChecking' => 'Kontrollerer en midlertidig kopi av den valgte filen. Originalfilen blir ikke endret.',
+			'startup.legacyImportReviewTitle' => 'Se gjennom denne databasen',
+			'startup.legacyImportFile' => ({required Object name}) => 'Fil: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Filstørrelse: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Databaseskjema: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profiler: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Serverforbindelser: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Lagrede nedlastingsoppføringer: ${count}',
+			'startup.legacyImportIdentityWarning' => 'Databasen har ingen markør for appidentitet. Navnet og skjemaet viser ikke om den kommer fra Pleazyng eller oppstrømsprosjektet Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'Påloggingsinformasjon for tjenere lagres separat og overføres ikke. Du må logge inn igjen.',
+			'startup.legacyImportPathsWarning' => 'Nedlastede mediefiler kopieres ikke. De eksisterende banene fungerer kanskje ikke på denne enheten; du må kanskje velge lagringsmapper på nytt eller laste ned mediene igjen.',
+			'startup.legacyImportBackup' => 'Den valgte filen forblir uendret som en sikkerhetskopi for tilbakerulling. Dette valget vises bare når Pleazyng ikke har en database; en eksisterende Pleazyng-database erstattes aldri.',
+			'startup.legacyImportConfirm' => 'Importer denne databasen',
+			'startup.legacyImportInvalidTitle' => 'Filen kunne ikke valideres',
+			'startup.legacyImportInvalidBody' => 'Pleazyng kunne ikke bekrefte at den valgte filen er en støttet database. Ingenting ble importert eller endret.',
+			'startup.legacyImportTryAnother' => 'Velg en annen fil',
 			'licenses.relatedPackages' => 'Relaterte pakker',
 			'licenses.license' => 'Lisens',
 			'licenses.licenseNumber' => ({required Object number}) => 'Lisens ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsNb {
 			'music.noAudioUrl' => ({required Object track}) => 'Ingen lyd-URL er tilgjengelig for ${track}',
 			'music.discography.singlesAndEps' => 'Singler og EP-er',
 			'music.discography.live' => 'Live',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Samlealbum',
 			'music.backTo' => 'Tilbake til',
 			'music.upNext' => 'Neste',
@@ -7616,8 +7660,6 @@ extension on TranslationsNb {
 			'watchTogether.paste' => 'Lim inn',
 			'watchTogether.noCodeInClipboard' => 'Utklippstavlen inneholder ingen romkode',
 			'watchTogether.copyCode' => 'Kopier kode',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Romkode kopiert',
 			'watchTogether.shareInvite' => 'Del invitasjon',
 			'watchTogether.inviteCopied' => 'Invitasjon kopiert. Lim den inn i en melding.',
@@ -8109,6 +8151,8 @@ extension on TranslationsNb {
 			'metadataEdit.editMetadata' => 'Rediger...',
 			'metadataEdit.screenTitle' => 'Rediger metadata',
 			'metadataEdit.basicInfo' => 'Grunnleggende informasjon',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Grafikk',
 			'metadataEdit.advancedSettings' => 'Avanserte innstillinger',
 			'metadataEdit.title' => 'Tittel',
@@ -8130,8 +8174,6 @@ extension on TranslationsNb {
 			'metadataEdit.fromUrl' => 'Fra URL',
 			'metadataEdit.uploadFile' => 'Last opp fil',
 			'metadataEdit.enterImageUrl' => 'Skriv inn bilde-URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'Bilde-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata oppdatert',
 			'metadataEdit.metadataUpdateFailed' => 'Kunne ikke oppdatere metadata',
@@ -8623,6 +8665,8 @@ extension on TranslationsNb {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Skjul',
 			'homeLayout.remove' => 'Fjern',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'Denne bibliotekets resume-runde',
 			'homeLayout.pressAgainToDelete' => 'Trykk igjen for å slette',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsNb {
 			'universalMedia.files' => 'Device filer',
 			'universalMedia.favorites' => 'Saved stream favoritter',
 			'universalMedia.address' => 'Media adresser',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URLer med anerkjente akkrediterings- eller signaturparameter brukes kun for denne sesjonen og kan ikke lagres som favoritter.',
 			'universalMedia.displayName' => 'Visningsnavnet (alternativt)',
 			'universalMedia.displayNameHelp' => 'Velg et kort navn for spilleren og systemmediakontrollene.',
@@ -9137,6 +9179,8 @@ extension on TranslationsNb {
 			'sourceSetup.passwordOrKey' => 'Angi et passord eller legg til en privat nøkkel nedenfor.',
 			'sourceSetup.sshFingerprint' => 'SHA256-fingeravtrykk for SSH-vertsnøkkel',
 			'sourceSetup.sshFingerprintHelp' => 'Kontroller det med serveradministratoren. Kjør ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub på serveren og bruk SHA256-verdien.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'La stå tomt for å beholde det fastlåste fingeravtrykket, eller angi et nytt serverfingeravtrykk.',
 			'sourceSetup.sshAuthentication' => 'SSH-autentisering med offentlig nøkkel',
 			'sourceSetup.sshAuthenticationHelp' => 'Valgfritt; autentisering med passord støttes også.',
@@ -9158,8 +9202,6 @@ extension on TranslationsNb {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS bruker de vanlige portene for NFS og monteringstjenesten og krever RFC 9289-støtte på NAS-enheten. TLS 1.3 er påkrevd. Vertsnavnet eller IP-adressen må samsvare med sertifikatet. AUTH_SYS UID/GID gjelder fortsatt i den krypterte kanalen.',
 			'sourceSetup.clientCertificate' => 'Klientsertifikat (valgfritt)',
 			'sourceSetup.clientCertificateHelp' => 'Lar NAS-enheten autentisere denne klienten; AUTH_SYS-ID-er avhenger fortsatt av reglene for NAS-enhetens NFS-deling.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'En lagret klientidentitet vil bli brukt.',
 			'sourceSetup.replaceIdentity' => 'Erstatt lagret klientidentitet',
 			'sourceSetup.chooseIdentity' => 'Velg PKCS#12-klientidentitet',
@@ -9651,6 +9693,8 @@ extension on TranslationsNb {
 			'musicTools.playlistRecipient' => 'Plex-brukernavn eller e-post',
 			'musicTools.playlistSharingHint' => 'Gi tilgang til denne spillelisten og sporene. Mottakeren må kanskje godta en invitasjon.',
 			'musicTools.playlistSharingFailed' => 'Kunne ikke be om tilgang til spillelisten.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex godtok tilgangsforespørselen.',
 			'musicTools.playlistAccessList' => 'Nåværende tilgang',
 			'musicTools.playlistAccessNone' => 'Ingen har fått tilgang til spillelisten',
@@ -9672,8 +9716,6 @@ extension on TranslationsNb {
 			'musicTools.continueStation' => 'Fortsett å spille denne stasjonen',
 			'musicDevices.playOn' => 'Spill av på',
 			'musicDevices.thisDevice' => 'Denne enheten',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'Spiller av på ${device}',
 			'musicDevices.remembered' => 'Lagrede enheter',
 			'musicDevices.forget' => 'Glem enhet',

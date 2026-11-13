@@ -1832,6 +1832,27 @@ class Translations$startup$pt extends Translations$startup$en {
 	@override String get deleteBackup => 'Excluir cópia';
 	@override String get backupDeleted => 'Cópia excluída.';
 	@override String get previousFailureTitle => 'O Pleazyng falhou ao iniciar da última vez';
+	@override String get legacyImportTitle => 'Importar uma biblioteca de multimédia existente?';
+	@override String get legacyImportBody => 'Se tiver uma base de dados de uma instalação anterior do Pleazyng ou do Plezy, pode selecioná-la aqui. O Pleazyng nunca procura bases de dados nem importa uma com base no nome do ficheiro.';
+	@override String get legacyImportChoose => 'Escolher uma base de dados';
+	@override String get legacyImportStartFresh => 'Começar de novo';
+	@override String get legacyImportPickTitle => 'Escolha um ficheiro de base de dados para pré-visualizar';
+	@override String get legacyImportChecking => 'A verificar uma cópia temporária do ficheiro selecionado. O ficheiro original não será alterado.';
+	@override String get legacyImportReviewTitle => 'Rever esta base de dados';
+	@override String legacyImportFile({required Object name}) => 'Ficheiro: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Tamanho do ficheiro: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Esquema da base de dados: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Perfis: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Ligações a servidores: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Registos de transferências guardados: ${count}';
+	@override String get legacyImportIdentityWarning => 'A base de dados não tem um identificador da aplicação. O nome e o esquema não permitem saber se veio do Pleazyng ou do projeto original Plezy.';
+	@override String get legacyImportCredentialsWarning => 'As credenciais dos servidores são guardadas separadamente e não serão transferidas. Terá de iniciar sessão novamente.';
+	@override String get legacyImportPathsWarning => 'Os ficheiros multimédia transferidos não são copiados. Os caminhos existentes podem não funcionar neste dispositivo; poderá ter de escolher novamente as pastas de armazenamento ou transferir os conteúdos outra vez.';
+	@override String get legacyImportBackup => 'O ficheiro selecionado permanece inalterado como cópia de recuperação. Esta opção só aparece quando o Pleazyng ainda não tem uma base de dados; uma base de dados existente do Pleazyng nunca é substituída.';
+	@override String get legacyImportConfirm => 'Importar esta base de dados';
+	@override String get legacyImportInvalidTitle => 'Não foi possível validar este ficheiro';
+	@override String get legacyImportInvalidBody => 'O Pleazyng não conseguiu confirmar que o ficheiro selecionado é uma base de dados suportada. Nada foi importado nem alterado.';
+	@override String get legacyImportTryAnother => 'Escolher outro ficheiro';
 }
 
 // Path: licenses
@@ -7245,6 +7266,27 @@ extension on TranslationsPt {
 			'startup.deleteBackup' => 'Excluir cópia',
 			'startup.backupDeleted' => 'Cópia excluída.',
 			'startup.previousFailureTitle' => 'O Pleazyng falhou ao iniciar da última vez',
+			'startup.legacyImportTitle' => 'Importar uma biblioteca de multimédia existente?',
+			'startup.legacyImportBody' => 'Se tiver uma base de dados de uma instalação anterior do Pleazyng ou do Plezy, pode selecioná-la aqui. O Pleazyng nunca procura bases de dados nem importa uma com base no nome do ficheiro.',
+			'startup.legacyImportChoose' => 'Escolher uma base de dados',
+			'startup.legacyImportStartFresh' => 'Começar de novo',
+			'startup.legacyImportPickTitle' => 'Escolha um ficheiro de base de dados para pré-visualizar',
+			'startup.legacyImportChecking' => 'A verificar uma cópia temporária do ficheiro selecionado. O ficheiro original não será alterado.',
+			'startup.legacyImportReviewTitle' => 'Rever esta base de dados',
+			'startup.legacyImportFile' => ({required Object name}) => 'Ficheiro: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Tamanho do ficheiro: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Esquema da base de dados: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Perfis: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Ligações a servidores: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Registos de transferências guardados: ${count}',
+			'startup.legacyImportIdentityWarning' => 'A base de dados não tem um identificador da aplicação. O nome e o esquema não permitem saber se veio do Pleazyng ou do projeto original Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'As credenciais dos servidores são guardadas separadamente e não serão transferidas. Terá de iniciar sessão novamente.',
+			'startup.legacyImportPathsWarning' => 'Os ficheiros multimédia transferidos não são copiados. Os caminhos existentes podem não funcionar neste dispositivo; poderá ter de escolher novamente as pastas de armazenamento ou transferir os conteúdos outra vez.',
+			'startup.legacyImportBackup' => 'O ficheiro selecionado permanece inalterado como cópia de recuperação. Esta opção só aparece quando o Pleazyng ainda não tem uma base de dados; uma base de dados existente do Pleazyng nunca é substituída.',
+			'startup.legacyImportConfirm' => 'Importar esta base de dados',
+			'startup.legacyImportInvalidTitle' => 'Não foi possível validar este ficheiro',
+			'startup.legacyImportInvalidBody' => 'O Pleazyng não conseguiu confirmar que o ficheiro selecionado é uma base de dados suportada. Nada foi importado nem alterado.',
+			'startup.legacyImportTryAnother' => 'Escolher outro ficheiro',
 			'licenses.relatedPackages' => 'Pacotes Relacionados',
 			'licenses.license' => 'Licença',
 			'licenses.licenseNumber' => ({required Object number}) => 'Licença ${number}',
@@ -7602,6 +7644,8 @@ extension on TranslationsPt {
 			'music.noAudioUrl' => ({required Object track}) => 'Nenhuma URL de áudio está disponível para ${track}',
 			'music.discography.singlesAndEps' => 'Singles e EPs',
 			'music.discography.live' => 'Ao vivo',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Compilações',
 			'music.backTo' => 'Voltar para',
 			'music.upNext' => 'A seguir',
@@ -7623,8 +7667,6 @@ extension on TranslationsPt {
 			'watchTogether.paste' => 'Colar',
 			'watchTogether.noCodeInClipboard' => 'A área de transferência não contém um código de sala',
 			'watchTogether.copyCode' => 'Copiar código',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Código da sala copiado',
 			'watchTogether.shareInvite' => 'Compartilhar convite',
 			'watchTogether.inviteCopied' => 'Convite copiado. Cole-o em uma mensagem.',
@@ -8116,6 +8158,8 @@ extension on TranslationsPt {
 			'metadataEdit.editMetadata' => 'Editar...',
 			'metadataEdit.screenTitle' => 'Editar Metadados',
 			'metadataEdit.basicInfo' => 'Informações Básicas',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Arte',
 			'metadataEdit.advancedSettings' => 'Configurações Avançadas',
 			'metadataEdit.title' => 'Título',
@@ -8137,8 +8181,6 @@ extension on TranslationsPt {
 			'metadataEdit.fromUrl' => 'Da URL',
 			'metadataEdit.uploadFile' => 'Enviar Arquivo',
 			'metadataEdit.enterImageUrl' => 'Insira a URL da imagem',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'URL da Imagem',
 			'metadataEdit.metadataUpdated' => 'Metadados atualizados',
 			'metadataEdit.metadataUpdateFailed' => 'Falha ao atualizar metadados',
@@ -8630,6 +8672,8 @@ extension on TranslationsPt {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Ocultar',
 			'homeLayout.remove' => 'Remover',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'A Biblioteca de Resumo',
 			'homeLayout.pressAgainToDelete' => 'Pressione novamente para apagar',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8651,8 +8695,6 @@ extension on TranslationsPt {
 			'universalMedia.files' => 'Arquivos de dispositivos',
 			'universalMedia.favorites' => 'Redução dos favoritos',
 			'universalMedia.address' => 'Endereço de mídia',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URLs com parâmetros de autenticação ou assinatura reconhecidos são usados apenas para esta sessão e não podem ser salvos como favoritos.',
 			'universalMedia.displayName' => 'Nome de exibição (opcional)',
 			'universalMedia.displayNameHelp' => 'Escolha um nome curto para o jogador e controles de mídia do sistema.',
@@ -9144,6 +9186,8 @@ extension on TranslationsPt {
 			'sourceSetup.passwordOrKey' => 'Digite uma senha ou adicione uma chave privada abaixo.',
 			'sourceSetup.sshFingerprint' => 'Impressão digital SHA256 da chave de host SSH',
 			'sourceSetup.sshFingerprintHelp' => 'Verifique com o administrador do servidor. No servidor, execute ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub e use o valor SHA256.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Deixe em branco para manter a impressão digital fixada atual ou digite uma nova impressão digital do servidor.',
 			'sourceSetup.sshAuthentication' => 'Autenticação SSH por chave pública',
 			'sourceSetup.sshAuthenticationHelp' => 'Opcional; a autenticação por senha também é aceita.',
@@ -9165,8 +9209,6 @@ extension on TranslationsPt {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS usa as portas habituais de NFS e do serviço de montagem e exige que o NAS ofereça suporte a RFC 9289. TLS 1.3 é obrigatório. O nome do host ou o IP deve corresponder ao certificado. Os UID/GID de AUTH_SYS continuam valendo no canal criptografado.',
 			'sourceSetup.clientCertificate' => 'Certificado do cliente (opcional)',
 			'sourceSetup.clientCertificateHelp' => 'Permite que o NAS autentique este cliente; os IDs de AUTH_SYS continuam sujeitos à política do compartilhamento NFS do NAS.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Será usada uma identidade de cliente salva.',
 			'sourceSetup.replaceIdentity' => 'Substituir a identidade de cliente salva',
 			'sourceSetup.chooseIdentity' => 'Escolher identidade de cliente PKCS#12',
@@ -9658,6 +9700,8 @@ extension on TranslationsPt {
 			'musicTools.playlistRecipient' => 'Nome de utilizador Plex ou e-mail',
 			'musicTools.playlistSharingHint' => 'Conceda acesso a esta lista e às suas faixas. O destinatário poderá ter de aceitar um convite.',
 			'musicTools.playlistSharingFailed' => 'Não foi possível solicitar acesso à lista.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'O Plex aceitou o pedido de acesso.',
 			'musicTools.playlistAccessList' => 'Acesso atual',
 			'musicTools.playlistAccessNone' => 'Não há acessos concedidos à lista',
@@ -9679,8 +9723,6 @@ extension on TranslationsPt {
 			'musicTools.continueStation' => 'Continuar a reproduzir esta estação',
 			'musicDevices.playOn' => 'Reproduzir em',
 			'musicDevices.thisDevice' => 'Este dispositivo',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'A reproduzir em ${device}',
 			'musicDevices.remembered' => 'Dispositivos guardados',
 			'musicDevices.forget' => 'Esquecer dispositivo',

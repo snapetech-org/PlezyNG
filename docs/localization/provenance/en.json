@@ -1,7 +1,7 @@
 {
   "locale": "en",
   "inherits": null,
-  "catalogSha256": "45d3f116b643b7443be287d24d7baed4b10e8d7c973c979f2e82b2ba53247f43",
+  "catalogSha256": "6df900b9912d2b8eeccca844a6eaf7ccc77915cb5b228ef673c750c71011f9d4",
   "nativeSpeakerReviewed": false,
   "messages": {
     "app.title": "source-english",
@@ -3656,7 +3656,28 @@
     "games.streamAudio": "source-english",
     "games.streamAudioHelp": "source-english",
     "karaokeUi.practiceMetronomeTitle": "source-english",
-    "karaokeUi.practiceMetronomeHelp": "source-english"
+    "karaokeUi.practiceMetronomeHelp": "source-english",
+    "startup.legacyImportTitle": "source-english",
+    "startup.legacyImportBody": "source-english",
+    "startup.legacyImportChoose": "source-english",
+    "startup.legacyImportStartFresh": "source-english",
+    "startup.legacyImportPickTitle": "source-english",
+    "startup.legacyImportChecking": "source-english",
+    "startup.legacyImportReviewTitle": "source-english",
+    "startup.legacyImportFile": "source-english",
+    "startup.legacyImportSize": "source-english",
+    "startup.legacyImportSchemaVersion": "source-english",
+    "startup.legacyImportProfiles": "source-english",
+    "startup.legacyImportConnections": "source-english",
+    "startup.legacyImportDownloads": "source-english",
+    "startup.legacyImportIdentityWarning": "source-english",
+    "startup.legacyImportCredentialsWarning": "source-english",
+    "startup.legacyImportPathsWarning": "source-english",
+    "startup.legacyImportBackup": "source-english",
+    "startup.legacyImportConfirm": "source-english",
+    "startup.legacyImportInvalidTitle": "source-english",
+    "startup.legacyImportInvalidBody": "source-english",
+    "startup.legacyImportTryAnother": "source-english"
   },
   "beforeIndependentQaCorrection": {
     "mediaMenu.deleteEpisodeCountWarning": "source-english"

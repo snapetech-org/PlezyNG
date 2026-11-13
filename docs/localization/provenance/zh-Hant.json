@@ -1,7 +1,7 @@
 {
   "locale": "zh-Hant",
   "inherits": null,
-  "catalogSha256": "885730af9684f6d7892afb15bee8eafd66c2e68c0fece020373764bb46a8bec3",
+  "catalogSha256": "41d4e70812a478c2e4ad40e2eba46e2cb4f1a61c752c0581ce9a7a5a9751cb41",
   "nativeSpeakerReviewed": false,
   "messages": {
     "app.title": "nonlinguistic",
@@ -3678,7 +3678,28 @@
     "games.streamAudio": "english-fallback",
     "games.streamAudioHelp": "english-fallback",
     "karaokeUi.practiceMetronomeTitle": "assistant-generated-draft",
-    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft"
+    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft",
+    "startup.legacyImportTitle": "assistant-generated-draft",
+    "startup.legacyImportBody": "assistant-generated-draft",
+    "startup.legacyImportChoose": "assistant-generated-draft",
+    "startup.legacyImportStartFresh": "assistant-generated-draft",
+    "startup.legacyImportPickTitle": "assistant-generated-draft",
+    "startup.legacyImportChecking": "assistant-generated-draft",
+    "startup.legacyImportReviewTitle": "assistant-generated-draft",
+    "startup.legacyImportFile": "assistant-generated-draft",
+    "startup.legacyImportSize": "assistant-generated-draft",
+    "startup.legacyImportSchemaVersion": "assistant-generated-draft",
+    "startup.legacyImportProfiles": "assistant-generated-draft",
+    "startup.legacyImportConnections": "assistant-generated-draft",
+    "startup.legacyImportDownloads": "assistant-generated-draft",
+    "startup.legacyImportIdentityWarning": "assistant-generated-draft",
+    "startup.legacyImportCredentialsWarning": "assistant-generated-draft",
+    "startup.legacyImportPathsWarning": "assistant-generated-draft",
+    "startup.legacyImportBackup": "assistant-generated-draft",
+    "startup.legacyImportConfirm": "assistant-generated-draft",
+    "startup.legacyImportInvalidTitle": "assistant-generated-draft",
+    "startup.legacyImportInvalidBody": "assistant-generated-draft",
+    "startup.legacyImportTryAnother": "assistant-generated-draft"
   },
   "beforeIndependentQaCorrection": {
     "settings.cloudBackupDescription": "m2m100-draft+opencc-s2twp",

@@ -1830,6 +1830,27 @@ class _Translations$startup$de extends Translations$startup$en {
 	@override String get deleteBackup => 'Kopie löschen';
 	@override String get backupDeleted => 'Kopie gelöscht.';
 	@override String get previousFailureTitle => 'Pleazyng konnte beim letzten Mal nicht starten';
+	@override String get legacyImportTitle => 'Vorhandene Medienbibliothek importieren?';
+	@override String get legacyImportBody => 'Wenn du eine Datenbank aus einer früheren Pleazyng- oder Plezy-Installation hast, kannst du sie hier auswählen. Pleazyng sucht nie nach Datenbanken und importiert nichts anhand des Dateinamens.';
+	@override String get legacyImportChoose => 'Datenbank auswählen';
+	@override String get legacyImportStartFresh => 'Neu beginnen';
+	@override String get legacyImportPickTitle => 'Datenbankdatei zur Vorschau auswählen';
+	@override String get legacyImportChecking => 'Eine temporäre Kopie der ausgewählten Datei wird überprüft. Deine Originaldatei wird nicht geändert.';
+	@override String get legacyImportReviewTitle => 'Diese Datenbank prüfen';
+	@override String legacyImportFile({required Object name}) => 'Datei: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Dateigröße: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Datenbankschema: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Profile: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Serververbindungen: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Gespeicherte Download-Einträge: ${count}';
+	@override String get legacyImportIdentityWarning => 'Die Datenbank enthält keine App-Kennung. An Name und Schema lässt sich nicht erkennen, ob sie von Pleazyng oder dem Upstream-Projekt Plezy stammt.';
+	@override String get legacyImportCredentialsWarning => 'Server-Zugangsdaten werden getrennt gespeichert und nicht übertragen. Du musst dich erneut anmelden.';
+	@override String get legacyImportPathsWarning => 'Heruntergeladene Mediendateien werden nicht kopiert. Vorhandene Pfade funktionieren auf diesem Gerät möglicherweise nicht; du musst eventuell Speicherordner erneut auswählen oder Medien noch einmal herunterladen.';
+	@override String get legacyImportBackup => 'Die ausgewählte Datei bleibt als Wiederherstellungskopie unverändert. Diese Option erscheint nur, wenn noch keine Pleazyng-Datenbank vorhanden ist; eine vorhandene Pleazyng-Datenbank wird nie ersetzt.';
+	@override String get legacyImportConfirm => 'Diese Datenbank importieren';
+	@override String get legacyImportInvalidTitle => 'Diese Datei konnte nicht überprüft werden';
+	@override String get legacyImportInvalidBody => 'Pleazyng konnte nicht bestätigen, dass die ausgewählte Datei eine unterstützte Datenbank ist. Es wurde nichts importiert oder geändert.';
+	@override String get legacyImportTryAnother => 'Andere Datei auswählen';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsDe {
 			'startup.deleteBackup' => 'Kopie löschen',
 			'startup.backupDeleted' => 'Kopie gelöscht.',
 			'startup.previousFailureTitle' => 'Pleazyng konnte beim letzten Mal nicht starten',
+			'startup.legacyImportTitle' => 'Vorhandene Medienbibliothek importieren?',
+			'startup.legacyImportBody' => 'Wenn du eine Datenbank aus einer früheren Pleazyng- oder Plezy-Installation hast, kannst du sie hier auswählen. Pleazyng sucht nie nach Datenbanken und importiert nichts anhand des Dateinamens.',
+			'startup.legacyImportChoose' => 'Datenbank auswählen',
+			'startup.legacyImportStartFresh' => 'Neu beginnen',
+			'startup.legacyImportPickTitle' => 'Datenbankdatei zur Vorschau auswählen',
+			'startup.legacyImportChecking' => 'Eine temporäre Kopie der ausgewählten Datei wird überprüft. Deine Originaldatei wird nicht geändert.',
+			'startup.legacyImportReviewTitle' => 'Diese Datenbank prüfen',
+			'startup.legacyImportFile' => ({required Object name}) => 'Datei: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Dateigröße: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Datenbankschema: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profile: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Serververbindungen: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Gespeicherte Download-Einträge: ${count}',
+			'startup.legacyImportIdentityWarning' => 'Die Datenbank enthält keine App-Kennung. An Name und Schema lässt sich nicht erkennen, ob sie von Pleazyng oder dem Upstream-Projekt Plezy stammt.',
+			'startup.legacyImportCredentialsWarning' => 'Server-Zugangsdaten werden getrennt gespeichert und nicht übertragen. Du musst dich erneut anmelden.',
+			'startup.legacyImportPathsWarning' => 'Heruntergeladene Mediendateien werden nicht kopiert. Vorhandene Pfade funktionieren auf diesem Gerät möglicherweise nicht; du musst eventuell Speicherordner erneut auswählen oder Medien noch einmal herunterladen.',
+			'startup.legacyImportBackup' => 'Die ausgewählte Datei bleibt als Wiederherstellungskopie unverändert. Diese Option erscheint nur, wenn noch keine Pleazyng-Datenbank vorhanden ist; eine vorhandene Pleazyng-Datenbank wird nie ersetzt.',
+			'startup.legacyImportConfirm' => 'Diese Datenbank importieren',
+			'startup.legacyImportInvalidTitle' => 'Diese Datei konnte nicht überprüft werden',
+			'startup.legacyImportInvalidBody' => 'Pleazyng konnte nicht bestätigen, dass die ausgewählte Datei eine unterstützte Datenbank ist. Es wurde nichts importiert oder geändert.',
+			'startup.legacyImportTryAnother' => 'Andere Datei auswählen',
 			'licenses.relatedPackages' => 'Verwandte Pakete',
 			'licenses.license' => 'Lizenz',
 			'licenses.licenseNumber' => ({required Object number}) => 'Lizenz ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsDe {
 			'music.noAudioUrl' => ({required Object track}) => 'Für ${track} ist keine Audio-URL verfügbar',
 			'music.discography.singlesAndEps' => 'Singles & EPs',
 			'music.discography.live' => 'Live',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Kompilationen',
 			'music.backTo' => 'Zurück zu',
 			'music.upNext' => 'Als Nächstes',
@@ -7616,8 +7660,6 @@ extension on TranslationsDe {
 			'watchTogether.paste' => 'Einfügen',
 			'watchTogether.noCodeInClipboard' => 'Die Zwischenablage enthält keinen Raumcode',
 			'watchTogether.copyCode' => 'Code kopieren',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Raumcode kopiert',
 			'watchTogether.shareInvite' => 'Einladung teilen',
 			'watchTogether.inviteCopied' => 'Einladung kopiert. Füge sie in eine Nachricht ein.',
@@ -8109,6 +8151,8 @@ extension on TranslationsDe {
 			'metadataEdit.editMetadata' => 'Bearbeiten...',
 			'metadataEdit.screenTitle' => 'Metadaten bearbeiten',
 			'metadataEdit.basicInfo' => 'Grundinformationen',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Grafiken',
 			'metadataEdit.advancedSettings' => 'Erweiterte Einstellungen',
 			'metadataEdit.title' => 'Titel',
@@ -8130,8 +8174,6 @@ extension on TranslationsDe {
 			'metadataEdit.fromUrl' => 'Über URL',
 			'metadataEdit.uploadFile' => 'Datei hochladen',
 			'metadataEdit.enterImageUrl' => 'Bild-URL eingeben',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'Bild-URL',
 			'metadataEdit.metadataUpdated' => 'Metadaten aktualisiert',
 			'metadataEdit.metadataUpdateFailed' => 'Metadaten konnten nicht aktualisiert werden',
@@ -8623,6 +8665,8 @@ extension on TranslationsDe {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Ausblenden',
 			'homeLayout.remove' => 'Entfernen',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'Die Bibliothek wird wiederum',
 			'homeLayout.pressAgainToDelete' => 'Drücken Sie wieder, um zu löschen',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsDe {
 			'universalMedia.files' => 'Geräte Datei',
 			'universalMedia.favorites' => 'Sparen Stream Favoriten',
 			'universalMedia.address' => 'Medienadresse',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URLs mit anerkannten Kennzeichnungs- oder Signaturparameter werden nur für diese Sitzung verwendet und können nicht als Favoriten gespeichert werden.',
 			'universalMedia.displayName' => 'Anzeige Name (optional)',
 			'universalMedia.displayNameHelp' => 'Wählen Sie einen kurzen Namen für den Spieler und System-Media-Controls aus.',
@@ -9137,6 +9179,8 @@ extension on TranslationsDe {
 			'sourceSetup.passwordOrKey' => 'Gib ein Passwort ein oder füge unten einen privaten Schlüssel hinzu.',
 			'sourceSetup.sshFingerprint' => 'SHA256-Fingerabdruck des SSH-Hostschlüssels',
 			'sourceSetup.sshFingerprintHelp' => 'Prüfe ihn mit dem Serveradministrator. Führe auf dem Server ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub aus und verwende den SHA256-Wert.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Leer lassen, um den aktuell festgelegten Fingerabdruck beizubehalten, oder einen neuen Serverfingerabdruck eingeben.',
 			'sourceSetup.sshAuthentication' => 'SSH-Authentifizierung mit öffentlichem Schlüssel',
 			'sourceSetup.sshAuthenticationHelp' => 'Optional; die Authentifizierung mit Passwort wird ebenfalls unterstützt.',
@@ -9158,8 +9202,6 @@ extension on TranslationsDe {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS verwendet die üblichen NFS- und Mount-Dienst-Ports und benötigt RFC 9289-Unterstützung auf dem NAS. TLS 1.3 ist erforderlich. Hostname oder IP-Adresse müssen zum Zertifikat passen. AUTH_SYS-UID/GID gelten auch im verschlüsselten Kanal.',
 			'sourceSetup.clientCertificate' => 'Clientzertifikat (optional)',
 			'sourceSetup.clientCertificateHelp' => 'Damit kann das NAS diesen Client authentifizieren; AUTH_SYS-IDs unterliegen weiterhin den Regeln der NFS-Freigabe des NAS.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Eine gespeicherte Clientidentität wird verwendet.',
 			'sourceSetup.replaceIdentity' => 'Gespeicherte Clientidentität ersetzen',
 			'sourceSetup.chooseIdentity' => 'PKCS#12-Clientidentität auswählen',
@@ -9651,6 +9693,8 @@ extension on TranslationsDe {
 			'musicTools.playlistRecipient' => 'Plex-Benutzername oder E-Mail',
 			'musicTools.playlistSharingHint' => 'Zugriff auf diese Playlist und ihre Titel gewähren. Der Empfänger muss eventuell eine Einladung annehmen.',
 			'musicTools.playlistSharingFailed' => 'Playlist-Zugriff konnte nicht angefordert werden.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex hat die Zugriffsanfrage angenommen.',
 			'musicTools.playlistAccessList' => 'Aktueller Zugriff',
 			'musicTools.playlistAccessNone' => 'Keine Playlist-Zugriffsrechte vergeben',
@@ -9672,8 +9716,6 @@ extension on TranslationsDe {
 			'musicTools.continueStation' => 'Diesen Sender weiter abspielen',
 			'musicDevices.playOn' => 'Wiedergeben auf',
 			'musicDevices.thisDevice' => 'Dieses Gerät',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'Wiedergabe auf ${device}',
 			'musicDevices.remembered' => 'Gespeicherte Geräte',
 			'musicDevices.forget' => 'Gerät vergessen',

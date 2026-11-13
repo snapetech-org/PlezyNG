@@ -1844,6 +1844,27 @@ class _Translations$startup$cs extends Translations$startup$en {
 	@override String get deleteBackup => 'Vymazat kopii';
 	@override String get backupDeleted => 'Kopie je vymazána.';
 	@override String get previousFailureTitle => 'Pleazyng neuspěl naposledy';
+	@override String get legacyImportTitle => 'Importovat existující knihovnu médií?';
+	@override String get legacyImportBody => 'Pokud máte databázi z dřívější instalace Pleazyng nebo Plezy, můžete ji vybrat zde. Pleazyng databáze nikdy nevyhledává ani neimportuje podle názvu souboru.';
+	@override String get legacyImportChoose => 'Vybrat databázi';
+	@override String get legacyImportStartFresh => 'Začít znovu';
+	@override String get legacyImportPickTitle => 'Vyberte soubor databáze k náhledu';
+	@override String get legacyImportChecking => 'Kontroluje se kopie vybraného souboru. Původní soubor zůstane beze změny.';
+	@override String get legacyImportReviewTitle => 'Zkontrolovat tuto databázi';
+	@override String legacyImportFile({required Object name}) => 'Soubor: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Velikost souboru: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Schéma databáze: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Profily: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Připojení k serverům: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Uložené záznamy o stažení: ${count}';
+	@override String get legacyImportIdentityWarning => 'Databáze neobsahuje značku aplikace. Z názvu ani schématu nelze poznat, zda pochází z Pleazyng, nebo z upstream projektu Plezy.';
+	@override String get legacyImportCredentialsWarning => 'Přihlašovací údaje k serverům se ukládají zvlášť a nepřenesou se. Budete se muset znovu přihlásit.';
+	@override String get legacyImportPathsWarning => 'Stažené mediální soubory se nekopírují. Stávající cesty nemusí v tomto zařízení fungovat; možná bude potřeba znovu vybrat složky úložiště nebo média znovu stáhnout.';
+	@override String get legacyImportBackup => 'Vybraný soubor zůstane beze změny jako záložní kopie pro návrat. Tato možnost se zobrazí jen tehdy, když databáze Pleazyng neexistuje; existující databáze Pleazyng se nikdy nenahradí.';
+	@override String get legacyImportConfirm => 'Importovat tuto databázi';
+	@override String get legacyImportInvalidTitle => 'Soubor se nepodařilo ověřit';
+	@override String get legacyImportInvalidBody => 'Pleazyng nemohl ověřit, zda je vybraný soubor podporovanou databází. Nic nebylo importováno ani změněno.';
+	@override String get legacyImportTryAnother => 'Vybrat jiný soubor';
 }
 
 // Path: licenses
@@ -7282,6 +7303,27 @@ extension on TranslationsCs {
 			'startup.deleteBackup' => 'Vymazat kopii',
 			'startup.backupDeleted' => 'Kopie je vymazána.',
 			'startup.previousFailureTitle' => 'Pleazyng neuspěl naposledy',
+			'startup.legacyImportTitle' => 'Importovat existující knihovnu médií?',
+			'startup.legacyImportBody' => 'Pokud máte databázi z dřívější instalace Pleazyng nebo Plezy, můžete ji vybrat zde. Pleazyng databáze nikdy nevyhledává ani neimportuje podle názvu souboru.',
+			'startup.legacyImportChoose' => 'Vybrat databázi',
+			'startup.legacyImportStartFresh' => 'Začít znovu',
+			'startup.legacyImportPickTitle' => 'Vyberte soubor databáze k náhledu',
+			'startup.legacyImportChecking' => 'Kontroluje se kopie vybraného souboru. Původní soubor zůstane beze změny.',
+			'startup.legacyImportReviewTitle' => 'Zkontrolovat tuto databázi',
+			'startup.legacyImportFile' => ({required Object name}) => 'Soubor: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Velikost souboru: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Schéma databáze: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profily: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Připojení k serverům: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Uložené záznamy o stažení: ${count}',
+			'startup.legacyImportIdentityWarning' => 'Databáze neobsahuje značku aplikace. Z názvu ani schématu nelze poznat, zda pochází z Pleazyng, nebo z upstream projektu Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'Přihlašovací údaje k serverům se ukládají zvlášť a nepřenesou se. Budete se muset znovu přihlásit.',
+			'startup.legacyImportPathsWarning' => 'Stažené mediální soubory se nekopírují. Stávající cesty nemusí v tomto zařízení fungovat; možná bude potřeba znovu vybrat složky úložiště nebo média znovu stáhnout.',
+			'startup.legacyImportBackup' => 'Vybraný soubor zůstane beze změny jako záložní kopie pro návrat. Tato možnost se zobrazí jen tehdy, když databáze Pleazyng neexistuje; existující databáze Pleazyng se nikdy nenahradí.',
+			'startup.legacyImportConfirm' => 'Importovat tuto databázi',
+			'startup.legacyImportInvalidTitle' => 'Soubor se nepodařilo ověřit',
+			'startup.legacyImportInvalidBody' => 'Pleazyng nemohl ověřit, zda je vybraný soubor podporovanou databází. Nic nebylo importováno ani změněno.',
+			'startup.legacyImportTryAnother' => 'Vybrat jiný soubor',
 			'licenses.relatedPackages' => 'související balíčky',
 			'licenses.license' => 'Licence',
 			'licenses.licenseNumber' => ({required Object number}) => 'Licence ${number}',
@@ -7639,6 +7681,8 @@ extension on TranslationsCs {
 			'music.noAudioUrl' => ({required Object track}) => 'Žádný audio URL není k dispozici pro ${track}',
 			'music.discography.singlesAndEps' => 'Singles a EPs',
 			'music.discography.live' => 'Živě',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Kompilace',
 			'music.backTo' => 'Zpět na',
 			'music.upNext' => 'Následuje',
@@ -7660,8 +7704,6 @@ extension on TranslationsCs {
 			'watchTogether.paste' => 'Vložit',
 			'watchTogether.noCodeInClipboard' => 'Klipboard neobsahuje kód místnosti',
 			'watchTogether.copyCode' => 'Kopírování kódu',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
@@ -8153,6 +8195,8 @@ extension on TranslationsCs {
 			'metadataEdit.editMetadata' => 'Upravit',
 			'metadataEdit.screenTitle' => 'Upravit metadata',
 			'metadataEdit.basicInfo' => 'Základní info',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'umělecká práce',
 			'metadataEdit.advancedSettings' => 'Pokročilé nastavení',
 			'metadataEdit.title' => 'Název',
@@ -8174,8 +8218,6 @@ extension on TranslationsCs {
 			'metadataEdit.fromUrl' => 'Od URL',
 			'metadataEdit.uploadFile' => 'Upload souborů',
 			'metadataEdit.enterImageUrl' => 'Vložte obrázek URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'obrázek URL',
 			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
 			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
@@ -8667,6 +8709,8 @@ extension on TranslationsCs {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Skrýt',
 			'homeLayout.remove' => 'Odstranit',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'Knižní přehled této knihovny',
 			'homeLayout.pressAgainToDelete' => 'Znovu stiskněte, abyste odstranili',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8688,8 +8732,6 @@ extension on TranslationsCs {
 			'universalMedia.files' => 'Přístrojové soubory',
 			'universalMedia.favorites' => 'Úsporný stream oblíbené',
 			'universalMedia.address' => 'Mediální adresa',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL s uznanými parametry ověřování nebo podpisů se používají pouze pro tuto schůzku a nelze je uložit jako oblíbené.',
 			'universalMedia.displayName' => 'Název zobrazení (volitelné)',
 			'universalMedia.displayNameHelp' => 'Vyberte krátký název pro hráče a systémové médií ovládacích prvků.',
@@ -9181,6 +9223,8 @@ extension on TranslationsCs {
 			'sourceSetup.passwordOrKey' => 'Zadejte heslo nebo níže přidejte soukromý klíč.',
 			'sourceSetup.sshFingerprint' => 'Otisk SHA256 hostitelského klíče SSH',
 			'sourceSetup.sshFingerprintHelp' => 'Ověřte jej u správce serveru. Na serveru spusťte ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub a použijte hodnotu SHA256.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Ponechte prázdné pro zachování připnutého otisku nebo zadejte nový otisk serveru.',
 			'sourceSetup.sshAuthentication' => 'Ověření SSH veřejným klíčem',
 			'sourceSetup.sshAuthenticationHelp' => 'Nepovinné; podporováno je i ověření heslem.',
@@ -9202,8 +9246,6 @@ extension on TranslationsCs {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS používá běžné porty NFS a služby připojení a vyžaduje podporu RFC 9289 na NAS. Je nutné TLS 1.3. Název hostitele nebo IP adresa musí odpovídat certifikátu. UID/GID AUTH_SYS nadále platí i v šifrovaném kanálu.',
 			'sourceSetup.clientCertificate' => 'Klientský certifikát (nepovinné)',
 			'sourceSetup.clientCertificateHelp' => 'Umožňuje NAS ověřit tohoto klienta; ID AUTH_SYS stále podléhají pravidlům exportu NFS na NAS.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Bude použita uložená identita klienta.',
 			'sourceSetup.replaceIdentity' => 'Nahradit uloženou identitu klienta',
 			'sourceSetup.chooseIdentity' => 'Vybrat identitu klienta PKCS#12',
@@ -9695,6 +9737,8 @@ extension on TranslationsCs {
 			'musicTools.playlistRecipient' => 'Uživatelské jméno Plex nebo e-mail',
 			'musicTools.playlistSharingHint' => 'Udělte přístup k tomuto playlistu a jeho skladbám. Příjemce možná bude muset přijmout pozvánku.',
 			'musicTools.playlistSharingFailed' => 'Nepodařilo se požádat o přístup k playlistu.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex přijal žádost o přístup.',
 			'musicTools.playlistAccessList' => 'Aktuální přístup',
 			'musicTools.playlistAccessNone' => 'K playlistu nebyl udělen žádný přístup',
@@ -9716,8 +9760,6 @@ extension on TranslationsCs {
 			'musicTools.continueStation' => 'Pokračovat v přehrávání této stanice',
 			'musicDevices.playOn' => 'Přehrávat na',
 			'musicDevices.thisDevice' => 'Toto zařízení',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',
 			'musicDevices.remembered' => 'Zapamatovaná zařízení',
 			'musicDevices.forget' => 'Zapomenout zařízení',

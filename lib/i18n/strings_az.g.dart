@@ -1830,6 +1830,27 @@ class _Translations$startup$az extends Translations$startup$en {
 	@override String get deleteBackup => 'Nüsxəni sil';
 	@override String get backupDeleted => 'Nüsxə silindi.';
 	@override String get previousFailureTitle => 'Pleazyng son dəfə başlaya bilmədi';
+	@override String get legacyImportTitle => 'Mövcud media kitabxanası idxal edilsin?';
+	@override String get legacyImportBody => 'Əvvəlki Pleazyng və ya Plezy quraşdırmasından verilənlər bazanız varsa, onu burada seçə bilərsiniz. Pleazyng verilənlər bazalarını heç vaxt axtarmır və fayl adına əsasən idxal etmir.';
+	@override String get legacyImportChoose => 'Verilənlər bazasını seç';
+	@override String get legacyImportStartFresh => 'Yenidən başla';
+	@override String get legacyImportPickTitle => 'Önizləmə üçün verilənlər bazası faylını seçin';
+	@override String get legacyImportChecking => 'Seçilmiş fayl müvəqqəti nüsxədə yoxlanılır. Orijinal faylınız dəyişdirilməyəcək.';
+	@override String get legacyImportReviewTitle => 'Bu verilənlər bazasını nəzərdən keçir';
+	@override String legacyImportFile({required Object name}) => 'Fayl: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Faylın ölçüsü: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Verilənlər bazasının sxemi: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Profillər: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Server bağlantıları: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Saxlanmış yükləmə qeydləri: ${count}';
+	@override String get legacyImportIdentityWarning => 'Verilənlər bazasında tətbiq identifikatoru yoxdur. Faylın adı və sxemi onun Pleazyng-dən, yoxsa upstream Plezy-dən olduğunu göstərmir.';
+	@override String get legacyImportCredentialsWarning => 'Server giriş məlumatları ayrıca saxlanılır və köçürülməyəcək. Yenidən daxil olmalısınız.';
+	@override String get legacyImportPathsWarning => 'Yüklənmiş media faylları köçürülmür. Mövcud yollar bu cihazda işləməyə bilər; saxlama qovluqlarını yenidən seçməli və ya medianı təkrar yükləməli ola bilərsiniz.';
+	@override String get legacyImportBackup => 'Seçilmiş fayl geri qayıtmaq üçün dəyişmədən saxlanılır. Bu seçim yalnız Pleazyng verilənlər bazası olmadıqda görünür; mövcud Pleazyng bazası heç vaxt əvəz edilmir.';
+	@override String get legacyImportConfirm => 'Bu verilənlər bazasını idxal et';
+	@override String get legacyImportInvalidTitle => 'Bu faylı yoxlamaq mümkün olmadı';
+	@override String get legacyImportInvalidBody => 'Pleazyng seçilmiş faylın dəstəklənən verilənlər bazası olduğunu təsdiqləyə bilmədi. Heç nə idxal edilmədi və dəyişdirilmədi.';
+	@override String get legacyImportTryAnother => 'Başqa fayl seç';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsAz {
 			'startup.deleteBackup' => 'Nüsxəni sil',
 			'startup.backupDeleted' => 'Nüsxə silindi.',
 			'startup.previousFailureTitle' => 'Pleazyng son dəfə başlaya bilmədi',
+			'startup.legacyImportTitle' => 'Mövcud media kitabxanası idxal edilsin?',
+			'startup.legacyImportBody' => 'Əvvəlki Pleazyng və ya Plezy quraşdırmasından verilənlər bazanız varsa, onu burada seçə bilərsiniz. Pleazyng verilənlər bazalarını heç vaxt axtarmır və fayl adına əsasən idxal etmir.',
+			'startup.legacyImportChoose' => 'Verilənlər bazasını seç',
+			'startup.legacyImportStartFresh' => 'Yenidən başla',
+			'startup.legacyImportPickTitle' => 'Önizləmə üçün verilənlər bazası faylını seçin',
+			'startup.legacyImportChecking' => 'Seçilmiş fayl müvəqqəti nüsxədə yoxlanılır. Orijinal faylınız dəyişdirilməyəcək.',
+			'startup.legacyImportReviewTitle' => 'Bu verilənlər bazasını nəzərdən keçir',
+			'startup.legacyImportFile' => ({required Object name}) => 'Fayl: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Faylın ölçüsü: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Verilənlər bazasının sxemi: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profillər: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Server bağlantıları: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Saxlanmış yükləmə qeydləri: ${count}',
+			'startup.legacyImportIdentityWarning' => 'Verilənlər bazasında tətbiq identifikatoru yoxdur. Faylın adı və sxemi onun Pleazyng-dən, yoxsa upstream Plezy-dən olduğunu göstərmir.',
+			'startup.legacyImportCredentialsWarning' => 'Server giriş məlumatları ayrıca saxlanılır və köçürülməyəcək. Yenidən daxil olmalısınız.',
+			'startup.legacyImportPathsWarning' => 'Yüklənmiş media faylları köçürülmür. Mövcud yollar bu cihazda işləməyə bilər; saxlama qovluqlarını yenidən seçməli və ya medianı təkrar yükləməli ola bilərsiniz.',
+			'startup.legacyImportBackup' => 'Seçilmiş fayl geri qayıtmaq üçün dəyişmədən saxlanılır. Bu seçim yalnız Pleazyng verilənlər bazası olmadıqda görünür; mövcud Pleazyng bazası heç vaxt əvəz edilmir.',
+			'startup.legacyImportConfirm' => 'Bu verilənlər bazasını idxal et',
+			'startup.legacyImportInvalidTitle' => 'Bu faylı yoxlamaq mümkün olmadı',
+			'startup.legacyImportInvalidBody' => 'Pleazyng seçilmiş faylın dəstəklənən verilənlər bazası olduğunu təsdiqləyə bilmədi. Heç nə idxal edilmədi və dəyişdirilmədi.',
+			'startup.legacyImportTryAnother' => 'Başqa fayl seç',
 			'licenses.relatedPackages' => 'Əlaqəli paketlər',
 			'licenses.license' => 'Lisenziya',
 			'licenses.licenseNumber' => ({required Object number}) => 'Lisenziya ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsAz {
 			'music.noAudioUrl' => ({required Object track}) => '${track} üçün səs URL-i mövcud deyil',
 			'music.discography.singlesAndEps' => 'Single-lar və EP-lər',
 			'music.discography.live' => 'Canlı',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Kompilyasiyalar',
 			'music.backTo' => 'Əvvəl çalınanlar',
 			'music.upNext' => 'Növbəti',
@@ -7616,8 +7660,6 @@ extension on TranslationsAz {
 			'watchTogether.paste' => 'Yapışdır',
 			'watchTogether.noCodeInClipboard' => 'Buferdə otaq kodu yoxdur',
 			'watchTogether.copyCode' => 'Kodu kopyala',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Otaq kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Dəvəti paylaş',
 			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
@@ -8109,6 +8151,8 @@ extension on TranslationsAz {
 			'metadataEdit.editMetadata' => 'Düzəliş et...',
 			'metadataEdit.screenTitle' => 'Meta-məlumatlara düzəliş et',
 			'metadataEdit.basicInfo' => 'Əsas məlumatlar',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Şəkillər/Posterlər',
 			'metadataEdit.advancedSettings' => 'Təkmilləşdirilmiş tənzimləmələr',
 			'metadataEdit.title' => 'Başlıq',
@@ -8130,8 +8174,6 @@ extension on TranslationsAz {
 			'metadataEdit.fromUrl' => 'URL-dən',
 			'metadataEdit.uploadFile' => 'Fayl yüklə',
 			'metadataEdit.enterImageUrl' => 'Şəkil URL-i daxil edin',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'Şəkil URL-i',
 			'metadataEdit.metadataUpdated' => 'Meta-məlumatlar yeniləndi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta-məlumatlar yenilənə bilmədi',
@@ -8623,6 +8665,8 @@ extension on TranslationsAz {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Gizlət',
 			'homeLayout.remove' => 'Sil',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'Bu kütüphaneyi yenə',
 			'homeLayout.pressAgainToDelete' => 'Yenə xilas etmək üçün basın',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsAz {
 			'universalMedia.files' => 'Fillər',
 			'universalMedia.favorites' => 'Sürücüsüz favoritlər',
 			'universalMedia.address' => 'Medyanın adresi',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS-i tercih edilir. tanınmış kimlik və ya imza parametrləri olan URL-lər yalnız bu oturum üçün istifadə edilir və favori olarak saklanamaz.',
 			'universalMedia.displayName' => 'Görüntülər adı (optional)',
 			'universalMedia.displayNameHelp' => 'Bir oyuncu və sistem medya kontrolləri üçün kısa adı seçin.',
@@ -9137,6 +9179,8 @@ extension on TranslationsAz {
 			'sourceSetup.passwordOrKey' => 'Şifrə daxil edin və ya aşağıda özəl açar əlavə edin.',
 			'sourceSetup.sshFingerprint' => 'SSH host açarının SHA256 izi',
 			'sourceSetup.sshFingerprintHelp' => 'Server administratoru ilə yoxlayın. Serverdə ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub əmrini işlədin və SHA256 dəyərini istifadə edin.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Hazırda sabitlənmiş izi saxlamaq üçün boş saxlayın və ya serverin yeni izini daxil edin.',
 			'sourceSetup.sshAuthentication' => 'Açıq açarla SSH kimlik təsdiqi',
 			'sourceSetup.sshAuthenticationHelp' => 'İstəyə bağlıdır; şifrə ilə kimlik təsdiqi də dəstəklənir.',
@@ -9158,8 +9202,6 @@ extension on TranslationsAz {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS adi NFS və mount xidməti portlarını istifadə edir və NAS-da RFC 9289 dəstəyi tələb edir. TLS 1.3 tələb olunur. Host adı və ya IP ünvanı sertifikata uyğun gəlməlidir. Şifrələnmiş kanalda da AUTH_SYS UID/GID qüvvədə qalır.',
 			'sourceSetup.clientCertificate' => 'Klient sertifikatı (istəyə bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-a bu klientin kimliyini təsdiqləməyə imkan verir; AUTH_SYS ID-ləri yenə NAS-ın NFS paylaşım qaydalarından asılıdır.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Yadda saxlanmış klient kimlik məlumatları istifadə olunacaq.',
 			'sourceSetup.replaceIdentity' => 'Yadda saxlanmış klient kimlik məlumatlarını əvəz et',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 klient kimlik məlumatlarını seç',
@@ -9651,6 +9693,8 @@ extension on TranslationsAz {
 			'musicTools.playlistRecipient' => 'Plex istifadəçi adı və ya e-poçt',
 			'musicTools.playlistSharingHint' => 'Bu pleylistə və treklərinə giriş verin. Alıcı dəvəti qəbul etməli ola bilər.',
 			'musicTools.playlistSharingFailed' => 'Pleylistə giriş istənilə bilmədi.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex giriş sorğusunu qəbul etdi.',
 			'musicTools.playlistAccessList' => 'Cari giriş',
 			'musicTools.playlistAccessNone' => 'Pleylistə giriş icazəsi yoxdur',
@@ -9672,8 +9716,6 @@ extension on TranslationsAz {
 			'musicTools.continueStation' => 'Bu stansiyanı səsləndirməyə davam et',
 			'musicDevices.playOn' => 'Burada səsləndir',
 			'musicDevices.thisDevice' => 'Bu cihaz',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',
 			'musicDevices.remembered' => 'Yadda saxlanmış cihazlar',
 			'musicDevices.forget' => 'Cihazı unut',

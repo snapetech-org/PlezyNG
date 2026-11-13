@@ -1846,6 +1846,27 @@ class Translations$startup$fr extends Translations$startup$en {
 	@override String get deleteBackup => 'Supprimer la copie';
 	@override String get backupDeleted => 'Copie supprimée.';
 	@override String get previousFailureTitle => 'Pleazyng n\'a pas réussi à démarrer la dernière fois';
+	@override String get legacyImportTitle => 'Importer une bibliothèque multimédia existante ?';
+	@override String get legacyImportBody => 'Si vous avez une base de données d’une ancienne installation de Pleazyng ou de Plezy, vous pouvez la choisir ici. Pleazyng ne recherche jamais de base de données et n’en importe jamais selon son nom de fichier.';
+	@override String get legacyImportChoose => 'Choisir une base de données';
+	@override String get legacyImportStartFresh => 'Repartir de zéro';
+	@override String get legacyImportPickTitle => 'Choisissez un fichier de base de données à prévisualiser';
+	@override String get legacyImportChecking => 'Une copie temporaire du fichier sélectionné est en cours de vérification. Le fichier d’origine ne sera pas modifié.';
+	@override String get legacyImportReviewTitle => 'Vérifier cette base de données';
+	@override String legacyImportFile({required Object name}) => 'Fichier : ${name}';
+	@override String legacyImportSize({required Object size}) => 'Taille du fichier : ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Schéma de la base de données : ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Profils : ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Connexions aux serveurs : ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Entrées de téléchargement enregistrées : ${count}';
+	@override String get legacyImportIdentityWarning => 'La base de données ne contient aucun identifiant de l’application. Son nom et son schéma ne permettent pas de savoir si elle vient de Pleazyng ou du projet amont Plezy.';
+	@override String get legacyImportCredentialsWarning => 'Les identifiants des serveurs sont stockés séparément et ne seront pas transférés. Vous devrez vous reconnecter.';
+	@override String get legacyImportPathsWarning => 'Les fichiers multimédias téléchargés ne sont pas copiés. Les chemins existants peuvent ne pas fonctionner sur cet appareil ; vous devrez peut-être choisir à nouveau les dossiers de stockage ou télécharger les médias de nouveau.';
+	@override String get legacyImportBackup => 'Le fichier sélectionné reste inchangé comme copie de secours. Cette option apparaît uniquement si Pleazyng ne possède pas encore de base de données ; une base de données Pleazyng existante n’est jamais remplacée.';
+	@override String get legacyImportConfirm => 'Importer cette base de données';
+	@override String get legacyImportInvalidTitle => 'Impossible de valider ce fichier';
+	@override String get legacyImportInvalidBody => 'Pleazyng n’a pas pu vérifier que le fichier sélectionné est une base de données compatible. Rien n’a été importé ni modifié.';
+	@override String get legacyImportTryAnother => 'Choisir un autre fichier';
 }
 
 // Path: licenses
@@ -7289,6 +7310,27 @@ extension on TranslationsFr {
 			'startup.deleteBackup' => 'Supprimer la copie',
 			'startup.backupDeleted' => 'Copie supprimée.',
 			'startup.previousFailureTitle' => 'Pleazyng n\'a pas réussi à démarrer la dernière fois',
+			'startup.legacyImportTitle' => 'Importer une bibliothèque multimédia existante ?',
+			'startup.legacyImportBody' => 'Si vous avez une base de données d’une ancienne installation de Pleazyng ou de Plezy, vous pouvez la choisir ici. Pleazyng ne recherche jamais de base de données et n’en importe jamais selon son nom de fichier.',
+			'startup.legacyImportChoose' => 'Choisir une base de données',
+			'startup.legacyImportStartFresh' => 'Repartir de zéro',
+			'startup.legacyImportPickTitle' => 'Choisissez un fichier de base de données à prévisualiser',
+			'startup.legacyImportChecking' => 'Une copie temporaire du fichier sélectionné est en cours de vérification. Le fichier d’origine ne sera pas modifié.',
+			'startup.legacyImportReviewTitle' => 'Vérifier cette base de données',
+			'startup.legacyImportFile' => ({required Object name}) => 'Fichier : ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Taille du fichier : ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Schéma de la base de données : ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profils : ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Connexions aux serveurs : ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Entrées de téléchargement enregistrées : ${count}',
+			'startup.legacyImportIdentityWarning' => 'La base de données ne contient aucun identifiant de l’application. Son nom et son schéma ne permettent pas de savoir si elle vient de Pleazyng ou du projet amont Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'Les identifiants des serveurs sont stockés séparément et ne seront pas transférés. Vous devrez vous reconnecter.',
+			'startup.legacyImportPathsWarning' => 'Les fichiers multimédias téléchargés ne sont pas copiés. Les chemins existants peuvent ne pas fonctionner sur cet appareil ; vous devrez peut-être choisir à nouveau les dossiers de stockage ou télécharger les médias de nouveau.',
+			'startup.legacyImportBackup' => 'Le fichier sélectionné reste inchangé comme copie de secours. Cette option apparaît uniquement si Pleazyng ne possède pas encore de base de données ; une base de données Pleazyng existante n’est jamais remplacée.',
+			'startup.legacyImportConfirm' => 'Importer cette base de données',
+			'startup.legacyImportInvalidTitle' => 'Impossible de valider ce fichier',
+			'startup.legacyImportInvalidBody' => 'Pleazyng n’a pas pu vérifier que le fichier sélectionné est une base de données compatible. Rien n’a été importé ni modifié.',
+			'startup.legacyImportTryAnother' => 'Choisir un autre fichier',
 			'licenses.relatedPackages' => 'Paquets associés',
 			'licenses.license' => 'Licence',
 			'licenses.licenseNumber' => ({required Object number}) => 'Licence ${number}',
@@ -7639,6 +7681,8 @@ extension on TranslationsFr {
 			'music.nextTrack' => 'Titre suivant',
 			'music.repeat' => 'Répéter',
 			'music.repeatAll' => 'Tout répéter',
+			_ => null,
+		} ?? switch (path) {
 			'music.repeatOne' => 'Répéter le titre',
 			'music.instantMixNoServer' => 'Aucun serveur n’est disponible pour créer un mix instantané',
 			'music.instantMixFailed' => 'Impossible de charger le mix instantané',
@@ -7660,8 +7704,6 @@ extension on TranslationsFr {
 			'watchTogether.relayCustom' => ({required Object url}) => 'Les salons utilisent votre relais à l’adresse ${url}.',
 			'watchTogether.recentRooms' => 'Salons récents',
 			'watchTogether.roomActions' => 'Actions du salon',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.renameRoom' => 'Renommer le salon',
 			'watchTogether.removeRoom' => 'Supprimer',
 			'watchTogether.enterRoomCode' => 'Saisissez le code à 6 caractères communiqué par l’hôte.',
@@ -8153,6 +8195,8 @@ extension on TranslationsFr {
 			'externalPlayer.description' => 'Choisissez une autre application pour ouvrir les vidéos. Les joueurs disponibles dépendent de votre appareil et des applications installées.',
 			'externalPlayer.systemDefaultDescription' => 'Laissez le système d\'exploitation ouvrir la vidéo avec son application par défaut.',
 			'externalPlayer.playerOptionDescription' => ({required Object player}) => 'Ouvrez des vidéos avec ${player}.',
+			_ => null,
+		} ?? switch (path) {
 			'externalPlayer.playerNameDescription' => 'L\'étiquette affichée dans la liste des joueurs.',
 			'externalPlayer.playerPackageDescription' => 'Entrez le nom de paquet Android de l\'application joueur, comme com.example.player.',
 			'externalPlayer.playerCommandDescription' => 'Entrez le commandement de joueur installé ou la voie exécutable pour ce dispositif.',
@@ -8174,8 +8218,6 @@ extension on TranslationsFr {
 			'metadataEdit.background' => 'Arrière-plan',
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Image carrée',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.selectPoster' => 'Sélectionner l\'affiche',
 			'metadataEdit.selectBackground' => 'Sélectionner l\'arrière-plan',
 			'metadataEdit.selectLogo' => 'Sélectionner le logo',
@@ -8667,6 +8709,8 @@ extension on TranslationsFr {
 			'homeLayout.editHomeRow' => 'Edit à domicile',
 			'homeLayout.resetHeroButton' => 'Résetez le layout de l\'héroïne à stock Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Réservation déclenchée',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.reorderingLocked' => 'Réservation bloquée',
 			'homeLayout.rowsCanBeDragged' => 'Les rayons peuvent être tirés — tapez le verrou pour éviter que',
 			'homeLayout.tapLockToDrag' => 'Tapez le lock pour tirer les lignes',
@@ -8688,8 +8732,6 @@ extension on TranslationsFr {
 			'platform.cameraPermission' => 'Scannez des codes QR pour associer une Companion Remote.',
 			'universalMedia.title' => 'Médias ouverts',
 			'universalMedia.shortcutHelp' => 'Jouez à un lien, une playlist ou un fichier pour cette session.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.intro' => 'Ouvrez un lien, une liste de lecture ou un fichier. Playback utilise le lecteur standard de Pleazyng et n’ajoute pas d’historique à votre bibliothèque.',
 			'universalMedia.openWhat' => 'Que voudriez-vous ouvrir ?',
 			'universalMedia.stream' => 'Adresse de courant',
@@ -9181,6 +9223,8 @@ extension on TranslationsFr {
 			'sourceSetup.nfsEndpointInvalid' => 'Saisissez une URL NFS, par exemple nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Aucun serveur DLNA trouvé. Saisissez manuellement l’URL de description de l’appareil.',
 			'sourceSetup.dlnaServers' => 'Serveurs multimédias DLNA',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.dlnaUnavailable' => 'La découverte DLNA est indisponible sur ce réseau. Saisissez manuellement l’URL de description de l’appareil.',
 			'sourceSetup.dlnaSearching' => 'Recherche de serveurs DLNA sur le réseau local',
 			'sourceSetup.networkSearching' => 'Recherche sur le réseau local…',
@@ -9202,8 +9246,6 @@ extension on TranslationsFr {
 			'sourceSetup.nfsGroupId' => 'Identifiant de groupe NFS (AUTH_SYS)',
 			'sourceSetup.nfsGroupIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant de groupe autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsEncryption' => 'Exiger NFS chiffré (RPC-with-TLS)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionHelp' => 'Exiger TLS 1.3 pour NFS et le service de montage. Si le NAS ne le prend pas en charge, la connexion est refusée.',
 			'sourceSetup.nfsTrustCertificate' => 'CA NFS personnalisée ou certificat du serveur (PEM, facultatif)',
 			'sourceSetup.nfsTrustHelp' => 'Laissez vide pour utiliser les certificats reconnus par cet appareil. Si nécessaire, ajoutez un certificat d’une CA privée ou un certificat de serveur autosigné ; ses noms doivent correspondre à l’hôte de l’URL NFS.',
@@ -9695,6 +9737,8 @@ extension on TranslationsFr {
 			'musicTools.days' => 'Jours',
 			'musicTools.albumBlocks' => 'Garder les albums entiers',
 			'musicTools.home' => 'Musique',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.recent' => 'Écoutés récemment',
 			'musicTools.apiKey' => 'Clé API',
 			'musicTools.missing' => 'N/D',
@@ -9716,8 +9760,6 @@ extension on TranslationsFr {
 			'musicTools.unpin' => 'Désépingler',
 			'musicTools.serverAnalysis' => 'Analyse du serveur',
 			'musicTools.sonicAnalysis' => 'Analyse sonore',
-			_ => null,
-		} ?? switch (path) {
 			'musicTools.serverAnalysisScope' => 'Toutes les bibliothèques musicales éligibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.',
 			'musicTools.serverActivities' => 'Activités du serveur',
 			'musicTools.playlistSharing' => 'Accès à la liste',

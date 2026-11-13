@@ -1822,6 +1822,27 @@ class _Translations$startup$th extends Translations$startup$en {
 	@override String get deleteBackup => 'ลบสําเนา';
 	@override String get backupDeleted => 'การคัดลอกลบ';
 	@override String get previousFailureTitle => 'Pleazyng ไม่สามารถเริ่มต้นครั้งสุดท้าย';
+	@override String get legacyImportTitle => 'นำเข้าคลังสื่อที่มีอยู่หรือไม่?';
+	@override String get legacyImportBody => 'หากคุณมีฐานข้อมูลจากการติดตั้ง Pleazyng หรือ Plezy ก่อนหน้า คุณเลือกได้ที่นี่ Pleazyng จะไม่ค้นหาฐานข้อมูลเองหรือเลือกนำเข้าจากชื่อไฟล์';
+	@override String get legacyImportChoose => 'เลือกฐานข้อมูล';
+	@override String get legacyImportStartFresh => 'เริ่มใหม่';
+	@override String get legacyImportPickTitle => 'เลือกไฟล์ฐานข้อมูลเพื่อดูตัวอย่าง';
+	@override String get legacyImportChecking => 'กำลังตรวจสอบสำเนาชั่วคราวของไฟล์ที่เลือก ไฟล์ต้นฉบับจะไม่ถูกเปลี่ยนแปลง';
+	@override String get legacyImportReviewTitle => 'ตรวจสอบฐานข้อมูลนี้';
+	@override String legacyImportFile({required Object name}) => 'ไฟล์: ${name}';
+	@override String legacyImportSize({required Object size}) => 'ขนาดไฟล์: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'สคีมาฐานข้อมูล: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'โปรไฟล์: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'การเชื่อมต่อเซิร์ฟเวอร์: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'รายการดาวน์โหลดที่บันทึกไว้: ${count}';
+	@override String get legacyImportIdentityWarning => 'ฐานข้อมูลนี้ไม่มีเครื่องหมายระบุแอป ชื่อและสคีมาไม่สามารถบอกได้ว่ามาจาก Pleazyng หรือโครงการต้นทาง Plezy';
+	@override String get legacyImportCredentialsWarning => 'ข้อมูลรับรองเซิร์ฟเวอร์จัดเก็บแยกต่างหากและจะไม่ถูกโอน คุณต้องลงชื่อเข้าใช้อีกครั้ง';
+	@override String get legacyImportPathsWarning => 'ไฟล์สื่อที่ดาวน์โหลดจะไม่ถูกคัดลอก เส้นทางเดิมอาจใช้ไม่ได้บนอุปกรณ์นี้ คุณอาจต้องเลือกโฟลเดอร์จัดเก็บใหม่หรือดาวน์โหลดสื่ออีกครั้ง';
+	@override String get legacyImportBackup => 'ไฟล์ที่เลือกจะคงเดิมเป็นสำเนาสำหรับย้อนกลับ ตัวเลือกนี้จะแสดงเมื่อยังไม่มีฐานข้อมูล Pleazyng เท่านั้น และจะไม่มีการแทนที่ฐานข้อมูล Pleazyng ที่มีอยู่';
+	@override String get legacyImportConfirm => 'นำเข้าฐานข้อมูลนี้';
+	@override String get legacyImportInvalidTitle => 'ตรวจสอบไฟล์นี้ไม่ได้';
+	@override String get legacyImportInvalidBody => 'Pleazyng ยืนยันไม่ได้ว่าไฟล์ที่เลือกเป็นฐานข้อมูลที่รองรับ ไม่มีการนำเข้าหรือเปลี่ยนแปลงข้อมูลใด ๆ';
+	@override String get legacyImportTryAnother => 'เลือกไฟล์อื่น';
 }
 
 // Path: licenses
@@ -7213,6 +7234,27 @@ extension on TranslationsTh {
 			'startup.deleteBackup' => 'ลบสําเนา',
 			'startup.backupDeleted' => 'การคัดลอกลบ',
 			'startup.previousFailureTitle' => 'Pleazyng ไม่สามารถเริ่มต้นครั้งสุดท้าย',
+			'startup.legacyImportTitle' => 'นำเข้าคลังสื่อที่มีอยู่หรือไม่?',
+			'startup.legacyImportBody' => 'หากคุณมีฐานข้อมูลจากการติดตั้ง Pleazyng หรือ Plezy ก่อนหน้า คุณเลือกได้ที่นี่ Pleazyng จะไม่ค้นหาฐานข้อมูลเองหรือเลือกนำเข้าจากชื่อไฟล์',
+			'startup.legacyImportChoose' => 'เลือกฐานข้อมูล',
+			'startup.legacyImportStartFresh' => 'เริ่มใหม่',
+			'startup.legacyImportPickTitle' => 'เลือกไฟล์ฐานข้อมูลเพื่อดูตัวอย่าง',
+			'startup.legacyImportChecking' => 'กำลังตรวจสอบสำเนาชั่วคราวของไฟล์ที่เลือก ไฟล์ต้นฉบับจะไม่ถูกเปลี่ยนแปลง',
+			'startup.legacyImportReviewTitle' => 'ตรวจสอบฐานข้อมูลนี้',
+			'startup.legacyImportFile' => ({required Object name}) => 'ไฟล์: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'ขนาดไฟล์: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'สคีมาฐานข้อมูล: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'โปรไฟล์: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'การเชื่อมต่อเซิร์ฟเวอร์: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'รายการดาวน์โหลดที่บันทึกไว้: ${count}',
+			'startup.legacyImportIdentityWarning' => 'ฐานข้อมูลนี้ไม่มีเครื่องหมายระบุแอป ชื่อและสคีมาไม่สามารถบอกได้ว่ามาจาก Pleazyng หรือโครงการต้นทาง Plezy',
+			'startup.legacyImportCredentialsWarning' => 'ข้อมูลรับรองเซิร์ฟเวอร์จัดเก็บแยกต่างหากและจะไม่ถูกโอน คุณต้องลงชื่อเข้าใช้อีกครั้ง',
+			'startup.legacyImportPathsWarning' => 'ไฟล์สื่อที่ดาวน์โหลดจะไม่ถูกคัดลอก เส้นทางเดิมอาจใช้ไม่ได้บนอุปกรณ์นี้ คุณอาจต้องเลือกโฟลเดอร์จัดเก็บใหม่หรือดาวน์โหลดสื่ออีกครั้ง',
+			'startup.legacyImportBackup' => 'ไฟล์ที่เลือกจะคงเดิมเป็นสำเนาสำหรับย้อนกลับ ตัวเลือกนี้จะแสดงเมื่อยังไม่มีฐานข้อมูล Pleazyng เท่านั้น และจะไม่มีการแทนที่ฐานข้อมูล Pleazyng ที่มีอยู่',
+			'startup.legacyImportConfirm' => 'นำเข้าฐานข้อมูลนี้',
+			'startup.legacyImportInvalidTitle' => 'ตรวจสอบไฟล์นี้ไม่ได้',
+			'startup.legacyImportInvalidBody' => 'Pleazyng ยืนยันไม่ได้ว่าไฟล์ที่เลือกเป็นฐานข้อมูลที่รองรับ ไม่มีการนำเข้าหรือเปลี่ยนแปลงข้อมูลใด ๆ',
+			'startup.legacyImportTryAnother' => 'เลือกไฟล์อื่น',
 			'licenses.relatedPackages' => 'บรรจุภัณฑ์ที่เกี่ยวข้อง',
 			'licenses.license' => 'ใบอนุญาต',
 			'licenses.licenseNumber' => ({required Object number}) => 'ใบอนุญาต ${number}',
@@ -7570,6 +7612,8 @@ extension on TranslationsTh {
 			'music.noAudioUrl' => ({required Object track}) => 'ไม่มี URL เสียงที่มีอยู่สําหรับ ${track}',
 			'music.discography.singlesAndEps' => 'Singles และ EPs',
 			'music.discography.live' => 'ชีวิต',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'คอมเพลต',
 			'music.backTo' => 'กลับไปที่',
 			'music.upNext' => 'ถัดไป',
@@ -7591,8 +7635,6 @@ extension on TranslationsTh {
 			'watchTogether.paste' => 'แพสติ้ง',
 			'watchTogether.noCodeInClipboard' => 'แผ่นคลิปไม่ได้มีรหัสห้อง',
 			'watchTogether.copyCode' => 'รหัสคัดลอก',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
 			'watchTogether.shareInvite' => 'คู่มือ',
 			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
@@ -8084,6 +8126,8 @@ extension on TranslationsTh {
 			'metadataEdit.editMetadata' => 'แก้ไข',
 			'metadataEdit.screenTitle' => 'การแก้ไข Metadata',
 			'metadataEdit.basicInfo' => 'ข้อมูลพื้นฐาน',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'งานศิลปะ',
 			'metadataEdit.advancedSettings' => 'การตั้งค่าขั้นสูง',
 			'metadataEdit.title' => 'ชื่อเรื่อง',
@@ -8105,8 +8149,6 @@ extension on TranslationsTh {
 			'metadataEdit.fromUrl' => 'จาก URL',
 			'metadataEdit.uploadFile' => 'ดาวน์โหลดไฟล์',
 			'metadataEdit.enterImageUrl' => 'หมายเลข URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'ภาพ URL',
 			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
 			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
@@ -8598,6 +8640,8 @@ extension on TranslationsTh {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'ซ่อน',
 			'homeLayout.remove' => 'นำออก',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'ใบรับรองของห้องสมุดนี้',
 			'homeLayout.pressAgainToDelete' => 'คลิกอีกครั้งเพื่อลบ',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8619,8 +8663,6 @@ extension on TranslationsTh {
 			'universalMedia.files' => 'ไฟล์อุปกรณ์',
 			'universalMedia.favorites' => 'เก็บ Stream มือสมัครเล่น',
 			'universalMedia.address' => 'อ้างอิงสื่อ',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'HTTPS เป็นความต้องการ URL ที่มีพารามิเตอร์การรับรองหรือสัญญาที่ได้รับการยอมรับจะใช้เฉพาะสําหรับเซสชั่นนี้และไม่สามารถบันทึกเป็นโปรด',
 			'universalMedia.displayName' => 'ชื่อแสดงผล (ตัวเลือก)',
 			'universalMedia.displayNameHelp' => 'เลือกชื่อสั้นสําหรับผู้เล่นและระบบการควบคุมสื่อ',
@@ -9112,6 +9154,8 @@ extension on TranslationsTh {
 			'sourceSetup.passwordOrKey' => 'ป้อนรหัสผ่านหรือเพิ่มกุญแจส่วนตัวด้านล่าง',
 			'sourceSetup.sshFingerprint' => 'ลายนิ้วมือ SHA256 ของกุญแจโฮสต์ SSH',
 			'sourceSetup.sshFingerprintHelp' => 'ตรวจสอบกับผู้ดูแลเซิร์ฟเวอร์ เรียกใช้ ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub บนเซิร์ฟเวอร์ แล้วใช้ค่า SHA256',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'เว้นว่างไว้เพื่อคงลายนิ้วมือที่ตรึงไว้อยู่ หรือป้อนลายนิ้วมือเซิร์ฟเวอร์ใหม่',
 			'sourceSetup.sshAuthentication' => 'การยืนยันตัวตน SSH ด้วยกุญแจสาธารณะ',
 			'sourceSetup.sshAuthenticationHelp' => 'ไม่บังคับ รองรับการยืนยันตัวตนด้วยรหัสผ่านด้วย',
@@ -9133,8 +9177,6 @@ extension on TranslationsTh {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS ใช้พอร์ต NFS และบริการเมานต์ตามปกติ และ NAS ต้องรองรับ RFC 9289 ต้องใช้ TLS 1.3 ชื่อโฮสต์หรือ IP ต้องตรงกับใบรับรอง AUTH_SYS UID/GID ยังคงมีผลภายในช่องทางที่เข้ารหัส',
 			'sourceSetup.clientCertificate' => 'ใบรับรองไคลเอนต์ (ไม่บังคับ)',
 			'sourceSetup.clientCertificateHelp' => 'ช่วยให้ NAS ยืนยันตัวตนของไคลเอนต์นี้ได้ โดย ID ของ AUTH_SYS ยังขึ้นอยู่กับนโยบายส่วนแบ่งปัน NFS ของ NAS',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'จะใช้ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
 			'sourceSetup.replaceIdentity' => 'แทนที่ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
 			'sourceSetup.chooseIdentity' => 'เลือกข้อมูลประจำตัวไคลเอนต์ PKCS#12',
@@ -9626,6 +9668,8 @@ extension on TranslationsTh {
 			'musicTools.playlistRecipient' => 'ชื่อผู้ใช้ Plex หรืออีเมล',
 			'musicTools.playlistSharingHint' => 'ให้สิทธิ์เข้าถึงเพลย์ลิสต์นี้และเพลงในรายการ ผู้รับอาจต้องตอบรับคำเชิญ',
 			'musicTools.playlistSharingFailed' => 'ไม่สามารถขอสิทธิ์เข้าถึงเพลย์ลิสต์ได้',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex ยอมรับคำขอสิทธิ์เข้าถึงแล้ว',
 			'musicTools.playlistAccessList' => 'สิทธิ์เข้าถึงปัจจุบัน',
 			'musicTools.playlistAccessNone' => 'ยังไม่มีการให้สิทธิ์เข้าถึงเพลย์ลิสต์',
@@ -9647,8 +9691,6 @@ extension on TranslationsTh {
 			'musicTools.continueStation' => 'เล่นสถานีนี้ต่อไป',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',
 			'musicDevices.remembered' => 'อุปกรณ์ที่บันทึกไว้',
 			'musicDevices.forget' => 'ลืมอุปกรณ์',

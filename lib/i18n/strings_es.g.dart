@@ -1837,6 +1837,27 @@ class Translations$startup$es extends Translations$startup$en {
 	@override String get deleteBackup => 'Eliminar copia';
 	@override String get backupDeleted => 'Copia eliminada.';
 	@override String get previousFailureTitle => 'Pleazyng no se inició la última vez';
+	@override String get legacyImportTitle => '¿Importar una biblioteca multimedia existente?';
+	@override String get legacyImportBody => 'Si tienes una base de datos de una instalación anterior de Pleazyng o Plezy, puedes seleccionarla aquí. Pleazyng nunca busca bases de datos ni importa una según el nombre del archivo.';
+	@override String get legacyImportChoose => 'Elegir una base de datos';
+	@override String get legacyImportStartFresh => 'Empezar de cero';
+	@override String get legacyImportPickTitle => 'Elige un archivo de base de datos para previsualizarlo';
+	@override String get legacyImportChecking => 'Se está comprobando una copia temporal del archivo seleccionado. El archivo original no se modificará.';
+	@override String get legacyImportReviewTitle => 'Revisar esta base de datos';
+	@override String legacyImportFile({required Object name}) => 'Archivo: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Tamaño del archivo: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Esquema de la base de datos: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Perfiles: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Conexiones con servidores: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Registros de descargas guardados: ${count}';
+	@override String get legacyImportIdentityWarning => 'La base de datos no tiene un identificador de la aplicación. Su nombre y esquema no permiten saber si procede de Pleazyng o del proyecto original Plezy.';
+	@override String get legacyImportCredentialsWarning => 'Las credenciales del servidor se guardan por separado y no se transferirán. Tendrás que iniciar sesión de nuevo.';
+	@override String get legacyImportPathsWarning => 'Los archivos multimedia descargados no se copian. Es posible que las rutas existentes no funcionen en este dispositivo; puede que tengas que volver a elegir las carpetas de almacenamiento o descargar el contenido otra vez.';
+	@override String get legacyImportBackup => 'El archivo seleccionado permanecerá intacto como copia de respaldo. Esta opción solo aparece cuando Pleazyng no tiene una base de datos; nunca se reemplaza una base de datos existente de Pleazyng.';
+	@override String get legacyImportConfirm => 'Importar esta base de datos';
+	@override String get legacyImportInvalidTitle => 'No se pudo validar este archivo';
+	@override String get legacyImportInvalidBody => 'Pleazyng no pudo verificar que el archivo seleccionado sea una base de datos compatible. No se importó ni modificó nada.';
+	@override String get legacyImportTryAnother => 'Elegir otro archivo';
 }
 
 // Path: licenses
@@ -7381,6 +7402,27 @@ extension on TranslationsEs {
 			'startup.deleteBackup' => 'Eliminar copia',
 			'startup.backupDeleted' => 'Copia eliminada.',
 			'startup.previousFailureTitle' => 'Pleazyng no se inició la última vez',
+			'startup.legacyImportTitle' => '¿Importar una biblioteca multimedia existente?',
+			'startup.legacyImportBody' => 'Si tienes una base de datos de una instalación anterior de Pleazyng o Plezy, puedes seleccionarla aquí. Pleazyng nunca busca bases de datos ni importa una según el nombre del archivo.',
+			'startup.legacyImportChoose' => 'Elegir una base de datos',
+			'startup.legacyImportStartFresh' => 'Empezar de cero',
+			'startup.legacyImportPickTitle' => 'Elige un archivo de base de datos para previsualizarlo',
+			'startup.legacyImportChecking' => 'Se está comprobando una copia temporal del archivo seleccionado. El archivo original no se modificará.',
+			'startup.legacyImportReviewTitle' => 'Revisar esta base de datos',
+			'startup.legacyImportFile' => ({required Object name}) => 'Archivo: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Tamaño del archivo: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Esquema de la base de datos: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Perfiles: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Conexiones con servidores: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Registros de descargas guardados: ${count}',
+			'startup.legacyImportIdentityWarning' => 'La base de datos no tiene un identificador de la aplicación. Su nombre y esquema no permiten saber si procede de Pleazyng o del proyecto original Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'Las credenciales del servidor se guardan por separado y no se transferirán. Tendrás que iniciar sesión de nuevo.',
+			'startup.legacyImportPathsWarning' => 'Los archivos multimedia descargados no se copian. Es posible que las rutas existentes no funcionen en este dispositivo; puede que tengas que volver a elegir las carpetas de almacenamiento o descargar el contenido otra vez.',
+			'startup.legacyImportBackup' => 'El archivo seleccionado permanecerá intacto como copia de respaldo. Esta opción solo aparece cuando Pleazyng no tiene una base de datos; nunca se reemplaza una base de datos existente de Pleazyng.',
+			'startup.legacyImportConfirm' => 'Importar esta base de datos',
+			'startup.legacyImportInvalidTitle' => 'No se pudo validar este archivo',
+			'startup.legacyImportInvalidBody' => 'Pleazyng no pudo verificar que el archivo seleccionado sea una base de datos compatible. No se importó ni modificó nada.',
+			'startup.legacyImportTryAnother' => 'Elegir otro archivo',
 			'licenses.relatedPackages' => 'Paquetes relacionados',
 			'licenses.license' => 'Licencia',
 			'licenses.licenseNumber' => ({required Object number}) => 'Licencia ${number}',
@@ -7719,6 +7761,8 @@ extension on TranslationsEs {
 			'music.visualizerPresetAurora' => 'Aurora',
 			'music.visualizerPresetBloom' => 'Blojo',
 			'music.visualizerPresetOrbitals' => 'Orbitales',
+			_ => null,
+		} ?? switch (path) {
 			'music.visualizerPresetPrism' => 'Prism',
 			'music.visualizerPresetTunnel' => 'Túnel',
 			'music.visualizerPresetTrackMap' => 'Mapa de Track',
@@ -7740,8 +7784,6 @@ extension on TranslationsEs {
 			'music.discography.live' => 'En directo',
 			'music.discography.compilations' => 'Recopilaciones',
 			'music.backTo' => 'Volver a',
-			_ => null,
-		} ?? switch (path) {
 			'music.upNext' => 'A continuación',
 			'watchTogether.title' => 'Ver juntos',
 			'watchTogether.description' => 'Mira contenido sincronizado con amigos y familiares',
@@ -8233,6 +8275,8 @@ extension on TranslationsEs {
 			'externalPlayer.customPlayers' => 'Reproductores personalizados',
 			'externalPlayer.systemDefault' => 'Predeterminado del sistema',
 			'externalPlayer.addCustomPlayer' => 'Añadir reproductor personalizado',
+			_ => null,
+		} ?? switch (path) {
 			'externalPlayer.playerName' => 'Nombre del reproductor',
 			'externalPlayer.playerNameHint' => 'Mi reproductor',
 			'externalPlayer.playerCommand' => 'Comando',
@@ -8254,8 +8298,6 @@ extension on TranslationsEs {
 			'metadataEdit.basicInfo' => 'Información básica',
 			'metadataEdit.artwork' => 'Imágenes',
 			'metadataEdit.advancedSettings' => 'Ajustes avanzados',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.title' => 'Título',
 			'metadataEdit.sortTitle' => 'Título de ordenación',
 			'metadataEdit.originalTitle' => 'Título original',
@@ -8747,6 +8789,8 @@ extension on TranslationsEs {
 			'homeLayout.showThisRowIn' => 'Mostrar esta línea en:',
 			'homeLayout.libraryRecommended' => 'Biblioteca Recomendada',
 			'homeLayout.heroCard' => 'Tarjeta de héroe',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.heroCardDescription' => 'Mostra como una tarjeta de rotación de ancho en lugar de una esquina de carteles.',
 			'homeLayout.heroUnavailableDescription' => 'Sólo está disponible cuando esta línea se resuelva a los títulos reales de una sola colección — con más de una colección seleccionada no hay ningún título para girar.',
 			'homeLayout.librariesSelection' => 'Librerías (deja todas las bibliotecas sin verificación para incluir todas las biblioteas)',
@@ -8768,8 +8812,6 @@ extension on TranslationsEs {
 			'homeLayout.reorderingLocked' => 'Reorganización localizada',
 			'homeLayout.rowsCanBeDragged' => 'Las rayas pueden ser atraídas — tapar el cierre para evitar que',
 			'homeLayout.tapLockToDrag' => 'Toma el cierre para sacar líneas',
-			_ => null,
-		} ?? switch (path) {
 			'homeLayout.customRowLabel' => ({required Object title}) => 'Cálculo: ${title}',
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Ocultar',
@@ -9261,6 +9303,8 @@ extension on TranslationsEs {
 			'audiobook.sortRecent' => 'recientemente abierto',
 			'audiobook.statusFilter' => 'El estado de lectura',
 			'audiobook.statusAll' => 'Todos los libros',
+			_ => null,
+		} ?? switch (path) {
 			'audiobook.statusNew' => 'No comenzó',
 			'audiobook.statusProgress' => 'En el progreso',
 			'audiobook.statusFinished' => 'Finalizado',
@@ -9282,8 +9326,6 @@ extension on TranslationsEs {
 			'sourceSetup.dlnaUnavailable' => 'La detección DLNA no está disponible en esta red. Introduce manualmente la URL de descripción del dispositivo.',
 			'sourceSetup.dlnaSearching' => 'Buscando servidores DLNA en la red local',
 			'sourceSetup.networkSearching' => 'Buscando en la red local…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.dlnaDiscover' => 'Detectar servidores DLNA',
 			'sourceSetup.dlnaHelp' => 'La detección depende de la multidifusión de la red local. Si no aparece ningún servidor, introduce arriba su URL de descripción del dispositivo.',
 			'sourceSetup.dlnaRoot' => 'ID de objeto DLNA; déjalo en blanco para usar la raíz del dispositivo.',
@@ -9775,6 +9817,8 @@ extension on TranslationsEs {
 			'bonusExtras.kind.interview' => 'Entrevistas',
 			'bonusExtras.kind.deletedScene' => 'Escenas eliminadas',
 			'bonusExtras.kind.bloopers' => 'Tomas falsas',
+			_ => null,
+		} ?? switch (path) {
 			'bonusExtras.kind.commentary' => 'Comentarios',
 			'bonusExtras.kind.trailer' => 'Tráilers',
 			'bonusExtras.kind.analysis' => 'Análisis cinematográfico',
@@ -9796,8 +9840,6 @@ extension on TranslationsEs {
 			'musicExperience.empty' => 'No hay música coincidente. Las funciones sonoras requieren análisis en el servidor.',
 			'musicExperience.unsupported' => 'Este servidor no ofrece análisis sonoro.',
 			'musicExperience.continuation' => 'Seguir con música similar',
-			_ => null,
-		} ?? switch (path) {
 			'musicExperience.shuffleAlbums' => 'Mezclar álbumes',
 			'musicExperience.nextAlbum' => 'Álbum siguiente',
 			'musicExperience.driving' => 'Vista de conducción',

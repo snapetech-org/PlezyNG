@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "sourceSnapshot": "../../lib/i18n/source_snapshot.json",
-  "reviewStatus": "AI-assisted drafts and retained source translations with per-message origins recorded. The 3.0.0 deep-link and playback screen-lock additions include 107 targeted AI corrections; universal media and VLC parity additions use M2M100 drafts, with explicit English fallbacks recorded per message. Traditional Chinese uses OpenCC s2twp. No native-speaker review is claimed. The live audio visualizer status is an assistant-generated short-label draft and has not received native-speaker review. The five Steam audio setting messages are explicit English fallbacks in non-English catalogs until reviewed translations are available; they have not received semantic or native-speaker review. The take/guide comparison label was translated as an assistant-generated draft in 32 base locales; it has not received independent or native-speaker review. The practice-loop count-in label is an assistant-generated draft in 32 base locales; it has not received independent or native-speaker review. K23 karaoke trim and skip controls use explicit English fallbacks until reviewed translations are available; this is not language qualification. The practice-metronome title and guidance are assistant-generated drafts in all 32 non-English base locales; no independent or native-speaker review is claimed.",
+  "reviewStatus": "AI-assisted drafts and retained source translations with per-message origins recorded. The 3.0.0 deep-link and playback screen-lock additions include 107 targeted AI corrections; universal media and VLC parity additions use M2M100 drafts, with explicit English fallbacks recorded per message. Traditional Chinese uses OpenCC s2twp. No native-speaker review is claimed. The live audio visualizer status is an assistant-generated short-label draft and has not received native-speaker review. The five Steam audio setting messages are explicit English fallbacks in non-English catalogs until reviewed translations are available; they have not received semantic or native-speaker review. The take/guide comparison label was translated as an assistant-generated draft in 32 base locales; it has not received independent or native-speaker review. The practice-loop count-in label is an assistant-generated draft in 32 base locales; it has not received independent or native-speaker review. K23 karaoke trim and skip controls use explicit English fallbacks until reviewed translations are available; this is not language qualification. The practice-metronome title and guidance are assistant-generated drafts in all 32 non-English base locales; no independent or native-speaker review is claimed.\n\nAI-assisted drafts and retained source translations with per-message origins recorded. The 3.0.0 deep-link and playback screen-lock additions include 107 targeted AI corrections; universal media and VLC parity additions use M2M100 drafts, with explicit English fallbacks recorded per message. Traditional Chinese uses OpenCC s2twp. No native-speaker review is claimed. The live audio visualizer status is an assistant-generated short-label draft and has not received native-speaker review. The five Steam audio setting messages are explicit English fallbacks in non-English catalogs until reviewed translations are available; they have not received semantic or native-speaker review. The take/guide comparison label was translated as an assistant-generated draft in 32 base locales; it has not received independent or native-speaker review. The practice-loop count-in label is an assistant-generated draft in 32 base locales; it has not received independent or native-speaker review. K23 karaoke trim and skip controls use explicit English fallbacks until reviewed translations are available; this is not language qualification. The first-run legacy desktop database import adds 21 assistant-generated drafts in 32 non-English base locales; regional catalogs inherit normally. These drafts have not received independent or native-speaker review.",
   "locales": {
     "ar": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "1eeb4db06fd3609d28813e46e61e9e470bc724ebb99a0e0b3c763ab202fb130b",
+      "catalogSha256": "83ac0806e49734eea732238ada7d07419aa1e98a710b8391cc0d33d51b440da8",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-independently-reviewed-source-translation": 94,
         "ai-authored-self-reviewed-discovery-translation": 41,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 15,
         "independent-ai-qa-correction": 24,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -266,14 +266,14 @@
       "detail": "provenance/ar.json"
     },
     "az": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "88392e3ea24e36826f0120d586c09056ec7418e626905af884d2ba8665785b43",
+      "catalogSha256": "a3bd757437f0328a7f1108c88927a23187f8ef9a5ffcc07156c88ed919727894",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 22,
         "existing": 2234,
         "independent-ai-qa-correction": 34,
@@ -291,14 +291,14 @@
       "detail": "provenance/az.json"
     },
     "bg": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "1a7785d7d1e20b4caea5ef2ec501d126a652df5b61287bdb8b410b8e3aa34166",
+      "catalogSha256": "9a060f4a0dca144d47ff73d88f16ad366c4ce4d50f71524a28719dc946de7a60",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2233,
         "independent-ai-qa-correction": 22,
@@ -316,14 +316,14 @@
       "detail": "provenance/bg.json"
     },
     "bn": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "d42b871f1007b25bc6fd30a5dbe53adea9be68212ca8c9514d3efd7b239a19f7",
+      "catalogSha256": "09868008427791b0845c5c88a8fd3ad015f01f2d449836c8962450c90b029a4e",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-independently-reviewed-source-translation": 94,
         "ai-authored-self-reviewed-discovery-translation": 41,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 16,
         "independent-ai-qa-correction": 61,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -409,14 +409,14 @@
       "detail": "provenance/bn.json"
     },
     "cs": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "ea38f7b175803f4014e74996ab66afee546310afab4c549e039b632d23a89a24",
+      "catalogSha256": "9b34899b89b102bba93ddf9b34cbb50121de808cb412c240669a7dc329c30657",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "independent-ai-qa-correction": 49,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -662,14 +662,14 @@
       "detail": "provenance/cs.json"
     },
     "da": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "1920f5f82e02be5cd54fd8adabe1e46a4cffe352c750b62afbd78e4e0db66901",
+      "catalogSha256": "41d510ea14d08f69b0b39046bb4546348d53014c08d0734099cf13d6b651312d",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2233,
         "independent-ai-qa-correction": 22,
@@ -687,14 +687,14 @@
       "detail": "provenance/da.json"
     },
     "de": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "e02d286ced6974982e23a03d12dbee7ae8bba6434b81d9f77440114d90c2fdbe",
+      "catalogSha256": "43d969c99e578257f7704d3afd33df75d63690f7f9247cccfec1446260917e3b",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 15,
         "existing": 2233,
         "independent-ai-qa-correction": 20,
@@ -712,24 +712,24 @@
       "detail": "provenance/de.json"
     },
     "en": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3674,
       "inherits": null,
-      "catalogSha256": "45d3f116b643b7443be287d24d7baed4b10e8d7c973c979f2e82b2ba53247f43",
+      "catalogSha256": "6df900b9912d2b8eeccca844a6eaf7ccc77915cb5b228ef673c750c71011f9d4",
       "sourceCounts": {
         "source-ai-qa-correction": 1,
-        "source-english": 3647
+        "source-english": 3673
       },
       "detail": "provenance/en.json"
     },
     "es": {
-      "messagesInFile": 3746,
+      "messagesInFile": 3767,
       "inherits": null,
-      "catalogSha256": "8c9422c115e78732a8190863d9db00edaba6d4dac4e2c21520f62c6f9d5cc419",
+      "catalogSha256": "0ef71b983ea29800707d893a09e8be0323778e0e8f9b8ef0c06b1338ed25be7a",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "assistant-semantic-review-2026-11-09": 100,
         "english-fallback": 14,
         "existing": 2234,
@@ -994,14 +994,14 @@
       "detail": "provenance/es-419.json"
     },
     "fa": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "670de9ff45ea00f47b6980c2657158115280a17f75400fd8a605ed03667476e1",
+      "catalogSha256": "7557c051fa82e443a5478cd81a11324532446bcc6a9a4796b1d6c3f2b775ccce",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-independently-reviewed-source-translation": 94,
         "ai-authored-self-reviewed-discovery-translation": 41,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 16,
         "independent-ai-qa-correction": 58,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -1239,14 +1239,14 @@
       "detail": "provenance/fa.json"
     },
     "fr": {
-      "messagesInFile": 3673,
+      "messagesInFile": 3694,
       "inherits": null,
-      "catalogSha256": "a9cdd02897633b4ca71ee5d27f06da9ad9c5955ec20838428a9016f5e177fde9",
+      "catalogSha256": "9a41616d47603db5ff52cf643a6f7ec01b2dde97292ade33636a23f07f4979f8",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "assistant-semantic-review-2026-11-09": 27,
         "english-fallback": 14,
         "existing": 2234,
@@ -1499,14 +1499,14 @@
       "detail": "provenance/fr-CA.json"
     },
     "he": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "363dd24695b4decf7938d69e646cab44973d2c29855bbbaae7a6e50c833a146f",
+      "catalogSha256": "4a8a9e4fa864141b49dd0d51319bf92656bbc5ae30f3f517bfa074e0a0017eb8",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-independently-reviewed-source-translation": 94,
         "ai-authored-self-reviewed-discovery-translation": 41,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 15,
         "independent-ai-qa-correction": 67,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -1760,14 +1760,14 @@
       "detail": "provenance/he.json"
     },
     "hi": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "67fb17294d27bff9262ae568019c8e4ac8ebeb2fe9987c97beb608ec3568bcdd",
+      "catalogSha256": "0d0028278bf37855dd1205b73edc55907e8d6172debc5212fc18c99a7d6a1038",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-independently-reviewed-source-translation": 94,
         "ai-authored-self-reviewed-discovery-translation": 41,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 15,
         "independent-ai-qa-correction": 43,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -1840,14 +1840,14 @@
       "detail": "provenance/hi.json"
     },
     "hu": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "aaba7ddc31d0a1f0d502184421fc0b5d1495a4d3582b86221d354dc66d8373f5",
+      "catalogSha256": "f9081b0ed85b4ee1bcc42416fd1297e503ab05dccfa1a8c093f4da02eb1ee0f0",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2234,
         "independent-ai-qa-correction": 19,
@@ -1865,14 +1865,14 @@
       "detail": "provenance/hu.json"
     },
     "id": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "816b01617e42b31c3573f285d258f4fae8719f8b89d8a7c94e2068e704c55226",
+      "catalogSha256": "b0cb40e962a9bea33137683259e46940966dd74a6e21a21b8913ca1695a94e79",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "independent-ai-qa-correction": 45,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -2105,14 +2105,14 @@
       "detail": "provenance/id.json"
     },
     "it": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "0a1c425971224c2be7d0ba28e014acae00da0280931d7cbe757de3632d4b2d0b",
+      "catalogSha256": "db1f9c200d7432627dcdc918fb1b485cc8e03ff2ca0cfb1082d7b45d9f5bdeb5",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2233,
         "independent-ai-integration-qa-correction": 71,
@@ -2131,14 +2131,14 @@
       "detail": "provenance/it.json"
     },
     "ja": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "8fb736389a26925b9e0cd3cb4f73540abd48da82fd4f71dd302577f929ec92c1",
+      "catalogSha256": "78a15ec292b92238bd2224f17899806ab213698a6698320603a0f7397b6dd521",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-independently-reviewed-source-translation": 94,
         "ai-authored-self-reviewed-discovery-translation": 41,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 17,
         "existing": 2231,
         "independent-ai-integration-qa-correction": 1,
@@ -2157,14 +2157,14 @@
       "detail": "provenance/ja.json"
     },
     "kk": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "a1dc7af1e8b5dc60293cb0b03e357eb0fcc1cdee15696b58dc828e3cabd5bbc5",
+      "catalogSha256": "7a950c958515bbe76f83553af1d1a80e6b0e236a38ecd3bdeb1626705ce0ecd4",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 34,
         "existing": 2231,
         "independent-ai-integration-qa-correction": 1,
@@ -2183,14 +2183,14 @@
       "detail": "provenance/kk.json"
     },
     "ko": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "e74fba27785d4a6f354db2008d2df3c95db0da0dca9ee7497bc2db3202f5ba35",
+      "catalogSha256": "281d93763a6cf9439a511b688dd12755de4e31fd304d183099d8be2262e869a4",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-independently-reviewed-source-translation": 94,
         "ai-authored-self-reviewed-discovery-translation": 41,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 16,
         "existing": 2231,
         "independent-ai-qa-correction": 53,
@@ -2208,14 +2208,14 @@
       "detail": "provenance/ko.json"
     },
     "ms": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "82f036260a3fe59e4a9000fd9b113f293e266abb53165c3a8fdf1768b2167261",
+      "catalogSha256": "9273fc417e16afa7f676c2320f2c0bdd2ea4afafd3dd4a400ea5e18cb352fd33",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "independent-ai-qa-correction": 51,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -2303,14 +2303,14 @@
       "detail": "provenance/ms.json"
     },
     "nb": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "d1a3cbe962b98f1b9e87dcd21d0c1bda1b414a6553ab232783a549a66ce6c0a9",
+      "catalogSha256": "9c74813f5aa4b3fb94c737765b4a0e3731403f46251c3e70054fb546b2b4afba",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2234,
         "independent-ai-qa-correction": 20,
@@ -2328,14 +2328,14 @@
       "detail": "provenance/nb.json"
     },
     "nl": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "a26424ba81907606afb1d562219f65ca47aac834d14c29e4ebf2a0e2c942177d",
+      "catalogSha256": "bbf6d980ff17e516984174fec5ab19362529f8fee80951252ae013d546a5a402",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 15,
         "existing": 2234,
         "independent-ai-qa-correction": 19,
@@ -2353,14 +2353,14 @@
       "detail": "provenance/nl.json"
     },
     "pl": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "0e423fb62cb7d9d2eb6492156c018341d813b71542f916d584b8087ce7a3532c",
+      "catalogSha256": "acffea0bc9808494cdefd49722fa38a5f7c79f845fb53a5dbbd071b4e6056d50",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2234,
         "independent-ai-qa-correction": 20,
@@ -2378,14 +2378,14 @@
       "detail": "provenance/pl.json"
     },
     "pt": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "eb3a0cf96f3309bef48193e31794d1f57412ff500e439f4c18d79e179286a109",
+      "catalogSha256": "70ccab1a130d63cb1119fef720a3f1770a99ce8db8c2333432b184999d07c04d",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2234,
         "independent-ai-qa-correction": 20,
@@ -2904,14 +2904,14 @@
       "detail": "provenance/pt-PT.json"
     },
     "ru": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "4ff4106b4fd4eb7a4908a6cd0f029ece4bd3fa4f06bcc08c593063353873edce",
+      "catalogSha256": "28449999dbd704f8c847a429463005526cf2af163ff6e2bf61f9430b362e55a0",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 15,
         "existing": 2234,
         "independent-ai-qa-correction": 18,
@@ -2929,14 +2929,14 @@
       "detail": "provenance/ru.json"
     },
     "sv": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "077d0806d111889e0c68992654409bb22557b24b4be5054fe2c02ed9d9e9e009",
+      "catalogSha256": "2dbf554e66ad2e68934da32604cff7b82a6e6afb80c35d3fd3a75c615b971aad",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2234,
         "independent-ai-qa-correction": 18,
@@ -2954,14 +2954,14 @@
       "detail": "provenance/sv.json"
     },
     "th": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "b6f77e4cf2a0d6ad20e43881b7764721ecadee77b07848303bcc2d4c03a77bde",
+      "catalogSha256": "1b26820a8199cd287dfdea69f72b4f98c78655a5012813632cf91e02dc737a6c",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 5,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "independent-ai-integration-qa-correction": 1,
         "independent-ai-qa-correction": 57,
@@ -3068,14 +3068,14 @@
       "detail": "provenance/th.json"
     },
     "tr": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "8957143e85abcaae8befb822733efa1c8f2110c3a0bc26a6aa5a5b2f917f0d04",
+      "catalogSha256": "507f877e3bd2a19cf93f32f2edde9461b0a1e80c3a35977b38cae7e9049aee3e",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 15,
         "existing": 2234,
         "independent-ai-qa-correction": 20,
@@ -3093,14 +3093,14 @@
       "detail": "provenance/tr.json"
     },
     "uk": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "f4a9f9885ecd0ec71e52b707ff73b1bb93199d5d31690546f81b4074176b5f4b",
+      "catalogSha256": "cc27af8c77b6cda09fc16c9bd01c083668834a601a740521ef6b1c39409ee690",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 15,
         "independent-ai-qa-correction": 55,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -3357,14 +3357,14 @@
       "detail": "provenance/uk.json"
     },
     "uz": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "860e13e1a58d8081c700e64c7b101644adafc22eeebb795a3641040cf3b5d5a8",
+      "catalogSha256": "e1495cf7c1e27016519d89842e58d8ec204d7d55af6c2a9e475ce1db7dcdf55c",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 26,
         "existing": 2230,
         "independent-ai-integration-qa-correction": 2,
@@ -3383,14 +3383,14 @@
       "detail": "provenance/uz.json"
     },
     "vi": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "228ba4181088431d1004c0878c7a4e1305bdd632d298758e459b8dbdce7358e1",
+      "catalogSha256": "130845aff656130ab46f7a915d8d89bd62431dcde5e1a8a02ef8383aad17b426",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-self-reviewed-discovery-translation": 41,
         "ai-authored-self-reviewed-source-translation": 94,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "independent-ai-qa-correction": 53,
         "independent-ai-reviewed-main-swipe-hint": 1,
@@ -3644,14 +3644,14 @@
       "detail": "provenance/vi.json"
     },
     "zh": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "b849caca481bad841c9ca8df4b96673f7446cc4c2a6716fad237928f4dd30d01",
+      "catalogSha256": "77004f5c243065d200fa04dd4296dad94efdbdae695242769d6c16102af4fc2b",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-independently-reviewed-source-translation": 94,
         "ai-authored-self-reviewed-discovery-translation": 41,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2231,
         "independent-ai-integration-qa-correction": 3,
@@ -3670,14 +3670,14 @@
       "detail": "provenance/zh.json"
     },
     "zh-Hant": {
-      "messagesInFile": 3648,
+      "messagesInFile": 3669,
       "inherits": null,
-      "catalogSha256": "885730af9684f6d7892afb15bee8eafd66c2e68c0fece020373764bb46a8bec3",
+      "catalogSha256": "41d4e70812a478c2e4ad40e2eba46e2cb4f1a61c752c0581ce9a7a5a9751cb41",
       "sourceCounts": {
         "ai-authored-independently-reviewed-smb-translation": 6,
         "ai-authored-independently-reviewed-source-translation": 94,
         "ai-authored-self-reviewed-discovery-translation": 41,
-        "assistant-generated-draft": 3,
+        "assistant-generated-draft": 24,
         "english-fallback": 14,
         "existing": 2231,
         "independent-ai-integration-qa-correction": 3,

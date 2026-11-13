@@ -1830,6 +1830,27 @@ class _Translations$startup$hi extends Translations$startup$en {
 	@override String get deleteBackup => 'कॉपी हटाएँ';
 	@override String get backupDeleted => 'कॉपी हटा दी गई है।';
 	@override String get previousFailureTitle => 'Pleazyng पिछली बार शुरू करने में विफल';
+	@override String get legacyImportTitle => 'मौजूदा मीडिया लाइब्रेरी आयात करें?';
+	@override String get legacyImportBody => 'अगर आपके पास पिछले Pleazyng या Plezy इंस्टॉलेशन का डेटाबेस है, तो आप उसे यहाँ चुन सकते हैं। Pleazyng कभी डेटाबेस खोजता नहीं है और फ़ाइल के नाम के आधार पर उसे आयात नहीं करता।';
+	@override String get legacyImportChoose => 'डेटाबेस चुनें';
+	@override String get legacyImportStartFresh => 'नई शुरुआत करें';
+	@override String get legacyImportPickTitle => 'पूर्वावलोकन के लिए डेटाबेस फ़ाइल चुनें';
+	@override String get legacyImportChecking => 'चुनी गई फ़ाइल की अस्थायी कॉपी जाँची जा रही है। आपकी मूल फ़ाइल नहीं बदली जाएगी।';
+	@override String get legacyImportReviewTitle => 'इस डेटाबेस की समीक्षा करें';
+	@override String legacyImportFile({required Object name}) => 'फ़ाइल: ${name}';
+	@override String legacyImportSize({required Object size}) => 'फ़ाइल का आकार: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'डेटाबेस स्कीमा: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'प्रोफ़ाइल: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'सर्वर कनेक्शन: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'सहेजे गए डाउनलोड रिकॉर्ड: ${count}';
+	@override String get legacyImportIdentityWarning => 'डेटाबेस में ऐप की पहचान का कोई चिह्न नहीं है। नाम और स्कीमा से यह पता नहीं चलता कि यह Pleazyng से आया है या upstream Plezy से।';
+	@override String get legacyImportCredentialsWarning => 'सर्वर के साइन-इन विवरण अलग से रखे जाते हैं और स्थानांतरित नहीं होंगे। आपको फिर से साइन इन करना होगा।';
+	@override String get legacyImportPathsWarning => 'डाउनलोड की गई मीडिया फ़ाइलें कॉपी नहीं होतीं। इस डिवाइस पर मौजूदा पथ काम न करें; आपको स्टोरेज फ़ोल्डर फिर से चुनने या मीडिया दोबारा डाउनलोड करने की ज़रूरत पड़ सकती है।';
+	@override String get legacyImportBackup => 'चुनी गई फ़ाइल वापसी के लिए बिना बदलाव के सुरक्षित रहेगी। यह विकल्प तभी दिखता है जब Pleazyng का डेटाबेस मौजूद न हो; पहले से मौजूद Pleazyng डेटाबेस कभी बदला नहीं जाता।';
+	@override String get legacyImportConfirm => 'यह डेटाबेस आयात करें';
+	@override String get legacyImportInvalidTitle => 'इस फ़ाइल की पुष्टि नहीं हो सकी';
+	@override String get legacyImportInvalidBody => 'Pleazyng यह सत्यापित नहीं कर सका कि चुनी गई फ़ाइल समर्थित डेटाबेस है। कुछ भी आयात या बदला नहीं गया।';
+	@override String get legacyImportTryAnother => 'दूसरी फ़ाइल चुनें';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsHi {
 			'startup.deleteBackup' => 'कॉपी हटाएँ',
 			'startup.backupDeleted' => 'कॉपी हटा दी गई है।',
 			'startup.previousFailureTitle' => 'Pleazyng पिछली बार शुरू करने में विफल',
+			'startup.legacyImportTitle' => 'मौजूदा मीडिया लाइब्रेरी आयात करें?',
+			'startup.legacyImportBody' => 'अगर आपके पास पिछले Pleazyng या Plezy इंस्टॉलेशन का डेटाबेस है, तो आप उसे यहाँ चुन सकते हैं। Pleazyng कभी डेटाबेस खोजता नहीं है और फ़ाइल के नाम के आधार पर उसे आयात नहीं करता।',
+			'startup.legacyImportChoose' => 'डेटाबेस चुनें',
+			'startup.legacyImportStartFresh' => 'नई शुरुआत करें',
+			'startup.legacyImportPickTitle' => 'पूर्वावलोकन के लिए डेटाबेस फ़ाइल चुनें',
+			'startup.legacyImportChecking' => 'चुनी गई फ़ाइल की अस्थायी कॉपी जाँची जा रही है। आपकी मूल फ़ाइल नहीं बदली जाएगी।',
+			'startup.legacyImportReviewTitle' => 'इस डेटाबेस की समीक्षा करें',
+			'startup.legacyImportFile' => ({required Object name}) => 'फ़ाइल: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'फ़ाइल का आकार: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'डेटाबेस स्कीमा: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'प्रोफ़ाइल: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'सर्वर कनेक्शन: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'सहेजे गए डाउनलोड रिकॉर्ड: ${count}',
+			'startup.legacyImportIdentityWarning' => 'डेटाबेस में ऐप की पहचान का कोई चिह्न नहीं है। नाम और स्कीमा से यह पता नहीं चलता कि यह Pleazyng से आया है या upstream Plezy से।',
+			'startup.legacyImportCredentialsWarning' => 'सर्वर के साइन-इन विवरण अलग से रखे जाते हैं और स्थानांतरित नहीं होंगे। आपको फिर से साइन इन करना होगा।',
+			'startup.legacyImportPathsWarning' => 'डाउनलोड की गई मीडिया फ़ाइलें कॉपी नहीं होतीं। इस डिवाइस पर मौजूदा पथ काम न करें; आपको स्टोरेज फ़ोल्डर फिर से चुनने या मीडिया दोबारा डाउनलोड करने की ज़रूरत पड़ सकती है।',
+			'startup.legacyImportBackup' => 'चुनी गई फ़ाइल वापसी के लिए बिना बदलाव के सुरक्षित रहेगी। यह विकल्प तभी दिखता है जब Pleazyng का डेटाबेस मौजूद न हो; पहले से मौजूद Pleazyng डेटाबेस कभी बदला नहीं जाता।',
+			'startup.legacyImportConfirm' => 'यह डेटाबेस आयात करें',
+			'startup.legacyImportInvalidTitle' => 'इस फ़ाइल की पुष्टि नहीं हो सकी',
+			'startup.legacyImportInvalidBody' => 'Pleazyng यह सत्यापित नहीं कर सका कि चुनी गई फ़ाइल समर्थित डेटाबेस है। कुछ भी आयात या बदला नहीं गया।',
+			'startup.legacyImportTryAnother' => 'दूसरी फ़ाइल चुनें',
 			'licenses.relatedPackages' => 'संबंधित पैकेज',
 			'licenses.license' => 'अनुमति',
 			'licenses.licenseNumber' => ({required Object number}) => 'लाइसेंस ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsHi {
 			'music.noAudioUrl' => ({required Object track}) => 'कोई ऑडियो URL उपलब्ध नहीं है ${track} के लिए',
 			'music.discography.singlesAndEps' => 'सींग्स & EPs',
 			'music.discography.live' => 'जीवित',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'संकलित',
 			'music.backTo' => 'वापस जाएँ',
 			'music.upNext' => 'इसके बाद',
@@ -7616,8 +7660,6 @@ extension on TranslationsHi {
 			'watchTogether.paste' => 'पास्ता',
 			'watchTogether.noCodeInClipboard' => 'क्लिपबोर्ड में कोई कमरे कोड नहीं है',
 			'watchTogether.copyCode' => 'कॉपी कोड',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'कमरे का कोड कॉपी',
 			'watchTogether.shareInvite' => 'आमंत्रण साझा',
 			'watchTogether.inviteCopied' => 'इसे कॉपी करें. इसे एक संदेश में डालें.',
@@ -8109,6 +8151,8 @@ extension on TranslationsHi {
 			'metadataEdit.editMetadata' => 'संपादित करें...',
 			'metadataEdit.screenTitle' => 'मेटाडेटा संपादन',
 			'metadataEdit.basicInfo' => 'बुनियादी जानकारी',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'कला कार्य',
 			'metadataEdit.advancedSettings' => 'उन्नत सेटिंग्स',
 			'metadataEdit.title' => 'शीर्षक',
@@ -8130,8 +8174,6 @@ extension on TranslationsHi {
 			'metadataEdit.fromUrl' => 'URL से',
 			'metadataEdit.uploadFile' => 'फ़ाइल अपलोड करें',
 			'metadataEdit.enterImageUrl' => 'इमेज URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'इमेज URL',
 			'metadataEdit.metadataUpdated' => 'मेटाडेटा अपडेट',
 			'metadataEdit.metadataUpdateFailed' => 'मेटाडेटा अपडेट करने में असफल',
@@ -8623,6 +8665,8 @@ extension on TranslationsHi {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'छिपाना',
 			'homeLayout.remove' => 'हटाना',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'इस पुस्तकालय की पुनरावृत्ति',
 			'homeLayout.pressAgainToDelete' => 'इसे हटाने के लिए फिर से दबाएं',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsHi {
 			'universalMedia.files' => 'डिवाइस फ़ाइल',
 			'universalMedia.favorites' => 'बचाए गए स्ट्रीम पसंदीदा',
 			'universalMedia.address' => 'मीडिया संदेश',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'मान्यता प्राप्त क्रेडिट या हस्ताक्षर पैरामीटर वाले URL का उपयोग केवल इस सत्र के लिए किया जाता है और पसंदीदा के रूप में संग्रहीत नहीं किया जा सकता है।',
 			'universalMedia.displayName' => 'डिस्प्ले नाम (वैकल्पिक)',
 			'universalMedia.displayNameHelp' => 'प्लेयर और सिस्टम मीडिया नियंत्रण के लिए एक संक्षिप्त नाम चुनें।',
@@ -9137,6 +9179,8 @@ extension on TranslationsHi {
 			'sourceSetup.passwordOrKey' => 'पासवर्ड दर्ज करें या नीचे निजी कुंजी जोड़ें।',
 			'sourceSetup.sshFingerprint' => 'SSH होस्ट कुंजी का SHA256 फ़िंगरप्रिंट',
 			'sourceSetup.sshFingerprintHelp' => 'सर्वर व्यवस्थापक से इसकी पुष्टि करें। सर्वर पर ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub चलाएँ और उससे मिलने वाला SHA256 मान इस्तेमाल करें।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'मौजूदा पिन किया गया फ़िंगरप्रिंट रखने के लिए खाली छोड़ें, या सर्वर का नया फ़िंगरप्रिंट दर्ज करें।',
 			'sourceSetup.sshAuthentication' => 'SSH सार्वजनिक कुंजी से प्रमाणीकरण',
 			'sourceSetup.sshAuthenticationHelp' => 'वैकल्पिक; पासवर्ड से प्रमाणीकरण भी समर्थित है।',
@@ -9158,8 +9202,6 @@ extension on TranslationsHi {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS सामान्य NFS और माउंट सेवा पोर्ट इस्तेमाल करता है और NAS में RFC 9289 का समर्थन होना ज़रूरी है। TLS 1.3 अनिवार्य है। होस्ट का नाम या IP प्रमाणपत्र से मेल खाना चाहिए। एन्क्रिप्टेड चैनल में भी AUTH_SYS UID/GID लागू रहते हैं।',
 			'sourceSetup.clientCertificate' => 'क्लाइंट प्रमाणपत्र (वैकल्पिक)',
 			'sourceSetup.clientCertificateHelp' => 'NAS को इस क्लाइंट की पहचान सत्यापित करने देता है; AUTH_SYS ID अब भी NAS की एक्सपोर्ट नीति पर निर्भर रहते हैं।',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'सहेजी गई क्लाइंट पहचान इस्तेमाल की जाएगी।',
 			'sourceSetup.replaceIdentity' => 'सहेजी गई क्लाइंट पहचान बदलें',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 क्लाइंट पहचान चुनें',
@@ -9651,6 +9693,8 @@ extension on TranslationsHi {
 			'musicTools.playlistRecipient' => 'Plex उपयोगकर्ता नाम या ईमेल',
 			'musicTools.playlistSharingHint' => 'इस प्लेलिस्ट और इसके ट्रैक का ऐक्सेस दें। प्राप्तकर्ता को निमंत्रण स्वीकार करना पड़ सकता है।',
 			'musicTools.playlistSharingFailed' => 'प्लेलिस्ट के ऐक्सेस का अनुरोध नहीं किया जा सका।',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex ने ऐक्सेस अनुरोध स्वीकार कर लिया।',
 			'musicTools.playlistAccessList' => 'मौजूदा ऐक्सेस',
 			'musicTools.playlistAccessNone' => 'प्लेलिस्ट का ऐक्सेस किसी को नहीं दिया गया',
@@ -9672,8 +9716,6 @@ extension on TranslationsHi {
 			'musicTools.continueStation' => 'इस स्टेशन को चलाते रहें',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',
 			'musicDevices.remembered' => 'सहेजे गए डिवाइस',
 			'musicDevices.forget' => 'डिवाइस भूलें',

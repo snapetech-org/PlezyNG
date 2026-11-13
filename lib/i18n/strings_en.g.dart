@@ -22573,13 +22573,13 @@ extension on Translations {
 			'subtitleAiUi.savedAnUndoCheckpointToThisDeviceForThisItem' => 'Saved an undo checkpoint to this device for this item.',
 			'subtitleAiUi.couldNotSaveAnUndoCheckpointTheAccep_6f1c79d5' => ({required Object error}) => 'Could not save an undo checkpoint; the accepted revision remains available: ${error}',
 			'subtitleAiUi.attachedReviewedRevisionFrom' => ({required Object revisionDate}) => 'Attached reviewed revision from ${revisionDate}.',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.exportReviewedSubtitleRevision' => 'Export reviewed subtitle revision',
 			'subtitleAiUi.reviewedSubtitleRevisionExportedAsSRT' => 'Reviewed subtitle revision exported as SRT.',
 			'subtitleAiUi.revisionHistoryNeedsAStableProfileAndMediaItem' => 'Revision history needs a stable profile and media item.',
 			'subtitleAiUi.subtitleRevisionHistory' => 'Subtitle revision history',
 			'subtitleAiUi.noReviewedRevisionsHaveBeenSavedForThisItemYet' => 'No reviewed revisions have been saved for this item yet.',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.cues' => ({required Object revisionDate, required Object revisionCueCount, required Object language}) => '${revisionDate} · ${revisionCueCount} cues${language}',
 			'subtitleAiUi.tokenDerivedTimingSpansRetained' => ({required Object revisionWordtimingCount}) => '${revisionWordtimingCount} token-derived timing spans retained',
 			'subtitleAiUi.export' => 'Export',
@@ -22596,8 +22596,6 @@ extension on Translations {
 			'subtitleAiUi.saveCue' => 'Save cue',
 			'subtitleAiUi.editAllCues' => ({required Object cuesCueCount}) => 'Edit all ${cuesCueCount} cues',
 			'subtitleAiUi.reviewOrEditAnyOutputCueChangesStayI_26d3610b' => 'Review or edit any output cue. Changes stay in this result until you attach it.',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.findInSourceOrOutputCues' => 'Find in source or output cues',
 			'subtitleAiUi.showingOfCues' => ({required Object visibleIndexesVisibleindexCount, required Object cuesCueCount}) => 'Showing ${visibleIndexesVisibleindexCount} of ${cuesCueCount} cues.',
 			'subtitleAiUi.noCuesMatchThisSearch' => 'No cues match this search.',
@@ -23089,13 +23087,13 @@ extension on Translations {
 			'karaokeUi.quizInterludes' => 'Quiz interludes',
 			'karaokeUi.addQuestion' => 'Add question',
 			'karaokeUi.closeAndRevealAnswer' => 'Close and reveal answer',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.returnToSingerRotation' => 'Return to singer rotation',
 			'karaokeUi.askPhones' => 'Ask phones',
 			'karaokeUi.recentPrivateScores' => 'Recent private scores',
 			'karaokeUi.keyTempo' => ({required Object value1, required Object value2, required Object value3, required Object value4}) => '${value1} · ${value2} · key ${value3} · tempo ${value4}',
 			'karaokeUi.preparationCompanion' => 'Preparation companion',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.',
 			'karaokeUi.companionURL' => 'Companion URL',
 			'karaokeUi.confirmDeleteShowTemplate' => ({required Object value1}) => 'Delete the show template ‘${value1}’?',
@@ -23112,8 +23110,6 @@ extension on Translations {
 			'karaokeUi.part' => ({required Object value1}) => 'Part ${value1}',
 			'karaokeUi.queueAssignedSingers' => 'Queue assigned singers',
 			'karaokeUi.roomConnection' => 'Room connection',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.configureHTTPS' => 'Configure HTTPS',
 			'karaokeUi.selectTrustedPEMCertificate' => 'Select trusted PEM certificate',
 			'karaokeUi.selectPrivatePEMKey' => 'Select private PEM key',

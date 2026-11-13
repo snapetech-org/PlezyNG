@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27",
+  "updated": "2026-11-13",
   "upstream": {
     "repository": "jellyfin/jellyfin-web",
     "license": "GPL-2.0-or-later",
@@ -269,6 +269,70 @@
         "traditionalChinese": "M2M100 zh draft converted with OpenCC s2twp",
         "translationOrigin": "m2m100-draft",
         "nativeSpeakerReviewed": false
+      },
+      {
+        "scope": "Legacy desktop database import onboarding",
+        "messagesPerBaseLocale": 21,
+        "baseLocales": 32,
+        "keys": [
+          "startup.legacyImportBackup",
+          "startup.legacyImportBody",
+          "startup.legacyImportChecking",
+          "startup.legacyImportChoose",
+          "startup.legacyImportConfirm",
+          "startup.legacyImportConnections",
+          "startup.legacyImportCredentialsWarning",
+          "startup.legacyImportDownloads",
+          "startup.legacyImportFile",
+          "startup.legacyImportIdentityWarning",
+          "startup.legacyImportInvalidBody",
+          "startup.legacyImportInvalidTitle",
+          "startup.legacyImportPathsWarning",
+          "startup.legacyImportPickTitle",
+          "startup.legacyImportProfiles",
+          "startup.legacyImportReviewTitle",
+          "startup.legacyImportSchemaVersion",
+          "startup.legacyImportSize",
+          "startup.legacyImportStartFresh",
+          "startup.legacyImportTitle",
+          "startup.legacyImportTryAnother"
+        ],
+        "translationOrigin": "assistant-generated-draft",
+        "nativeSpeakerReviewed": false,
+        "regionalCatalogsInherit": {
+          "es-419": "es",
+          "fr-CA": "fr",
+          "pt-BR": "pt",
+          "pt-PT": "pt"
+        },
+        "translationNote": "Assistant-generated drafts; no independent semantic or native-speaker review is claimed."
+      },
+      {
+        "scope": "Practice metronome title and guidance",
+        "messagesPerBaseLocale": 2,
+        "baseLocales": 32,
+        "keys": [
+          "karaokeUi.practiceMetronomeHelp",
+          "karaokeUi.practiceMetronomeTitle"
+        ],
+        "translationOrigin": "assistant-generated-draft",
+        "nativeSpeakerReviewed": false,
+        "translationNote": "Assistant-generated drafts in all 32 non-English base locales; no independent semantic or native-speaker review is claimed."
+      },
+      {
+        "scope": "Saved legacy link converter labels",
+        "messagesPerBaseLocale": 5,
+        "baseLocales": 32,
+        "keys": [
+          "deepLinks.legacyConverterClipboardUnavailable",
+          "deepLinks.legacyConverterDescription",
+          "deepLinks.legacyConverterTitle",
+          "deepLinks.legacyConverterUnsupportedRoute",
+          "deepLinks.legacyConverterUnsupportedScheme"
+        ],
+        "translationOrigin": "english-fallback",
+        "nativeSpeakerReviewed": false,
+        "translationNote": "These labels intentionally use the explicit English fallback until reviewed translations are available."
       }
     ]
   },

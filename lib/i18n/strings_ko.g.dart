@@ -1828,6 +1828,27 @@ class _Translations$startup$ko extends Translations$startup$en {
 	@override String get deleteBackup => '복사본 삭제';
 	@override String get backupDeleted => '복사본이 삭제되었습니다.';
 	@override String get previousFailureTitle => '지난번에 Plezy를 시작하지 못했습니다';
+	@override String get legacyImportTitle => '기존 미디어 라이브러리를 가져올까요?';
+	@override String get legacyImportBody => '이전 Pleazyng 또는 Plezy 설치의 데이터베이스가 있으면 여기에서 선택할 수 있습니다. Pleazyng은 데이터베이스를 검색하거나 파일 이름만으로 가져오지 않습니다.';
+	@override String get legacyImportChoose => '데이터베이스 선택';
+	@override String get legacyImportStartFresh => '새로 시작';
+	@override String get legacyImportPickTitle => '미리 볼 데이터베이스 파일을 선택하세요';
+	@override String get legacyImportChecking => '선택한 파일의 임시 복사본을 확인하고 있습니다. 원본 파일은 변경되지 않습니다.';
+	@override String get legacyImportReviewTitle => '이 데이터베이스 검토';
+	@override String legacyImportFile({required Object name}) => '파일: ${name}';
+	@override String legacyImportSize({required Object size}) => '파일 크기: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => '데이터베이스 스키마: ${version}';
+	@override String legacyImportProfiles({required Object count}) => '프로필: ${count}';
+	@override String legacyImportConnections({required Object count}) => '서버 연결: ${count}';
+	@override String legacyImportDownloads({required Object count}) => '저장된 다운로드 기록: ${count}';
+	@override String get legacyImportIdentityWarning => '이 데이터베이스에는 앱 식별자가 없습니다. 이름과 스키마만으로 Pleazyng에서 왔는지 upstream Plezy에서 왔는지 알 수 없습니다.';
+	@override String get legacyImportCredentialsWarning => '서버 자격 증명은 별도로 저장되므로 이전되지 않습니다. 다시 로그인해야 합니다.';
+	@override String get legacyImportPathsWarning => '다운로드한 미디어 파일은 복사되지 않습니다. 기존 경로가 이 기기에서 작동하지 않을 수 있으므로 저장 폴더를 다시 선택하거나 미디어를 다시 다운로드해야 할 수 있습니다.';
+	@override String get legacyImportBackup => '선택한 파일은 복구용 사본으로 변경 없이 유지됩니다. 이 옵션은 Pleazyng 데이터베이스가 없을 때만 표시되며 기존 Pleazyng 데이터베이스는 교체되지 않습니다.';
+	@override String get legacyImportConfirm => '이 데이터베이스 가져오기';
+	@override String get legacyImportInvalidTitle => '이 파일을 검증할 수 없습니다';
+	@override String get legacyImportInvalidBody => '선택한 파일이 지원되는 데이터베이스인지 확인하지 못했습니다. 가져오거나 변경한 내용은 없습니다.';
+	@override String get legacyImportTryAnother => '다른 파일 선택';
 }
 
 // Path: licenses
@@ -7233,6 +7254,27 @@ extension on TranslationsKo {
 			'startup.deleteBackup' => '복사본 삭제',
 			'startup.backupDeleted' => '복사본이 삭제되었습니다.',
 			'startup.previousFailureTitle' => '지난번에 Plezy를 시작하지 못했습니다',
+			'startup.legacyImportTitle' => '기존 미디어 라이브러리를 가져올까요?',
+			'startup.legacyImportBody' => '이전 Pleazyng 또는 Plezy 설치의 데이터베이스가 있으면 여기에서 선택할 수 있습니다. Pleazyng은 데이터베이스를 검색하거나 파일 이름만으로 가져오지 않습니다.',
+			'startup.legacyImportChoose' => '데이터베이스 선택',
+			'startup.legacyImportStartFresh' => '새로 시작',
+			'startup.legacyImportPickTitle' => '미리 볼 데이터베이스 파일을 선택하세요',
+			'startup.legacyImportChecking' => '선택한 파일의 임시 복사본을 확인하고 있습니다. 원본 파일은 변경되지 않습니다.',
+			'startup.legacyImportReviewTitle' => '이 데이터베이스 검토',
+			'startup.legacyImportFile' => ({required Object name}) => '파일: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => '파일 크기: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => '데이터베이스 스키마: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => '프로필: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => '서버 연결: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => '저장된 다운로드 기록: ${count}',
+			'startup.legacyImportIdentityWarning' => '이 데이터베이스에는 앱 식별자가 없습니다. 이름과 스키마만으로 Pleazyng에서 왔는지 upstream Plezy에서 왔는지 알 수 없습니다.',
+			'startup.legacyImportCredentialsWarning' => '서버 자격 증명은 별도로 저장되므로 이전되지 않습니다. 다시 로그인해야 합니다.',
+			'startup.legacyImportPathsWarning' => '다운로드한 미디어 파일은 복사되지 않습니다. 기존 경로가 이 기기에서 작동하지 않을 수 있으므로 저장 폴더를 다시 선택하거나 미디어를 다시 다운로드해야 할 수 있습니다.',
+			'startup.legacyImportBackup' => '선택한 파일은 복구용 사본으로 변경 없이 유지됩니다. 이 옵션은 Pleazyng 데이터베이스가 없을 때만 표시되며 기존 Pleazyng 데이터베이스는 교체되지 않습니다.',
+			'startup.legacyImportConfirm' => '이 데이터베이스 가져오기',
+			'startup.legacyImportInvalidTitle' => '이 파일을 검증할 수 없습니다',
+			'startup.legacyImportInvalidBody' => '선택한 파일이 지원되는 데이터베이스인지 확인하지 못했습니다. 가져오거나 변경한 내용은 없습니다.',
+			'startup.legacyImportTryAnother' => '다른 파일 선택',
 			'licenses.relatedPackages' => '관련 소프트웨어 패키지',
 			'licenses.license' => '라이선스',
 			'licenses.licenseNumber' => ({required Object number}) => '라이선스 ${number}',
@@ -7590,6 +7632,8 @@ extension on TranslationsKo {
 			'music.noAudioUrl' => ({required Object track}) => '${track}에 사용할 수 있는 오디오 URL이 없습니다',
 			'music.discography.singlesAndEps' => '싱글 및 EP',
 			'music.discography.live' => '라이브',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => '컴필레이션',
 			'music.backTo' => '이전에 재생한 곡',
 			'music.upNext' => '다음 재생',
@@ -7611,8 +7655,6 @@ extension on TranslationsKo {
 			'watchTogether.paste' => '붙여넣기',
 			'watchTogether.noCodeInClipboard' => '클립보드에 방 코드가 없습니다',
 			'watchTogether.copyCode' => '코드 복사',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => '방 코드가 복사되었습니다',
 			'watchTogether.shareInvite' => '초대 공유',
 			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
@@ -8104,6 +8146,8 @@ extension on TranslationsKo {
 			'metadataEdit.editMetadata' => '편집...',
 			'metadataEdit.screenTitle' => '메타데이터 편집',
 			'metadataEdit.basicInfo' => '기본 정보',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => '아트워크',
 			'metadataEdit.advancedSettings' => '고급 설정',
 			'metadataEdit.title' => '제목',
@@ -8125,8 +8169,6 @@ extension on TranslationsKo {
 			'metadataEdit.fromUrl' => 'URL에서',
 			'metadataEdit.uploadFile' => '파일 업로드',
 			'metadataEdit.enterImageUrl' => '이미지 URL 입력',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => '이미지 URL',
 			'metadataEdit.metadataUpdated' => '메타데이터가 업데이트되었습니다',
 			'metadataEdit.metadataUpdateFailed' => '메타데이터 업데이트 실패',
@@ -8618,6 +8660,8 @@ extension on TranslationsKo {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => '숨기기',
 			'homeLayout.remove' => '제거',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => '이 도서관의 재구성 순서',
 			'homeLayout.pressAgainToDelete' => '다시 눌러 삭제',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8639,8 +8683,6 @@ extension on TranslationsKo {
 			'universalMedia.files' => '장치 파일',
 			'universalMedia.favorites' => '저장된 스트림 좋아하는',
 			'universalMedia.address' => '미디어 주소',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => '인증 또는 서명 매개 변수를 가진 URL은 이 세션에만 사용되며 좋아하는 것으로 저장될 수 없습니다.',
 			'universalMedia.displayName' => '디스플레이 이름 (선택)',
 			'universalMedia.displayNameHelp' => '플레이어 및 시스템 미디어 컨트롤에 대한 짧은 이름을 선택합니다.',
@@ -9132,6 +9174,8 @@ extension on TranslationsKo {
 			'sourceSetup.passwordOrKey' => '비밀번호를 입력하거나 아래에 개인 키를 추가하세요.',
 			'sourceSetup.sshFingerprint' => 'SSH 호스트 키의 SHA256 지문',
 			'sourceSetup.sshFingerprintHelp' => '서버 관리자에게 확인하세요. 서버에서 ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub 명령을 실행하고 표시된 SHA256 값을 사용하세요.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => '현재 고정된 지문을 유지하려면 비워 두세요. 변경하려면 새 서버 지문을 입력하세요.',
 			'sourceSetup.sshAuthentication' => 'SSH 공개 키 인증',
 			'sourceSetup.sshAuthenticationHelp' => '선택 사항입니다. 비밀번호 인증도 지원합니다.',
@@ -9153,8 +9197,6 @@ extension on TranslationsKo {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS는 일반 NFS 및 마운트 서비스 포트를 사용하며, NAS가 RFC 9289를 지원해야 합니다. TLS 1.3이 필수입니다. 호스트 이름 또는 IP가 인증서와 일치해야 합니다. 암호화된 채널에서도 AUTH_SYS UID/GID가 적용됩니다.',
 			'sourceSetup.clientCertificate' => '클라이언트 인증서(선택 사항)',
 			'sourceSetup.clientCertificateHelp' => 'NAS가 이 클라이언트를 인증하도록 합니다. AUTH_SYS ID에는 여전히 NAS 내보내기 정책이 적용됩니다.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => '저장된 클라이언트 인증 정보를 사용합니다.',
 			'sourceSetup.replaceIdentity' => '저장된 클라이언트 인증 정보 교체',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 클라이언트 인증 정보 선택',
@@ -9646,6 +9688,8 @@ extension on TranslationsKo {
 			'musicTools.playlistRecipient' => 'Plex 사용자 이름 또는 이메일',
 			'musicTools.playlistSharingHint' => '이 재생목록과 트랙에 대한 접근을 허용합니다. 수신자가 초대를 수락해야 할 수 있습니다.',
 			'musicTools.playlistSharingFailed' => '재생목록 접근을 요청할 수 없습니다.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex가 접근 요청을 접수했습니다.',
 			'musicTools.playlistAccessList' => '현재 접근 권한',
 			'musicTools.playlistAccessNone' => '부여된 재생목록 접근 권한이 없습니다',
@@ -9667,8 +9711,6 @@ extension on TranslationsKo {
 			'musicTools.continueStation' => '이 스테이션 계속 재생',
 			'musicDevices.playOn' => '재생 기기',
 			'musicDevices.thisDevice' => '이 기기',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',
 			'musicDevices.remembered' => '저장된 기기',
 			'musicDevices.forget' => '기기 삭제',

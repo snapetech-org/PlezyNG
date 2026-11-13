@@ -1830,6 +1830,27 @@ class _Translations$startup$sv extends Translations$startup$en {
 	@override String get deleteBackup => 'Ta bort kopia';
 	@override String get backupDeleted => 'Kopian borttagen.';
 	@override String get previousFailureTitle => 'Pleazyng kunde inte starta förra gången';
+	@override String get legacyImportTitle => 'Importera ett befintligt mediebibliotek?';
+	@override String get legacyImportBody => 'Om du har en databas från en tidigare installation av Pleazyng eller Plezy kan du välja den här. Pleazyng söker aldrig efter databaser och importerar aldrig utifrån filnamnet.';
+	@override String get legacyImportChoose => 'Välj en databas';
+	@override String get legacyImportStartFresh => 'Börja om';
+	@override String get legacyImportPickTitle => 'Välj en databasfil att förhandsgranska';
+	@override String get legacyImportChecking => 'En tillfällig kopia av den valda filen kontrolleras. Originalfilen ändras inte.';
+	@override String get legacyImportReviewTitle => 'Granska den här databasen';
+	@override String legacyImportFile({required Object name}) => 'Fil: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Filstorlek: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Databasschema: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Profiler: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Serveranslutningar: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Sparade nedladdningsposter: ${count}';
+	@override String get legacyImportIdentityWarning => 'Databasen saknar en appidentitetsmarkör. Namnet och schemat visar inte om den kommer från Pleazyng eller uppströmsprojektet Plezy.';
+	@override String get legacyImportCredentialsWarning => 'Serveruppgifter lagras separat och överförs inte. Du måste logga in igen.';
+	@override String get legacyImportPathsWarning => 'Nedladdade mediefiler kopieras inte. Befintliga sökvägar kanske inte fungerar på den här enheten; du kan behöva välja lagringsmappar igen eller ladda ned media på nytt.';
+	@override String get legacyImportBackup => 'Den valda filen lämnas oförändrad som återställningskopia. Alternativet visas bara när Pleazyng saknar en databas; en befintlig Pleazyng-databas ersätts aldrig.';
+	@override String get legacyImportConfirm => 'Importera den här databasen';
+	@override String get legacyImportInvalidTitle => 'Filen kunde inte valideras';
+	@override String get legacyImportInvalidBody => 'Pleazyng kunde inte bekräfta att den valda filen är en databas som stöds. Ingenting importerades eller ändrades.';
+	@override String get legacyImportTryAnother => 'Välj en annan fil';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsSv {
 			'startup.deleteBackup' => 'Ta bort kopia',
 			'startup.backupDeleted' => 'Kopian borttagen.',
 			'startup.previousFailureTitle' => 'Pleazyng kunde inte starta förra gången',
+			'startup.legacyImportTitle' => 'Importera ett befintligt mediebibliotek?',
+			'startup.legacyImportBody' => 'Om du har en databas från en tidigare installation av Pleazyng eller Plezy kan du välja den här. Pleazyng söker aldrig efter databaser och importerar aldrig utifrån filnamnet.',
+			'startup.legacyImportChoose' => 'Välj en databas',
+			'startup.legacyImportStartFresh' => 'Börja om',
+			'startup.legacyImportPickTitle' => 'Välj en databasfil att förhandsgranska',
+			'startup.legacyImportChecking' => 'En tillfällig kopia av den valda filen kontrolleras. Originalfilen ändras inte.',
+			'startup.legacyImportReviewTitle' => 'Granska den här databasen',
+			'startup.legacyImportFile' => ({required Object name}) => 'Fil: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Filstorlek: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Databasschema: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profiler: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Serveranslutningar: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Sparade nedladdningsposter: ${count}',
+			'startup.legacyImportIdentityWarning' => 'Databasen saknar en appidentitetsmarkör. Namnet och schemat visar inte om den kommer från Pleazyng eller uppströmsprojektet Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'Serveruppgifter lagras separat och överförs inte. Du måste logga in igen.',
+			'startup.legacyImportPathsWarning' => 'Nedladdade mediefiler kopieras inte. Befintliga sökvägar kanske inte fungerar på den här enheten; du kan behöva välja lagringsmappar igen eller ladda ned media på nytt.',
+			'startup.legacyImportBackup' => 'Den valda filen lämnas oförändrad som återställningskopia. Alternativet visas bara när Pleazyng saknar en databas; en befintlig Pleazyng-databas ersätts aldrig.',
+			'startup.legacyImportConfirm' => 'Importera den här databasen',
+			'startup.legacyImportInvalidTitle' => 'Filen kunde inte valideras',
+			'startup.legacyImportInvalidBody' => 'Pleazyng kunde inte bekräfta att den valda filen är en databas som stöds. Ingenting importerades eller ändrades.',
+			'startup.legacyImportTryAnother' => 'Välj en annan fil',
 			'licenses.relatedPackages' => 'Relaterade paket',
 			'licenses.license' => 'Licens',
 			'licenses.licenseNumber' => ({required Object number}) => 'Licens ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsSv {
 			'music.noAudioUrl' => ({required Object track}) => 'Ingen ljud-URL är tillgänglig för ${track}',
 			'music.discography.singlesAndEps' => 'Singlar och EP',
 			'music.discography.live' => 'Live',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Samlingar',
 			'music.backTo' => 'Tillbaka till',
 			'music.upNext' => 'Härnäst',
@@ -7616,8 +7660,6 @@ extension on TranslationsSv {
 			'watchTogether.paste' => 'Klistra in',
 			'watchTogether.noCodeInClipboard' => 'Urklippet innehåller ingen rumskod',
 			'watchTogether.copyCode' => 'Kopiera kod',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Rumskod kopierad',
 			'watchTogether.shareInvite' => 'Dela inbjudan',
 			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
@@ -8109,6 +8151,8 @@ extension on TranslationsSv {
 			'metadataEdit.editMetadata' => 'Redigera...',
 			'metadataEdit.screenTitle' => 'Redigera metadata',
 			'metadataEdit.basicInfo' => 'Grundläggande information',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Bildmaterial',
 			'metadataEdit.advancedSettings' => 'Avancerade inställningar',
 			'metadataEdit.title' => 'Titel',
@@ -8130,8 +8174,6 @@ extension on TranslationsSv {
 			'metadataEdit.fromUrl' => 'Från URL',
 			'metadataEdit.uploadFile' => 'Ladda upp fil',
 			'metadataEdit.enterImageUrl' => 'Ange bild-URL',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'Bild-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata har uppdaterats',
 			'metadataEdit.metadataUpdateFailed' => 'Det gick inte att uppdatera metadata',
@@ -8623,6 +8665,8 @@ extension on TranslationsSv {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Dölj',
 			'homeLayout.remove' => 'Ta bort',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'Denna bibliotek återställer',
 			'homeLayout.pressAgainToDelete' => 'Tryck igen för att radera',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsSv {
 			'universalMedia.files' => 'Device filer',
 			'universalMedia.favorites' => 'Spara ström favoriter',
 			'universalMedia.address' => 'Media adresser',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL-adresser med erkända verifierings- eller signaturparametrar används endast för den här sessionen och kan inte sparas som favorit.',
 			'universalMedia.displayName' => 'Visningsnamn (alternativt)',
 			'universalMedia.displayNameHelp' => 'Välj ett kortnamn för spelaren och systemmediakontroller.',
@@ -9137,6 +9179,8 @@ extension on TranslationsSv {
 			'sourceSetup.passwordOrKey' => 'Ange ett lösenord eller lägg till en privat nyckel nedan.',
 			'sourceSetup.sshFingerprint' => 'SHA256-fingeravtryck för SSH-värdnyckeln',
 			'sourceSetup.sshFingerprintHelp' => 'Kontrollera det med serveradministratören. Kör ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub på servern och använd dess SHA256-värde.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Lämna tomt för att behålla det låsta fingeravtrycket eller ange ett nytt serverfingeravtryck.',
 			'sourceSetup.sshAuthentication' => 'SSH-autentisering med offentlig nyckel',
 			'sourceSetup.sshAuthenticationHelp' => 'Valfritt; autentisering med lösenord stöds också.',
@@ -9158,8 +9202,6 @@ extension on TranslationsSv {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS använder de vanliga portarna för NFS och monteringstjänsten och kräver stöd för RFC 9289 i NAS-enheten. TLS 1.3 krävs. Värdnamnet eller IP-adressen måste stämma överens med certifikatet. AUTH_SYS UID/GID gäller fortfarande i den krypterade kanalen.',
 			'sourceSetup.clientCertificate' => 'Klientcertifikat (valfritt)',
 			'sourceSetup.clientCertificateHelp' => 'Låter NAS-enheten autentisera den här klienten; AUTH_SYS-ID:n styrs fortfarande av reglerna för NAS-enhetens NFS-delning.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'En sparad klientidentitet kommer att användas.',
 			'sourceSetup.replaceIdentity' => 'Ersätt sparad klientidentitet',
 			'sourceSetup.chooseIdentity' => 'Välj PKCS#12-klientidentitet',
@@ -9651,6 +9693,8 @@ extension on TranslationsSv {
 			'musicTools.playlistRecipient' => 'Plex-användarnamn eller e-post',
 			'musicTools.playlistSharingHint' => 'Ge åtkomst till den här spellistan och dess spår. Mottagaren kan behöva godkänna en inbjudan.',
 			'musicTools.playlistSharingFailed' => 'Kunde inte begära åtkomst till spellistan.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex tog emot åtkomstbegäran.',
 			'musicTools.playlistAccessList' => 'Nuvarande åtkomst',
 			'musicTools.playlistAccessNone' => 'Ingen åtkomst till spellistan har beviljats',
@@ -9672,8 +9716,6 @@ extension on TranslationsSv {
 			'musicTools.continueStation' => 'Fortsätt spela den här stationen',
 			'musicDevices.playOn' => 'Spela på',
 			'musicDevices.thisDevice' => 'Den här enheten',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',
 			'musicDevices.remembered' => 'Sparade enheter',
 			'musicDevices.forget' => 'Glöm enhet',

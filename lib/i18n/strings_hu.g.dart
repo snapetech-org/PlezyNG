@@ -1830,6 +1830,27 @@ class _Translations$startup$hu extends Translations$startup$en {
 	@override String get deleteBackup => 'Másolat törlése';
 	@override String get backupDeleted => 'A másolat törölve.';
 	@override String get previousFailureTitle => 'A Pleazyng legutóbb nem tudott elindulni';
+	@override String get legacyImportTitle => 'Importál egy meglévő médiatárat?';
+	@override String get legacyImportBody => 'Ha van adatbázisa egy korábbi Pleazyng- vagy Plezy-telepítésből, itt kiválaszthatja. A Pleazyng soha nem keres adatbázisokat, és nem importál fájlnév alapján.';
+	@override String get legacyImportChoose => 'Adatbázis kiválasztása';
+	@override String get legacyImportStartFresh => 'Kezdés elölről';
+	@override String get legacyImportPickTitle => 'Válasszon ki egy adatbázisfájlt az előnézethez';
+	@override String get legacyImportChecking => 'A kiválasztott fájl ideiglenes másolatának ellenőrzése folyamatban van. Az eredeti fájl nem változik.';
+	@override String get legacyImportReviewTitle => 'Az adatbázis áttekintése';
+	@override String legacyImportFile({required Object name}) => 'Fájl: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Fájlméret: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Adatbázisséma: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Profilok: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Szerverkapcsolatok: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Mentett letöltési rekordok: ${count}';
+	@override String get legacyImportIdentityWarning => 'Az adatbázis nem tartalmaz alkalmazásazonosítót. A nevéből és sémájából nem állapítható meg, hogy a Pleazyngtől vagy az upstream Plezy projekttől származik-e.';
+	@override String get legacyImportCredentialsWarning => 'A szerver hitelesítő adatai külön vannak tárolva, ezért nem kerülnek át. Újra be kell jelentkeznie.';
+	@override String get legacyImportPathsWarning => 'A letöltött médiafájlok nem másolódnak át. A meglévő elérési utak ezen az eszközön nem feltétlenül működnek; lehet, hogy újra ki kell választania a tárolómappákat, vagy ismét le kell töltenie a médiát.';
+	@override String get legacyImportBackup => 'A kiválasztott fájl változatlan marad visszaállítási másolatként. Ez a lehetőség csak akkor jelenik meg, ha még nincs Pleazyng-adatbázis; meglévő Pleazyng-adatbázis soha nem cserélődik le.';
+	@override String get legacyImportConfirm => 'Adatbázis importálása';
+	@override String get legacyImportInvalidTitle => 'A fájl nem ellenőrizhető';
+	@override String get legacyImportInvalidBody => 'A Pleazyng nem tudta igazolni, hogy a kiválasztott fájl támogatott adatbázis. Nem történt importálás vagy módosítás.';
+	@override String get legacyImportTryAnother => 'Másik fájl kiválasztása';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsHu {
 			'startup.deleteBackup' => 'Másolat törlése',
 			'startup.backupDeleted' => 'A másolat törölve.',
 			'startup.previousFailureTitle' => 'A Pleazyng legutóbb nem tudott elindulni',
+			'startup.legacyImportTitle' => 'Importál egy meglévő médiatárat?',
+			'startup.legacyImportBody' => 'Ha van adatbázisa egy korábbi Pleazyng- vagy Plezy-telepítésből, itt kiválaszthatja. A Pleazyng soha nem keres adatbázisokat, és nem importál fájlnév alapján.',
+			'startup.legacyImportChoose' => 'Adatbázis kiválasztása',
+			'startup.legacyImportStartFresh' => 'Kezdés elölről',
+			'startup.legacyImportPickTitle' => 'Válasszon ki egy adatbázisfájlt az előnézethez',
+			'startup.legacyImportChecking' => 'A kiválasztott fájl ideiglenes másolatának ellenőrzése folyamatban van. Az eredeti fájl nem változik.',
+			'startup.legacyImportReviewTitle' => 'Az adatbázis áttekintése',
+			'startup.legacyImportFile' => ({required Object name}) => 'Fájl: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Fájlméret: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Adatbázisséma: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profilok: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Szerverkapcsolatok: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Mentett letöltési rekordok: ${count}',
+			'startup.legacyImportIdentityWarning' => 'Az adatbázis nem tartalmaz alkalmazásazonosítót. A nevéből és sémájából nem állapítható meg, hogy a Pleazyngtől vagy az upstream Plezy projekttől származik-e.',
+			'startup.legacyImportCredentialsWarning' => 'A szerver hitelesítő adatai külön vannak tárolva, ezért nem kerülnek át. Újra be kell jelentkeznie.',
+			'startup.legacyImportPathsWarning' => 'A letöltött médiafájlok nem másolódnak át. A meglévő elérési utak ezen az eszközön nem feltétlenül működnek; lehet, hogy újra ki kell választania a tárolómappákat, vagy ismét le kell töltenie a médiát.',
+			'startup.legacyImportBackup' => 'A kiválasztott fájl változatlan marad visszaállítási másolatként. Ez a lehetőség csak akkor jelenik meg, ha még nincs Pleazyng-adatbázis; meglévő Pleazyng-adatbázis soha nem cserélődik le.',
+			'startup.legacyImportConfirm' => 'Adatbázis importálása',
+			'startup.legacyImportInvalidTitle' => 'A fájl nem ellenőrizhető',
+			'startup.legacyImportInvalidBody' => 'A Pleazyng nem tudta igazolni, hogy a kiválasztott fájl támogatott adatbázis. Nem történt importálás vagy módosítás.',
+			'startup.legacyImportTryAnother' => 'Másik fájl kiválasztása',
 			'licenses.relatedPackages' => 'Kapcsolódó csomagok',
 			'licenses.license' => 'Licenc',
 			'licenses.licenseNumber' => ({required Object number}) => '${number}. licenc',
@@ -7595,6 +7637,8 @@ extension on TranslationsHu {
 			'music.noAudioUrl' => ({required Object track}) => 'Nem érhető el hang-URL ehhez: ${track}',
 			'music.discography.singlesAndEps' => 'Kislemezek és EP-k',
 			'music.discography.live' => 'Élő',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Válogatások',
 			'music.backTo' => 'Vissza ide',
 			'music.upNext' => 'Következik',
@@ -7616,8 +7660,6 @@ extension on TranslationsHu {
 			'watchTogether.paste' => 'Beillesztés',
 			'watchTogether.noCodeInClipboard' => 'A vágólapon nincs szobakód',
 			'watchTogether.copyCode' => 'Kód másolása',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Szobakód másolva',
 			'watchTogether.shareInvite' => 'Meghívó megosztása',
 			'watchTogether.inviteCopied' => 'Meghívó másolva. Illeszd be egy üzenetbe.',
@@ -8109,6 +8151,8 @@ extension on TranslationsHu {
 			'metadataEdit.editMetadata' => 'Szerkesztés...',
 			'metadataEdit.screenTitle' => 'Metaadatok szerkesztése',
 			'metadataEdit.basicInfo' => 'Alapinformációk',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Borítók és képek',
 			'metadataEdit.advancedSettings' => 'Haladó beállítások',
 			'metadataEdit.title' => 'Cím',
@@ -8130,8 +8174,6 @@ extension on TranslationsHu {
 			'metadataEdit.fromUrl' => 'URL-ről',
 			'metadataEdit.uploadFile' => 'Fájl feltöltése',
 			'metadataEdit.enterImageUrl' => 'Add meg a kép URL-címét',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'Kép URL-címe',
 			'metadataEdit.metadataUpdated' => 'Metaadatok frissítve',
 			'metadataEdit.metadataUpdateFailed' => 'Nem sikerült a metaadatok frissítése',
@@ -8623,6 +8665,8 @@ extension on TranslationsHu {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Elrejtés',
 			'homeLayout.remove' => 'Eltávolítás',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'A könyvtár újbóli sorrendje',
 			'homeLayout.pressAgainToDelete' => 'Nyomja meg újra a törléshez',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsHu {
 			'universalMedia.files' => 'készülék fájl',
 			'universalMedia.favorites' => 'Megtakarított stream kedvencek',
 			'universalMedia.address' => 'média cím',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'Az elismert hitelesítési vagy aláírási paraméterekkel rendelkező URL-k csak ebben az ülésen használhatók, és nem menthetők kedvencként.',
 			'universalMedia.displayName' => 'A kijelző neve (opcionális)',
 			'universalMedia.displayNameHelp' => 'Válasszon egy rövid nevét a játékos és a rendszer média vezérlők.',
@@ -9137,6 +9179,8 @@ extension on TranslationsHu {
 			'sourceSetup.passwordOrKey' => 'Adj meg egy jelszót, vagy adj hozzá lent egy privát kulcsot.',
 			'sourceSetup.sshFingerprint' => 'Az SSH-gépkulcs SHA256-ujjlenyomata',
 			'sourceSetup.sshFingerprintHelp' => 'Ellenőrizd a szerver rendszergazdájával. A szerveren futtasd az ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub parancsot, és használd az SHA256-értékét.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Hagyd üresen a jelenleg rögzített ujjlenyomat megőrzéséhez, vagy adj meg új szerverujjlenyomatot.',
 			'sourceSetup.sshAuthentication' => 'SSH-hitelesítés nyilvános kulccsal',
 			'sourceSetup.sshAuthenticationHelp' => 'Nem kötelező; a jelszavas hitelesítés is támogatott.',
@@ -9158,8 +9202,6 @@ extension on TranslationsHu {
 			'sourceSetup.nfsTlsHelp' => 'Az RPC-with-TLS a szokásos NFS- és csatolásiszolgáltatás-portokat használja, és RFC 9289-támogatást igényel a NAS-on. TLS 1.3 szükséges. A gépnévnek vagy IP-címnek egyeznie kell a tanúsítvánnyal. Az AUTH_SYS UID/GID a titkosított csatornán belül is érvényes.',
 			'sourceSetup.clientCertificate' => 'Kliens tanúsítványa (nem kötelező)',
 			'sourceSetup.clientCertificateHelp' => 'Lehetővé teszi, hogy a NAS hitelesítse ezt a klienst; az AUTH_SYS-azonosítók továbbra is a NAS NFS-megosztásának szabályaitól függenek.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'A mentett kliensazonosság lesz használva.',
 			'sourceSetup.replaceIdentity' => 'Mentett kliensazonosság cseréje',
 			'sourceSetup.chooseIdentity' => 'PKCS#12-kliensazonosság kiválasztása',
@@ -9651,6 +9693,8 @@ extension on TranslationsHu {
 			'musicTools.playlistRecipient' => 'Plex-felhasználónév vagy e-mail',
 			'musicTools.playlistSharingHint' => 'Adjon hozzáférést ehhez a listához és számaihoz. A címzettnek esetleg el kell fogadnia egy meghívást.',
 			'musicTools.playlistSharingFailed' => 'Nem sikerült hozzáférést kérni a listához.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'A Plex elfogadta a hozzáférési kérést.',
 			'musicTools.playlistAccessList' => 'Jelenlegi hozzáférés',
 			'musicTools.playlistAccessNone' => 'Nincs megadott hozzáférés a listához',
@@ -9672,8 +9716,6 @@ extension on TranslationsHu {
 			'musicTools.continueStation' => 'Az állomás lejátszásának folytatása',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',
 			'musicDevices.remembered' => 'Megjegyzett eszközök',
 			'musicDevices.forget' => 'Eszköz elfelejtése',

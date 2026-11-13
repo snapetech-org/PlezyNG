@@ -1830,6 +1830,27 @@ class _Translations$startup$nl extends Translations$startup$en {
 	@override String get deleteBackup => 'Kopie verwijderen';
 	@override String get backupDeleted => 'Kopie verwijderd.';
 	@override String get previousFailureTitle => 'Pleazyng kon de vorige keer niet starten';
+	@override String get legacyImportTitle => 'Een bestaande mediabibliotheek importeren?';
+	@override String get legacyImportBody => 'Als je een database van een eerdere Pleazyng- of Plezy-installatie hebt, kun je die hier kiezen. Pleazyng zoekt nooit naar databases en importeert niets op basis van de bestandsnaam.';
+	@override String get legacyImportChoose => 'Een database kiezen';
+	@override String get legacyImportStartFresh => 'Opnieuw beginnen';
+	@override String get legacyImportPickTitle => 'Kies een databasebestand om vooraf te bekijken';
+	@override String get legacyImportChecking => 'Er wordt een tijdelijke kopie van het gekozen bestand gecontroleerd. Het oorspronkelijke bestand blijft ongewijzigd.';
+	@override String get legacyImportReviewTitle => 'Deze database bekijken';
+	@override String legacyImportFile({required Object name}) => 'Bestand: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Bestandsgrootte: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Databaseschema: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Profielen: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Serververbindingen: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Opgeslagen downloadgegevens: ${count}';
+	@override String get legacyImportIdentityWarning => 'De database bevat geen app-identificatie. Aan de naam en het schema is niet te zien of de database van Pleazyng of van het upstream-project Plezy komt.';
+	@override String get legacyImportCredentialsWarning => 'Servergegevens worden apart opgeslagen en niet overgezet. Je moet opnieuw aanmelden.';
+	@override String get legacyImportPathsWarning => 'Gedownloade mediabestanden worden niet gekopieerd. Bestaande paden werken mogelijk niet op dit apparaat; je moet misschien opslagmappen opnieuw kiezen of media opnieuw downloaden.';
+	@override String get legacyImportBackup => 'Het gekozen bestand blijft ongewijzigd als terugzetkopie. Deze optie wordt alleen getoond wanneer Pleazyng nog geen database heeft; een bestaande Pleazyng-database wordt nooit vervangen.';
+	@override String get legacyImportConfirm => 'Deze database importeren';
+	@override String get legacyImportInvalidTitle => 'Dit bestand kon niet worden gevalideerd';
+	@override String get legacyImportInvalidBody => 'Pleazyng kon niet controleren of het gekozen bestand een ondersteunde database is. Er is niets geïmporteerd of gewijzigd.';
+	@override String get legacyImportTryAnother => 'Ander bestand kiezen';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsNl {
 			'startup.deleteBackup' => 'Kopie verwijderen',
 			'startup.backupDeleted' => 'Kopie verwijderd.',
 			'startup.previousFailureTitle' => 'Pleazyng kon de vorige keer niet starten',
+			'startup.legacyImportTitle' => 'Een bestaande mediabibliotheek importeren?',
+			'startup.legacyImportBody' => 'Als je een database van een eerdere Pleazyng- of Plezy-installatie hebt, kun je die hier kiezen. Pleazyng zoekt nooit naar databases en importeert niets op basis van de bestandsnaam.',
+			'startup.legacyImportChoose' => 'Een database kiezen',
+			'startup.legacyImportStartFresh' => 'Opnieuw beginnen',
+			'startup.legacyImportPickTitle' => 'Kies een databasebestand om vooraf te bekijken',
+			'startup.legacyImportChecking' => 'Er wordt een tijdelijke kopie van het gekozen bestand gecontroleerd. Het oorspronkelijke bestand blijft ongewijzigd.',
+			'startup.legacyImportReviewTitle' => 'Deze database bekijken',
+			'startup.legacyImportFile' => ({required Object name}) => 'Bestand: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Bestandsgrootte: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Databaseschema: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Profielen: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Serververbindingen: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Opgeslagen downloadgegevens: ${count}',
+			'startup.legacyImportIdentityWarning' => 'De database bevat geen app-identificatie. Aan de naam en het schema is niet te zien of de database van Pleazyng of van het upstream-project Plezy komt.',
+			'startup.legacyImportCredentialsWarning' => 'Servergegevens worden apart opgeslagen en niet overgezet. Je moet opnieuw aanmelden.',
+			'startup.legacyImportPathsWarning' => 'Gedownloade mediabestanden worden niet gekopieerd. Bestaande paden werken mogelijk niet op dit apparaat; je moet misschien opslagmappen opnieuw kiezen of media opnieuw downloaden.',
+			'startup.legacyImportBackup' => 'Het gekozen bestand blijft ongewijzigd als terugzetkopie. Deze optie wordt alleen getoond wanneer Pleazyng nog geen database heeft; een bestaande Pleazyng-database wordt nooit vervangen.',
+			'startup.legacyImportConfirm' => 'Deze database importeren',
+			'startup.legacyImportInvalidTitle' => 'Dit bestand kon niet worden gevalideerd',
+			'startup.legacyImportInvalidBody' => 'Pleazyng kon niet controleren of het gekozen bestand een ondersteunde database is. Er is niets geïmporteerd of gewijzigd.',
+			'startup.legacyImportTryAnother' => 'Ander bestand kiezen',
 			'licenses.relatedPackages' => 'Gerelateerde pakketten',
 			'licenses.license' => 'Licentie',
 			'licenses.licenseNumber' => ({required Object number}) => 'Licentie ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsNl {
 			'music.noAudioUrl' => ({required Object track}) => 'Er is geen audio-URL beschikbaar voor ${track}',
 			'music.discography.singlesAndEps' => 'Singles en EP\'s',
 			'music.discography.live' => 'Live',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Compilaties',
 			'music.backTo' => 'Terug naar',
 			'music.upNext' => 'Hierna',
@@ -7616,8 +7660,6 @@ extension on TranslationsNl {
 			'watchTogether.paste' => 'Plakken',
 			'watchTogether.noCodeInClipboard' => 'Het klembord bevat geen kamercode',
 			'watchTogether.copyCode' => 'Code kopiëren',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Kamercode gekopieerd',
 			'watchTogether.shareInvite' => 'Uitnodiging delen',
 			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
@@ -8109,6 +8151,8 @@ extension on TranslationsNl {
 			'metadataEdit.editMetadata' => 'Bewerken...',
 			'metadataEdit.screenTitle' => 'Metadata bewerken',
 			'metadataEdit.basicInfo' => 'Basisinformatie',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Illustraties',
 			'metadataEdit.advancedSettings' => 'Geavanceerde instellingen',
 			'metadataEdit.title' => 'Titel',
@@ -8130,8 +8174,6 @@ extension on TranslationsNl {
 			'metadataEdit.fromUrl' => 'Vanaf URL',
 			'metadataEdit.uploadFile' => 'Bestand uploaden',
 			'metadataEdit.enterImageUrl' => 'Voer de afbeeldings-URL in',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'Afbeeldings-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata bijgewerkt',
 			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
@@ -8623,6 +8665,8 @@ extension on TranslationsNl {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Verbergen',
 			'homeLayout.remove' => 'Verwijderen',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'De herhaling van deze bibliotheek',
 			'homeLayout.pressAgainToDelete' => 'Druk opnieuw om te verwijderen',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsNl {
 			'universalMedia.files' => 'Gerelateerde bestanden',
 			'universalMedia.favorites' => 'Save Stream favorieten',
 			'universalMedia.address' => 'Media adres',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL\'s met geïdentificeerde credentiale of signature parameters worden alleen gebruikt voor deze sessie en kunnen niet als favorieten worden opgeslagen.',
 			'universalMedia.displayName' => 'Display naam (optional)',
 			'universalMedia.displayNameHelp' => 'Kies een korte naam voor de speler en system media controles.',
@@ -9137,6 +9179,8 @@ extension on TranslationsNl {
 			'sourceSetup.passwordOrKey' => 'Voer een wachtwoord in of voeg hieronder een privésleutel toe.',
 			'sourceSetup.sshFingerprint' => 'SHA256-vingerafdruk van de SSH-hostsleutel',
 			'sourceSetup.sshFingerprintHelp' => 'Controleer deze bij de serverbeheerder. Voer op de server ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub uit en gebruik de SHA256-waarde.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Laat leeg om de huidige vastgelegde vingerafdruk te behouden, of voer een nieuwe servervingerafdruk in.',
 			'sourceSetup.sshAuthentication' => 'SSH-authenticatie met openbare sleutel',
 			'sourceSetup.sshAuthenticationHelp' => 'Optioneel; authenticatie met een wachtwoord wordt ook ondersteund.',
@@ -9158,8 +9202,6 @@ extension on TranslationsNl {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS gebruikt de gebruikelijke poorten van NFS en de mountservice en vereist RFC 9289-ondersteuning op de NAS. TLS 1.3 is verplicht. De hostnaam of het IP-adres moet overeenkomen met het certificaat. AUTH_SYS-UID/GID blijven ook binnen het versleutelde kanaal gelden.',
 			'sourceSetup.clientCertificate' => 'Clientcertificaat (optioneel)',
 			'sourceSetup.clientCertificateHelp' => 'Hiermee kan de NAS deze client authenticeren; AUTH_SYS-ID’s blijven afhankelijk van het beleid van de NFS-share op de NAS.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Er wordt een opgeslagen clientidentiteit gebruikt.',
 			'sourceSetup.replaceIdentity' => 'Opgeslagen clientidentiteit vervangen',
 			'sourceSetup.chooseIdentity' => 'PKCS#12-clientidentiteit kiezen',
@@ -9651,6 +9693,8 @@ extension on TranslationsNl {
 			'musicTools.playlistRecipient' => 'Plex-gebruikersnaam of e-mail',
 			'musicTools.playlistSharingHint' => 'Geef toegang tot deze afspeellijst en de nummers. De ontvanger moet mogelijk een uitnodiging accepteren.',
 			'musicTools.playlistSharingFailed' => 'Kon geen toegang tot de afspeellijst aanvragen.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex heeft het toegangsverzoek geaccepteerd.',
 			'musicTools.playlistAccessList' => 'Huidige toegang',
 			'musicTools.playlistAccessNone' => 'Er is geen toegang tot deze afspeellijst verleend',
@@ -9672,8 +9716,6 @@ extension on TranslationsNl {
 			'musicTools.continueStation' => 'Dit station blijven afspelen',
 			'musicDevices.playOn' => 'Afspelen op',
 			'musicDevices.thisDevice' => 'Dit apparaat',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',
 			'musicDevices.remembered' => 'Onthouden apparaten',
 			'musicDevices.forget' => 'Apparaat vergeten',

@@ -74,6 +74,12 @@ The [VLC feature parity addendum](LANGUAGE_QA_VLC_PARITY.md) records the 36
 playback and converter messages, the explicit English fallbacks, and the review
 limits for those drafts.
 
+The [legacy database import addendum](LANGUAGE_QA_LEGACY_IMPORT.md) records 21
+assistant-generated onboarding drafts across the 32 non-English base locales;
+regional catalogs inherit from their configured language parent. These messages
+are translated drafts, not English fallbacks, and have not received independent
+or native-speaker review.
+
 Steam connected-experience, service-integration, cross-media discovery,
 cloud-sync privacy, Trakt export, host-stage karaoke analysis, karaoke
 microphone/performance and phone-capture, A-B count-in tick,

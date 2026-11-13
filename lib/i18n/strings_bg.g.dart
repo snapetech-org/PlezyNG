@@ -1830,6 +1830,27 @@ class _Translations$startup$bg extends Translations$startup$en {
 	@override String get deleteBackup => 'Изтрий копието';
 	@override String get backupDeleted => 'Копието е изтрито.';
 	@override String get previousFailureTitle => 'Pleazyng не успя да стартира последния път';
+	@override String get legacyImportTitle => 'Да се импортира ли съществуваща медийна библиотека?';
+	@override String get legacyImportBody => 'Ако разполагате с база данни от предишна инсталация на Pleazyng или Plezy, можете да я изберете тук. Pleazyng никога не търси бази данни и не импортира според името на файла.';
+	@override String get legacyImportChoose => 'Избор на база данни';
+	@override String get legacyImportStartFresh => 'Започване начисто';
+	@override String get legacyImportPickTitle => 'Изберете файл на база данни за предварителен преглед';
+	@override String get legacyImportChecking => 'Проверява се копие на избрания файл. Оригиналният файл няма да бъде променен.';
+	@override String get legacyImportReviewTitle => 'Преглед на тази база данни';
+	@override String legacyImportFile({required Object name}) => 'Файл: ${name}';
+	@override String legacyImportSize({required Object size}) => 'Размер на файла: ${size}';
+	@override String legacyImportSchemaVersion({required Object version}) => 'Схема на базата данни: ${version}';
+	@override String legacyImportProfiles({required Object count}) => 'Профили: ${count}';
+	@override String legacyImportConnections({required Object count}) => 'Връзки със сървъри: ${count}';
+	@override String legacyImportDownloads({required Object count}) => 'Запазени записи за изтегляния: ${count}';
+	@override String get legacyImportIdentityWarning => 'В базата данни няма маркер за приложението. Името и схемата ѝ не показват дали идва от Pleazyng или от upstream Plezy.';
+	@override String get legacyImportCredentialsWarning => 'Данните за достъп до сървърите се съхраняват отделно и няма да се прехвърлят. Ще трябва да влезете отново.';
+	@override String get legacyImportPathsWarning => 'Изтеглените медийни файлове не се копират. Съществуващите пътища може да не работят на това устройство; може да се наложи да изберете папки за съхранение отново или да изтеглите медиите пак.';
+	@override String get legacyImportBackup => 'Избраният файл остава непроменен като резервно копие за връщане. Тази опция се показва само ако няма база данни на Pleazyng; съществуваща база данни на Pleazyng никога не се заменя.';
+	@override String get legacyImportConfirm => 'Импортиране на тази база данни';
+	@override String get legacyImportInvalidTitle => 'Файлът не може да бъде проверен';
+	@override String get legacyImportInvalidBody => 'Pleazyng не можа да потвърди, че избраният файл е поддържана база данни. Нищо не беше импортирано или променено.';
+	@override String get legacyImportTryAnother => 'Избор на друг файл';
 }
 
 // Path: licenses
@@ -7238,6 +7259,27 @@ extension on TranslationsBg {
 			'startup.deleteBackup' => 'Изтрий копието',
 			'startup.backupDeleted' => 'Копието е изтрито.',
 			'startup.previousFailureTitle' => 'Pleazyng не успя да стартира последния път',
+			'startup.legacyImportTitle' => 'Да се импортира ли съществуваща медийна библиотека?',
+			'startup.legacyImportBody' => 'Ако разполагате с база данни от предишна инсталация на Pleazyng или Plezy, можете да я изберете тук. Pleazyng никога не търси бази данни и не импортира според името на файла.',
+			'startup.legacyImportChoose' => 'Избор на база данни',
+			'startup.legacyImportStartFresh' => 'Започване начисто',
+			'startup.legacyImportPickTitle' => 'Изберете файл на база данни за предварителен преглед',
+			'startup.legacyImportChecking' => 'Проверява се копие на избрания файл. Оригиналният файл няма да бъде променен.',
+			'startup.legacyImportReviewTitle' => 'Преглед на тази база данни',
+			'startup.legacyImportFile' => ({required Object name}) => 'Файл: ${name}',
+			'startup.legacyImportSize' => ({required Object size}) => 'Размер на файла: ${size}',
+			'startup.legacyImportSchemaVersion' => ({required Object version}) => 'Схема на базата данни: ${version}',
+			'startup.legacyImportProfiles' => ({required Object count}) => 'Профили: ${count}',
+			'startup.legacyImportConnections' => ({required Object count}) => 'Връзки със сървъри: ${count}',
+			'startup.legacyImportDownloads' => ({required Object count}) => 'Запазени записи за изтегляния: ${count}',
+			'startup.legacyImportIdentityWarning' => 'В базата данни няма маркер за приложението. Името и схемата ѝ не показват дали идва от Pleazyng или от upstream Plezy.',
+			'startup.legacyImportCredentialsWarning' => 'Данните за достъп до сървърите се съхраняват отделно и няма да се прехвърлят. Ще трябва да влезете отново.',
+			'startup.legacyImportPathsWarning' => 'Изтеглените медийни файлове не се копират. Съществуващите пътища може да не работят на това устройство; може да се наложи да изберете папки за съхранение отново или да изтеглите медиите пак.',
+			'startup.legacyImportBackup' => 'Избраният файл остава непроменен като резервно копие за връщане. Тази опция се показва само ако няма база данни на Pleazyng; съществуваща база данни на Pleazyng никога не се заменя.',
+			'startup.legacyImportConfirm' => 'Импортиране на тази база данни',
+			'startup.legacyImportInvalidTitle' => 'Файлът не може да бъде проверен',
+			'startup.legacyImportInvalidBody' => 'Pleazyng не можа да потвърди, че избраният файл е поддържана база данни. Нищо не беше импортирано или променено.',
+			'startup.legacyImportTryAnother' => 'Избор на друг файл',
 			'licenses.relatedPackages' => 'Свързани пакети',
 			'licenses.license' => 'Лиценз',
 			'licenses.licenseNumber' => ({required Object number}) => 'Лиценз ${number}',
@@ -7595,6 +7637,8 @@ extension on TranslationsBg {
 			'music.noAudioUrl' => ({required Object track}) => 'Няма наличен URL за аудиото на ${track}',
 			'music.discography.singlesAndEps' => 'Сингли и EP',
 			'music.discography.live' => 'Концертни',
+			_ => null,
+		} ?? switch (path) {
 			'music.discography.compilations' => 'Компилации',
 			'music.backTo' => 'Вече пуснати',
 			'music.upNext' => 'Следващи',
@@ -7616,8 +7660,6 @@ extension on TranslationsBg {
 			'watchTogether.paste' => 'Постави',
 			'watchTogether.noCodeInClipboard' => 'В клипборда няма код на стая',
 			'watchTogether.copyCode' => 'Копирай кода',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Кодът на стаята е копиран',
 			'watchTogether.shareInvite' => 'Сподели покана',
 			'watchTogether.inviteCopied' => 'Поканата е копирана. Поставете я в съобщение.',
@@ -8109,6 +8151,8 @@ extension on TranslationsBg {
 			'metadataEdit.editMetadata' => 'Редактирай...',
 			'metadataEdit.screenTitle' => 'Редактиране на метаданни',
 			'metadataEdit.basicInfo' => 'Основна информация',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artwork' => 'Обложка',
 			'metadataEdit.advancedSettings' => 'Разширени настройки',
 			'metadataEdit.title' => 'Заглавие',
@@ -8130,8 +8174,6 @@ extension on TranslationsBg {
 			'metadataEdit.fromUrl' => 'От URL',
 			'metadataEdit.uploadFile' => 'Качи файл',
 			'metadataEdit.enterImageUrl' => 'Въведете URL на изображение',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'URL на изображение',
 			'metadataEdit.metadataUpdated' => 'Метаданните са обновени',
 			'metadataEdit.metadataUpdateFailed' => 'Неуспешно обновяване на метаданни',
@@ -8623,6 +8665,8 @@ extension on TranslationsBg {
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Скрий',
 			'homeLayout.remove' => 'Премахни',
+			_ => null,
+		} ?? switch (path) {
 			'homeLayout.libraryResumeRow' => 'Тази библиотека се пренасочва',
 			'homeLayout.pressAgainToDelete' => 'Натиснете отново за изтриване',
 			'homeLayout.actionState' => ({required Object action, required Object state}) => '${action}: ${state}',
@@ -8644,8 +8688,6 @@ extension on TranslationsBg {
 			'universalMedia.files' => 'Филми на устройството',
 			'universalMedia.favorites' => 'Спасените любимци на потока',
 			'universalMedia.address' => 'Медиен адрес',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.addressHelp' => 'URL адресите с разпознати параметри на акредитация или подпис се използват само за тази сесия и не могат да бъдат запазени като любими.',
 			'universalMedia.displayName' => 'Името на екрана (опционално)',
 			'universalMedia.displayNameHelp' => 'Изберете кратко име за играча и системните медийни контроли.',
@@ -9137,6 +9179,8 @@ extension on TranslationsBg {
 			'sourceSetup.passwordOrKey' => 'Въведете парола или добавете частен ключ по-долу.',
 			'sourceSetup.sshFingerprint' => 'SHA256 отпечатък на SSH ключа на хоста',
 			'sourceSetup.sshFingerprintHelp' => 'Проверете го с администратора на сървъра. На сървъра изпълнете ssh-keygen -lf /path/to/ssh_host_ed25519_key.pub и използвайте стойността SHA256.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.sshFingerprintKeep' => 'Оставете празно, за да запазите фиксирания отпечатък, или въведете нов отпечатък на сървъра.',
 			'sourceSetup.sshAuthentication' => 'SSH удостоверяване с публичен ключ',
 			'sourceSetup.sshAuthenticationHelp' => 'Незадължително; поддържа се и удостоверяване с парола.',
@@ -9158,8 +9202,6 @@ extension on TranslationsBg {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS използва обичайните портове на NFS и услугата за монтиране и изисква NAS да поддържа RFC 9289. Изисква се TLS 1.3. Името на хоста или IP адресът трябва да съответства на сертификата. AUTH_SYS UID/GID продължават да важат в шифрования канал.',
 			'sourceSetup.clientCertificate' => 'Клиентски сертификат (незадължително)',
 			'sourceSetup.clientCertificateHelp' => 'Позволява на NAS да удостовери този клиент; ID на AUTH_SYS все още зависят от правилата на NFS експорта на NAS.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.savedIdentity' => 'Ще се използва запазена клиентска самоличност.',
 			'sourceSetup.replaceIdentity' => 'Замяна на запазената клиентска самоличност',
 			'sourceSetup.chooseIdentity' => 'Избор на клиентска самоличност PKCS#12',
@@ -9651,6 +9693,8 @@ extension on TranslationsBg {
 			'musicTools.playlistRecipient' => 'Plex потребителско име или имейл',
 			'musicTools.playlistSharingHint' => 'Дайте достъп до този плейлист и песните му. Получателят може да трябва да приеме покана.',
 			'musicTools.playlistSharingFailed' => 'Неуспешна заявка за достъп до плейлиста.',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex прие заявката за достъп.',
 			'musicTools.playlistAccessList' => 'Текущ достъп',
 			'musicTools.playlistAccessNone' => 'Няма предоставен достъп до плейлиста',
@@ -9672,8 +9716,6 @@ extension on TranslationsBg {
 			'musicTools.continueStation' => 'Продължаване на възпроизвеждането на тази станция',
 			'musicDevices.playOn' => 'Възпроизвеждане на',
 			'musicDevices.thisDevice' => 'Това устройство',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',
 			'musicDevices.remembered' => 'Запомнени устройства',
 			'musicDevices.forget' => 'Забравяне на устройството',

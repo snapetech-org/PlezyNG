@@ -105,9 +105,9 @@ def main() -> None:
 
     if onnx.__version__ != "1.17.0":
         raise SystemExit(f"Expected ONNX 1.17.0 for the pinned export, found {onnx.__version__}")
-    if torch.__version__.split("+", maxsplit=1)[0] != "2.9.1":
+    if torch.__version__.split("+", maxsplit=1)[0] != "2.15.0":
         raise SystemExit(
-            f"Expected PyTorch 2.9.1 for the pinned export, found {torch.__version__}"
+            f"Expected patched PyTorch 2.15.0 for the pinned export, found {torch.__version__}"
         )
 
     sys.path.insert(0, str(source_root / "anvil_exp01"))

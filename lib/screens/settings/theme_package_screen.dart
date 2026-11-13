@@ -182,12 +182,18 @@ class _ThemePackageScreenState extends State<ThemePackageScreen> {
                     Text(package.name, style: Theme.of(context).textTheme.headlineSmall),
                     Text(t.themeEditor.preview, style: Theme.of(context).textTheme.bodyLarge),
                     const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 12,
-                      children: [
-                        FilledButton(onPressed: () {}, child: Text(t.common.save)),
-                        OutlinedButton(onPressed: () {}, child: Text(t.common.cancel)),
-                      ],
+                    IgnorePointer(
+                      child: ExcludeFocus(
+                        child: ExcludeSemantics(
+                          child: Wrap(
+                            spacing: 12,
+                            children: [
+                              FilledButton(onPressed: () {}, child: Text(t.common.save)),
+                              OutlinedButton(onPressed: () {}, child: Text(t.common.cancel)),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

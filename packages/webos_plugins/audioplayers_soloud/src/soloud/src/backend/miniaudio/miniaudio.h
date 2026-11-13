@@ -3857,7 +3857,6 @@ typedef ma_uint16 wchar_t;
     #define MA_SIZE_MAX    0xFFFFFFFF  /* When SIZE_MAX is not defined by the standard library just default to the maximum 32-bit unsigned integer. */
 #endif
 
-
 /* Platform/backend detection. */
 #if defined(_WIN32) || defined(__COSMOPOLITAN__)
     #define MA_WIN32
@@ -11508,6 +11507,16 @@ IMPLEMENTATION
 #ifndef miniaudio_c
 #define miniaudio_c
 
+static ma_bool32 ma_size_mul_checked(ma_uint64 a, ma_uint64 b, size_t* pResult)
+{
+    if (pResult == NULL || (b != 0 && a > (ma_uint64)MA_SIZE_MAX / b)) {
+        return MA_FALSE;
+    }
+
+    *pResult = (size_t)(a * b);
+    return MA_TRUE;
+}
+
 #include <assert.h>
 #include <limits.h>         /* For INT_MAX */
 #include <math.h>           /* sin(), etc. */
@@ -18948,7 +18957,7 @@ static void ma_device__handle_data_callback(ma_device* pDevice, void* pFramesOut
                 }
 
                 if (!pDevice->noClip && pDevice->playback.format == ma_format_f32) {
-                    ma_clip_samples_f32((float*)pFramesOut, (const float*)pFramesOut, frameCount * pDevice->playback.channels);   /* Intentionally specifying the same pointer for both input and output for in-place processing. */
+                    ma_clip_samples_f32((float*)pFramesOut, (const float*)pFramesOut, (ma_uint64)frameCount * pDevice->playback.channels);   /* Intentionally specifying the same pointer for both input and output for in-place processing. */
                 }
             }
         }
@@ -27953,7 +27962,14 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
 
     /* Buffer Size */
     {
-        ma_snd_pcm_uframes_t actualBufferSizeInFrames = ma_calculate_buffer_size_in_frames_from_descriptor(pDescriptor, internalSampleRate, pConfig->performanceProfile) * internalPeriods;
+        ma_uint64 actualBufferSizeInFrames64 = (ma_uint64)ma_calculate_buffer_size_in_frames_from_descriptor(pDescriptor, internalSampleRate, pConfig->performanceProfile) * internalPeriods;
+        ma_snd_pcm_uframes_t actualBufferSizeInFrames;
+        if (actualBufferSizeInFrames64 > (ma_uint64)MA_SIZE_MAX) {
+            ma_free(pHWParams, &pDevice->pContext->allocationCallbacks);
+            ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
+            return MA_OUT_OF_RANGE;
+        }
+        actualBufferSizeInFrames = (ma_snd_pcm_uframes_t)actualBufferSizeInFrames64;
 
         resultALSA = ((ma_snd_pcm_hw_params_set_buffer_size_near_proc)pDevice->pContext->alsa.snd_pcm_hw_params_set_buffer_size_near)(pPCM, pHWParams, &actualBufferSizeInFrames);
         if (resultALSA < 0) {
@@ -28005,7 +28021,13 @@ static ma_result ma_device_init_by_type__alsa(ma_device* pDevice, const ma_devic
 
     resultALSA = ((ma_snd_pcm_sw_params_get_boundary_proc)pDevice->pContext->alsa.snd_pcm_sw_params_get_boundary)(pSWParams, &bufferBoundary);
     if (resultALSA < 0) {
-        bufferBoundary = internalPeriodSizeInFrames * internalPeriods;
+        ma_uint64 bufferBoundary64 = (ma_uint64)internalPeriodSizeInFrames * internalPeriods;
+        if (bufferBoundary64 > (ma_uint64)MA_SIZE_MAX) {
+            ma_free(pSWParams, &pDevice->pContext->allocationCallbacks);
+            ((ma_snd_pcm_close_proc)pDevice->pContext->alsa.snd_pcm_close)(pPCM);
+            return MA_OUT_OF_RANGE;
+        }
+        bufferBoundary = (ma_snd_pcm_uframes_t)bufferBoundary64;
     }
 
     if (deviceType == ma_device_type_playback && !isUsingMMap) {   /* Only playback devices in writei/readi mode need a start threshold. */
@@ -31530,10 +31552,15 @@ static void ma_device__jack_shutdown_callback(void* pUserData)
 static int ma_device__jack_buffer_size_callback(ma_jack_nframes_t frameCount, void* pUserData)
 {
     ma_device* pDevice = (ma_device*)pUserData;
+    size_t newBufferSize;
+    ma_uint64 bytesPerFrame;
     MA_ASSERT(pDevice != NULL);
 
     if (pDevice->type == ma_device_type_capture || pDevice->type == ma_device_type_duplex) {
-        size_t newBufferSize = frameCount * (pDevice->capture.internalChannels * ma_get_bytes_per_sample(pDevice->capture.internalFormat));
+        bytesPerFrame = (ma_uint64)pDevice->capture.internalChannels * ma_get_bytes_per_sample(pDevice->capture.internalFormat);
+        if (!ma_size_mul_checked(frameCount, bytesPerFrame, &newBufferSize)) {
+            return MA_OUT_OF_RANGE;
+        }
         float* pNewBuffer = (float*)ma_calloc(newBufferSize, &pDevice->pContext->allocationCallbacks);
         if (pNewBuffer == NULL) {
             return MA_OUT_OF_MEMORY;
@@ -31546,7 +31573,10 @@ static int ma_device__jack_buffer_size_callback(ma_jack_nframes_t frameCount, vo
     }
 
     if (pDevice->type == ma_device_type_playback || pDevice->type == ma_device_type_duplex) {
-        size_t newBufferSize = frameCount * (pDevice->playback.internalChannels * ma_get_bytes_per_sample(pDevice->playback.internalFormat));
+        bytesPerFrame = (ma_uint64)pDevice->playback.internalChannels * ma_get_bytes_per_sample(pDevice->playback.internalFormat);
+        if (!ma_size_mul_checked(frameCount, bytesPerFrame, &newBufferSize)) {
+            return MA_OUT_OF_RANGE;
+        }
         float* pNewBuffer = (float*)ma_calloc(newBufferSize, &pDevice->pContext->allocationCallbacks);
         if (pNewBuffer == NULL) {
             return MA_OUT_OF_MEMORY;
@@ -31618,6 +31648,7 @@ static ma_result ma_device_init__jack(ma_device* pDevice, const ma_device_config
 {
     ma_result result;
     ma_uint32 periodSizeInFrames;
+    size_t intermediaryBufferSize;
 
     MA_ASSERT(pConfig != NULL);
     MA_ASSERT(pDevice != NULL);
@@ -31708,7 +31739,12 @@ static ma_result ma_device_init__jack(ma_device* pDevice, const ma_device_config
         pDescriptorCapture->periodSizeInFrames = periodSizeInFrames;
         pDescriptorCapture->periodCount        = 1; /* There's no notion of a period in JACK. Just set to 1. */
 
-        pDevice->jack.pIntermediaryBufferCapture = (float*)ma_calloc(pDescriptorCapture->periodSizeInFrames * ma_get_bytes_per_frame(pDescriptorCapture->format, pDescriptorCapture->channels), &pDevice->pContext->allocationCallbacks);
+        if (!ma_size_mul_checked(pDescriptorCapture->periodSizeInFrames,
+                ma_get_bytes_per_frame(pDescriptorCapture->format, pDescriptorCapture->channels), &intermediaryBufferSize)) {
+            ma_device_uninit__jack(pDevice);
+            return MA_OUT_OF_RANGE;
+        }
+        pDevice->jack.pIntermediaryBufferCapture = (float*)ma_calloc(intermediaryBufferSize, &pDevice->pContext->allocationCallbacks);
         if (pDevice->jack.pIntermediaryBufferCapture == NULL) {
             ma_device_uninit__jack(pDevice);
             return MA_OUT_OF_MEMORY;
@@ -31760,7 +31796,12 @@ static ma_result ma_device_init__jack(ma_device* pDevice, const ma_device_config
         pDescriptorPlayback->periodSizeInFrames = periodSizeInFrames;
         pDescriptorPlayback->periodCount        = 1;   /* There's no notion of a period in JACK. Just set to 1. */
 
-        pDevice->jack.pIntermediaryBufferPlayback = (float*)ma_calloc(pDescriptorPlayback->periodSizeInFrames * ma_get_bytes_per_frame(pDescriptorPlayback->format, pDescriptorPlayback->channels), &pDevice->pContext->allocationCallbacks);
+        if (!ma_size_mul_checked(pDescriptorPlayback->periodSizeInFrames,
+                ma_get_bytes_per_frame(pDescriptorPlayback->format, pDescriptorPlayback->channels), &intermediaryBufferSize)) {
+            ma_device_uninit__jack(pDevice);
+            return MA_OUT_OF_RANGE;
+        }
+        pDevice->jack.pIntermediaryBufferPlayback = (float*)ma_calloc(intermediaryBufferSize, &pDevice->pContext->allocationCallbacks);
         if (pDevice->jack.pIntermediaryBufferPlayback == NULL) {
             ma_device_uninit__jack(pDevice);
             return MA_OUT_OF_MEMORY;
@@ -42323,7 +42364,7 @@ MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pC
         }
 
         if (pConfig->deviceType == ma_device_type_capture || pConfig->deviceType == ma_device_type_duplex || pConfig->deviceType == ma_device_type_loopback) {
-            ma_uint32 intermediaryBufferSizeInBytes;
+            size_t intermediaryBufferSizeInBytes;
 
             pDevice->capture.intermediaryBufferLen = 0;
             pDevice->capture.intermediaryBufferCap = intermediaryBufferCap;
@@ -42331,7 +42372,12 @@ MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pC
                 pDevice->capture.intermediaryBufferCap = pDevice->capture.internalPeriodSizeInFrames;
             }
 
-            intermediaryBufferSizeInBytes = pDevice->capture.intermediaryBufferCap * ma_get_bytes_per_frame(pDevice->capture.format, pDevice->capture.channels);
+            if (!ma_size_mul_checked(pDevice->capture.intermediaryBufferCap,
+                    ma_get_bytes_per_frame(pDevice->capture.format, pDevice->capture.channels),
+                    &intermediaryBufferSizeInBytes)) {
+                ma_device_uninit(pDevice);
+                return MA_OUT_OF_RANGE;
+            }
 
             pDevice->capture.pIntermediaryBuffer = ma_malloc((size_t)intermediaryBufferSizeInBytes, &pContext->allocationCallbacks);
             if (pDevice->capture.pIntermediaryBuffer == NULL) {
@@ -42345,7 +42391,7 @@ MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pC
         }
 
         if (pConfig->deviceType == ma_device_type_playback || pConfig->deviceType == ma_device_type_duplex) {
-            ma_uint64 intermediaryBufferSizeInBytes;
+            size_t intermediaryBufferSizeInBytes;
 
             pDevice->playback.intermediaryBufferLen = 0;
             if (pConfig->deviceType == ma_device_type_duplex) {
@@ -42357,7 +42403,12 @@ MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pC
                 }
             }
 
-            intermediaryBufferSizeInBytes = pDevice->playback.intermediaryBufferCap * ma_get_bytes_per_frame(pDevice->playback.format, pDevice->playback.channels);
+            if (!ma_size_mul_checked(pDevice->playback.intermediaryBufferCap,
+                    ma_get_bytes_per_frame(pDevice->playback.format, pDevice->playback.channels),
+                    &intermediaryBufferSizeInBytes)) {
+                ma_device_uninit(pDevice);
+                return MA_OUT_OF_RANGE;
+            }
 
             pDevice->playback.pIntermediaryBuffer = ma_malloc((size_t)intermediaryBufferSizeInBytes, &pContext->allocationCallbacks);
             if (pDevice->playback.pIntermediaryBuffer == NULL) {
@@ -57100,6 +57151,8 @@ MA_API ma_result ma_pcm_rb_init_ex(ma_format format, ma_uint32 channels, ma_uint
 {
     ma_uint32 bpf;
     ma_result result;
+    size_t subbufferSizeInBytes;
+    size_t subbufferStrideInBytes;
 
     if (pRB == NULL) {
         return MA_INVALID_ARGS;
@@ -57112,7 +57165,12 @@ MA_API ma_result ma_pcm_rb_init_ex(ma_format format, ma_uint32 channels, ma_uint
         return MA_INVALID_ARGS;
     }
 
-    result = ma_rb_init_ex(subbufferSizeInFrames*bpf, subbufferCount, subbufferStrideInFrames*bpf, pOptionalPreallocatedBuffer, pAllocationCallbacks, &pRB->rb);
+    if (!ma_size_mul_checked(subbufferSizeInFrames, bpf, &subbufferSizeInBytes) ||
+        !ma_size_mul_checked(subbufferStrideInFrames, bpf, &subbufferStrideInBytes)) {
+        return MA_OUT_OF_RANGE;
+    }
+
+    result = ma_rb_init_ex(subbufferSizeInBytes, subbufferCount, subbufferStrideInBytes, pOptionalPreallocatedBuffer, pAllocationCallbacks, &pRB->rb);
     if (result != MA_SUCCESS) {
         return result;
     }
@@ -57163,77 +57221,127 @@ MA_API void ma_pcm_rb_reset(ma_pcm_rb* pRB)
 MA_API ma_result ma_pcm_rb_acquire_read(ma_pcm_rb* pRB, ma_uint32* pSizeInFrames, void** ppBufferOut)
 {
     size_t sizeInBytes;
+    ma_uint32 bpf;
     ma_result result;
 
     if (pRB == NULL || pSizeInFrames == NULL) {
         return MA_INVALID_ARGS;
     }
 
-    sizeInBytes = *pSizeInFrames * ma_pcm_rb_get_bpf(pRB);
+    bpf = ma_pcm_rb_get_bpf(pRB);
+    if (bpf == 0) {
+        return MA_INVALID_ARGS;
+    }
+    if (!ma_size_mul_checked(*pSizeInFrames, bpf, &sizeInBytes)) {
+        return MA_OUT_OF_RANGE;
+    }
 
     result = ma_rb_acquire_read(&pRB->rb, &sizeInBytes, ppBufferOut);
     if (result != MA_SUCCESS) {
         return result;
     }
 
-    *pSizeInFrames = (ma_uint32)(sizeInBytes / (size_t)ma_pcm_rb_get_bpf(pRB));
+    *pSizeInFrames = (ma_uint32)(sizeInBytes / bpf);
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_pcm_rb_commit_read(ma_pcm_rb* pRB, ma_uint32 sizeInFrames)
 {
+    size_t sizeInBytes;
+    ma_uint32 bpf;
     if (pRB == NULL) {
         return MA_INVALID_ARGS;
     }
 
-    return ma_rb_commit_read(&pRB->rb, sizeInFrames * ma_pcm_rb_get_bpf(pRB));
+    bpf = ma_pcm_rb_get_bpf(pRB);
+    if (bpf == 0) {
+        return MA_INVALID_ARGS;
+    }
+    if (!ma_size_mul_checked(sizeInFrames, bpf, &sizeInBytes)) {
+        return MA_OUT_OF_RANGE;
+    }
+    return ma_rb_commit_read(&pRB->rb, sizeInBytes);
 }
 
 MA_API ma_result ma_pcm_rb_acquire_write(ma_pcm_rb* pRB, ma_uint32* pSizeInFrames, void** ppBufferOut)
 {
     size_t sizeInBytes;
+    ma_uint32 bpf;
     ma_result result;
 
-    if (pRB == NULL) {
+    if (pRB == NULL || pSizeInFrames == NULL) {
         return MA_INVALID_ARGS;
     }
 
-    sizeInBytes = *pSizeInFrames * ma_pcm_rb_get_bpf(pRB);
+    bpf = ma_pcm_rb_get_bpf(pRB);
+    if (bpf == 0) {
+        return MA_INVALID_ARGS;
+    }
+    if (!ma_size_mul_checked(*pSizeInFrames, bpf, &sizeInBytes)) {
+        return MA_OUT_OF_RANGE;
+    }
 
     result = ma_rb_acquire_write(&pRB->rb, &sizeInBytes, ppBufferOut);
     if (result != MA_SUCCESS) {
         return result;
     }
 
-    *pSizeInFrames = (ma_uint32)(sizeInBytes / ma_pcm_rb_get_bpf(pRB));
+    *pSizeInFrames = (ma_uint32)(sizeInBytes / bpf);
     return MA_SUCCESS;
 }
 
 MA_API ma_result ma_pcm_rb_commit_write(ma_pcm_rb* pRB, ma_uint32 sizeInFrames)
 {
+    size_t sizeInBytes;
+    ma_uint32 bpf;
     if (pRB == NULL) {
         return MA_INVALID_ARGS;
     }
 
-    return ma_rb_commit_write(&pRB->rb, sizeInFrames * ma_pcm_rb_get_bpf(pRB));
+    bpf = ma_pcm_rb_get_bpf(pRB);
+    if (bpf == 0) {
+        return MA_INVALID_ARGS;
+    }
+    if (!ma_size_mul_checked(sizeInFrames, bpf, &sizeInBytes)) {
+        return MA_OUT_OF_RANGE;
+    }
+    return ma_rb_commit_write(&pRB->rb, sizeInBytes);
 }
 
 MA_API ma_result ma_pcm_rb_seek_read(ma_pcm_rb* pRB, ma_uint32 offsetInFrames)
 {
+    size_t offsetInBytes;
+    ma_uint32 bpf;
     if (pRB == NULL) {
         return MA_INVALID_ARGS;
     }
 
-    return ma_rb_seek_read(&pRB->rb, offsetInFrames * ma_pcm_rb_get_bpf(pRB));
+    bpf = ma_pcm_rb_get_bpf(pRB);
+    if (bpf == 0) {
+        return MA_INVALID_ARGS;
+    }
+    if (!ma_size_mul_checked(offsetInFrames, bpf, &offsetInBytes)) {
+        return MA_OUT_OF_RANGE;
+    }
+    return ma_rb_seek_read(&pRB->rb, offsetInBytes);
 }
 
 MA_API ma_result ma_pcm_rb_seek_write(ma_pcm_rb* pRB, ma_uint32 offsetInFrames)
 {
+    size_t offsetInBytes;
+    ma_uint32 bpf;
     if (pRB == NULL) {
         return MA_INVALID_ARGS;
     }
 
-    return ma_rb_seek_write(&pRB->rb, offsetInFrames * ma_pcm_rb_get_bpf(pRB));
+    bpf = ma_pcm_rb_get_bpf(pRB);
+    if (bpf == 0) {
+        return MA_INVALID_ARGS;
+    }
+    if (!ma_size_mul_checked(offsetInFrames, bpf, &offsetInBytes)) {
+        return MA_OUT_OF_RANGE;
+    }
+    return ma_rb_seek_write(&pRB->rb, offsetInBytes);
 }
 
 MA_API ma_int32 ma_pcm_rb_pointer_distance(ma_pcm_rb* pRB)
@@ -67276,6 +67384,12 @@ static MA_INLINE ma_uint64 ma_noise_read_pcm_frames__white(ma_noise* pNoise, voi
     ma_uint32 iChannel;
     const ma_uint32 channels = pNoise->config.channels;
     MA_ASSUME(channels > 0);
+    {
+        ma_uint32 bytesPerFrame = ma_get_bytes_per_frame(pNoise->config.format, channels);
+        if (bytesPerFrame == 0 || frameCount > (ma_uint64)MA_SIZE_MAX / bytesPerFrame) {
+            return 0;
+        }
+    }
 
     if (pNoise->config.format == ma_format_f32) {
         float* pFramesOutF32 = (float*)pFramesOut;
@@ -67317,14 +67431,14 @@ static MA_INLINE ma_uint64 ma_noise_read_pcm_frames__white(ma_noise* pNoise, voi
             for (iFrame = 0; iFrame < frameCount; iFrame += 1) {
                 float s = ma_noise_f32_white(pNoise);
                 for (iChannel = 0; iChannel < channels; iChannel += 1) {
-                    ma_pcm_convert(ma_offset_ptr(pFramesOut, iFrame*bpf + iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
+                    ma_pcm_convert(ma_offset_ptr(pFramesOut, (size_t)iFrame*bpf + (size_t)iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
                 }
             }
         } else {
             for (iFrame = 0; iFrame < frameCount; iFrame += 1) {
                 for (iChannel = 0; iChannel < channels; iChannel += 1) {
                     float s = ma_noise_f32_white(pNoise);
-                    ma_pcm_convert(ma_offset_ptr(pFramesOut, iFrame*bpf + iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
+                    ma_pcm_convert(ma_offset_ptr(pFramesOut, (size_t)iFrame*bpf + (size_t)iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
                 }
             }
         }
@@ -67395,6 +67509,12 @@ static MA_INLINE ma_uint64 ma_noise_read_pcm_frames__pink(ma_noise* pNoise, void
     ma_uint32 iChannel;
     const ma_uint32 channels = pNoise->config.channels;
     MA_ASSUME(channels > 0);
+    {
+        ma_uint32 bytesPerFrame = ma_get_bytes_per_frame(pNoise->config.format, channels);
+        if (bytesPerFrame == 0 || frameCount > (ma_uint64)MA_SIZE_MAX / bytesPerFrame) {
+            return 0;
+        }
+    }
 
     if (pNoise->config.format == ma_format_f32) {
         float* pFramesOutF32 = (float*)pFramesOut;
@@ -67436,14 +67556,14 @@ static MA_INLINE ma_uint64 ma_noise_read_pcm_frames__pink(ma_noise* pNoise, void
             for (iFrame = 0; iFrame < frameCount; iFrame += 1) {
                 float s = ma_noise_f32_pink(pNoise, 0);
                 for (iChannel = 0; iChannel < channels; iChannel += 1) {
-                    ma_pcm_convert(ma_offset_ptr(pFramesOut, iFrame*bpf + iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
+                    ma_pcm_convert(ma_offset_ptr(pFramesOut, (size_t)iFrame*bpf + (size_t)iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
                 }
             }
         } else {
             for (iFrame = 0; iFrame < frameCount; iFrame += 1) {
                 for (iChannel = 0; iChannel < channels; iChannel += 1) {
                     float s = ma_noise_f32_pink(pNoise, iChannel);
-                    ma_pcm_convert(ma_offset_ptr(pFramesOut, iFrame*bpf + iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
+                    ma_pcm_convert(ma_offset_ptr(pFramesOut, (size_t)iFrame*bpf + (size_t)iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
                 }
             }
         }
@@ -67477,6 +67597,12 @@ static MA_INLINE ma_uint64 ma_noise_read_pcm_frames__brownian(ma_noise* pNoise, 
     ma_uint32 iChannel;
     const ma_uint32 channels = pNoise->config.channels;
     MA_ASSUME(channels > 0);
+    {
+        ma_uint32 bytesPerFrame = ma_get_bytes_per_frame(pNoise->config.format, channels);
+        if (bytesPerFrame == 0 || frameCount > (ma_uint64)MA_SIZE_MAX / bytesPerFrame) {
+            return 0;
+        }
+    }
 
     if (pNoise->config.format == ma_format_f32) {
         float* pFramesOutF32 = (float*)pFramesOut;
@@ -67518,14 +67644,14 @@ static MA_INLINE ma_uint64 ma_noise_read_pcm_frames__brownian(ma_noise* pNoise, 
             for (iFrame = 0; iFrame < frameCount; iFrame += 1) {
                 float s = ma_noise_f32_brownian(pNoise, 0);
                 for (iChannel = 0; iChannel < channels; iChannel += 1) {
-                    ma_pcm_convert(ma_offset_ptr(pFramesOut, iFrame*bpf + iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
+                    ma_pcm_convert(ma_offset_ptr(pFramesOut, (size_t)iFrame*bpf + (size_t)iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
                 }
             }
         } else {
             for (iFrame = 0; iFrame < frameCount; iFrame += 1) {
                 for (iChannel = 0; iChannel < channels; iChannel += 1) {
                     float s = ma_noise_f32_brownian(pNoise, iChannel);
-                    ma_pcm_convert(ma_offset_ptr(pFramesOut, iFrame*bpf + iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
+                    ma_pcm_convert(ma_offset_ptr(pFramesOut, (size_t)iFrame*bpf + (size_t)iChannel*bps), pNoise->config.format, &s, ma_format_f32, 1, ma_dither_mode_none);
                 }
             }
         }
@@ -71871,6 +71997,8 @@ MA_API ma_result ma_node_graph_init(const ma_node_graph_config* pConfig, const m
     ma_result result;
     ma_node_config baseConfig;
     ma_node_config endpointConfig;
+    size_t processingCacheBytesPerFrame;
+    size_t processingCacheSizeInBytes;
 
     if (pNodeGraph == NULL) {
         return MA_INVALID_ARGS;
@@ -71905,7 +72033,13 @@ MA_API ma_result ma_node_graph_init(const ma_node_graph_config* pConfig, const m
 
     /* Processing cache. */
     if (pConfig->processingSizeInFrames > 0) {
-        pNodeGraph->pProcessingCache = (float*)ma_malloc(pConfig->processingSizeInFrames * pConfig->channels * sizeof(float), pAllocationCallbacks);
+        if (!ma_size_mul_checked(pConfig->channels, sizeof(float), &processingCacheBytesPerFrame) ||
+            !ma_size_mul_checked(pConfig->processingSizeInFrames, processingCacheBytesPerFrame, &processingCacheSizeInBytes)) {
+            ma_node_uninit(&pNodeGraph->endpoint, pAllocationCallbacks);
+            ma_node_uninit(&pNodeGraph->base, pAllocationCallbacks);
+            return MA_OUT_OF_RANGE;
+        }
+        pNodeGraph->pProcessingCache = (float*)ma_malloc(processingCacheSizeInBytes, pAllocationCallbacks);
         if (pNodeGraph->pProcessingCache == NULL) {
             ma_node_uninit(&pNodeGraph->endpoint, pAllocationCallbacks);
             ma_node_uninit(&pNodeGraph->base, pAllocationCallbacks);
@@ -72008,8 +72142,12 @@ MA_API ma_result ma_node_graph_read_pcm_frames(ma_node_graph* pNodeGraph, void* 
                 framesToReadFromCache = pNodeGraph->processingCacheFramesRemaining;
             }
 
-            MA_COPY_MEMORY(pRunningFramesOut, pNodeGraph->pProcessingCache, framesToReadFromCache * channels * sizeof(float));
-            MA_MOVE_MEMORY(pNodeGraph->pProcessingCache, pNodeGraph->pProcessingCache + (framesToReadFromCache * channels), (pNodeGraph->processingCacheFramesRemaining - framesToReadFromCache) * channels * sizeof(float));
+            {
+                size_t samplesToCopy = (size_t)framesToReadFromCache * channels;
+                size_t samplesRemaining = (size_t)(pNodeGraph->processingCacheFramesRemaining - framesToReadFromCache) * channels;
+                MA_COPY_MEMORY(pRunningFramesOut, pNodeGraph->pProcessingCache, samplesToCopy * sizeof(float));
+                MA_MOVE_MEMORY(pNodeGraph->pProcessingCache, pNodeGraph->pProcessingCache + samplesToCopy, samplesRemaining * sizeof(float));
+            }
             pNodeGraph->processingCacheFramesRemaining -= framesToReadFromCache;
 
             totalFramesRead += framesToReadFromCache;
@@ -72503,7 +72641,13 @@ static ma_result ma_node_input_bus_read_pcm_frames(ma_node* pInputNode, ma_node_
                 } else {
                     /* Slow path. Not the first attachment. Mixing required. */
                     ma_uint32 preMixBufferCapInFrames = ((ma_node_base*)pInputNode)->cachedDataCapInFramesPerBus;
-                    float* pPreMixBuffer = (float*)ma_stack_alloc(((ma_node_base*)pInputNode)->pNodeGraph->pPreMixStack, preMixBufferCapInFrames * inputChannels * sizeof(float));
+                    size_t preMixSampleCount;
+                    size_t preMixBufferSizeInBytes;
+                    if (!ma_size_mul_checked(preMixBufferCapInFrames, inputChannels, &preMixSampleCount) ||
+                        !ma_size_mul_checked(preMixSampleCount, sizeof(float), &preMixBufferSizeInBytes)) {
+                        return MA_OUT_OF_RANGE;
+                    }
+                    float* pPreMixBuffer = (float*)ma_stack_alloc(((ma_node_base*)pInputNode)->pNodeGraph->pPreMixStack, preMixBufferSizeInBytes);
 
                     if (pPreMixBuffer == NULL) {
                         /*
@@ -72616,7 +72760,7 @@ static float* ma_node_get_cached_input_ptr(ma_node* pNode, ma_uint32 inputBusInd
     /* Input data is stored at the front of the buffer. */
     pBasePtr = pNodeBase->pCachedData;
     for (iInputBus = 0; iInputBus < inputBusIndex; iInputBus += 1) {
-        pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iInputBus]);
+        pBasePtr += (size_t)pNodeBase->cachedDataCapInFramesPerBus * ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iInputBus]);
     }
 
     return pBasePtr;
@@ -72634,11 +72778,11 @@ static float* ma_node_get_cached_output_ptr(ma_node* pNode, ma_uint32 outputBusI
     /* Cached output data starts after the input data. */
     pBasePtr = pNodeBase->pCachedData;
     for (iInputBus = 0; iInputBus < ma_node_get_input_bus_count(pNodeBase); iInputBus += 1) {
-        pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iInputBus]);
+        pBasePtr += (size_t)pNodeBase->cachedDataCapInFramesPerBus * ma_node_input_bus_get_channels(&pNodeBase->pInputBuses[iInputBus]);
     }
 
     for (iOutputBus = 0; iOutputBus < outputBusIndex; iOutputBus += 1) {
-        pBasePtr += pNodeBase->cachedDataCapInFramesPerBus * ma_node_output_bus_get_channels(&pNodeBase->pOutputBuses[iOutputBus]);
+        pBasePtr += (size_t)pNodeBase->cachedDataCapInFramesPerBus * ma_node_output_bus_get_channels(&pNodeBase->pOutputBuses[iOutputBus]);
     }
 
     return pBasePtr;
@@ -72774,6 +72918,8 @@ static ma_result ma_node_get_heap_layout(ma_node_graph* pNodeGraph, const ma_nod
     } else {
         /* Slow path. Cache needed. */
         size_t cachedDataSizeInBytes = 0;
+        size_t busCacheSizeInBytes;
+        ma_uint32 bytesPerFrame;
         ma_uint32 cacheCapInFrames;
         ma_uint32 iBus;
 
@@ -72781,15 +72927,32 @@ static ma_result ma_node_get_heap_layout(ma_node_graph* pNodeGraph, const ma_nod
         cacheCapInFrames = ma_node_config_get_cache_size_in_frames(pConfig, pNodeGraph);
 
         for (iBus = 0; iBus < inputBusCount; iBus += 1) {
-            cachedDataSizeInBytes += cacheCapInFrames * ma_get_bytes_per_frame(ma_format_f32, pConfig->pInputChannels[iBus]);
+            bytesPerFrame = ma_get_bytes_per_frame(ma_format_f32, pConfig->pInputChannels[iBus]);
+            if (bytesPerFrame == 0 || !ma_size_mul_checked(cacheCapInFrames, bytesPerFrame, &busCacheSizeInBytes) ||
+                busCacheSizeInBytes > (size_t)MA_SIZE_MAX - cachedDataSizeInBytes) {
+                return MA_OUT_OF_RANGE;
+            }
+            cachedDataSizeInBytes += busCacheSizeInBytes;
         }
 
         for (iBus = 0; iBus < outputBusCount; iBus += 1) {
-            cachedDataSizeInBytes += cacheCapInFrames * ma_get_bytes_per_frame(ma_format_f32, pConfig->pOutputChannels[iBus]);
+            bytesPerFrame = ma_get_bytes_per_frame(ma_format_f32, pConfig->pOutputChannels[iBus]);
+            if (bytesPerFrame == 0 || !ma_size_mul_checked(cacheCapInFrames, bytesPerFrame, &busCacheSizeInBytes) ||
+                busCacheSizeInBytes > (size_t)MA_SIZE_MAX - cachedDataSizeInBytes) {
+                return MA_OUT_OF_RANGE;
+            }
+            cachedDataSizeInBytes += busCacheSizeInBytes;
         }
 
+        if (cachedDataSizeInBytes > (size_t)MA_SIZE_MAX - 63) {
+            return MA_OUT_OF_RANGE;
+        }
+        busCacheSizeInBytes = ma_align_64(cachedDataSizeInBytes);
+        if (busCacheSizeInBytes > (size_t)MA_SIZE_MAX - pHeapLayout->sizeInBytes) {
+            return MA_OUT_OF_RANGE;
+        }
         pHeapLayout->cachedDataOffset = pHeapLayout->sizeInBytes;
-        pHeapLayout->sizeInBytes += ma_align_64(cachedDataSizeInBytes);
+        pHeapLayout->sizeInBytes += busCacheSizeInBytes;
     }
 
 
@@ -73655,7 +73818,7 @@ static ma_result ma_node_read_pcm_frames(ma_node* pNode, ma_uint32 outputBusInde
     }
 
     /* Apply volume, if necessary. */
-    ma_apply_volume_factor_f32(pFramesOut, totalFramesRead * ma_node_get_output_channels(pNodeBase, outputBusIndex), ma_node_output_bus_get_volume(&pNodeBase->pOutputBuses[outputBusIndex]));
+    ma_apply_volume_factor_f32(pFramesOut, (ma_uint64)totalFramesRead * ma_node_get_output_channels(pNodeBase, outputBusIndex), ma_node_output_bus_get_volume(&pNodeBase->pOutputBuses[outputBusIndex]));
 
     /* Advance our local time forward. */
     ma_atomic_fetch_add_64(&pNodeBase->localTime, (ma_uint64)totalFramesRead);
@@ -75080,10 +75243,10 @@ static void ma_engine_node_process_pcm_frames__general(ma_engine_node* pEngineNo
                 /* No channel conversion required. Just copy straight to the output buffer. */
                 if (isVolumeSmoothingEnabled) {
                     /* Volume has already been applied. Just copy straight to the output buffer. */
-                    ma_copy_pcm_frames(pRunningFramesOut, pWorkingBuffer, framesJustProcessedOut * channelsOut, ma_format_f32, channelsOut);
+                    ma_copy_pcm_frames(pRunningFramesOut, pWorkingBuffer, (ma_uint64)framesJustProcessedOut * channelsOut, ma_format_f32, channelsOut);
                 } else {
                     /* Volume has not been applied yet. Copy and apply volume in the same pass. */
-                    ma_copy_and_apply_volume_factor_f32(pRunningFramesOut, pWorkingBuffer, framesJustProcessedOut * channelsOut, volume);
+                    ma_copy_and_apply_volume_factor_f32(pRunningFramesOut, pWorkingBuffer, (ma_uint64)framesJustProcessedOut * channelsOut, volume);
                 }
             } else {
                 /* Channel conversion required. TODO: Add support for channel maps here. */
@@ -75091,7 +75254,7 @@ static void ma_engine_node_process_pcm_frames__general(ma_engine_node* pEngineNo
 
                 /* If we're using smoothing, the volume will have already been applied. */
                 if (!isVolumeSmoothingEnabled) {
-                    ma_apply_volume_factor_f32(pRunningFramesOut, framesJustProcessedOut * channelsOut, volume);
+                    ma_apply_volume_factor_f32(pRunningFramesOut, (ma_uint64)framesJustProcessedOut * channelsOut, volume);
                 }
             }
         }

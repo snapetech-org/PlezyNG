@@ -4307,6 +4307,8 @@ class Translations$karaokeUi$es extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Cada segmento necesita tiempos de inicio y fin válidos.';
 	@override String get listenToGuideTrack => 'Escuchar pista guía';
 	@override String get countInOnPracticeLoops => 'Cuenta atrás al reiniciar el bucle de práctica';
+	@override String get practiceMetronomeTitle => 'Metrónomo de práctica';
+	@override String get practiceMetronomeHelp => 'Reproduce un clic en cada pulso mientras suena el bucle de práctica. Usa el BPM guardado y la velocidad de reproducción; se pausa durante la captura del micrófono. Los ajustes del dispositivo pueden silenciar el clic.';
 }
 
 // Path: bonusExtras
@@ -9704,6 +9706,8 @@ extension on TranslationsEs {
 			'karaokeUi.invalidLyricSpanTiming' => 'Cada segmento necesita tiempos de inicio y fin válidos.',
 			'karaokeUi.listenToGuideTrack' => 'Escuchar pista guía',
 			'karaokeUi.countInOnPracticeLoops' => 'Cuenta atrás al reiniciar el bucle de práctica',
+			'karaokeUi.practiceMetronomeTitle' => 'Metrónomo de práctica',
+			'karaokeUi.practiceMetronomeHelp' => 'Reproduce un clic en cada pulso mientras suena el bucle de práctica. Usa el BPM guardado y la velocidad de reproducción; se pausa durante la captura del micrófono. Los ajustes del dispositivo pueden silenciar el clic.',
 			'bonusExtras.title' => 'Extras',
 			'bonusExtras.seeAll' => 'Ver todos los extras',
 			'bonusExtras.findMore' => 'Buscar más',
@@ -9792,10 +9796,10 @@ extension on TranslationsEs {
 			'musicExperience.empty' => 'No hay música coincidente. Las funciones sonoras requieren análisis en el servidor.',
 			'musicExperience.unsupported' => 'Este servidor no ofrece análisis sonoro.',
 			'musicExperience.continuation' => 'Seguir con música similar',
-			'musicExperience.shuffleAlbums' => 'Mezclar álbumes',
-			'musicExperience.nextAlbum' => 'Álbum siguiente',
 			_ => null,
 		} ?? switch (path) {
+			'musicExperience.shuffleAlbums' => 'Mezclar álbumes',
+			'musicExperience.nextAlbum' => 'Álbum siguiente',
 			'musicExperience.driving' => 'Vista de conducción',
 			'musicExperience.exitDriving' => 'Salir de la vista de conducción',
 			'musicExperience.signalPath' => 'Ruta de la señal de audio',

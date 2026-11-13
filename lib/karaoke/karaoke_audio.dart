@@ -157,6 +157,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
         throw UnsupportedError(failure);
       }
       capturing = true;
+      session.captureActive = true;
       _lastPacket = DateTime.now().millisecondsSinceEpoch;
       _window.clear();
       trace.clear();
@@ -456,6 +457,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> _stop() async {
     _generation++;
     capturing = false;
+    session.captureActive = false;
     starting = false;
     if (score != null && singerId != null && session.current != null) {
       session.party.addResult(score!.result(), singerId: singerId!, requestId: session.current!.id);

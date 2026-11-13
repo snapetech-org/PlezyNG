@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Countdown beim Neustart der Übungsschleife"
+    "countInOnPracticeLoops": "Countdown beim Neustart der Übungsschleife",
+    "practiceMetronomeTitle": "Übungsmetronom",
+    "practiceMetronomeHelp": "Spielt während der Übungsschleife auf jedem Schlag einen Klick. Verwendet gespeichertes BPM und Wiedergabetempo; pausiert während der Mikrofonaufnahme. Geräteeinstellungen können den Klick unterdrücken."
   },
   "musicExperience": {
     "title": "Musik entdecken",

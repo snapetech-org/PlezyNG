@@ -5502,7 +5502,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Cuenta atrás al reiniciar el bucle de práctica"
+    "countInOnPracticeLoops": "Cuenta atrás al reiniciar el bucle de práctica",
+    "practiceMetronomeTitle": "Metrónomo de práctica",
+    "practiceMetronomeHelp": "Reproduce un clic en cada pulso mientras suena el bucle de práctica. Usa el BPM guardado y la velocidad de reproducción; se pausa durante la captura del micrófono. Los ajustes del dispositivo pueden silenciar el clic."
   },
   "bonusExtras": {
     "title": "Extras",

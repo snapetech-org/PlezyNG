@@ -4331,6 +4331,8 @@ class Translations$karaokeUi$fr extends Translations$karaokeUi$en {
 	@override String get listenToGuideTrack => 'Écouter la piste guide';
 	@override String get hostExitPIN => 'Code PIN de sortie de l’animateur';
 	@override String get countInOnPracticeLoops => 'Décompte au redémarrage de la boucle d’entraînement';
+	@override String get practiceMetronomeTitle => 'Métronome d’entraînement';
+	@override String get practiceMetronomeHelp => 'Joue un clic à chaque temps pendant la boucle d’entraînement. Utilise le BPM enregistré et la vitesse de lecture ; se met en pause pendant la capture du micro. Les réglages de l’appareil peuvent supprimer le clic.';
 }
 
 // Path: musicExperience
@@ -9624,6 +9626,8 @@ extension on TranslationsFr {
 			'karaokeUi.listenToGuideTrack' => 'Écouter la piste guide',
 			'karaokeUi.hostExitPIN' => 'Code PIN de sortie de l’animateur',
 			'karaokeUi.countInOnPracticeLoops' => 'Décompte au redémarrage de la boucle d’entraînement',
+			'karaokeUi.practiceMetronomeTitle' => 'Métronome d’entraînement',
+			'karaokeUi.practiceMetronomeHelp' => 'Joue un clic à chaque temps pendant la boucle d’entraînement. Utilise le BPM enregistré et la vitesse de lecture ; se met en pause pendant la capture du micro. Les réglages de l’appareil peuvent supprimer le clic.',
 			'musicExperience.title' => 'Découverte musicale',
 			'musicExperience.mix' => 'Créateur de mix',
 			'musicExperience.adventure' => 'Aventure sonore',
@@ -9712,10 +9716,10 @@ extension on TranslationsFr {
 			'musicTools.unpin' => 'Désépingler',
 			'musicTools.serverAnalysis' => 'Analyse du serveur',
 			'musicTools.sonicAnalysis' => 'Analyse sonore',
-			'musicTools.serverAnalysisScope' => 'Toutes les bibliothèques musicales éligibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.',
-			'musicTools.serverActivities' => 'Activités du serveur',
 			_ => null,
 		} ?? switch (path) {
+			'musicTools.serverAnalysisScope' => 'Toutes les bibliothèques musicales éligibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.',
+			'musicTools.serverActivities' => 'Activités du serveur',
 			'musicTools.playlistSharing' => 'Accès à la liste',
 			'musicTools.playlistRecipient' => 'Nom d’utilisateur Plex ou e-mail',
 			'musicTools.playlistSharingHint' => 'Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.',

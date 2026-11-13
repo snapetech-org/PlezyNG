@@ -14626,6 +14626,12 @@ class Translations$karaokeUi$en {
 	/// en: 'Use the device's short system click on each beat. Some devices or sound settings may suppress it.'
 	String get practiceCountInTickHelp => 'Use the device\'s short system click on each beat. Some devices or sound settings may suppress it.';
 
+	/// en: 'Practice metronome'
+	String get practiceMetronomeTitle => 'Practice metronome';
+
+	/// en: 'Click on each beat while the practice loop plays. Uses saved BPM and playback speed; pauses during microphone capture. Device sound settings may suppress the click.'
+	String get practiceMetronomeHelp => 'Click on each beat while the practice loop plays. Uses saved BPM and playback speed; pauses during microphone capture. Device sound settings may suppress the click.';
+
 	/// en: 'Mark intro end here'
 	String get setIntroTrimAtPlayhead => 'Mark intro end here';
 
@@ -23084,6 +23090,8 @@ extension on Translations {
 			'karaokeUi.countInOnPracticeLoops' => 'Count in on practice loops',
 			'karaokeUi.practiceCountInTickTitle' => 'Play count-in ticks',
 			'karaokeUi.practiceCountInTickHelp' => 'Use the device\'s short system click on each beat. Some devices or sound settings may suppress it.',
+			'karaokeUi.practiceMetronomeTitle' => 'Practice metronome',
+			'karaokeUi.practiceMetronomeHelp' => 'Click on each beat while the practice loop plays. Uses saved BPM and playback speed; pauses during microphone capture. Device sound settings may suppress the click.',
 			'karaokeUi.setIntroTrimAtPlayhead' => 'Mark intro end here',
 			'karaokeUi.setOutroTrimAtPlayhead' => 'Mark outro start here',
 			'karaokeUi.previewTrimmedRange' => 'Play marked range',

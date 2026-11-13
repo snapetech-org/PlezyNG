@@ -78,6 +78,11 @@ class KaraokeSession extends ChangeNotifier {
   int _countInGeneration = 0;
   bool _countInRunning = false;
   int? countInBeat;
+  Timer? _metronomeTimer;
+  String? _metronomeRenditionId;
+  int? _metronomeBeatIndex, _metronomeBpm, _metronomeSourcePositionMs, _metronomeLoopStartMs, _metronomeLoopEndMs;
+  int? _metronomeEpoch;
+  double? _metronomeTempo;
   Player? _player;
   KaraokeStemMixer? mixer;
   VideoPlayerLease? _videoLease;
@@ -90,6 +95,9 @@ class KaraokeSession extends ChangeNotifier {
   bool fairRotation = true, allowExplicit = true, requireApproval = true, allowVotes = false, held = false;
   bool practiceCountInEnabled = false;
   bool practiceCountInTickEnabled = false;
+  bool practiceMetronomeEnabled = false;
+  // The stop callback is a lifetime hook; this flag represents active capture.
+  bool captureActive = false;
   bool autoSkipMarkersEnabled = false;
   bool _disposed = false, _loopSeeking = false, _finishing = false;
   bool _instrumentalSkipSeeking = false, _trimPreviewActive = false, _trimPreviewStopping = false;
@@ -212,6 +220,7 @@ class KaraokeSession extends ChangeNotifier {
       allowVotes = j['allowVotes'] == true;
       practiceCountInEnabled = j['practiceCountInEnabled'] == true;
       practiceCountInTickEnabled = j['practiceCountInTickEnabled'] == true;
+      practiceMetronomeEnabled = j['practiceMetronomeEnabled'] == true;
       autoSkipMarkersEnabled = j['autoSkipMarkersEnabled'] == true;
       banner = j['banner'] as String? ?? '';
       stageColor = j['stageColor'] as int? ?? stageColor;
@@ -263,6 +272,7 @@ class KaraokeSession extends ChangeNotifier {
     'allowVotes': allowVotes,
     'practiceCountInEnabled': practiceCountInEnabled,
     'practiceCountInTickEnabled': practiceCountInTickEnabled,
+    'practiceMetronomeEnabled': practiceMetronomeEnabled,
     'autoSkipMarkersEnabled': autoSkipMarkersEnabled,
     'party': party.toJson(),
     'duetInvitation': duetInvitation,
@@ -1404,7 +1414,7 @@ class KaraokeSession extends ChangeNotifier {
     if (!_started || current?.trackId != selected.id) {
       throw StateError('Preview requires this rendition to be playing');
     }
-    if (stopCapture != null) {
+    if (captureActive) {
       throw StateError('Stop vocal capture before previewing trim markers');
     }
     final duration = durationMs;
@@ -1558,6 +1568,13 @@ class KaraokeSession extends ChangeNotifier {
     await save();
   }
 
+  Future<void> setPracticeMetronomeEnabled(bool enabled) async {
+    practiceMetronomeEnabled = enabled;
+    _resetPracticeMetronome();
+    _notify();
+    await save();
+  }
+
   Future<void> setAutoSkipMarkersEnabled(bool enabled) async {
     autoSkipMarkersEnabled = enabled;
     _notify();
@@ -1602,7 +1619,7 @@ class KaraokeSession extends ChangeNotifier {
     if (!_started ||
         !playing ||
         !practiceCountInEnabled ||
-        stopCapture != null ||
+        captureActive ||
         renditionId == null ||
         startMs == null ||
         loopEndMs == null) {
@@ -1798,6 +1815,7 @@ class KaraokeSession extends ChangeNotifier {
 
   Future<void> _stopPlayback() async {
     PlaybackCoordinator.instance.unregisterKaraoke(stopPlayback);
+    _resetPracticeMetronome();
     _cancelTrimPreview();
     _trimPreviewHeldAtEnd = false;
     _cancelPracticeCountIn();
@@ -1979,6 +1997,99 @@ class KaraokeSession extends ChangeNotifier {
     }
   }
 
+  void _resetPracticeMetronome() {
+    _metronomeTimer?.cancel();
+    _metronomeTimer = null;
+    _metronomeRenditionId = null;
+    _metronomeBeatIndex = null;
+    _metronomeBpm = null;
+    _metronomeSourcePositionMs = null;
+    _metronomeLoopStartMs = null;
+    _metronomeLoopEndMs = null;
+    _metronomeEpoch = null;
+    _metronomeTempo = null;
+  }
+
+  void _schedulePracticeMetronomeBeat({
+    required int ms,
+    required int startMs,
+    required int bpm,
+    required double tempo,
+  }) {
+    final beatDurationUs = (60000000 / bpm).round();
+    final elapsedUs = math.max(0, ms - startMs) * 1000;
+    final nextBeatUs = (elapsedUs ~/ beatDurationUs + 1) * beatDurationUs;
+    final delayUs = math.max(1000, ((nextBeatUs - elapsedUs) / tempo).round());
+    _metronomeTimer = Timer(Duration(microseconds: delayUs), _onPracticeMetronomeTimer);
+  }
+
+  void _playPracticeMetronomeClick() {
+    unawaited(
+      SystemSound.play(SystemSoundType.click).catchError((Object _) {
+        // The metronome is best effort on devices without an available system click.
+      }),
+    );
+  }
+
+  void _tickPracticeMetronome(int ms) {
+    final startMs = loopStartMs, endMs = loopEndMs, renditionId = current?.trackId;
+    if (!practiceMetronomeEnabled ||
+        !_started ||
+        !playing ||
+        captureActive ||
+        _countInRunning ||
+        _trimPreviewActive ||
+        _trimPreviewHeldAtEnd ||
+        _loopSeeking ||
+        startMs == null ||
+        endMs == null ||
+        renditionId == null ||
+        ms < startMs ||
+        ms >= endMs) {
+      _resetPracticeMetronome();
+      return;
+    }
+
+    final bpm = karaokePracticeCountInBpm(analysis[renditionId]?['bpm'] as num?, tempo: 1);
+    final tempo = current?.tempo ?? 1;
+    final beatIndex = ((ms - startMs) * bpm) ~/ 60000;
+    final contextChanged =
+        _metronomeRenditionId != renditionId ||
+        _metronomeBpm != bpm ||
+        _metronomeTempo != tempo ||
+        _metronomeLoopStartMs != startMs ||
+        _metronomeLoopEndMs != endMs ||
+        _metronomeEpoch != epoch ||
+        (_metronomeSourcePositionMs != null && ms < _metronomeSourcePositionMs!);
+    if (contextChanged) {
+      _metronomeTimer?.cancel();
+      _metronomeTimer = null;
+      _metronomeRenditionId = renditionId;
+      _metronomeBpm = bpm;
+      _metronomeTempo = tempo;
+      _metronomeLoopStartMs = startMs;
+      _metronomeLoopEndMs = endMs;
+      _metronomeEpoch = epoch;
+      _metronomeBeatIndex = beatIndex;
+      if (ms - startMs <= 100) {
+        _playPracticeMetronomeClick();
+      }
+    } else if (_metronomeBeatIndex != beatIndex) {
+      _metronomeBeatIndex = beatIndex;
+      _playPracticeMetronomeClick();
+    }
+    _metronomeSourcePositionMs = ms;
+    if (_metronomeTimer == null) {
+      _schedulePracticeMetronomeBeat(ms: ms, startMs: startMs, bpm: bpm, tempo: tempo);
+    }
+  }
+
+  void _onPracticeMetronomeTimer() {
+    _metronomeTimer = null;
+    final ms = (_usingMusic ? music.position : _player?.currentPosition)?.inMilliseconds ?? positionMs.value;
+    _tickPracticeMetronome(ms);
+  }
+
   void _tick() {
     if (_disposed || (!_started && !_usingFiller)) {
       return;
@@ -1987,10 +2098,11 @@ class KaraokeSession extends ChangeNotifier {
     if (_started && ms != positionMs.value) {
       positionMs.value = ms;
     }
+    _tickPracticeMetronome(ms);
     final practiceLoopActive = loopStartMs != null && loopEndMs != null;
     if (_started && !_trimPreviewActive && practiceLoopActive && ms >= loopEndMs! && playing && !_loopSeeking) {
       _loopSeeking = true;
-      final restart = practiceCountInEnabled && stopCapture == null ? _startPracticeCountIn() : seek(loopStartMs!);
+      final restart = practiceCountInEnabled && !captureActive ? _startPracticeCountIn() : seek(loopStartMs!);
       unawaited(restart.catchError(report).whenComplete(() => _loopSeeking = false));
     }
     if (_started && _trimPreviewActive) {
@@ -2036,6 +2148,7 @@ class KaraokeSession extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _resetPracticeMetronome();
     _clock.cancel();
     music.removeListener(_onMusic);
     unawaited(save().catchError((Object _) {}));

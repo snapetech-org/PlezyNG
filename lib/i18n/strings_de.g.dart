@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$de extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Jeder Abschnitt benötigt gültige Start- und Endzeiten.';
 	@override String get listenToGuideTrack => 'Guide-Spur anhören';
 	@override String get countInOnPracticeLoops => 'Countdown beim Neustart der Übungsschleife';
+	@override String get practiceMetronomeTitle => 'Übungsmetronom';
+	@override String get practiceMetronomeHelp => 'Spielt während der Übungsschleife auf jedem Schlag einen Klick. Verwendet gespeichertes BPM und Wiedergabetempo; pausiert während der Mikrofonaufnahme. Geräteeinstellungen können den Klick unterdrücken.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsDe {
 			'karaokeUi.invalidLyricSpanTiming' => 'Jeder Abschnitt benötigt gültige Start- und Endzeiten.',
 			'karaokeUi.listenToGuideTrack' => 'Guide-Spur anhören',
 			'karaokeUi.countInOnPracticeLoops' => 'Countdown beim Neustart der Übungsschleife',
+			'karaokeUi.practiceMetronomeTitle' => 'Übungsmetronom',
+			'karaokeUi.practiceMetronomeHelp' => 'Spielt während der Übungsschleife auf jedem Schlag einen Klick. Verwendet gespeichertes BPM und Wiedergabetempo; pausiert während der Mikrofonaufnahme. Geräteeinstellungen können den Klick unterdrücken.',
 			'musicExperience.title' => 'Musik entdecken',
 			'musicExperience.mix' => 'Mix erstellen',
 			'musicExperience.adventure' => 'Klangreise',
@@ -9668,10 +9672,10 @@ extension on TranslationsDe {
 			'musicTools.continueStation' => 'Diesen Sender weiter abspielen',
 			'musicDevices.playOn' => 'Wiedergeben auf',
 			'musicDevices.thisDevice' => 'Dieses Gerät',
-			'musicDevices.playingOn' => ({required Object device}) => 'Wiedergabe auf ${device}',
-			'musicDevices.remembered' => 'Gespeicherte Geräte',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Wiedergabe auf ${device}',
+			'musicDevices.remembered' => 'Gespeicherte Geräte',
 			'musicDevices.forget' => 'Gerät vergessen',
 			'musicDevices.receive' => 'Wiedergabe auf diesem Gerät erlauben',
 			'musicDevices.receiverHint' => 'Lass Pleazyng geöffnet, um Musik zu empfangen. Kopple einmal mit diesem Code.',

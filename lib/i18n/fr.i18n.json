@@ -5506,7 +5506,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Décompte au redémarrage de la boucle d’entraînement"
+    "countInOnPracticeLoops": "Décompte au redémarrage de la boucle d’entraînement",
+    "practiceMetronomeTitle": "Métronome d’entraînement",
+    "practiceMetronomeHelp": "Joue un clic à chaque temps pendant la boucle d’entraînement. Utilise le BPM enregistré et la vitesse de lecture ; se met en pause pendant la capture du micro. Les réglages de l’appareil peuvent supprimer le clic."
   },
   "musicExperience": {
     "title": "Découverte musicale",

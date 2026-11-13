@@ -1210,6 +1210,14 @@ class _KaraokeScreenState extends State<KaraokeScreen> with WidgetsBindingObserv
                   SwitchListTile(
                     dense: true,
                     contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.t.karaokeUi.practiceMetronomeTitle),
+                    subtitle: Text(l10n.t.karaokeUi.practiceMetronomeHelp),
+                    value: s.practiceMetronomeEnabled,
+                    onChanged: _busy ? null : (value) => _run(() => s.setPracticeMetronomeEnabled(value)),
+                  ),
+                  SwitchListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
                     title: Text(l10n.t.karaokeUi.countInOnPracticeLoops),
                     value: s.practiceCountInEnabled,
                     onChanged: _busy ? null : (value) => _run(() => s.setPracticeCountInEnabled(value)),

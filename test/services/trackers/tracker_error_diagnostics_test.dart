@@ -307,7 +307,7 @@ void main() {
       addTearDown(startClient.dispose);
       addTearDown(pollClient.dispose);
 
-      expect(await _runThroughConnect(() async => startClient.start('mal'), label: 'mal'), isFalse);
+      expect(await _runThroughConnect(() async => startClient.start('trakt'), label: 'mal'), isFalse);
       expect(await _runThroughConnect(() async => pollClient.poll('local-session'), label: 'mal'), isFalse);
 
       _expectNoCanaries(

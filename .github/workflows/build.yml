@@ -332,14 +332,6 @@ jobs:
               output.write('approved=true\n')
           PY
 
-      - name: Check out the approved packaging source
-        if: steps.frozen-repair.outputs.approved == 'true'
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          ref: ${{ inputs.recovery_source_sha }}
-          fetch-depth: 0
-          persist-credentials: false
-
       - name: Require current verified fork native dependency
         if: steps.frozen-repair.outputs.approved != 'true'
         run: python3 scripts/sync_native_revision.py --check
@@ -601,8 +593,8 @@ jobs:
             exit 1
           fi
           if [[ -n "$PACKAGING_SHA" ]]; then
-            if [[ "$REPAIR_APPROVED" != true || "$release_commit" != "$PRODUCT_SHA" || "$(git rev-parse HEAD)" != "$PACKAGING_SHA" ]]; then
-              echo "Approved packaging source is not bound to the immutable product tag." >&2
+            if [[ "$REPAIR_APPROVED" != true || "$release_commit" != "$PRODUCT_SHA" ]]; then
+              echo "Approved packaging recovery is not bound to the immutable product tag." >&2
               exit 1
             fi
           else

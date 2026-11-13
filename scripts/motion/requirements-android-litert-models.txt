@@ -3,10 +3,10 @@
 # local accelerator. litert-torch 0.10.0 pins the matching LiteRT 2.3.x and AI
 # Edge Quantizer 0.10.x API families. Pin the CPU-only Python 3.11 x86_64
 # wheel directly so model export cannot select a workstation accelerator.
-# LiteRT Torch 0.10.0 requires torch<2.15.0. PyTorch 2.14.1 is affected by
-# GHSA-v32g-mr63-3j83; this exporter verifies the pinned checkpoint bytes and
-# SHA-256 immediately before loading until LiteRT supports patched Torch.
+# Pin PyTorch 2.12.1, inside LiteRT Torch 0.10.0's supported range and outside
+# the affected ranges of GHSA-63cw-57p8-fm3p and GHSA-v32g-mr63-3j83. Keep the
+# pinned checkpoint size and SHA-256 verification immediately before loading.
 litert-torch==0.10.0
 ai-edge-quantizer==0.10.1
-torch @ https://download-r2.pytorch.org/whl/cpu/torch-2.14.1%2Bcpu-cp311-cp311-manylinux_2_28_x86_64.whl#sha256=5e38154c8896d426a5df58bf2276b603e82184dfae4f54d77dbb212f36e34f37
+torch @ https://download-r2.pytorch.org/whl/cpu/torch-2.12.1%2Bcpu-cp311-cp311-manylinux_2_28_x86_64.whl#sha256=04cd8b002c03dd6a246fbb4ae5abf1edd42adf0a9929ad82162c973e5737b5ac
 numpy>=2.0,<3.0

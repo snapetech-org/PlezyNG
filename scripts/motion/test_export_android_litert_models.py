@@ -37,7 +37,7 @@ class PreserveGoogleTensorAotRecordsTest(unittest.TestCase):
                 "converter": "litert-torch==0.10.0",
                 "litert": "ai-edge-litert==2.3.0",
                 "sdk": "ai-edge-litert-sdk-google-tensor-nightly==2.3.0.dev20261001",
-                "torch": "2.14.1+cpu",
+                "torch": "2.12.1+cpu",
                 "validated_resolutions": ["720p"],
             },
             "models": {

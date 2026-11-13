@@ -104,9 +104,12 @@ experimental engines or substituting a system mpv. Keep automatic DV/FEL and com
 motion processing remains off by default.
 
 Repository submission must include a maintainer, license/provenance review and
-the tested native outputs. Confirm whether each community requires source
-builds; a request for source packaging is a separate build adaptation, not a
-reason to describe a binary candidate as accepted. The renderer does not submit PRs. The approved Nixpkgs PR is linked above; no binary cache is configured.
+the tested native outputs. Flathub requires offline source builds; its current
+source-build blockers and the read-only audit are recorded in the
+[Flathub source-build guide](flathub-source-build.md). A request for source
+packaging is a separate build adaptation, not a reason to describe a binary
+candidate as accepted. The renderer does not submit PRs. The approved Nixpkgs
+PR is linked above; no binary cache is configured.
 
 ## aerynOS
 

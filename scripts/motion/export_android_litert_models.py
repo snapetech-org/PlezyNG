@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import importlib.metadata
+import io
 import json
 import os
 import shutil
@@ -93,8 +94,23 @@ def verify_source(source: Path) -> None:
         raise ValueError(f"ANVIL source must be at {SOURCE_REVISION}; found {revision}")
 
 
-def load_checkpoint(model: Any, checkpoint_path: Path, torch: Any) -> None:
-    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
+def load_checkpoint(
+    model: Any,
+    checkpoint_path: Path,
+    torch: Any,
+    expected_bytes: int,
+    expected_sha256: str,
+) -> None:
+    with checkpoint_path.open("rb") as source:
+        checkpoint_bytes = source.read(expected_bytes + 1)
+    if (
+        len(checkpoint_bytes) != expected_bytes
+        or hashlib.sha256(checkpoint_bytes).hexdigest() != expected_sha256
+    ):
+        raise ValueError(f"Pinned checkpoint size or SHA-256 mismatch: {checkpoint_path}")
+    checkpoint = torch.load(
+        io.BytesIO(checkpoint_bytes), map_location="cpu", weights_only=True
+    )
     state = checkpoint.get("model_state_dict", checkpoint)
     model.load_state_dict(state, strict=True)
 
@@ -706,7 +722,9 @@ def main() -> int:
         for resolution in args.resolutions:
             height, width = SHAPES[resolution]
             model = build_model(spec["upstream_id"])
-            load_checkpoint(model, checkpoint, torch)
+            load_checkpoint(
+                model, checkpoint, torch, spec["bytes"], spec["sha256"]
+            )
             model.eval()
             if hasattr(model, "fuse_for_deploy"):
                 model.fuse_for_deploy()

@@ -139,7 +139,7 @@ python3 scripts/motion/export_android_litert_models.py \
   --output-dir /path/to/task-scratch/android-litert-models
 ```
 
-The exporter needs Python 3.11 and `scripts/motion/requirements-android-litert-models.txt` (`litert-torch==0.10.0`, AI Edge Quantizer 0.10.0, PyTorch 2.11–2.14, and NumPy). For local export without an NVIDIA runtime, install the official CPU wheel first, then the pinned requirements:
+The exporter needs Python 3.11 and `scripts/motion/requirements-android-litert-models.txt` (`litert-torch==0.10.0`, AI Edge Quantizer 0.10.1, PyTorch 2.14.1 CPU, and NumPy). LiteRT Torch 0.10.0 does not accept patched PyTorch 2.15 yet; because 2.14.1 is affected by [GHSA-v32g-mr63-3j83](https://github.com/pytorch/pytorch/security/advisories/GHSA-v32g-mr63-3j83), the exporter hashes the exact checkpoint bytes again immediately before loading them and refuses any file that differs from the pinned upstream artifact. Update this profile to patched PyTorch once LiteRT supports it. For local export without an NVIDIA runtime, install the official CPU wheel first, then the pinned requirements:
 
 ```sh
 python3.11 -m venv /path/to/model-env

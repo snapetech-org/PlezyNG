@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Declare Moonlight surface-recovery state before its timeout callback so Android Java compilation succeeds.
 - Track the practice-metronome title and guidance as explicit English fallbacks until translation review; refresh locale structure and coverage counts.
 - Allow native aerynOS qualification to run from the trusted downstream main workflow and resolve its QA tooling from canonical main, with source and tooling ancestry checks.
 - Rebind the active Moonlight decoder to a recreated workspace surface, suspend input during surface loss, and stop cleanly when the target cannot be restored. The receiver API was contributed upstream by [@cgutman](https://github.com/cgutman) in [Moonlight Android commit `b48494cb`](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d); Pleazyng independently adapted it. See [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md#credited-moonlight-android-source).

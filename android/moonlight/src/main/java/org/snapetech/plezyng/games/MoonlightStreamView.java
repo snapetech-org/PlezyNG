@@ -70,6 +70,8 @@ public final class MoonlightStreamView extends FrameLayout
   private final AtomicBoolean decoderStopping = new AtomicBoolean();
   private final CountDownLatch stopped = new CountDownLatch(1);
   private static final long SURFACE_RECOVERY_TIMEOUT_MS = 8000;
+  private volatile boolean closed;
+  private volatile boolean surfaceLost;
   private final Runnable surfaceRecoveryTimeout = () -> {
     if (closed || !surfaceLost) return;
     failSurfaceRecovery();
@@ -90,12 +92,10 @@ public final class MoonlightStreamView extends FrameLayout
   private volatile String sessionState = "connecting";
   private volatile boolean inputEnabled;
   private volatile boolean inputLeaseGranted;
-  private volatile boolean closed;
   private volatile boolean audioEnabled;
   private volatile boolean connectionReady;
   private volatile Runnable onStateChanged;
   private volatile String errorLabel = "The stream could not start.";
-  private volatile boolean surfaceLost;
   private Map<String, Object> labels = java.util.Collections.emptyMap();
 
   public MoonlightStreamView(Context context, Map<?, ?> rawArguments) {

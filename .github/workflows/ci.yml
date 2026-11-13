@@ -1,7 +1,7 @@
 # ng-runner-policy: hosted-first-v1
 # The trusted-main hybrid profile routes compatible Linux, Windows, and Apple validation jobs to standard GitHub-hosted runners.
 name: CI - Sanity Checks
-run-name: ${{ format('action:{0}:pool:{1}:macos:{2}', inputs.action, inputs.runner_pool, inputs.apple_runner_pool) }}
+run-name: ${{ format('action:{0}:pool:{1}:apple:{2}', inputs.action, inputs.runner_pool, inputs.apple_runner_pool) }}
 
 # Validation is opt-in: choose a ref from Actions and dispatch this workflow.
 on:
@@ -47,10 +47,10 @@ on:
         default: false
         type: boolean
       apple_runner_pool:
-        description: Select the Mac native reliability runner; iOS and tvOS reliability use hosted Apple Silicon in hybrid mode
+        description: Select the Apple route for native reliability checks; private-ios keeps tvOS hosted while using private iOS and macOS runners
         required: false
         type: choice
-        options: [hosted, private]
+        options: [hosted, private, split, private-ios]
         default: hosted
 
 env:
@@ -695,7 +695,7 @@ jobs:
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
     timeout-minutes: 120
     # Native tests and their simulator dependencies build arm64 on every platform.
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool != 'private' || matrix.platform != 'macOS') && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool == 'hosted' || (inputs.apple_runner_pool == 'split' && matrix.platform != 'macOS') || (inputs.apple_runner_pool == 'private-ios' && matrix.platform == 'tvOS')) && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     env:

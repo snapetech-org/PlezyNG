@@ -90,20 +90,23 @@ active platform work. After every other platform job succeeds or is skipped and
 release assembly has not started, it cancels the drained workflow. The
 controller verifies the job's exact attempt, `macos-26` label, missing runner
 identity, empty step list, and the success of every other source job before it
-retries tvOS on private Apple JIT. The explicit private Apple route selects
-private JIT for iOS, tvOS, macOS and Apple CI checks while other hybrid jobs
-keep their compatible hosted runners.
+retries tvOS on private Apple JIT. `--tvos-runner-pool private` selects private
+JIT for all Apple packages and native checks. `--ios-runner-pool private` selects
+private iOS/macOS while leaving tvOS hosted and parallel; other hybrid jobs keep
+their compatible hosted runners.
 Unsigned developer releases reuse successful platform artifacts only after
 exact source and digest checks; signed Apple recovery uses the approved full
 build path. Other tvOS failures remain failures.
 
 The private queue controller waits for a free Apple slot and the Mac's APFS
 capacity gate, then launches the recovery job. Use
-`--apple-arm-runner-pool hosted|private` to force a route for qualification or
-diagnosis. Run releases through `scripts/release_all_platforms.py` so it can
+`--apple-arm-runner-pool hosted|private` selects the macOS package route for
+qualification or diagnosis. Run releases through `scripts/release_all_platforms.py` so it can
 observe failure evidence and start the private JIT controller. Every Apple
 build checks ARM64, Xcode, simulator runtimes, and free APFS/NFS space; native
-tests retain their full coverage.
+tests retain their full coverage. Apple native tests stop after 75 minutes, the
+job stops after 120 minutes, and the iOS simulator's first VideoToolbox callback
+has a 30-second bounded wait.
 Private images use their installed compatible toolchain and must qualify it.
 The test selector creates a fresh job-owned simulator using an available device
 type and runtime matching the selected SDK's major/minor version. It never

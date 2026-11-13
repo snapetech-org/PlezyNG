@@ -310,8 +310,10 @@ def trusted_preflight_ci_run(run: dict, repository: str) -> bool:
         and isinstance(path, str)
         and path.split("@", 1)[0] == ".github/workflows/ci.yml"
         and run.get("display_title") in {
-            "action:ci:pool:private:macos:hosted",
-            "action:ci:pool:private:macos:private",
+            "action:ci:pool:private:apple:hosted",
+            "action:ci:pool:private:apple:private",
+            "action:ci:pool:private:apple:split",
+            "action:ci:pool:private:apple:private-ios",
         }
     )
 
@@ -607,11 +609,13 @@ def dispatch(repo: str, workflow: str, ref: str, fields: dict[str, str], purpose
             apple_route = fields.get("tvos_runner_pool")
             private_apple = (fields.get("execution_profile") != "hybrid"
                              or fields.get("apple_runner_pool") == "private"
+                             or fields.get("apple_runner_pool") == "private-ios"
+                             or fields.get("apple_runner_pool") == "split"
                              or fields.get("macos_runner_pool") == "private"
-                             or apple_route in {"private", "split"})
+                             or apple_route in {"private", "private-ios", "split"})
             return wait_for_run(repo, run, purpose, private_apple=private_apple,
                                 allow_failure=allow_failure,
-                                watch_hosted_tvos=watch_hosted_tvos and apple_route in {"hosted", "split"})
+                                watch_hosted_tvos=watch_hosted_tvos and apple_route in {"hosted", "split", "private-ios"})
         time.sleep(5)
     raise ReleaseError(f"Workflow dispatch succeeded, but its run was not visible: {repo}/{workflow} on {ref}")
 
@@ -636,10 +640,14 @@ def select_apple_runner_pool(requested: str) -> str:
     return "hosted"
 
 
-def apple_workflow_route(tvos_runner_pool: str, macos_runner_pool: str) -> str:
-    """Encode the mobile/Mac runner split in the workflow's single Apple route input."""
+def apple_workflow_route(
+    tvos_runner_pool: str, macos_runner_pool: str, ios_runner_pool: str = "hosted"
+) -> str:
+    """Encode the selected iOS, tvOS and macOS runner pools in one workflow input."""
     if tvos_runner_pool == "private":
         return "private"
+    if ios_runner_pool == "private":
+        return "private-ios"
     if macos_runner_pool == "private":
         return "split"
     return "hosted"
@@ -1164,11 +1172,19 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
 
 
 def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref: str = "main",
-              apple_runner_pool: str = "auto") -> dict:
+              apple_runner_pool: str = "auto", ios_runner_pool: str = "auto",
+              tvos_runner_pool: str = "auto") -> dict:
     apple_runner_pool = select_apple_runner_pool(apple_runner_pool)
+    ios_runner_pool = select_apple_runner_pool(ios_runner_pool)
+    tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
+    if tvos_runner_pool == "private":
+        apple_runner_pool = ios_runner_pool = "private"
+    elif ios_runner_pool == "private":
+        apple_runner_pool = "private"
+    apple_route = apple_workflow_route(tvos_runner_pool, apple_runner_pool, ios_runner_pool)
     if source_ref != "main":
         ensure_frozen_release_source(source_ref, commit_sha)
-    ci_title = f"action:ci:pool:private:macos:{apple_runner_pool}"
+    ci_title = f"action:ci:pool:private:apple:{apple_route}"
     existing = matching_run(
         PLEZY_REPO, CI_WORKFLOW, commit_sha, ref=source_ref, expected_title=ci_title,
     )
@@ -1180,7 +1196,7 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref:
                 PLEZY_REPO,
                 existing,
                 "Pleazyng CI",
-                private_apple=execution_profile != "hybrid" or apple_runner_pool == "private",
+                private_apple=execution_profile != "hybrid" or apple_route != "hosted",
                 cancel_failed_preflight=True,
             )
         if execution_profile != "hybrid" or run_has_successful_job(
@@ -1194,7 +1210,7 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref:
         )
     fields = {"action": "ci", "runner_pool": "private", "execution_profile": execution_profile,
               "build_linux_packages": "true"}
-    fields["apple_runner_pool"] = apple_runner_pool
+    fields["apple_runner_pool"] = apple_route
     return dispatch(
         PLEZY_REPO,
         CI_WORKFLOW,
@@ -1224,12 +1240,16 @@ def ensure_candidate_build(
     include_webos_build: bool = True,
     tvos_runner_pool: str = "auto",
     macos_runner_pool: str = "auto",
+    ios_runner_pool: str = "auto",
 ) -> dict:
     """Require a complete nonpublishing release-mode build before creating the immutable tag."""
     watch_hosted_tvos = tvos_runner_pool == "auto"
     tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
     macos_runner_pool = select_apple_runner_pool(macos_runner_pool)
+    ios_runner_pool = select_apple_runner_pool(ios_runner_pool)
     if tvos_runner_pool == "private":
+        macos_runner_pool = ios_runner_pool = "private"
+    elif ios_runner_pool == "private":
         macos_runner_pool = "private"
     purpose = f"Pleazyng {version} all-platform release-mode candidate"
 
@@ -1266,7 +1286,7 @@ def ensure_candidate_build(
             "include_webos_release": "true",
             "include_tizen_build": "true",
             "include_apple_store_build": "true" if include_apple_store_build else "false",
-            "tvos_runner_pool": apple_workflow_route(pool, macos_runner_pool),
+            "tvos_runner_pool": apple_workflow_route(pool, macos_runner_pool, ios_runner_pool),
             "subtitle_gpu_backend": "cpu",
             "prepare_homebrew_cask": "true" if prepare_homebrew_cask else "false",
         }
@@ -1308,7 +1328,8 @@ def ensure_candidate_build(
         if existing.get("status") != "completed":
             existing = wait_for_run(
                 PLEZY_REPO, existing, purpose,
-                private_apple=tvos_runner_pool == "private" or macos_runner_pool == "private",
+                private_apple=(tvos_runner_pool == "private" or macos_runner_pool == "private"
+                               or ios_runner_pool == "private"),
                 allow_failure=True,
                 watch_hosted_tvos=watch_hosted_tvos and tvos_runner_pool == "hosted",
             )
@@ -1560,6 +1581,7 @@ def ensure_release(
     start_only: bool = False,
     tvos_runner_pool: str = "auto",
     macos_runner_pool: str = "auto",
+    ios_runner_pool: str = "auto",
     packaging_source_sha: str | None = None,
     workflow_source_sha: str | None = None,
     runner_acquisition_retry_of: int | None = None,
@@ -1567,7 +1589,10 @@ def ensure_release(
     watch_hosted_tvos = tvos_runner_pool == "auto"
     tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
     macos_runner_pool = select_apple_runner_pool(macos_runner_pool)
+    ios_runner_pool = select_apple_runner_pool(ios_runner_pool)
     if tvos_runner_pool == "private":
+        macos_runner_pool = ios_runner_pool = "private"
+    elif ios_runner_pool == "private":
         macos_runner_pool = "private"
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
@@ -1635,6 +1660,7 @@ def ensure_release(
             "start_only": False,
             "tvos_runner_pool": "private",
             "macos_runner_pool": macos_runner_pool,
+            "ios_runner_pool": "private",
         }
         if include_apple_store_build:
             # The signed Apple recovery gate requires a frozen packaging approval.
@@ -1716,7 +1742,8 @@ def ensure_release(
                 return existing
             existing = wait_for_run(PLEZY_REPO, existing, f"Pleazyng {tag} all-platform release build",
                                     private_apple=(tvos_runner_pool == "private"
-                                                   or macos_runner_pool == "private"),
+                                                   or macos_runner_pool == "private"
+                                                   or ios_runner_pool == "private"),
                                     allow_failure=True,
                                     watch_hosted_tvos=(watch_hosted_tvos
                                                        and tvos_runner_pool == "hosted"
@@ -1779,7 +1806,9 @@ def ensure_release(
     if repair:
         fields["recovery_source_sha"] = packaging_source_sha
         fields["recovery_product_sha"] = proof["product_source_sha"]
-    fields["tvos_runner_pool"] = apple_workflow_route(tvos_runner_pool, macos_runner_pool)
+    fields["tvos_runner_pool"] = apple_workflow_route(
+        tvos_runner_pool, macos_runner_pool, ios_runner_pool
+    )
     if rebuild_linux:
         fields["rebuild_linux"] = "true"
     if rebuild_macos:
@@ -2597,6 +2626,10 @@ def parse_args() -> argparse.Namespace:
         help="Select the iOS/tvOS package route; auto uses hosted Macs and retries tvOS privately after verified queue cancellation.",
     )
     parser.add_argument(
+        "--ios-runner-pool", choices=("auto", "hosted", "private"), default="auto",
+        help="Select iOS separately; private runs iOS on Apple JIT while tvOS can remain hosted and parallel.",
+    )
+    parser.add_argument(
         "--reuse-platform-run", type=int,
         help="Rebuild Android/WebOS and reuse other verified platform outputs after infrastructure-only fixes.",
     )
@@ -2869,6 +2902,7 @@ def main() -> int:
         if apple_pool == "auto":
             apple_pool = select_apple_runner_pool(apple_pool)
         tvos_pool = getattr(args, "tvos_runner_pool", "auto")
+        ios_pool = getattr(args, "ios_runner_pool", "auto")
         if frozen:
             # One main workflow captures the source for reusable CI and every
             # platform. Existing main-only private runner authorization remains
@@ -2876,7 +2910,7 @@ def main() -> int:
             captured = ensure_release(tag, pin_sha, include_webos_release=args.include_webos_release,
                 execution_profile=args.execution_profile, include_apple_store_build=args.include_apple_store_build,
                 prepare_homebrew_cask=args.prepare_homebrew_cask, candidate_ref=candidate_ref,
-                tvos_runner_pool=tvos_pool, macos_runner_pool=apple_pool)
+                tvos_runner_pool=tvos_pool, macos_runner_pool=apple_pool, ios_runner_pool=ios_pool)
             ci = {"databaseId": captured["databaseId"]}
             progress["release_run"] = captured["databaseId"]
             progress["ci_mode"] = "embedded"
@@ -2894,6 +2928,8 @@ def main() -> int:
                 ci_source,
                 execution_profile=args.execution_profile,
                 apple_runner_pool=apple_pool,
+                ios_runner_pool=ios_pool,
+                tvos_runner_pool=tvos_pool,
             )
         progress["ci_run"] = ci["databaseId"]
         # Store variants are explicit preparation, never implied by publishing.
@@ -2926,6 +2962,7 @@ def main() -> int:
             **({"candidate_ref": candidate_ref} if frozen else {}),
             tvos_runner_pool=tvos_pool,
             macos_runner_pool=apple_pool,
+            ios_runner_pool=ios_pool,
             **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"rebuild_macos": True} if args.rebuild_macos else {}),
             **({"rebuild_tvos": True} if args.rebuild_tvos else {}),

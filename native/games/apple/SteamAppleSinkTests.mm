@@ -60,7 +60,8 @@
   XCTAssertFalse(sink.frame(redH264, 8 * 1024 * 1024 + 1, 1, true));
   XCTAssertTrue(sink.video(IHS_StreamVideoCodecH264, 64, 64, nullptr, 0));
   XCTAssertTrue(sink.frame(redH264, sizeof(redH264), 7, true));
-  [self waitForExpectations:@[ready] timeout:15];
+  // The hosted iOS simulator can take longer to schedule its first VideoToolbox callback.
+  [self waitForExpectations:@[ready] timeout:30];
   {
     std::lock_guard<std::mutex> lock(mutex);
     XCTAssertFalse(failed);

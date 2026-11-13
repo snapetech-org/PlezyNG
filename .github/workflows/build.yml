@@ -1,5 +1,5 @@
 # ng-runner-policy: hosted-first-v1
-# Hybrid builds use compatible hosted runners by default; the split Apple route runs mobile packages hosted and macOS private.
+# Hybrid builds use compatible hosted runners by default; private-ios keeps tvOS hosted while routing iOS and macOS through Apple JIT.
 # packer-windows-jit-v1
 name: Pleazyng Release
 run-name: ${{ inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'build' && format('action:{0}:pool:{1}:mode:{2}:version:{3}:runner-retry-of:{4}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}:runner-retry-of:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && inputs.reuse_platform_run_id != '' && inputs.rebuild_tvos && format('action:{0}:pool:{1}:tag:v{2}:recovery:source:{3}:tvos', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_platform_run_id) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
@@ -48,10 +48,10 @@ on:
         required: false
         type: string
       tvos_runner_pool:
-        description: "Apple package route: hosted uses hosted Macs throughout; private uses Apple JIT throughout; split uses hosted iOS/tvOS and private macOS"
+        description: "Apple package route: hosted uses hosted Macs throughout; private uses Apple JIT throughout; split uses hosted iOS/tvOS and private macOS; private-ios uses private iOS/macOS and hosted tvOS"
         required: false
         type: choice
-        options: [hosted, private, split]
+        options: [hosted, private, split, private-ios]
         default: hosted
       macos_compilation_job_id:
         description: Recover a verified same-product Mac compilation for signing-only macos-validation
@@ -245,7 +245,7 @@ jobs:
       execution_profile: hybrid
       build_linux_packages: true
       # Keep Release CI on the same Apple route selected for the package jobs.
-      apple_runner_pool: ${{ (inputs.tvos_runner_pool == 'private' || inputs.tvos_runner_pool == 'split') && 'private' || 'hosted' }}
+      apple_runner_pool: ${{ inputs.tvos_runner_pool }}
 
   freeze-qualified-source:
     name: Freeze qualified source
@@ -1281,7 +1281,7 @@ jobs:
     if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_ios) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     timeout-minutes: 240
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && inputs.tvos_runner_pool != 'private-ios' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
     permissions:
       id-token: write
       attestations: write

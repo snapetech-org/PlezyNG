@@ -91,9 +91,9 @@ require(
 )
 require(
     tvos_pool_input is not None
-    and "options: [hosted, private, split]" in tvos_pool_input.group("body")
+    and "options: [hosted, private, split, private-ios]" in tvos_pool_input.group("body")
     and "default: hosted" in tvos_pool_input.group("body"),
-    "Apple release builds must default hosted and support the split mobile-hosted/Mac-private route",
+    "Apple release builds must default hosted and support explicit split and private-iOS routes",
 )
 require(
     "inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos"
@@ -108,9 +108,9 @@ require(
     "the release controller must cancel only a drained workflow after a bounded unassigned hosted tvOS wait",
 )
 require(
-    "apple_runner_pool: ${{ (inputs.tvos_runner_pool == 'private' || inputs.tvos_runner_pool == 'split') && 'private' || 'hosted' }}"
+    "apple_runner_pool: ${{ inputs.tvos_runner_pool }}"
     in job("release-ci"),
-    "Release CI must route only its macOS reliability job privately when the release Apple route is split",
+    "Release CI must inherit the same explicit Apple route as the release packages",
 )
 require(
     "inputs.action == 'release' && 'pleazyng-versioned-release-v2'" in text
@@ -146,7 +146,8 @@ require(
     and "runner-retry-of" in release_driver_text
     and "recovery:source:" in release_driver_text
     and "apple_runner_pool=apple_pool" in release_driver_text
-    and "apple_workflow_route(tvos_runner_pool, macos_runner_pool)" in release_driver_text
+    and "apple_workflow_route(\n        tvos_runner_pool, macos_runner_pool, ios_runner_pool" in release_driver_text
+    and "--ios-runner-pool" in release_driver_text
     and "private Apple JIT route" in release_driver_text,
     "release driver must support hosted mobile Apple jobs alongside a private macOS job",
 )
@@ -1493,7 +1494,9 @@ for apple_job_name in ("build-ios", "build-tvos"):
         f"{apple_job_name} signing archives and DerivedData must stay on local APFS",
     )
 require(
-    "inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool != 'private' || matrix.platform != 'macOS') && 'macos-26' || fromJSON(format(" in apple_native
+    "inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool == 'hosted' || (inputs.apple_runner_pool == 'split' && matrix.platform != 'macOS') || (inputs.apple_runner_pool == 'private-ios' && matrix.platform == 'tvOS')) && 'macos-26' || fromJSON(format(" in apple_native
+    and "timeout-minutes: 120" in apple_native
+    and "timeout-minutes: 75" in named_step(apple_native, "Run Apple native reliability tests")
     and "hosted-xcode-version: '26.5'" in apple_native
     and 'test "$(uname -m)" = arm64' in named_step(apple_native, "Require native Apple Silicon host")
     and "ARCHS=arm64" in apple_native,
@@ -1838,7 +1841,7 @@ require(
 ios_worker_stage = named_step(job("build-ios"), "Stage locked iOS worker frameworks for Release")
 require(
     "(inputs.reuse_platform_run_id == '' || inputs.rebuild_ios)" in job("build-ios")
-    and "inputs.tvos_runner_pool != 'private' && 'macos-26-intel' || fromJSON(format(" in job("build-ios")
+    and "inputs.tvos_runner_pool != 'private' && inputs.tvos_runner_pool != 'private-ios' && 'macos-26-intel' || fromJSON(format(" in job("build-ios")
     and "--rebuild-ios" in recovery_gate and "--rebuild-ios" in recovery_download
     and "inputs.rebuild_ios && needs.build-ios.result == 'success'" in release_condition
     and "!inputs.rebuild_ios && needs.build-ios.result == 'skipped'" in release_condition

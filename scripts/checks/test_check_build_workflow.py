@@ -289,7 +289,7 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
         ci_path = ROOT / '.github/workflows/ci.yml'
         original = Path.read_text
         ci = original(ci_path, encoding='utf-8')
-        selection = "inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool != 'private' || matrix.platform != 'macOS') && 'macos-26' || fromJSON(format("
+        selection = "inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool == 'hosted' || (inputs.apple_runner_pool == 'split' && matrix.platform != 'macOS') || (inputs.apple_runner_pool == 'private-ios' && matrix.platform == 'tvOS')) && 'macos-26' || fromJSON(format("
         self.assertIn(selection, ci)
         changes = [
             ("'macos-26'", "'macos-26-intel'"),

@@ -15,6 +15,7 @@
 - Add a manual macOS App Store candidate workflow that creates an unsigned Xcode archive and `productbuild` package with a truthful qualification receipt; keep the direct DMG path unchanged.
 - Clarify Chocolatey upstream and fork attribution, and validate that package descriptions distinguish the Plezy author from the Pleazyng maintainer.
 - Honor the shared media-controls artwork-byte precedence on Linux and display byte-backed artwork in Windows system media controls.
+- Document both Kavita OPDS Auth Key setup options and how the credential is kept out of saved URLs and entry identifiers.
 
 - Allow a pinned-source release to run exact-source CI and create its stable tag through the authenticated release controller when the organization blocks Actions tag creation.
 - Route an explicit private Apple selection to macOS as well as iOS and tvOS, and bound the macOS compile and package job to 100 and 150 minutes.

@@ -4,8 +4,11 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/utils/certificate_trust.dart';
 import 'package:plezy/utils/happy_eyeballs.dart';
+
+import '../test_helpers/prefs.dart';
 
 // Self-signed CA, valid until 2126; mirrors android/.../UserCertificateChannelTest.kt.
 const _privateAuthorityPem = '''
@@ -64,7 +67,21 @@ void main() {
   });
 
   group('contextFor', () {
-    test('build-configured services retain system-only trust on their exact hosts', () {
+    test('uses only the explicitly configured user relay as an additional fixed endpoint', () async {
+      resetSharedPreferencesForTest();
+      expect(CertificateTrust.isFixedEndpoint('relay.example.test'), isFalse);
+
+      final settings = await SettingsService.getInstance();
+      await settings.write(SettingsService.userRelayBaseUrl, 'https://relay.example.test/api');
+      CertificateTrust.debugSetUserAuthoritiesForTesting(SecurityContext());
+
+      expect(CertificateTrust.isFixedEndpoint('relay.example.test'), isTrue);
+      expect(CertificateTrust.contextFor('relay.example.test'), isNull);
+      expect(CertificateTrust.isFixedEndpoint('sub.relay.example.test'), isFalse);
+      expect(CertificateTrust.isFixedEndpoint('unrelated.example.test'), isFalse);
+    });
+
+    test('explicit service URLs retain system-only trust on their exact hosts', () {
       const urls = [
         'https://relay.example.test/api',
         'https://Store.example.test/',
@@ -72,7 +89,6 @@ void main() {
         'http://insecure.example.test',
         'https://name:secret@private.example.test',
         'https://query.example.test/?token=secret',
-        'https://ice.plezy.app',
       ];
       for (final host in ['relay.example.test', 'RELAY.EXAMPLE.TEST', 'store.example.test']) {
         expect(CertificateTrust.isFixedEndpoint(host, serviceUrls: urls), isTrue, reason: host);

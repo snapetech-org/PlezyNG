@@ -8,6 +8,7 @@
 - Reset the AUR package release number when publishing a new Pleazyng version while preserving same-version maintainer revisions.
 - Keep the theme preview’s illustrative save/cancel controls out of pointer, keyboard-focus, and accessibility interaction until they have real actions.
 - Keep the download-queue source formatted with the repository Dart formatter so the release CI formatting gate passes.
+- Apply system-only TLS trust to the explicitly configured user relay and keep MAL OAuth callback validation compiling.
 - Declare Moonlight surface-recovery state before its timeout callback so Android Java compilation succeeds.
 - Add assistant-generated draft translations for the practice-metronome title and guidance across all 32 non-English base locales; no native-speaker review is claimed.
 - Allow native aerynOS qualification to run from the trusted downstream main workflow and resolve its QA tooling from canonical main, with source and tooling ancestry checks.

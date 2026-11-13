@@ -57,9 +57,10 @@ abstract final class CertificateTrust {
   /// Whether [host] is a fixed provider or an exact build-configured service
   /// host. Configured services need the same system-only trust even though
   /// their URLs are not hard-coded in the Android XML resource.
-  static bool isFixedEndpoint(String host, {Iterable<String> serviceUrls = pleazyngConfiguredServiceUrls}) {
+  static bool isFixedEndpoint(String host, {Iterable<String>? serviceUrls}) {
     final candidate = host.toLowerCase();
-    for (final value in serviceUrls) {
+    final configuredUrls = serviceUrls ?? [configuredUserRelayBaseUrl].whereType<String>();
+    for (final value in configuredUrls) {
       if (value.trim().isEmpty) continue;
       try {
         if (Uri.parse(requirePleazyngServiceUrl(value)).host.toLowerCase() == candidate) return true;

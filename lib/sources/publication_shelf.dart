@@ -7,6 +7,7 @@ Set<PublicationShelf> defaultPublicationShelves(FileSourceKind kind) => {
   if (kind != FileSourceKind.openSubsonic && kind != FileSourceKind.podcastRss) ...{
     PublicationShelf.ebooks,
     PublicationShelf.audiobooks,
+    PublicationShelf.comics,
   },
   if (kind == FileSourceKind.komga) PublicationShelf.comics,
   if (kind == FileSourceKind.local || kind == FileSourceKind.smb || kind == FileSourceKind.remoteCloud)

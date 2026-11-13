@@ -67,6 +67,13 @@ The RAR and 7z codec support matrix still excludes some uncommon compression
 methods. Password-protected ZIP, RAR and 7z data can be opened when supported
 by the locked decoder; source implementation is not physical-device qualification.
 
+Archive source selection classifies `.cbz`, `.cbr` and `.cb7` filenames (and
+comic archive MIME types) as comics. Book-capable source defaults include the
+Comics shelf, so local, network, cloud and catalogue sources can surface these
+editions without a manual shelf change when first configured. Saved per-source
+shelf choices remain authoritative. Legacy sources without a stored shelf list
+use the same source-kind default in the edit screen.
+
 The integrated main snapshot also needed small Dart compatibility and merge
 repairs in the source adapters, metadata lookup, directional padding, semantics,
 license notices and remote dialog. The changes preserve the shared navigation and

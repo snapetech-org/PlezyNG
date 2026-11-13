@@ -85,8 +85,9 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
         }
         WidgetsBinding.instance.addPostFrameCallback((_) => _loadSavedNfsTlsIdentity(old));
       }
+      final defaultShelves = defaultPublicationShelves(old.kind).map((shelf) => shelf.name).join(',');
       _shelves = PublicationShelf.values
-          .where((s) => (old.options['shelves'] ?? 'ebooks,audiobooks,videos').split(',').contains(s.name))
+          .where((shelf) => (old.options['shelves'] ?? defaultShelves).split(',').contains(shelf.name))
           .toSet();
       field('syncRoot').text = old.options['syncRoot'] ?? '';
       field('syncLibrary').text = old.options['syncLibrary'] ?? '';

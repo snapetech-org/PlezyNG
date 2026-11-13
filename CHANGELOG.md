@@ -19,6 +19,7 @@
 - Document both Kavita OPDS Auth Key setup options and how the credential is kept out of saved URLs and entry identifiers.
 - Localize karaoke microphone/performance feedback and explain unavailable TV capture with phone-companion and external-mixer options.
 - Localize phone-companion microphone controls, capture errors, HTTPS guidance and its accessible level label.
+- Stop local karaoke capture when a device changes the requested 48 kHz mono PCM format, preventing incorrectly timed scoring and take files; document the current recorder boundary for separate audio buses.
 - Add an optional persisted system click to each beat of the A–B practice-loop count-in.
 - Open password-protected CBZ, CBR and CB7 archives with a bounded, non-persistent password prompt.
 - Verify Chocolatey release checksum provenance and attest moderation-correction packages.

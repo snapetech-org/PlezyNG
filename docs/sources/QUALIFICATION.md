@@ -32,7 +32,7 @@ Recovery export contains the encrypted sync document and its authenticated filen
 
 ## NFS read performance
 
-NFSv3 reads use a bounded read-ahead window, configurable from one to four requests. Four is the hard limit for concurrent NFS READ RPCs per adapter. A source detail action reads at most 64 MiB from the largest file and reports the bytes read, elapsed throughput, request count, and configured window. A short or interrupted sample fails qualification instead of reporting throughput for an incomplete read.
+NFSv3 reads use a bounded read-ahead window, configurable from one to four requests. Four is the hard limit for concurrent NFS READ RPCs per adapter, including metadata and cover reads. A source detail action reads at most 64 MiB from the largest file and reports the bytes read, elapsed throughput, request count, and configured window. A short or interrupted sample fails qualification instead of reporting throughput for an incomplete read.
 
 For a target NAS qualification, run the measurement with the same file and network path at read-ahead values 1, 2, 3, and 4. Repeat each measurement three times. Record the app build, NAS model and firmware, NFS export options, RPC-with-TLS setting, network link, file size, seek behavior, cancellation behavior, and the median throughput. This workspace has no NAS endpoint, so it has no live throughput result.
 

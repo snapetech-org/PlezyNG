@@ -639,11 +639,9 @@ class NfsSourceAdapter extends SourceAdapter {
       ..opaque(handle)
       ..uint64(offset)
       ..uint32(count);
-    final response = lane == 0
-        ? await _rpc(_endpoint.host, _nfsPort, _nfsProgram, _nfsVersion, 6, args.take())
-        : await _readLimiter.run(
-            () => _rpc(_endpoint.host, _nfsPort, _nfsProgram, _nfsVersion, 6, args.take(), lane: lane),
-          );
+    final response = await _readLimiter.run(
+      () => _rpc(_endpoint.host, _nfsPort, _nfsProgram, _nfsVersion, 6, args.take(), lane: lane),
+    );
     final reader = _XdrReader(response);
     final status = reader.uint32();
     if (status != 0) throw _nfsError(status);

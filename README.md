@@ -1,25 +1,12 @@
-<table>
-  <tr>
-    <td width="38%" valign="middle">
-      <a href="https://pleazyng.app/">
-        <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="https://pleazyng.app/assets/branding/wordmark-dark.png">
-          <img src="https://pleazyng.app/assets/branding/wordmark-light.png" alt="Pleazyng" width="100%">
-        </picture>
-      </a>
-      <p>Movies, ebooks, audiobooks and comics from your servers and cloud storage.</p>
-      <p><a href="https://pleazyng.app/">pleazyng.app</a> · <a href="https://pleazyng.app/features.html">Feature comparison</a></p>
-    </td>
-    <td width="62%" align="center" valign="middle">
-      <a href="https://pleazyng.app/">
-        <img src="https://pleazyng.app/assets/pleazyng-games-tv.svg" alt="Pleazyng game library concept displayed on a TV" width="46%">
-      </a>
-      <a href="https://pleazyng.app/">
-        <img src="https://pleazyng.app/assets/pleazyng-product-comics.webp" alt="Pleazyng multi-device concept with reading, comics and audio interfaces" width="50%">
-      </a>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <a href="https://pleazyng.app/">
+    <img src="assets/branding/pleazyng-readme-hero.webp" alt="Pleazyng on your big screen: Steam game library on the TV with reading, comics, and audio across devices" width="100%">
+  </a>
+</p>
+
+<p align="center"><a href="https://pleazyng.app/">pleazyng.app</a> · <a href="https://pleazyng.app/features.html">Feature comparison</a></p>
+
+A cross-platform media client for Plex, Jellyfin, Emby, standalone files, books, music, and podcasts, maintained as a fork of [Plezy](https://github.com/edde746/plezy).
 
 Pleazyng is a downstream fork for feature requests that Plezy upstream has declined, left open, or not yet shipped. The table below maps those upstream gaps to the corresponding downstream implementation.
 

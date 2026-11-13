@@ -676,7 +676,10 @@
       "Enable validated endpoint through a separately qualified client release",
       "Container image release qualification remains separate"
     ],
-    "repository_variable_staged": "PLEAZYNG_RELAY_BASE_URL"
+    "repository_variable_staged": "PLEAZYNG_RELAY_BASE_URL",
+    "current_status_checked": "2026-11-13",
+    "current_operator_public_service": "Cloudflare Worker code-only MAL OAuth broker; home Go relay and Tunnel origin retired",
+    "repository_variable_retired_from_official_builds": true
   },
   "discord": {
     "verified_date": "2026-11-06",

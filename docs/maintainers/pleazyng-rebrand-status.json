@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "updated": "2026-11-12",
+  "current_relay_boundary": "Superseded on 2026-11-13: the operator-hosted Go relay and Tunnel origin were retired; pleazyng-api.snape.tech now provides only a code-only MAL OAuth handoff. See docs/maintainers/pleazyng-relay-endpoints.md and the security review.",
   "product": "Pleazyng",
   "state": "source_implemented_application_repository_migrated",
   "completed": [
@@ -21,7 +22,7 @@
     "Website domain registrant/control evidence and historical-domain migration redirects; apex and www DNS/TLS respond successfully",
     "Data/purchase continuity bridges and native device qualification",
     "Store/channel records, signing, purchase continuity, fresh store screenshots and package-manager reviews",
-    "Remaining provider production approvals and end-to-end account flows; the relay is live and the Discord application is configured"
+    "Remaining provider production approvals and end-to-end account flows; the operator relay was live at this snapshot and was retired on 2026-11-13; the Discord application is configured"
   ],
   "checks": {
     "brand_exports": "590 exports reproduced byte-for-byte with --check",

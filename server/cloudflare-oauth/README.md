@@ -1,36 +1,48 @@
-# Cloudflare OAuth edge
+# Cloudflare OAuth code broker
 
-This Worker hosts MyAnimeList and AniList sign-in independently of the home relay.
-It preserves the existing app API and exact registered callback URLs:
+This Worker supports only MyAnimeList's authorization-code handoff. It does not
+exchange authorization codes or receive provider access or refresh tokens.
+The Flutter app creates and holds MAL's PKCE verifier, builds the provider
+authorization URL itself, and exchanges the returned code directly with MAL.
+MAL supports only PKCE `plain`, so the challenge is the verifier; the app must
+never send that challenge to this Worker.
 
-- `https://pleazyng-api.snape.tech/auth/mal/callback`
-- `https://pleazyng-api.snape.tech/auth/anilist/callback`
-
-Trakt browser PKCE, Steam OpenID/catalog/cloud features, watch parties, uploads,
-and other relay features continue on the existing Go origin. Trakt TV sign-in
-continues using Trakt's direct device-code API. A hostname on Cloudflare does
-not mean every endpoint is hosted there.
+The registered callback remains
+`https://pleazyng-api.snape.tech/auth/mal/callback`. The Worker receives a
+single-use authorization code and signed state at that callback, stores the
+code briefly for the initiating device, then deletes it after delivery or
+expiry. The worker has no AniList client secret and does not handle AniList
+token exchange. AniList, Trakt browser, Steam account/capability operations,
+uploads, commerce lookups, music control relaying and Steam streaming require a
+relay URL the user explicitly configures and operates. The official app ships
+with no relay URL.
 
 ## Request routing and compatibility
 
-Cloudflare Worker Route `pleazyng-api.snape.tech/auth/*` selects `pleazyng-oauth`.
-DNS continues to point at the existing dedicated Tunnel. The Worker handles:
+Cloudflare Worker Route `pleazyng-api.snape.tech/*` selects
+`pleazyng-oauth` for the entire hostname. Its proxied CNAME remains pointed at
+the retired Tunnel target for DNS compatibility, but that connector and the Go
+service are stopped. The Worker never calls `fetch(request)` or forwards to an
+origin; all requests outside the four Worker endpoints return `404`. It
+handles:
 
 | Request | Behavior |
 | --- | --- |
-| `POST /auth/start`, service `mal` or `anilist` | Admit an expiring edge session if that provider is configured |
-| `GET /auth/mal` or `/auth/anilist`, edge browser state | Redirect to the fixed provider authorize endpoint |
-| Corresponding `/callback`, edge browser state | Claim once and exchange the code at the fixed provider token endpoint |
-| `GET /auth/result`, `e1_` device capability | Hold up to 50 seconds, then return 204 or deliver the result once |
-| `GET /auth/edge-health` | Non-secret runtime/configuration readiness |
-| Trakt, Steam, other paths, old local capabilities | Fetch the existing Tunnel origin unchanged |
+| `POST /auth/pkce/start`, service `mal` | Admit a short-lived session and return a fixed MAL authorize URL without a PKCE challenge |
+| App opens the MAL authorize URL | The app adds its locally held `plain` verifier as the challenge; the browser goes directly to MAL |
+| `GET /auth/mal/callback`, signed browser state | Claim once and store only the authorization code or a sanitized error |
+| `GET /auth/result`, `e1_` device capability in `Authorization` | Hold up to 50 seconds, then return 204 or deliver the code-only result once |
+| `GET /auth/edge-health` | Non-secret readiness; MAL is the only provider |
+| Legacy `POST /auth/start`, service `mal` | Return `410`; the previous first-party token-exchange flow is retired |
+| Other `/auth/*` paths and all non-auth paths | Return `404`; never forward to a home origin |
 
-Worker Routes allow same-host `fetch(request)` to reach the origin without
-recursing into this Worker. Do not replace the Tunnel DNS with a Worker Custom
-Domain: that would remove this pass-through origin relationship. Existing local
-MAL/AniList sessions may finish through their legacy state/capabilities. The app
-continues using `PLEAZYNG_RELAY_BASE_URL=https://pleazyng-api.snape.tech`; no client
-update or new callback registration is required for this infrastructure split.
+The whole-host route prevents Worker gaps from falling back to the Tunnel. Do
+not narrow it to `/auth/*` or restore an origin pass-through. A pre-change
+Durable Object result containing tokens is rejected and deleted instead of
+being delivered; old pending MAL sessions must restart authorization. The Go
+relay source remains available for users to host themselves, but the operator's
+home deployment and Tunnel origin are disabled. The official release workflows
+do not inject a relay URL.
 
 ## Storage, cost and limits
 
@@ -49,9 +61,9 @@ The defaults deliberately bound admission:
   per Cloudflare location; the admission object also enforces three successful
   admissions per hashed client/minute globally.
 - Session lifetime is ten minutes; one outstanding long poll per session.
-- Callback is claimed durably before the external token request; replay cannot
-  trigger another exchange. Provider fetch timeout is 15 seconds, redirects are
-  refused, response size is limited to 64 KiB.
+- Callback is claimed durably before the one-time code is stored; callback
+  replay cannot change or replace the result. The Worker makes no provider
+  token request.
 - Pending polls and admission rejections do not write session state. Valid signed
   capabilities are checked before contacting the session object, so fabricated
   object names do not create arbitrary stored sessions.
@@ -82,27 +94,33 @@ capability. Do not log complete URLs, authorization codes, capabilities, tokens,
 provider response bodies or configuration values.
 
 Workers invocation logs and traces are disabled, with query-string redaction
-also specified in deployment metadata. Responses are no-store and carry MIME, referrer, frame and HSTS headers; browser pages
-have a restrictive CSP and no-referrer policy. The Worker never accepts arbitrary
-provider/token URLs. Start bodies are bounded to 512 bytes and oversized streams are cancelled
-without waiting on cloned-stream cancellation. MAL/AniList starts require JSON
-and reject foreign/null browser Origins and cross-site Fetch Metadata. Native
-clients omit Origin; same-origin browser calls remain allowed. These checks apply
-only to the migrated providers and do not change Trakt/Steam pass-through.
+also specified in deployment metadata. Responses are no-store and carry MIME,
+referrer, frame and HSTS headers; browser pages have a restrictive CSP and
+no-referrer policy. The Worker never accepts arbitrary provider/token URLs.
+Start bodies are bounded to 512 bytes, accept only the `service` field, and
+oversized streams are cancelled without waiting on cloned-stream cancellation.
+The callback accepts only the `state`, `code`, and sanitized error parameters;
+token-bearing or duplicate query parameters are rejected. Device capabilities
+use the `Authorization` header and are rejected in URL queries. The MAL start
+requires JSON and rejects foreign Origins and cross-site Fetch Metadata. The
+app opens MAL's fixed authorization URL directly; the Worker never sees the
+PKCE verifier.
 
-Token results and PKCE state exist temporarily in the object's encrypted-at-rest
-storage until single-use delivery or expiry. They are not a permanent token
-vault. Cloudflare storage recovery/retention can outlive application deletion;
-expiry is not a claim of immediate physical erasure. Do not add OAuth session
-exports to backups. Back up only provider configuration and the signing key
-through the approved private secret-backup mechanism. The key/configuration
-backup is separate from the application state.
+Durable Objects temporarily store state, device poll capabilities, and a
+single-use authorization code or sanitized error. They never store provider
+tokens in this flow. Results from older token-exchange sessions are rejected
+and deleted when polled, and old verifier fields are removed when those
+sessions reach the callback. Remaining inactive legacy rows expire after ten
+minutes. Cloudflare storage recovery/retention can outlive application
+deletion; expiry is not a claim of immediate physical erasure. Do not add OAuth
+session exports to backups. Back up only the signing key through the approved
+private secret-backup mechanism.
 
-Cloudflare zone protections remain applicable. The local Caddy Knock filter
-still protects origin requests, including Trakt/Steam pass-through. Edge-handled
-MAL/AniList requests do not pass through local Caddy or its request analytics;
-they use the edge admission limits and existing zone controls. There is no
-D1-based request-event queue feeding local Knock for these edge requests.
+Cloudflare zone protections remain applicable. MAL broker requests use the
+edge admission limits and existing zone controls; no first-party request goes
+through local Caddy or Knock. User-operated relay deployments have their own
+origin and perimeter. There is no D1-based request-event queue feeding local
+Knock for these edge requests.
 
 ## Configuration and provider activation
 
@@ -110,16 +128,16 @@ D1-based request-event queue feeding local Knock for these edge requests.
 | --- | --- |
 | `PUBLIC_ORIGIN` | Exact public HTTPS origin, without a trailing slash |
 | `SESSION_SIGNING_KEY` | Server-only capability signing key; keep stable across normal uploads |
-| `MAL_CLIENT_ID` | Owned public MAL client registration; PKCE uses MAL's supported plain challenge |
-| `ANILIST_CLIENT_ID`, `ANILIST_CLIENT_SECRET` | Owned AniList registration; secret remains server-side |
+| `MAL_CLIENT_ID` | Public MAL client registration ID; it is not a secret |
 | `SESSIONS` | `OAuthSession` SQLite-backed namespace |
 | `ADMISSION` | `OAuthAdmission` SQLite-backed namespace |
 | `START_LIMIT` | Workers rate limiter, namespace `182791`, three starts/60 seconds |
 
-An absent provider configuration returns 503 before admission or state writes.
-A deployed callback is not proof of provider registration, approval or actual
-user consent/token exchange. The separate owned-provider registration handoff
-records those gates. Keep Trakt's server/client ID configuration independent.
+An absent MAL client ID returns 503 before admission or state writes. A
+deployed callback is not proof of provider registration or actual user consent.
+The app receives only a code and exchanges it directly with MAL. Trakt's
+device-code flow remains direct-to-provider; browser OAuth and other
+server-exchanged providers use a user-operated relay.
 
 ## Test and deploy
 
@@ -131,18 +149,21 @@ node --check server/cloudflare-oauth/worker.mjs
 python3 server/cloudflare-oauth/runtime.test.py --output-dir /task-owned/oauth-runtime-check
 ```
 
-The tests exercise actual request handlers with instrumented storage: PKCE,
-read-only pending polls, a single outstanding poll, single-use delivery,
-callback replay/concurrency and cold reload, denial/failure sanitization, expiry,
-body limits, rolling/IP admission and unchanged Trakt/Steam/legacy pass-through.
+The tests exercise actual request handlers with instrumented storage: code-only
+callback delivery, absence of verifier/token exchange, rejection of legacy
+token results, read-only pending polls, a single outstanding poll, callback
+replay/concurrency and cold reload, denial sanitization, expiry, body limits,
+rolling/IP admission and 404 rejection without origin pass-through.
 
 Use Wrangler 4.158.0 for a local workerd/SQLite smoke test. Use task-owned state
 and output directories, test-only credentials, and a loopback `PUBLIC_ORIGIN`.
-Verify that the provider authorize request returns a browser-visible 302 (the
-internal Durable Object fetch must use `redirect: manual`). Complete the cancellation callback (`error=access_denied`), retrieve its device
-result once and verify the second retrieval returns 410. This tests lifecycle
-without accessing a real user's account. Stop the dev server before cleaning
-its task-owned SQLite files. Preserve shared package caches.
+Verify that `/auth/pkce/start` returns a fixed MAL authorize URL without a
+challenge. Complete the cancellation callback (`error=access_denied`), retrieve
+the sanitized result once and verify the second retrieval returns 410. Confirm
+that the Worker never calls the MAL token endpoint and rejects a legacy token
+result. This tests lifecycle without accessing a real user's account. Stop the
+dev server before cleaning its task-owned SQLite files. Preserve shared package
+caches.
 
 Commit and push the reviewed source. `deploy.py` uploads the exact committed
 `worker.mjs` from the supplied full SHA and refuses a mismatched checkout. It
@@ -156,47 +177,53 @@ python3 server/cloudflare-oauth/deploy.py \
 ```
 
 The account file supplies `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` with
-Workers Scripts Edit. The provider file supplies the signing key and available
-provider credentials. Use `--initial` only once: it creates migration `v1` with
+Workers Scripts Edit. The provider file supplies `SESSION_SIGNING_KEY` and the
+public `MAL_CLIENT_ID`; it must not contain AniList client credentials. Use
+`--initial` only once: it creates migration `v1` with
 SQLite classes `OAuthSession` and `OAuthAdmission`. Later uploads omit it and
-reuse the same signing key, bindings and object namespaces. Secrets are applied
-only as Worker secret bindings, never returned by the helper. Keep the private
-provider file and its backup outside Git.
+reuse the same signing key, bindings and object namespaces. The helper binds
+only the signing key as a secret. Keep the private provider file and its backup
+outside Git.
 
-The helper does **not** modify routes. Before attaching the route, inspect the
-current route list and Tunnel DNS, verify the uploaded script's bindings and
-observability settings, then add only the exact `/auth/*` route to the existing
-zone. Route management requires zone Workers Routes Edit separately. Never
-replace unrelated routes or import an old account snapshot.
+The helper does **not** modify routes. Before changing the route, inspect the
+current route list and DNS, verify the uploaded script's bindings and
+observability settings, then change only the existing Worker route to
+`pleazyng-api.snape.tech/*`. Preserve its route ID and script binding. Route
+management requires zone Workers Routes Edit separately. Never replace
+unrelated routes or import an old account snapshot.
 
-After attachment, check edge health, MAL authorize redirects, a denied callback,
-single-use result retrieval, and a replay rejection. Verify local health and
-Trakt/Steam paths still reach the origin. Verify the local relay listeners,
-firewall rules and unrelated website Workers were not changed. Record source
-SHA, deployment ID, route ID, test outcomes and remaining provider gates in the
-owner runbook; never retain raw test capabilities or codes in public evidence.
+After attachment, check edge health, the MAL authorization URL, a denied
+callback, single-use code retrieval, and a replay rejection. Check that `/health`
+and `/games/steam/relay` return 404. Stop and disable the operator's Go relay
+and Tunnel connector, remove their Caddy route, and replace the Tunnel ingress
+with a 404-only catch-all. Preserve the proxied DNS record required by the
+whole-host Worker Route. Record source SHA, deployment ID, route ID, test
+outcomes and remaining provider gates in the owner runbook; never retain raw
+test capabilities or codes in public evidence.
 
 ## Rollback and operations
 
-Remove only the route pointing `/auth/*` to `pleazyng-oauth`. Existing DNS/Tunnel
-and local Go OAuth handlers resume all requests. Edge sessions will need to
-restart sign-in; legacy local sessions can still finish. Do not stop the local
-relay, change unrelated DNS, or recreate the whole Tunnel. Keep the Worker and
-namespaces for incident investigation unless their destruction is explicitly
-intended. Deleting a namespace destroys its stored sessions and quota history.
+Do not remove or narrow the whole-host Worker route to roll back: an origin
+fallback would expose the retired operator-hosted relay again. Roll back only
+to a previously verified code-only Worker source while preserving the signing
+key and Durable Object namespaces. Edge sessions may need to restart sign-in.
+Do not restart the operator's relay or Tunnel connector. Keep the Worker and
+namespaces unless their destruction is explicitly intended.
+Deleting a namespace destroys pending code sessions and quota history.
 
-For source rollback, upload the previously verified source while preserving the
-signing key and SQLite namespaces. Rotating the signing key invalidates all
-pending edge sessions; document that as a deliberate sign-in interruption.
-Provider credentials can be changed independently of app releases. A 429 means
+For source rollback, upload only a previously verified code-only source while
+preserving the signing key and SQLite namespaces. Rotating the signing key
+invalidates pending edge sessions; document that as a deliberate sign-in
+interruption. A 429 means
 admission or concurrent-poll limits, 410 means expired/consumed/invalid capability,
 and 503 means disabled provider or unavailable edge dependency. Do not log a
 failed request URL while investigating.
 
 ## Security review
 
-See [the dated security review](security-review-20261106.md) for the tested
-controls, fixes, provider-specific PKCE compatibility and explicit residual risks.
-Login admission limits protect state/compute usage; they do not authenticate an
-application or guarantee availability. A distributed attacker can still exhaust
-a public free-tier request allowance or the global sign-in cap.
+The [2026-11-06 review](security-review-20261106.md) is a historical record of
+the previous architecture. See [the 2026-11-13 review](security-review-20261113.md)
+for the current code-only broker, user-hosted relay boundary, and deployment
+cutover. Login admission limits protect state/compute usage; they do not
+authenticate an application or guarantee availability. A distributed attacker
+can still exhaust a public free-tier request allowance or the global sign-in cap.

@@ -12,13 +12,14 @@ import '../oauth_proxy_auth_service.dart';
 import '../tracker_constants.dart';
 import '../tracker_exceptions.dart';
 import '../tracker_session.dart';
+import '../../plezy_server.dart';
 import 'mal_constants.dart';
 
 /// MyAnimeList authentication.
 ///
-/// New sessions come from the Plezy relay's OAuth proxy (PKCE is server-side).
-/// Refreshes are direct public-client calls against MAL's token endpoint —
-/// no proxy needed because refresh requires no redirect.
+/// The first-party handoff returns only a one-time authorization code. PKCE is
+/// generated on this device and the code is exchanged directly with MAL, so
+/// the handoff service never receives the verifier or tokens.
 class MalAuthService extends OAuthProxyAuthServiceBase {
   /// MAL returns these for a terminally-invalid grant (revoked/expired refresh
   /// token); anything else (5xx, network) is transient and must not log out.
@@ -34,6 +35,52 @@ class MalAuthService extends OAuthProxyAuthServiceBase {
   @override
   TrackerSession buildSession(OAuthProxyResult result) =>
       TrackerSession.fromOAuthProxyResult(TrackerService.mal, result);
+
+  @override
+  Future<TrackerSession?> authorize({
+    required void Function(OAuthProxyStart) onCodeReady,
+    bool Function()? shouldCancel,
+    Future<void>? onCancel,
+  }) async {
+    final start = await proxy.start(service);
+    onCodeReady(start);
+    final result = await proxy.poll(
+      start.session,
+      codeVerifier: start.codeVerifier,
+      shouldCancel: shouldCancel,
+      onCancel: onCancel,
+    );
+    if (result == null) return null;
+    final code = result.authorizationCode;
+    final verifier = result.codeVerifier;
+    if (code == null || verifier == null) {
+      throw const OAuthProxyException('MAL authorization handoff returned an invalid result');
+    }
+    final response = await sendAbortableHttpRequest(
+      _http,
+      'POST',
+      Uri.parse(MalConstants.tokenUrl),
+      body: {
+        'client_id': MalConstants.clientId,
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': pleazyngMalCallbackUrl,
+        'code_verifier': verifier,
+      },
+      timeout: TrackerConstants.authRequestTimeout,
+      operation: 'MAL authorization code exchange',
+    );
+    if (response.statusCode != 200) {
+      appLogger.w('MAL: authorization code exchange failed (HTTP ${response.statusCode})');
+      throw TrackerAuthException(
+        service: TrackerService.mal,
+        message: 'Authorization code exchange failed: HTTP ${response.statusCode}',
+        statusCode: response.statusCode,
+        isPermanent: _permanentRefreshFailureStatuses.contains(response.statusCode),
+      );
+    }
+    return TrackerSession.fromTokenResponse(TrackerService.mal, json.decode(response.body) as Map<String, dynamic>);
+  }
 
   @override
   void dispose() {

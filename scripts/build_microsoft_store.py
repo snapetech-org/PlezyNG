@@ -25,7 +25,6 @@ def build_arguments(
     arch: str,
     product_id: str,
     *,
-    relay_base_url: str = '',
     discord_application_id: str = '',
 ) -> list[str]:
     validate_product_id(product_id)
@@ -38,7 +37,6 @@ def build_arguments(
         f'--split-debug-info=debug-info/windows-store-{arch}',
     ]
     for name, value in (
-        ('PLEAZYNG_RELAY_BASE_URL', relay_base_url),
         ('PLEAZYNG_DISCORD_APPLICATION_ID', discord_application_id),
     ):
         if value.strip():
@@ -92,7 +90,6 @@ def main() -> None:
     command = build_arguments(
         args.arch,
         args.product_id,
-        relay_base_url=os.environ.get('PLEAZYNG_RELAY_BASE_URL', ''),
         discord_application_id=os.environ.get('PLEAZYNG_DISCORD_APPLICATION_ID', ''),
     )
     # Current Flutter selects Windows architecture from its native host and

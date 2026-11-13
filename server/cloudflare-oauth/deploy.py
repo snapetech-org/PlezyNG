@@ -53,9 +53,10 @@ def main():
         {'type': 'durable_object_namespace', 'name': 'ADMISSION', 'class_name': 'OAuthAdmission'},
         {'type': 'ratelimit', 'name': 'START_LIMIT', 'namespace_id': '182791', 'simple': {'limit': 3, 'period': 60}},
     ]
-    for name in ['SESSION_SIGNING_KEY', 'MAL_CLIENT_ID', 'ANILIST_CLIENT_ID', 'ANILIST_CLIENT_SECRET']:
-        if providers.get(name):
-            bindings.append({'type': 'secret_text', 'name': name, 'text': providers[name]})
+    if providers.get('MAL_CLIENT_ID'):
+        bindings.append({'type': 'plain_text', 'name': 'MAL_CLIENT_ID', 'text': providers['MAL_CLIENT_ID']})
+    if providers.get('SESSION_SIGNING_KEY'):
+        bindings.append({'type': 'secret_text', 'name': 'SESSION_SIGNING_KEY', 'text': providers['SESSION_SIGNING_KEY']})
     metadata = {
         'main_module': 'worker.mjs', 'compatibility_date': '2026-11-06', 'bindings': bindings,
         'observability': {'enabled': False, 'redact_query_string': True, 'logs': {'enabled': False, 'invocation_logs': False, 'persist': False}, 'traces': {'enabled': False, 'persist': False}},

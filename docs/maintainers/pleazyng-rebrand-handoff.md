@@ -1,6 +1,12 @@
 # Pleazyng implementation and cutover record
 
-Updated 2026-11-12. Source baseline:
+Historical implementation snapshot updated 2026-11-12. Its relay deployment
+statement below was superseded on 2026-11-13: the operator-hosted Go relay and
+Tunnel origin were retired, and `pleazyng-api.snape.tech` now handles only the
+code-only MAL OAuth handoff. See [the current relay boundary](pleazyng-relay-endpoints.md)
+and [security review](../../server/cloudflare-oauth/security-review-20261113.md).
+
+Source baseline:
 af5b1b21a7ddf986f20efd91ba475c406ee119ab. Owner: SnapeTech.
 The application repository and local checkout now use the canonical
 `snapetech-org/pleazyng` identity; the old GitHub URL redirects to it. The
@@ -24,7 +30,7 @@ remain separate. Historical tags and release assets remain preserved.
   plezxyng:// handlers remain explicit compatibility aliases.
 - Future release asset consumers/producers, Homebrew, WinGet, Chocolatey,
   Debian/RPM/AUR, Flatpak/Snap and TV recipes use the new public identities.
-- The Pleazyng relay is deployed at the configured
+- Historical snapshot: the Pleazyng relay was deployed at the configured
   `pleazyng-api.snape.tech` endpoint. Its `/health` endpoint returned HTTP 200
   with TLS verification on 12 November 2026. Route-specific provider activation
   and end-to-end account qualification remain separate gates.
@@ -108,8 +114,9 @@ External gates still open: website domain registrant/control evidence and
 historical-domain redirects; store records, certificates and IAP permissions;
 production provider approvals and end-to-end OAuth/account flows; native clean-install, coexistence,
 data and purchase migration; signed updater bridge; fresh actual-device store
-screenshots; and package-manager review. The relay is live and the Discord app
-is configured, but neither fact qualifies every integration. Do not publish old
+screenshots; and package-manager review. At this snapshot the operator relay
+was live; it was retired on 2026-11-13. The Discord app is configured, but
+neither fact qualifies every integration. Do not publish old
 binaries under new filenames or infer channel approval from the GitHub release.
 
 ## Repository and release order

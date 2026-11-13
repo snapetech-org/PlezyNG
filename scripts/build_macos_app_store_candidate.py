@@ -69,7 +69,6 @@ def validate_entitlements() -> None:
 
 def build_app(
     source_sha: str,
-    relay_base_url: str,
     discord_application_id: str,
     archive_path: Path,
     derived_data_path: Path,
@@ -87,7 +86,6 @@ def build_app(
         "--dart-define=SUPPORTER_MODE=iap",
         "--dart-define=ENABLE_UPDATE_CHECK=false",
         f"--dart-define=GIT_COMMIT={source_sha}",
-        f"--dart-define=PLEAZYNG_RELAY_BASE_URL={relay_base_url}",
         f"--dart-define=PLEAZYNG_DISCORD_APPLICATION_ID={discord_application_id}",
         "--split-debug-info=debug-info/macos-app-store-candidate",
     ]
@@ -209,7 +207,6 @@ def parse_args() -> argparse.Namespace:
         "--derived-data-dir", type=Path, required=True,
         help="Separate Xcode DerivedData directory, retained outside the candidate artifact",
     )
-    parser.add_argument("--relay-base-url", default="", help="Configured Pleazyng relay URL build define")
     parser.add_argument("--discord-application-id", default="", help="Configured Discord application ID build define")
     args = parser.parse_args()
     if not re.fullmatch(r"[0-9a-fA-F]{40}", args.source_sha):
@@ -233,7 +230,7 @@ def main() -> int:
             raise FileExistsError(f"Refusing to overwrite a candidate output: {output}")
     if derived_data_dir.exists():
         raise FileExistsError(f"Refusing to reuse existing Xcode DerivedData: {derived_data_dir}")
-    build_app(args.source_sha, args.relay_base_url, args.discord_application_id, archive_path, derived_data_dir)
+    build_app(args.source_sha, args.discord_application_id, archive_path, derived_data_dir)
     package_path, receipt_path = create_candidate(args.source_sha.lower(), output_dir, archive_path)
     print(f"Created unsigned Mac App Store candidate: {package_path}")
     print(f"Created qualification receipt: {receipt_path}")

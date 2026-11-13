@@ -6,11 +6,9 @@ enum MalRankingType {
   String get queryValue => name;
 }
 
-/// Bundled MyAnimeList API endpoints and public client ID.
-///
-/// The authorize flow lives in the Plezy relay's OAuth proxy; see
-/// `lib/services/trackers/oauth_proxy_client.dart`. Only the refresh path
-/// (public-client, no redirect) calls MAL directly from the device.
+/// Bundled MyAnimeList API endpoints and public client ID. The app creates the
+/// PKCE verifier locally and exchanges authorization codes and refresh tokens
+/// directly with MAL.
 class MalConstants {
   MalConstants._();
 

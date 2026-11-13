@@ -14,8 +14,6 @@ import 'game_models.dart';
 import 'steam_discovery_codec.dart';
 import 'steam_tunnel_codec.dart';
 
-const steamRelayBaseUrl = String.fromEnvironment('PLEZY_STEAM_RELAY_URL');
-
 enum SteamInternetPath { relay, direct }
 
 bool steamPublicIPv4(InternetAddress address) {
@@ -33,8 +31,14 @@ bool steamPublicIPv4(InternetAddress address) {
       !(a == 203 && b[1] == 0 && b[2] == 113);
 }
 
-Uri? steamRelayUri([String value = steamRelayBaseUrl]) {
-  final uri = Uri.tryParse(value);
+Uri? steamRelayUri([String? value]) {
+  final String relayBase;
+  try {
+    relayBase = requirePleazyngServiceUrl(value ?? pleazyngRelayBaseUrl, service: 'Steam relay');
+  } on StateError {
+    return null;
+  }
+  final uri = Uri.tryParse(relayBase);
   final Uri? catalog;
   try {
     catalog = Uri.tryParse(plezyServerBaseUrl);
@@ -50,7 +54,8 @@ Uri? steamRelayUri([String value = steamRelayBaseUrl]) {
     return null;
   }
   if (catalog == null || catalog.scheme != 'https' || catalog.host.isEmpty || uri.origin != catalog.origin) return null;
-  return uri.replace(scheme: 'wss', path: '${uri.path.replaceFirst(RegExp(r'/$'), '')}/games/steam/relay');
+  final path = '${uri.path.replaceFirst(RegExp(r'/+$'), '')}/games/steam/relay';
+  return uri.replace(scheme: 'wss', path: path);
 }
 
 /// A transient route, owned by one retained receiver session (or one host

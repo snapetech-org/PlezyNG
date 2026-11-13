@@ -91,7 +91,6 @@ jobs:
 
       - name: Build and package the unsigned candidate
         env:
-          PLEAZYNG_RELAY_BASE_URL: ${{ vars.PLEAZYNG_RELAY_BASE_URL }}
           PLEAZYNG_DISCORD_APPLICATION_ID: ${{ vars.PLEAZYNG_DISCORD_APPLICATION_ID }}
         run: |
           set -euo pipefail
@@ -99,7 +98,6 @@ jobs:
             --source-sha "$GITHUB_SHA" \
             --output-dir "$RUNNER_TEMP/macos-app-store-candidate" \
             --derived-data-dir "$RUNNER_TEMP/macos-app-store-derived-data" \
-            --relay-base-url "$PLEAZYNG_RELAY_BASE_URL" \
             --discord-application-id "$PLEAZYNG_DISCORD_APPLICATION_ID"
 
       - name: Attest candidate package provenance

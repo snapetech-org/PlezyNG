@@ -18,7 +18,7 @@ function context(storage = new MemoryStorage()) {
   return { storage, blockConcurrencyWhile(fn) { this.ready = fn(); } };
 }
 function fixture() {
-  const env = { START_LIMIT: { async limit() { return { success: true }; } }, PUBLIC_ORIGIN: origin, SESSION_SIGNING_KEY: 'test-signing-material-with-at-least-32-bytes', MAL_CLIENT_ID: 'owned-mal', ANILIST_CLIENT_ID: 'owned-anilist', ANILIST_CLIENT_SECRET: 'test-anilist-secret' };
+  const env = { START_LIMIT: { async limit() { return { success: true }; } }, PUBLIC_ORIGIN: origin, SESSION_SIGNING_KEY: 'test-signing-material-with-at-least-32-bytes', MAL_CLIENT_ID: 'owned-mal' };
   const sessions = new Map(); const admissions = new Map();
   function namespace(Class, objects) {
     return { calls: 0, idFromName: value => value, get(id) {
@@ -33,38 +33,31 @@ function fixture() {
     return worker.fetch(new Request(`${origin}${path}`, { method, headers: { 'CF-Connecting-IP': ip, 'Content-Type': 'application/json', ...headers }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }), env);
   }
   async function start(service = 'mal') {
-    const response = await call('/auth/start', { method: 'POST', body: { service } }); assert.equal(response.status, 200);
+    const response = await call('/auth/pkce/start', { method: 'POST', body: { service } }); assert.equal(response.status, 200);
     const value = await response.json(); const state = new URL(value.url).searchParams.get('state');
     return { ...value, state, entry: sessions.values().next().value };
   }
-  return { env, sessions, admissions, call, start };
+  return { env, sessions, admissions, call, poll: session => call('/auth/result', { headers: { Authorization: `Bearer ${session}` } }), start };
 }
 
-test('MAL start, PKCE exchange, long poll, single-use result; no poll writes', async t => {
+test('MAL code-only handoff, long poll, single-use result; no poll writes', async t => {
   const f = fixture(); const s = await f.start();
-  const authorize = await f.call(`/auth/mal?state=${s.state}`);
-  assert.equal(authorize.status, 302);
-  const upstream = new URL(authorize.headers.get('Location'));
-  assert.equal(upstream.hostname, 'myanimelist.net');
-  assert.equal(upstream.searchParams.get('code_challenge_method'), 'plain');
-  assert.equal(upstream.searchParams.get('state'), s.state);
-  let exchanges = 0;
-  t.mock.method(globalThis, 'fetch', async (url, options) => {
-    exchanges++; assert.equal(url, 'https://myanimelist.net/v1/oauth2/token');
-    assert.equal(options.body.get('code_verifier'), upstream.searchParams.get('code_challenge'));
-    assert.equal(options.body.get('redirect_uri'), `${origin}/auth/mal/callback`);
-    assert.equal(options.redirect, 'error');
-    return Response.json({ access_token: 'access-test', refresh_token: 'refresh-test', expires_in: 3600 });
-  });
+  const authorize = new URL(s.url);
+  assert.equal(authorize.hostname, 'myanimelist.net');
+  assert.equal(authorize.pathname, '/v1/oauth2/authorize');
+  assert.equal(authorize.searchParams.get('response_type'), 'code');
+  assert.equal(authorize.searchParams.get('redirect_uri'), `${origin}/auth/mal/callback`);
+  assert.equal(authorize.searchParams.get('state'), s.state);
+  assert.equal(authorize.searchParams.has('code_challenge'), false);
+  assert.equal(authorize.searchParams.has('code_challenge_method'), false);
   const writes = s.entry.ctx.storage.writes;
-  const pending = f.call(`/auth/result?session=${s.session}`);
+  const pending = f.poll(s.session);
   await new Promise(resolve => setImmediate(resolve));
   assert.equal(s.entry.ctx.storage.writes, writes, 'pending poll is read-only');
-  assert.equal((await f.call(`/auth/result?session=${s.session}`)).status, 429);
+  assert.equal((await f.poll(s.session)).status, 429);
   assert.equal((await f.call(`/auth/mal/callback?state=${s.state}&code=owned-code`)).status, 200);
-  assert.deepEqual(await (await pending).json(), { accessToken: 'access-test', refreshToken: 'refresh-test', expiresIn: 3600 });
-  assert.equal(exchanges, 1);
-  assert.equal((await f.call(`/auth/result?session=${s.session}`)).status, 410);
+  assert.deepEqual(await (await pending).json(), { authorizationCode: 'owned-code' });
+  assert.equal((await f.poll(s.session)).status, 410);
   assert.equal((await f.call(`/auth/mal/callback?state=${s.state}&code=replay`)).status, 410);
   assert.equal(s.entry.ctx.storage.values.size, 0);
   assert.equal(s.entry.ctx.storage.alarm, null);
@@ -74,7 +67,7 @@ test('pending poll timeout writes nothing', async t => {
   const f = fixture(); const s = await f.start();
   t.mock.timers.enable({ apis: ['setTimeout'] });
   const writes = s.entry.ctx.storage.writes;
-  const poll = f.call(`/auth/result?session=${s.session}`);
+  const poll = f.poll(s.session);
   // Signature verification is asynchronous and precedes the object fetch.
   while (!s.entry.object.waiter) await new Promise(resolve => setImmediate(resolve));
   t.mock.timers.tick(50_001);
@@ -84,38 +77,32 @@ test('pending poll timeout writes nothing', async t => {
 
 test('forged/expired capabilities never invoke storage; browser capability cannot poll', async () => {
   const f = fixture(); const s = await f.start(); const before = f.env.SESSIONS.calls;
-  assert.equal((await f.call(`/auth/result?session=${s.state}`)).status, 410);
+  assert.equal((await f.poll(s.state)).status, 410);
   const forged = s.session.slice(0, -1) + (s.session.endsWith('a') ? 'b' : 'a');
-  assert.equal((await f.call(`/auth/result?session=${forged}`)).status, 410);
+  assert.equal((await f.poll(forged)).status, 410);
   assert.equal(await verify(f.env, 'device', 'e1_bad'), null);
   assert.equal(f.env.SESSIONS.calls, before);
   assert.equal((await f.call(`/auth/anilist?state=${s.state}`)).status, 404);
 });
 
-test('duplicate callbacks claim before upstream exchange, including after cold reload', async t => {
-  const f = fixture(); const s = await f.start('anilist'); let release; let exchanges = 0;
-  t.mock.method(globalThis, 'fetch', async (_url, options) => {
-    exchanges++; assert.equal(options.body.get('client_secret'), 'test-anilist-secret');
-    await new Promise(resolve => { release = resolve; }); return Response.json({ access_token: 'once' });
-  });
-  const callback = f.call(`/auth/anilist/callback?state=${s.state}&code=code`);
-  while (!release) await new Promise(resolve => setImmediate(resolve));
-  assert.equal((await f.call(`/auth/anilist/callback?state=${s.state}&code=code`)).status, 404);
-  release(); assert.equal((await callback).status, 200); assert.equal(exchanges, 1);
+test('duplicate callbacks claim before storing a code, including after cold reload', async () => {
+  const f = fixture(); const s = await f.start();
+  const callback = f.call(`/auth/mal/callback?state=${s.state}&code=code`);
+  assert.equal((await callback).status, 200);
+  assert.equal((await f.call(`/auth/mal/callback?state=${s.state}&code=code`)).status, 404);
   const ctx = context(s.entry.ctx.storage); const reloaded = new OAuthSession(ctx, f.env); await ctx.ready;
-  assert.equal((await reloaded.fetch(new Request('https://session.internal/callback', { method: 'POST', body: JSON.stringify({ service: 'anilist', code: 'replay' }) }))).status, 404);
-  assert.equal((await f.call(`/auth/result?session=${s.session}`)).status, 200);
+  assert.equal((await reloaded.fetch(new Request('https://session.internal/callback', { method: 'POST', body: JSON.stringify({ service: 'mal', code: 'replay' }) }))).status, 404);
+  assert.deepEqual(await (await f.poll(s.session)).json(), { authorizationCode: 'code' });
 });
 
-test('provider denial and failed exchange return sanitized device errors', async t => {
+test('provider denial returns a sanitized device error; successful callbacks return only a code', async () => {
   const f = fixture(); const s = await f.start();
   const denial = await f.call(`/auth/mal/callback?state=${s.state}&error=access_denied&error_description=PRIVATE`);
   assert.equal(denial.status, 200); assert.ok(!(await denial.text()).includes('PRIVATE'));
-  assert.deepEqual(await (await f.call(`/auth/result?session=${s.session}`)).json(), { error: 'access_denied' });
+  assert.deepEqual(await (await f.poll(s.session)).json(), { error: 'access_denied' });
   const s2 = await f.start();
-  t.mock.method(globalThis, 'fetch', async () => new Response('PRIVATE UPSTREAM TOKEN', { status: 500 }));
-  assert.equal((await f.call(`/auth/mal/callback?state=${s2.state}&code=x`)).status, 502);
-  assert.deepEqual(await (await f.call(`/auth/result?session=${s2.session}`)).json(), { error: 'exchange_failed' });
+  assert.equal((await f.call(`/auth/mal/callback?state=${s2.state}&code=single-use`)).status, 200);
+  assert.deepEqual(await (await f.poll(s2.session)).json(), { authorizationCode: 'single-use' });
 });
 
 test('rolling admission persists, rejections do not write, and capacity replenishes', async t => {
@@ -136,34 +123,36 @@ test('rolling admission persists, rejections do not write, and capacity replenis
   assert.equal((await reloaded.fetch(req('another-new-client'))).status, 429);
 });
 
-test('Trakt browser PKCE, Steam, legacy sessions, and unknown paths pass through unchanged', async t => {
-  const f = fixture(); const requests = [];
-  t.mock.method(globalThis, 'fetch', async request => { requests.push(request); return new Response('local', { status: 202 }); });
-  for (const service of ['trakt', 'steam', 'steam-cloud']) {
-    assert.equal((await f.call('/auth/start', { method: 'POST', body: { service } })).status, 202);
-    assert.equal((await requests.at(-1).json()).service, service);
+test('the first-party hostname never forwards relay requests to the home origin', async t => {
+  const f = fixture(); let forwards = 0;
+  t.mock.method(globalThis, 'fetch', async () => { forwards++; return new Response('origin', { status: 202 }); });
+  for (const service of ['anilist', 'trakt', 'steam', 'steam-cloud']) {
+    assert.equal((await f.call('/auth/start', { method: 'POST', body: { service } })).status, 404);
   }
-  for (const path of ['/auth/trakt/callback?state=local', '/auth/steam/library', '/auth/result?session=legacy', '/auth/result?session=e1_' + 'a'.repeat(21), '/auth/mal/callback?state=legacy&code=x']) {
-    assert.equal((await f.call(path)).status, 202); assert.equal(new URL(requests.at(-1).url).pathname, new URL(origin + path).pathname);
+  for (const path of ['/auth/trakt/callback?state=local', '/auth/steam/library', '/games/steam/relay', '/logs']) {
+    assert.equal((await f.call(path)).status, 404);
   }
+  assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'mal' } })).status, 410);
+  assert.equal(forwards, 0);
   assert.equal(f.sessions.size, 0); assert.equal(f.admissions.size, 0);
 });
 
-test('unconfigured providers and oversized bodies cannot create state; expiry cleans secrets', async () => {
-  const f = fixture(); f.env.ANILIST_CLIENT_SECRET = '';
-  assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'anilist' } })).status, 503);
-  assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'mal', padding: 'a'.repeat(1024) } })).status, 413);
+test('unconfigured MAL and oversized bodies cannot create state; expiry cleans secrets', async () => {
+  const f = fixture(); f.env.MAL_CLIENT_ID = '';
+  assert.equal((await f.call('/auth/pkce/start', { method: 'POST', body: { service: 'mal' } })).status, 503);
+  f.env.MAL_CLIENT_ID = 'owned-mal';
+  assert.equal((await f.call('/auth/pkce/start', { method: 'POST', body: { service: 'mal', padding: 'a'.repeat(1024) } })).status, 413);
   assert.equal(f.admissions.size, 0);
   const s = await f.start(); await s.entry.object.alarm();
   assert.equal(s.entry.ctx.storage.values.size, 0);
-  assert.equal((await f.call(`/auth/result?session=${s.session}`)).status, 410);
+  assert.equal((await f.poll(s.session)).status, 410);
   assert.equal(s.expiresIn, TTL_MS / 1000);
 });
 
 
 test('edge start limiter rejects attempts before any object call', async () => {
   const f = fixture(); f.env.START_LIMIT.limit = async () => ({ success: false });
-  assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'mal' } })).status, 429);
+  assert.equal((await f.call('/auth/pkce/start', { method: 'POST', body: { service: 'mal' } })).status, 429);
   assert.equal(f.admissions.size, 0); assert.equal(f.sessions.size, 0);
 });
 
@@ -173,7 +162,7 @@ test('declared and streamed oversized bodies reject promptly without state alloc
     const body = declared ? 'x'.repeat(1024) : new ReadableStream({
       start(controller) { controller.enqueue(new TextEncoder().encode('x'.repeat(1024))); controller.close(); },
     });
-    const request = new Request(`${origin}/auth/start`, {
+    const request = new Request(`${origin}/auth/pkce/start`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', ...(declared ? { 'Content-Length': '1024' } : {}) },
       body, ...(declared ? {} : { duplex: 'half' }),
     });
@@ -192,11 +181,11 @@ test('browser-simple and cross-site starts cannot spend login quota', async () =
     { 'Content-Type': 'text/plain' }, { Origin: 'https://untrusted.example' },
     { Origin: 'null' }, { 'Sec-Fetch-Site': 'cross-site' },
   ]) {
-    const response = await f.call('/auth/start', { method: 'POST', body: { service: 'mal' }, headers });
+    const response = await f.call('/auth/pkce/start', { method: 'POST', body: { service: 'mal' }, headers });
     assert.equal(response.status, headers['Content-Type'] ? 415 : 403);
   }
   assert.equal(f.sessions.size, 0); assert.equal(f.admissions.size, 0);
-  assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'mal' }, headers: { Origin: origin } })).status, 200);
+  assert.equal((await f.call('/auth/pkce/start', { method: 'POST', body: { service: 'mal' }, headers: { Origin: origin } })).status, 200);
 });
 
 test('client hourly quota survives reload while the global bucket replenishes', async t => {
@@ -216,7 +205,7 @@ test('client hourly quota survives reload while the global bucket replenishes', 
 
 test('edge responses carry no-store, referrer, MIME and frame protections', async () => {
   const f = fixture(); const s = await f.start();
-  for (const response of [await f.call('/auth/edge-health'), await f.call('/auth/mal?state=' + s.state), await f.call('/auth/result?session=e1_invalid')]) {
+  for (const response of [await f.call('/auth/edge-health'), await f.call('/auth/start'), await f.call('/auth/result', { headers: { Authorization: 'Bearer e1_invalid' } })]) {
     assert.equal(response.headers.get('X-Content-Type-Options'), 'nosniff');
     assert.equal(response.headers.get('Referrer-Policy'), 'no-referrer');
     assert.equal(response.headers.get('X-Frame-Options'), 'DENY');

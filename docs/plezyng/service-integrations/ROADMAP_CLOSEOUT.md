@@ -1,5 +1,13 @@
 # Service integration roadmap closeout
 
+Historical snapshot from 2026-10-28. The operator-hosted relay described below
+was retired in the 2026-11-13 user-hosted relay and token-safe OAuth change.
+Official builds no longer embed its URL. Relay-backed services require an
+HTTPS relay the user operates; the first-party Cloudflare Worker handles only
+MAL authorization-code handoff and never receives provider tokens. See the
+[current endpoint inventory](../../maintainers/pleazyng-relay-endpoints.md)
+and [2026-11-13 security review](../../../server/cloudflare-oauth/security-review-20261113.md).
+
 Status: code-level work for the selected first-release scope is delivered on `codex/service-roadmap-closeout-final-20261028`, based on `main` at `6fba6ab6d0c257c20b9470adf39dea13ffa6495f`. This records implementation boundaries and the remaining operator gates; it does not claim production qualification, partner acceptance, or earned revenue.
 
 ## Delivery by work package

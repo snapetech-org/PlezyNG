@@ -12,6 +12,7 @@ import '../../providers/seerr_account_provider.dart';
 import '../../services/remote_streams/remote_streaming_provider.dart';
 import '../../services/discord_rpc_service.dart';
 import '../../services/external_access_directory.dart';
+import '../../services/plezy_server.dart';
 import '../../services/settings_service.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/catalog_source_logo.dart';
@@ -35,9 +36,14 @@ import '../external_access_screen.dart';
 
 /// Unified hub for connected trackers, reading history, requests, and
 /// external-access integrations.
-class ServicesSettingsScreen extends StatelessWidget {
+class ServicesSettingsScreen extends StatefulWidget {
   const ServicesSettingsScreen({super.key});
 
+  @override
+  State<ServicesSettingsScreen> createState() => _ServicesSettingsScreenState();
+}
+
+class _ServicesSettingsScreenState extends State<ServicesSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final profileId = context.watch<ActiveProfileProvider?>()?.activeId;
@@ -98,6 +104,15 @@ class ServicesSettingsScreen extends StatelessWidget {
             SettingsGroup(
               title: t.services.integrations,
               children: [
+                FocusableListTile(
+                  leading: const AppIcon(Symbols.dns_rounded),
+                  title: Text(t.services.userRelayTitle),
+                  subtitle: Text(
+                    configuredUserRelayBaseUrl == null ? t.services.userRelayOff : t.services.userRelayConfigured,
+                  ),
+                  trailing: const AppIcon(Symbols.chevron_right_rounded, fill: 1),
+                  onTap: () => _editUserRelay(context),
+                ),
                 for (final info in TrackerServiceInfo.all) _TrackerHubRow(info),
                 _seerr(),
                 _remoteStreaming(),
@@ -165,6 +180,67 @@ class ServicesSettingsScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _editUserRelay(BuildContext context) async {
+    final controller = TextEditingController(text: configuredUserRelayBaseUrl ?? '');
+    final formKey = GlobalKey<FormState>();
+    final value = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(t.services.userRelayTitle),
+        content: Form(
+          key: formKey,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(t.services.userRelayPrivacy),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: controller,
+                  autofocus: true,
+                  keyboardType: TextInputType.url,
+                  decoration: InputDecoration(
+                    labelText: t.services.userRelayAddress,
+                    hintText: t.services.userRelayHint,
+                  ),
+                  validator: (input) {
+                    if (input == null || input.trim().isEmpty) return null;
+                    try {
+                      normalizeUserRelayBaseUrl(input);
+                      return null;
+                    } on FormatException {
+                      return t.services.userRelayInvalid;
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          if (configuredUserRelayBaseUrl != null)
+            TextButton(onPressed: () => Navigator.pop(dialogContext, ''), child: Text(t.common.clear)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(t.common.cancel)),
+          FilledButton(
+            onPressed: () {
+              if (formKey.currentState?.validate() ?? false) {
+                Navigator.pop(dialogContext, controller.text.trim());
+              }
+            },
+            child: Text(t.common.save),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (value == null || !context.mounted) return;
+    final normalized = value.trim().isEmpty ? null : normalizeUserRelayBaseUrl(value);
+    await SettingsService.instance.write(SettingsService.userRelayBaseUrl, normalized);
+    if (mounted) setState(() {});
   }
 
   Widget _seerr() => Consumer<SeerrAccountProvider>(

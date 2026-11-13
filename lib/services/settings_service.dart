@@ -1408,6 +1408,11 @@ class SettingsService extends BaseSharedPreferencesService {
   static const autoPip = _AutoPipPref();
   static const customDownloadPath = NullableStringPref('custom_download_path');
 
+  /// Optional endpoint for a relay the user operates. It is deliberately not
+  /// part of portable settings because the same URL can route account data and
+  /// tokens to a different machine on another installation.
+  static final userRelayBaseUrl = NullableStringPref('user_relay_base_url', transform: _trimEmptyAsNull);
+
   /// A self-hosted Open Watch Party relay's base URL; null for the public
   /// relays.
   static final watchPartyRelayUrl = NullableStringPref('watch_party_relay_url', transform: _normalizeRelayBaseUrl);
@@ -2434,6 +2439,7 @@ class SettingsService extends BaseSharedPreferencesService {
     customShaderPresets,
     selectedExternalPlayer,
     customExternalPlayers,
+    userRelayBaseUrl,
     watchPartyRelayUrl,
     companionRemoteLastHostAddress,
     rememberedBrightnessLevel,
@@ -2461,6 +2467,7 @@ class SettingsService extends BaseSharedPreferencesService {
         pref,
     crashReporting,
     mpvConfigText,
+    userRelayBaseUrl,
     watchPartyRelayUrl,
     rememberedBrightnessLevel,
   ]);

@@ -38,10 +38,9 @@ after a reset.
 4. Later, select that remembered receiver from another network. Pleazyng uses
    an available direct connection or the saved relay invitation.
 
-Official builds can supply the relay address through
-`PLEAZYNG_RELAY_BASE_URL`. A service operator must enable and deploy the music
-relay route. The [deployment guide](../../../server/MUSIC_CONNECT.md) covers
-configuration and capacity. Self-hosted users can enter their own HTTPS relay.
+Official builds contain no relay address. Configure a relay you operate in
+**Settings → Services → User-hosted relay**. The [deployment guide](../../../server/MUSIC_CONNECT.md)
+covers server configuration and capacity.
 
 The relay receives network addresses, connection timing and pairing-handshake
 device identifiers, names, platforms and user identifiers. Queue metadata and

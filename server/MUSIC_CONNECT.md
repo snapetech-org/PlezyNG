@@ -31,10 +31,9 @@ room headers from request logs.
 A simple unauthenticated health probe to the enabled route receives HTTP 401.
 The service's existing health endpoint remains the container readiness check.
 
-For builds operated by the deployment owner, set
-`PLEAZYNG_RELAY_BASE_URL=https://your-owned-relay.example` in the normal build
-configuration. The app appends `/music/connect/relay`. Users can also enter an
-HTTPS base address or the full music endpoint in the picker.
+Official builds include no music-relay endpoint. Configure a user-operated
+HTTPS base URL in **Settings → Services → User-hosted relay**; the app appends
+`/music/connect/relay`. A profile may override that base in the relay picker.
 
 ## User activation
 

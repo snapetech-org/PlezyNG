@@ -8,7 +8,7 @@ const ADMISSION_REFILL_MS = 900_000;
 const CLIENT_WINDOW_MS = 3_600_000;
 const CLIENT_SESSIONS = 10;
 const POLL_MS = 50_000;
-const EDGE = new Set(['mal', 'anilist']);
+const EDGE = new Set(['mal']);
 const encoder = new TextEncoder();
 const SECURITY_HEADERS = Object.freeze({
   'X-Content-Type-Options': 'nosniff',
@@ -28,10 +28,7 @@ const json = (value, status = 200, headers = {}) => new Response(JSON.stringify(
 const empty = status => new Response(null, { status, headers: { ...SECURITY_HEADERS, 'Cache-Control': 'no-store, private' } });
 const hex = bytes => [...bytes].map(v => v.toString(16).padStart(2, '0')).join('');
 const random = () => hex(crypto.getRandomValues(new Uint8Array(16)));
-const configured = (env, service) => service === 'mal' ? !!env.MAL_CLIENT_ID : !!(env.ANILIST_CLIENT_ID && env.ANILIST_CLIENT_SECRET);
-// Legacy Go capabilities are exactly 24 base64url characters. Preserve even
-// the rare legacy value whose random prefix happens to be e1_.
-const edgeToken = value => !!value && value.startsWith('e1_') && value.length !== 24;
+const configured = (env, service) => service === 'mal' && !!env.MAL_CLIENT_ID;
 const base = env => env.PUBLIC_ORIGIN || 'https://pleazyng-api.snape.tech';
 
 async function key(env) {
@@ -87,22 +84,20 @@ export default {
     if (url.origin !== base(env)) return empty(404);
     try {
       if (url.pathname === '/auth/edge-health') return request.method === 'GET'
-        ? json({ ok: true, runtime: 'cloudflare', d1: false, providers: { mal: configured(env, 'mal'), anilist: configured(env, 'anilist') }, admissionBurst: ADMISSION_BURST, admissionRefillSeconds: ADMISSION_REFILL_MS / 1000 }) : empty(405);
-      if (url.pathname === '/auth/start' && request.method === 'POST') {
+        ? json({ ok: true, runtime: 'cloudflare', d1: false, providers: { mal: configured(env, 'mal'), anilist: false }, flow: 'code-only-pkce', admissionBurst: ADMISSION_BURST, admissionRefillSeconds: ADMISSION_REFILL_MS / 1000 }) : empty(405);
+      if (url.pathname === '/auth/pkce/start' && request.method !== 'POST') return empty(405);
+      if (url.pathname === '/auth/pkce/start' && request.method === 'POST') {
         let body;
         try { body = JSON.parse(await limitedText(request.clone(), 512)); } catch (error) {
           discardBody(request); return empty(error instanceof PayloadTooLarge ? 413 : 400);
         }
-        // New Trakt browser PKCE, Steam, and all other local providers retain
-        // their original origin protocol and session keys.
-        if (!EDGE.has(body?.service)) return fetch(request);
-        // Native clients send JSON without Origin. Block browser-simple posts
-        // and cross-site attempts from spending a victim's admission budget.
+        if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).some(name => name !== 'service')) return empty(400);
+        if (body.service !== 'mal') return empty(404);
         const contentType = (request.headers.get('Content-Type') || '').split(';')[0].trim().toLowerCase();
         if (contentType !== 'application/json') return empty(415);
         const origin = request.headers.get('Origin');
         if ((origin !== null && origin !== base(env)) || request.headers.get('Sec-Fetch-Site') === 'cross-site') return empty(403);
-        if (!configured(env, body.service)) return json({ error: 'provider_not_configured' }, 503);
+        if (!configured(env, 'mal')) return json({ error: 'provider_not_configured' }, 503);
         const ip = request.headers.get('CF-Connecting-IP');
         if (!ip) return empty(400);
         const day = new Date().toISOString().slice(0, 10);
@@ -115,32 +110,58 @@ export default {
         const id = random(); const expires = Date.now() + TTL_MS;
         const browser = await capability(env, 'browser', id, expires);
         const poll = await capability(env, 'device', id, expires);
-        const created = await session(env, id).fetch(internal('start', { service: body.service, expires, browser }));
+        const created = await session(env, id).fetch(internal('start', { service: 'mal', expires, browser }));
         if (!created.ok) return created;
-        return json({ session: poll, url: `${base(env)}/auth/${body.service}?state=${browser}`, expiresIn: TTL_MS / 1000 });
+        const redirectUri = `${base(env)}/auth/mal/callback`;
+        const authorize = new URL('https://myanimelist.net/v1/oauth2/authorize');
+        authorize.search = new URLSearchParams({ response_type: 'code', client_id: env.MAL_CLIENT_ID, redirect_uri: redirectUri, state: browser });
+        // The app adds its locally-held plain PKCE verifier to this URL. Never
+        // send the challenge to this Worker: MAL only supports `plain`.
+        return json({ session: poll, url: authorize.toString(), redirectUri, expiresIn: TTL_MS / 1000 });
       }
-      if (url.pathname === '/auth/result' && edgeToken(url.searchParams.get('session'))) {
+      if (url.pathname === '/auth/start') {
+        if (request.method !== 'POST') return empty(405);
+        let body;
+        try { body = JSON.parse(await limitedText(request.clone(), 512)); } catch (error) {
+          discardBody(request); return empty(error instanceof PayloadTooLarge ? 413 : 400);
+        }
+        // All provider flows that deliver tokens require a relay operated by
+        // the user. The first-party MAL flow uses /auth/pkce/start.
+        if (body?.service === 'mal') return json({ error: 'code_only_authorization_required' }, 410);
+        return empty(404);
+      }
+      if (url.pathname === '/auth/result') {
         if (request.method !== 'GET') return empty(405);
-        const verified = await verify(env, 'device', url.searchParams.get('session'));
+        if (url.search) return empty(400);
+        const match = /^Bearer (.+)$/i.exec((request.headers.get('Authorization') || '').trim());
+        const verified = await verify(env, 'device', match?.[1]);
         if (!verified) return empty(410);
         return session(env, verified.id).fetch(internal('result'));
       }
-      const route = /^\/auth\/(mal|anilist)(\/callback)?$/.exec(url.pathname);
-      if (route) {
+      if (url.pathname === '/auth/mal/callback' && request.method !== 'GET') return empty(405);
+      if (url.pathname === '/auth/mal/callback') {
         if (request.method !== 'GET') return empty(405);
+        const allowedParameters = new Set(['state', 'code', 'error', 'error_description']);
+        const parameterNames = [...url.searchParams.keys()];
+        if (parameterNames.some(name => !allowedParameters.has(name)) ||
+          parameterNames.some(name => url.searchParams.getAll(name).length !== 1) ||
+          !url.searchParams.has('state') ||
+          url.searchParams.has('code') === url.searchParams.has('error') ||
+          (url.searchParams.has('error_description') && !url.searchParams.has('error')) ||
+          (url.searchParams.has('code') && (!url.searchParams.get('code') || url.searchParams.get('code').length > 4096))) return empty(400);
         const token = url.searchParams.get('state');
-        // Allow sessions issued by the old local deployment to finish during cutover.
-        if (token && !edgeToken(token)) return fetch(request);
+        // MAL callbacks for old full-exchange sessions must not fall back to
+        // the origin. The code-only broker creates a fresh signed state.
         const verified = await verify(env, 'browser', token);
         if (!verified) return page(false, 404);
-        return session(env, verified.id).fetch(internal(route[2] ? 'callback' : 'authorize', {
-          service: route[1], code: (url.searchParams.get('code') || '').slice(0, 4096),
+        return session(env, verified.id).fetch(internal('callback', {
+          service: 'mal', code: (url.searchParams.get('code') || '').slice(0, 4096),
           error: url.searchParams.has('error') ? (url.searchParams.get('error') === 'access_denied' ? 'access_denied' : 'authorization_failed') : '',
         }));
       }
-      // Worker Routes fetch() reaches the existing Tunnel origin; it does not
-      // invoke this Worker again. No origin hostname or DNS cutover is needed.
-      return fetch(request);
+      // This hostname is a code-only OAuth broker. Never proxy requests to the
+      // home relay, including unknown routes that an older app may request.
+      return empty(404);
     } catch {
       // Do not log exception text: fetch errors can include capability URLs.
       return json({ error: 'oauth_unavailable' }, 503);
@@ -192,7 +213,7 @@ export class OAuthSession {
       const { service, expires, browser } = await request.json();
       if (this.data) return empty(409);
       if (!EDGE.has(service) || !Number.isSafeInteger(expires) || expires <= Date.now() || expires > Date.now() + TTL_MS) return empty(400);
-      this.data = { service, expires, browser, verifier: service === 'mal' ? random() + random() : '', claimed: false, result: null };
+      this.data = { service, expires, browser, claimed: false, result: null };
       await this.ctx.storage.put('session', this.data);
       await this.ctx.storage.setAlarm(expires);
       return empty(204);
@@ -201,50 +222,20 @@ export class OAuthSession {
     if (action === '/result') return this.poll();
     const body = await request.json();
     if (body.service !== this.data.service) return empty(404);
-    if (action === '/authorize') {
-      if (this.data.claimed) return page(false, 404);
-      const mal = this.data.service === 'mal';
-      const url = new URL(mal ? 'https://myanimelist.net/v1/oauth2/authorize' : 'https://anilist.co/api/v2/oauth/authorize');
-      url.search = new URLSearchParams({ response_type: 'code', client_id: mal ? this.env.MAL_CLIENT_ID : this.env.ANILIST_CLIENT_ID,
-        redirect_uri: `${base(this.env)}/auth/${this.data.service}/callback`, state: this.data.browser,
-        ...(mal ? { code_challenge: this.data.verifier, code_challenge_method: 'plain' } : {}),
-      });
-      return new Response(null, { status: 302, headers: { ...SECURITY_HEADERS, Location: url.toString(), 'Cache-Control': 'no-store, private', 'Referrer-Policy': 'no-referrer' } });
-    }
     if (action !== '/callback') return empty(404);
     if (this.data.claimed) return page(false, 404);
     this.data.claimed = true;
-    await this.ctx.storage.put('session', this.data); // Persist replay claim before upstream exchange.
+    await this.ctx.storage.put('session', this.data); // Persist the one-use callback claim before storing its code.
     let result; let status = 200;
     if (body.error) result = { error: body.error };
     else if (!body.code) { result = { error: 'missing_code' }; status = 400; }
-    else {
-      try { result = await this.exchange(body.code); }
-      catch { result = { error: 'exchange_failed' }; status = 502; }
-    }
-    // The expiry alarm may have run during the provider exchange.
+    else result = { authorizationCode: body.code };
     if (!this.data || this.data.consumed || this.data.expires <= Date.now()) return page(false, 410);
-    this.data.verifier = ''; this.data.browser = ''; this.data.result = result;
+    delete this.data.verifier; // Remove verifier material from sessions created by the retired exchange flow.
+    this.data.browser = ''; this.data.result = result;
     await this.ctx.storage.put('session', this.data);
     this.waiter?.();
     return page(!result.error, status);
-  }
-  async exchange(code) {
-    const mal = this.data.service === 'mal';
-    const form = new URLSearchParams({ grant_type: 'authorization_code', code,
-      client_id: mal ? this.env.MAL_CLIENT_ID : this.env.ANILIST_CLIENT_ID,
-      redirect_uri: `${base(this.env)}/auth/${this.data.service}/callback`,
-      ...(mal ? { code_verifier: this.data.verifier } : { client_secret: this.env.ANILIST_CLIENT_SECRET }),
-    });
-    const response = await fetch(mal ? 'https://myanimelist.net/v1/oauth2/token' : 'https://anilist.co/api/v2/oauth/token', {
-      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
-      body: form, redirect: 'error', signal: AbortSignal.timeout(15_000),
-    });
-    if (!response.ok) throw new Error('exchange failed');
-    const value = JSON.parse(await limitedText(response, 64 * 1024));
-    if (typeof value.access_token !== 'string' || !value.access_token) throw new Error('missing token');
-    return { accessToken: value.access_token, refreshToken: typeof value.refresh_token === 'string' ? value.refresh_token : '',
-      expiresIn: Number.isFinite(value.expires_in) ? value.expires_in : 0 };
   }
   async poll() {
     if (this.waiter) return json({ error: 'poll_in_progress' }, 429, { 'Retry-After': '2' });
@@ -257,13 +248,24 @@ export class OAuthSession {
     if (!this.data || this.data.consumed || this.data.expires <= Date.now()) return empty(410);
     if (!this.data.result) return empty(204); // No storage writes on pending polls.
     const result = this.data.result;
+    const codeOnly = result && typeof result === 'object' && (
+      (Object.keys(result).length === 1 && typeof result.authorizationCode === 'string') ||
+      (Object.keys(result).length === 1 && typeof result.error === 'string')
+    );
+    if (!codeOnly) {
+      // Never return a token result retained by a pre-code-only deployment.
+      this.data = null;
+      await this.ctx.storage.deleteAll();
+      await this.ctx.storage.deleteAlarm();
+      return empty(410);
+    }
     this.data.consumed = true; this.data.result = null;
     await this.ctx.storage.deleteAll();
     await this.ctx.storage.deleteAlarm();
-    return json(result); // One device receives the tokens, once.
+    return json(result); // One device receives the code-only result, once.
   }
   async alarm() {
-    if (this.data) { this.data.consumed = true; this.data.result = null; this.data.verifier = ''; this.data.browser = ''; }
+    if (this.data) { this.data.consumed = true; this.data.result = null; this.data.browser = ''; }
     await this.ctx.storage.deleteAll(); this.waiter?.();
   }
 }

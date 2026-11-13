@@ -52,15 +52,10 @@ STEAM_STREAM_RELAY_MIB_PER_SECOND=8
 STEAM_STREAM_RELAY_UDP_PORT=3479
 ```
 
-Build the app with matching origins:
-
-```sh
---dart-define=PLEZY_SERVER_BASE_URL=https://your-approved-server.example
---dart-define=PLEZY_STEAM_RELAY_URL=https://your-approved-server.example
-```
-
-The client rejects HTTP, user-info, query/fragment credentials and an origin
-different from its catalog server. The relay refuses initialization without
+Official builds leave the relay URL unset. Configure a user-operated HTTPS
+relay in **Settings → Services → User-hosted relay** before enabling Steam
+internet streaming. The client derives the Steam WebSocket route from that base
+and uses the same origin for catalog requests. The relay refuses initialization without
 Steam admission or a configured HTTPS public origin. TLS termination belongs
 to the existing reverse proxy; forward WebSocket upgrades at
 `/games/steam/relay`, retain the admission headers, and use an idle timeout

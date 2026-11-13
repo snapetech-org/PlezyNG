@@ -17,11 +17,10 @@ WATCHMODE_API_KEY=<commercial-plan-api-key>
 WATCHMODE_COMMERCIAL_APPROVED=true
 ```
 
-Keep the approval value false until the account has an active commercial plan and the app's use is approved under the current terms. If the API is served from a different relay than the default Plezy endpoint, point the app at it at build time:
-
-```sh
---dart-define=PLEAZYNG_WATCHMODE_AVAILABILITY_BASE_URL=https://relay.example
-```
+Keep the approval value false until the account has an active commercial plan
+and the app's use is approved under the current terms. The official app has no
+relay URL by default; configure the base URL for a relay you operate in
+**Settings → Services → User-hosted relay**.
 
 For web builds, add the web origin to `COMIC_COMMERCE_ALLOWED_ORIGINS`, which this relay already uses for its exact-origin CORS allowlist. Native requests normally do not send an Origin header. Never add the API key to Dart defines, app settings, URLs, or client logs.
 

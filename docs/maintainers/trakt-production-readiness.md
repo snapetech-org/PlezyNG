@@ -7,19 +7,19 @@ embed or request a client secret for Pleazyng user sign-in.
 
 - TV hardware uses Trakt Device Code. The app requests a code, observes the
   provider's polling interval/expiry, and exchanges it without a client secret.
-- Browser-capable devices use S256 PKCE through the owned OAuth relay. Each
+- Browser-capable devices use S256 PKCE through a relay the user operates. Each
   attempt has a fresh verifier and separate browser-state and poll capabilities.
-  The relay exchanges the code, clears the verifier, and permits one result
-  retrieval. It does not log or persist the tokens.
+  That relay exchanges the code and returns tokens to the app. The operator's
+  public Worker and retired home relay never handle this Trakt flow.
 - Refresh and revoke are direct public-client requests. Disconnect clears the
   local connection before attempting remote revocation; failed revocation must
   not restore a disconnected session. Users can revoke access in Trakt itself.
 
 The production callback is derived by `oauthProxy.redirectURI("trakt")` from
-`OAUTH_BASE_URL`: with the owned relay it is
-`https://pleazyng-api.snape.tech/auth/trakt/callback`. Do not register a support
-page as an OAuth callback, and do not replace a real callback with a custom
-scheme or localhost address in production.
+`OAUTH_BASE_URL`: the callback URL belongs to the user's own relay. The
+operator's `pleazyng-api.snape.tech` Worker does not serve a Trakt callback. Do
+not register a support page as an OAuth callback, and do not replace a real
+callback with a custom scheme or localhost address in production.
 
 Trakt's **Development** registration editor permits loopback callbacks only.
 Explain that development restriction in the production request. Ask Trakt to
@@ -38,12 +38,13 @@ already satisfying production HTTPS requirements.
 2. Obtain production approval and confirm the exact HTTPS callback. Retain
    privacy/support links, developer ownership, and the separate development
    record if Trakt issues a new production client.
-3. Configure the same approved public production Client ID as server
-   `TRAKT_CLIENT_ID` and app `PLEAZYNG_TRAKT_CLIENT_ID`. Configure the app's
-   `PLEAZYNG_RELAY_BASE_URL` to the owned HTTPS relay. Check that actual release
-   compile inputs consume these values; repository variables alone do not
-   activate a provider. Never add a `client_secret` build input.
-4. Deploy the tested relay revision, then qualify the exact HTTPS PKCE path,
+3. Configure the same approved public production Client ID as the app
+   `PLEAZYNG_TRAKT_CLIENT_ID` and in the relay the user operates. Configure the app's
+   user-operated HTTPS relay in **Settings → Services → User-hosted relay** for
+   browser OAuth. Official builds do not embed a relay URL. Never add a
+   `client_secret` build input; Trakt TV device-code sign-in exchanges tokens
+   directly with Trakt.
+4. Deploy the user's tested relay revision, then qualify the exact HTTPS PKCE path,
    state rejection, one-time result retrieval, token refresh, disconnect, TV
    device flow and selected sync features with the production registration.
 5. Verify that the public privacy page reflects `PRIVACY.md`, and include

@@ -59,22 +59,26 @@ def main():
                 time.sleep(0.25)
             else:
                 raise RuntimeError('workerd startup timed out')
-            assert request('/auth/start', {'service': 'mal'}, {'Origin': 'https://untrusted.example'}).status == 403
-            assert request('/auth/start', {'service': 'mal'}, {'Content-Type': 'text/plain'}).status == 415
-            assert request('/auth/start', {'service': 'mal', 'padding': 'x' * 1024}).status == 413
-            response = request('/auth/start', {'service': 'mal'})
+            assert request('/auth/pkce/start', {'service': 'mal'}, {'Origin': 'https://untrusted.example'}).status == 403
+            assert request('/auth/pkce/start', {'service': 'mal'}, {'Content-Type': 'text/plain'}).status == 415
+            assert request('/auth/pkce/start', {'service': 'mal', 'padding': 'x' * 1024}).status == 413
+            response = request('/auth/pkce/start', {'service': 'mal'})
             assert response.status == 200, ('start', response.status)
             session = json.load(response)
-            state = urllib.parse.parse_qs(urllib.parse.urlparse(session['url']).query)['state'][0]
-            response = request('/auth/mal?state=' + state)
-            assert response.status == 302, ('authorize', response.status)
-            assert response.headers['Location'].startswith('https://myanimelist.net/v1/oauth2/authorize?')
+            authorize = urllib.parse.urlparse(session['url'])
+            assert authorize.hostname == 'myanimelist.net'
+            assert authorize.path == '/v1/oauth2/authorize'
+            params = urllib.parse.parse_qs(authorize.query)
+            state = params['state'][0]
+            assert 'code_challenge' not in params
+            assert 'code_challenge_method' not in params
+            assert request('/games/steam/relay').status == 404
             assert request('/auth/mal/callback?state=' + state + '&error=access_denied').status == 200
-            response = request('/auth/result?session=' + session['session'])
+            response = request('/auth/result', extra_headers={'Authorization': 'Bearer ' + session['session']})
             assert response.status == 200
             assert json.load(response) == {'error': 'access_denied'}
-            assert request('/auth/result?session=' + session['session']).status == 410
-            print('workerd + SQLite + rate limiter: body/origin rejection, redirect, callback, single-use delivery passed')
+            assert request('/auth/result', extra_headers={'Authorization': 'Bearer ' + session['session']}).status == 410
+            print('workerd + SQLite + rate limiter: body/origin rejection, code-only callback, no relay pass-through passed')
         finally:
             if process.poll() is None:
                 os.killpg(process.pid, signal.SIGTERM)

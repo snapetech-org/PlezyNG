@@ -152,7 +152,6 @@ env:
   RELEASE_DART_DEFINES: >-
     --dart-define=ENABLE_UPDATE_CHECK=true
     --dart-define=GIT_COMMIT=${{ inputs.recovery_product_sha || github.sha }}
-    --dart-define=PLEAZYNG_RELAY_BASE_URL=${{ vars.PLEAZYNG_RELAY_BASE_URL }}
     --dart-define=PLEAZYNG_DISCORD_APPLICATION_ID=${{ vars.PLEAZYNG_DISCORD_APPLICATION_ID }}
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
   LINUX_APT_PACKAGES: >
@@ -2663,7 +2662,6 @@ jobs:
         shell: pwsh
         env:
           MSSTORE_LIFETIME_PRODUCT_ID: ${{ vars.MSSTORE_LIFETIME_PRODUCT_ID }}
-          PLEAZYNG_RELAY_BASE_URL: ${{ vars.PLEAZYNG_RELAY_BASE_URL }}
           PLEAZYNG_DISCORD_APPLICATION_ID: ${{ vars.PLEAZYNG_DISCORD_APPLICATION_ID }}
           FLUTTER_WHISPER_GPU_BACKEND: ${{ inputs.subtitle_gpu_backend == 'vulkan' && matrix.arch == 'x64' && 'VULKAN' || inputs.subtitle_gpu_backend == 'cuda' && matrix.arch == 'x64' && 'CUDA' || 'CPU' }}
         run: python scripts/build_microsoft_store.py --arch "${{ matrix.arch }}"

@@ -8050,6 +8050,27 @@ class Translations$services$en {
 	/// en: 'Integrations'
 	String get integrations => 'Integrations';
 
+	/// en: 'User-hosted relay'
+	String get userRelayTitle => 'User-hosted relay';
+
+	/// en: 'No relay configured; relay-backed features stay off.'
+	String get userRelayOff => 'No relay configured; relay-backed features stay off.';
+
+	/// en: 'A relay is configured. Only use a server you operate and trust.'
+	String get userRelayConfigured => 'A relay is configured. Only use a server you operate and trust.';
+
+	/// en: 'Relay requests can contain account tokens, uploaded data, or remote-control traffic. Only enter an HTTPS server you operate. The official app does not select a relay for you.'
+	String get userRelayPrivacy => 'Relay requests can contain account tokens, uploaded data, or remote-control traffic. Only enter an HTTPS server you operate. The official app does not select a relay for you.';
+
+	/// en: 'Relay base URL'
+	String get userRelayAddress => 'Relay base URL';
+
+	/// en: 'https://relay.example.com'
+	String get userRelayHint => 'https://relay.example.com';
+
+	/// en: 'Enter a valid HTTPS base URL.'
+	String get userRelayInvalid => 'Enter a valid HTTPS base URL.';
+
 	/// en: 'Hardcover'
 	String get hardcover => 'Hardcover';
 
@@ -20953,6 +20974,13 @@ extension on Translations {
 			'services.title' => 'Services',
 			'services.hubSubtitle' => 'Sync watch progress and request new titles.',
 			'services.integrations' => 'Integrations',
+			'services.userRelayTitle' => 'User-hosted relay',
+			'services.userRelayOff' => 'No relay configured; relay-backed features stay off.',
+			'services.userRelayConfigured' => 'A relay is configured. Only use a server you operate and trust.',
+			'services.userRelayPrivacy' => 'Relay requests can contain account tokens, uploaded data, or remote-control traffic. Only enter an HTTPS server you operate. The official app does not select a relay for you.',
+			'services.userRelayAddress' => 'Relay base URL',
+			'services.userRelayHint' => 'https://relay.example.com',
+			'services.userRelayInvalid' => 'Enter a valid HTTPS base URL.',
 			'services.hardcover' => 'Hardcover',
 			'services.linkedCatalogTitles' => 'Linked catalog titles',
 			'services.planNote' => 'Optional plan note. This label is only for you; Pleazyng does not verify account access.',
@@ -21439,6 +21467,8 @@ extension on Translations {
 			'universalMedia.converterLocalOnly' => 'The selected file is not available as a local device path.',
 			'universalMedia.converterReplaceTitle' => 'Replace this file?',
 			'universalMedia.converterReplaceHelp' => 'Pleazyng backs up the existing file until the converted copy is saved.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.converterStarting' => 'Starting FFmpeg…',
 			'universalMedia.converterProgress' => 'Converting on this computer…',
 			'universalMedia.converterComplete' => 'Conversion complete. The new file is ready.',
@@ -21446,8 +21476,6 @@ extension on Translations {
 			'universalMedia.converterFailed' => 'Conversion failed. Check that the source file can be read and the destination has enough free space.',
 			'universalMedia.converterCancelled' => 'Conversion cancelled. The incomplete output was removed.',
 			'universalMedia.converterDesktopOnly' => 'Local conversion is available on desktop computers with FFmpeg installed.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.converterStart' => 'Convert file',
 			'universalMedia.mediaToolsTitle' => 'Media tools',
 			'universalMedia.mediaToolsShortcut' => 'Capture or share media, add search extensions, or use the command line.',
@@ -21953,6 +21981,8 @@ extension on Translations {
 			'comics.controlsHelp' => 'Swipe to turn pages. Double-tap to change fit. In continuous scroll, swipe vertically or use Page Up and Page Down.',
 			'comics.savedForComic' => 'Display settings are remembered for this comic in this profile.',
 			'comics.readLists' => 'Reading lists',
+			_ => null,
+		} ?? switch (path) {
 			'comics.collections' => 'Collections',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
@@ -21960,8 +21990,6 @@ extension on Translations {
 			'games.computers' => 'Your computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
-			_ => null,
-		} ?? switch (path) {
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
 			'games.port' => 'Service port',
@@ -22467,6 +22495,8 @@ extension on Translations {
 			'subtitleAiUi.noCuesMatchThisSearch' => 'No cues match this search.',
 			'subtitleAiUi.cue' => ({required Object cueIndex, required Object startTime, required Object endTime}) => 'Cue ${cueIndex} · ${startTime} – ${endTime}',
 			'subtitleAiUi.original' => 'Original',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.output' => 'Output',
 			'subtitleAiUi.editCue' => 'Edit cue',
 			'subtitleAiUi.undo' => ({required Object undoHistoryUndohistoryCount}) => 'Undo (${undoHistoryUndohistoryCount})',
@@ -22474,8 +22504,6 @@ extension on Translations {
 			'subtitleAiUi.cuesAreReadyReviewThisSampleBeforeAt_2851cf04' => ({required Object cuesCueCount}) => '${cuesCueCount} cues are ready. Review this sample before attaching the generated SRT.',
 			'subtitleAiUi.andMore' => ({required Object count}) => 'And ${count} more.',
 			'subtitleAiUi.saveSRTOrJSONExportsTheReviewedResul_b960b84b' => 'Save SRT or JSON exports the reviewed result without changing the active track or source subtitle.',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.editAllCues_8771718b' => 'Edit all cues',
 			'subtitleAiUi.theCurrentlySelectedCaptionsAreBurne_9904ad02' => 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.',
 			'subtitleAiUi.uploadAttachStoresThisSRTOnTheActive_3e49fa27' => 'Upload + attach stores this SRT on the active library item when the server allows it.',
@@ -22981,6 +23009,8 @@ extension on Translations {
 			'karaokeUi.selectPrivatePEMKey' => 'Select private PEM key',
 			'karaokeUi.thisInvitationExpiresIn30MinutesConnectedGuestsCan' => 'This invitation expires in 30 minutes. Connected guests can request songs for 8 hours, until revoked or the room closes.',
 			'karaokeUi.copyInvitation' => 'Copy invitation',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.createReadOnlyStageLink' => 'Create read-only stage link',
 			'karaokeUi.createOneUseHostHandoverLink' => 'Create one-use host handover link',
 			'karaokeUi.revokeGuestsAndReplaceInvitation' => 'Revoke guests and replace invitation',
@@ -22988,8 +23018,6 @@ extension on Translations {
 			'karaokeUi.karaokeTools' => 'Karaoke tools',
 			'karaokeUi.privateTakes' => 'Private takes',
 			'karaokeUi.venueCollectionsAndReadiness' => 'Venue, collections and readiness',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.recentlyAdded' => 'Recently added',
 			'karaokeUi.scoredCharts' => 'Scored charts',
 			'karaokeUi.fitsMyRange' => 'Fits my range',

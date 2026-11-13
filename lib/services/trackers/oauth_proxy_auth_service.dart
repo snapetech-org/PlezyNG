@@ -19,7 +19,12 @@ abstract class OAuthProxyAuthServiceBase {
   }) async {
     final start = await proxy.start(service);
     onCodeReady(start);
-    final result = await proxy.poll(start.session, shouldCancel: shouldCancel, onCancel: onCancel);
+    final result = await proxy.poll(
+      start.session,
+      codeVerifier: start.codeVerifier,
+      shouldCancel: shouldCancel,
+      onCancel: onCancel,
+    );
     if (result == null) return null;
     return buildSession(result);
   }

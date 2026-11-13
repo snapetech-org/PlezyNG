@@ -3,7 +3,7 @@
   "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "f2e595c388190de8fe00e48f436384b83b9670a1",
+    "auditedMainCommit": "aa1f614b99a1e92c5df88a24ca31bd085c6324ad",
     "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
@@ -81,10 +81,10 @@
     "localeChoices": 37,
     "directory": "lib/i18n",
     "filePattern": "*.i18n.json",
-    "qualityStatus": "Structural locale coverage is present: 5,433 messages across 37 locales and 47,544 explicitly allowlisted English-fallback entries. Native-speaker fluency review is not established by key counts or generated-file checks.",
-    "messagesPerLocale": 5433,
-    "englishFallbackKeys": 1328,
-    "englishFallbackEntries": 47544,
+    "qualityStatus": "Structural locale coverage is present: 5,459 messages across 37 locales and 47,662 explicitly allowlisted English-fallback entries. Metronome and legacy-import strings use assistant-generated drafts without independent/native-speaker review; five legacy-link converter labels remain explicit English fallback. Native-speaker fluency review is not established by key counts or generated-file checks.",
+    "messagesPerLocale": 5459,
+    "englishFallbackKeys": 1331,
+    "englishFallbackEntries": 47662,
     "coverageReport": "docs/localization/coverage.json",
     "coverageReviewedOn": "2026-11-13"
   },
@@ -141,7 +141,7 @@
         "docs/plezyng/multiview/README.md",
         "docs/plezyng/multiview/DELIVERY.md"
       ],
-      "open": "The in-app workspace, detached desktop video and shared-engine non-video windows are implemented on macOS, Windows and Linux. Profile-scoped recovery checkpoints support explicit resume through existing library/source/reader owners after restart; they never deserialize credentials or launch games automatically. Local recovery/profile/source/catalog and player-startup regressions pass. Native builds, concurrent decoder limits, audio/input ownership, crash injection, accessibility and physical-device acceptance remain open."
+      "open": "The in-app workspace, detached desktop video and shared-engine non-video windows are implemented on macOS, Windows and Linux. Pane semantics expose focus activation, and interactive game panes request their FocusNode so the game-input lease transfers with pane focus. Profile-scoped recovery checkpoints support explicit resume through existing library/source/reader owners after restart; they never deserialize credentials or launch games automatically. Local recovery/profile/source/catalog and player-startup regressions pass. Native builds, concurrent decoder limits, audio/input ownership, crash injection, native screen-reader acceptance and physical-device qualification remain open."
     },
     {
       "area": "MilkDrop-compatible music visualizer",
@@ -168,6 +168,29 @@
         "docs/plezyng/music/STATUS.md"
       ],
       "open": "Shared playback and 10,000-track durable queue behavior are implemented with bounded pages, leased scratch indexes and occurrence identity. Multi-index edits retain rollback leases; tail appends keep the incremental path. This change passes formatting and focused static analysis; no tests/builds/CI were run. Existing P06/P07 regressions are recorded in music STATUS. Physical offline cold start, live provider and receiver/vehicle qualification remain open."
+    },
+    {
+      "area": "Neural motion smoothing and NPU providers",
+      "status": "partial",
+      "evidence": [
+        "docs/plezyng/motion-processing.md",
+        "lib/models/motion_processing_mode.dart",
+        "lib/services/motion_processing_service.dart",
+        "lib/services/neural_model_pack_service.dart",
+        "lib/services/settings_service.dart",
+        "lib/widgets/video_controls/sheets/video_settings_sheet.dart",
+        "pubspec.yaml",
+        "assets/motion_models/manifest.json",
+        "assets/motion_models/litert/manifest.json",
+        "android/app/build.gradle.kts",
+        "cmake/pleazyng_desktop_neural_models.cmake",
+        "linux/runner/CMakeLists.txt",
+        "windows/CMakeLists.txt",
+        "shared/cpp/plezy_motion_engine/CMakeLists.txt",
+        "shared/cpp/plezy_motion_engine/providers.linux.auto.tsv",
+        "shared/cpp/plezy_motion_engine/providers.windows.tsv"
+      ],
+      "open": "The persisted Playback → Motion smoothing preference defaults to Off; Neural is opt-in. Source and package configuration include Android LiteRT model packs by default and pinned Performance/Balanced/Quality ONNX graphs plus native PME/runtime packaging hooks for Windows and Linux. At runtime, the service resolves provider availability against the active stream and renderer, reports provider/model/power/thermal state, and falls back to MPV smoothing where supported or Off. NPU availability still depends on matching hardware, drivers/providers and optional vendor SDK or compiled-context inputs; bundled model files and provider adapters do not prove accelerator access. Recorded evidence covers model/runtime packaging, Android APK model checks, and local Linux GPU inference with null video/audio output. Apple package builds, exact current-release package qualification, provider execution across device/OS combinations, visible frame quality, presentation pacing and A/V sync remain open. Proprietary SDK access and compatible hardware remain external prerequisites."
     },
     {
       "area": "Dolby Vision and FEL",

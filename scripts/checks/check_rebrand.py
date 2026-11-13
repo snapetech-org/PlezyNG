@@ -6,6 +6,8 @@ aliases, internal
 com.edde746.plezy / org.snapetech.plezyng JNI and method channels, credential
 vault keys, persisted schemas, docs/plezyng paths, runner labels and existing
 environment/secret names. Historical release receipts and GPL notices remain.
+Legacy import onboarding may identify upstream Plezy as a possible database
+source; those names are provenance, not current product branding.
 """
 
 import json
@@ -17,6 +19,22 @@ from check_brand_assets import check as check_art
 from check_deep_link_schemes import check as check_links
 
 ROOT = Path(__file__).resolve().parents[2]
+UPSTREAM_IMPORT_COPY_KEYS = {
+    'startup.legacyImportBody',
+    'startup.legacyImportIdentityWarning',
+}
+
+
+def translation_values(node, prefix=''):
+    """Yield translation strings with their dotted key paths."""
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key.startswith('@'):
+                continue
+            child = f'{prefix}.{key}' if prefix else key
+            yield from translation_values(value, child)
+    elif isinstance(node, str):
+        yield prefix, node
 
 
 def check():
@@ -42,10 +60,19 @@ def check():
     info = json.loads((ROOT / 'webos/meta/appinfo.json').read_text())
     if (info['id'], info['main'], info['title']) != ('org.snapetech.pleazyng', 'pleazyng', 'Pleazyng'):
         errors.append('webOS identity differs')
-    # Source translations, including non-English copy, must not expose old names.
+    # Source translations must not expose old product branding. The two legacy
+    # import messages may name Plezy solely to identify a possible DB source.
     for path in (ROOT / 'lib/i18n').glob('*.i18n.json'):
-        values = re.findall(r':\s*"((?:[^"\\]|\\.)*)"', path.read_text())
-        if any(re.search(r'\b(?:PlezyNG|Plezy)\b', value) for value in values):
+        data = json.loads(path.read_text())
+        invalid_name = any(
+            re.search(r'\bPlezyNG\b', value)
+            or (
+                key not in UPSTREAM_IMPORT_COPY_KEYS
+                and re.search(r'\bPlezy\b', value)
+            )
+            for key, value in translation_values(data)
+        )
+        if invalid_name:
             errors.append(f'{path.name}: old product display name')
     for relative in ('lib/services/plezy_server.dart', 'lib/services/discord_service.dart', 'lib/services/trakt_service.dart'):
         path = ROOT / relative

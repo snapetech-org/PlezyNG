@@ -31,6 +31,7 @@ val promoteDirectory = extra["promoteDirectory"] as (File, File) -> Unit
 // project here declares its own (root allprojects, the Flutter plugin), and
 // Gradle then ignores the settings' repositories.
 val mpvLockFile = rootProject.file("../mpv-build.lock.json")
+
 @Suppress("UNCHECKED_CAST")
 val mpvLock = groovy.json.JsonSlurper().parse(mpvLockFile) as Map<String, Any?>
 val mpvAndroid = run {
@@ -42,10 +43,16 @@ val mpvAndroid = run {
 @Suppress("UNCHECKED_CAST")
 val mpvAar = mpvAndroid["aar"] as? Map<String, String>
   ?: throw GradleException("$mpvLockFile artifacts.android has no aar; run scripts/set_native_revision.sh")
+
 @Suppress("UNCHECKED_CAST")
-val androidPackageReceipt = (((mpvLock["nativePackages"] as? Map<String, Any?>)
-  ?.get("android") as? Map<String, Any?>)?.get("aar") as? Map<String, Any?>)
+val androidPackageReceipt = (
+  (
+    (mpvLock["nativePackages"] as? Map<String, Any?>)
+      ?.get("android") as? Map<String, Any?>
+    )?.get("aar") as? Map<String, Any?>
+  )
   ?: throw GradleException("$mpvLockFile has no nativePackages.android.aar receipt; refresh the MPV lock")
+
 @Suppress("UNCHECKED_CAST")
 val androidFelCapabilities = androidPackageReceipt["capabilities"] as? Map<String, Any?>
   ?: throw GradleException("$mpvLockFile nativePackages.android.aar has no capability receipt")

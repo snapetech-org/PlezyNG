@@ -127,7 +127,7 @@ class _LegacyLinkConverterScreenState extends State<LegacyLinkConverterScreen> {
                   OutlinedButton.icon(
                     key: const ValueKey('legacy-link-converter-paste'),
                     onPressed: _paste,
-                    icon: const Icon(Icons.content_paste_rounded),
+                    icon: const AppIcon(Symbols.content_paste_rounded),
                     label: Text(t.watchTogether.paste),
                   ),
                   FilledButton.icon(
@@ -173,7 +173,7 @@ class _LegacyLinkConverterScreenState extends State<LegacyLinkConverterScreen> {
                   child: FilledButton.icon(
                     key: const ValueKey('legacy-link-converter-copy'),
                     onPressed: _copyPreview,
-                    icon: const Icon(Icons.content_copy_rounded),
+                    icon: const AppIcon(Symbols.content_copy_rounded),
                     label: Text(t.deepLinks.copy),
                   ),
                 ),

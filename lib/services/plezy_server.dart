@@ -5,7 +5,6 @@ import 'settings_service.dart';
 /// directly with MAL. All other relay-backed features require an endpoint the
 /// user configures in Settings → Services.
 const String pleazyngOAuthBrokerBaseUrl = 'https://pleazyng-api.snape.tech';
-const List<String> pleazyngConfiguredServiceUrls = [pleazyngOAuthBrokerBaseUrl];
 const String pleazyngMalCallbackUrl = '$pleazyngOAuthBrokerBaseUrl/auth/mal/callback';
 
 String? get configuredUserRelayBaseUrl {

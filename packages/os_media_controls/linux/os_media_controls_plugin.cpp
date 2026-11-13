@@ -928,30 +928,29 @@ void OsMediaControlsPluginImpl::SetMetadata(FlValue* args) {
   // Handle artwork - clean up old file first
   std::string old_artwork_path = artwork_path_;
 
-  // Check for artwork URL first (preferred if provided)
-  std::string artwork_url = GetStringFromFlValue(args, "artworkUrl");
-  if (!artwork_url.empty()) {
-    // Pass through URLs directly (file://, http://, https://)
-    // Note: GNOME Shell only supports file:// reliably, but we'll pass through anyway
-    if (artwork_url.find("file://") == 0 ||
-        artwork_url.find("http://") == 0 ||
-        artwork_url.find("https://") == 0) {
-      artwork_path_ = artwork_url;
-      artwork_data_.clear();  // Clear binary data if using URL
-    } else {
-      // If it's not a proper URL, try to make it a file:// URL
-      if (artwork_url[0] == '/') {
-        artwork_path_ = "file://" + artwork_url;
-        artwork_data_.clear();
-      }
-    }
+  // Match MediaMetadata's portable contract: caller-provided bytes take
+  // precedence over a URL when both are present.
+  auto artwork = GetBytesFromFlValue(args, "artwork");
+  if (!artwork.empty()) {
+    artwork_data_ = artwork;
+    artwork_path_ = SaveArtworkToFile(artwork);
   } else {
-    // Fall back to binary artwork data
-    auto artwork = GetBytesFromFlValue(args, "artwork");
-    if (!artwork.empty()) {
-      // Save binary data to file with unique timestamp
-      artwork_data_ = artwork;
-      artwork_path_ = SaveArtworkToFile(artwork);
+    std::string artwork_url = GetStringFromFlValue(args, "artworkUrl");
+    if (!artwork_url.empty()) {
+      // Pass through URLs directly (file://, http://, https://).
+      // GNOME Shell only supports file:// reliably, but pass through anyway.
+      if (artwork_url.find("file://") == 0 ||
+          artwork_url.find("http://") == 0 ||
+          artwork_url.find("https://") == 0) {
+        artwork_path_ = artwork_url;
+        artwork_data_.clear();
+      } else {
+        // If it's not a proper URL, try to make it a file:// URL
+        if (artwork_url[0] == '/') {
+          artwork_path_ = "file://" + artwork_url;
+          artwork_data_.clear();
+        }
+      }
     }
   }
 

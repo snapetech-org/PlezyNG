@@ -55,6 +55,10 @@ class OsMediaControlsPlugin : public flutter::Plugin {
   // SystemMediaTransportControls instance
   winrt::Windows::Media::SystemMediaTransportControls smtc_{nullptr};
 
+  // Keep byte-backed artwork streams alive while Windows reads the thumbnail.
+  winrt::Windows::Storage::Streams::RandomAccessStreamReference
+      artwork_stream_ref_{nullptr};
+
   // Event tokens for SMTC event handlers
   winrt::event_token button_pressed_token_;
   winrt::event_token position_change_token_;
@@ -105,6 +109,7 @@ class OsMediaControlsPlugin : public flutter::Plugin {
   void DisableControlOnThread(const std::string& control);
   void SetMetadataOnThread(const std::string& title, const std::string& artist,
                            const std::string& album, const std::string& albumArtist,
+                           const std::optional<std::vector<uint8_t>>& artwork,
                            const std::string& artworkUri, double duration);
   void SetPlaybackStateOnThread(const std::string& state, double position,
                                 double duration, double speed);
@@ -114,6 +119,8 @@ class OsMediaControlsPlugin : public flutter::Plugin {
   winrt::hstring StringToHString(const std::string& str);
   winrt::Windows::Storage::Streams::RandomAccessStreamReference
       CreateStreamReferenceFromUri(const std::string& uri);
+  winrt::Windows::Storage::Streams::RandomAccessStreamReference
+      CreateStreamReferenceFromBytes(const std::vector<uint8_t>& bytes);
 };
 
 }  // namespace os_media_controls

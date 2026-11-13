@@ -368,17 +368,26 @@ void OsMediaControlsPlugin::SetMetadata(const flutter::EncodableValue *args) {
   std::string album = GetStringFromMap(map, "album");
   std::string albumArtist = GetStringFromMap(map, "albumArtist");
   std::string artworkUri = GetStringFromMap(map, "artworkUrl");
+  std::optional<std::vector<uint8_t>> artwork;
+  auto artworkIt = map.find(flutter::EncodableValue("artwork"));
+  if (artworkIt != map.end()) {
+    if (const auto* bytes = std::get_if<std::vector<uint8_t>>(&artworkIt->second)) {
+      artwork = *bytes;
+    }
+  }
   double duration = GetDoubleFromMap(map, "duration");
 
-  PostToSmtcThread([this, title, artist, album, albumArtist, artworkUri,
-                    duration]() {
-    SetMetadataOnThread(title, artist, album, albumArtist, artworkUri, duration);
+  PostToSmtcThread([this, title, artist, album, albumArtist, artwork,
+                    artworkUri, duration]() {
+    SetMetadataOnThread(title, artist, album, albumArtist, artwork, artworkUri,
+                        duration);
   });
 }
 
 void OsMediaControlsPlugin::SetMetadataOnThread(
     const std::string& title, const std::string& artist,
     const std::string& album, const std::string& albumArtist,
+    const std::optional<std::vector<uint8_t>>& artwork,
     const std::string& artworkUri, double duration) {
 
   if (!smtc_) return;
@@ -406,11 +415,12 @@ void OsMediaControlsPlugin::SetMetadataOnThread(
       musicProps.AlbumArtist(StringToHString(albumArtist));
     }
 
-    if (!artworkUri.empty()) {
-      auto streamRef = CreateStreamReferenceFromUri(artworkUri);
-      if (streamRef) {
-        updater.Thumbnail(streamRef);
-      }
+    if (artwork.has_value()) {
+      artwork_stream_ref_ = CreateStreamReferenceFromBytes(*artwork);
+      updater.Thumbnail(artwork_stream_ref_);
+    } else if (!artworkUri.empty()) {
+      artwork_stream_ref_ = CreateStreamReferenceFromUri(artworkUri);
+      updater.Thumbnail(artwork_stream_ref_);
     }
 
     updater.Update();
@@ -480,6 +490,7 @@ void OsMediaControlsPlugin::SetPlaybackStateOnThread(
 }
 
 void OsMediaControlsPlugin::ClearOnThread() {
+  artwork_stream_ref_ = nullptr;
   if (!smtc_) return;
 
   try {
@@ -591,6 +602,27 @@ OsMediaControlsPlugin::CreateStreamReferenceFromUri(const std::string &uri_str) 
   try {
     auto uri = winrt::Windows::Foundation::Uri(StringToHString(uri_str));
     return RandomAccessStreamReference::CreateFromUri(uri);
+  } catch (...) {
+    return nullptr;
+  }
+}
+
+RandomAccessStreamReference
+OsMediaControlsPlugin::CreateStreamReferenceFromBytes(
+    const std::vector<uint8_t>& bytes) {
+  if (bytes.empty()) {
+    return nullptr;
+  }
+
+  try {
+    auto stream = InMemoryRandomAccessStream();
+    auto writer = DataWriter(stream.GetOutputStreamAt(0));
+    writer.WriteBytes(winrt::array_view<uint8_t const>(
+        bytes.data(), bytes.data() + bytes.size()));
+    writer.StoreAsync().get();
+    writer.DetachStream();
+    stream.Seek(0);
+    return RandomAccessStreamReference::CreateFromStream(stream);
   } catch (...) {
     return nullptr;
   }

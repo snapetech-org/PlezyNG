@@ -529,8 +529,9 @@ class _FindNextScreenState extends State<FindNextScreen> {
                       runSpacing: 8,
                       children: [
                         TextButton(
-                          onPressed: () => Navigator.of(sheetContext)
-                              .pop((preferred: <String>{}, avoided: <String>{}, hiddenIds: <String>{}, reset: true)),
+                          onPressed: () => Navigator.of(
+                            sheetContext,
+                          ).pop((preferred: <String>{}, avoided: <String>{}, hiddenIds: <String>{}, reset: true)),
                           child: Text(t.discover.findNext.resetTaste),
                         ),
                         FilledButton(
@@ -1178,8 +1179,9 @@ class _FindNextScreenState extends State<FindNextScreen> {
   static ExternalIds _externalIdsForMedia(MediaItem item) {
     if (item is PlexMediaItem) {
       final guids = item.raw?['Guid'];
-      return ExternalIds.fromGuids(guids is List ? guids : const [])
-          .fillFrom(ExternalIds.fromLegacyPlexGuid(item.guid));
+      return ExternalIds.fromGuids(
+        guids is List ? guids : const [],
+      ).fillFrom(ExternalIds.fromLegacyPlexGuid(item.guid));
     }
     final providerIds = item.raw?['ProviderIds'];
     if (providerIds is! Map) return const ExternalIds();
@@ -1951,6 +1953,8 @@ class _FindNextScreenState extends State<FindNextScreen> {
       });
       if (action == DiscoveryDecisionAction.save) sources.scheduleSync();
       if (widget.openSavedPicksOnStart && _choices.isEmpty) unawaited(_load());
+    } on DiscoverySaveLimitException {
+      if (mounted) showErrorSnackBar(context, t.discover.findNext.savedLimit);
     } catch (_) {
       if (mounted) showErrorSnackBar(context, t.discover.findNext.changeFailed);
     } finally {
@@ -2612,9 +2616,9 @@ class _FindNextScreenState extends State<FindNextScreen> {
       from: now.subtract(const Duration(hours: 1)),
       to: now.add(const Duration(minutes: 1)),
     );
-    final channels = (await client.liveTv.fetchChannels(lineup: liveServer.lineup))
-        .map((item) => item.copyWith(serverId: choice.serverId, liveDvrKey: liveServer.dvrKey))
-        .toList(growable: false);
+    final channels = (await client.liveTv.fetchChannels(
+      lineup: liveServer.lineup,
+    )).map((item) => item.copyWith(serverId: choice.serverId, liveDvrKey: liveServer.dvrKey)).toList(growable: false);
     if (!mounted ||
         context.read<ActiveProfileProvider>().active?.id != profileId ||
         !identical(client.authenticationSessionId, authentication)) {

@@ -7,6 +7,10 @@ class DiscoveryUndoLimitException implements Exception {
   const DiscoveryUndoLimitException();
 }
 
+class DiscoverySaveLimitException implements Exception {
+  const DiscoverySaveLimitException();
+}
+
 class DiscoveryDecision {
   const DiscoveryDecision({
     required this.action,
@@ -117,7 +121,10 @@ class DiscoveryStore {
       var savedChanged = false;
       switch (action) {
         case DiscoveryDecisionAction.save:
-          if (previous == null && saved.length < maxSaved) {
+          if (previous == null) {
+            if (saved.length >= maxSaved) {
+              throw const DiscoverySaveLimitException();
+            }
             saved[choice.id] = choice;
             savedChanged = true;
           }

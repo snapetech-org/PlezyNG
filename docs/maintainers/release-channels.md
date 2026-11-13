@@ -99,7 +99,9 @@ identify Pleazyng as a fork of Plezy and link to the upstream project. State
 that the upstream Plezy project was created by edde746 and Pleazyng is
 maintained by SnapeTech; do not imply that edde746 created, contributed to, or
 maintains the Pleazyng fork. The release builder and `publish-chocolatey.yml`
-validate this metadata. For a
+validate this metadata. The publisher verifies the attested release checksum
+manifest before trusting installer or package bytes; moderation-correction
+packages receive their own build-provenance attestation. For a
 moderator-requested correction to an already-published GitHub release, dispatch
 `publish-chocolatey.yml` with that exact release tag, `rebuild_package=true`, and
 `publish=true`; it rebuilds the same package version from the committed recipe

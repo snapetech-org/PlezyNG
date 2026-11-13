@@ -37,9 +37,12 @@ env:
 
 permissions:
   contents: read
+  attestations: write
+  id-token: write
 
 jobs:
   publish:
+    if: github.ref == 'refs/heads/main'
     runs-on: windows-2025
     timeout-minutes: 20
     steps:
@@ -101,13 +104,28 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw 'Unable to download the Chocolatey package from the release.' }
           }
 
-      - name: Check out the release recipe
-        if: inputs.rebuild_package == true
+      - name: Check out the release recipe and provenance verifier
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ github.sha }}
           path: chocolatey-source
           persist-credentials: false
+
+      - name: Set up Python for provenance verification
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.14.8"
+          architecture: "x64"
+
+      - name: Verify release checksum manifest provenance
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python chocolatey-source\scripts\verify_release_attestation.py `
+            release-assets\SHA256SUMS.txt --repo $env:GITHUB_REPOSITORY
+          if ($LASTEXITCODE -ne 0) { throw 'Chocolatey release checksum manifest attestation did not verify.' }
 
       - name: Rebuild the package from the corrected recipe
         if: inputs.rebuild_package == true
@@ -217,6 +235,12 @@ jobs:
           if ($descriptionNode.InnerText -notmatch [regex]::Escape('The upstream Plezy project was created by edde746; Pleazyng is maintained by SnapeTech.')) {
             throw 'Chocolatey package description must distinguish the upstream Plezy author from the Pleazyng maintainer.'
           }
+
+      - name: Attest corrected Chocolatey package provenance
+        if: inputs.rebuild_package == true
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: release-assets/pleazyng.${{ steps.release.outputs.version }}.nupkg
 
       - name: Retain the corrected Chocolatey package
         if: inputs.rebuild_package == true

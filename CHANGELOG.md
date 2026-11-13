@@ -34,6 +34,7 @@
 - Honor the shared media-controls artwork-byte precedence on Linux and display byte-backed artwork in Windows system media controls.
 - Document both Kavita OPDS Auth Key setup options and how the credential is kept out of saved URLs and entry identifiers.
 - Localize karaoke microphone/performance feedback and explain unavailable TV capture with phone-companion and external-mixer options.
+- Localize the LAN karaoke guest songbook, queue, stage, host actions and accessibility labels in English, German, Spanish and French, with English fallback elsewhere.
 - Localize phone-companion microphone controls, capture errors, HTTPS guidance and its accessible level label.
 - Stop local karaoke capture if a device renegotiates a different PCM rate or channel count, preserving valid scoring and take files; document the current recorder boundary for separate audio buses.
 - Reuse a bounded, profile-scoped WAV source transcript across local subtitle translations to different target languages.

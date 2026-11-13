@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+
 import 'package:flutter/foundation.dart';
+
 import '../i18n/strings.g.dart' as l10n;
 import 'karaoke_models.dart';
 import 'karaoke_phone_input.dart';
@@ -282,7 +284,7 @@ class KaraokeRoomServer extends ChangeNotifier {
             'phoneCaptureRequiresTrustedHTTPS': l10n.t.karaokeUi.phoneCaptureRequiresTrustedHTTPS,
             'phoneInputNeedsAssignedSinger': l10n.t.karaokeUi.phoneInputNeedsAssignedSinger,
             'phoneInputUncalibratedPracticeOnly': l10n.t.karaokeUi.phoneInputUncalibratedPracticeOnly,
-          }),
+          }, locale: l10n.LocaleSettings.currentLocale.languageCode),
         );
         return;
       }

@@ -756,6 +756,13 @@ bool MpvPlayer::Initialize(HWND view) {
     return false;
   }
 
+  // The generic format filter may be accepted by a compatibility engine
+  // that cannot pair or compose Profile 7 layers. Treat the producer identity
+  // as a capability prerequisite, as Android does, and keep filter acceptance
+  // as the per-file activation check.
+  const auto dv_engine = DvStringProperty(mpv_, "plezyng-dv-engine");
+  fel_engine_available_ = dv_engine && *dv_engine == "plezyng-dv-fel-v1";
+
   if (experimental_dv_ && !audio_only_) {
     try {
       dv_hook_stop_ = false;
@@ -864,7 +871,16 @@ void MpvPlayer::GetPropertyAsync(const std::string& name, GetPropertyCallback ca
     return;
   }
 
+  if (name == "plezyng-dv-route") {
+    if (callback) callback(0, DolbyVisionPlaybackRoute());
+    return;
+  }
+
   plezy::mpv_common::SubmitGetPropertyAsync(mpv_, pending_requests_, name, std::move(callback));
+}
+
+std::string MpvPlayer::DolbyVisionPlaybackRoute() const {
+  return p7_fel_route_active_.load(std::memory_order_acquire) ? "fel-graph-active" : "";
 }
 
 void MpvPlayer::ObserveProperty(const std::string& name, const std::string& format, int id) {
@@ -1074,7 +1090,10 @@ void MpvPlayer::ApplyDolbyVisionHook(uint64_t hook_id) {
   try {
     const auto profile = PendingDolbyVisionProfile();
     if (profile && *profile == 7) {
-      if (!p7_fel_hwdec_overridden_) {
+      p7_fel_route_active_.store(false, std::memory_order_release);
+      if (!fel_engine_available_) {
+        LogDolbyVisionRoute("profile=7 experiment=on felEngine=compatibility fallback=engine-identity-unavailable");
+      } else if (!p7_fel_hwdec_overridden_) {
         const auto hwdec = DvStringProperty(mpv_, "hwdec");
         if (!hwdec) {
           LogDolbyVisionRoute("profile=7 experiment=on fallback=hwdec-unavailable");
@@ -1104,9 +1123,12 @@ void MpvPlayer::ApplyDolbyVisionHook(uint64_t hook_id) {
         }
       }
       if (p7_fel_hwdec_overridden_ && p7_fel_filter_active_) {
-        LogDolbyVisionRoute("profile=7 experiment=on vo=gpu-next hwdec=no filter=accepted pixels=unverified");
+        p7_fel_route_active_.store(true, std::memory_order_release);
+        LogDolbyVisionRoute(
+            "profile=7 experiment=on felEngine=paired vo=gpu-next hwdec=no filter=accepted pixels=unverified");
       }
     } else {
+      p7_fel_route_active_.store(false, std::memory_order_release);
       if (p7_fel_filter_active_) {
         const char* command[] = {"vf", "remove", "@plezy-dv-fel", nullptr};
         const int filter_error = mpv_command(mpv_, command);
@@ -1122,8 +1144,10 @@ void MpvPlayer::ApplyDolbyVisionHook(uint64_t hook_id) {
       }
     }
   } catch (const std::exception& error) {
+    p7_fel_route_active_.store(false, std::memory_order_release);
     LogDolbyVisionRoute(std::string("Profile 7 route failed closed: ") + error.what());
   } catch (...) {
+    p7_fel_route_active_.store(false, std::memory_order_release);
     LogDolbyVisionRoute("Profile 7 route failed closed: unknown error");
   }
   if (mpv_) mpv_hook_continue(mpv_, hook_id);

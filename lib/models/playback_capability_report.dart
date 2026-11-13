@@ -21,6 +21,11 @@ final class PlaybackCapabilityReport {
 
   /// Source Dolby Vision profile; null means no profile was reported.
   final int? dolbyVisionProfile;
+
+  /// Active Dolby Vision playback route, when the backend can identify it.
+  /// `fel-graph-active` means the experimental graph was selected, not that
+  /// enhancement-layer pixels or physical output have been qualified.
+  final String? dolbyVisionPlaybackRoute;
   final double? sourceFps;
 
   /// Source-PTS cadence reported by a frame-processing filter. `cfr-24` and
@@ -85,6 +90,7 @@ final class PlaybackCapabilityReport {
     this.sourceIsHdr,
     this.sourceIsInterlaced,
     this.dolbyVisionProfile,
+    this.dolbyVisionPlaybackRoute,
     this.sourceFps,
     this.sourceCadenceStatus,
     this.sourceCadenceSamples,

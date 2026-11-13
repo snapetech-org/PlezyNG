@@ -262,6 +262,7 @@ class PerformanceStatsService {
           currentDemuxer: statsMap['current-demuxer']?.toString(),
         ),
         dolbyVisionProfile: (statsMap['dvSourceProfile'] as num?)?.toInt() ?? _sourceDolbyVisionProfile,
+        dolbyVisionPlaybackRoute: statsMap['dvRoute'] as String?,
         sourceFps: _parseDouble(statsMap['container-fps'] as String?),
         displayFps: _parseDouble(statsMap['display-fps'] as String?),
         renderedFps: _parseDouble(statsMap['estimated-vf-fps'] as String?),
@@ -519,6 +520,7 @@ class PerformanceStatsService {
             ? _optionalPlayerProperty('vf-metadata/plezy-pme/source-cadence-samples')
             : Future.value(null), // 38
         hasPmeMetadata ? _optionalPlayerProperty('vf-metadata/plezy-pme/source-cadence-fps') : Future.value(null), // 39
+        Platform.isWindows ? _optionalPlayerProperty('plezyng-dv-route') : Future.value(null), // 40
       ]);
     }
 
@@ -587,6 +589,7 @@ class PerformanceStatsService {
         currentDemuxer: videoResults?[36],
       ),
       dolbyVisionProfile: dolbyVisionProfile ?? _sourceDolbyVisionProfile,
+      dolbyVisionPlaybackRoute: videoResults?[40],
       sourceFps: _parseDouble(results[3]),
       sourceCadenceStatus: videoResults?[37],
       sourceCadenceSamples: _parseInt(videoResults?[38]),
@@ -675,6 +678,7 @@ class PerformanceStatsService {
       rotate: _parseInt(videoResults?[11]),
       dvSourceProfile: dolbyVisionProfile ?? _sourceDolbyVisionProfile,
       dvSourceLayers: _sourceDolbyVisionLayersFor(dolbyVisionProfile ?? _sourceDolbyVisionProfile),
+      dvRoute: DvRoute.fromId(videoResults?[40]),
       dvPlaybackPath: dolbyVisionProfile == null ? null : (videoResults?[14] ?? videoResults?[13]),
       appMemoryBytes: appMemory,
       uiFps: _currentUiFps,

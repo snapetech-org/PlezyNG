@@ -8,7 +8,7 @@ the rebased Android/Linux/Windows producer, bundled Apple runtime and offline
 tools. The dated standalone experiments below retain their historical evidence;
 references to unchanged production pins describe those earlier runs.
 
-Updated 2026-11-12. This is the implementation and testing entry point. Read the
+Updated 2026-11-13. This is the implementation and testing entry point. Read the
 [Linux evidence](dv-engine-luna-handoff.md) and [platform research](../plezyng/dolby-vision-platform-research.md)
 alongside it. Automatic DV/FEL routing uses the bundled implementation; no system
 driver, EDID, kernel module or TV firmware is replaced automatically.
@@ -28,7 +28,7 @@ cannot meet.
 | Offline companion | Pinned FelBaker builder patches its VapourSynth output key and builds a tested RGB48 pipeline. A 48-frame generated P7 sample changed all 2,073,600 designed residual-patch pixels; both HDR10/PQ HEVC and SDR/BT.709 H.264 outputs encoded and passed `ffprobe` frame/color-tag checks. | These lossy files are derived compatibility versions, not native DV. FelBaker is a comparison implementation, not an independent Dolby reference; real-clip and playback-device checks remain open. |
 | Android | The checksum-pinned normal AAR contains `plezyng-dv-fel-v1`, paired FFmpeg headers, and all four declared ABIs. Android MPV attempts P7 FEL by default only when that engine identity is present and the enhancement-layer filter is accepted. Otherwise it retains the native decoder or compatible base-layer route; online startup failure can retry through a server SDR rendition. ExoPlayer remains on its platform decoder path. | The MediaCodec profile list is not a per-source pixel test. The API 36 x86_64 emulator comparison uses synthetic media and does not qualify real-device playback, reference pixels or physical Dolby Vision output. CoreELEC S5 remains a separate vendor/kernel project. |
 | webOS | For an identified Dolby Vision source, Plex, Jellyfin, and Emby are asked for a full server video encode, even at Original quality; a response offering only the original direct stream is rejected. Jellyfin/Emby also receive an explicit SDR output-range constraint. | The server's output must declare SDR in every HLS video variant before Plezy opens it. That declaration is not proof of correct tone mapping or visible pixel values. The app path exposes no BL/EL GPU composer. |
-| Windows | Ordinary app builds use the locked Windows libmpv from the rebased producer; the current artifact reports the paired FEL engine identity. The default-on per-file hook requests software decoding and the FEL filter for P7; when the hook, decoder override, or filter is unavailable, it preserves the existing route and logs the fallback. | FEL filter acceptance is not proof of EL pixels. D3D11 rendering, independent pixels and device output remain unqualified. The configured private `packer-windows` route may queue; compatible hosted runners are allowed when they meet the job's OS, architecture, and trust requirements. No D3D11/Vulkan reference comparison or device result is claimed. |
+| Windows | Ordinary app builds use the locked Windows libmpv from the rebased producer. The default-on per-file hook requires the loaded `plezyng-dv-fel-v1` engine identity before requesting software decoding and the FEL filter for P7; without that identity, or if the hook, decoder override, or filter is unavailable, it preserves the existing route and logs the fallback. | FEL filter acceptance is not proof of EL pixels. D3D11 rendering, independent pixels and device output remain unqualified. The configured private `packer-windows` route may queue; compatible hosted runners are allowed when they meet the job's OS, architecture, and trust requirements. No D3D11/Vulkan reference comparison or device result is claimed. |
 
 Online VOD playback uses a profile-aware compatibility policy before a local
 decoder sees the source. Android MPV, Windows, Linux and supported Apple OS
@@ -160,8 +160,11 @@ their parent strings. These new translations are drafts pending native-speaker
 review, with generated Dart committed through the normal Slang workflow.
 
 The existing performance overlay adds P7 `BL / EL?` when residual use is unknown
-and `BL / EL−` for known Android EL-discarding routes. It now also carries the
-server-reported BL, EL and RPU presence flags into the overlay on every backend;
+and `BL / EL−` for known Android EL-discarding routes. Windows reports
+`Experimental P7 FEL graph (unqualified)` only when the loaded paired-engine
+identity, software decode and enhancement-layer filter are all active; an
+engine mismatch keeps the route unclaimed and logs the fallback. The overlay
+also carries server-reported BL, EL and RPU presence flags from every backend;
 these are source flags, separate from the renderer's layer-use verdict. When the
 experimental Android P7 FEL filter is active, the route reads “Experimental P7
 FEL graph (unqualified)”. Linux queries the synthetic `plezyng-dv-renderer`

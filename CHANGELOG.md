@@ -28,6 +28,7 @@
 - Reconcile the localization capability ledger with its generated 37-locale coverage report and enforce count consistency.
 - Include pinned Balanced and Quality Neural ONNX models in standard Windows/Linux bundles, bundle Android LiteRT models by default, and show the ANVIL MIT notice in the app license list.
 - Require Android's loaded paired-FEL engine identity as well as enhancement-layer filter acceptance before selecting the Profile 7 FEL graph; otherwise keep the native or compatible base-layer route and report the active engine.
+- Require the loaded paired FEL engine identity as well as enhancement-layer filter acceptance before selecting the Windows Profile 7 FEL route; otherwise preserve the existing native or compatible base-layer path and report the fallback.
 - Correct Linux channel readiness claims and remove stale IPTV handoff/requirement-map references; distinguish the IPTV roadmap from current source evidence.
 - Add a manual macOS App Store candidate workflow that creates an unsigned Xcode archive and `productbuild` package with a truthful qualification receipt; keep the direct DMG path unchanged.
 - Clarify Chocolatey upstream and fork attribution, and validate that package descriptions distinguish the Plezy author from the Pleazyng maintainer.

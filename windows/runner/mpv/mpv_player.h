@@ -89,6 +89,10 @@ class MpvPlayer {
   // Gets an mpv property asynchronously.
   void GetPropertyAsync(const std::string& name, GetPropertyCallback callback);
 
+  // Returns the unqualified P7 FEL graph only after the paired engine, the
+  // software-decoder override, and enhancement-layer filter are active.
+  std::string DolbyVisionPlaybackRoute() const;
+
   // Observes an mpv property for changes.
   void ObserveProperty(const std::string& name, const std::string& format, int id);
 
@@ -156,6 +160,8 @@ class MpvPlayer {
   std::mutex visualization_mutex_;
   std::atomic<double> visualization_pts_{std::numeric_limits<double>::quiet_NaN()};
   bool experimental_dv_ = true;
+  bool fel_engine_available_ = false;
+  std::atomic<bool> p7_fel_route_active_{false};
   bool p7_fel_filter_active_ = false;
   bool p7_fel_hwdec_overridden_ = false;
   std::string p7_fel_restore_hwdec_;

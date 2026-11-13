@@ -17,7 +17,7 @@ import sys
 import threading
 import wave
 
-VERSION = "plezy-karaoke-worker-3"
+VERSION = "plezy-karaoke-worker-4"
 MEDIA_FORMATS = "aac,flac,mp3,mov,matroska,webm,ogg,wav"
 MEMORY_LIMIT_BYTES = 8 * 1024 * 1024 * 1024
 
@@ -115,34 +115,7 @@ def separate(source, out, params, models):
 
 
 def align(source, out, params, models):
-    lyrics = params.get("lyrics", "")
-    if not isinstance(lyrics, str) or not 0 < len(lyrics) <= 50000: raise ValueError("Supply approved lyrics, up to 50,000 characters")
-    language = params.get("language", "en")
-    if not isinstance(language, str) or len(language) > 16: raise ValueError("Invalid language")
-    if not models or not models.is_dir(): raise ValueError("Provision a local alignment model first")
-    import whisperx
-    audio = whisperx.load_audio(str(source))
-    model, metadata = whisperx.load_align_model(language_code=language, device="cpu", model_dir=str(models), model_cache_only=True)
-    result = whisperx.align([{"start": 0, "end": len(audio) / 16000, "text": lyrics}], model, metadata, audio, "cpu", return_char_alignments=True)
-    words = iter(result.get("word_segments", []))
-    lines, warnings = [], []
-    for raw in lyrics.splitlines():
-        spans = []
-        # Match in source order; repeated choruses are never deduplicated.
-        for token in raw.split():
-            word = next(words, {})
-            if word.get("start") is None or word.get("end") is None:
-                warnings.append(f"Unaligned token: {token}")
-                continue
-            spans.append({"text": token + " ", "startMs": round(word["start"] * 1000), "endMs": round(word["end"] * 1000),
-                          "unit": "word", "confidence": word.get("score") if isinstance(word.get("score"), (int, float)) and math.isfinite(word["score"]) else None})
-        line = {"text": raw, "spans": spans if spans and "".join(s["text"] for s in spans).strip() == raw.strip() else []}
-        if spans: line.update(startMs=spans[0]["startMs"], endMs=spans[-1]["endMs"])
-        if not line["spans"] and spans: warnings.append(f"Partial alignment retained only at line level: {raw[:100]}")
-        lines.append(line)
-    write_json(out / "lyrics.json", {"synced": any("startMs" in l for l in lines), "lines": lines})
-    write_json(out / "review.json", {"reviewRequired": True, "warnings": warnings,
-        "method": "CTC forced alignment on supplied vocal audio; singing timing requires audition", "language": language})
+    raise ValueError("Karaoke alignment is disabled until a patched supported dependency profile is available")
 
 
 def analyze(source, out, params):

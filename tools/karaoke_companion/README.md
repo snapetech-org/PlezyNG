@@ -45,9 +45,13 @@ without optional ML packages; native tests skip in that environment.
 Compatibility references: [TorchAudio](https://github.com/pytorch/audio/blob/main/docs/source/installation.rst),
 [TorchCodec](https://github.com/pytorch/torchcodec#compatibility-with-torch-versions).
 
-The optional alignment profile remains an upstream upgrade blocker: WhisperX
-3.8.6 pins the older Torch 2.8 stack. Do not install that profile over the
-qualified separation environment or treat its dependencies as patched.
+Karaoke alignment is disabled because the WhisperX profile resolves 18 known
+advisories in Torch 2.8.0 and Transformers 4.57.6. WhisperX 3.8.6 pins Torch
+2.8 and Hugging Face Hub below 1.0; its current prerelease still pins Torch
+2.8. The server reports alignment unavailable and the worker rejects direct
+alignment jobs. Re-enable it only with a supported WhisperX profile that
+resolves patched Torch 2.15.0+ and Transformers 5.22.2+ and passes both
+vulnerability and compatibility qualification.
 
 CPU wheel versions include a `+cpu` build tag that the PyPI advisory service
 may skip. Audit the installed dependency inventory together with the pinned

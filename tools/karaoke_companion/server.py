@@ -27,7 +27,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
-VERSION = "plezy-karaoke-worker-3"
+VERSION = "plezy-karaoke-worker-4"
 MAX_ASSET = 512 * 1024 * 1024
 MAX_WORK = 20 * 1024 * 1024 * 1024
 WORKER_MEMORY_LIMIT = 8 * 1024 * 1024 * 1024
@@ -187,7 +187,8 @@ class Jobs:
                 "analyze": memory_limited and ffmpeg and has("librosa"),
                 "reference": memory_limited and ffmpeg and has("librosa"),
                 "separate": memory_limited and ffmpeg and model_ready and has("demucs") and self.separation_runtime_ready(),
-                "align": memory_limited and ffmpeg and model_ready and has("whisperx"),
+                # WhisperX currently resolves to vulnerable Torch/Transformers versions.
+                "align": False,
                 "midi": memory_limited and bool(shutil.which("fluidsynth") and self.soundfont and self.soundfont.is_file())},
             "modelRevision": self.model_revision,
             "separationRuntimeReady": self.separation_runtime_ready(),

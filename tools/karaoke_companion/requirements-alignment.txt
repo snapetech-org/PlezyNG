@@ -1,1 +1,2 @@
-whisperx==3.8.6
+# Disabled: the current WhisperX dependency profile resolves vulnerable
+# Torch and Transformers versions. See README.md before restoring alignment.

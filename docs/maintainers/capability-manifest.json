@@ -167,7 +167,7 @@
         "lib/services/music/music_session_store.dart",
         "docs/plezyng/music/STATUS.md"
       ],
-      "open": "Shared playback and 10,000-track durable queue behavior are implemented with bounded pages, leased scratch indexes and occurrence identity. Multi-index edits retain rollback leases; tail appends keep the incremental path. This change passes formatting and focused static analysis; no tests/builds/CI were run. Existing P06/P07 regressions are recorded in music STATUS. Physical offline cold start, live provider and receiver/vehicle qualification remain open."
+      "open": "Shared playback and 10,000-track durable queue behavior are implemented with bounded pages, leased scratch indexes and occurrence identity. Multi-index edits retain rollback leases; tail appends keep the incremental path. Formatting and focused static analysis pass. On 2026-11-13, focused queue-controller, queue-items, session-store and Cast-queue tests passed 112 tests; Security regressions CI at 503b1533a22b3eb0f64a42d2e31203ba9ce7c961 passed the complete Dart/widget suite and repository checker regressions. Direct scratch-index write-failure injection remains untested. Existing P06/P07 regressions are recorded in music STATUS. Physical offline cold start, live provider and receiver/vehicle qualification remain open."
     },
     {
       "area": "Neural motion smoothing and NPU providers",

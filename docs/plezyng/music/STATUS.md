@@ -381,7 +381,12 @@ snapshots let go. Large production album shuffles sort fixed-size runs on disk
 and merge with bounded fan-in; small queues retain the simple in-memory path.
 
 Validation for this audit pass: Dart formatting and targeted static analysis
-passed. Queue behavior and native/device qualification remain separate evidence.
+passed. On 2026-11-13, focused queue-controller, queue-items, session-store and
+Cast-queue tests passed 112 tests. Security regressions CI at
+`503b1533a22b3eb0f64a42d2e31203ba9ce7c961` passed the complete Dart/widget
+suite and repository checker regressions. These results do not exercise a
+scratch-index write failure directly. Queue behavior and native/device
+qualification remain separate evidence.
 
 Remaining limits include provider/reference metadata equivalence, merged
 server/local history, additional discovery controls, bounded temporary

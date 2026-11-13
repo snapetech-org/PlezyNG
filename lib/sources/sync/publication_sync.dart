@@ -85,31 +85,6 @@ class PublicationSync {
   static const configKey = 'publication-sync-config-v1';
   static const entryMappingsKey = 'publication-sync-entry-mappings-v1';
   static String _cacheKey(String namespace) => 'publication-sync-cache-v1:$namespace';
-  static String _syncFileKey(SyncFile file) => canonicalSyncJson([file.name, file.id]);
-
-  Future<void> _pruneOwnedGenerations({
-    required SyncStore store,
-    required Iterable<SyncFile> files,
-    required String device,
-    required int keep,
-    required void Function() check,
-    required Set<String> deleted,
-  }) async {
-    final owned = files.where((file) => file.device == device).toList()
-      ..sort((a, b) => b.sequence.compareTo(a.sequence));
-    for (final old in owned.skip(keep)) {
-      if (deleted.contains(_syncFileKey(old))) continue;
-      check();
-      try {
-        await store.delete(old);
-        deleted.add(_syncFileKey(old));
-      } on SourceException catch (e) {
-        if (e.reason == SourceFailure.cancelled) rethrow;
-        // Cleanup is retried on later syncs; it does not undo a committed generation.
-      }
-    }
-  }
-
   void resetStatus() {
     conflicts.clear();
     failure = null;
@@ -782,7 +757,7 @@ class PublicationSync {
         // Keep both current recovery generations while making room. If this
         // target cannot prune any owned history, do not create an unlistable
         // generation beyond the provider's bounded namespace listing.
-        await _pruneOwnedGenerations(
+        await pruneOwnedSyncGenerations(
           store: store,
           files: listed,
           device: device,
@@ -812,7 +787,7 @@ class PublicationSync {
       // Keep the previous successful snapshot after a publish, or the latest
       // two snapshots when there was no new state. A failed deletion is retried
       // even when a later sync has nothing new to upload.
-      await _pruneOwnedGenerations(
+      await pruneOwnedSyncGenerations(
         store: store,
         files: listed,
         device: device,

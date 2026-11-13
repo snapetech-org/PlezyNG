@@ -332,6 +332,7 @@
       "confidence": "high",
       "evidence": [
         "lib/sources/source_controller.dart",
+        "lib/discovery/discovery_sync.dart",
         "lib/sources/sync/publication_sync.dart",
         "lib/sources/sync/sync_document.dart",
         "lib/sources/sync/sync_store.dart"

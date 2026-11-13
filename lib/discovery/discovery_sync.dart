@@ -150,7 +150,26 @@ class DiscoverySync {
       });
 
       final digest = _hash(cache.document.toJson());
-      if (digest != cache.published || !latest.containsKey(device)) {
+      final needsPublish = digest != cache.published || !latest.containsKey(device);
+      final deleted = <String>{};
+      if (needsPublish && listed.length >= SyncFile.maxNamespaceFiles) {
+        // Keep both current recovery generations while making room. If this
+        // target cannot prune enough owned history, do not exceed the bounded
+        // provider listing limit.
+        await pruneOwnedSyncGenerations(
+          store: store,
+          files: listed,
+          device: device,
+          keep: 2,
+          check: check,
+          deleted: deleted,
+        );
+        if (listed.length - deleted.length >= SyncFile.maxNamespaceFiles) {
+          throw const SourceException(SourceFailure.quotaExceeded);
+        }
+      }
+      var publishedGeneration = false;
+      if (needsPublish) {
         cache.sequence++;
         if (cache.sequence > 9999999999999999) throw const SourceException(SourceFailure.invalidData);
         check();
@@ -160,17 +179,18 @@ class DiscoverySync {
         check();
         cache.published = digest;
         await repository.savePreference(profile, cacheKey, cache.toJson());
-        final owned = listed.where((file) => file.device == device).toList()
-          ..sort((left, right) => right.sequence.compareTo(left.sequence));
-        for (final old in owned.skip(1)) {
-          check();
-          try {
-            await store.delete(old);
-          } on SourceException catch (error) {
-            if (error.reason == SourceFailure.cancelled) rethrow;
-          }
-        }
+        publishedGeneration = true;
       }
+      // Retry stale-generation cleanup even when the encrypted document did
+      // not change. Keep one prior snapshot after a publish, or two otherwise.
+      await pruneOwnedSyncGenerations(
+        store: store,
+        files: listed,
+        device: device,
+        keep: publishedGeneration ? 1 : 2,
+        check: check,
+        deleted: deleted,
+      );
       check();
       lastSuccess = DateTime.now();
     } on SourceException catch (error) {

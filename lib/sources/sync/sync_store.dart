@@ -31,6 +31,29 @@ abstract class SyncStore {
   Future<void> delete(SyncFile file);
 }
 
+Future<void> pruneOwnedSyncGenerations({
+  required SyncStore store,
+  required Iterable<SyncFile> files,
+  required String device,
+  required int keep,
+  required void Function() check,
+  required Set<String> deleted,
+}) async {
+  final owned = files.where((file) => file.device == device).toList()..sort((a, b) => b.sequence.compareTo(a.sequence));
+  for (final old in owned.skip(keep)) {
+    final key = jsonEncode([old.name, old.id]);
+    if (deleted.contains(key)) continue;
+    check();
+    try {
+      await store.delete(old);
+      deleted.add(key);
+    } on SourceException catch (e) {
+      if (e.reason == SourceFailure.cancelled) rethrow;
+      // Cleanup is retried on later syncs; it does not undo a committed generation.
+    }
+  }
+}
+
 /// Every write creates a new immutable generation. A successful publish can
 /// prune this device's older generations without ever replacing another writer.
 class ProviderSyncStore implements SyncStore {

@@ -34,20 +34,16 @@ permissions:
 jobs:
   qualify:
     name: Native aerynOS install and release-app QA
+    if: github.repository == 'snapetech-org/pleazyng' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: snapetech-org/pleazyng
-          ref: ${{ inputs.source_sha }}
-          path: source
-          persist-credentials: false
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          repository: snapetech-org/pleazyng
-          ref: main
+          ref: ${{ github.sha }}
           path: tooling
+          fetch-depth: 0
           persist-credentials: false
           sparse-checkout: |
             scripts
@@ -64,15 +60,27 @@ jobs:
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           python3 - <<'PY'
-          import json,os,pathlib
-          data=json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'candidate/build.json').read_text())
-          if data['source_sha'] != os.environ['SOURCE_SHA']:
+          import json, os, pathlib, re, subprocess
+          data = json.loads((pathlib.Path(os.environ['RUNNER_TEMP']) / 'candidate/build.json').read_text())
+          source_sha = os.environ['SOURCE_SHA']
+          if not re.fullmatch(r'[0-9a-f]{40}', source_sha) or data.get('source_sha') != source_sha:
               raise SystemExit('Producer artifact source mismatch')
+          provenance = data.get('provenance', {})
+          if (provenance.get('kind') != 'attested-core-linux-artifact'
+              or provenance.get('repository') != 'snapetech-org/pleazyng'
+              or provenance.get('verified_source_sha') != source_sha):
+              raise SystemExit('Producer artifact lacks canonical core attestation metadata')
+          tooling = pathlib.Path('tooling')
+          head = subprocess.check_output(['git', '-C', str(tooling), 'rev-parse', 'HEAD'], text=True).strip()
+          for revision in (source_sha, data.get('tooling_sha', '')):
+              if not re.fullmatch(r'[0-9a-f]{40}', revision):
+                  raise SystemExit('Producer artifact has an invalid source or tooling revision')
+              subprocess.run(['git', '-C', str(tooling), 'merge-base', '--is-ancestor', revision, head], check=True)
           PY
       - name: Install native VM and fixture tools
         timeout-minutes: 10
         run: |
-          sudo python3 source/scripts/configure_hosted_apt.py '${{ runner.environment }}'
+          sudo python3 tooling/scripts/configure_hosted_apt.py '${{ runner.environment }}'
           sudo apt-get update --error-on=any \
             -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
           sudo apt-get install -y \
@@ -99,7 +107,7 @@ jobs:
           PACKAGE_RELEASE: ${{ inputs.release }}
         run: |
           /usr/bin/python3 tooling/scripts/aerynos/qualify.py \
-            --source source --candidate "$RUNNER_TEMP/candidate" \
+            --candidate "$RUNNER_TEMP/candidate" \
             --output "$RUNNER_TEMP/qualified" --scratch "$RUNNER_TEMP/aerynos-qa" \
             --iso "$HOME/.cache/pleazyng-aerynos/iso/aerynOS-2026.11-GNOME-live-x86_64.iso" \
             --release "$PACKAGE_RELEASE"

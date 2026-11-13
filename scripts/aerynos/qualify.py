@@ -618,11 +618,12 @@ class AppQA:
 
 
 
-def fixture(source, root):
+def fixture(root):
     data = root / 'jellyfin'
     for name in ('media', 'config', 'cache'):
         (data / name).mkdir(parents=True)
-    run([sys.executable, source / 'scripts/maestro/maestro_real_jellyfin.py', 'prepare', '--output-dir', data / 'media'])
+    maestro = HERE.parents[1] / 'scripts/maestro/maestro_real_jellyfin.py'
+    run([sys.executable, maestro, 'prepare', '--output-dir', data / 'media'])
     movie = data / 'media/movies/maestro-movie/Maestro Movie.mp4'
     run(['ffmpeg', '-y', '-v', 'error', '-f', 'lavfi', '-i', 'testsrc2=size=640x360:rate=24',
          '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=44100', '-t', '600',
@@ -635,7 +636,7 @@ def fixture(source, root):
                   '-p', f'127.0.0.1:{server_port}:8096', '-v', f'{data}/config:/config',
                   '-v', f'{data}/cache:/cache', '-v', f'{data}/media:/media:ro', image], capture_output=True)
     try:
-        run([sys.executable, source / 'scripts/maestro/maestro_real_jellyfin.py', 'bootstrap', '--url', f'http://127.0.0.1:{server_port}', '--timeout', '180'])
+        run([sys.executable, maestro, 'bootstrap', '--url', f'http://127.0.0.1:{server_port}', '--timeout', '180'])
     except BaseException:
         run(['docker', 'rm', '-f', name])
         raise
@@ -658,7 +659,7 @@ def check_playback_routes(app, fixture_root):
 
 
 def qualify(args):
-    source, candidate, output = args.source.resolve(), args.candidate.resolve(), args.output.resolve()
+    candidate, output = args.candidate.resolve(), args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     evidence = output / 'evidence'
     evidence.mkdir()
@@ -688,7 +689,7 @@ def qualify(args):
     guest = Guest(args.scratch / 'vm')
     container = None
     try:
-        container, server_port = fixture(source, args.scratch)
+        container, server_port = fixture(args.scratch)
         print('Preparing official aerynOS guest', flush=True)
         guest.prepare(args.iso)
         guest.start()
@@ -798,7 +799,6 @@ def qualify(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--source', required=True, type=Path)
     parser.add_argument('--candidate', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--scratch', required=True, type=Path)

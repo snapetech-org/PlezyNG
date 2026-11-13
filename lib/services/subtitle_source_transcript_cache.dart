@@ -255,17 +255,25 @@ abstract final class SubtitleSourceTranscriptCacheService {
       await _exclusive(() async {
         final file = await _entryFile(profileId, identity.key, createDirectory: true);
         if (file == null) return;
-        final temporary = File('${file.path}.pending');
-        if (await temporary.exists()) await temporary.delete();
-        await temporary.writeAsString(jsonText, flush: true);
-        if (await temporary.length() > maximumTranscriptBytes) {
-          await temporary.delete();
-          return;
+        if (!await _removePendingEntries(file.parent.parent)) {
+          throw FileSystemException('Cannot remove abandoned subtitle transcript cache writes.', file.parent.parent.path);
         }
-        if (await file.exists()) await file.delete();
-        await temporary.rename(file.path);
-        await _evictProfileEntries(file.parent);
-        await _evictGlobalEntries(file.parent.parent);
+        final temporary = File('${file.path}.pending');
+        try {
+          if (await temporary.exists()) await temporary.delete();
+          await temporary.writeAsString(jsonText, flush: true);
+          if (await temporary.length() > maximumTranscriptBytes) return;
+          if (await file.exists()) await file.delete();
+          await temporary.rename(file.path);
+          await _evictProfileEntries(file.parent);
+          await _evictGlobalEntries(file.parent.parent);
+        } finally {
+          try {
+            if (await temporary.exists()) await temporary.delete();
+          } on FileSystemException {
+            // A later store refuses to write until abandoned temporary files are removed.
+          }
+        }
       });
       final file = await _entryFile(profileId, identity.key, createDirectory: false);
       final persisted = file != null && await file.exists();
@@ -533,6 +541,20 @@ abstract final class SubtitleSourceTranscriptCacheService {
     final directory = Directory(p.join(root.path, sha256.convert(utf8.encode(profile)).toString()));
     if (createDirectory) await directory.create(recursive: true);
     return File(p.join(directory.path, '$key.json'));
+  }
+
+  static Future<bool> _removePendingEntries(Directory root) async {
+    if (!await root.exists()) return true;
+    var removedAll = true;
+    await for (final entity in root.list(recursive: true, followLinks: false)) {
+      if (entity is! File || !entity.path.endsWith('.pending')) continue;
+      try {
+        await entity.delete();
+      } on FileSystemException {
+        removedAll = false;
+      }
+    }
+    return removedAll;
   }
 
   static Future<void> _evictProfileEntries(Directory directory) async {

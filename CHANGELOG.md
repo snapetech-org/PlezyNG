@@ -24,6 +24,7 @@
 - Stop local karaoke capture if a device renegotiates a different PCM rate or channel count, preserving valid scoring and take files; document the current recorder boundary for separate audio buses.
 - Reuse a bounded, profile-scoped WAV source transcript across local subtitle translations to different target languages.
 - Disclose that locally generated source subtitle text and timing metadata can remain in the profile-scoped WAV transcript cache.
+- Remove abandoned subtitle transcript cache writes before saving and stop new cache writes if cleanup fails, preserving the storage bound.
 - Add an optional persisted system click to each beat of the A–B practice-loop count-in.
 - Open password-protected CBZ, CBR and CB7 archives with a bounded, non-persistent password prompt.
 - Verify Chocolatey release checksum provenance and attest moderation-correction packages.

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Keep the download-queue source formatted with the repository Dart formatter so the release CI formatting gate passes.
 - Declare Moonlight surface-recovery state before its timeout callback so Android Java compilation succeeds.
 - Track the practice-metronome title and guidance as explicit English fallbacks until translation review; refresh locale structure and coverage counts.
 - Allow native aerynOS qualification to run from the trusted downstream main workflow and resolve its QA tooling from canonical main, with source and tooling ancestry checks.

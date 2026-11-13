@@ -455,8 +455,9 @@ extension DownloadDatabaseOperations on AppDatabase {
   /// [excludedGlobalKeys] filters out heads the caller already tried and could
   /// not resolve, so one stale row cannot starve the rest of the queue.
   Future<DownloadQueueItem?> getNextQueueItem({Set<String> excludedGlobalKeys = const {}}) async {
-    final query = select(downloadQueue)
-        .join([innerJoin(downloadedMedia, downloadedMedia.globalKey.equalsExp(downloadQueue.mediaGlobalKey))]);
+    final query = select(
+      downloadQueue,
+    ).join([innerJoin(downloadedMedia, downloadedMedia.globalKey.equalsExp(downloadQueue.mediaGlobalKey))]);
 
     query.where(downloadedMedia.status.equals(DownloadStatus.queued.index));
     if (excludedGlobalKeys.isNotEmpty) {
@@ -476,8 +477,9 @@ extension DownloadDatabaseOperations on AppDatabase {
   /// Completed videos whose retained queue row records unsettled
   /// supplementary download intent.
   Future<List<DownloadQueueItem>> getPendingSupplementaryQueueItems() async {
-    final query = select(downloadQueue)
-        .join([innerJoin(downloadedMedia, downloadedMedia.globalKey.equalsExp(downloadQueue.mediaGlobalKey))]);
+    final query = select(
+      downloadQueue,
+    ).join([innerJoin(downloadedMedia, downloadedMedia.globalKey.equalsExp(downloadQueue.mediaGlobalKey))]);
     query
       ..where(downloadedMedia.status.equals(DownloadStatus.completed.index) & downloadedMedia.videoFilePath.isNotNull())
       ..orderBy([OrderingTerm(expression: downloadQueue.addedAt)]);

@@ -718,8 +718,8 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
         return
       }
       if let selected = intent.mediaItems?.first,
-        (selected.identifier?.hasPrefix("item:") == true || selected.identifier?.hasPrefix("station:") == true
-          || selected.identifier?.hasPrefix("recipe:") == true)
+        (selected.identifier?.hasPrefix("item:") == true || selected.identifier?.hasPrefix("audiobook:") == true
+          || selected.identifier?.hasPrefix("station:") == true || selected.identifier?.hasPrefix("recipe:") == true)
       {
         // The play command revalidates this identifier against the active map.
         completion(INPlayMediaMediaItemResolutionResult.successes(with: [selected]))
@@ -735,6 +735,7 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
       if let album = intent.mediaSearch?.albumName { args["album"] = album }
       switch intent.mediaSearch?.mediaType {
       case .song: args["kind"] = "track"
+      case .audioBook: args["kind"] = "audiobook"
       case .album: args["kind"] = "album"
       case .artist: args["kind"] = "artist"
       case .playlist: args["kind"] = "playlist"
@@ -750,7 +751,10 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
             : row["kind"] as? String == "artist"
               ? .artist
               : row["kind"] as? String == "station"
-                ? .radioStation : row["kind"] as? String == "playlist" ? .playlist : .song
+                ? .radioStation
+                : row["kind"] as? String == "audiobook"
+                  ? .audioBook
+                  : row["kind"] as? String == "playlist" ? .playlist : .song
           return INMediaItem(
             identifier: id, title: title, type: type, artwork: nil,
             artist: row["subtitle"] as? String)

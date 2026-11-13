@@ -42,21 +42,39 @@ class Gateway:
         origin = urlsplit(self.origin)
         if origin.scheme != 'https' or not origin.hostname or origin.username or origin.path or origin.query or origin.fragment:
             raise ValueError('origin must be an HTTPS origin')
-        self.client_id = config['client_id']
-        self.secret = config['client_secret']
+        self.client_id = config.get('client_id', '')
+        self.secret = config.get('client_secret', '')
         self.code_parameter = config.get('code_parameter', 'code')
-        self.signing_key = config['signing_key'].encode()
-        if len(self.signing_key) < 32:
-            raise ValueError('signing_key must contain at least 32 random characters')
-        self.libraries = {str(lib['id']): lib for lib in config['libraries']}
+        signing_key = config.get('signing_key', '')
+        if not isinstance(self.client_id, str) or not isinstance(self.secret, str) or not isinstance(signing_key, str):
+            raise ValueError('invalid native OverDrive credentials')
+        self.signing_key = signing_key.encode()
+        libraries = config.get('libraries', [])
+        if not isinstance(libraries, list):
+            raise ValueError('libraries must be an array')
+        self.libraries = {str(lib['id']): lib for lib in libraries if isinstance(lib, dict) and 'id' in lib}
         for lib in self.libraries.values():
-            if not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', str(lib['id'])) or not str(lib['websiteId']).isdigit():
+            if not re.fullmatch(r'[A-Za-z0-9_-]{1,80}', str(lib['id'])) or not str(lib.get('websiteId', '')).isdigit():
                 raise ValueError('invalid library identifiers')
         self.pending = {}
         self.rates = {}
         self.lock = threading.Lock()
         self.clock = clock
         self.exchange = exchange or self._exchange
+        title_link = config.get('title_link') or {}
+        if not isinstance(title_link, dict):
+            raise ValueError('title_link must be an object')
+        self.title_link_client_id = title_link.get('client_id', '')
+        self.title_link_secret = title_link.get('client_secret', '')
+        if not isinstance(self.title_link_client_id, str) or not isinstance(self.title_link_secret, str):
+            raise ValueError('invalid Title Link credentials')
+        self._title_link_token_value = None
+        self._title_link_token_expiry = 0
+        self._title_link_token_lock = threading.Lock()
+
+    def _require_native(self):
+        if not self.client_id or not self.secret or len(self.signing_key) < 32:
+            raise InvalidRequest(503)
 
     def public_libraries(self):
         allowed = ('id', 'name', 'websiteId', 'libraryId', 'home', 'integration', 'circulation')
@@ -72,6 +90,7 @@ class Gateway:
             self.rates[address] = (start, count + 1)
 
     def initiate(self, data):
+        self._require_native()
         library = str(data.get('library', ''))
         challenge = data.get('challenge', '')
         if library not in self.libraries or not isinstance(challenge, str) or not re.fullmatch(r'[A-Za-z0-9_-]{43}', challenge):
@@ -108,6 +127,7 @@ class Gateway:
             pending['code'] = code
 
     def poll(self, identifier, data):
+        self._require_native()
         verifier = data.get('verifier', '')
         if not isinstance(verifier, str) or not re.fullmatch(r'[A-Za-z0-9_-]{43,128}', verifier):
             raise InvalidRequest()
@@ -144,12 +164,130 @@ class Gateway:
         return result
 
     def refresh(self, data):
+        self._require_native()
         library, token, proof = data.get('library'), data.get('refresh_token'), data.get('refreshProof')
         if library not in self.libraries or not isinstance(token, str) or not isinstance(proof, str):
             raise InvalidRequest()
         if not hmac.compare_digest(proof, self.proof(token, library)):
             raise InvalidRequest(403)
         return self._tokens(self.exchange('refresh', {'grant_type': 'refresh_token', 'refresh_token': token}), library)
+
+    def title_link_find(self, data):
+        if not self.title_link_client_id or not self.title_link_secret:
+            raise InvalidRequest(503)
+        title = data.get('title', '')
+        creator = data.get('creator', '')
+        isbn = data.get('isbn', '')
+        media_type = data.get('mediaType')
+        if not isinstance(title, str) or not isinstance(creator, str) or not isinstance(isbn, str):
+            raise InvalidRequest()
+        title, creator, isbn = title.strip(), creator.strip(), isbn.strip()
+        if len(title) > 300 or len(creator) > 200 or len(isbn) > 32:
+            raise InvalidRequest()
+        if isbn:
+            isbn = re.sub(r'[\s-]', '', isbn)
+            if not re.fullmatch(r'(?:[0-9]{9}[0-9Xx]|[0-9]{13})', isbn):
+                raise InvalidRequest()
+        elif not title:
+            raise InvalidRequest()
+        if media_type not in (None, '', 'ebook', 'audiobook'):
+            raise InvalidRequest()
+        token = self._title_link_token()
+        query = {}
+        if isbn:
+            query['isbn'] = isbn
+        else:
+            query['title'] = title
+        if creator:
+            query['creator'] = creator
+        if media_type:
+            query['mediaType'] = media_type
+        request = Request(
+            'https://api.overdrive.com/v1/share/find?' + urlencode(query),
+            headers={'Authorization': f'Bearer {token}', 'User-Agent': 'Pleazyng', 'Accept': 'application/json'},
+        )
+        try:
+            with build_opener(NoRedirect()).open(request, timeout=20) as response:
+                payload = response.read(65537)
+                if len(payload) > 65536:
+                    raise InvalidRequest(502)
+                result = json.loads(payload)
+        except HTTPError as error:
+            if error.code == 404:
+                return {'found': False}
+            raise InvalidRequest(502) from None
+        except (OSError, ValueError):
+            raise InvalidRequest(502) from None
+        if not isinstance(result, dict):
+            raise InvalidRequest(502)
+        result_title = result.get('title')
+        result_type = result.get('mediaType')
+        creators = result.get('creators', [])
+        share = result.get('shareLink')
+        href = share.get('href') if isinstance(share, dict) else None
+        target = urlsplit(href) if isinstance(href, str) else None
+        query_values = parse_qs(target.query).get('q', []) if target else []
+        if (not isinstance(result_title, str) or not result_title.strip() or len(result_title) > 500 or
+                result_type not in ('ebook', 'audiobook') or not target or target.scheme != 'https' or
+                target.hostname != 'link.overdrive.com' or target.username or target.password or
+                target.port not in (None, 443) or target.path != '/share' or
+                not query_values or not query_values[0] or len(query_values[0]) > 256):
+            raise InvalidRequest(502)
+        if not isinstance(creators, list):
+            creators = []
+        safe_creators = [value.strip()[:200] for value in creators[:10]
+                         if isinstance(value, str) and value.strip()]
+        return {
+            'found': True,
+            'title': result_title.strip(),
+            'creators': safe_creators,
+            'mediaType': result_type,
+            'shareLink': {'href': href, 'type': 'text/HTML'},
+        }
+
+    def _title_link_token(self):
+        if not self.title_link_client_id or not self.title_link_secret:
+            raise InvalidRequest(503)
+        with self._title_link_token_lock:
+            now = time.monotonic()
+            if self._title_link_token_value and self._title_link_token_expiry > now + 5:
+                return self._title_link_token_value
+            basic = base64.b64encode(
+                f'{self.title_link_client_id}:{self.title_link_secret}'.encode()
+            ).decode()
+            request = Request(
+                'https://oauth.overdrive.com/token',
+                data=urlencode({'grant_type': 'client_credentials'}).encode(),
+                headers={
+                    'Authorization': f'Basic {basic}',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': 'Pleazyng',
+                    'Accept': 'application/json',
+                },
+            )
+            try:
+                with build_opener(NoRedirect()).open(request, timeout=20) as response:
+                    payload = response.read(65537)
+                    if len(payload) > 65536:
+                        raise InvalidRequest(502)
+                    result = json.loads(payload)
+            except (HTTPError, OSError, ValueError):
+                raise InvalidRequest(502) from None
+            token = result.get('access_token') if isinstance(result, dict) else None
+            scope = result.get('scope', '') if isinstance(result, dict) else ''
+            token_type = result.get('token_type', '') if isinstance(result, dict) else ''
+            expires = result.get('expires_in', 3600) if isinstance(result, dict) else 0
+            if (not isinstance(token, str) or not token or len(token) > 8192 or
+                    not isinstance(token_type, str) or token_type.lower() != 'bearer' or
+                    'SRCH' not in str(scope).split()):
+                raise InvalidRequest(403)
+            try:
+                lifetime = max(30, min(int(expires), 86400))
+            except (TypeError, ValueError):
+                lifetime = 3600
+            self._title_link_token_value = token
+            self._title_link_token_expiry = time.monotonic() + max(5, lifetime - 60)
+            return token
 
     def _exchange(self, endpoint, fields):
         basic = base64.b64encode(f'{self.client_id}:{self.secret}'.encode()).decode()
@@ -269,6 +407,8 @@ def handler(gateway):
                     return self._reply(status, result)
                 if parts == ['v1', 'refresh']:
                     return self._reply(200, gateway.refresh(data))
+                if parts == ['v1', 'title-links']:
+                    return self._reply(200, gateway.title_link_find(data))
                 raise InvalidRequest(404)
             except InvalidRequest as error:
                 self._reply(error.status, {'error': 'Request could not be completed.'})

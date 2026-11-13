@@ -27,6 +27,10 @@ import '../../providers/libraries_provider.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../screens/music/music_driving_screen.dart';
 import '../../services/settings_service.dart';
+import '../../sources/publication_shelf.dart';
+import '../../sources/source_controller.dart';
+import '../../sources/source_models.dart';
+import '../../sources/source_playback.dart';
 import '../../utils/provider_extensions.dart';
 import '../../utils/music_read_scope.dart';
 import 'music_tracks_loader.dart';
@@ -66,6 +70,10 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
   final _artworkItems =
       <String, ({MediaItem item, MediaServerClient? client, Object? authentication, String? scope})>{};
   final Map<String, MediaItem> _items = {};
+  final Map<String, SourceEntry> _audiobookEntries = {};
+  SourceController? _sourceController;
+  int _audiobookSequence = 0;
+  bool _audiobookRefreshPending = false;
   final _serverRadios = <String, ({ServerMusicRadio radio, MediaServerClient client, bool Function() current})>{};
   final _authorizations =
       <String, ({MediaServerClient? client, Object? authentication, String? account, int generation})>{};
@@ -94,6 +102,8 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     _profiles = context.read<ActiveProfileProvider>();
     _profileId = _profiles.activeId;
     _music = context.read<MusicPlaybackService>()..addListener(_publish);
+    _sourceController = context.read<SourceController?>();
+    _sourceController?.addListener(_audiobookCatalogChanged);
     for (final source in [
       context.read<MultiServerProvider?>(),
       context.read<LibrariesProvider?>(),
@@ -138,6 +148,18 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     } on PlatformException {
       /* Native host can reconnect without affecting audio. */
     }
+  }
+
+  void _audiobookCatalogChanged() {
+    if (_audiobookRefreshPending || !mounted) return;
+    _audiobookRefreshPending = true;
+    scheduleMicrotask(() {
+      _audiobookRefreshPending = false;
+      if (!_current) return;
+      _audiobookEntries.clear();
+      _carArtwork.clear();
+      unawaited(_send('catalogChanged'));
+    });
   }
 
   void _catalogChanged() {
@@ -219,6 +241,9 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       });
     }
     _music.removeListener(_publish);
+    _sourceController?.removeListener(_audiobookCatalogChanged);
+    _sourceController = null;
+    _audiobookEntries.clear();
     for (final source in _catalogSources) {
       source.removeListener(_catalogChanged);
     }
@@ -303,9 +328,55 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     };
   }
 
+  Map<String, Object?> _audiobookItem(SourceEntry entry) {
+    final id = 'audiobook:' + _itemScope + ':' + (++_audiobookSequence).toString();
+    if (_audiobookEntries.length >= 2000) {
+      _audiobookEntries.remove(_audiobookEntries.keys.first);
+    }
+    _audiobookEntries[id] = entry;
+    return {
+      'id': id,
+      'title': entry.displayTitle,
+      'subtitle': entry.narrator.isNotEmpty ? entry.narrator : entry.author,
+      'kind': 'audiobook',
+      'playable': true,
+      'artwork': true,
+    };
+  }
+
+  Future<Uint8List?> _audiobookArtwork(String id, SourceEntry entry, int size) async {
+    final sources = _sourceController;
+    if (sources == null || _profileId == null || sources.profileId != _profileId || sources.blocked) return null;
+    bool current() =>
+        _current &&
+        _audiobookEntries[id] == entry &&
+        sources.profileId == _profileId &&
+        !sources.blocked &&
+        sources.sources.any((source) => source.id == entry.sourceId && source.profileId == _profileId);
+    if (!current()) return null;
+    return _carArtwork.load(
+      id: jsonEncode([id, entry.coverId, entry.onlinePosterUrl]),
+      size: size,
+      isCurrent: current,
+      read: () async {
+        if (!current()) return null;
+        final file = await sources.cover(entry);
+        if (!current() || file == null) return null;
+        try {
+          if (await file.length() > MusicCarArtwork.maxInputBytes || !current()) return null;
+          return await file.readAsBytes();
+        } on Object {
+          return null;
+        }
+      },
+    );
+  }
+
   Future<Uint8List?> _artwork(Map<String, dynamic> args) async {
     final id = args['id'], size = args['size'];
     if (id is! String || id.length > 256 || size is! int || size < 32 || size > 256) return null;
+    final audiobook = _audiobookEntries[id];
+    if (audiobook != null) return _audiobookArtwork(id, audiobook, size);
     final owner = _artworkItems[id];
     if (owner == null) return null;
     final item = owner.item, client = owner.client;
@@ -410,6 +481,44 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         identical(authentication, client.authenticationSessionId);
   }
 
+  Future<bool> _carTransport(String command) async {
+    final sourcePlayback = context.read<SourcePlayback?>();
+    if (sourcePlayback != null &&
+        sourcePlayback.active &&
+        sourcePlayback.entry?.kind == SourceItemKind.audiobook) {
+      switch (command) {
+        case 'play':
+          await sourcePlayback.play();
+          return sourcePlayback.playing;
+        case 'pause':
+          await sourcePlayback.pause();
+          return true;
+        case 'previous':
+          await sourcePlayback.previousChapter();
+          return true;
+        case 'next':
+          await sourcePlayback.nextChapter();
+          return true;
+      }
+    }
+    switch (command) {
+      case 'play':
+        await _music.play();
+        return _music.isPlaying;
+      case 'pause':
+        await _music.pause();
+        return true;
+      case 'previous':
+        await _music.previous();
+        return true;
+      case 'next':
+        await _music.next();
+        return true;
+      default:
+        throw PlatformException(code: 'invalid_transport');
+    }
+  }
+
   Future<Object?> _handle(MethodCall call) async {
     if (!mounted || !_current || _profileId == null) throw PlatformException(code: 'profile_unavailable');
     final requestGeneration = _profiles.identityMutationGeneration;
@@ -420,26 +529,17 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         if (args['scope'] != _itemScope || args['revision'] != _catalogRevision) {
           throw PlatformException(code: 'stale_widget');
         }
-        switch (args['command']) {
-          case 'play':
-            await _music.play();
-          case 'pause':
-            await _music.pause();
-          case 'previous':
-            await _music.previous();
-          case 'next':
-            await _music.next();
-          default:
-            throw PlatformException(code: 'invalid_transport');
-        }
+        await _carTransport(args['command'] as String? ?? '');
         return null;
       case 'artwork':
         return _artwork(args);
       case 'browse':
         return _browse(args['id'] as String? ?? 'root');
       case 'search':
-        final results = await _search(args['query'] as String? ?? '');
-        return _current ? results.map(_item).toList() : [];
+        final query = args['query'] as String? ?? '';
+        final results = await _search(query);
+        final books = await _searchAudiobooks(query);
+        return _current ? [...results.map(_item), ...books] : [];
       case 'resolveVoice':
         final title = (args['query'] as String? ?? '').trim().toLowerCase();
         final artist = (args['artist'] as String? ?? '').trim().toLowerCase();
@@ -459,6 +559,16 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
             .take(10)
             .map(_item)
             .toList();
+        final audiobookMatches = await _searchAudiobooks(args['query'] as String? ?? '');
+        if (!mounted || !requestCurrent()) return [];
+        resolved.addAll(
+          audiobookMatches.where(
+            (row) =>
+                (row['title'] as String? ?? '').trim().toLowerCase() == title &&
+                (artist.isEmpty || (row['subtitle'] as String? ?? '').trim().toLowerCase() == artist) &&
+                (kind == null || kind == 'audiobook'),
+          ),
+        );
         if (artist.isEmpty && album.isEmpty && (kind == null || kind == 'station' || kind == 'playlist')) {
           final store = MusicLibraryStore(context.read<AppDatabase>(), _profileId);
           final stations = await store.documents('station');
@@ -497,7 +607,29 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         return requestCurrent() ? resolved.take(10).toList() : [];
       case 'playItem':
         final id = args['id'] as String? ?? '';
-        if (id.startsWith('queue:')) {
+        if (id.startsWith('audiobook:')) {
+          final entry = _audiobookEntries[id];
+          final sources = _sourceController;
+          final playback = context.read<SourcePlayback?>();
+          if (entry == null || sources == null || playback == null || _profileId == null) {
+            throw PlatformException(code: 'stale_audiobook');
+          }
+          if (args['queue'] == 'next' || args['queue'] == 'later') {
+            throw PlatformException(code: 'unsupported_audiobook_queue');
+          }
+          if (sources.profileId != _profileId ||
+              sources.blocked ||
+              !sources.sources.any((source) => source.id == entry.sourceId && source.profileId == _profileId)) {
+            throw PlatformException(code: 'stale_audiobook');
+          }
+          final fresh = await sources.hydrate(entry);
+          if (!mounted || !requestCurrent()) return false;
+          if (fresh.kind != SourceItemKind.audiobook || fresh.unavailable || fresh.audio.isEmpty) {
+            throw PlatformException(code: 'unavailable_audiobook');
+          }
+          await playback.start(fresh, fresh.audio, isStartCurrent: requestCurrent);
+          return requestCurrent() && playback.active && playback.entry?.key == fresh.key;
+        } else if (id.startsWith('queue:')) {
           final parts = id.split(':');
           if (parts.length != 3 || int.tryParse(parts[1]) != _catalogRevision) {
             throw PlatformException(code: 'stale_queue');
@@ -719,21 +851,17 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
         await _music.jumpTo(index);
         return true;
       case 'play':
-        await _music.play();
-        return _music.isPlaying;
+        return _carTransport('play');
       case 'pause':
-        await _music.pause();
-        return true;
+        return _carTransport('pause');
       case 'next':
-        await _music.next();
-        return true;
+        return _carTransport('next');
       case 'previous':
-        await _music.previous();
-        return true;
+        return _carTransport('previous');
       case 'connection':
         final connected = args['connected'] == true;
         if (_connected && !connected) {
-          await _music.pause();
+          await _carTransport('pause');
           if (!_current) return false;
         }
         if (!connected && !_bluetoothConnected) {
@@ -864,6 +992,10 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
     }
     if (id == 'root') {
       return [
+        if (_sourceController != null && !_sourceController!.blocked) ...[
+          _folder('continueAudiobooks', t.fileSources.continueListening),
+          _folder('audiobooks', t.fileSources.audiobooks),
+        ],
         _folder('queue', t.music.queue),
         _folder('offline', t.navigation.downloads),
         _folder('libraries', t.navigation.libraries),
@@ -877,6 +1009,55 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
           _folder('serverRadio', t.libraries.tabs.recommended),
         _folder('recent', t.musicTools.recent),
       ];
+    }
+    if (id == 'continueAudiobooks') {
+      final sources = _sourceController;
+      if (sources == null || sources.blocked || _profileId == null || sources.profileId != _profileId) return [];
+      final recent = await sources.repository.recentProgressEntries(_profileId!, limit: 100);
+      if (!mounted || !_current || sources.profileId != _profileId || sources.blocked) return [];
+      final configured = sources.sources.map((source) => source.id).toSet();
+      final seen = <String>{};
+      final entries = recent
+          .where((row) => row.$2.mode == PublicationMode.listening && !row.$2.finished)
+          .map((row) => row.$1)
+          .where(
+            (entry) =>
+                entry.kind == SourceItemKind.audiobook &&
+                entry.audio.isNotEmpty &&
+                !entry.unavailable &&
+                configured.contains(entry.sourceId) &&
+                seen.add(entry.key),
+          )
+          .map(_audiobookItem);
+      return _page(entries, id, offset);
+    }
+    if (id == 'audiobooks' || id.startsWith('audiobookPage:')) {
+      final sources = _sourceController;
+      if (sources == null || sources.blocked || _profileId == null || sources.profileId != _profileId) return [];
+      String? cursor;
+      if (id.startsWith('audiobookPage:')) {
+        final value = id.substring('audiobookPage:'.length);
+        if (!RegExp(r'^\d{1,12}$').hasMatch(value)) throw PlatformException(code: 'invalid_audiobook_page');
+        cursor = value;
+      }
+      final page = await sources.repository.entriesPage(
+        _profileId!,
+        shelf: PublicationShelf.audiobooks,
+        cursor: cursor,
+        limit: _pageSize,
+      );
+      if (!mounted || !_current || sources.profileId != _profileId || sources.blocked) return [];
+      final configured = sources.sources.map((source) => source.id).toSet();
+      final rows = <Map<String, Object?>>[
+        for (final entry in page.items)
+          if (entry.kind == SourceItemKind.audiobook &&
+              entry.audio.isNotEmpty &&
+              !entry.unavailable &&
+              configured.contains(entry.sourceId))
+            _audiobookItem(entry),
+        if (page.cursor != null) _folder('audiobookPage:' + page.cursor!, t.fileSources.loadMore),
+      ];
+      return rows;
     }
     if (id == 'queue') {
       final queue = _music.queue;
@@ -1128,6 +1309,40 @@ class _MusicCarHostState extends State<MusicCarHost> with WidgetsBindingObserver
       if (page.items.isNotEmpty && offset + page.items.length < page.totalCount)
         _nextPage(id, offset + page.items.length),
     ];
+  }
+
+  Future<List<Map<String, Object?>>> _searchAudiobooks(String query) async {
+    final sources = _sourceController;
+    final normalized = query.trim();
+    if (sources == null ||
+        sources.blocked ||
+        _profileId == null ||
+        sources.profileId != _profileId ||
+        normalized.isEmpty ||
+        normalized.length > 200) {
+      return [];
+    }
+    try {
+      final page = await sources.repository.entriesPage(
+        _profileId!,
+        shelf: PublicationShelf.audiobooks,
+        query: normalized,
+        limit: 100,
+      );
+      if (!mounted || !_current || sources.profileId != _profileId || sources.blocked) return [];
+      final configured = sources.sources.map((source) => source.id).toSet();
+      return [
+        for (final entry in page.items)
+          if (entry.kind == SourceItemKind.audiobook &&
+              entry.audio.isNotEmpty &&
+              !entry.unavailable &&
+              configured.contains(entry.sourceId))
+            _audiobookItem(entry),
+      ];
+    } on Object {
+      // A damaged or unavailable book index must not break music search.
+      return [];
+    }
   }
 
   Future<List<MediaItem>> _search(String query) async {

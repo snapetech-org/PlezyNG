@@ -9,9 +9,13 @@ No adapter owns a second playback queue or starts audio merely on connection.
 
 `MusicCarHost` binds the `com.pleazyng/music_car` channel only while an unlocked
 profile session is mounted. It exposes queue, downloaded music, authorized
-libraries, server audio playlists, saved recipes/stations, recent listening, search
-and transport. Media IDs are opaque session-scoped references, never media URLs,
-tokens or local file paths. The in-memory lookup
+libraries, server audio playlists, saved recipes/stations, indexed audiobooks,
+recent listening, search and transport. Selecting an audiobook starts or resumes
+the shared `SourcePlayback` session, with its saved position and chapter controls.
+Car transport play, pause, previous and next commands follow that active audiobook
+session; previous and next move by chapter or file. It does not create another
+queue or player. Media IDs are opaque session-scoped
+references, never media URLs, tokens or local file paths. The in-memory lookup
 registry is bounded to 2,000 items and may require refreshing an old browser page.
 Browser pages contain at most 99 content entries plus a continuation folder.
 
@@ -32,7 +36,11 @@ refresh native catalogs. Progress-only download notifications do not repeatedly
 reload a car browser. Playback rechecks hidden-library access at selection time.
 
 The existing playback coordinator still arbitrates music, video and other audio.
-Existing OS playback controls and the music engine remain authoritative.
+Audiobooks appear in a dedicated browse shelf and continue-listening list; indexed
+book search is also available to native car search and exact-title voice resolution.
+The shared source player publishes title, narrator/author, series, duration and
+cached cover art to OS Now Playing controls. Existing OS playback controls and the
+music engine remain authoritative.
 
 ## Android
 
@@ -104,9 +112,10 @@ See Apple's [CarPlay guide](https://developer.apple.com/download/files/CarPlay-D
 and [music integration documentation](https://developer.apple.com/documentation/carplay/integrating-carplay-with-your-music-app).
 
 The additional scene/intent sources have not been compiled with Xcode in this
-workspace. Artwork integration, signed entitlement verification, plugin lifecycle
-checks and simulator/hardware qualification remain. Neither source registration
-nor a simulator session would establish final App Store/device approval.
+workspace. Audiobook browse and Now Playing artwork are wired in source, but
+signed entitlement verification, plugin lifecycle checks and simulator/hardware
+qualification remain. Neither source registration nor a simulator session would
+establish final App Store/device approval.
 
 ## Phone driving presentation
 

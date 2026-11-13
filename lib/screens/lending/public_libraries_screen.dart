@@ -520,6 +520,7 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
   List<LendingBook> _books = [];
   String _shelf = 'catalogue';
   String _catalogProvider = 'openLibrary';
+  String? _libbyMediaType;
   int _page = 1, _request = 0;
   bool _busy = false, _more = false;
   bool _openedInitialBook = false;
@@ -544,7 +545,9 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
     try {
       final page = more ? _page + 1 : 1, service = widget.service, library = widget.library;
       final result = library == null
-          ? _catalogProvider == 'googleBooks'
+          ? _catalogProvider == 'libby'
+                ? await service.libbyTitleSearch(_search.text.trim(), mediaType: _libbyMediaType)
+                : _catalogProvider == 'googleBooks'
                 ? await service.googleBooksSearch(
                     _search.text.trim(),
                     page: page,
@@ -603,7 +606,14 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
 
   @override
   Widget build(BuildContext context) => FocusedScrollScaffold(
-    title: Text(widget.library?.name ?? (_catalogProvider == 'googleBooks' ? 'Google Books' : 'Open Library')),
+    title: Text(
+      widget.library?.name ??
+          (_catalogProvider == 'googleBooks'
+              ? 'Google Books'
+              : _catalogProvider == 'libby'
+              ? 'Libby / OverDrive'
+              : 'Open Library'),
+    ),
     focusableAppBarActions: true,
     actions: [
       if (widget.library != null)
@@ -654,7 +664,11 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
                   child: Wrap(
                     spacing: 8,
                     children: [
-                      for (final source in const [('openLibrary', 'Open Library'), ('googleBooks', 'Google Books')])
+                      for (final source in [
+                        const ('openLibrary', 'Open Library'),
+                        const ('googleBooks', 'Google Books'),
+                        if (widget.service.titleLinkAvailable) const ('libby', 'Libby / OverDrive'),
+                      ])
                         ChoiceChip(
                           label: Text(source.$2),
                           selected: _catalogProvider == source.$1,
@@ -692,6 +706,45 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
                     ),
                   ),
                 ),
+              if (widget.library == null && _catalogProvider == 'libby')
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Wrap(
+                    spacing: 8,
+                    children: [
+                      ChoiceChip(
+                        label: Text(t.fileSources.all),
+                        selected: _libbyMediaType == null,
+                        onSelected: _busy
+                            ? null
+                            : (_) {
+                                setState(() => _libbyMediaType = null);
+                                if (_search.text.trim().isNotEmpty) unawaited(_load());
+                              },
+                      ),
+                      ChoiceChip(
+                        label: Text(t.fileSources.ebooks),
+                        selected: _libbyMediaType == 'ebook',
+                        onSelected: _busy
+                            ? null
+                            : (_) {
+                                setState(() => _libbyMediaType = 'ebook');
+                                if (_search.text.trim().isNotEmpty) unawaited(_load());
+                              },
+                      ),
+                      ChoiceChip(
+                        label: Text(t.fileSources.audiobooks),
+                        selected: _libbyMediaType == 'audiobook',
+                        onSelected: _busy
+                            ? null
+                            : (_) {
+                                setState(() => _libbyMediaType = 'audiobook');
+                                if (_search.text.trim().isNotEmpty) unawaited(_load());
+                              },
+                      ),
+                    ],
+                  ),
+                ),
               if (widget.selectOnly)
                 Padding(
                   padding: const EdgeInsets.only(top: 12),
@@ -717,7 +770,11 @@ class _LibraryCatalogueScreenState extends State<LibraryCatalogueScreen> {
               if (!_busy && _books.isEmpty && _error == null)
                 Padding(
                   padding: const EdgeInsets.only(top: 32),
-                  child: Text(widget.library == null ? t.lending.openLibraryNote : t.lending.empty),
+                  child: Text(
+                    widget.library == null && _catalogProvider == 'openLibrary'
+                        ? t.lending.openLibraryNote
+                        : t.lending.empty,
+                  ),
                 ),
             ],
           ),
@@ -896,7 +953,14 @@ class _LendingDetailScreenState extends State<_LendingDetailScreen> {
     final expired = book.due?.isBefore(DateTime.now()) ?? false;
     final available = _availability?['available'] == true;
     return FocusedScrollScaffold(
-      title: Text(library?.name ?? (book.data['source'] == 'googleBooks' ? 'Google Books' : 'Open Library')),
+      title: Text(
+        library?.name ??
+            (book.data['source'] == 'libbyTitleLink'
+                ? 'Libby / OverDrive'
+                : book.data['source'] == 'googleBooks'
+                ? 'Google Books'
+                : 'Open Library'),
+      ),
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.all(24),
@@ -916,6 +980,18 @@ class _LendingDetailScreenState extends State<_LendingDetailScreen> {
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(color: tokens(context).textMuted),
                     ),
+                    if (book.data['source'] == 'libbyTitleLink')
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 620),
+                          child: Text(
+                            t.lending.handoff,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: tokens(context).textMuted),
+                          ),
+                        ),
+                      ),
                     if (book.price != null && book.currency != null) ...[
                       const SizedBox(height: 8),
                       Text(NumberFormat.simpleCurrency(name: book.currency).format(book.price)),

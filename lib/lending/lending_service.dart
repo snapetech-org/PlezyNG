@@ -118,6 +118,8 @@ class LendingPage {
 
 class LendingService {
   static const overdriveEnabled = bool.fromEnvironment('ENABLE_OVERDRIVE', defaultValue: false);
+  static const titleLinkEnabled = bool.fromEnvironment('ENABLE_OVERDRIVE_TITLE_LINK', defaultValue: false);
+  static const defaultTitleLinkGateway = String.fromEnvironment('LENDING_GATEWAY_URL');
   LendingService(
     this.repository,
     this.profile, {
@@ -125,6 +127,7 @@ class LendingService {
     SourceTransport? transport,
     Future<bool> Function(Uri)? launch,
     this.enableOverdrive = overdriveEnabled,
+    this.titleLinkGateway = defaultTitleLinkGateway,
   }) : transport = transport ?? SourceTransport(),
        launch = launch ?? ((uri) => launchUrl(uri, mode: LaunchMode.externalApplication));
   final SourceRepository repository;
@@ -132,6 +135,16 @@ class LendingService {
   final bool Function() valid;
   final SourceTransport transport;
   final bool enableOverdrive;
+  final String titleLinkGateway;
+  bool get titleLinkAvailable {
+    if (!titleLinkEnabled || titleLinkGateway.trim().isEmpty) return false;
+    try {
+      final uri = lendingHttps(titleLinkGateway.trim());
+      return (uri.path.isEmpty || uri.path == '/') && !uri.hasQuery && !uri.hasFragment;
+    } on SourceException {
+      return false;
+    }
+  }
   void _native() {
     check();
     if (!enableOverdrive) throw const SourceException(SourceFailure.unsupported);
@@ -281,6 +294,63 @@ class LendingService {
     }
     final total = sourceInt(result['totalItems']) ?? 0;
     return LendingPage(books, more: page * pageSize < total);
+  }
+
+  /// Search the global OverDrive catalog through its approved Title Link API.
+  /// This returns one official Libby share link; it does not expose patron loans
+  /// or permit checkout, return, or fulfillment inside Pleazyng.
+  Future<LendingPage> libbyTitleSearch(String query, {String creator = '', String? mediaType}) async {
+    check();
+    if (!titleLinkAvailable) throw const SourceException(SourceFailure.unsupported);
+    final input = query.trim();
+    final author = creator.trim();
+    if (input.isEmpty ||
+        input.length > 300 ||
+        author.length > 200 ||
+        (mediaType != null && !const {'ebook', 'audiobook'}.contains(mediaType))) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
+    final compact = input.replaceAll(RegExp(r'[\s-]'), '');
+    final isIsbn = RegExp(r'^(?:[0-9]{9}[0-9Xx]|[0-9]{13})$').hasMatch(compact);
+    final endpoint = lendingHttps(titleLinkGateway.trim());
+    if (endpoint.path.isNotEmpty || endpoint.hasQuery || endpoint.hasFragment) {
+      throw const SourceException(SourceFailure.permission);
+    }
+    final result = await _post(endpoint.replace(path: '/v1/title-links'), {
+      if (isIsbn) 'isbn': compact else 'title': input,
+      if (author.isNotEmpty && !isIsbn) 'creator': author,
+      if (mediaType != null) 'mediaType': mediaType,
+    });
+    check();
+    if (result['found'] == false) return const LendingPage([]);
+    final foundTitle = result['title'];
+    final foundType = result['mediaType'];
+    final rawCreators = sourceList(result['creators']);
+    final href = sourceMap(result['shareLink'])['href'];
+    if (foundTitle is! String ||
+        foundTitle.trim().isEmpty ||
+        !const {'ebook', 'audiobook'}.contains(foundType) ||
+        href is! String) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
+    final share = lendingHttps(href);
+    if (share.host != 'link.overdrive.com' ||
+        share.port != 443 ||
+        share.path != '/share' ||
+        share.queryParameters['q']?.isNotEmpty != true) {
+      throw const SourceException(SourceFailure.permission);
+    }
+    final creators = rawCreators.whereType<String>().map((value) => value.trim()).where((value) => value.isNotEmpty);
+    return LendingPage([
+      LendingBook(
+        id: 'libby-title:' + (share.queryParameters['q'] ?? ''),
+        title: foundTitle.trim(),
+        author: creators.join(', '),
+        page: share,
+        identifiers: isIsbn ? {'isbn': compact} : const {},
+        data: {'source': 'libbyTitleLink', 'mediaType': foundType},
+      ),
+    ]);
   }
 
   static Uri? _googleBooksLink(Object? value) {

@@ -2405,11 +2405,14 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     if (!_valid || player != native || generation != _generation || fileEpoch != _fileEpoch) {
       return;
     }
+    final mediaDuration = hasCompleteTimeline ? Duration(milliseconds: durationMs) : null;
     await _controls?.updateFileMetadata(
       title: item.displayTitle,
       author: item.narrator.isEmpty ? item.author : item.narrator,
-      duration: hasCompleteTimeline ? Duration(milliseconds: durationMs) : null,
+      album: item.series.isEmpty ? null : item.series,
+      duration: mediaDuration,
     );
+    unawaited(_publishFileArtwork(item, native, generation, fileEpoch, index, mediaDuration));
     final measured = native.state.duration.inMilliseconds;
     if (measured > 0) {
       _durations[index] = measured;
@@ -2419,6 +2422,49 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     _notify();
     if (_userMuted) {
       unawaited(_selectSubtitleForMute(native, _subtitleMuteGeneration));
+    }
+  }
+
+  Future<void> _publishFileArtwork(
+    SourceEntry item,
+    Player native,
+    int generation,
+    int fileEpoch,
+    int fileIndex,
+    Duration? duration,
+  ) async {
+    try {
+      final cover = await sources.cover(item);
+      if (cover == null ||
+          !_valid ||
+          player != native ||
+          entry?.key != item.key ||
+          _generation != generation ||
+          _fileEpoch != fileEpoch ||
+          _fileIndex != fileIndex) {
+        return;
+      }
+      if (await cover.length() > 4 * 1024 * 1024) return;
+      final bytes = await cover.readAsBytes();
+      if (bytes.isEmpty ||
+          bytes.length > 4 * 1024 * 1024 ||
+          !_valid ||
+          player != native ||
+          entry?.key != item.key ||
+          _generation != generation ||
+          _fileEpoch != fileEpoch ||
+          _fileIndex != fileIndex) {
+        return;
+      }
+      await _controls?.updateFileMetadata(
+        title: item.displayTitle,
+        author: item.narrator.isEmpty ? item.author : item.narrator,
+        album: item.series.isEmpty ? null : item.series,
+        duration: duration,
+        artwork: bytes,
+      );
+    } on Object {
+      // Artwork must never delay or interrupt audiobook playback.
     }
   }
 

@@ -4,6 +4,8 @@
 
 Evidence collected 2026-10-27 America/Regina and checked while documenting on 2026-10-28 UTC. Repository observations are source inspection; external behavior comes from the linked primary documentation or upstream source. A library declaring a platform does not establish that Discord works on that platform inside PlezyNG.
 
+The application-ID and poster-host details below describe that historical source snapshot. Current ownership and runtime configuration are recorded in the [owned-provider registration handoff](../../maintainers/owned-provider-registrations.md) and [rebrand status](../../maintainers/pleazyng-rebrand-status.json); those later records supersede the old identifier and host. Neither configuration nor registration alone qualifies live IPC or poster upload.
+
 Confidence labels: **high** means directly supported by inspected code or explicit documentation; **moderate** means an engineering inference with identified dependencies; **low** means a weakly supported expectation; **unknown** means the research did not establish the answer.
 
 ## Existing PlezyNG wiring
@@ -17,7 +19,7 @@ Confidence labels: **high** means directly supported by inspected code or explic
 | Workspace | [models](../../../lib/multiview/workspace_models.dart), [controller](../../../lib/multiview/workspace_controller.dart), [overlay](../../../lib/multiview/workspace_overlay.dart) | Reusable layout, focus, ownership, and runtime-surface boundary |
 | Native PiP | [`PipService`](../../../lib/services/pip_service.dart), [video player adapter](../../../lib/screens/video_player/parts/pip.dart) | Existing video continuation path, distinct from the app's workspace compositor |
 
-The presence service uses application ID `1453773470306402439`. This is a public identifier, not a credential. Ownership of that application and permission to reuse it for broader account features were not established. The poster path uploads bounded artwork to the configured Plezy service; it is not an account-authentication or video-transport path. Playback presence and CI webhooks grant no Discord message-history or call access. **Confidence: high** for the code boundaries; operational setup remains unverified.
+At the historical source snapshot, Rich Presence used application ID `1453773470306402439`, and the poster path used the then-configured Plezy service. These are historical values, not current defaults. Current source accepts an optional fork-owned `PLEAZYNG_DISCORD_APPLICATION_ID` and uploads posters to the explicitly configured fork service. The source and registration records do not establish live Discord IPC, poster-upload success, or approval for broader account features. Playback presence and CI webhooks grant no Discord message-history or call access. **Confidence: high** for the current source boundaries; runtime qualification remains open.
 
 Immutable starting points: [presence at the audited revision](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/services/discord_rpc_service.dart), [workspace controller](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/multiview/workspace_controller.dart), and [vendored webview manifest](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/packages/flutter_inappwebview/pubspec.yaml).
 
@@ -104,4 +106,4 @@ Ongoing mobile voice and receiving a new call while suspended are different prob
 
 ## What remains unproven
 
-No research step authenticated an account, sent a message, joined a call, measured latency/resource use, tested DAVE interoperation, embedded Discord in a PlezyNG build, or qualified any platform. No SDK production approval, account-policy exemption, licensing clearance, or ownership of a Discord application was obtained. Those are explicit [future gates](DELIVERY.md), not hidden prerequisites presumed complete.
+No research step authenticated an account, sent a message, joined a call, measured latency/resource use, tested DAVE interoperation, embedded Discord in a PlezyNG build, or qualified any platform. An owned Rich Presence application is recorded in the registration handoff, but no Social SDK production approval, account-policy exemption, or licensing clearance was obtained. Those are explicit [future gates](DELIVERY.md), not hidden prerequisites presumed complete.

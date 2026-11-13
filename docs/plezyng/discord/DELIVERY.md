@@ -127,7 +127,7 @@ Rollback should remove the optional client path without deleting unrelated user 
 | Decision | Current position | Resolution needed before |
 | --- | --- | --- |
 | Full native client versus embedded client versus official social features | Unselected; native offers most UI control, embedded is a useful comparator | Stage 2 architecture commitment |
-| Discord application ownership, approved scopes, production limits | Unknown beyond the existing public presence ID | Official account/SDK production path |
+| Discord application ownership, approved scopes, production limits | An owned desktop Rich Presence application is recorded; no broader Social SDK approval or production limits are established | Official account/SDK production path |
 | Authentication and unofficial-client policy exposure | Unresolved; no token-harvesting or challenge-bypass design assumed | Native account experiment |
 | Proprietary SDK compatibility and dependency license obligations | Requires specific assessment | Import/distribution of affected code/binaries |
 | DAVE/native encoded-frame seam | Not prototyped | Native calling architecture commitment |

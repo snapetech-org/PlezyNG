@@ -57,5 +57,5 @@ for path in "${paths[@]}"; do
 done
 
 if [[ ${#files[@]} -gt 0 ]]; then
-  dart format "${options[@]}" "${files[@]}"
+  dart format --page-width=120 "${options[@]}" "${files[@]}"
 fi

@@ -85,6 +85,32 @@ void main() {
     expect(await downloads.verifiedFiles('p', [entry]), isEmpty);
   });
 
+  test('an active reader lease protects only its exact retired edition from removal', () async {
+    final source = DownloadSource(SourceTransport(client: MockClient((_) async => http.Response('abcdef', 200))));
+    addTearDown(source.close);
+    final oldFile = await downloads.download('p', source, file);
+    const replacement = PublicationFile(
+      id: 'book',
+      name: 'book.epub',
+      mimeType: 'application/epub+zip',
+      size: 6,
+      revision: 'v2',
+    );
+    await downloads.download('p', source, replacement);
+
+    final lease = await downloads.acquireLocal('p', 'source', file);
+    expect(lease?.file.path, oldFile.path);
+    await downloads.remove('p', 'source', replacement);
+    expect(await oldFile.exists(), isTrue);
+    expect(await downloads.removeRetiredDownload('p', downloads.key('source', file), file.fingerprint), isFalse);
+    expect(await oldFile.exists(), isTrue);
+
+    await lease!.release();
+    await lease.release();
+    expect(await downloads.removeRetiredDownload('p', downloads.key('source', file), file.fingerprint), isTrue);
+    expect(await oldFile.exists(), isFalse);
+  });
+
   test('immediate cancellation cannot start a late transfer or publish a file', () async {
     var requested = false;
     final source = DownloadSource(

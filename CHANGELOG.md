@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Keep an offline book edition available while its reader is open, and block removal until that reader closes.
 - Move the MAL OAuth broker to a code-only handoff and require users to configure their own HTTPS relay for relay-backed integrations. See the [relay endpoint inventory](docs/maintainers/pleazyng-relay-endpoints.md) and [security review](server/cloudflare-oauth/security-review-20261113.md).
 - Add approved-only OverDrive Title Link search and Libby handoff, plus indexed audiobook playback through the existing Android Auto and CarPlay controls. See [LENDING_SETUP.md](docs/LENDING_SETUP.md) and the [car integration guide](docs/plezyng/music/CAR_INTEGRATION.md).
 - Require normal Android, Linux, and Windows packages to carry a checksum-bound Dolby Vision FEL engine receipt.

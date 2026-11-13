@@ -357,9 +357,11 @@
       "evidence": [
         "lib/sources/content_access.dart",
         "lib/sources/source_database.dart",
+        "lib/screens/sources/publication_reader_screen.dart",
+        "lib/screens/sources/sources_screen.dart",
         "docs/sources/QUALIFICATION.md"
       ],
-      "qualification": "The app persists jobs, applies per-profile quota and free-space bounds, recovers interrupted transfers, and limits native background transfer to explicit safe subsets. Replaced editions remain quota-accounted and removable while an active reader may still use them. Crash/resume, low-space, and platform lifecycle acceptance remains open."
+      "qualification": "The app persists jobs, applies per-profile quota and free-space bounds, recovers interrupted transfers, and limits native background transfer to explicit safe subsets. Active readers hold an exact-edition lease that blocks its removal. Crash/resume, low-space, and platform lifecycle acceptance remains open."
     },
     {
       "id": "F12",

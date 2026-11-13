@@ -26,6 +26,7 @@ import '../../focus/focusable_wrapper.dart';
 import '../../services/playback_coordinator.dart';
 import '../../sources/publication_archive.dart';
 import '../../sources/comic_document.dart';
+import '../../sources/content_access.dart';
 import '../../sources/source_controller.dart';
 import '../../sources/source_models.dart';
 import '../../sources/source_playback.dart';
@@ -62,6 +63,7 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
   PdfTextSearcher? _pdfSearch;
   InAppWebViewController? _web;
   File? _file;
+  DownloadedFileLease? _offlineFileLease;
   PublicationServer? _server;
   Uri? _url;
   Map<String, dynamic> _settings = {};
@@ -383,7 +385,11 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
               widget.entry.key,
             )).where((a) => a.edition == widget.file.fingerprint && a.mode == PublicationMode.reading).toList();
       final temp = await getTemporaryDirectory();
-      final cached = _previewOnly ? null : await sources.downloads.local(_profile!, widget.entry.sourceId, widget.file);
+      final offlineFileLease = _previewOnly
+          ? null
+          : await sources.downloads.acquireLocal(_profile!, widget.entry.sourceId, widget.file);
+      _offlineFileLease = offlineFileLease;
+      final cached = offlineFileLease?.file;
       ComicPageSource? pages;
       if (cached == null && !_previewOnly && sources.sources.any((s) => s.id == widget.entry.sourceId)) {
         try {
@@ -397,16 +403,25 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
           }
         }
       }
-      if (!valid) return;
+      if (!valid) {
+        await _releaseOfflineFileLease();
+        return;
+      }
       if (pages == null) {
         if (_previewOnly && cached == null) {
           _previewSession = sources.beginPreview(widget.entry, widget.file);
           _file = await _previewSession!.open();
         } else {
           _file = cached ?? await sources.content(widget.entry, widget.file);
+          if (offlineFileLease == null) {
+            await _holdOfflineFile(sources);
+          }
         }
       }
-      if (!valid) return;
+      if (!valid) {
+        await _releaseOfflineFileLease();
+        return;
+      }
       _streamingComic = pages != null;
       if (!pdf || pages != null) {
         final archive = pages != null
@@ -430,6 +445,7 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
       final preview = _previewSession;
       _previewSession = null;
       if (preview != null) await preview.dispose();
+      await _releaseOfflineFileLease();
       if (mounted) {
         setState(() {
           _error = e;
@@ -444,8 +460,27 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
       unawaited(_stopSpeech());
       unawaited(_server?.close());
       unawaited(_previewSession?.dispose());
+      unawaited(_releaseOfflineFileLease());
       if (mounted) setState(() => _error = const SourceException(SourceFailure.cancelled));
     }
+  }
+
+  Future<void> _holdOfflineFile(SourceController sources) async {
+    final profile = _profile;
+    if (profile == null || !valid) return;
+    final lease = await sources.downloads.acquireLocal(profile, widget.entry.sourceId, widget.file);
+    if (lease == null) return;
+    if (!valid || (_file != null && _file!.path != lease.file.path)) {
+      await lease.release();
+      return;
+    }
+    _offlineFileLease = lease;
+  }
+
+  Future<void> _releaseOfflineFileLease() async {
+    final lease = _offlineFileLease;
+    _offlineFileLease = null;
+    await lease?.release();
   }
 
   Future<dynamic> _js(String method, [Object? argument]) async {
@@ -1064,6 +1099,7 @@ class _PublicationReaderScreenState extends State<PublicationReaderScreen> with 
       );
     }
     _disposed = true;
+    unawaited(_releaseOfflineFileLease());
     WidgetsBinding.instance.removeObserver(this);
     _sources?.removeListener(_profileChanged);
     _observedWorkspaceController?.removeListener(_scheduleWorkspaceAutoJoin);

@@ -702,6 +702,23 @@ class TransferCancellation {
   }
 }
 
+/// A downloaded publication file held by an active reader. The owning
+/// [PublicationDownloads] instance prevents deletion until this lease is
+/// released.
+class DownloadedFileLease {
+  DownloadedFileLease(this.file, this._release);
+
+  final File file;
+  final Future<void> Function() _release;
+  bool _released = false;
+
+  Future<void> release() async {
+    if (_released) return;
+    _released = true;
+    await _release();
+  }
+}
+
 class PublicationDownloads {
   PublicationDownloads(this.repository, this.directory);
   static const int maxConcurrentTransfers = 2;
@@ -709,6 +726,7 @@ class PublicationDownloads {
   final Directory directory;
   final Map<String, Future<File>> _pending = {};
   final Map<String, Future<void>> _removals = {};
+  final Map<String, int> _readerLeases = {};
   final Map<String, TransferCancellation> _cancellations = {};
   final Map<String, _DownloadTask> _tasks = {};
   final Queue<_DownloadTask> _queue = Queue();
@@ -1088,6 +1106,48 @@ class PublicationDownloads {
       !_tvOsBuild &&
       const {'android', 'ios', 'linux', 'macos', 'windows'}.contains(Platform.operatingSystem);
   String key(String sourceId, PublicationFile file) => sourceKey(sourceId, file.id);
+  String _readerLeaseKey(String profile, String sourceId, PublicationFile file) =>
+      sourceKey(sourceKey(profile, key(sourceId, file)), file.fingerprint);
+
+  void _releaseReaderLease(String identity) {
+    final count = _readerLeases[identity] ?? 0;
+    if (count <= 1) {
+      _readerLeases.remove(identity);
+    } else {
+      _readerLeases[identity] = count - 1;
+    }
+  }
+
+  /// Resolves an already-downloaded copy while preventing concurrent removal.
+  /// A null result means that the edition is not currently stored offline.
+  Future<DownloadedFileLease?> acquireLocal(String profile, String sourceId, PublicationFile file) async {
+    final removalIdentity = sourceKey(profile, key(sourceId, file));
+    final leaseIdentity = _readerLeaseKey(profile, sourceId, file);
+    while (true) {
+      final removal = _removals[removalIdentity];
+      if (removal != null) {
+        try {
+          await removal;
+        } on SourceException catch (error) {
+          if (error.reason != SourceFailure.conflict) rethrow;
+        }
+        continue;
+      }
+      _readerLeases.update(leaseIdentity, (count) => count + 1, ifAbsent: () => 1);
+      try {
+        final localFile = await local(profile, sourceId, file);
+        if (localFile == null) {
+          _releaseReaderLease(leaseIdentity);
+          return null;
+        }
+        return DownloadedFileLease(localFile, () async => _releaseReaderLease(leaseIdentity));
+      } on Object {
+        _releaseReaderLease(leaseIdentity);
+        rethrow;
+      }
+    }
+  }
+
   File _target(String profile, String sourceId, PublicationFile file) {
     final extension = p.extension(file.name).toLowerCase();
     return File(
@@ -2305,6 +2365,9 @@ class PublicationDownloads {
             if (!p.isWithin(p.join(directory.path, sourceDigest(profile)), path)) {
               throw const SourceException(SourceFailure.permission);
             }
+            if ((_readerLeases[_readerLeaseKey(profile, sourceId, file)] ?? 0) > 0) {
+              throw const SourceException(SourceFailure.conflict);
+            }
             final target = File(path);
             final exists = await target.exists();
             if (!allowed()) {
@@ -2330,27 +2393,23 @@ class PublicationDownloads {
     return removal;
   }
 
-  Future<void> removeRetiredDownload(String profile, String downloadKey, String fingerprint) async {
+  Future<bool> removeRetiredDownload(String profile, String downloadKey, String fingerprint) async {
     final row = await repository.retiredDownload(profile, downloadKey, fingerprint);
     if (row == null) {
-      return;
+      return true;
     }
-    final root = p.join(directory.path, sourceDigest(profile));
-    final path = row['path'] as String? ?? '';
-    if (path.isEmpty || !p.isWithin(root, path)) {
+    final sourceId = row['source_id'] as String? ?? '';
+    final file = PublicationFile.fromJson(sourceMap(jsonDecode(row['file_payload'] as String? ?? '{}')));
+    if (sourceId.isEmpty || key(sourceId, file) != downloadKey || file.fingerprint != fingerprint) {
       throw const SourceException(SourceFailure.permission);
     }
-    final file = File(path);
-    if (await file.exists()) {
-      await file.delete();
+    try {
+      await remove(profile, sourceId, file);
+      return true;
+    } on SourceException catch (error) {
+      if (error.reason == SourceFailure.conflict) return false;
+      rethrow;
     }
-    if (path.endsWith('.partial')) {
-      final validator = File('${p.withoutExtension(path)}.validator');
-      if (p.isWithin(root, validator.path) && await validator.exists()) {
-        await validator.delete();
-      }
-    }
-    await repository.forgetRetiredDownload(profile, downloadKey, fingerprint);
   }
 }
 

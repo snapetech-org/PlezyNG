@@ -685,7 +685,10 @@ class _SourcesScreenState extends State<SourcesScreen> {
                 if (!mounted || sources.profileId != profile) {
                   return;
                 }
-                await sources.downloads.removeRetiredDownload(profile, key, fingerprint);
+                final removed = await sources.downloads.removeRetiredDownload(profile, key, fingerprint);
+                if (!removed && mounted) {
+                  showSnackBar(context, t.fileSources.retiredOfflineCopyHelp);
+                }
                 if (mounted) await _load();
               }),
       ),

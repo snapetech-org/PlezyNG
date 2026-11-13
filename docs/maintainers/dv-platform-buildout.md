@@ -26,7 +26,7 @@ cannot meet.
 | Linux app | Normal Linux packages include the locked FEL-capable libmpv and offline HDR10/SDR export tools. The default-on Playback preference requests `opengl-next`; if render-context creation fails and compatibility fallback is enabled, the app retries `opengl` once and reports the renderer actually selected. | Full Plezy Wayland playback, zero-copy and independent pixel accuracy remain open. The synthetic result proves qualitative EL contribution only. The hardware residual capture produced three pending-RPU replacement warnings; its RPU/frame association is unqualified. |
 | macOS, iOS, tvOS | Normal Apple packages include the bundled `PlezyNGDVRuntime.framework`. The default-on preference tries it on macOS 15 and iOS/tvOS 18; a load or initialization failure retains ordinary MPV playback. Other OS versions keep the ordinary route. | The Apple mode/profile report selects a system path; it does not certify displayed pixels. Physical output and FEL image accuracy remain unqualified. |
 | Offline companion | Pinned FelBaker builder patches its VapourSynth output key and builds a tested RGB48 pipeline. A 48-frame generated P7 sample changed all 2,073,600 designed residual-patch pixels; both HDR10/PQ HEVC and SDR/BT.709 H.264 outputs encoded and passed `ffprobe` frame/color-tag checks. | These lossy files are derived compatibility versions, not native DV. FelBaker is a comparison implementation, not an independent Dolby reference; real-clip and playback-device checks remain open. |
-| Android | The checksum-pinned normal AAR contains `plezyng-dv-fel-v1`, paired FFmpeg headers, and all four declared ABIs. Android MPV attempts P7 FEL by default only when that engine identity is present and the enhancement-layer filter is accepted. Otherwise it retains the native decoder or compatible base-layer route; online startup failure can retry through a server SDR rendition. ExoPlayer remains on its platform decoder path. | The MediaCodec profile list is not a per-source pixel test. The API 36 x86_64 emulator comparison uses synthetic media and does not qualify real-device playback, reference pixels or physical Dolby Vision output. CoreELEC S5 remains a separate vendor/kernel project. |
+| Android | The checksum-pinned normal AAR contains `plezyng-dv-fel-v1`, paired FFmpeg headers, and all four declared ABIs. Android MPV attempts P7 FEL by default only when that engine identity is present and the enhancement-layer filter is accepted. Otherwise it retains the native decoder or compatible base-layer route. A typed video-chain initialization failure or explicit fatal P7 pairing error can retry through a server SDR rendition, including after the first frame; generic audio and network errors cannot. ExoPlayer remains on its platform decoder path. | The MediaCodec profile list is not a per-source pixel test. The API 36 x86_64 emulator comparison uses synthetic media and does not qualify real-device playback, reference pixels or physical Dolby Vision output. CoreELEC S5 remains a separate vendor/kernel project. |
 | webOS | For an identified Dolby Vision source, Plex, Jellyfin, and Emby are asked for a full server video encode, even at Original quality; a response offering only the original direct stream is rejected. Jellyfin/Emby also receive an explicit SDR output-range constraint. | The server's output must declare SDR in every HLS video variant before Plezy opens it. That declaration is not proof of correct tone mapping or visible pixel values. The app path exposes no BL/EL GPU composer. |
 | Windows | Ordinary app builds use the locked Windows libmpv from the rebased producer. The default-on per-file hook requires the loaded `plezyng-dv-fel-v1` engine identity before requesting software decoding and the FEL filter for P7; without that identity, or if the hook, decoder override, or filter is unavailable, it preserves the existing route and logs the fallback. | FEL filter acceptance is not proof of EL pixels. D3D11 rendering, independent pixels and device output remain unqualified. The configured private `packer-windows` route may queue; compatible hosted runners are allowed when they meet the job's OS, architecture, and trust requirements. No D3D11/Vulkan reference comparison or device result is claimed. |
 
@@ -39,7 +39,10 @@ rendition when the backend has a known route; unknown or incompatible profiles
 fail before the original DV stream opens. A downloaded DV source with no
 matching local profile also yields to the server; offline-only playback fails
 clearly when no compatible local route is reported. Live TV is unchanged. A
-later initialization failure still gets one bounded server retry.
+typed video-chain initialization failure or one of the paired FEL filter's
+explicit fatal pairing errors gets one bounded server retry. Generic open
+timeouts, audio errors, HTTP failures and permission errors do not trigger this
+retry.
 
 The server route is profile- and backend-specific. Jellyfin's documented
 Dolby Vision to SDR path accepts Profiles 5 and 8; Profile 7 is accepted only
@@ -147,8 +150,10 @@ Use **Settings → Playback → Video and display** (the existing settings tiles
    initialization fails.
 2. **Compatibility fallback** defaults on and appears when the Linux experiment
    is enabled. It retries `opengl` once if experimental render-context creation
-   fails. It is **not** a retry for arbitrary mid-stream decode, pairing or shader
-   failures, and does not silently convert a failed FEL run to a qualified result.
+   fails. Separately, fatal P7 pairing errors from the paired `el_pair` filter
+   can trigger one server-compatible retry after playback starts. Non-terminal
+   unmatched-pair warnings and shader errors without a typed video failure do
+   not trigger that retry; none of these routes makes FEL qualified.
 3. **Video experiment logging** defaults off and uses the existing player log
    flow for the next playback. It is disabled on webOS. Review exported logs for
    private filenames/URLs before sharing.
@@ -172,14 +177,15 @@ property to report the actual selected API/fallback. Neither `reshaped`,
 `opengl-next`, an HEVC decoder name nor the source DV profile means FEL is
 qualified. No new “full FEL” badge is inferred from those properties.
 
-Automatic server fallback currently covers identified DV startup failures
-before the first visible frame (`streamInitFailed` or an open timeout), when the
-source is online and the server has a supported SDR route. A failure after
-playback has begun does not automatically migrate to a server rendition. The
-player does not yet receive a narrow native signal that distinguishes a fatal
-video-route, pairing or shader failure from recoverable network, audio or
-permission errors. Treat post-start route recovery as unfinished; generic
-player errors must not trigger an unrelated transcode.
+Automatic server fallback requires a typed video failure on an identified DV
+source, an online item, a supported server SDR route and an unused retry. It
+recognizes exact video-chain, video-output, and terminal video decoder
+initialization errors plus the three fatal messages emitted by the paired P7
+`el_pair` filter. The paired filter signal can recover a session after its
+first frame and resumes from the current playback position. Open timeouts,
+audio errors, HTTP failures, permissions, recoverable video conversion probes,
+unmatched-pair warnings and untyped shader/runtime errors do not trigger the
+transcode. Physical output and image accuracy remain unqualified.
 
 ## Linux run and evidence
 

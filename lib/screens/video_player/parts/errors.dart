@@ -153,7 +153,11 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
     final session = _playbackSession;
     final request = _currentOpenRequest;
     final client = session?.reportingClient;
-    if (session == null || request == null || client == null || _firstFrame.rendered) return false;
+    if (error.cause != PlayerError.dolbyVisionVideoRouteFailed &&
+        error.cause != PlayerError.dolbyVisionFelRouteFailed) {
+      return false;
+    }
+    if (session == null || request == null || client == null) return false;
     if (_transitionGate.transition != PlaybackTransition.idle) return false;
 
     final alreadyAttempted = _dolbyVisionFallbackAttemptedFor?.sameSourceAs(request) == true;
@@ -172,9 +176,14 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
 
     _dolbyVisionFallbackAttemptedFor = request;
     _dolbyVisionCompatibilityFallbackInFlight = true;
+    final afterFirstFrame = _firstFrame.rendered;
+    final failure = switch (error.cause) {
+      PlayerError.dolbyVisionFelRouteFailed => 'Local Dolby Vision Profile 7 FEL pairing failed',
+      PlayerError.dolbyVisionVideoRouteFailed => 'Local Dolby Vision video chain failed',
+      _ => 'Local Dolby Vision profile ${session.mediaInfo?.displayCriteria?.doviProfile} could not initialize',
+    };
     appLogger.i(
-      'Local Dolby Vision profile ${session.mediaInfo?.displayCriteria?.doviProfile} '
-      'could not initialize; retrying with a server-compatible rendition',
+      '$failure${afterFirstFrame ? ' after playback began' : ''}; retrying with a server-compatible rendition',
     );
     unawaited(_openDolbyVisionCompatibilityFallback(request, error));
     return true;
@@ -190,7 +199,9 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
         qualityPreset: request.qualityPreset,
         selectedAudioStreamId: request.audioStreamId,
         useCurrentAudioStreamSelection: false,
-        resumePosition: request.resumePosition,
+        resumePosition: _firstFrame.rendered
+            ? (player?.state.position ?? request.resumePosition)
+            : request.resumePosition,
         preferredSubtitleTrackOverride: SubtitlePreference.trackOrNull(
           _playbackSession?.subtitleSelection.primaryTrack,
         ),
@@ -357,6 +368,20 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
       _lastLogError = _redactPlayerError(log.text.trim());
     }
     if (SpuriousEofRecovery.isTransportFaultLog(log)) _transportFaultSeen = true;
+    final dvFelFailureCause = dolbyVisionFelRouteFailureCauseFromLog(level: log.level, text: log.text);
+    final dvVideoFailureCause = dolbyVisionVideoRouteFailureCauseFromLog(
+      level: log.level,
+      prefix: log.prefix,
+      text: log.text,
+    );
+    final videoRouteFailureCause = dvFelFailureCause ?? dvVideoFailureCause;
+    if (videoRouteFailureCause != null &&
+        (_playbackAttempt?.isCurrent ?? false) &&
+        !_hasFatalPlaybackError &&
+        _transitionGate.transition == PlaybackTransition.idle) {
+      _onPlayerError(PlayerError(log.text.trim(), cause: videoRouteFailureCause));
+      return;
+    }
     // A stream mpv gives up on at open (`error_on_track`) ends the file only
     // when the other stream is gone too; otherwise the load lives on with no
     // end-file and the viewer waits out the open deadline for an error mpv

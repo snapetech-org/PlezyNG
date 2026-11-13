@@ -34,6 +34,7 @@ import '../../mpv/models.dart';
 
 const String _audioOutputFailedLine = 'Could not open/initialize audio device -> no sound.';
 const String _videoChainFailedLine = 'Could not initialize video chain.';
+const String _videoOutputInitFailedLine = 'Error opening/initializing the selected video_out (--vo) device.';
 const String _outputConversionFailedLine =
     'Cannot convert decoder/filter output to any format supported by the output.';
 const String _decoderInitFailedPrefix = 'Failed to initialize a decoder for codec';
@@ -41,8 +42,44 @@ const String _lavfiRunFailedPrefix = 'error on filtering (';
 const List<String> _streamInitFailedLines = [
   'Audio filter initialized failed!',
   'Error reinitializing audio.',
-  'Error opening/initializing the selected video_out (--vo) device.',
+  _videoOutputInitFailedLine,
 ];
+
+const Set<String> _dolbyVisionFelPairFailureLines = {
+  'Matched BL/EL frames lack usable Dolby Vision metadata.',
+  'Enhancement stream ended before all base frames could be paired.',
+  'Cannot pair Dolby Vision layers: unknown or non-finite PTS.',
+};
+
+/// A terminal error emitted only by Pleazyng's Profile 7 enhancement-layer
+/// pairing filter's `pair_fail()` path. Exact message matching distinguishes a
+/// failed FEL video graph from generic decoder, audio, network, and permission
+/// errors. These diagnostics can arrive after the first frame, so they use a
+/// separate typed cause from the open-only classifier below.
+String? dolbyVisionFelRouteFailureCauseFromLog({required PlayerLogLevel level, required String text}) {
+  if (level != PlayerLogLevel.error && level != PlayerLogLevel.fatal) return null;
+  return _dolbyVisionFelPairFailureLines.contains(text.trim()) ? PlayerError.dolbyVisionFelRouteFailed : null;
+}
+
+/// A terminal video-chain failure is eligible for a Dolby Vision retry only
+/// when the log line identifies the video chain itself. Audio filter and
+/// decoder failures are intentionally left to the ordinary error policy.
+String? dolbyVisionVideoRouteFailureCauseFromLog({
+  required PlayerLogLevel level,
+  required String prefix,
+  required String text,
+}) {
+  if (level != PlayerLogLevel.error && level != PlayerLogLevel.fatal) return null;
+  final line = text.trim();
+  if (line == _videoChainFailedLine || line == _videoOutputInitFailedLine) {
+    return PlayerError.dolbyVisionVideoRouteFailed;
+  }
+  // mpv's decoder log prefixes are `vd` for video and `ad` for audio.
+  if (line.startsWith(_decoderInitFailedPrefix) && prefix.toLowerCase() == 'vd') {
+    return PlayerError.dolbyVisionVideoRouteFailed;
+  }
+  return null;
+}
 
 /// The [PlayerError] cause an open should fail with because of one mpv log
 /// line, or null when the line is not one mpv gives a stream up on.

@@ -69,11 +69,10 @@ bool hlsMasterDeclaresSdrVideoOutput(String manifest) {
   return variants.every((variant) => sdrRange.hasMatch(variant.group(1)!.trim()));
 }
 
-/// Keep the native or device-local DV route first. If that route cannot
-/// initialize an identified DV source, retry once through the media server's
-/// video transcoder, provided the source is online and the backend supports
-/// video transcoding. These narrow causes avoid hiding network, permission,
-/// missing-file, or audio-output failures behind an unrelated transcode.
+/// Route and server eligibility checks for a bounded compatibility retry.
+/// VideoPlayerScreen additionally requires a typed video-route failure before
+/// calling this helper; `streamInitFailed` and `openTimedOut` alone do not
+/// identify a video failure and must never trigger a transcode.
 bool shouldAttemptAutomaticDolbyVisionCompatibilityFallback({
   required MediaDisplayCriteria? source,
   required bool isOnline,
@@ -94,5 +93,8 @@ bool shouldAttemptAutomaticDolbyVisionCompatibilityFallback({
     return false;
   }
 
-  return failureCause == PlayerError.streamInitFailed || failureCause == PlayerError.openTimedOut;
+  return failureCause == PlayerError.streamInitFailed ||
+      failureCause == PlayerError.openTimedOut ||
+      (failureCause == PlayerError.dolbyVisionVideoRouteFailed && source?.hasDolbyVision == true) ||
+      (failureCause == PlayerError.dolbyVisionFelRouteFailed && source?.doviProfile == 7);
 }

@@ -70,6 +70,17 @@ sealed class PlayerError with _$PlayerError {
   /// error's message.
   static const String streamInitFailed = 'stream-init-failed';
 
+  /// Cause tag for a terminal Profile 7 FEL pairing failure reported by the
+  /// paired `el_pair` video filter. This is narrower than a decoder or player
+  /// error: only the filter's explicit fatal pairing diagnostics qualify for
+  /// a server-compatible retry after playback has begun.
+  static const String dolbyVisionFelRouteFailed = 'dolby-vision-fel-route-failed';
+
+  /// Cause tag for an explicit video-chain initialization failure on an
+  /// identified Dolby Vision source. Audio-chain failures and open timeouts
+  /// deliberately use other causes and do not trigger this fallback.
+  static const String dolbyVisionVideoRouteFailed = 'dolby-vision-video-route-failed';
+
   /// Cause tag for an audio device that stopped taking audio (or never
   /// could) after the native core's own bounded recovery. A device fault, not
   /// a stream fault: no stream retry, quality change, or backend switch can

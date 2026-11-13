@@ -1,7 +1,7 @@
 {
   "locale": "fr",
   "inherits": null,
-  "catalogSha256": "6f2d704147c646134a1a0e9ec1629bd8174c5a1398ac5db809a0da9a1abae5e9",
+  "catalogSha256": "a9cdd02897633b4ca71ee5d27f06da9ad9c5955ec20838428a9016f5e177fde9",
   "nativeSpeakerReviewed": false,
   "messages": {
     "app.title": "nonlinguistic",
@@ -3674,7 +3674,9 @@
     "karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS": "assistant-semantic-review-2026-11-09",
     "karaokeUi.selectTrustedPEMCertificate": "assistant-semantic-review-2026-11-09",
     "podcasts.syncConsent": "assistant-semantic-review-2026-11-09",
-    "podcasts.syncPrivacy": "assistant-semantic-review-2026-11-09"
+    "podcasts.syncPrivacy": "assistant-semantic-review-2026-11-09",
+    "karaokeUi.practiceMetronomeTitle": "assistant-generated-draft",
+    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft"
   },
   "beforeIndependentQaCorrection": {
     "accessibility.reduceMotionHint": "m2m100-draft",

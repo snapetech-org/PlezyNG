@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$fa extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'هر بخش به زمان شروع و پایان معتبر نیاز دارد.';
 	@override String get listenToGuideTrack => 'شنیدن قطعه راهنما';
 	@override String get countInOnPracticeLoops => 'شمارش هنگام شروع دوبارهٔ حلقهٔ تمرین';
+	@override String get practiceMetronomeTitle => 'مترونوم تمرین';
+	@override String get practiceMetronomeHelp => 'هنگام پخش حلقهٔ تمرین، در هر ضرب یک کلیک پخش می‌کند. از BPM ذخیره‌شده و سرعت پخش استفاده می‌کند؛ هنگام ضبط با میکروفون مکث می‌کند. تنظیمات صدای دستگاه ممکن است صدای کلیک را قطع کند.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsFa {
 			'karaokeUi.invalidLyricSpanTiming' => 'هر بخش به زمان شروع و پایان معتبر نیاز دارد.',
 			'karaokeUi.listenToGuideTrack' => 'شنیدن قطعه راهنما',
 			'karaokeUi.countInOnPracticeLoops' => 'شمارش هنگام شروع دوبارهٔ حلقهٔ تمرین',
+			'karaokeUi.practiceMetronomeTitle' => 'مترونوم تمرین',
+			'karaokeUi.practiceMetronomeHelp' => 'هنگام پخش حلقهٔ تمرین، در هر ضرب یک کلیک پخش می‌کند. از BPM ذخیره‌شده و سرعت پخش استفاده می‌کند؛ هنگام ضبط با میکروفون مکث می‌کند. تنظیمات صدای دستگاه ممکن است صدای کلیک را قطع کند.',
 			'musicExperience.title' => 'کشف موسیقی',
 			'musicExperience.mix' => 'ساخت میکس',
 			'musicExperience.adventure' => 'ماجراجویی صوتی',
@@ -9668,10 +9672,10 @@ extension on TranslationsFa {
 			'musicTools.continueStation' => 'ادامهٔ پخش این ایستگاه',
 			'musicDevices.playOn' => 'پخش در',
 			'musicDevices.thisDevice' => 'این دستگاه',
-			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',
-			'musicDevices.remembered' => 'دستگاه‌های ذخیره‌شده',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',
+			'musicDevices.remembered' => 'دستگاه‌های ذخیره‌شده',
 			'musicDevices.forget' => 'فراموش کردن دستگاه',
 			'musicDevices.receive' => 'اجازه پخش در این دستگاه',
 			'musicDevices.receiverHint' => 'برای دریافت موسیقی Pleazyng را باز نگه دارید. با این کد یک بار جفت‌سازی کنید.',

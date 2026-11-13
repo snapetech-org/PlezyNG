@@ -5470,7 +5470,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Đếm ngược khi vòng lặp luyện tập bắt đầu lại"
+    "countInOnPracticeLoops": "Đếm ngược khi vòng lặp luyện tập bắt đầu lại",
+    "practiceMetronomeTitle": "Máy đếm nhịp luyện tập",
+    "practiceMetronomeHelp": "Phát tiếng tích tắc theo từng phách khi vòng lặp luyện tập đang phát. Dùng BPM và tốc độ phát đã lưu; tạm dừng khi thu âm bằng micrô. Cài đặt âm thanh của thiết bị có thể khiến tiếng tích tắc không nghe được."
   },
   "musicExperience": {
     "title": "Khám phá âm nhạc",

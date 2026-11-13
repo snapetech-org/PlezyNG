@@ -5470,7 +5470,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Hitung mundur saat putaran latihan dimulai ulang"
+    "countInOnPracticeLoops": "Hitung mundur saat putaran latihan dimulai ulang",
+    "practiceMetronomeTitle": "Metronom latihan",
+    "practiceMetronomeHelp": "Mengeluarkan bunyi klik pada setiap ketukan saat loop latihan diputar. Menggunakan BPM dan kecepatan pemutaran yang tersimpan; dijeda saat mikrofon merekam. Setelan suara perangkat mungkin membuat bunyi klik tidak terdengar."
   },
   "musicExperience": {
     "title": "Jelajahi musik",

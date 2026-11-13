@@ -4285,6 +4285,8 @@ class _Translations$karaokeUi$ja extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => '各区間に有効な開始時刻と終了時刻が必要です。';
 	@override String get listenToGuideTrack => 'ガイドトラックを聴く';
 	@override String get countInOnPracticeLoops => '練習ループの再開時にカウントイン';
+	@override String get practiceMetronomeTitle => '練習用メトロノーム';
+	@override String get practiceMetronomeHelp => '練習ループの再生中、各拍でクリック音が鳴ります。保存済みのBPMと再生速度を使い、マイク録音中は一時停止します。端末のサウンド設定によってはクリック音が聞こえない場合があります。';
 }
 
 // Path: musicExperience
@@ -9548,6 +9550,8 @@ extension on TranslationsJa {
 			'karaokeUi.invalidLyricSpanTiming' => '各区間に有効な開始時刻と終了時刻が必要です。',
 			'karaokeUi.listenToGuideTrack' => 'ガイドトラックを聴く',
 			'karaokeUi.countInOnPracticeLoops' => '練習ループの再開時にカウントイン',
+			'karaokeUi.practiceMetronomeTitle' => '練習用メトロノーム',
+			'karaokeUi.practiceMetronomeHelp' => '練習ループの再生中、各拍でクリック音が鳴ります。保存済みのBPMと再生速度を使い、マイク録音中は一時停止します。端末のサウンド設定によってはクリック音が聞こえない場合があります。',
 			'musicExperience.title' => '音楽を探す',
 			'musicExperience.mix' => 'ミックス作成',
 			'musicExperience.adventure' => 'サウンドアドベンチャー',
@@ -9663,10 +9667,10 @@ extension on TranslationsJa {
 			'musicTools.continueStation' => 'このステーションを再生し続ける',
 			'musicDevices.playOn' => '再生先',
 			'musicDevices.thisDevice' => 'このデバイス',
-			'musicDevices.playingOn' => ({required Object device}) => '${device} で再生中',
-			'musicDevices.remembered' => '保存済みデバイス',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => '${device} で再生中',
+			'musicDevices.remembered' => '保存済みデバイス',
 			'musicDevices.forget' => 'デバイスを削除',
 			'musicDevices.receive' => 'このデバイスでの再生を許可',
 			'musicDevices.receiverHint' => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。',

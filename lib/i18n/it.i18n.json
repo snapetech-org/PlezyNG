@@ -5506,7 +5506,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Conto alla rovescia al riavvio del ciclo di esercitazione"
+    "countInOnPracticeLoops": "Conto alla rovescia al riavvio del ciclo di esercitazione",
+    "practiceMetronomeTitle": "Metronomo per esercitarsi",
+    "practiceMetronomeHelp": "Emette un clic a ogni battito mentre il loop di esercitazione è in riproduzione. Usa il BPM e la velocità di riproduzione salvati; si mette in pausa durante la registrazione con il microfono. Le impostazioni audio del dispositivo potrebbero rendere il clic impercettibile."
   },
   "musicExperience": {
     "title": "Scoperta musicale",

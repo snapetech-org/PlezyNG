@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "अभ्यास लूप दोबारा शुरू होने पर उलटी गिनती"
+    "countInOnPracticeLoops": "अभ्यास लूप दोबारा शुरू होने पर उलटी गिनती",
+    "practiceMetronomeTitle": "अभ्यास मेट्रोनोम",
+    "practiceMetronomeHelp": "अभ्यास लूप के चलने पर हर बीट पर क्लिक बजता है। यह सहेजे गए BPM और प्लेबैक गति का उपयोग करता है; माइक्रोफ़ोन से रिकॉर्डिंग के दौरान रुक जाता है। डिवाइस की ध्वनि सेटिंग के कारण क्लिक सुनाई नहीं दे सकता है।"
   },
   "musicExperience": {
     "title": "संगीत खोजें",

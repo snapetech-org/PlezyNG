@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$hu extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Minden szakasznak érvényes kezdő- és végidő kell.';
 	@override String get listenToGuideTrack => 'Vezérsáv meghallgatása';
 	@override String get countInOnPracticeLoops => 'Visszaszámlálás a gyakorló ciklus újraindításakor';
+	@override String get practiceMetronomeTitle => 'Gyakorló metronóm';
+	@override String get practiceMetronomeHelp => 'A gyakorló ciklus lejátszása közben minden ütésnél kattan. A mentett BPM-et és lejátszási sebességet használja; mikrofonos felvétel közben szünetel. Az eszköz hangbeállításai elnémíthatják a kattintást.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsHu {
 			'karaokeUi.invalidLyricSpanTiming' => 'Minden szakasznak érvényes kezdő- és végidő kell.',
 			'karaokeUi.listenToGuideTrack' => 'Vezérsáv meghallgatása',
 			'karaokeUi.countInOnPracticeLoops' => 'Visszaszámlálás a gyakorló ciklus újraindításakor',
+			'karaokeUi.practiceMetronomeTitle' => 'Gyakorló metronóm',
+			'karaokeUi.practiceMetronomeHelp' => 'A gyakorló ciklus lejátszása közben minden ütésnél kattan. A mentett BPM-et és lejátszási sebességet használja; mikrofonos felvétel közben szünetel. Az eszköz hangbeállításai elnémíthatják a kattintást.',
 			'musicExperience.title' => 'Zene felfedezése',
 			'musicExperience.mix' => 'Mixkészítő',
 			'musicExperience.adventure' => 'Hangzáskaland',
@@ -9668,10 +9672,10 @@ extension on TranslationsHu {
 			'musicTools.continueStation' => 'Az állomás lejátszásának folytatása',
 			'musicDevices.playOn' => 'Lejátszás itt',
 			'musicDevices.thisDevice' => 'Ez az eszköz',
-			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',
-			'musicDevices.remembered' => 'Megjegyzett eszközök',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',
+			'musicDevices.remembered' => 'Megjegyzett eszközök',
 			'musicDevices.forget' => 'Eszköz elfelejtése',
 			'musicDevices.receive' => 'Lejátszás engedélyezése ezen az eszközön',
 			'musicDevices.receiverHint' => 'Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.',

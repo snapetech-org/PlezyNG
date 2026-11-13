@@ -5545,7 +5545,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Odpočítávání při opakování cvičební smyčky"
+    "countInOnPracticeLoops": "Odpočítávání při opakování cvičební smyčky",
+    "practiceMetronomeTitle": "Metronom pro nácvik",
+    "practiceMetronomeHelp": "Při přehrávání cvičební smyčky zazní kliknutí na každou dobu. Používá uložené BPM a rychlost přehrávání; během nahrávání mikrofonem se pozastaví. Nastavení zvuku zařízení může kliknutí potlačit."
   },
   "musicExperience": {
     "title": "Objevování hudby",

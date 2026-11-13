@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Aftellen wanneer de oefenlus opnieuw start"
+    "countInOnPracticeLoops": "Aftellen wanneer de oefenlus opnieuw start",
+    "practiceMetronomeTitle": "Oefenmetronoom",
+    "practiceMetronomeHelp": "Tikt op elke tel terwijl de oefenlus wordt afgespeeld. Gebruikt de opgeslagen BPM en afspeelsnelheid en pauzeert tijdens microfoonopnamen. De geluidsinstellingen van het apparaat kunnen de tik onhoorbaar maken."
   },
   "musicExperience": {
     "title": "Muziek ontdekken",

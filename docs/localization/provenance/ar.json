@@ -1,7 +1,7 @@
 {
   "locale": "ar",
   "inherits": null,
-  "catalogSha256": "c6bce010035b16bd6b7b80bd625c290a8bc869e312bcb5dba23bfa1f02902fbc",
+  "catalogSha256": "1eeb4db06fd3609d28813e46e61e9e470bc724ebb99a0e0b3c763ab202fb130b",
   "nativeSpeakerReviewed": false,
   "messages": {
     "app.title": "nonlinguistic",
@@ -3649,7 +3649,9 @@
     "games.audioStereo": "english-fallback",
     "games.audioSurround51": "english-fallback",
     "games.streamAudio": "english-fallback",
-    "games.streamAudioHelp": "english-fallback"
+    "games.streamAudioHelp": "english-fallback",
+    "karaokeUi.practiceMetronomeTitle": "assistant-generated-draft",
+    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft"
   },
   "beforeIndependentQaCorrection": {
     "auth.localDataRecoveryRequired": "m2m100-draft",

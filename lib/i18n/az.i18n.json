@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Məşq dövrəsi yenidən başlayanda sayım"
+    "countInOnPracticeLoops": "Məşq dövrəsi yenidən başlayanda sayım",
+    "practiceMetronomeTitle": "Məşq metronomu",
+    "practiceMetronomeHelp": "Məşq dövrəsi oxunarkən hər vuruşda klik səsi çalır. Yadda saxlanmış BPM və oxutma sürətindən istifadə edir; mikrofonla səs yazılarkən fasilə verir. Cihazın səs parametrləri klik səsinin eşidilməsinə mane ola bilər."
   },
   "musicExperience": {
     "title": "Musiqi kəşfi",

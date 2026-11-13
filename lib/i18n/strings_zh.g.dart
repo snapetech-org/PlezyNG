@@ -4285,6 +4285,8 @@ class Translations$karaokeUi$zh extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => '每个片段都需要有效的开始和结束时间。';
 	@override String get listenToGuideTrack => '收听引导音轨';
 	@override String get countInOnPracticeLoops => '练习循环重新开始时倒数';
+	@override String get practiceMetronomeTitle => '练习节拍器';
+	@override String get practiceMetronomeHelp => '练习循环播放时，每拍都会发出节拍声。使用已保存的 BPM 和播放速度；麦克风录音时暂停。设备的声音设置可能会让节拍声听不见。';
 }
 
 // Path: musicExperience
@@ -9548,6 +9550,8 @@ extension on TranslationsZh {
 			'karaokeUi.invalidLyricSpanTiming' => '每个片段都需要有效的开始和结束时间。',
 			'karaokeUi.listenToGuideTrack' => '收听引导音轨',
 			'karaokeUi.countInOnPracticeLoops' => '练习循环重新开始时倒数',
+			'karaokeUi.practiceMetronomeTitle' => '练习节拍器',
+			'karaokeUi.practiceMetronomeHelp' => '练习循环播放时，每拍都会发出节拍声。使用已保存的 BPM 和播放速度；麦克风录音时暂停。设备的声音设置可能会让节拍声听不见。',
 			'musicExperience.title' => '发现音乐',
 			'musicExperience.mix' => '创建混音',
 			'musicExperience.adventure' => '声音之旅',
@@ -9663,10 +9667,10 @@ extension on TranslationsZh {
 			'musicTools.continueStation' => '继续播放此电台',
 			'musicDevices.playOn' => '播放设备',
 			'musicDevices.thisDevice' => '此设备',
-			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
-			'musicDevices.remembered' => '已保存的设备',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
+			'musicDevices.remembered' => '已保存的设备',
 			'musicDevices.forget' => '忘记设备',
 			'musicDevices.receive' => '允许在此设备上播放',
 			'musicDevices.receiverHint' => '保持 Pleazyng 打开以接收音乐。使用此代码配对一次。',

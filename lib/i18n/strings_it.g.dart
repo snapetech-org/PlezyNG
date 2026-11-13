@@ -4297,6 +4297,8 @@ class _Translations$karaokeUi$it extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Ogni segmento richiede tempi di inizio e fine validi.';
 	@override String get listenToGuideTrack => 'Ascolta la traccia guida';
 	@override String get countInOnPracticeLoops => 'Conto alla rovescia al riavvio del ciclo di esercitazione';
+	@override String get practiceMetronomeTitle => 'Metronomo per esercitarsi';
+	@override String get practiceMetronomeHelp => 'Emette un clic a ogni battito mentre il loop di esercitazione è in riproduzione. Usa il BPM e la velocità di riproduzione salvati; si mette in pausa durante la registrazione con il microfono. Le impostazioni audio del dispositivo potrebbero rendere il clic impercettibile.';
 }
 
 // Path: musicExperience
@@ -9560,6 +9562,8 @@ extension on TranslationsIt {
 			'karaokeUi.invalidLyricSpanTiming' => 'Ogni segmento richiede tempi di inizio e fine validi.',
 			'karaokeUi.listenToGuideTrack' => 'Ascolta la traccia guida',
 			'karaokeUi.countInOnPracticeLoops' => 'Conto alla rovescia al riavvio del ciclo di esercitazione',
+			'karaokeUi.practiceMetronomeTitle' => 'Metronomo per esercitarsi',
+			'karaokeUi.practiceMetronomeHelp' => 'Emette un clic a ogni battito mentre il loop di esercitazione è in riproduzione. Usa il BPM e la velocità di riproduzione salvati; si mette in pausa durante la registrazione con il microfono. Le impostazioni audio del dispositivo potrebbero rendere il clic impercettibile.',
 			'musicExperience.title' => 'Scoperta musicale',
 			'musicExperience.mix' => 'Crea mix',
 			'musicExperience.adventure' => 'Avventura sonora',
@@ -9675,10 +9679,10 @@ extension on TranslationsIt {
 			'musicTools.continueStation' => 'Continua a riprodurre questa stazione',
 			'musicDevices.playOn' => 'Riproduci su',
 			'musicDevices.thisDevice' => 'Questo dispositivo',
-			'musicDevices.playingOn' => ({required Object device}) => 'In riproduzione su ${device}',
-			'musicDevices.remembered' => 'Dispositivi salvati',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'In riproduzione su ${device}',
+			'musicDevices.remembered' => 'Dispositivi salvati',
 			'musicDevices.forget' => 'Dimentica dispositivo',
 			'musicDevices.receive' => 'Consenti la riproduzione su questo dispositivo',
 			'musicDevices.receiverHint' => 'Tieni Pleazyng aperto per ricevere musica. Associa una volta con questo codice.',

@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$sv extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Varje segment behöver giltiga start- och sluttider.';
 	@override String get listenToGuideTrack => 'Lyssna på guidspåret';
 	@override String get countInOnPracticeLoops => 'Nedräkning när övningsloopen startar om';
+	@override String get practiceMetronomeTitle => 'Övningsmetronom';
+	@override String get practiceMetronomeHelp => 'Ett klick hörs på varje slag medan övningsloopen spelas. Använder sparat BPM och uppspelningshastighet; pausas vid mikrofoninspelning. Enhetens ljudinställningar kan tysta klicket.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsSv {
 			'karaokeUi.invalidLyricSpanTiming' => 'Varje segment behöver giltiga start- och sluttider.',
 			'karaokeUi.listenToGuideTrack' => 'Lyssna på guidspåret',
 			'karaokeUi.countInOnPracticeLoops' => 'Nedräkning när övningsloopen startar om',
+			'karaokeUi.practiceMetronomeTitle' => 'Övningsmetronom',
+			'karaokeUi.practiceMetronomeHelp' => 'Ett klick hörs på varje slag medan övningsloopen spelas. Använder sparat BPM och uppspelningshastighet; pausas vid mikrofoninspelning. Enhetens ljudinställningar kan tysta klicket.',
 			'musicExperience.title' => 'Upptäck musik',
 			'musicExperience.mix' => 'Skapa mix',
 			'musicExperience.adventure' => 'Ljudäventyr',
@@ -9668,10 +9672,10 @@ extension on TranslationsSv {
 			'musicTools.continueStation' => 'Fortsätt spela den här stationen',
 			'musicDevices.playOn' => 'Spela på',
 			'musicDevices.thisDevice' => 'Den här enheten',
-			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',
-			'musicDevices.remembered' => 'Sparade enheter',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',
+			'musicDevices.remembered' => 'Sparade enheter',
 			'musicDevices.forget' => 'Glöm enhet',
 			'musicDevices.receive' => 'Tillåt uppspelning på den här enheten',
 			'musicDevices.receiverHint' => 'Håll Pleazyng öppet för att ta emot musik. Parkoppla en gång med den här koden.',

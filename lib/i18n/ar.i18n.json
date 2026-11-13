@@ -5605,7 +5605,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "العدّ التمهيدي عند إعادة بدء حلقة التدريب"
+    "countInOnPracticeLoops": "العدّ التمهيدي عند إعادة بدء حلقة التدريب",
+    "practiceMetronomeTitle": "مترونوم التدريب",
+    "practiceMetronomeHelp": "يصدر نقرة مع كل نبضة أثناء تشغيل حلقة التدريب. يستخدم قيمة BPM المحفوظة وسرعة التشغيل؛ ويتوقف مؤقتًا أثناء تسجيل الصوت بالميكروفون. قد تمنع إعدادات صوت الجهاز سماع النقرة."
   },
   "musicExperience": {
     "title": "اكتشاف الموسيقى",

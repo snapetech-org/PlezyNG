@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$nb extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Hvert segment må ha gyldige start- og sluttider.';
 	@override String get listenToGuideTrack => 'Lytt til guidensporet';
 	@override String get countInOnPracticeLoops => 'Nedtelling når øvingsløkken starter på nytt';
+	@override String get practiceMetronomeTitle => 'Øvingsmetronom';
+	@override String get practiceMetronomeHelp => 'Gir et klikk på hvert slag mens øvingsløkken spilles. Bruker lagret BPM og avspillingshastighet, og settes på pause under mikrofonopptak. Lydinnstillingene på enheten kan gjøre at klikket ikke høres.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsNb {
 			'karaokeUi.invalidLyricSpanTiming' => 'Hvert segment må ha gyldige start- og sluttider.',
 			'karaokeUi.listenToGuideTrack' => 'Lytt til guidensporet',
 			'karaokeUi.countInOnPracticeLoops' => 'Nedtelling når øvingsløkken starter på nytt',
+			'karaokeUi.practiceMetronomeTitle' => 'Øvingsmetronom',
+			'karaokeUi.practiceMetronomeHelp' => 'Gir et klikk på hvert slag mens øvingsløkken spilles. Bruker lagret BPM og avspillingshastighet, og settes på pause under mikrofonopptak. Lydinnstillingene på enheten kan gjøre at klikket ikke høres.',
 			'musicExperience.title' => 'Oppdag musikk',
 			'musicExperience.mix' => 'Lag miks',
 			'musicExperience.adventure' => 'Lydeventyr',
@@ -9668,10 +9672,10 @@ extension on TranslationsNb {
 			'musicTools.continueStation' => 'Fortsett å spille denne stasjonen',
 			'musicDevices.playOn' => 'Spill av på',
 			'musicDevices.thisDevice' => 'Denne enheten',
-			'musicDevices.playingOn' => ({required Object device}) => 'Spiller av på ${device}',
-			'musicDevices.remembered' => 'Lagrede enheter',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Spiller av på ${device}',
+			'musicDevices.remembered' => 'Lagrede enheter',
 			'musicDevices.forget' => 'Glem enhet',
 			'musicDevices.receive' => 'Tillat avspilling på denne enheten',
 			'musicDevices.receiverHint' => 'Hold Pleazyng åpen for å motta musikk. Koble sammen én gang med denne koden.',

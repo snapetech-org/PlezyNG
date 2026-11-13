@@ -5551,7 +5551,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Odliczanie przy ponownym uruchomieniu pętli ćwiczeniowej"
+    "countInOnPracticeLoops": "Odliczanie przy ponownym uruchomieniu pętli ćwiczeniowej",
+    "practiceMetronomeTitle": "Metronom do ćwiczeń",
+    "practiceMetronomeHelp": "Emituje kliknięcie przy każdym uderzeniu podczas odtwarzania pętli ćwiczeniowej. Korzysta z zapisanego BPM i szybkości odtwarzania; wstrzymuje działanie podczas nagrywania mikrofonem. Ustawienia dźwięku urządzenia mogą sprawić, że kliknięcie będzie niesłyszalne."
   },
   "musicExperience": {
     "title": "Odkrywaj muzykę",

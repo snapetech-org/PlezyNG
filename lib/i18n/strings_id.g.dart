@@ -4267,6 +4267,8 @@ class _Translations$karaokeUi$id extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Setiap rentang memerlukan waktu mulai dan akhir yang valid.';
 	@override String get listenToGuideTrack => 'Dengarkan trek panduan';
 	@override String get countInOnPracticeLoops => 'Hitung mundur saat putaran latihan dimulai ulang';
+	@override String get practiceMetronomeTitle => 'Metronom latihan';
+	@override String get practiceMetronomeHelp => 'Mengeluarkan bunyi klik pada setiap ketukan saat loop latihan diputar. Menggunakan BPM dan kecepatan pemutaran yang tersimpan; dijeda saat mikrofon merekam. Setelan suara perangkat mungkin membuat bunyi klik tidak terdengar.';
 }
 
 // Path: musicExperience
@@ -9528,6 +9530,8 @@ extension on TranslationsId {
 			'karaokeUi.invalidLyricSpanTiming' => 'Setiap rentang memerlukan waktu mulai dan akhir yang valid.',
 			'karaokeUi.listenToGuideTrack' => 'Dengarkan trek panduan',
 			'karaokeUi.countInOnPracticeLoops' => 'Hitung mundur saat putaran latihan dimulai ulang',
+			'karaokeUi.practiceMetronomeTitle' => 'Metronom latihan',
+			'karaokeUi.practiceMetronomeHelp' => 'Mengeluarkan bunyi klik pada setiap ketukan saat loop latihan diputar. Menggunakan BPM dan kecepatan pemutaran yang tersimpan; dijeda saat mikrofon merekam. Setelan suara perangkat mungkin membuat bunyi klik tidak terdengar.',
 			'musicExperience.title' => 'Jelajahi musik',
 			'musicExperience.mix' => 'Pembuat mix',
 			'musicExperience.adventure' => 'Petualangan suara',
@@ -9643,10 +9647,10 @@ extension on TranslationsId {
 			'musicTools.continueStation' => 'Terus putar stasiun ini',
 			'musicDevices.playOn' => 'Putar di',
 			'musicDevices.thisDevice' => 'Perangkat ini',
-			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',
-			'musicDevices.remembered' => 'Perangkat tersimpan',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',
+			'musicDevices.remembered' => 'Perangkat tersimpan',
 			'musicDevices.forget' => 'Lupakan perangkat',
 			'musicDevices.receive' => 'Izinkan pemutaran di perangkat ini',
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.',

@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "অনুশীলনের লুপ পুনরায় শুরু হলে গণনা"
+    "countInOnPracticeLoops": "অনুশীলনের লুপ পুনরায় শুরু হলে গণনা",
+    "practiceMetronomeTitle": "অনুশীলনের মেট্রোনোম",
+    "practiceMetronomeHelp": "অনুশীলনের লুপ চলার সময় প্রতিটি বিটে ক্লিকের শব্দ হয়। সংরক্ষিত BPM ও প্লেব্যাকের গতি ব্যবহার করে; মাইক্রোফোনে রেকর্ড করার সময় থেমে যায়। ডিভাইসের সাউন্ড সেটিংসের কারণে ক্লিকের শব্দ নাও শোনা যেতে পারে।"
   },
   "musicExperience": {
     "title": "সংগীত আবিষ্কার",

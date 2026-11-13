@@ -4285,6 +4285,8 @@ class _Translations$karaokeUi$ko extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => '각 구간에는 올바른 시작 및 종료 시간이 필요합니다.';
 	@override String get listenToGuideTrack => '가이드 트랙 듣기';
 	@override String get countInOnPracticeLoops => '연습 구간이 다시 시작될 때 카운트인';
+	@override String get practiceMetronomeTitle => '연습용 메트로놈';
+	@override String get practiceMetronomeHelp => '연습 루프가 재생되는 동안 매 박자마다 클릭음을 냅니다. 저장된 BPM과 재생 속도를 사용하며, 마이크 녹음 중에는 일시 정지됩니다. 기기의 사운드 설정에 따라 클릭음이 들리지 않을 수 있습니다.';
 }
 
 // Path: musicExperience
@@ -9548,6 +9550,8 @@ extension on TranslationsKo {
 			'karaokeUi.invalidLyricSpanTiming' => '각 구간에는 올바른 시작 및 종료 시간이 필요합니다.',
 			'karaokeUi.listenToGuideTrack' => '가이드 트랙 듣기',
 			'karaokeUi.countInOnPracticeLoops' => '연습 구간이 다시 시작될 때 카운트인',
+			'karaokeUi.practiceMetronomeTitle' => '연습용 메트로놈',
+			'karaokeUi.practiceMetronomeHelp' => '연습 루프가 재생되는 동안 매 박자마다 클릭음을 냅니다. 저장된 BPM과 재생 속도를 사용하며, 마이크 녹음 중에는 일시 정지됩니다. 기기의 사운드 설정에 따라 클릭음이 들리지 않을 수 있습니다.',
 			'musicExperience.title' => '음악 둘러보기',
 			'musicExperience.mix' => '믹스 만들기',
 			'musicExperience.adventure' => '사운드 어드벤처',
@@ -9663,10 +9667,10 @@ extension on TranslationsKo {
 			'musicTools.continueStation' => '이 스테이션 계속 재생',
 			'musicDevices.playOn' => '재생 기기',
 			'musicDevices.thisDevice' => '이 기기',
-			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',
-			'musicDevices.remembered' => '저장된 기기',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',
+			'musicDevices.remembered' => '저장된 기기',
 			'musicDevices.forget' => '기기 삭제',
 			'musicDevices.receive' => '이 기기에서 재생 허용',
 			'musicDevices.receiverHint' => '음악을 받으려면 Pleazyng을 열어 두세요. 이 코드로 한 번 페어링하세요.',

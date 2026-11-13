@@ -5506,7 +5506,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Contagem antes de reiniciar o ciclo de prática"
+    "countInOnPracticeLoops": "Contagem antes de reiniciar o ciclo de prática",
+    "practiceMetronomeTitle": "Metrónomo de prática",
+    "practiceMetronomeHelp": "Emite um clique em cada batida enquanto o ciclo de prática é reproduzido. Usa o BPM e a velocidade de reprodução guardados; pausa durante a captação pelo microfone. As definições de som do dispositivo podem impedir que se ouça o clique."
   },
   "musicExperience": {
     "title": "Descoberta musical",

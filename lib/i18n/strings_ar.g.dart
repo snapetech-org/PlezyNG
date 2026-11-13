@@ -4382,6 +4382,8 @@ class _Translations$karaokeUi$ar extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'يحتاج كل جزء إلى وقتي بدء ونهاية صالحين.';
 	@override String get listenToGuideTrack => 'استمع إلى المسار الإرشادي';
 	@override String get countInOnPracticeLoops => 'العدّ التمهيدي عند إعادة بدء حلقة التدريب';
+	@override String get practiceMetronomeTitle => 'مترونوم التدريب';
+	@override String get practiceMetronomeHelp => 'يصدر نقرة مع كل نبضة أثناء تشغيل حلقة التدريب. يستخدم قيمة BPM المحفوظة وسرعة التشغيل؛ ويتوقف مؤقتًا أثناء تسجيل الصوت بالميكروفون. قد تمنع إعدادات صوت الجهاز سماع النقرة.';
 }
 
 // Path: musicExperience
@@ -9653,6 +9655,8 @@ extension on TranslationsAr {
 			'karaokeUi.invalidLyricSpanTiming' => 'يحتاج كل جزء إلى وقتي بدء ونهاية صالحين.',
 			'karaokeUi.listenToGuideTrack' => 'استمع إلى المسار الإرشادي',
 			'karaokeUi.countInOnPracticeLoops' => 'العدّ التمهيدي عند إعادة بدء حلقة التدريب',
+			'karaokeUi.practiceMetronomeTitle' => 'مترونوم التدريب',
+			'karaokeUi.practiceMetronomeHelp' => 'يصدر نقرة مع كل نبضة أثناء تشغيل حلقة التدريب. يستخدم قيمة BPM المحفوظة وسرعة التشغيل؛ ويتوقف مؤقتًا أثناء تسجيل الصوت بالميكروفون. قد تمنع إعدادات صوت الجهاز سماع النقرة.',
 			'musicExperience.title' => 'اكتشاف الموسيقى',
 			'musicExperience.mix' => 'إنشاء مزيج',
 			'musicExperience.adventure' => 'رحلة صوتية',
@@ -9768,10 +9772,10 @@ extension on TranslationsAr {
 			'musicTools.continueStation' => 'متابعة تشغيل هذه المحطة',
 			'musicDevices.playOn' => 'التشغيل على',
 			'musicDevices.thisDevice' => 'هذا الجهاز',
-			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',
-			'musicDevices.remembered' => 'الأجهزة المحفوظة',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',
+			'musicDevices.remembered' => 'الأجهزة المحفوظة',
 			'musicDevices.forget' => 'نسيان الجهاز',
 			'musicDevices.receive' => 'السماح بالتشغيل على هذا الجهاز',
 			'musicDevices.receiverHint' => 'أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.',

@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Nedtelling når øvingsløkken starter på nytt"
+    "countInOnPracticeLoops": "Nedtelling når øvingsløkken starter på nytt",
+    "practiceMetronomeTitle": "Øvingsmetronom",
+    "practiceMetronomeHelp": "Gir et klikk på hvert slag mens øvingsløkken spilles. Bruker lagret BPM og avspillingshastighet, og settes på pause under mikrofonopptak. Lydinnstillingene på enheten kan gjøre at klikket ikke høres."
   },
   "musicExperience": {
     "title": "Oppdag musikk",

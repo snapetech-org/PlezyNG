@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$bg extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Всеки откъс изисква валидни времена за начало и край.';
 	@override String get listenToGuideTrack => 'Слушайте водещия запис';
 	@override String get countInOnPracticeLoops => 'Отброяване при рестартиране на тренировъчния цикъл';
+	@override String get practiceMetronomeTitle => 'Метроном за упражнение';
+	@override String get practiceMetronomeHelp => 'Издава щракване на всеки удар, докато се възпроизвежда тренировъчният цикъл. Използва запазените BPM и скорост на възпроизвеждане; поставя се на пауза по време на запис с микрофона. Звуковите настройки на устройството може да заглушат щракването.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsBg {
 			'karaokeUi.invalidLyricSpanTiming' => 'Всеки откъс изисква валидни времена за начало и край.',
 			'karaokeUi.listenToGuideTrack' => 'Слушайте водещия запис',
 			'karaokeUi.countInOnPracticeLoops' => 'Отброяване при рестартиране на тренировъчния цикъл',
+			'karaokeUi.practiceMetronomeTitle' => 'Метроном за упражнение',
+			'karaokeUi.practiceMetronomeHelp' => 'Издава щракване на всеки удар, докато се възпроизвежда тренировъчният цикъл. Използва запазените BPM и скорост на възпроизвеждане; поставя се на пауза по време на запис с микрофона. Звуковите настройки на устройството може да заглушат щракването.',
 			'musicExperience.title' => 'Откриване на музика',
 			'musicExperience.mix' => 'Създаване на микс',
 			'musicExperience.adventure' => 'Звуково пътешествие',
@@ -9668,10 +9672,10 @@ extension on TranslationsBg {
 			'musicTools.continueStation' => 'Продължаване на възпроизвеждането на тази станция',
 			'musicDevices.playOn' => 'Възпроизвеждане на',
 			'musicDevices.thisDevice' => 'Това устройство',
-			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',
-			'musicDevices.remembered' => 'Запомнени устройства',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',
+			'musicDevices.remembered' => 'Запомнени устройства',
 			'musicDevices.forget' => 'Забравяне на устройството',
 			'musicDevices.receive' => 'Разрешаване на възпроизвеждане на това устройство',
 			'musicDevices.receiverHint' => 'Оставете Pleazyng отворен, за да получава музика. Сдвоете веднъж с този код.',

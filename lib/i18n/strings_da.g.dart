@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$da extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Hvert segment skal have gyldige start- og sluttider.';
 	@override String get listenToGuideTrack => 'Lyt til guidesporet';
 	@override String get countInOnPracticeLoops => 'Nedtælling, når øvelsessløjfen starter igen';
+	@override String get practiceMetronomeTitle => 'Øvemetronom';
+	@override String get practiceMetronomeHelp => 'Giver et klik for hvert slag, mens øvelsessløjfen afspilles. Bruger gemt BPM og afspilningshastighed; sættes på pause under mikrofonoptagelse. Enhedens lydindstillinger kan undertrykke klikket.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsDa {
 			'karaokeUi.invalidLyricSpanTiming' => 'Hvert segment skal have gyldige start- og sluttider.',
 			'karaokeUi.listenToGuideTrack' => 'Lyt til guidesporet',
 			'karaokeUi.countInOnPracticeLoops' => 'Nedtælling, når øvelsessløjfen starter igen',
+			'karaokeUi.practiceMetronomeTitle' => 'Øvemetronom',
+			'karaokeUi.practiceMetronomeHelp' => 'Giver et klik for hvert slag, mens øvelsessløjfen afspilles. Bruger gemt BPM og afspilningshastighed; sættes på pause under mikrofonoptagelse. Enhedens lydindstillinger kan undertrykke klikket.',
 			'musicExperience.title' => 'Opdag musik',
 			'musicExperience.mix' => 'Lav et mix',
 			'musicExperience.adventure' => 'Lydeventyr',
@@ -9668,10 +9672,10 @@ extension on TranslationsDa {
 			'musicTools.continueStation' => 'Fortsæt med at afspille denne station',
 			'musicDevices.playOn' => 'Afspil på',
 			'musicDevices.thisDevice' => 'Denne enhed',
-			'musicDevices.playingOn' => ({required Object device}) => 'Afspiller på ${device}',
-			'musicDevices.remembered' => 'Huskede enheder',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Afspiller på ${device}',
+			'musicDevices.remembered' => 'Huskede enheder',
 			'musicDevices.forget' => 'Glem enhed',
 			'musicDevices.receive' => 'Tillad afspilning på denne enhed',
 			'musicDevices.receiverHint' => 'Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.',

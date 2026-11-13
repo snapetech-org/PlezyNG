@@ -4267,6 +4267,8 @@ class _Translations$karaokeUi$th extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'แต่ละช่วงต้องมีเวลาเริ่มและสิ้นสุดที่ถูกต้อง';
 	@override String get listenToGuideTrack => 'ฟังแทร็กนำทาง';
 	@override String get countInOnPracticeLoops => 'นับจังหวะก่อนเริ่มวนฝึกซ้ำ';
+	@override String get practiceMetronomeTitle => 'เมโทรนอมสำหรับฝึกซ้อม';
+	@override String get practiceMetronomeHelp => 'เมโทรนอมจะเคาะทุกจังหวะขณะเล่นวนซ้อม โดยใช้ BPM และความเร็วการเล่นที่บันทึกไว้ และจะหยุดชั่วคราวขณะบันทึกเสียงจากไมโครโฟน การตั้งค่าเสียงของอุปกรณ์อาจทำให้ไม่ได้ยินเสียงเคาะ';
 }
 
 // Path: musicExperience
@@ -9528,6 +9530,8 @@ extension on TranslationsTh {
 			'karaokeUi.invalidLyricSpanTiming' => 'แต่ละช่วงต้องมีเวลาเริ่มและสิ้นสุดที่ถูกต้อง',
 			'karaokeUi.listenToGuideTrack' => 'ฟังแทร็กนำทาง',
 			'karaokeUi.countInOnPracticeLoops' => 'นับจังหวะก่อนเริ่มวนฝึกซ้ำ',
+			'karaokeUi.practiceMetronomeTitle' => 'เมโทรนอมสำหรับฝึกซ้อม',
+			'karaokeUi.practiceMetronomeHelp' => 'เมโทรนอมจะเคาะทุกจังหวะขณะเล่นวนซ้อม โดยใช้ BPM และความเร็วการเล่นที่บันทึกไว้ และจะหยุดชั่วคราวขณะบันทึกเสียงจากไมโครโฟน การตั้งค่าเสียงของอุปกรณ์อาจทำให้ไม่ได้ยินเสียงเคาะ',
 			'musicExperience.title' => 'ค้นพบเพลง',
 			'musicExperience.mix' => 'สร้างมิกซ์',
 			'musicExperience.adventure' => 'การเดินทางแห่งเสียง',
@@ -9643,10 +9647,10 @@ extension on TranslationsTh {
 			'musicTools.continueStation' => 'เล่นสถานีนี้ต่อไป',
 			'musicDevices.playOn' => 'เล่นบน',
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
-			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',
-			'musicDevices.remembered' => 'อุปกรณ์ที่บันทึกไว้',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',
+			'musicDevices.remembered' => 'อุปกรณ์ที่บันทึกไว้',
 			'musicDevices.forget' => 'ลืมอุปกรณ์',
 			'musicDevices.receive' => 'อนุญาตให้เล่นบนอุปกรณ์นี้',
 			'musicDevices.receiverHint' => 'เปิด Pleazyng ไว้เพื่อรับเพลง จับคู่ครั้งเดียวด้วยรหัสนี้',

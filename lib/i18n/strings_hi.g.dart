@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$hi extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'हर खंड के आरंभ और अंत का समय मान्य होना चाहिए।';
 	@override String get listenToGuideTrack => 'गाइड ट्रैक सुनें';
 	@override String get countInOnPracticeLoops => 'अभ्यास लूप दोबारा शुरू होने पर उलटी गिनती';
+	@override String get practiceMetronomeTitle => 'अभ्यास मेट्रोनोम';
+	@override String get practiceMetronomeHelp => 'अभ्यास लूप के चलने पर हर बीट पर क्लिक बजता है। यह सहेजे गए BPM और प्लेबैक गति का उपयोग करता है; माइक्रोफ़ोन से रिकॉर्डिंग के दौरान रुक जाता है। डिवाइस की ध्वनि सेटिंग के कारण क्लिक सुनाई नहीं दे सकता है।';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsHi {
 			'karaokeUi.invalidLyricSpanTiming' => 'हर खंड के आरंभ और अंत का समय मान्य होना चाहिए।',
 			'karaokeUi.listenToGuideTrack' => 'गाइड ट्रैक सुनें',
 			'karaokeUi.countInOnPracticeLoops' => 'अभ्यास लूप दोबारा शुरू होने पर उलटी गिनती',
+			'karaokeUi.practiceMetronomeTitle' => 'अभ्यास मेट्रोनोम',
+			'karaokeUi.practiceMetronomeHelp' => 'अभ्यास लूप के चलने पर हर बीट पर क्लिक बजता है। यह सहेजे गए BPM और प्लेबैक गति का उपयोग करता है; माइक्रोफ़ोन से रिकॉर्डिंग के दौरान रुक जाता है। डिवाइस की ध्वनि सेटिंग के कारण क्लिक सुनाई नहीं दे सकता है।',
 			'musicExperience.title' => 'संगीत खोजें',
 			'musicExperience.mix' => 'मिक्स बनाएँ',
 			'musicExperience.adventure' => 'ध्वनि यात्रा',
@@ -9668,10 +9672,10 @@ extension on TranslationsHi {
 			'musicTools.continueStation' => 'इस स्टेशन को चलाते रहें',
 			'musicDevices.playOn' => 'इस पर चलाएँ',
 			'musicDevices.thisDevice' => 'यह डिवाइस',
-			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',
-			'musicDevices.remembered' => 'सहेजे गए डिवाइस',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',
+			'musicDevices.remembered' => 'सहेजे गए डिवाइस',
 			'musicDevices.forget' => 'डिवाइस भूलें',
 			'musicDevices.receive' => 'इस डिवाइस पर प्लेबैक की अनुमति दें',
 			'musicDevices.receiverHint' => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।',

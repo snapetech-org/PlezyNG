@@ -5470,7 +5470,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "นับจังหวะก่อนเริ่มวนฝึกซ้ำ"
+    "countInOnPracticeLoops": "นับจังหวะก่อนเริ่มวนฝึกซ้ำ",
+    "practiceMetronomeTitle": "เมโทรนอมสำหรับฝึกซ้อม",
+    "practiceMetronomeHelp": "เมโทรนอมจะเคาะทุกจังหวะขณะเล่นวนซ้อม โดยใช้ BPM และความเร็วการเล่นที่บันทึกไว้ และจะหยุดชั่วคราวขณะบันทึกเสียงจากไมโครโฟน การตั้งค่าเสียงของอุปกรณ์อาจทำให้ไม่ได้ยินเสียงเคาะ"
   },
   "musicExperience": {
     "title": "ค้นพบเพลง",

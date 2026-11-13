@@ -4298,6 +4298,8 @@ class _Translations$karaokeUi$he extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'כל מקטע דורש זמני התחלה וסיום תקינים.';
 	@override String get listenToGuideTrack => 'האזנה לרצועת ההנחיה';
 	@override String get countInOnPracticeLoops => 'ספירה לאחור בהפעלה מחדש של לולאת התרגול';
+	@override String get practiceMetronomeTitle => 'מטרונום לתרגול';
+	@override String get practiceMetronomeHelp => 'משמיע נקישה בכל פעמה בזמן שהלולאה לתרגול מתנגנת. משתמש ב‑BPM ובמהירות ההפעלה השמורים; מושהה בזמן הקלטה מהמיקרופון. הגדרות הצליל במכשיר עשויות להשתיק את הנקישה.';
 }
 
 // Path: musicExperience
@@ -9561,6 +9563,8 @@ extension on TranslationsHe {
 			'karaokeUi.invalidLyricSpanTiming' => 'כל מקטע דורש זמני התחלה וסיום תקינים.',
 			'karaokeUi.listenToGuideTrack' => 'האזנה לרצועת ההנחיה',
 			'karaokeUi.countInOnPracticeLoops' => 'ספירה לאחור בהפעלה מחדש של לולאת התרגול',
+			'karaokeUi.practiceMetronomeTitle' => 'מטרונום לתרגול',
+			'karaokeUi.practiceMetronomeHelp' => 'משמיע נקישה בכל פעמה בזמן שהלולאה לתרגול מתנגנת. משתמש ב‑BPM ובמהירות ההפעלה השמורים; מושהה בזמן הקלטה מהמיקרופון. הגדרות הצליל במכשיר עשויות להשתיק את הנקישה.',
 			'musicExperience.title' => 'גילוי מוזיקה',
 			'musicExperience.mix' => 'יצירת מיקס',
 			'musicExperience.adventure' => 'מסע קולי',
@@ -9676,10 +9680,10 @@ extension on TranslationsHe {
 			'musicTools.continueStation' => 'המשך לנגן תחנה זו',
 			'musicDevices.playOn' => 'ניגון באמצעות',
 			'musicDevices.thisDevice' => 'מכשיר זה',
-			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',
-			'musicDevices.remembered' => 'מכשירים שמורים',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',
+			'musicDevices.remembered' => 'מכשירים שמורים',
 			'musicDevices.forget' => 'שכח מכשיר',
 			'musicDevices.receive' => 'אפשר ניגון במכשיר זה',
 			'musicDevices.receiverHint' => 'השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.',

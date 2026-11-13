@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Visszaszámlálás a gyakorló ciklus újraindításakor"
+    "countInOnPracticeLoops": "Visszaszámlálás a gyakorló ciklus újraindításakor",
+    "practiceMetronomeTitle": "Gyakorló metronóm",
+    "practiceMetronomeHelp": "A gyakorló ciklus lejátszása közben minden ütésnél kattan. A mentett BPM-et és lejátszási sebességet használja; mikrofonos felvétel közben szünetel. Az eszköz hangbeállításai elnémíthatják a kattintást."
   },
   "musicExperience": {
     "title": "Zene felfedezése",

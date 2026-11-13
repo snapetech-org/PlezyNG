@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Çalışma döngüsü yeniden başladığında geri sayım"
+    "countInOnPracticeLoops": "Çalışma döngüsü yeniden başladığında geri sayım",
+    "practiceMetronomeTitle": "Alıştırma metronomu",
+    "practiceMetronomeHelp": "Alıştırma döngüsü çalarken her vuruşta bir klik sesi duyulur. Kaydedilmiş BPM ve çalma hızı kullanılır; mikrofon kaydı sırasında duraklatılır. Cihazın ses ayarları klik sesini bastırabilir."
   },
   "musicExperience": {
     "title": "Müzik keşfi",

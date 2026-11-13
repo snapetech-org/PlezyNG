@@ -4267,6 +4267,8 @@ class _Translations$karaokeUi$ms extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Setiap bahagian memerlukan masa mula dan tamat yang sah.';
 	@override String get listenToGuideTrack => 'Dengar trek panduan';
 	@override String get countInOnPracticeLoops => 'Kira detik apabila gelung latihan dimulakan semula';
+	@override String get practiceMetronomeTitle => 'Metronom latihan';
+	@override String get practiceMetronomeHelp => 'Menghasilkan bunyi klik pada setiap rentak semasa gelung latihan dimainkan. Menggunakan BPM dan kelajuan main balik yang disimpan; dijeda semasa rakaman mikrofon. Tetapan bunyi peranti mungkin menyebabkan klik tidak kedengaran.';
 }
 
 // Path: musicExperience
@@ -9528,6 +9530,8 @@ extension on TranslationsMs {
 			'karaokeUi.invalidLyricSpanTiming' => 'Setiap bahagian memerlukan masa mula dan tamat yang sah.',
 			'karaokeUi.listenToGuideTrack' => 'Dengar trek panduan',
 			'karaokeUi.countInOnPracticeLoops' => 'Kira detik apabila gelung latihan dimulakan semula',
+			'karaokeUi.practiceMetronomeTitle' => 'Metronom latihan',
+			'karaokeUi.practiceMetronomeHelp' => 'Menghasilkan bunyi klik pada setiap rentak semasa gelung latihan dimainkan. Menggunakan BPM dan kelajuan main balik yang disimpan; dijeda semasa rakaman mikrofon. Tetapan bunyi peranti mungkin menyebabkan klik tidak kedengaran.',
 			'musicExperience.title' => 'Terokai muzik',
 			'musicExperience.mix' => 'Pembina campuran',
 			'musicExperience.adventure' => 'Pengembaraan bunyi',
@@ -9643,10 +9647,10 @@ extension on TranslationsMs {
 			'musicTools.continueStation' => 'Teruskan memainkan stesen ini',
 			'musicDevices.playOn' => 'Mainkan pada',
 			'musicDevices.thisDevice' => 'Peranti ini',
-			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',
-			'musicDevices.remembered' => 'Peranti disimpan',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',
+			'musicDevices.remembered' => 'Peranti disimpan',
 			'musicDevices.forget' => 'Lupakan peranti',
 			'musicDevices.receive' => 'Benarkan main balik pada peranti ini',
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.',

@@ -4332,6 +4332,8 @@ class _Translations$karaokeUi$cs extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Každý úsek potřebuje platný začátek a konec.';
 	@override String get listenToGuideTrack => 'Přehrát vodicí stopu';
 	@override String get countInOnPracticeLoops => 'Odpočítávání při opakování cvičební smyčky';
+	@override String get practiceMetronomeTitle => 'Metronom pro nácvik';
+	@override String get practiceMetronomeHelp => 'Při přehrávání cvičební smyčky zazní kliknutí na každou dobu. Používá uložené BPM a rychlost přehrávání; během nahrávání mikrofonem se pozastaví. Nastavení zvuku zařízení může kliknutí potlačit.';
 }
 
 // Path: musicExperience
@@ -9597,6 +9599,8 @@ extension on TranslationsCs {
 			'karaokeUi.invalidLyricSpanTiming' => 'Každý úsek potřebuje platný začátek a konec.',
 			'karaokeUi.listenToGuideTrack' => 'Přehrát vodicí stopu',
 			'karaokeUi.countInOnPracticeLoops' => 'Odpočítávání při opakování cvičební smyčky',
+			'karaokeUi.practiceMetronomeTitle' => 'Metronom pro nácvik',
+			'karaokeUi.practiceMetronomeHelp' => 'Při přehrávání cvičební smyčky zazní kliknutí na každou dobu. Používá uložené BPM a rychlost přehrávání; během nahrávání mikrofonem se pozastaví. Nastavení zvuku zařízení může kliknutí potlačit.',
 			'musicExperience.title' => 'Objevování hudby',
 			'musicExperience.mix' => 'Tvorba mixu',
 			'musicExperience.adventure' => 'Zvukové dobrodružství',
@@ -9712,10 +9716,10 @@ extension on TranslationsCs {
 			'musicTools.continueStation' => 'Pokračovat v přehrávání této stanice',
 			'musicDevices.playOn' => 'Přehrávat na',
 			'musicDevices.thisDevice' => 'Toto zařízení',
-			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',
-			'musicDevices.remembered' => 'Zapamatovaná zařízení',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',
+			'musicDevices.remembered' => 'Zapamatovaná zařízení',
 			'musicDevices.forget' => 'Zapomenout zařízení',
 			'musicDevices.receive' => 'Povolit přehrávání na tomto zařízení',
 			'musicDevices.receiverHint' => 'Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.',

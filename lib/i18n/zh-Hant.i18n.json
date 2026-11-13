@@ -5492,7 +5492,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "練習循環重新開始時倒數"
+    "countInOnPracticeLoops": "練習循環重新開始時倒數",
+    "practiceMetronomeTitle": "練習節拍器",
+    "practiceMetronomeHelp": "練習循環播放時，每拍都會發出節拍聲。使用已儲存的 BPM 和播放速度；麥克風錄音時暫停。裝置的音效設定可能會讓節拍聲聽不見。"
   },
   "musicExperience": {
     "title": "探索音樂",

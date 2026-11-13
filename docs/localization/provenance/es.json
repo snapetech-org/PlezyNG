@@ -1,7 +1,7 @@
 {
   "locale": "es",
   "inherits": null,
-  "catalogSha256": "04327f9da17cd7536124e0414682643114f8ecaaf2b4158d615e7eb61c24e7c5",
+  "catalogSha256": "8c9422c115e78732a8190863d9db00edaba6d4dac4e2c21520f62c6f9d5cc419",
   "nativeSpeakerReviewed": false,
   "messages": {
     "app.title": "nonlinguistic",
@@ -3747,7 +3747,9 @@
     "discover.findNext.aiSaved": "assistant-semantic-review-2026-11-09",
     "discover.findNext.aiSavedKey": "assistant-semantic-review-2026-11-09",
     "discover.findNext.availability": "assistant-semantic-review-2026-11-09",
-    "discover.findNext.availabilityNotChecked": "assistant-semantic-review-2026-11-09"
+    "discover.findNext.availabilityNotChecked": "assistant-semantic-review-2026-11-09",
+    "karaokeUi.practiceMetronomeTitle": "assistant-generated-draft",
+    "karaokeUi.practiceMetronomeHelp": "assistant-generated-draft"
   },
   "beforeIndependentQaCorrection": {
     "accessibility.reduceMotionHint": "m2m100-draft",

@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$nl extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Elk segment heeft geldige begin- en eindtijden nodig.';
 	@override String get listenToGuideTrack => 'Gidsspoor beluisteren';
 	@override String get countInOnPracticeLoops => 'Aftellen wanneer de oefenlus opnieuw start';
+	@override String get practiceMetronomeTitle => 'Oefenmetronoom';
+	@override String get practiceMetronomeHelp => 'Tikt op elke tel terwijl de oefenlus wordt afgespeeld. Gebruikt de opgeslagen BPM en afspeelsnelheid en pauzeert tijdens microfoonopnamen. De geluidsinstellingen van het apparaat kunnen de tik onhoorbaar maken.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsNl {
 			'karaokeUi.invalidLyricSpanTiming' => 'Elk segment heeft geldige begin- en eindtijden nodig.',
 			'karaokeUi.listenToGuideTrack' => 'Gidsspoor beluisteren',
 			'karaokeUi.countInOnPracticeLoops' => 'Aftellen wanneer de oefenlus opnieuw start',
+			'karaokeUi.practiceMetronomeTitle' => 'Oefenmetronoom',
+			'karaokeUi.practiceMetronomeHelp' => 'Tikt op elke tel terwijl de oefenlus wordt afgespeeld. Gebruikt de opgeslagen BPM en afspeelsnelheid en pauzeert tijdens microfoonopnamen. De geluidsinstellingen van het apparaat kunnen de tik onhoorbaar maken.',
 			'musicExperience.title' => 'Muziek ontdekken',
 			'musicExperience.mix' => 'Mix maken',
 			'musicExperience.adventure' => 'Klankavontuur',
@@ -9668,10 +9672,10 @@ extension on TranslationsNl {
 			'musicTools.continueStation' => 'Dit station blijven afspelen',
 			'musicDevices.playOn' => 'Afspelen op',
 			'musicDevices.thisDevice' => 'Dit apparaat',
-			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',
-			'musicDevices.remembered' => 'Onthouden apparaten',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Wordt afgespeeld op ${device}',
+			'musicDevices.remembered' => 'Onthouden apparaten',
 			'musicDevices.forget' => 'Apparaat vergeten',
 			'musicDevices.receive' => 'Afspelen op dit apparaat toestaan',
 			'musicDevices.receiverHint' => 'Houd Pleazyng geopend om muziek te ontvangen. Koppel één keer met deze code.',

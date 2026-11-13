@@ -4297,6 +4297,8 @@ class Translations$karaokeUi$pt extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Cada trecho precisa de tempos de início e fim válidos.';
 	@override String get listenToGuideTrack => 'Ouvir faixa guia';
 	@override String get countInOnPracticeLoops => 'Contagem antes de reiniciar o ciclo de prática';
+	@override String get practiceMetronomeTitle => 'Metrónomo de prática';
+	@override String get practiceMetronomeHelp => 'Emite um clique em cada batida enquanto o ciclo de prática é reproduzido. Usa o BPM e a velocidade de reprodução guardados; pausa durante a captação pelo microfone. As definições de som do dispositivo podem impedir que se ouça o clique.';
 }
 
 // Path: musicExperience
@@ -9560,6 +9562,8 @@ extension on TranslationsPt {
 			'karaokeUi.invalidLyricSpanTiming' => 'Cada trecho precisa de tempos de início e fim válidos.',
 			'karaokeUi.listenToGuideTrack' => 'Ouvir faixa guia',
 			'karaokeUi.countInOnPracticeLoops' => 'Contagem antes de reiniciar o ciclo de prática',
+			'karaokeUi.practiceMetronomeTitle' => 'Metrónomo de prática',
+			'karaokeUi.practiceMetronomeHelp' => 'Emite um clique em cada batida enquanto o ciclo de prática é reproduzido. Usa o BPM e a velocidade de reprodução guardados; pausa durante a captação pelo microfone. As definições de som do dispositivo podem impedir que se ouça o clique.',
 			'musicExperience.title' => 'Descoberta musical',
 			'musicExperience.mix' => 'Criador de misturas',
 			'musicExperience.adventure' => 'Aventura sonora',
@@ -9675,10 +9679,10 @@ extension on TranslationsPt {
 			'musicTools.continueStation' => 'Continuar a reproduzir esta estação',
 			'musicDevices.playOn' => 'Reproduzir em',
 			'musicDevices.thisDevice' => 'Este dispositivo',
-			'musicDevices.playingOn' => ({required Object device}) => 'A reproduzir em ${device}',
-			'musicDevices.remembered' => 'Dispositivos guardados',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'A reproduzir em ${device}',
+			'musicDevices.remembered' => 'Dispositivos guardados',
 			'musicDevices.forget' => 'Esquecer dispositivo',
 			'musicDevices.receive' => 'Permitir reprodução neste dispositivo',
 			'musicDevices.receiverHint' => 'Mantenha o Pleazyng aberto para receber música. Emparelhe uma vez com este código.',

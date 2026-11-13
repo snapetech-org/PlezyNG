@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$kk extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Әр бөліктің басталу және аяқталу уақыты жарамды болуы керек.';
 	@override String get listenToGuideTrack => 'Бағыттаушы жолды тыңдау';
 	@override String get countInOnPracticeLoops => 'Жаттығу циклі қайта басталғанда кері санау';
+	@override String get practiceMetronomeTitle => 'Жаттығу метрономы';
+	@override String get practiceMetronomeHelp => 'Жаттығу циклі ойналғанда әр соққыда шерту дыбысын шығарады. Сақталған BPM мен ойнату жылдамдығын қолданады; микрофонмен жазу кезінде кідіртіледі. Құрылғының дыбыс параметрлері шерту дыбысын естіртпеуі мүмкін.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsKk {
 			'karaokeUi.invalidLyricSpanTiming' => 'Әр бөліктің басталу және аяқталу уақыты жарамды болуы керек.',
 			'karaokeUi.listenToGuideTrack' => 'Бағыттаушы жолды тыңдау',
 			'karaokeUi.countInOnPracticeLoops' => 'Жаттығу циклі қайта басталғанда кері санау',
+			'karaokeUi.practiceMetronomeTitle' => 'Жаттығу метрономы',
+			'karaokeUi.practiceMetronomeHelp' => 'Жаттығу циклі ойналғанда әр соққыда шерту дыбысын шығарады. Сақталған BPM мен ойнату жылдамдығын қолданады; микрофонмен жазу кезінде кідіртіледі. Құрылғының дыбыс параметрлері шерту дыбысын естіртпеуі мүмкін.',
 			'musicExperience.title' => 'Музыка іздеу',
 			'musicExperience.mix' => 'Микс жасау',
 			'musicExperience.adventure' => 'Дыбыстық саяхат',
@@ -9668,10 +9672,10 @@ extension on TranslationsKk {
 			'musicTools.continueStation' => 'Осы станцияны ойнатуды жалғастыру',
 			'musicDevices.playOn' => 'Ойнату құрылғысы',
 			'musicDevices.thisDevice' => 'Осы құрылғы',
-			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',
-			'musicDevices.remembered' => 'Сақталған құрылғылар',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',
+			'musicDevices.remembered' => 'Сақталған құрылғылар',
 			'musicDevices.forget' => 'Құрылғыны ұмыту',
 			'musicDevices.receive' => 'Осы құрылғыда ойнатуға рұқсат беру',
 			'musicDevices.receiverHint' => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.',

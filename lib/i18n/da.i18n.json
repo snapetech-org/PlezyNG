@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Nedtælling, når øvelsessløjfen starter igen"
+    "countInOnPracticeLoops": "Nedtælling, når øvelsessløjfen starter igen",
+    "practiceMetronomeTitle": "Øvemetronom",
+    "practiceMetronomeHelp": "Giver et klik for hvert slag, mens øvelsessløjfen afspilles. Bruger gemt BPM og afspilningshastighed; sættes på pause under mikrofonoptagelse. Enhedens lydindstillinger kan undertrykke klikket."
   },
   "musicExperience": {
     "title": "Opdag musik",

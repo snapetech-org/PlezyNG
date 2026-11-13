@@ -76,13 +76,16 @@ limits for those drafts.
 
 Steam connected-experience, service-integration, cross-media discovery,
 cloud-sync privacy, Trakt export, host-stage karaoke analysis, karaoke
-microphone/performance and phone-capture, practice-metronome, A-B count-in tick,
+microphone/performance and phone-capture, A-B count-in tick,
 K23 trim/skip, audiobook bedtime, karaoke show-template, comic archive password, subtitle
 WAV transcript reuse/cache disclosure, and retired publication-copy management
 messages currently use the documented
 English fallback for non-English catalogs until reviewed translations are available. They are listed in
 `lib/i18n/english_fallbacks.json`; this fallback is not a claim of translation
-or native-speaker review.
+or native-speaker review. The practice-metronome title and guidance have
+assistant-generated drafts in all 32 non-English base locales; no independent
+or native-speaker review is claimed. Regional locales inherit from their
+language-only parent.
 
 `sources.json` records source blob identifiers, model provenance and licenses.
 `translation-provenance.json` records message origins and review status;

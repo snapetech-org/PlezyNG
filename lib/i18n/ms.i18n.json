@@ -5470,7 +5470,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Kira detik apabila gelung latihan dimulakan semula"
+    "countInOnPracticeLoops": "Kira detik apabila gelung latihan dimulakan semula",
+    "practiceMetronomeTitle": "Metronom latihan",
+    "practiceMetronomeHelp": "Menghasilkan bunyi klik pada setiap rentak semasa gelung latihan dimainkan. Menggunakan BPM dan kelajuan main balik yang disimpan; dijeda semasa rakaman mikrofon. Tetapan bunyi peranti mungkin menyebabkan klik tidak kedengaran."
   },
   "musicExperience": {
     "title": "Terokai muzik",

@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "شمارش هنگام شروع دوبارهٔ حلقهٔ تمرین"
+    "countInOnPracticeLoops": "شمارش هنگام شروع دوبارهٔ حلقهٔ تمرین",
+    "practiceMetronomeTitle": "مترونوم تمرین",
+    "practiceMetronomeHelp": "هنگام پخش حلقهٔ تمرین، در هر ضرب یک کلیک پخش می‌کند. از BPM ذخیره‌شده و سرعت پخش استفاده می‌کند؛ هنگام ضبط با میکروفون مکث می‌کند. تنظیمات صدای دستگاه ممکن است صدای کلیک را قطع کند."
   },
   "musicExperience": {
     "title": "کشف موسیقی",

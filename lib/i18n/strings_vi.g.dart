@@ -4267,6 +4267,8 @@ class _Translations$karaokeUi$vi extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Mỗi đoạn cần thời điểm bắt đầu và kết thúc hợp lệ.';
 	@override String get listenToGuideTrack => 'Nghe bản nhạc hướng dẫn';
 	@override String get countInOnPracticeLoops => 'Đếm ngược khi vòng lặp luyện tập bắt đầu lại';
+	@override String get practiceMetronomeTitle => 'Máy đếm nhịp luyện tập';
+	@override String get practiceMetronomeHelp => 'Phát tiếng tích tắc theo từng phách khi vòng lặp luyện tập đang phát. Dùng BPM và tốc độ phát đã lưu; tạm dừng khi thu âm bằng micrô. Cài đặt âm thanh của thiết bị có thể khiến tiếng tích tắc không nghe được.';
 }
 
 // Path: musicExperience
@@ -9528,6 +9530,8 @@ extension on TranslationsVi {
 			'karaokeUi.invalidLyricSpanTiming' => 'Mỗi đoạn cần thời điểm bắt đầu và kết thúc hợp lệ.',
 			'karaokeUi.listenToGuideTrack' => 'Nghe bản nhạc hướng dẫn',
 			'karaokeUi.countInOnPracticeLoops' => 'Đếm ngược khi vòng lặp luyện tập bắt đầu lại',
+			'karaokeUi.practiceMetronomeTitle' => 'Máy đếm nhịp luyện tập',
+			'karaokeUi.practiceMetronomeHelp' => 'Phát tiếng tích tắc theo từng phách khi vòng lặp luyện tập đang phát. Dùng BPM và tốc độ phát đã lưu; tạm dừng khi thu âm bằng micrô. Cài đặt âm thanh của thiết bị có thể khiến tiếng tích tắc không nghe được.',
 			'musicExperience.title' => 'Khám phá âm nhạc',
 			'musicExperience.mix' => 'Tạo bản phối',
 			'musicExperience.adventure' => 'Hành trình âm thanh',
@@ -9643,10 +9647,10 @@ extension on TranslationsVi {
 			'musicTools.continueStation' => 'Tiếp tục phát đài này',
 			'musicDevices.playOn' => 'Phát trên',
 			'musicDevices.thisDevice' => 'Thiết bị này',
-			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',
-			'musicDevices.remembered' => 'Thiết bị đã lưu',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',
+			'musicDevices.remembered' => 'Thiết bị đã lưu',
 			'musicDevices.forget' => 'Quên thiết bị',
 			'musicDevices.receive' => 'Cho phép phát trên thiết bị này',
 			'musicDevices.receiverHint' => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.',

@@ -5507,7 +5507,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "ספירה לאחור בהפעלה מחדש של לולאת התרגול"
+    "countInOnPracticeLoops": "ספירה לאחור בהפעלה מחדש של לולאת התרגול",
+    "practiceMetronomeTitle": "מטרונום לתרגול",
+    "practiceMetronomeHelp": "משמיע נקישה בכל פעמה בזמן שהלולאה לתרגול מתנגנת. משתמש ב‑BPM ובמהירות ההפעלה השמורים; מושהה בזמן הקלטה מהמיקרופון. הגדרות הצליל במכשיר עשויות להשתיק את הנקישה."
   },
   "musicExperience": {
     "title": "גילוי מוזיקה",

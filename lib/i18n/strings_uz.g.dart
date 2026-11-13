@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$uz extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Har bir qism uchun to‘g‘ri boshlanish va tugash vaqti kerak.';
 	@override String get listenToGuideTrack => 'Yo‘riqnoma trekini tinglash';
 	@override String get countInOnPracticeLoops => 'Mashq sikli qayta boshlanganda teskari sanoq';
+	@override String get practiceMetronomeTitle => 'Mashq metronomi';
+	@override String get practiceMetronomeHelp => 'Mashq sikli ijro etilayotganda har bir zarbda metronom tovushi eshitiladi. Saqlangan BPM va ijro tezligidan foydalanadi; mikrofon orqali yozish paytida pauza qiladi. Qurilmaning ovoz sozlamalari bu tovushni o‘chirib qo‘yishi mumkin.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsUz {
 			'karaokeUi.invalidLyricSpanTiming' => 'Har bir qism uchun to‘g‘ri boshlanish va tugash vaqti kerak.',
 			'karaokeUi.listenToGuideTrack' => 'Yo‘riqnoma trekini tinglash',
 			'karaokeUi.countInOnPracticeLoops' => 'Mashq sikli qayta boshlanganda teskari sanoq',
+			'karaokeUi.practiceMetronomeTitle' => 'Mashq metronomi',
+			'karaokeUi.practiceMetronomeHelp' => 'Mashq sikli ijro etilayotganda har bir zarbda metronom tovushi eshitiladi. Saqlangan BPM va ijro tezligidan foydalanadi; mikrofon orqali yozish paytida pauza qiladi. Qurilmaning ovoz sozlamalari bu tovushni o‘chirib qo‘yishi mumkin.',
 			'musicExperience.title' => 'Musiqa kashf etish',
 			'musicExperience.mix' => 'Miks yaratish',
 			'musicExperience.adventure' => 'Ovozli sayohat',
@@ -9668,10 +9672,10 @@ extension on TranslationsUz {
 			'musicTools.continueStation' => 'Bu stansiyani ijro etishda davom etish',
 			'musicDevices.playOn' => 'Shu qurilmada ijro etish',
 			'musicDevices.thisDevice' => 'Bu qurilma',
-			'musicDevices.playingOn' => ({required Object device}) => '${device} qurilmasida ijro etilmoqda',
-			'musicDevices.remembered' => 'Saqlangan qurilmalar',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => '${device} qurilmasida ijro etilmoqda',
+			'musicDevices.remembered' => 'Saqlangan qurilmalar',
 			'musicDevices.forget' => 'Qurilmani unutish',
 			'musicDevices.receive' => 'Bu qurilmada ijroga ruxsat berish',
 			'musicDevices.receiverHint' => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.',

@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$bn extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'প্রতিটি অংশের বৈধ শুরু ও শেষের সময় প্রয়োজন।';
 	@override String get listenToGuideTrack => 'গাইড ট্র্যাক শুনুন';
 	@override String get countInOnPracticeLoops => 'অনুশীলনের লুপ পুনরায় শুরু হলে গণনা';
+	@override String get practiceMetronomeTitle => 'অনুশীলনের মেট্রোনোম';
+	@override String get practiceMetronomeHelp => 'অনুশীলনের লুপ চলার সময় প্রতিটি বিটে ক্লিকের শব্দ হয়। সংরক্ষিত BPM ও প্লেব্যাকের গতি ব্যবহার করে; মাইক্রোফোনে রেকর্ড করার সময় থেমে যায়। ডিভাইসের সাউন্ড সেটিংসের কারণে ক্লিকের শব্দ নাও শোনা যেতে পারে।';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsBn {
 			'karaokeUi.invalidLyricSpanTiming' => 'প্রতিটি অংশের বৈধ শুরু ও শেষের সময় প্রয়োজন।',
 			'karaokeUi.listenToGuideTrack' => 'গাইড ট্র্যাক শুনুন',
 			'karaokeUi.countInOnPracticeLoops' => 'অনুশীলনের লুপ পুনরায় শুরু হলে গণনা',
+			'karaokeUi.practiceMetronomeTitle' => 'অনুশীলনের মেট্রোনোম',
+			'karaokeUi.practiceMetronomeHelp' => 'অনুশীলনের লুপ চলার সময় প্রতিটি বিটে ক্লিকের শব্দ হয়। সংরক্ষিত BPM ও প্লেব্যাকের গতি ব্যবহার করে; মাইক্রোফোনে রেকর্ড করার সময় থেমে যায়। ডিভাইসের সাউন্ড সেটিংসের কারণে ক্লিকের শব্দ নাও শোনা যেতে পারে।',
 			'musicExperience.title' => 'সংগীত আবিষ্কার',
 			'musicExperience.mix' => 'মিক্স তৈরি',
 			'musicExperience.adventure' => 'ধ্বনি যাত্রা',
@@ -9668,10 +9672,10 @@ extension on TranslationsBn {
 			'musicTools.continueStation' => 'এই স্টেশন চালানো চালিয়ে যান',
 			'musicDevices.playOn' => 'এখানে চালান',
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
-			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',
-			'musicDevices.remembered' => 'মনে রাখা ডিভাইস',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',
+			'musicDevices.remembered' => 'মনে রাখা ডিভাইস',
 			'musicDevices.forget' => 'ডিভাইস ভুলে যান',
 			'musicDevices.receive' => 'এই ডিভাইসে প্লেব্যাকের অনুমতি দিন',
 			'musicDevices.receiverHint' => 'গান গ্রহণ করতে Pleazyng খোলা রাখুন। এই কোড দিয়ে একবার জোড়া লাগান।',

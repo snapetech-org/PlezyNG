@@ -5492,7 +5492,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "練習ループの再開時にカウントイン"
+    "countInOnPracticeLoops": "練習ループの再開時にカウントイン",
+    "practiceMetronomeTitle": "練習用メトロノーム",
+    "practiceMetronomeHelp": "練習ループの再生中、各拍でクリック音が鳴ります。保存済みのBPMと再生速度を使い、マイク録音中は一時停止します。端末のサウンド設定によってはクリック音が聞こえない場合があります。"
   },
   "musicExperience": {
     "title": "音楽を探す",

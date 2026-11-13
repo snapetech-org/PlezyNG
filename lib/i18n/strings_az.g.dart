@@ -4290,6 +4290,8 @@ class _Translations$karaokeUi$az extends Translations$karaokeUi$en {
 	@override String get invalidLyricSpanTiming => 'Hər hissənin etibarlı başlanğıc və bitmə vaxtı olmalıdır.';
 	@override String get listenToGuideTrack => 'Bələdçi treki dinlə';
 	@override String get countInOnPracticeLoops => 'Məşq dövrəsi yenidən başlayanda sayım';
+	@override String get practiceMetronomeTitle => 'Məşq metronomu';
+	@override String get practiceMetronomeHelp => 'Məşq dövrəsi oxunarkən hər vuruşda klik səsi çalır. Yadda saxlanmış BPM və oxutma sürətindən istifadə edir; mikrofonla səs yazılarkən fasilə verir. Cihazın səs parametrləri klik səsinin eşidilməsinə mane ola bilər.';
 }
 
 // Path: musicExperience
@@ -9553,6 +9555,8 @@ extension on TranslationsAz {
 			'karaokeUi.invalidLyricSpanTiming' => 'Hər hissənin etibarlı başlanğıc və bitmə vaxtı olmalıdır.',
 			'karaokeUi.listenToGuideTrack' => 'Bələdçi treki dinlə',
 			'karaokeUi.countInOnPracticeLoops' => 'Məşq dövrəsi yenidən başlayanda sayım',
+			'karaokeUi.practiceMetronomeTitle' => 'Məşq metronomu',
+			'karaokeUi.practiceMetronomeHelp' => 'Məşq dövrəsi oxunarkən hər vuruşda klik səsi çalır. Yadda saxlanmış BPM və oxutma sürətindən istifadə edir; mikrofonla səs yazılarkən fasilə verir. Cihazın səs parametrləri klik səsinin eşidilməsinə mane ola bilər.',
 			'musicExperience.title' => 'Musiqi kəşfi',
 			'musicExperience.mix' => 'Miks yarat',
 			'musicExperience.adventure' => 'Səs səyahəti',
@@ -9668,10 +9672,10 @@ extension on TranslationsAz {
 			'musicTools.continueStation' => 'Bu stansiyanı səsləndirməyə davam et',
 			'musicDevices.playOn' => 'Burada səsləndir',
 			'musicDevices.thisDevice' => 'Bu cihaz',
-			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',
-			'musicDevices.remembered' => 'Yadda saxlanmış cihazlar',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',
+			'musicDevices.remembered' => 'Yadda saxlanmış cihazlar',
 			'musicDevices.forget' => 'Cihazı unut',
 			'musicDevices.receive' => 'Bu cihazda səsləndirməyə icazə ver',
 			'musicDevices.receiverHint' => 'Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.',

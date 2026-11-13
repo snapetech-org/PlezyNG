@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Mashq sikli qayta boshlanganda teskari sanoq"
+    "countInOnPracticeLoops": "Mashq sikli qayta boshlanganda teskari sanoq",
+    "practiceMetronomeTitle": "Mashq metronomi",
+    "practiceMetronomeHelp": "Mashq sikli ijro etilayotganda har bir zarbda metronom tovushi eshitiladi. Saqlangan BPM va ijro tezligidan foydalanadi; mikrofon orqali yozish paytida pauza qiladi. Qurilmaning ovoz sozlamalari bu tovushni o‘chirib qo‘yishi mumkin."
   },
   "musicExperience": {
     "title": "Musiqa kashf etish",

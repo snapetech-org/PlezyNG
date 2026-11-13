@@ -4286,6 +4286,8 @@ class _Translations$karaokeUi$zh_Hant extends Translations$karaokeUi$zh {
 	@override String get invalidLyricSpanTiming => '每個片段都需要有效的開始和結束時間。';
 	@override String get listenToGuideTrack => '聆聽引導音軌';
 	@override String get countInOnPracticeLoops => '練習循環重新開始時倒數';
+	@override String get practiceMetronomeTitle => '練習節拍器';
+	@override String get practiceMetronomeHelp => '練習循環播放時，每拍都會發出節拍聲。使用已儲存的 BPM 和播放速度；麥克風錄音時暫停。裝置的音效設定可能會讓節拍聲聽不見。';
 }
 
 // Path: musicExperience
@@ -9549,6 +9551,8 @@ extension on TranslationsZhHant {
 			'karaokeUi.invalidLyricSpanTiming' => '每個片段都需要有效的開始和結束時間。',
 			'karaokeUi.listenToGuideTrack' => '聆聽引導音軌',
 			'karaokeUi.countInOnPracticeLoops' => '練習循環重新開始時倒數',
+			'karaokeUi.practiceMetronomeTitle' => '練習節拍器',
+			'karaokeUi.practiceMetronomeHelp' => '練習循環播放時，每拍都會發出節拍聲。使用已儲存的 BPM 和播放速度；麥克風錄音時暫停。裝置的音效設定可能會讓節拍聲聽不見。',
 			'musicExperience.title' => '探索音樂',
 			'musicExperience.mix' => '建立混音',
 			'musicExperience.adventure' => '聲音之旅',
@@ -9664,10 +9668,10 @@ extension on TranslationsZhHant {
 			'musicTools.continueStation' => '繼續播放此電台',
 			'musicDevices.playOn' => '播放裝置',
 			'musicDevices.thisDevice' => '此裝置',
-			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
-			'musicDevices.remembered' => '已儲存的裝置',
 			_ => null,
 		} ?? switch (path) {
+			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
+			'musicDevices.remembered' => '已儲存的裝置',
 			'musicDevices.forget' => '忘記裝置',
 			'musicDevices.receive' => '允許在此裝置上播放',
 			'musicDevices.receiverHint' => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。',

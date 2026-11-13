@@ -5497,7 +5497,9 @@
     "hostUnlock": "",
     "chooseYourSingerName": "",
     "searchSongs": "",
-    "countInOnPracticeLoops": "Nedräkning när övningsloopen startar om"
+    "countInOnPracticeLoops": "Nedräkning när övningsloopen startar om",
+    "practiceMetronomeTitle": "Övningsmetronom",
+    "practiceMetronomeHelp": "Ett klick hörs på varje slag medan övningsloopen spelas. Använder sparat BPM och uppspelningshastighet; pausas vid mikrofoninspelning. Enhetens ljudinställningar kan tysta klicket."
   },
   "musicExperience": {
     "title": "Upptäck musik",

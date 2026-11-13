@@ -1812,12 +1812,30 @@ static stbi__uint16 stbi__compute_y_16(int r, int g, int b)
 static stbi__uint16 *stbi__convert_format16(stbi__uint16 *data, int img_n, int req_comp, unsigned int x, unsigned int y)
 {
    int i,j;
+   int row_size;
+   int pixel_count;
+   int allocation_size;
    stbi__uint16 *good;
 
    if (req_comp == img_n) return data;
-   STBI_ASSERT(req_comp >= 1 && req_comp <= 4);
+   if (req_comp < 1 || req_comp > 4 || x == 0 || y == 0 || x > INT_MAX || y > INT_MAX ||
+       !stbi__mul2sizes_valid(req_comp, (int)x)) {
+      STBI_FREE(data);
+      return (stbi__uint16 *) stbi__errpuc("too large", "Image too large to convert");
+   }
 
-   good = (stbi__uint16 *) stbi__malloc(req_comp * x * y * 2);
+   row_size = req_comp * (int)x;
+   if (!stbi__mul2sizes_valid(row_size, (int)y)) {
+      STBI_FREE(data);
+      return (stbi__uint16 *) stbi__errpuc("too large", "Image too large to convert");
+   }
+   pixel_count = row_size * (int)y;
+   if (!stbi__mul2sizes_valid(pixel_count, (int)sizeof(stbi__uint16))) {
+      STBI_FREE(data);
+      return (stbi__uint16 *) stbi__errpuc("too large", "Image too large to convert");
+   }
+   allocation_size = pixel_count * (int)sizeof(stbi__uint16);
+   good = (stbi__uint16 *) stbi__malloc(allocation_size);
    if (good == NULL) {
       STBI_FREE(data);
       return (stbi__uint16 *) stbi__errpuc("outofmem", "Out of memory");
@@ -6837,7 +6855,7 @@ static stbi_uc *stbi__gif_load_next(stbi__context *s, stbi__gif *g, int *comp, i
    }
 
    // clear my history;
-   memset( g->history, 0x00, g->w * g->h );        // pixels that were affected previous frame
+   memset( g->history, 0x00, (size_t)pcount );     // pixels that were affected previous frame
 
    for (;;) {
       int tag = stbi__get8(s);
@@ -6987,11 +7005,18 @@ static void *stbi__load_gif_main(stbi__context *s, int **delays, int *x, int *y,
          if (u) {
             *x = g.w;
             *y = g.h;
+            if (layers == INT_MAX) {
+               return stbi__load_gif_main_outofmem(&g, out, delays);
+            }
             ++layers;
             stride = g.w * g.h * 4;
+            if (!stbi__mul2sizes_valid(layers, stride) ||
+                !stbi__mul2sizes_valid(layers, (int)sizeof(int))) {
+               return stbi__load_gif_main_outofmem(&g, out, delays);
+            }
 
             if (out) {
-               void *tmp = (stbi_uc*) STBI_REALLOC_SIZED( out, out_size, layers * stride );
+               void *tmp = (stbi_uc*) STBI_REALLOC_SIZED( out, out_size, (size_t)layers * (size_t)stride );
                if (!tmp)
                   return stbi__load_gif_main_outofmem(&g, out, delays);
                else {
@@ -7007,7 +7032,7 @@ static void *stbi__load_gif_main(stbi__context *s, int **delays, int *x, int *y,
                   delays_size = layers * sizeof(int);
                }
             } else {
-               out = (stbi_uc*)stbi__malloc( layers * stride );
+               out = (stbi_uc*)stbi__malloc( (size_t)layers * (size_t)stride );
                if (!out)
                   return stbi__load_gif_main_outofmem(&g, out, delays);
                out_size = layers * stride;

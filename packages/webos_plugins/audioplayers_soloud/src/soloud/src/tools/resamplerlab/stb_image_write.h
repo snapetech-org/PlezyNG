@@ -102,6 +102,7 @@ extern int stbi_write_hdr(char const *filename, int w, int h, int comp, const fl
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <limits.h>
 
 #if defined(STBIW_MALLOC) && defined(STBIW_FREE) && defined(STBIW_REALLOC)
 // ok
@@ -391,25 +392,45 @@ int stbi_write_hdr(char const *filename, int x, int y, int comp, const float *da
 #define stbiw__sbm(a)   stbiw__sbraw(a)[0]
 #define stbiw__sbn(a)   stbiw__sbraw(a)[1]
 
-#define stbiw__sbneedgrow(a,n)  ((a)==0 || stbiw__sbn(a)+n >= stbiw__sbm(a))
-#define stbiw__sbmaybegrow(a,n) (stbiw__sbneedgrow(a,(n)) ? stbiw__sbgrow(a,n) : 0)
+#define stbiw__sbneedgrow(a,n)  ((a)==0 || stbiw__sbn(a) < 0 || (n) > INT_MAX - stbiw__sbn(a) || stbiw__sbn(a)+(n) >= stbiw__sbm(a))
 #define stbiw__sbgrow(a,n)  stbiw__sbgrowf((void **) &(a), (n), sizeof(*(a)))
 
-#define stbiw__sbpush(a, v)      (stbiw__sbmaybegrow(a,1), (a)[stbiw__sbn(a)++] = (v))
+#define stbiw__sbpush(a, v) do { \
+   if (stbiw__sbneedgrow((a), 1) && !stbiw__sbgrow((a), 1)) { \
+      stbiw__sbfree(a); \
+      (a) = NULL; \
+      return NULL; \
+   } \
+   (a)[stbiw__sbn(a)++] = (v); \
+} while (0)
 #define stbiw__sbcount(a)        ((a) ? stbiw__sbn(a) : 0)
 #define stbiw__sbfree(a)         ((a) ? STBIW_FREE(stbiw__sbraw(a)),0 : 0)
 
 static void *stbiw__sbgrowf(void **arr, int increment, int itemsize)
 {
-   int m = *arr ? 2*stbiw__sbm(*arr)+increment : increment+1;
-   void *p = STBIW_REALLOC(*arr ? stbiw__sbraw(*arr) : 0, itemsize * m + sizeof(int)*2);
+   int current = *arr ? stbiw__sbm(*arr) : 0;
+   int m;
+   size_t header_size = sizeof(int) * 2;
+   size_t allocation_size;
+   void *p;
+
+   if (increment < 0 || itemsize <= 0 || current < 0 ||
+       current > (INT_MAX - increment) / 2 || (!*arr && increment == INT_MAX)) {
+      return NULL;
+   }
+   m = *arr ? 2*current+increment : increment+1;
+   if ((size_t)itemsize > ((size_t)-1 - header_size) / (size_t)m) {
+      return NULL;
+   }
+   allocation_size = (size_t)itemsize * (size_t)m + header_size;
+   p = STBIW_REALLOC(*arr ? stbiw__sbraw(*arr) : 0, allocation_size);
    STBIW_ASSERT(p);
    if (p) {
       if (!*arr) ((int *) p)[1] = 0;
       *arr = (void *) ((int *) p + 2);
       stbiw__sbm(*arr) = m;
    }
-   return *arr;
+   return p ? *arr : NULL;
 }
 
 static unsigned char *stbiw__zlib_flushf(unsigned char *data, unsigned int *bitbuffer, int *bitcount)
@@ -607,13 +628,31 @@ unsigned char *stbi_write_png_to_mem(unsigned char *pixels, int stride_bytes, in
    unsigned char sig[8] = { 137,80,78,71,13,10,26,10 };
    unsigned char *out,*o, *filt, *zlib;
    signed char *line_buffer;
+   int row_size;
    int i,j,k,p,zlen;
+   size_t row_stride;
+   size_t filtered_size;
+   const int output_overhead = 57;
 
-   if (stride_bytes == 0)
-      stride_bytes = x * n;
+   if (pixels == NULL || out_len == NULL || x <= 0 || y <= 0 || n < 1 || n > 4 ||
+       x > (INT_MAX - 1) / n) {
+      return 0;
+   }
+   row_size = x * n;
+   row_stride = (size_t)row_size + 1;
+   if ((size_t)y > (size_t)INT_MAX / row_stride) {
+      return 0;
+   }
+   filtered_size = row_stride * (size_t)y;
+   if (stride_bytes == 0) {
+      stride_bytes = row_size;
+   }
+   if (stride_bytes < row_size || (size_t)stride_bytes > (size_t)-1 / (size_t)y) {
+      return 0;
+   }
 
-   filt = (unsigned char *) STBIW_MALLOC((x*n+1) * y); if (!filt) return 0;
-   line_buffer = (signed char *) STBIW_MALLOC(x * n); if (!line_buffer) { STBIW_FREE(filt); return 0; }
+   filt = (unsigned char *) STBIW_MALLOC(filtered_size); if (!filt) return 0;
+   line_buffer = (signed char *) STBIW_MALLOC((size_t)row_size); if (!line_buffer) { STBIW_FREE(filt); return 0; }
    for (j=0; j < y; ++j) {
       static int mapping[] = { 0,1,2,3,4 };
       static int firstmap[] = { 0,1,0,5,6 };
@@ -622,7 +661,7 @@ unsigned char *stbi_write_png_to_mem(unsigned char *pixels, int stride_bytes, in
       for (p=0; p < 2; ++p) {
          for (k= p?best:0; k < 5; ++k) {
             int type = mymap[k],est=0;
-            unsigned char *z = pixels + stride_bytes*j;
+            unsigned char *z = pixels + (size_t)stride_bytes * (size_t)j;
             for (i=0; i < n; ++i)
                switch (type) {
                   case 0: line_buffer[i] = z[i]; break;
@@ -633,7 +672,7 @@ unsigned char *stbi_write_png_to_mem(unsigned char *pixels, int stride_bytes, in
                   case 5: line_buffer[i] = z[i]; break;
                   case 6: line_buffer[i] = z[i]; break;
                }
-            for (i=n; i < x*n; ++i) {
+            for (i=n; i < row_size; ++i) {
                switch (type) {
                   case 0: line_buffer[i] = z[i]; break;
                   case 1: line_buffer[i] = z[i] - z[i-n]; break;
@@ -645,24 +684,25 @@ unsigned char *stbi_write_png_to_mem(unsigned char *pixels, int stride_bytes, in
                }
             }
             if (p) break;
-            for (i=0; i < x*n; ++i)
+            for (i=0; i < row_size; ++i)
                est += abs((signed char) line_buffer[i]);
             if (est < bestval) { bestval = est; best = k; }
          }
       }
       // when we get here, best contains the filter type, and line_buffer contains the data
-      filt[j*(x*n+1)] = (unsigned char) best;
-      STBIW_MEMMOVE(filt+j*(x*n+1)+1, line_buffer, x*n);
+      filt[(size_t)j*row_stride] = (unsigned char) best;
+      STBIW_MEMMOVE(filt+(size_t)j*row_stride+1, line_buffer, (size_t)row_size);
    }
    STBIW_FREE(line_buffer);
-   zlib = stbi_zlib_compress(filt, y*( x*n+1), &zlen, 8); // increase 8 to get smaller but use more memory
+   zlib = stbi_zlib_compress(filt, (int)filtered_size, &zlen, 8); // increase 8 to get smaller but use more memory
    STBIW_FREE(filt);
    if (!zlib) return 0;
+   if (zlen < 0 || zlen > INT_MAX - output_overhead) { STBIW_FREE(zlib); return 0; }
 
    // each tag requires 12 bytes of overhead
-   out = (unsigned char *) STBIW_MALLOC(8 + 12+13 + 12+zlen + 12);
+   out = (unsigned char *) STBIW_MALLOC((size_t)output_overhead + (size_t)zlen);
    if (!out) return 0;
-   *out_len = 8 + 12+13 + 12+zlen + 12;
+   *out_len = output_overhead + zlen;
 
    o=out;
    STBIW_MEMMOVE(o,sig,8); o+= 8;

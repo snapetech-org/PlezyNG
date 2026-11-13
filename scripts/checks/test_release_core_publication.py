@@ -179,6 +179,26 @@ class CorePublicationTests(unittest.TestCase):
             self.assertTrue(any(item["channel"] == "Amazon Appstore upload" for item in completed))
             self.assertTrue(all(call.args[2].get("channel") != "google-play" for call in dispatch.call_args_list))
 
+    def test_channel_summary_omits_configured_secret_names(self):
+        with patch.object(release, "release_metadata", return_value={"assets": [{"name": "SHA256SUMS.txt"}]}), \
+             patch.object(release, "configured_repo_names", return_value=set()), \
+             patch.object(release, "configured_repo_variables", return_value={}), \
+             patch.object(release, "play_publication_settings", return_value=("internal", "draft")), \
+             patch.object(release, "ensure_channel_run", return_value={"databaseId": 42, "url": "https://example.invalid/run"}):
+            _, skipped, _ = release.publish_configured_channels(
+                "v3.0.1", "3.0.1", release_sha="a" * 40, include_webos_release=False
+            )
+
+        summary = json.dumps(skipped)
+        self.assertIn("Required credentials or variables are not configured.", summary)
+        self.assertIn("optional mirror credentials are not configured", summary)
+        for secret_name in (
+            "GOOGLE_PLAY_SERVICE_ACCOUNT_JSON",
+            "AUR_SSH_KEY",
+            "DOCKERHUB_TOKEN",
+        ):
+            self.assertNotIn(secret_name, summary)
+
     def test_tooling_lookup_and_unexpected_followup_failure_preserve_published_core(self):
         for failure in ('lookup', 'followup'):
             with self.subTest(failure=failure), tempfile.TemporaryDirectory() as scratch, contextlib.ExitStack() as stack:

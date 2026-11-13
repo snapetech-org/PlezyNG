@@ -2553,12 +2553,10 @@ def publish_configured_channels(
                 "reason": f"{readiness_flag} is not true; first-console submission or signed-build validation is incomplete.",
             })
             continue
-        missing_secrets = sorted(spec["secrets"] - secrets)
-        missing_variables = sorted(spec["variables"] - variables)
-        if missing_secrets or missing_variables:
+        if spec["secrets"] - secrets or spec["variables"] - variables:
             skipped.append({
                 "channel": spec["name"],
-                "reason": f"missing secrets={missing_secrets}, variables={missing_variables}",
+                "reason": "Required credentials or variables are not configured.",
             })
             print(f"Skipping {spec['name']}: missing configured credentials or variables.")
             continue
@@ -2590,14 +2588,10 @@ def publish_configured_channels(
             completed.append({"channel": spec["name"], "run_id": result["databaseId"], "url": result.get("url")})
             optional_mirror = spec.get("optional_mirror")
             if optional_mirror:
-                missing_mirror_secrets = sorted(optional_mirror["secrets"] - secrets)
-                if missing_mirror_secrets:
+                if optional_mirror["secrets"] - secrets:
                     skipped.append({
                         "channel": optional_mirror["name"],
-                        "reason": (
-                            "The GHCR publication completed; the optional Docker Hub mirror was skipped "
-                            f"because these credentials are not configured: {missing_mirror_secrets}."
-                        ),
+                        "reason": "The GHCR publication completed; optional mirror credentials are not configured.",
                     })
                 else:
                     completed.append({

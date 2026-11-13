@@ -2644,7 +2644,7 @@ jobs:
           path: build/windows/${{ matrix.arch }}/runner/Release/
 
       - name: Build separate Microsoft Store trial and unlock payload
-        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' && vars.MSSTORE_LIFETIME_PRODUCT_ID != '' }}
         shell: pwsh
         env:
           MSSTORE_LIFETIME_PRODUCT_ID: ${{ vars.MSSTORE_LIFETIME_PRODUCT_ID }}
@@ -2654,7 +2654,7 @@ jobs:
         run: python scripts/build_microsoft_store.py --arch "${{ matrix.arch }}"
 
       - name: Upload Microsoft Store ${{ matrix.arch }} payload
-        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' && vars.MSSTORE_LIFETIME_PRODUCT_ID != '' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: windows-store-${{ matrix.arch }}-build
@@ -2714,21 +2714,21 @@ jobs:
         run: .\windows\build-installer.ps1 -X64BuildDir "build-x64" -Version "${{ steps.version.outputs.version }}"
 
       - name: Download Microsoft Store x64 payload
-        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' && vars.MSSTORE_LIFETIME_PRODUCT_ID != '' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: windows-store-x64-build
           path: build-store-x64
 
       - name: Download Microsoft Store arm64 payload
-        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' && vars.MSSTORE_LIFETIME_PRODUCT_ID != '' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: windows-store-arm64-build
           path: build-store-arm64
 
       - name: Build Microsoft Store MSIX bundle
-        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' && vars.MSSTORE_LIFETIME_PRODUCT_ID != '' }}
         env:
           MSSTORE_PACKAGE_NAME: ${{ vars.MSSTORE_PACKAGE_NAME }}
           MSSTORE_PUBLISHER: ${{ vars.MSSTORE_PUBLISHER }}
@@ -2880,7 +2880,7 @@ jobs:
             pleazyng-windows-installer.exe
 
       - name: Attest Microsoft Store bundle
-        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' && vars.MSSTORE_LIFETIME_PRODUCT_ID != '' }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: pleazyng-windows.msixbundle
@@ -2908,7 +2908,7 @@ jobs:
             win-installer-size.txt
 
       - name: Upload Microsoft Store bundle
-        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' && vars.MSSTORE_LIFETIME_PRODUCT_ID != '' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: windows-msix
@@ -3555,7 +3555,7 @@ jobs:
           path: artifacts/windows-installer
 
       - name: Download Microsoft Store bundle
-        if: ${{ inputs.reuse_platform_run_id == '' && vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        if: ${{ inputs.reuse_platform_run_id == '' && vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' && vars.MSSTORE_LIFETIME_PRODUCT_ID != '' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: windows-msix

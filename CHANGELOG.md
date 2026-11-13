@@ -14,6 +14,7 @@
 - Export multi-page PDF karaoke songbooks with embedded Unicode fonts, alongside CSV/XML catalogs and print-ready HTML.
 
 - Fail manual Snap, Launchpad PPA, COPR and AUR publication jobs when channel credentials or settings are missing, instead of reporting a successful skipped publish.
+- Gate the optional Microsoft Store build on all required identity values, and require/report its MSIX bundle when the release is configured for Partner Center handoff.
 
 - Report live-subtitle PCM provenance from the active Android, Tizen or MPV player instead of always labeling it Android ExoPlayer.
 

@@ -39,6 +39,12 @@ MPV_REPO = "snapetech-org/mpv-build"
 MPV_WORKFLOW = "publish.yml"
 CI_WORKFLOW = "ci.yml"
 RELEASE_WORKFLOW = "build.yml"
+MSSTORE_BUILD_VARIABLES = frozenset({
+    "MSSTORE_PACKAGE_NAME",
+    "MSSTORE_PUBLISHER",
+    "MSSTORE_PUBLISHER_DISPLAY_NAME",
+    "MSSTORE_LIFETIME_PRODUCT_ID",
+})
 NATIVE_GROUPS = ("apple", "android", "linux", "windows")
 FFMPEG_SIGNING_FINGERPRINT = "FCF986EA15E6E293A5644F10B4322F04D67658D8"
 DOWNLOAD_ATTEMPTS = 4
@@ -2073,11 +2079,14 @@ def validate_release_outputs(
         raise ReleaseError("Required public platform assets are missing: " + "; ".join(missing_platforms))
 
     secrets = configured_repo_names("secret")
+    publication_settings = configured_repo_variables()
     android_signing = {
         "ANDROID_KEYSTORE_BASE64", "ANDROID_STORE_PASSWORD", "ANDROID_KEY_PASSWORD", "ANDROID_KEY_ALIAS",
     }
     if android_signing.issubset(secrets):
         required.update({"pleazyng-android-play.aab", "pleazyng-amazon-firetv.apk"})
+    if all(publication_settings.get(name, "").strip() for name in MSSTORE_BUILD_VARIABLES):
+        required.add("pleazyng-windows.msixbundle")
     if include_apple_store_build:
         required.update({"pleazyng-ios-appstore.ipa", "pleazyng-tvos-appstore.ipa"})
     if prepare_homebrew_cask:
@@ -2301,10 +2310,26 @@ def publish_configured_channels(
             "channel": "Windows Authenticode signature",
             "reason": "certificate secrets are not configured; Windows release files will be unsigned.",
         })
-    skipped.append({
-        "channel": "Microsoft Store",
-        "reason": "MSSTORE_PACKAGE_NAME, MSSTORE_PUBLISHER, and MSSTORE_PUBLISHER_DISPLAY_NAME are not configured.",
-    })
+    missing_msstore_variables = sorted(
+        name for name in MSSTORE_BUILD_VARIABLES if not publication_settings.get(name, "").strip()
+    )
+    if "pleazyng-windows.msixbundle" in assets:
+        skipped.append({
+            "channel": "Microsoft Store / Partner Center handoff",
+            "reason": "The MSIX bundle is attached and ready for manual Partner Center submission; automated submission is not configured.",
+        })
+    elif not missing_msstore_variables:
+        failures.append("Microsoft Store identity is configured but pleazyng-windows.msixbundle is missing from the release.")
+    elif len(missing_msstore_variables) != len(MSSTORE_BUILD_VARIABLES):
+        skipped.append({
+            "channel": "Microsoft Store",
+            "reason": f"The optional MSIX build is skipped until these repository variables are set: {missing_msstore_variables}.",
+        })
+    else:
+        skipped.append({
+            "channel": "Microsoft Store",
+            "reason": "The MSIX identity and lifetime product variables are not configured.",
+        })
     skipped.append({
         "channel": "Samsung Tizen Seller Office",
         "reason": "no Samsung TV signing profile is configured; the release builds a tester TPK only.",

@@ -302,11 +302,13 @@ lifetime and references instead of claiming secure erasure.
 
 Require HTTPS for public add-ons. A user-entered private/self-hosted endpoint
 can receive a specific LAN grant using the existing insecure-connection consent
-pattern where appropriate; do not globally disable TLS verification or treat
-all LAN hosts as trusted. Resolve and validate IPv4/IPv6 addresses, reject
-loopback/link-local/metadata/private targets for public installations, and bind
-the connection to the validated address while preserving TLS SNI/Host. Repeat
-checks on redirects and DNS changes. Native provider CDN destinations require
+pattern where appropriate. The grant is limited to that exact origin and may
+reach RFC1918/ULA or loopback addresses; account imports get no grant, and
+mixed DNS answers, link-local/metadata/reserved addresses, and redirects to a
+different private origin remain denied. Do not globally disable TLS
+verification or treat all LAN hosts as trusted. Resolve and validate IPv4/IPv6
+addresses and bind the connection to the validated address while preserving
+TLS SNI/Host. Repeat checks on redirects and DNS changes. Native provider CDN destinations require
 documented destination policy and public-address validation, not arbitrary LAN
 access. Bound redirects; never forward credential headers across origins.
 

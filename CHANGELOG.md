@@ -9,8 +9,8 @@
 - Correct podcast implementation notes to reflect completed gPodder-compatible synchronization and the 10,000-episode RSS parsing limit.
 - Keep Find your next live-TV picks bound to the selected DVR lineup and exact airing, and make Watch live tune at the live edge without offering a recording-history restart.
 - Preserve Stremio add-on checkbox choices when a checked manifest default is turned off, including across reconfiguration.
-- Restrict Stremio add-on requests and redirect hops to validated public Internet addresses, pin native sockets to the checked DNS result, and refuse browser requests where that validation cannot be enforced.
-- Reject private and reserved Stremio IP-literal destinations before opening a socket, including when the HTTP stack would otherwise skip DNS lookup.
+- Restrict Stremio add-on requests and redirect hops to validated public Internet addresses by default, pin native sockets to the checked DNS result, and refuse browser requests where that validation cannot be enforced. Manual trusted-network consent grants only the entered add-on origin.
+- Reject private and reserved Stremio IP literals before opening a socket unless that exact manually entered origin has the saved LAN grant; account imports receive no private-network grant.
 - Preserve completed offline media when a native download finishes during a pause request.
 - Keep shared music queue edits atomic when a disk-backed scratch-index write fails, restoring the prior order, occurrences, cursor, and shuffle state.
 - Match gapless music transitions to queue occurrence IDs so repeated tracks remain distinct after reordering.

@@ -112,5 +112,9 @@ class _ManifestClient extends StremioAddonClient {
   final Map<String, dynamic> Function() readManifest;
 
   @override
-  Future<Map<String, dynamic>> fetchManifest(String address, {required bool allowHttp}) async => readManifest();
+  Future<Map<String, dynamic>> fetchManifest(
+    String address, {
+    required bool allowHttp,
+    String? privateNetworkGrantOrigin,
+  }) async => readManifest();
 }

@@ -175,6 +175,22 @@ class StremioAddonInstallation {
   final Map<String, dynamic> manifest;
   final bool enabled;
   final bool allowHttp;
+
+  /// The existing manual-install consent is also the origin-scoped LAN grant.
+  /// Imported add-ons always keep `allowHttp` false and receive no LAN grant.
+  String? get privateNetworkGrantOrigin {
+    if (!allowHttp) return null;
+    final uri = Uri.tryParse(configurationBaseUrl ?? manifestUrl);
+    if (uri == null ||
+        !const {'http', 'https'}.contains(uri.scheme) ||
+        uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty ||
+        uri.hasFragment) {
+      return null;
+    }
+    return uri.origin;
+  }
+
   final String? configurationBaseUrl;
   final List<StremioAddonConfigurationField> configurationSchema;
   final Map<String, String> configurationValues;

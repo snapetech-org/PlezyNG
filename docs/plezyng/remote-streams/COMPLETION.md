@@ -180,14 +180,17 @@ No new top-level navigation entry is added.
 ### Stremio destination-address enforcement (2026-11-13)
 
 The default native Stremio HTTP client resolves IPv4 and IPv6 together, rejects
-the request if any returned address is outside the public Internet ranges, and
-connects directly to the validated address while retaining the hostname for
-TLS. IP-literal destinations are classified synchronously before any socket is
-opened. Each manually followed redirect repeats this validation, so rebinding
-or a redirect cannot route the add-on client to loopback, private, link-local or
-reserved destinations. Proxies are rejected because the proxy would resolve
-the destination itself. Browser builds refuse Stremio HTTP requests because
-their fetch transport cannot enforce this address-pinning contract.
+private and mixed public/private answers unless the exact manually trusted LAN
+origin is requested, and connects directly to the validated address while
+retaining the hostname for TLS. IP literals are classified
+synchronously before any socket opens. The existing manual trusted-network
+opt-in grants the exact entered origin access to RFC1918/ULA or loopback
+addresses; account imports receive no grant, and link-local, metadata, and
+reserved destinations remain denied. Each manually followed redirect repeats
+the same checks, so a grant cannot move to another private origin. Proxies are
+rejected because the proxy would resolve the destination itself. Browser builds
+refuse Stremio HTTP requests because their fetch transport cannot enforce this
+address-pinning contract.
 
 Source inspection and `git diff --check` cover this change; no tests or network
 qualification were run for this follow-up. The existing S01 matrix still

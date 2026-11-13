@@ -32,7 +32,19 @@ Future<ConnectionTask<Socket>> happyEyeballsConnectionFactory(Uri url, String? p
 /// rejected because the proxy, rather than this process, would resolve the
 /// destination.
 Future<ConnectionTask<Socket>> publicInternetConnectionFactory(Uri url, String? proxyHost, int? proxyPort) {
-  if (proxyHost != null) {
+  return validatedInternetConnectionFactory(url, proxyHost, proxyPort);
+}
+
+/// Like [publicInternetConnectionFactory], with an optional origin-scoped LAN
+/// grant for a manually entered add-on. The grant cannot authorize another
+/// private origin or a mixed public/private DNS answer.
+Future<ConnectionTask<Socket>> validatedInternetConnectionFactory(
+  Uri url,
+  String? proxyHost,
+  int? proxyPort, {
+  String? privateNetworkGrantOrigin,
+}) {
+  if (proxyHost != null || proxyPort != null) {
     return Future.error(const SocketException('Proxied public-address validation is unavailable'));
   }
   if (!const {'http', 'https'}.contains(url.scheme) || url.host.isEmpty) {
@@ -42,14 +54,15 @@ Future<ConnectionTask<Socket>> publicInternetConnectionFactory(Uri url, String? 
   final port = url.port == 0 ? (secure ? HttpClient.defaultHttpsPort : HttpClient.defaultHttpPort) : url.port;
   final host = url.host.replaceFirst('%25', '%');
   final literal = InternetAddress.tryParse(host);
+  final hasPrivateOriginGrant = _matchesOrigin(url, privateNetworkGrantOrigin);
   if (literal != null) {
-    if (!_isPublicInternetAddress(literal)) {
+    if (!_isPublicInternetAddress(literal) && !(hasPrivateOriginGrant && _isExplicitPrivateNetworkAddress(literal))) {
       return Future.error(const SocketException('Destination is not a public Internet address'));
     }
     return Future.value(startHappyEyeballsConnect(host, port, secure: secure));
   }
   late final Future<({List<InternetAddress> ipv4, List<InternetAddress> ipv6})> resolved;
-  resolved = _lookupPublicInternetAddresses(host);
+  resolved = _lookupValidatedInternetAddresses(host, url, privateNetworkGrantOrigin);
 
   Future<List<InternetAddress>> lookup(String _, {required InternetAddressType type}) async {
     final addresses = await resolved;
@@ -59,17 +72,32 @@ Future<ConnectionTask<Socket>> publicInternetConnectionFactory(Uri url, String? 
   return Future.value(startHappyEyeballsConnect(host, port, secure: secure, lookup: lookup));
 }
 
-Future<({List<InternetAddress> ipv4, List<InternetAddress> ipv6})> _lookupPublicInternetAddresses(String host) async {
+Future<({List<InternetAddress> ipv4, List<InternetAddress> ipv6})> _lookupValidatedInternetAddresses(
+  String host,
+  Uri url,
+  String? privateNetworkGrantOrigin,
+) async {
   final results = await Future.wait([
     InternetAddress.lookup(host, type: InternetAddressType.IPv4),
     InternetAddress.lookup(host, type: InternetAddressType.IPv6),
   ]);
   final ipv4 = results[0], ipv6 = results[1];
   final addresses = [...ipv4, ...ipv6];
-  if (addresses.isEmpty || addresses.any((address) => !_isPublicInternetAddress(address))) {
+  final isPublic = addresses.isNotEmpty && addresses.every(_isPublicInternetAddress);
+  final isGrantedPrivate =
+      _matchesOrigin(url, privateNetworkGrantOrigin) &&
+      addresses.isNotEmpty &&
+      addresses.every(_isExplicitPrivateNetworkAddress);
+  if (!isPublic && !isGrantedPrivate) {
     throw const SocketException('Destination does not resolve exclusively to public Internet addresses');
   }
   return (ipv4: ipv4, ipv6: ipv6);
+}
+
+bool _matchesOrigin(Uri uri, String? origin) {
+  if (origin == null) return false;
+  final parsed = Uri.tryParse(origin);
+  return parsed != null && parsed.origin == origin && uri.origin == origin;
 }
 
 bool _isPublicInternetAddress(InternetAddress address) {
@@ -96,6 +124,18 @@ bool _isPublicInternetAddress(InternetAddress address) {
   if (bytes[0] == 0x20 && bytes[1] == 0x02) return false;
   if (bytes[0] == 0x3f && (bytes[1] & 0xf0) == 0xf0) return false;
   return true;
+}
+
+bool _isExplicitPrivateNetworkAddress(InternetAddress address) {
+  final bytes = address.rawAddress;
+  if (address.type == InternetAddressType.IPv4) {
+    final a = bytes[0], b = bytes[1];
+    return a == 127 || a == 10 || (a == 172 && b >= 16 && b <= 31) || (a == 192 && b == 168);
+  }
+  if (address.type != InternetAddressType.IPv6) return false;
+  final isLoopback = bytes.take(15).every((byte) => byte == 0) && bytes[15] == 1;
+  final isUniqueLocal = (bytes[0] & 0xfe) == 0xfc;
+  return isLoopback || isUniqueLocal;
 }
 
 const Duration defaultAttemptDelay = Duration(milliseconds: 250);

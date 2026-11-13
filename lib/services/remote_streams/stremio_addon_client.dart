@@ -67,13 +67,23 @@ class StremioAddonConfiguration {
 /// Bounded client for the Stremio add-on HTTP protocol. It never logs a
 /// manifest or resource URL because either may carry the add-on's secret.
 class StremioAddonClient {
-  StremioAddonClient({http.Client? client}) : _client = client ?? createPublicInternetHttpClient();
+  StremioAddonClient({http.Client? client}) : _injectedClient = client;
 
   static const _maxResponseBytes = 2 * 1024 * 1024;
   static const _maxManifestBytes = 256 * 1024;
   static const _maxStreamsPerAddon = 100;
   static const _timeout = Duration(seconds: 18);
-  final http.Client _client;
+  final http.Client? _injectedClient;
+  final Map<String?, http.Client> _clients = {};
+
+  http.Client _clientFor(String? privateNetworkGrantOrigin) {
+    final injected = _injectedClient;
+    if (injected != null) return injected;
+    return _clients.putIfAbsent(
+      privateNetworkGrantOrigin,
+      () => createPublicInternetHttpClient(privateNetworkGrantOrigin: privateNetworkGrantOrigin),
+    );
+  }
 
   static List<StremioAddonConfigurationField> configurationFields(Map<String, dynamic> manifest) {
     final rawFields = manifest['config'];
@@ -266,9 +276,13 @@ class StremioAddonClient {
     }
   }
 
-  Future<Map<String, dynamic>> fetchManifest(String address, {required bool allowHttp}) async {
+  Future<Map<String, dynamic>> fetchManifest(
+    String address, {
+    required bool allowHttp,
+    String? privateNetworkGrantOrigin,
+  }) async {
     final uri = _validateAddress(address, allowHttp: allowHttp);
-    final payload = await _getJson(uri);
+    final payload = await _getJson(uri, privateNetworkGrantOrigin: privateNetworkGrantOrigin);
     final id = payload['id'];
     final name = payload['name'];
     final version = payload['version'];
@@ -366,7 +380,7 @@ class StremioAddonClient {
     }
     final manifestUri = _validateAddress(addon.manifestUrl, allowHttp: addon.allowHttp);
     final streamUri = _resourceUri(manifestUri, 'stream', request.type, request.id);
-    final body = await _getJson(streamUri);
+    final body = await _getJson(streamUri, privateNetworkGrantOrigin: addon.privateNetworkGrantOrigin);
     final rows = body['streams'];
     if (rows is! List) throw const StremioAddonException(StremioAddonFailure.invalidResponse);
     final candidates = <RemoteStreamCandidate>[];
@@ -418,6 +432,7 @@ class StremioAddonClient {
     if (catalog.supportsSkip) requestedExtras['skip'] = '$skip';
     final body = await _getJson(
       _resourceUri(manifestUri, 'catalog', catalog.type, catalog.id, extras: requestedExtras),
+      privateNetworkGrantOrigin: addon.privateNetworkGrantOrigin,
     );
     final raw = body['metas'];
     if (raw is! List) throw const StremioAddonException(StremioAddonFailure.invalidResponse);
@@ -448,7 +463,10 @@ class StremioAddonClient {
     }
     final manifestUri = _validateAddress(addon.manifestUrl, allowHttp: addon.allowHttp);
     final extras = <String, String>{'search': trimmed, if (catalog.supportsSkip) 'skip': '$skip'};
-    final body = await _getJson(_resourceUri(manifestUri, 'catalog', catalog.type, catalog.id, extras: extras));
+    final body = await _getJson(
+      _resourceUri(manifestUri, 'catalog', catalog.type, catalog.id, extras: extras),
+      privateNetworkGrantOrigin: addon.privateNetworkGrantOrigin,
+    );
     final raw = body['metas'];
     if (raw is! List) throw const StremioAddonException(StremioAddonFailure.invalidResponse);
     return [
@@ -462,14 +480,20 @@ class StremioAddonClient {
     final resources = _resources(addon.manifest);
     if (!resources.any((resource) => resource.supports('meta', type, id))) return null;
     final manifestUri = _validateAddress(addon.manifestUrl, allowHttp: addon.allowHttp);
-    final body = await _getJson(_resourceUri(manifestUri, 'meta', type, id));
+    final body = await _getJson(
+      _resourceUri(manifestUri, 'meta', type, id),
+      privateNetworkGrantOrigin: addon.privateNetworkGrantOrigin,
+    );
     final meta = body['meta'];
     return meta is Map ? Map<String, dynamic>.from(meta) : null;
   }
 
-  Future<Map<String, dynamic>> _getJson(Uri uri) async {
+  Future<Map<String, dynamic>> _getJson(Uri uri, {String? privateNetworkGrantOrigin}) async {
     try {
-      final response = await _requestFollowingSafeRedirects(uri).timeout(_timeout);
+      final response = await _requestFollowingSafeRedirects(
+        uri,
+        privateNetworkGrantOrigin: privateNetworkGrantOrigin,
+      ).timeout(_timeout);
       if (response.statusCode < 200 || response.statusCode >= 300 || response.bodyBytes.length > _maxResponseBytes) {
         throw const StremioAddonException(StremioAddonFailure.unavailable);
       }
@@ -485,13 +509,13 @@ class StremioAddonClient {
     }
   }
 
-  Future<http.Response> _requestFollowingSafeRedirects(Uri initial) async {
+  Future<http.Response> _requestFollowingSafeRedirects(Uri initial, {String? privateNetworkGrantOrigin}) async {
     var uri = initial;
     for (var redirects = 0; redirects <= 4; redirects++) {
       final request = http.Request('GET', uri)
         ..followRedirects = false
         ..headers['accept'] = 'application/json';
-      final streamed = await _client.send(request).timeout(_timeout);
+      final streamed = await _clientFor(privateNetworkGrantOrigin).send(request).timeout(_timeout);
       if (streamed.statusCode >= 300 && streamed.statusCode < 400) {
         final location = streamed.headers['location'];
         if (location == null || redirects == 4) {
@@ -713,7 +737,13 @@ class StremioAddonClient {
     return value.length > 240 ? value.substring(0, 240) : value;
   }
 
-  void close() => _client.close();
+  void close() {
+    _injectedClient?.close();
+    for (final client in _clients.values) {
+      client.close();
+    }
+    _clients.clear();
+  }
 }
 
 class _AddonResource {

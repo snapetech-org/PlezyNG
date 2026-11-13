@@ -73,7 +73,7 @@ Separate parser/unit, integration, live-account and packaged-device evidence.
 | D01 | Download crashes, resumes, expires, runs out of space | Correct quota/reservation, same-file resume and cleanup; no completed-file corruption |
 | D02 | Native task database and renewal callback | Encrypted descriptor; actual callback supports provider; no raw signed URL/headers stored |
 | D03 | Remove local file / disconnect / cancel / remote delete | Distinct effects; no remote deletion through an unrelated local action |
-| S01 | Public add-on resolves to private/loopback/link-local IPv4/IPv6 | Denied before socket connection; rebinding and redirects tested |
+| S01 | Public add-on resolves to private/loopback/link-local IPv4/IPv6 | Denied before socket connection; rebinding and redirects tested. The exact origin of a manually trusted LAN add-on may use RFC1918/ULA or loopback addresses; mixed answers, link-local/metadata/reserved addresses, and redirects to other private origins remain denied. |
 | S02 | Origin changes with Authorization/Cookie/User-Agent | Only explicitly granted compatible headers survive; account tokens never leak |
 | S03 | Manifest injects code/headers/regex/XML/archive paths | No execution, header injection, XXE, unbounded regex or traversal |
 | S04 | Local content gateway guessed/replayed capability | Unrelated request denied; session disposal revokes access |

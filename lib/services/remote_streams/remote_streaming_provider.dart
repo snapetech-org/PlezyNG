@@ -26,6 +26,19 @@ class RemoteStreamSearchResult {
   final int failedAddons;
 }
 
+String? _manualAddonPrivateNetworkGrantOrigin(String address, {required bool allowHttp}) {
+  if (!allowHttp) return null;
+  final uri = Uri.tryParse(address);
+  if (uri == null ||
+      uri.host.isEmpty ||
+      uri.userInfo.isNotEmpty ||
+      uri.hasFragment ||
+      !const {'http', 'https'}.contains(uri.scheme)) {
+    return null;
+  }
+  return uri.origin;
+}
+
 /// Profile-bound owner for remote stream settings and add-on requests.
 /// Switching profile invalidates in-flight discovery before it can publish or
 /// persist results into the next profile.
@@ -914,9 +927,14 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     final (profile, generation) = _requireProfile();
     final imported = StremioAddonClient.configurationFromUrl(address, allowHttp: allowHttp);
     final baseUrl = imported?.baseUrl ?? address;
+    final privateNetworkGrantOrigin = _manualAddonPrivateNetworkGrantOrigin(baseUrl, allowHttp: allowHttp);
     final client = _stremioAddonClientFactory();
     try {
-      final manifest = await client.fetchManifest(baseUrl, allowHttp: allowHttp);
+      final manifest = await client.fetchManifest(
+        baseUrl,
+        allowHttp: allowHttp,
+        privateNetworkGrantOrigin: privateNetworkGrantOrigin,
+      );
       if (!_current(profile, generation)) {
         throw const StremioAddonException(StremioAddonFailure.unavailable);
       }
@@ -943,9 +961,14 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     final (profile, generation) = _requireProfile();
     final imported = StremioAddonClient.configurationFromUrl(address, allowHttp: allowHttp);
     final baseUrl = imported?.baseUrl ?? address;
+    final privateNetworkGrantOrigin = _manualAddonPrivateNetworkGrantOrigin(baseUrl, allowHttp: allowHttp);
     final client = _stremioAddonClientFactory();
     try {
-      final baseManifest = await client.fetchManifest(baseUrl, allowHttp: allowHttp);
+      final baseManifest = await client.fetchManifest(
+        baseUrl,
+        allowHttp: allowHttp,
+        privateNetworkGrantOrigin: privateNetworkGrantOrigin,
+      );
       if (expectedManifestId != null && baseManifest['id'] != expectedManifestId) {
         throw const StremioAddonException(StremioAddonFailure.invalidResponse);
       }
@@ -975,7 +998,11 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
             );
       final manifest = manifestUrl == baseUrl
           ? baseManifest
-          : await client.fetchManifest(manifestUrl, allowHttp: allowHttp);
+          : await client.fetchManifest(
+              manifestUrl,
+              allowHttp: allowHttp,
+              privateNetworkGrantOrigin: privateNetworkGrantOrigin,
+            );
       if (manifest['id'] != baseManifest['id']) {
         throw const StremioAddonException(StremioAddonFailure.invalidResponse);
       }
@@ -1022,7 +1049,11 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     }
     final client = _stremioAddonClientFactory();
     try {
-      final baseManifest = await client.fetchManifest(baseUrl, allowHttp: installed.allowHttp);
+      final baseManifest = await client.fetchManifest(
+        baseUrl,
+        allowHttp: installed.allowHttp,
+        privateNetworkGrantOrigin: installed.privateNetworkGrantOrigin,
+      );
       if (baseManifest['id'] != installed.manifest['id']) {
         throw const StremioAddonException(StremioAddonFailure.invalidResponse);
       }
@@ -1040,7 +1071,11 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       );
       final manifest = manifestUrl == baseUrl
           ? baseManifest
-          : await client.fetchManifest(manifestUrl, allowHttp: installed.allowHttp);
+          : await client.fetchManifest(
+              manifestUrl,
+              allowHttp: installed.allowHttp,
+              privateNetworkGrantOrigin: installed.privateNetworkGrantOrigin,
+            );
       if (manifest['id'] != baseManifest['id'] || !_current(profile, generation)) {
         throw const StremioAddonException(StremioAddonFailure.invalidResponse);
       }
@@ -1089,13 +1124,21 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     }
     final client = _stremioAddonClientFactory();
     try {
-      final latestManifest = await client.fetchManifest(installed.manifestUrl, allowHttp: installed.allowHttp);
+      final latestManifest = await client.fetchManifest(
+        installed.manifestUrl,
+        allowHttp: installed.allowHttp,
+        privateNetworkGrantOrigin: installed.privateNetworkGrantOrigin,
+      );
       List<StremioAddonConfigurationField>? latestConfigurationSchema;
       final configurationBaseUrl = installed.configurationBaseUrl;
       if (configurationBaseUrl != null) {
         final schemaManifest = configurationBaseUrl == installed.manifestUrl
             ? latestManifest
-            : await client.fetchManifest(configurationBaseUrl, allowHttp: installed.allowHttp);
+            : await client.fetchManifest(
+                configurationBaseUrl,
+                allowHttp: installed.allowHttp,
+                privateNetworkGrantOrigin: installed.privateNetworkGrantOrigin,
+              );
         if (schemaManifest['id'] != installed.manifest['id']) {
           throw const StremioAddonException(StremioAddonFailure.invalidResponse);
         }

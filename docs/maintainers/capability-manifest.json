@@ -3,7 +3,7 @@
   "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "89a70a62a4f0896b59835a58fc5b0f8375772192",
+    "auditedMainCommit": "e2e72e6ec3d07aaeba47a278d2452730946d554d",
     "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
@@ -318,9 +318,10 @@
       "confidence": "high",
       "evidence": [
         "lib/sources/source_database.dart",
-        "lib/sources/source_controller.dart"
+        "lib/sources/source_controller.dart",
+        "test/sources/source_scan_reconciliation_test.dart"
       ],
-      "qualification": "A generation mark is reconciled only when a scan completes; failed and cancelled partial scans do not delete unvisited rows. Deleted-source-entry and interrupted-scan durability acceptance remains pending."
+      "qualification": "A generation mark is reconciled only when a scan completes; focused tests cover stale-entry pruning, cancellation, and superseded scans preserving cached rows until the current scan finishes. Device-level interrupted-scan durability remains unqualified."
     },
     {
       "id": "F09",

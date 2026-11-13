@@ -3014,10 +3014,12 @@ def main() -> int:
             try:
                 publication_facts_commit = (refresh_latest_published_facts(scratch, tag, product_sha if packaging_repair else pin_sha)
                                             if frozen or packaging_repair else refresh_published_facts(worktree, tag, pin_sha))
-            except Exception as error:
-                # Preserve core publication success; do not rebuild published
-                # binaries merely because documentation needs a separate retry.
-                publication_facts_failures.append(str(error))
+            except Exception:
+                # Exception details can contain credentials from a failed
+                # publication operation. Preserve only the safe retry signal.
+                publication_facts_failures.append(
+                    "Publication facts refresh failed; retry without rebuilding published binaries."
+                )
                 print("GitHub release is published; publication facts need a separate retry.")
         else:
             metadata = release_metadata(tag)

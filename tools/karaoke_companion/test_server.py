@@ -116,6 +116,7 @@ class TransportTest(unittest.TestCase):
     def test_idle_tls_peer_does_not_block_accept_and_times_out(self):
         fixtures = Path(__file__).resolve().parents[2] / "test/fixtures/steam_relay"
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
         context.load_cert_chain(fixtures / "cert.pem", fixtures / "key.pem")
         server = Server(("127.0.0.1", 0), Handler, tls_context=context, handshake_timeout=0.5)
         server.token = "fixture-only-token-with-at-least-32-bytes"
@@ -124,6 +125,7 @@ class TransportTest(unittest.TestCase):
         idle = socket.create_connection(server.server_address, timeout=2)
         try:
             client = ssl.create_default_context(cafile=str(fixtures / "cert.pem"))
+            client.minimum_version = ssl.TLSVersion.TLSv1_2
             with client.wrap_socket(socket.create_connection(server.server_address, timeout=2), server_hostname="localhost") as active:
                 active.sendall(b"GET /v1/capabilities HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
                 self.assertIn(b"401", active.recv(1024))

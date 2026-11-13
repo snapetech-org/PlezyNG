@@ -42,6 +42,17 @@ def decode_secret(name: str) -> bytes:
         raise ValueError(f'{name} is not valid base64') from None
 
 
+def write_private_file(path: Path, contents: bytes) -> None:
+    """Create private signing material without a permissive mode window."""
+    descriptor = os.open(
+        path,
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+        0o600,
+    )
+    with os.fdopen(descriptor, 'wb') as stream:
+        stream.write(contents)
+
+
 @contextmanager
 def signing_identity(report: dict):
     if sys.platform != "darwin":
@@ -53,8 +64,7 @@ def signing_identity(report: dict):
         stage = Path(temporary)
         stage.chmod(0o700)
         p12 = stage / 'identity.p12'
-        p12.write_bytes(decode_secret('APPLE_DISTRIBUTION_CERTIFICATE_BASE64'))
-        p12.chmod(0o600)
+        write_private_file(p12, decode_secret('APPLE_DISTRIBUTION_CERTIFICATE_BASE64'))
         if not os.environ.get('APPLE_CERTIFICATE_PASSWORD'):
             raise ValueError('APPLE_CERTIFICATE_PASSWORD is missing')
         pem = run(['openssl', 'pkcs12', '-in', str(p12), '-passin',
@@ -64,7 +74,7 @@ def signing_identity(report: dict):
         if f'OU={team}' not in subject or 'CN=Apple Distribution:' not in subject:
             raise ValueError('PKCS12 does not contain the expected team Apple Distribution identity')
         run(['openssl', 'x509', '-noout', '-checkend', '86400'], data=pem)
-        fingerprint = hashlib.sha1(certificate).hexdigest().upper()  # Apple's identity selector
+        fingerprint = hashlib.sha1(certificate, usedforsecurity=False).hexdigest().upper()
         report.update(team=team, certificate_sha256=hashlib.sha256(certificate).hexdigest(),
                       certificate_sha1=fingerprint)
         password = secrets.token_urlsafe(32)
@@ -91,8 +101,7 @@ def signing_identity(report: dict):
             if not report['private_key_matches_certificate']:
                 raise ValueError('Configured PKCS12 private key does not match its Apple Distribution certificate')
             identity_file = stage / 'identity.pem'
-            identity_file.write_bytes(identity_pem)
-            identity_file.chmod(0o600)
+            write_private_file(identity_file, identity_pem)
             os.environ['PLEAZYNG_PREFLIGHT_P12_PASSWORD'] = secrets.token_urlsafe(32)
             try:
                 compatible = run(['openssl', 'pkcs12', '-export', '-in', str(identity_file),

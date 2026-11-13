@@ -5,6 +5,7 @@ import tempfile
 import threading
 import unittest
 import urllib.error
+from urllib.parse import urlsplit
 import urllib.request
 from pathlib import Path
 from unittest.mock import patch
@@ -40,11 +41,12 @@ class ServiceTests(unittest.TestCase):
 
     def fetch(self, url, headers=None):
         self.calls.append(url)
-        if '/find/' in url:
+        parsed = urlsplit(url)
+        if parsed.path.startswith('/3/find/'):
             return {'movie_results': self.find}
-        if 'api.themoviedb.org' in url:
+        if parsed.hostname == 'api.themoviedb.org':
             return {'id': 120, 'title': 'Fellowship', 'videos': {'results': self.catalog}, 'results': self.catalog}
-        if '/search?' in url:
+        if parsed.hostname == 'www.googleapis.com' and parsed.path == '/youtube/v3/search':
             return {'items': [{'id': {'videoId': OTHER}}]}
         return {'items': self.videos}
 

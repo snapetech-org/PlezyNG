@@ -10,6 +10,12 @@ The current continuation also builds and requires Tizen’s runtime bundle in th
 regular package workflow. Both cross-builds include target C++ for the vendored
 HLSL compiler. Neither platform is release-qualified.
 
+Use compatible GitHub-hosted runners by default. Tizen's hybrid workflow does
+this and reserves private JIT for constrained platform resources. The current
+webOS release-candidate script remains private-JIT-only because it enforces at
+least 60 GiB free under `RUNNER_TEMP` and verifies pinned LG toolchain inputs;
+that exception is tied to those storage and tooling requirements.
+
 ## Tizen source implementation
 
 The existing Samsung `MediaPlayer` remains the sole decoder and audible output.
@@ -73,7 +79,7 @@ library discovery. The generated directory must contain:
 - `milkrust-native.json` with `schemaVersion: 1`, MilkRust `abi: 2`, `sourceRevision`
   matching `native/visualizer/sources.lock.json`, `target: tizen-arm` or
   `tizen-x64`, `librarySha256`, `sourceArchiveSha256`, `noticesSha256`,
-  `runnerPolicy: private-ephemeral-jit`, and a PlezyNG or MilkRust Actions `buildRun` URL.
+  the applicable `runnerPolicy`, and a PlezyNG or MilkRust Actions `buildRun` URL.
 
 The regular workflow passes the just-built manifest digest directly to staging;
 externally supplied bundles require independent artifact review. Staging checks
@@ -82,7 +88,8 @@ inspector rejects partial bundles, duplicate runtime locations and changed
 payloads. Source and notices accompany the runtime inside the TPK. These are
 integrity checks, not cryptographic build attestation or proof that the declared
 runner actually built the library. Device qualification remains false in the
-report. No native artifact was built, staged, signed or published in this turn.
+report. No native artifact has been built, staged, signed or published as
+qualification evidence for this TV integration.
 
 ## API evidence and correction
 
@@ -128,8 +135,8 @@ registrant. The release-candidate source path now cross-builds the exact pinned
 MilkRust crate, bundles its corresponding-source archive and notices, and
 requires the runtime in every IPK created by `tools/webos/build_ipk.sh`. The IPK
 verifier rejects a package without it. This source integration has not been
-executed; the regular build remains dependent on a compatible private JIT
-runner and the pinned toolchains. The SoLoud tap observes that plugin's master
+executed; its current private-JIT release path and toolchains still require
+qualification. The SoLoud tap observes that plugin's master
 mix, so introducing simultaneous `audioplayers_soloud` voices would require
 per-voice isolation before claiming exact-source analysis.
 

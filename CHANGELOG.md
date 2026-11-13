@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Report ABI v2 for native MilkRust capability responses on Linux and Windows.
 - Correct podcast implementation notes to reflect completed gPodder-compatible synchronization and the 10,000-episode RSS parsing limit.
 - Keep Find your next live-TV picks bound to the selected DVR lineup and exact airing, and make Watch live tune at the live edge without offering a recording-history restart.
 - Preserve Stremio add-on checkbox choices when a checked manifest default is turned off, including across reconfiguration.

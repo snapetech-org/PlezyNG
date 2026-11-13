@@ -1,8 +1,12 @@
 # Native visualization dependency sources
 
 These patches remove the two source API gaps identified in the native probe.
-They are source work, unbuilt and unqualified. Existing app binary pins are
-unchanged. Do not claim that shipping libmpv already includes this extension.
+The app lock now records the promoted ordered-PCM artifacts for Android, Apple,
+Linux and Windows. Their package receipts still mark native execution
+unqualified. The exact Linux x64 package's first-use visualizer UI path has
+been exercised on a VM; that does not qualify the PCM tap, other platform
+packages or published binaries. Inspect each release artifact before claiming
+that it includes this extension.
 
 `sources.lock.json` pins projectM 4.1.8 and mpv 0.41.0, their full commits, the
 projectM evaluator gitlink and each local patch digest. It also pins the
@@ -56,13 +60,15 @@ serialized per handle. Exactly one client may own a tap per core.
 The public extension header is mirrored in `shared/visualization/` for runtime
 symbol negotiation. ABI 1 remains compatible; `read_next` is an additive symbol.
 Stock libmpv remains usable for music and reports live subtitle capture
-unavailable. The current shipped lock records ordered PCM ABI 1 for Android,
-Apple, Linux and Windows (mpv-build d74e7a4a); actual runtime capability is still
-negotiated from the loaded binary.
+unavailable. `mpv-build.lock.json` records the promoted ordered PCM ABI 1
+artifacts and their required exports for Android, Apple, Linux and Windows;
+actual runtime capability is still negotiated from the loaded binary.
 
 ## Source preparation and promotion
 
-On an authorized private JIT runner, prepare clean dependency sources with:
+On a compatible GitHub-hosted runner by default (or private JIT when the target
+platform, device, network, storage or tooling requires it), prepare clean
+dependency sources with:
 
 ```sh
 python3 native/visualizer/prepare_sources.py --platform linux --destination /path/to/visualizer-sources
@@ -144,12 +150,12 @@ driver or compiler hang now triggers helper termination on desktop; mobile/TV
 workers retain bounded thread teardown and quarantine. Verified recovery remains a release gate
 for arbitrary community inputs. Exceptions are not a substitute for that gate.
 
-Promotion still requires the private-JIT build and publication, updated app
-artifact checksums, native playback with actual audio, seek/pause/gapless/format
-changes, overload coverage, passthrough preservation, and device/performance
-qualification. The required build workflow is manual and only publishes from
-the reviewed main branch. No artifact build, hardware run, or qualification is
-claimed by these source changes.
+The ordered PCM artifacts are already promoted into the app lock, and the exact
+Linux x64 package's first-use visualizer UI path is qualified on a VM as recorded
+in `IMPLEMENTATION_STATUS.md`. Native PCM tap execution, seek/pause/gapless/format
+changes, overload coverage, passthrough preservation, cross-platform runtime
+installation, and device/performance qualification remain open. The required
+build workflow is manual and only publishes from the reviewed main branch.
 
 ## Native MilkRust and platform hosts
 
@@ -174,14 +180,19 @@ The app source now includes these hosts:
 | iOS/tvOS | Dedicated EAGL ES 3 context, ImageIO, retained CVPixelBuffer | Same Apple lifecycle lease |
 | Android/Android TV | EGL ES 3 pbuffer, bounded BitmapFactory decoding, SurfaceTexture native window | AAR `SessionGuard` admission lease; opaque session ID |
 
-All entries are source-only and unqualified. The non-Linux hosts currently offer
-MilkRust; selecting projectM produces an explicit unavailable response. Tizen
-and webOS now have decoded-audio and native-texture host source. The webOS route
+Host source is integrated across the listed platforms. The exact Linux x64
+package's first-use UI path has VM qualification; runtime/package, driver and
+device qualification across the remaining targets stays open. The non-Linux
+hosts currently offer MilkRust; selecting projectM produces an explicit
+unavailable response. Tizen and webOS have decoded-audio and native-texture
+host source. The webOS route
 uses app-owned SoLoud decoding/output for its bounded supported-file subset;
 LG NDL remains the fallback for other sources. The renderer declares a bounded
 legacy HLSL/resource profile; unsupported shader constructs fail with
-diagnostics. Native MilkRust currently uses immediate preset cuts, not
-qualified cross-preset transitions.
+diagnostics. Native MilkRust implements a bounded 0–10 second frozen-frame fade
+from the last published frame; it does not keep the old preset running in
+parallel. Cross-platform execution and reference transition fidelity remain
+unqualified.
 
 Android's exact pinned mpv-build tree contains the session-leased native bridge
 from `mpv-build-android-visualizer-bridge.patch`; source preparation verifies
@@ -199,7 +210,9 @@ supplies this state.
 
 ### Regular runtime artifact wiring
 
-The regular build paths now produce the pinned MilkRust runtime on private JIT.
+The regular build paths produce the pinned MilkRust runtime. Use compatible
+GitHub-hosted runners by default; reserve private JIT for platform, device,
+network, storage or tooling needs hosted runners cannot meet.
 Desktop workflows call `scripts/visualizer/build_runtime.py` before Flutter;
 CMake verifies the receipt/pin/digests and requires the runtime by default.
 Android Gradle stages selected ABIs before JNI/assets merge. Apple Runner targets
@@ -222,7 +235,7 @@ resolves `libmilkrust_native.so` beside its own plugin module; the packaged
 runtime and Flutter plugin are both staged under the app's `lib/` directory.
 This closes the optional-staging and runtime-discovery source gaps; the cross
 build, generated IPK, ABI loading and device behavior remain unverified until a
-compatible private JIT run and physical TV qualification complete.
+compatible SDK build and physical TV qualification complete.
 
 Do not edit the application dependency lock until those artifacts exist and
 have verified digests. Package the AGPL-3.0-only MilkRust notice, exact corresponding
@@ -257,8 +270,10 @@ RGBA image and blends it into the new running preset; it does not run the old
 preset in parallel. The render clock pauses with audio/rendering, rapid changes
 start from the last displayed mix, resize uses normalized sampling, and PCM
 generation resets discard history. Zero requests a hard cut. Linux projectM
-continues using its own soft-cut implementation. The authored native regression
-is part of the private Linux sanitizer job and has not been run here.
+continues using its own soft-cut implementation. The native transition
+regression is included among the five lifecycle/process/transition/image
+binaries that compile and pass, as recorded in `SOURCE_COMPLETION.md`; this
+does not establish cross-platform execution or reference-image fidelity.
 
 ### Desktop helper protocol and packaging
 
@@ -281,9 +296,10 @@ a device-wide GPU/kernel hang. iOS/tvOS retain the local backend.
 Desktop CMake installs `plezy_visualizer_helper[.exe]` beside the app; Xcode builds
 and signs it in `Contents/MacOS` with the app's signing identity. The executable
 is resolved beside the running app, never through PATH. Dependency/capability
-failures from the helper are reported explicitly. Authored process regression
-cases run through the existing private Linux/macOS sanitizer and Windows native
-CI paths; no executable verification has occurred for this change.
+failures from the helper are reported explicitly. The lifecycle/process/
+transition/image regression binaries compile and pass, as recorded in
+`SOURCE_COMPLETION.md`. Installed helper discovery/signing, injected-fault
+recovery on supported targets and device-wide GPU recovery remain open.
 
 ### Android bound renderer service
 

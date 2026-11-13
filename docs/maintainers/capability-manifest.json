@@ -417,10 +417,12 @@
         "lib/services/visualization/visualizer_session.dart",
         "lib/services/visualization/visualizer_pack_store.dart",
         "linux/runner/visualizer/visualizer_session.cc",
+        "linux/runner/mpv/mpv_plugin.cc",
+        "windows/runner/mpv/mpv_plugin.cpp",
         "docs/plezyng/visualizations/IMPLEMENTATION_STATUS.md",
         "docs/plezyng/visualizations/SOURCE_COMPLETION.md"
       ],
-      "qualification": "The pinned source implements the documented legacy .milk/.milk2 profile and verified pack workflow; see SOURCE_COMPLETION.md and IMPLEMENTATION_STATUS.md. The 2026-11-11 local x64 Linux MilkRust build and GL/GLES smoke checks rendered 12 changing frames for both bundled samples. The app lock records ordered PCM ABI 1 and all four required tap exports for Android, Apple, Linux, and Windows; mpv-build package manifests mark native execution unqualified, so export inspection does not establish end-to-end playback. The local Arch host lacks libmujs.so.3, liblua5.2.so.0 and libdisplay-info.so.1. Reference fidelity/corpus conformance, signed-catalog custody, cross-platform runtime qualification, device qualification, and community-pack rights remain open; .milk2 is implemented in source, not unavailable."
+      "qualification": "The pinned source implements the documented legacy .milk/.milk2 profile and verified pack workflow; see SOURCE_COMPLETION.md and IMPLEMENTATION_STATUS.md. The 2026-11-11 local x64 Linux MilkRust build and GL/GLES smoke checks rendered 12 changing frames for both bundled samples. An exact Linux x64 package's first-use visualizer UI path was exercised on a VM, but this does not qualify native PCM tap execution or other targets. The app lock records ordered PCM ABI 1 and all four required tap exports for Android, Apple, Linux, and Windows; mpv-build package manifests still mark native execution unqualified. The local Arch host lacks libmujs.so.3, liblua5.2.so.0 and libdisplay-info.so.1. Reference fidelity/corpus conformance, cross-platform runtime qualification, separate upstream MilkRust Ed25519-root custody, physical-device qualification, and broader community-pack rights remain open; the canonical sample-only keyless catalog is published, and .milk2 is implemented in source."
     }
   ],
   "currentRemediation": {

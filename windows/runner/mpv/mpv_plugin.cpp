@@ -424,7 +424,7 @@ void MpvPlayerPlugin::HandleVisualizerMethod(
     const auto unavailable = reason();
     result->Success(
         V(M{{V("available"), V(unavailable.empty())},
-            {V("engine"), V("milkrust-native-abi1")},
+            {V("engine"), V("milkrust-native-abi2")},
             {V("audioTap"), V(MpvPlayer::VisualizationTapAvailable())},
             {V("reason"), V(unavailable)}}));
     return;

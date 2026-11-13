@@ -92,6 +92,8 @@ x64 package UI-path qualification is recorded in
 [the current ledger](IMPLEMENTATION_STATUS.md); remaining work is listed there
 as distinct from source completion.
 
+## Historical checkpoints (2026-10-29 onward)
+
 The 2026-10-29 continuation also adds shared native legacy-image and renderer
 lifetime regression programs under `test/native/visualizer_*_test.cc`; the private
 Linux address-sanitizer job builds/runs them. Linux/Windows native CI stages the

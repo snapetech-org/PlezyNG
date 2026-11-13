@@ -1425,7 +1425,7 @@ static FlMethodResponse* visualizer_method(MpvPlugin* self, const char* method, 
     g_autoptr(FlValue) result = fl_value_new_map();
     fl_value_set_string_take(result, "available", fl_value_new_bool(reason.empty()));
     fl_value_set_string_take(
-        result, "engine", fl_value_new_string(engine == "milkrust" ? "milkrust-native-abi1" : "projectm-4.1.8"));
+        result, "engine", fl_value_new_string(engine == "milkrust" ? "milkrust-native-abi2" : "projectm-4.1.8"));
     fl_value_set_string_take(result, "reason", fl_value_new_string(reason.c_str()));
     fl_value_set_string_take(result, "audioTap", fl_value_new_bool(mpv::MpvPlayer::VisualizationTapAvailable()));
     return FL_METHOD_RESPONSE(fl_method_success_response_new(result));

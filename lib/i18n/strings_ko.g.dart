@@ -113,6 +113,7 @@ class TranslationsKo extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$ko householdSetup = _Translations$householdSetup$ko._(_root);
 	@override late final _Translations$issueReport$ko issueReport = _Translations$issueReport$ko._(_root);
 	@override late final _Translations$podcasts$ko podcasts = _Translations$podcasts$ko._(_root);
+	@override late final _Translations$subtitleAiUi$ko subtitleAiUi = _Translations$subtitleAiUi$ko._(_root);
 	@override late final _Translations$romm$ko romm = _Translations$romm$ko._(_root);
 	@override late final _Translations$subtitleCapture$ko subtitleCapture = _Translations$subtitleCapture$ko._(_root);
 	@override late final _Translations$karaokeUi$ko karaokeUi = _Translations$karaokeUi$ko._(_root);
@@ -4034,6 +4035,19 @@ class _Translations$podcasts$ko extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => '최신 에피소드 자동 다운로드';
 	@override String get removeFinishedAfter => '완료한 다운로드를 다음 기간 후 삭제';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$ko extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$ko._(TranslationsKo root) : this._root = root, super.internal(root);
+
+	final TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => '실시간 자막 시작';
+	@override String get liveCaptureStop => '실시간 자막 중지';
+	@override String get inferenceProviderNotice => '기본 경로는 CPU입니다. GPU, Core ML, QNN, RKNN 선택은 설치된 런타임 사용 요청일 뿐 하드웨어 실행을 증명하지 않습니다. 지원되지 않거나 실패한 요청은 CPU로 다시 시도하며, 작업별 실행 위치는 확인되지 않을 수 있습니다.';
+	@override String get translationProviderNotice => 'Argos는 자막별 하드웨어 실행 위치를 보고하지 않고, ML Kit은 CPU/GPU 선택을 공개하지 않습니다.';
 }
 
 // Path: romm
@@ -9320,6 +9334,10 @@ extension on TranslationsKo {
 			'issueReport.openDraft' => 'GitHub 초안 열기',
 			'podcasts.autoDownloadLatest' => '최신 에피소드 자동 다운로드',
 			'podcasts.removeFinishedAfter' => '완료한 다운로드를 다음 기간 후 삭제',
+			'subtitleAiUi.liveCaptureStart' => '실시간 자막 시작',
+			'subtitleAiUi.liveCaptureStop' => '실시간 자막 중지',
+			'subtitleAiUi.inferenceProviderNotice' => '기본 경로는 CPU입니다. GPU, Core ML, QNN, RKNN 선택은 설치된 런타임 사용 요청일 뿐 하드웨어 실행을 증명하지 않습니다. 지원되지 않거나 실패한 요청은 CPU로 다시 시도하며, 작업별 실행 위치는 확인되지 않을 수 있습니다.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos는 자막별 하드웨어 실행 위치를 보고하지 않고, ML Kit은 CPU/GPU 선택을 공개하지 않습니다.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9647,12 +9665,12 @@ extension on TranslationsKo {
 			'musicDevices.thisDevice' => '이 기기',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',
 			'musicDevices.remembered' => '저장된 기기',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => '기기 삭제',
 			'musicDevices.receive' => '이 기기에서 재생 허용',
 			'musicDevices.receiverHint' => '음악을 받으려면 Pleazyng을 열어 두세요. 이 코드로 한 번 페어링하세요.',
 			'musicDevices.moveFailed' => '재생을 옮기지 못했습니다. 기기가 켜져 있고 페어링되어 있으며 음악 서버에 접근할 수 있는지 확인하세요.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => '연결이 끊겼습니다. 선택한 기기에 다시 연결하여 재생 상태를 확인하세요.',
 			'musicDevices.away' => '집 밖에서',
 			'musicDevices.relay' => '음악 릴레이 URL',

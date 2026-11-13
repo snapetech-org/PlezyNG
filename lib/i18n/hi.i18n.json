@@ -5009,7 +5009,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "लाइव कैप्शन शुरू करें",
+    "liveCaptureStop": "लाइव कैप्शन रोकें",
+    "inferenceProviderNotice": "CPU मूल विकल्प है। GPU, Core ML, QNN और RKNN चुने जाने पर इंस्टॉल किए गए रनटाइम का अनुरोध होता है, हार्डवेयर पर चलने का प्रमाण नहीं। असमर्थित या विफल अनुरोध CPU पर दोबारा चलते हैं; हर काम में हार्डवेयर का उपयोग सत्यापित नहीं हो सकता।",
+    "translationProviderNotice": "Argos हर कैप्शन के लिए हार्डवेयर उपयोग नहीं बताता और ML Kit CPU/GPU चयन नहीं दिखाता।"
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

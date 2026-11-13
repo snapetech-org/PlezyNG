@@ -5117,7 +5117,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "بدء الترجمة النصية المباشرة",
+    "liveCaptureStop": "إيقاف الترجمة النصية المباشرة",
+    "inferenceProviderNotice": "وحدة CPU هي الخيار الافتراضي. اختيارات GPU وCore ML وQNN وRKNN تطلب استخدام بيئات التشغيل المثبتة ولا تثبت التنفيذ على العتاد. عند عدم الدعم أو الفشل، يعاد المحاولة باستخدام CPU؛ وقد لا يمكن التحقق من التنفيذ لكل عملية.",
+    "translationProviderNotice": "لا يبلّغ Argos عن موضع التنفيذ على العتاد لكل مقطع ترجمة، ولا يكشف ML Kit اختيار CPU أو GPU."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

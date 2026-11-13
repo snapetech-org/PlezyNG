@@ -113,6 +113,7 @@ class TranslationsJa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$ja householdSetup = _Translations$householdSetup$ja._(_root);
 	@override late final _Translations$issueReport$ja issueReport = _Translations$issueReport$ja._(_root);
 	@override late final _Translations$podcasts$ja podcasts = _Translations$podcasts$ja._(_root);
+	@override late final _Translations$subtitleAiUi$ja subtitleAiUi = _Translations$subtitleAiUi$ja._(_root);
 	@override late final _Translations$romm$ja romm = _Translations$romm$ja._(_root);
 	@override late final _Translations$subtitleCapture$ja subtitleCapture = _Translations$subtitleCapture$ja._(_root);
 	@override late final _Translations$karaokeUi$ja karaokeUi = _Translations$karaokeUi$ja._(_root);
@@ -4034,6 +4035,19 @@ class _Translations$podcasts$ja extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => '最新のエピソードを自動ダウンロード';
 	@override String get removeFinishedAfter => '再生済みのダウンロードを削除するまでの期間';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$ja extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$ja._(TranslationsJa root) : this._root = root, super.internal(root);
+
+	final TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'ライブ字幕を開始';
+	@override String get liveCaptureStop => 'ライブ字幕を停止';
+	@override String get inferenceProviderNotice => 'CPUが基本です。GPU、Core ML、QNN、RKNNの選択はインストール済みランタイムへの要求であり、ハードウェアで実行された証明ではありません。未対応または失敗した要求はCPUで再試行され、各処理の実行先は確認できない場合があります。';
+	@override String get translationProviderNotice => 'Argosは字幕ごとのハードウェア実行先を報告せず、ML KitはCPU/GPUの選択を公開しません。';
 }
 
 // Path: romm
@@ -9320,6 +9334,10 @@ extension on TranslationsJa {
 			'issueReport.openDraft' => 'GitHubの下書きを開く',
 			'podcasts.autoDownloadLatest' => '最新のエピソードを自動ダウンロード',
 			'podcasts.removeFinishedAfter' => '再生済みのダウンロードを削除するまでの期間',
+			'subtitleAiUi.liveCaptureStart' => 'ライブ字幕を開始',
+			'subtitleAiUi.liveCaptureStop' => 'ライブ字幕を停止',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPUが基本です。GPU、Core ML、QNN、RKNNの選択はインストール済みランタイムへの要求であり、ハードウェアで実行された証明ではありません。未対応または失敗した要求はCPUで再試行され、各処理の実行先は確認できない場合があります。',
+			'subtitleAiUi.translationProviderNotice' => 'Argosは字幕ごとのハードウェア実行先を報告せず、ML KitはCPU/GPUの選択を公開しません。',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9647,12 +9665,12 @@ extension on TranslationsJa {
 			'musicDevices.thisDevice' => 'このデバイス',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} で再生中',
 			'musicDevices.remembered' => '保存済みデバイス',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'デバイスを削除',
 			'musicDevices.receive' => 'このデバイスでの再生を許可',
 			'musicDevices.receiverHint' => '音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。',
 			'musicDevices.moveFailed' => '再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => '接続が切れました。選択したデバイスに再接続して再生状態を確認してください。',
 			'musicDevices.away' => '外出先から',
 			'musicDevices.relay' => '音楽リレーのURL',

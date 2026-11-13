@@ -113,6 +113,7 @@ class TranslationsKk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$kk householdSetup = _Translations$householdSetup$kk._(_root);
 	@override late final _Translations$issueReport$kk issueReport = _Translations$issueReport$kk._(_root);
 	@override late final _Translations$podcasts$kk podcasts = _Translations$podcasts$kk._(_root);
+	@override late final _Translations$subtitleAiUi$kk subtitleAiUi = _Translations$subtitleAiUi$kk._(_root);
 	@override late final _Translations$romm$kk romm = _Translations$romm$kk._(_root);
 	@override late final _Translations$subtitleCapture$kk subtitleCapture = _Translations$subtitleCapture$kk._(_root);
 	@override late final _Translations$karaokeUi$kk karaokeUi = _Translations$karaokeUi$kk._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$kk extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Соңғы эпизодтарды автоматты түрде жүктеп алу';
 	@override String get removeFinishedAfter => 'Аяқталған жүктеулерді кейін жою';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$kk extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$kk._(TranslationsKk root) : this._root = root, super.internal(root);
+
+	final TranslationsKk _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Тікелей субтитрлерді бастау';
+	@override String get liveCaptureStop => 'Тікелей субтитрлерді тоқтату';
+	@override String get inferenceProviderNotice => 'Негізгі нұсқа — CPU. GPU, Core ML, QNN және RKNN таңдау орнатылған орындау ортасына сұрау жібереді, бірақ аппараттық орындауды дәлелдемейді. Қолдау көрсетілмеген не сәтсіз сұраулар CPU арқылы қайта орындалады; әр операцияның орындалу ортасы расталмауы мүмкін.';
+	@override String get translationProviderNotice => 'Argos әр субтитр бойынша аппараттық орындауды көрсетпейді, ал ML Kit CPU/GPU таңдауын ашпайды.';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsKk {
 			'issueReport.openDraft' => 'GitHub жобасын ашу',
 			'podcasts.autoDownloadLatest' => 'Соңғы эпизодтарды автоматты түрде жүктеп алу',
 			'podcasts.removeFinishedAfter' => 'Аяқталған жүктеулерді кейін жою',
+			'subtitleAiUi.liveCaptureStart' => 'Тікелей субтитрлерді бастау',
+			'subtitleAiUi.liveCaptureStop' => 'Тікелей субтитрлерді тоқтату',
+			'subtitleAiUi.inferenceProviderNotice' => 'Негізгі нұсқа — CPU. GPU, Core ML, QNN және RKNN таңдау орнатылған орындау ортасына сұрау жібереді, бірақ аппараттық орындауды дәлелдемейді. Қолдау көрсетілмеген не сәтсіз сұраулар CPU арқылы қайта орындалады; әр операцияның орындалу ортасы расталмауы мүмкін.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos әр субтитр бойынша аппараттық орындауды көрсетпейді, ал ML Kit CPU/GPU таңдауын ашпайды.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsKk {
 			'musicDevices.thisDevice' => 'Осы құрылғы',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} құрылғысында ойнатылуда',
 			'musicDevices.remembered' => 'Сақталған құрылғылар',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Құрылғыны ұмыту',
 			'musicDevices.receive' => 'Осы құрылғыда ойнатуға рұқсат беру',
 			'musicDevices.receiverHint' => 'Музыка қабылдау үшін Pleazyng ашық тұрсын. Осы кодпен бір рет жұптастырыңыз.',
 			'musicDevices.moveFailed' => 'Ойнатуды көшіру мүмкін болмады. Құрылғының қосулы, жұптастырылған және музыка серверіне қолжетімді екенін тексеріңіз.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Байланыс үзілді. Ойнатуды тексеру үшін таңдалған құрылғыға қайта қосылыңыз.',
 			'musicDevices.away' => 'Үйден тыс жерде',
 			'musicDevices.relay' => 'Музыка релесінің URL мекенжайы',

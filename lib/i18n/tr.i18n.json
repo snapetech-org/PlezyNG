@@ -5009,7 +5009,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "Canlı altyazıları başlat",
+    "liveCaptureStop": "Canlı altyazıları durdur",
+    "inferenceProviderNotice": "Temel seçenek CPU’dur. GPU, Core ML, QNN ve RKNN kurulu çalışma ortamlarını kullanma isteğidir; donanımda çalıştığını kanıtlamaz. Desteklenmeyen veya başarısız istekler CPU’da yeniden denenir; her işlemin çalışma yeri doğrulanmamış olabilir.",
+    "translationProviderNotice": "Argos her altyazı satırı için donanım kullanımını bildirmez; ML Kit CPU/GPU seçimini göstermez."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

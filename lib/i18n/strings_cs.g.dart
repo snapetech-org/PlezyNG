@@ -113,6 +113,7 @@ class TranslationsCs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$cs householdSetup = _Translations$householdSetup$cs._(_root);
 	@override late final _Translations$issueReport$cs issueReport = _Translations$issueReport$cs._(_root);
 	@override late final _Translations$podcasts$cs podcasts = _Translations$podcasts$cs._(_root);
+	@override late final _Translations$subtitleAiUi$cs subtitleAiUi = _Translations$subtitleAiUi$cs._(_root);
 	@override late final _Translations$romm$cs romm = _Translations$romm$cs._(_root);
 	@override late final _Translations$subtitleCapture$cs subtitleCapture = _Translations$subtitleCapture$cs._(_root);
 	@override late final _Translations$karaokeUi$cs karaokeUi = _Translations$karaokeUi$cs._(_root);
@@ -4081,6 +4082,19 @@ class _Translations$podcasts$cs extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Automaticky stahovat nejnovější epizody';
 	@override String get removeFinishedAfter => 'Odstranit dokončená stažení po';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$cs extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$cs._(TranslationsCs root) : this._root = root, super.internal(root);
+
+	final TranslationsCs _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Spustit živé titulky';
+	@override String get liveCaptureStop => 'Zastavit živé titulky';
+	@override String get inferenceProviderNotice => 'CPU je výchozí možnost. Volby GPU, Core ML, QNN a RKNN žádají o použití nainstalovaných běhových prostředí, ale nedokazují hardwarové zpracování. Při nepodporované nebo neúspěšné žádosti se zkouší CPU; použití akcelerátoru u jednotlivých operací nemusí být ověřeno.';
+	@override String get translationProviderNotice => 'Argos neuvádí hardwarové zpracování jednotlivých titulků a ML Kit nezpřístupňuje volbu CPU/GPU.';
 }
 
 // Path: romm
@@ -9369,6 +9383,10 @@ extension on TranslationsCs {
 			'issueReport.openDraft' => 'Otevřít návrh na GitHubu',
 			'podcasts.autoDownloadLatest' => 'Automaticky stahovat nejnovější epizody',
 			'podcasts.removeFinishedAfter' => 'Odstranit dokončená stažení po',
+			'subtitleAiUi.liveCaptureStart' => 'Spustit živé titulky',
+			'subtitleAiUi.liveCaptureStop' => 'Zastavit živé titulky',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU je výchozí možnost. Volby GPU, Core ML, QNN a RKNN žádají o použití nainstalovaných běhových prostředí, ale nedokazují hardwarové zpracování. Při nepodporované nebo neúspěšné žádosti se zkouší CPU; použití akcelerátoru u jednotlivých operací nemusí být ověřeno.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos neuvádí hardwarové zpracování jednotlivých titulků a ML Kit nezpřístupňuje volbu CPU/GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9696,12 +9714,12 @@ extension on TranslationsCs {
 			'musicDevices.thisDevice' => 'Toto zařízení',
 			'musicDevices.playingOn' => ({required Object device}) => 'Přehrává se na ${device}',
 			'musicDevices.remembered' => 'Zapamatovaná zařízení',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Zapomenout zařízení',
 			'musicDevices.receive' => 'Povolit přehrávání na tomto zařízení',
 			'musicDevices.receiverHint' => 'Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.',
 			'musicDevices.moveFailed' => 'Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení.',
 			'musicDevices.away' => 'Mimo domov',
 			'musicDevices.relay' => 'URL hudebního relé',

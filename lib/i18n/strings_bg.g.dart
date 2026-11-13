@@ -113,6 +113,7 @@ class TranslationsBg extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$bg householdSetup = _Translations$householdSetup$bg._(_root);
 	@override late final _Translations$issueReport$bg issueReport = _Translations$issueReport$bg._(_root);
 	@override late final _Translations$podcasts$bg podcasts = _Translations$podcasts$bg._(_root);
+	@override late final _Translations$subtitleAiUi$bg subtitleAiUi = _Translations$subtitleAiUi$bg._(_root);
 	@override late final _Translations$romm$bg romm = _Translations$romm$bg._(_root);
 	@override late final _Translations$subtitleCapture$bg subtitleCapture = _Translations$subtitleCapture$bg._(_root);
 	@override late final _Translations$karaokeUi$bg karaokeUi = _Translations$karaokeUi$bg._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$bg extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Автоматично изтегляне на последните епизоди';
 	@override String get removeFinishedAfter => 'Премахване на завършените изтегляния след';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$bg extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$bg._(TranslationsBg root) : this._root = root, super.internal(root);
+
+	final TranslationsBg _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Стартиране на субтитри на живо';
+	@override String get liveCaptureStop => 'Спиране на субтитри на живо';
+	@override String get inferenceProviderNotice => 'CPU е основният вариант. Изборът на GPU, Core ML, QNN или RKNN заявява използването на инсталирана среда, но не доказва изпълнение на хардуера. При липса на поддръжка или грешка се прави повторен опит с CPU; изпълнението за всяка операция може да остане непотвърдено.';
+	@override String get translationProviderNotice => 'Argos не отчита хардуерното изпълнение за всеки субтитър, а ML Kit не показва избора между CPU и GPU.';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsBg {
 			'issueReport.openDraft' => 'Отваряне на чернова в GitHub',
 			'podcasts.autoDownloadLatest' => 'Автоматично изтегляне на последните епизоди',
 			'podcasts.removeFinishedAfter' => 'Премахване на завършените изтегляния след',
+			'subtitleAiUi.liveCaptureStart' => 'Стартиране на субтитри на живо',
+			'subtitleAiUi.liveCaptureStop' => 'Спиране на субтитри на живо',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU е основният вариант. Изборът на GPU, Core ML, QNN или RKNN заявява използването на инсталирана среда, но не доказва изпълнение на хардуера. При липса на поддръжка или грешка се прави повторен опит с CPU; изпълнението за всяка операция може да остане непотвърдено.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos не отчита хардуерното изпълнение за всеки субтитър, а ML Kit не показва избора между CPU и GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsBg {
 			'musicDevices.thisDevice' => 'Това устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Възпроизвежда се на ${device}',
 			'musicDevices.remembered' => 'Запомнени устройства',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Забравяне на устройството',
 			'musicDevices.receive' => 'Разрешаване на възпроизвеждане на това устройство',
 			'musicDevices.receiverHint' => 'Оставете Pleazyng отворен, за да получава музика. Сдвоете веднъж с този код.',
 			'musicDevices.moveFailed' => 'Възпроизвеждането не бе преместено. Проверете дали устройството е будно, сдвоено и има достъп до музикалния сървър.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Връзката прекъсна. Свържете се отново с избраното устройство, за да проверите възпроизвеждането.',
 			'musicDevices.away' => 'Извън дома',
 			'musicDevices.relay' => 'Адрес на музикалния ретранслатор',

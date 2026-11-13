@@ -2253,12 +2253,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ),
           ),
           const SizedBox(height: 6),
-          Text(
-            _provider == SubtitleInferenceProvider.desktopGpu
-                ? 'Desktop GPU uses CUDA or Vulkan only when compiled into the native Whisper runtime. Successful inference does not prove every operation ran on the GPU; placement is unverified and failures restart on CPU.'
-                : 'CPU is the baseline. Core ML/QNN/RKNN are provider requests for the installed native runtime; unsupported requests retry on CPU. The result reports provider initialization/fallback and marks per-operation placement as unverified.',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          Text(context.t.subtitleAiUi.inferenceProviderNotice, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 12),
           _speechLanguageSelector(),
           const SizedBox(height: 10),
@@ -2325,15 +2320,8 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                         service.isStarting
                             ? context.t.subtitleCapture.preparing
                             : (service.isRunning || service.hasActiveSession)
-                            ? 'Stop live capture'
-                            : 'Start live captions',
-                      ),
-                      subtitle: Text(
-                        service.isStarting
-                            ? 'Loading the local Whisper model'
-                            : (service.isRunning || service.hasActiveSession)
-                            ? 'Stop capture and retain the transcript for sync'
-                            : 'This player session; downloads the local Whisper model on first use',
+                            ? context.t.subtitleAiUi.liveCaptureStop
+                            : context.t.subtitleAiUi.liveCaptureStart,
                       ),
                       onTap: (_busy || service.isStarting) ? null : () => unawaited(_captureLivePlayback()),
                     ),
@@ -2524,12 +2512,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                 value: _requestTranslationCuda,
                 onChanged: _busy ? null : (value) => setState(() => _requestTranslationCuda = value),
               ),
-            Text(
-              SubtitleTranslationService.desktopPlatformSupported
-                  ? 'Subtitle text stays local. Argos does not report per-cue hardware placement; GPU requests are best-effort.'
-                  : 'Translation runs locally through ML Kit. Its CPU/GPU choice is not exposed by the provider.',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(context.t.subtitleAiUi.translationProviderNotice, style: Theme.of(context).textTheme.bodySmall),
             FocusableListTile(
               leading: const AppIcon(Symbols.translate_rounded),
               title: Text(context.t.subtitleAiUi.translateAnExistingSubtitle),

@@ -113,6 +113,7 @@ class TranslationsUz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$uz householdSetup = _Translations$householdSetup$uz._(_root);
 	@override late final _Translations$issueReport$uz issueReport = _Translations$issueReport$uz._(_root);
 	@override late final _Translations$podcasts$uz podcasts = _Translations$podcasts$uz._(_root);
+	@override late final _Translations$subtitleAiUi$uz subtitleAiUi = _Translations$subtitleAiUi$uz._(_root);
 	@override late final _Translations$romm$uz romm = _Translations$romm$uz._(_root);
 	@override late final _Translations$subtitleCapture$uz subtitleCapture = _Translations$subtitleCapture$uz._(_root);
 	@override late final _Translations$karaokeUi$uz karaokeUi = _Translations$karaokeUi$uz._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$uz extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Soʻnggi qismlarni avtomatik yuklab olish';
 	@override String get removeFinishedAfter => 'Tugallangan yuklamalarni quyidagi muddatdan soʻng oʻchirish';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$uz extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$uz._(TranslationsUz root) : this._root = root, super.internal(root);
+
+	final TranslationsUz _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Jonli subtitrlarni boshlash';
+	@override String get liveCaptureStop => 'Jonli subtitrlarni to‘xtatish';
+	@override String get inferenceProviderNotice => 'Asosiy variant — CPU. GPU, Core ML, QNN va RKNN o‘rnatilgan bajarish muhitidan foydalanish so‘rovidir, ammo apparatda bajarilganini isbotlamaydi. Qo‘llab-quvvatlanmagan yoki muvaffaqiyatsiz so‘rovlar CPU’da qayta uriniladi; har bir amalning bajarilish joyi tasdiqlanmasligi mumkin.';
+	@override String get translationProviderNotice => 'Argos har bir subtitr satri uchun apparat ishlatilishini bildirmaydi, ML Kit esa CPU/GPU tanlovini ko‘rsatmaydi.';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsUz {
 			'issueReport.openDraft' => 'GitHub qoralamasini ochish',
 			'podcasts.autoDownloadLatest' => 'Soʻnggi qismlarni avtomatik yuklab olish',
 			'podcasts.removeFinishedAfter' => 'Tugallangan yuklamalarni quyidagi muddatdan soʻng oʻchirish',
+			'subtitleAiUi.liveCaptureStart' => 'Jonli subtitrlarni boshlash',
+			'subtitleAiUi.liveCaptureStop' => 'Jonli subtitrlarni to‘xtatish',
+			'subtitleAiUi.inferenceProviderNotice' => 'Asosiy variant — CPU. GPU, Core ML, QNN va RKNN o‘rnatilgan bajarish muhitidan foydalanish so‘rovidir, ammo apparatda bajarilganini isbotlamaydi. Qo‘llab-quvvatlanmagan yoki muvaffaqiyatsiz so‘rovlar CPU’da qayta uriniladi; har bir amalning bajarilish joyi tasdiqlanmasligi mumkin.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos har bir subtitr satri uchun apparat ishlatilishini bildirmaydi, ML Kit esa CPU/GPU tanlovini ko‘rsatmaydi.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsUz {
 			'musicDevices.thisDevice' => 'Bu qurilma',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} qurilmasida ijro etilmoqda',
 			'musicDevices.remembered' => 'Saqlangan qurilmalar',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Qurilmani unutish',
 			'musicDevices.receive' => 'Bu qurilmada ijroga ruxsat berish',
 			'musicDevices.receiverHint' => 'Musiqa olish uchun Pleazyng ochiq tursin. Bu kod bilan bir marta juftlang.',
 			'musicDevices.moveFailed' => 'Ijro ko‘chirilmadi. Qurilma yoqilgan, juftlangan va musiqa serveriga kira olishini tekshiring.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Ulanish uzildi. Ijroni tekshirish uchun tanlangan qurilmaga qayta ulaning.',
 			'musicDevices.away' => 'Uydan tashqarida',
 			'musicDevices.relay' => 'Musiqa relesi URL manzili',

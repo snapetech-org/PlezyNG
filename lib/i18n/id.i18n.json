@@ -4982,7 +4982,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "Mulai subtitel langsung",
+    "liveCaptureStop": "Hentikan subtitel langsung",
+    "inferenceProviderNotice": "CPU adalah pilihan dasar. GPU, Core ML, QNN, dan RKNN meminta runtime yang terpasang, tetapi tidak membuktikan pemrosesan berjalan di perangkat keras. Permintaan yang tidak didukung atau gagal dicoba ulang di CPU; penggunaan akselerator per operasi mungkin tidak terverifikasi.",
+    "translationProviderNotice": "Argos tidak melaporkan penggunaan perangkat keras per teks, dan ML Kit tidak menampilkan pilihan CPU/GPU."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

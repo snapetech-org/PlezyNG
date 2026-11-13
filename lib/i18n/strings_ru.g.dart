@@ -113,6 +113,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$ru householdSetup = _Translations$householdSetup$ru._(_root);
 	@override late final _Translations$issueReport$ru issueReport = _Translations$issueReport$ru._(_root);
 	@override late final _Translations$podcasts$ru podcasts = _Translations$podcasts$ru._(_root);
+	@override late final _Translations$subtitleAiUi$ru subtitleAiUi = _Translations$subtitleAiUi$ru._(_root);
 	@override late final _Translations$romm$ru romm = _Translations$romm$ru._(_root);
 	@override late final _Translations$subtitleCapture$ru subtitleCapture = _Translations$subtitleCapture$ru._(_root);
 	@override late final _Translations$karaokeUi$ru karaokeUi = _Translations$karaokeUi$ru._(_root);
@@ -4085,6 +4086,19 @@ class _Translations$podcasts$ru extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Автоматически скачивать последние выпуски';
 	@override String get removeFinishedAfter => 'Удалять завершённые загрузки через';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$ru extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Включить субтитры в реальном времени';
+	@override String get liveCaptureStop => 'Остановить субтитры в реальном времени';
+	@override String get inferenceProviderNotice => 'Основной вариант — CPU. Выбор GPU, Core ML, QNN или RKNN запрашивает установленную среду выполнения, но не доказывает обработку на оборудовании. Неподдерживаемые или неудачные запросы повторяются на CPU; место выполнения каждой операции может быть не подтверждено.';
+	@override String get translationProviderNotice => 'Argos не сообщает об аппаратной обработке для каждой строки субтитров, а ML Kit не раскрывает выбор CPU/GPU.';
 }
 
 // Path: romm
@@ -9375,6 +9389,10 @@ extension on TranslationsRu {
 			'issueReport.openDraft' => 'Открыть черновик GitHub',
 			'podcasts.autoDownloadLatest' => 'Автоматически скачивать последние выпуски',
 			'podcasts.removeFinishedAfter' => 'Удалять завершённые загрузки через',
+			'subtitleAiUi.liveCaptureStart' => 'Включить субтитры в реальном времени',
+			'subtitleAiUi.liveCaptureStop' => 'Остановить субтитры в реальном времени',
+			'subtitleAiUi.inferenceProviderNotice' => 'Основной вариант — CPU. Выбор GPU, Core ML, QNN или RKNN запрашивает установленную среду выполнения, но не доказывает обработку на оборудовании. Неподдерживаемые или неудачные запросы повторяются на CPU; место выполнения каждой операции может быть не подтверждено.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos не сообщает об аппаратной обработке для каждой строки субтитров, а ML Kit не раскрывает выбор CPU/GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9702,12 +9720,12 @@ extension on TranslationsRu {
 			'musicDevices.thisDevice' => 'Это устройство',
 			'musicDevices.playingOn' => ({required Object device}) => 'Воспроизводится на ${device}',
 			'musicDevices.remembered' => 'Сохранённые устройства',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Забыть устройство',
 			'musicDevices.receive' => 'Разрешить воспроизведение на этом устройстве',
 			'musicDevices.receiverHint' => 'Оставьте Pleazyng открытым для приёма музыки. Один раз выполните сопряжение с этим кодом.',
 			'musicDevices.moveFailed' => 'Не удалось перенести воспроизведение. Проверьте, что устройство активно, сопряжено и имеет доступ к музыкальному серверу.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Соединение прервано. Подключитесь к выбранному устройству снова, чтобы проверить воспроизведение.',
 			'musicDevices.away' => 'Вне дома',
 			'musicDevices.relay' => 'URL музыкального ретранслятора',

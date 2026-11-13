@@ -5004,7 +5004,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "開始即時字幕",
+    "liveCaptureStop": "停止即時字幕",
+    "inferenceProviderNotice": "CPU 是基本選項。選擇 GPU、Core ML、QNN 或 RKNN 只是要求使用已安裝的執行環境，不能證明由硬體執行。不支援或失敗的要求會改用 CPU 重試；每項操作的實際執行位置可能無法確認。",
+    "translationProviderNotice": "Argos 不會回報每行字幕的硬體執行位置，ML Kit 也不會公開 CPU/GPU 選擇。"
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

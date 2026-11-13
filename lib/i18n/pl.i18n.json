@@ -5063,7 +5063,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "Uruchom napisy na żywo",
+    "liveCaptureStop": "Zatrzymaj napisy na żywo",
+    "inferenceProviderNotice": "CPU jest podstawowym trybem. GPU, Core ML, QNN i RKNN proszą o użycie zainstalowanego środowiska, ale nie potwierdzają wykonania sprzętowego. Nieobsługiwane lub nieudane żądania są ponawiane na CPU; miejsce wykonania poszczególnych operacji może pozostać niezweryfikowane.",
+    "translationProviderNotice": "Argos nie podaje użycia sprzętu dla każdej linijki napisów, a ML Kit nie ujawnia wyboru CPU/GPU."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

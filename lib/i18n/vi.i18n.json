@@ -4982,7 +4982,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "Bắt đầu phụ đề trực tiếp",
+    "liveCaptureStop": "Dừng phụ đề trực tiếp",
+    "inferenceProviderNotice": "CPU là lựa chọn cơ bản. GPU, Core ML, QNN và RKNN là yêu cầu sử dụng môi trường đã cài đặt, không phải bằng chứng xử lý bằng phần cứng. Yêu cầu không được hỗ trợ hoặc thất bại sẽ thử lại bằng CPU; vị trí chạy của từng thao tác có thể chưa được xác minh.",
+    "translationProviderNotice": "Argos không báo cáo xử lý phần cứng cho từng dòng phụ đề và ML Kit không cho biết lựa chọn CPU/GPU."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

@@ -113,6 +113,7 @@ class TranslationsDa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$da householdSetup = _Translations$householdSetup$da._(_root);
 	@override late final _Translations$issueReport$da issueReport = _Translations$issueReport$da._(_root);
 	@override late final _Translations$podcasts$da podcasts = _Translations$podcasts$da._(_root);
+	@override late final _Translations$subtitleAiUi$da subtitleAiUi = _Translations$subtitleAiUi$da._(_root);
 	@override late final _Translations$romm$da romm = _Translations$romm$da._(_root);
 	@override late final _Translations$subtitleCapture$da subtitleCapture = _Translations$subtitleCapture$da._(_root);
 	@override late final _Translations$karaokeUi$da karaokeUi = _Translations$karaokeUi$da._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$da extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Download automatisk de nyeste episoder';
 	@override String get removeFinishedAfter => 'Fjern færdigafspillede downloads efter';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$da extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$da._(TranslationsDa root) : this._root = root, super.internal(root);
+
+	final TranslationsDa _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Start liveundertekster';
+	@override String get liveCaptureStop => 'Stop liveundertekster';
+	@override String get inferenceProviderNotice => 'CPU er standarden. GPU, Core ML, QNN og RKNN anmoder om brug af installerede kørselsmiljøer, men beviser ikke hardwarekørsel. Ikke-understøttede eller mislykkede anmodninger prøves igen på CPU; placeringen kan være ubekræftet for enkelte handlinger.';
+	@override String get translationProviderNotice => 'Argos rapporterer ikke hardwareplacering pr. undertekst, og ML Kit oplyser ikke valget mellem CPU og GPU.';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsDa {
 			'issueReport.openDraft' => 'Åbn GitHub-udkast',
 			'podcasts.autoDownloadLatest' => 'Download automatisk de nyeste episoder',
 			'podcasts.removeFinishedAfter' => 'Fjern færdigafspillede downloads efter',
+			'subtitleAiUi.liveCaptureStart' => 'Start liveundertekster',
+			'subtitleAiUi.liveCaptureStop' => 'Stop liveundertekster',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU er standarden. GPU, Core ML, QNN og RKNN anmoder om brug af installerede kørselsmiljøer, men beviser ikke hardwarekørsel. Ikke-understøttede eller mislykkede anmodninger prøves igen på CPU; placeringen kan være ubekræftet for enkelte handlinger.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos rapporterer ikke hardwareplacering pr. undertekst, og ML Kit oplyser ikke valget mellem CPU og GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsDa {
 			'musicDevices.thisDevice' => 'Denne enhed',
 			'musicDevices.playingOn' => ({required Object device}) => 'Afspiller på ${device}',
 			'musicDevices.remembered' => 'Huskede enheder',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Glem enhed',
 			'musicDevices.receive' => 'Tillad afspilning på denne enhed',
 			'musicDevices.receiverHint' => 'Hold Pleazyng åben for at modtage musik. Par én gang med denne kode.',
 			'musicDevices.moveFailed' => 'Kunne ikke flytte afspilningen. Kontrollér, at enheden er vågen, parret og har adgang til din musikserver.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Forbindelsen blev afbrudt. Opret forbindelse til den valgte enhed igen for at kontrollere afspilningen.',
 			'musicDevices.away' => 'Uden for hjemmet',
 			'musicDevices.relay' => 'URL til musikrelæ',

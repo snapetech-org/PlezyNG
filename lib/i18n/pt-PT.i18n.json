@@ -948,5 +948,11 @@
   "musicExperience": {
     "bluetoothDriving": "Saídas Bluetooth para condução",
     "bluetoothDrivingHint": "Escolha as saídas Bluetooth ligadas que abrem automaticamente a vista de condução."
+  },
+  "subtitleAiUi": {
+    "liveCaptureStart": "Iniciar legendas em direto",
+    "liveCaptureStop": "Parar legendas em direto",
+    "inferenceProviderNotice": "A CPU é a opção base. GPU, Core ML, QNN e RKNN solicitam os ambientes instalados, mas não comprovam a execução por hardware. Pedidos não suportados ou falhados são repetidos na CPU; a execução de cada operação pode não ser verificada.",
+    "translationProviderNotice": "O Argos não informa o uso de hardware em cada legenda, e o ML Kit não revela a escolha entre CPU e GPU."
   }
 }

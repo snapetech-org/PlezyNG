@@ -5019,7 +5019,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "התחלת כתוביות בזמן אמת",
+    "liveCaptureStop": "עצירת כתוביות בזמן אמת",
+    "inferenceProviderNotice": "המעבד הוא ברירת המחדל. בחירה ב-GPU, ב-Core ML, ב-QNN או ב-RKNN מבקשת להשתמש בסביבת הריצה המותקנת, אך אינה מוכיחה שהחומרה ביצעה את העבודה. בקשה לא נתמכת או כושלת תנסה שוב במעבד; ייתכן שלא ניתן יהיה לאמת את המיקום של כל פעולה.",
+    "translationProviderNotice": "Argos לא מדווח על מיקום חומרה לכל כתובית, ו-ML Kit לא חושף בחירה בין מעבד ל-GPU."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

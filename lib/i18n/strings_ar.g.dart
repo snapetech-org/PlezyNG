@@ -113,6 +113,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$ar householdSetup = _Translations$householdSetup$ar._(_root);
 	@override late final _Translations$issueReport$ar issueReport = _Translations$issueReport$ar._(_root);
 	@override late final _Translations$podcasts$ar podcasts = _Translations$podcasts$ar._(_root);
+	@override late final _Translations$subtitleAiUi$ar subtitleAiUi = _Translations$subtitleAiUi$ar._(_root);
 	@override late final _Translations$romm$ar romm = _Translations$romm$ar._(_root);
 	@override late final _Translations$subtitleCapture$ar subtitleCapture = _Translations$subtitleCapture$ar._(_root);
 	@override late final _Translations$karaokeUi$ar karaokeUi = _Translations$karaokeUi$ar._(_root);
@@ -4131,6 +4132,19 @@ class _Translations$podcasts$ar extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'تنزيل أحدث الحلقات تلقائيًا';
 	@override String get removeFinishedAfter => 'إزالة التنزيلات المنتهية بعد';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$ar extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'بدء الترجمة النصية المباشرة';
+	@override String get liveCaptureStop => 'إيقاف الترجمة النصية المباشرة';
+	@override String get inferenceProviderNotice => 'وحدة CPU هي الخيار الافتراضي. اختيارات GPU وCore ML وQNN وRKNN تطلب استخدام بيئات التشغيل المثبتة ولا تثبت التنفيذ على العتاد. عند عدم الدعم أو الفشل، يعاد المحاولة باستخدام CPU؛ وقد لا يمكن التحقق من التنفيذ لكل عملية.';
+	@override String get translationProviderNotice => 'لا يبلّغ Argos عن موضع التنفيذ على العتاد لكل مقطع ترجمة، ولا يكشف ML Kit اختيار CPU أو GPU.';
 }
 
 // Path: romm
@@ -9425,6 +9439,10 @@ extension on TranslationsAr {
 			'issueReport.openDraft' => 'فتح مسودة GitHub',
 			'podcasts.autoDownloadLatest' => 'تنزيل أحدث الحلقات تلقائيًا',
 			'podcasts.removeFinishedAfter' => 'إزالة التنزيلات المنتهية بعد',
+			'subtitleAiUi.liveCaptureStart' => 'بدء الترجمة النصية المباشرة',
+			'subtitleAiUi.liveCaptureStop' => 'إيقاف الترجمة النصية المباشرة',
+			'subtitleAiUi.inferenceProviderNotice' => 'وحدة CPU هي الخيار الافتراضي. اختيارات GPU وCore ML وQNN وRKNN تطلب استخدام بيئات التشغيل المثبتة ولا تثبت التنفيذ على العتاد. عند عدم الدعم أو الفشل، يعاد المحاولة باستخدام CPU؛ وقد لا يمكن التحقق من التنفيذ لكل عملية.',
+			'subtitleAiUi.translationProviderNotice' => 'لا يبلّغ Argos عن موضع التنفيذ على العتاد لكل مقطع ترجمة، ولا يكشف ML Kit اختيار CPU أو GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9752,12 +9770,12 @@ extension on TranslationsAr {
 			'musicDevices.thisDevice' => 'هذا الجهاز',
 			'musicDevices.playingOn' => ({required Object device}) => 'يتم التشغيل على ${device}',
 			'musicDevices.remembered' => 'الأجهزة المحفوظة',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'نسيان الجهاز',
 			'musicDevices.receive' => 'السماح بالتشغيل على هذا الجهاز',
 			'musicDevices.receiverHint' => 'أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.',
 			'musicDevices.moveFailed' => 'تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل.',
 			'musicDevices.away' => 'خارج المنزل',
 			'musicDevices.relay' => 'عنوان مرحّل الموسيقى',

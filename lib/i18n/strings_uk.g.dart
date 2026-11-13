@@ -113,6 +113,7 @@ class TranslationsUk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$uk householdSetup = _Translations$householdSetup$uk._(_root);
 	@override late final _Translations$issueReport$uk issueReport = _Translations$issueReport$uk._(_root);
 	@override late final _Translations$podcasts$uk podcasts = _Translations$podcasts$uk._(_root);
+	@override late final _Translations$subtitleAiUi$uk subtitleAiUi = _Translations$subtitleAiUi$uk._(_root);
 	@override late final _Translations$romm$uk romm = _Translations$romm$uk._(_root);
 	@override late final _Translations$subtitleCapture$uk subtitleCapture = _Translations$subtitleCapture$uk._(_root);
 	@override late final _Translations$karaokeUi$uk karaokeUi = _Translations$karaokeUi$uk._(_root);
@@ -4081,6 +4082,19 @@ class _Translations$podcasts$uk extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Автоматично завантажувати останні випуски';
 	@override String get removeFinishedAfter => 'Видаляти завершені завантаження через';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$uk extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$uk._(TranslationsUk root) : this._root = root, super.internal(root);
+
+	final TranslationsUk _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Запустити субтитри наживо';
+	@override String get liveCaptureStop => 'Зупинити субтитри наживо';
+	@override String get inferenceProviderNotice => 'Основний варіант — CPU. Вибір GPU, Core ML, QNN або RKNN запитує встановлене середовище, але не доводить виконання на обладнанні. Непідтримувані або невдалі запити повторюються на CPU; місце виконання кожної операції може бути не підтверджене.';
+	@override String get translationProviderNotice => 'Argos не повідомляє про апаратне виконання для кожного рядка субтитрів, а ML Kit не показує вибір CPU/GPU.';
 }
 
 // Path: romm
@@ -9369,6 +9383,10 @@ extension on TranslationsUk {
 			'issueReport.openDraft' => 'Відкрити чернетку GitHub',
 			'podcasts.autoDownloadLatest' => 'Автоматично завантажувати останні випуски',
 			'podcasts.removeFinishedAfter' => 'Видаляти завершені завантаження через',
+			'subtitleAiUi.liveCaptureStart' => 'Запустити субтитри наживо',
+			'subtitleAiUi.liveCaptureStop' => 'Зупинити субтитри наживо',
+			'subtitleAiUi.inferenceProviderNotice' => 'Основний варіант — CPU. Вибір GPU, Core ML, QNN або RKNN запитує встановлене середовище, але не доводить виконання на обладнанні. Непідтримувані або невдалі запити повторюються на CPU; місце виконання кожної операції може бути не підтверджене.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos не повідомляє про апаратне виконання для кожного рядка субтитрів, а ML Kit не показує вибір CPU/GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9696,12 +9714,12 @@ extension on TranslationsUk {
 			'musicDevices.thisDevice' => 'Цей пристрій',
 			'musicDevices.playingOn' => ({required Object device}) => 'Відтворюється на ${device}',
 			'musicDevices.remembered' => 'Збережені пристрої',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Забути пристрій',
 			'musicDevices.receive' => 'Дозволити відтворення на цьому пристрої',
 			'musicDevices.receiverHint' => 'Залиште Pleazyng відкритим для приймання музики. Один раз створіть пару за допомогою цього коду.',
 			'musicDevices.moveFailed' => 'Не вдалося перенести відтворення. Перевірте, чи пристрій активний, спарений і має доступ до музичного сервера.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'З’єднання перервано. Знову підключіться до вибраного пристрою, щоб перевірити відтворення.',
 			'musicDevices.away' => 'Поза домом',
 			'musicDevices.relay' => 'URL музичного ретранслятора',

@@ -113,6 +113,7 @@ class TranslationsSv extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$sv householdSetup = _Translations$householdSetup$sv._(_root);
 	@override late final _Translations$issueReport$sv issueReport = _Translations$issueReport$sv._(_root);
 	@override late final _Translations$podcasts$sv podcasts = _Translations$podcasts$sv._(_root);
+	@override late final _Translations$subtitleAiUi$sv subtitleAiUi = _Translations$subtitleAiUi$sv._(_root);
 	@override late final _Translations$romm$sv romm = _Translations$romm$sv._(_root);
 	@override late final _Translations$subtitleCapture$sv subtitleCapture = _Translations$subtitleCapture$sv._(_root);
 	@override late final _Translations$karaokeUi$sv karaokeUi = _Translations$karaokeUi$sv._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$sv extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Ladda ned de senaste avsnitten automatiskt';
 	@override String get removeFinishedAfter => 'Ta bort färdiglyssnade nedladdningar efter';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$sv extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$sv._(TranslationsSv root) : this._root = root, super.internal(root);
+
+	final TranslationsSv _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Starta direktextning';
+	@override String get liveCaptureStop => 'Stoppa direktextning';
+	@override String get inferenceProviderNotice => 'CPU är grundläget. GPU, Core ML, QNN och RKNN begär installerade körmiljöer men bevisar inte hårdvarukörning. Begäranden som inte stöds eller misslyckas försöks igen på CPU; placeringen för varje åtgärd kan vara obekräftad.';
+	@override String get translationProviderNotice => 'Argos rapporterar inte hårdvaruplacering per undertextrad och ML Kit visar inte CPU/GPU-valet.';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsSv {
 			'issueReport.openDraft' => 'Öppna GitHub-utkast',
 			'podcasts.autoDownloadLatest' => 'Ladda ned de senaste avsnitten automatiskt',
 			'podcasts.removeFinishedAfter' => 'Ta bort färdiglyssnade nedladdningar efter',
+			'subtitleAiUi.liveCaptureStart' => 'Starta direktextning',
+			'subtitleAiUi.liveCaptureStop' => 'Stoppa direktextning',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU är grundläget. GPU, Core ML, QNN och RKNN begär installerade körmiljöer men bevisar inte hårdvarukörning. Begäranden som inte stöds eller misslyckas försöks igen på CPU; placeringen för varje åtgärd kan vara obekräftad.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos rapporterar inte hårdvaruplacering per undertextrad och ML Kit visar inte CPU/GPU-valet.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsSv {
 			'musicDevices.thisDevice' => 'Den här enheten',
 			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',
 			'musicDevices.remembered' => 'Sparade enheter',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Glöm enhet',
 			'musicDevices.receive' => 'Tillåt uppspelning på den här enheten',
 			'musicDevices.receiverHint' => 'Håll Pleazyng öppet för att ta emot musik. Parkoppla en gång med den här koden.',
 			'musicDevices.moveFailed' => 'Det gick inte att flytta uppspelningen. Kontrollera att enheten är vaken, parkopplad och når musikservern.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Anslutningen avbröts. Anslut till den valda enheten igen för att kontrollera uppspelningen.',
 			'musicDevices.away' => 'Utanför hemmet',
 			'musicDevices.relay' => 'URL till musikrelä',

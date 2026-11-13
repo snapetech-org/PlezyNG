@@ -5009,7 +5009,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "Élő feliratok indítása",
+    "liveCaptureStop": "Élő feliratok leállítása",
+    "inferenceProviderNotice": "A CPU az alapértelmezett. A GPU, Core ML, QNN és RKNN telepített futtatókörnyezetet kér, de nem bizonyítja a hardveres végrehajtást. A nem támogatott vagy sikertelen kérések újrapróbálkoznak CPU-n; az egyes műveletek elhelyezése nem feltétlenül ellenőrzött.",
+    "translationProviderNotice": "Az Argos nem jelzi a hardveres végrehajtást feliratonként, az ML Kit pedig nem közli a CPU/GPU választást."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

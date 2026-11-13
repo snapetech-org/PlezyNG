@@ -113,6 +113,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$vi householdSetup = _Translations$householdSetup$vi._(_root);
 	@override late final _Translations$issueReport$vi issueReport = _Translations$issueReport$vi._(_root);
 	@override late final _Translations$podcasts$vi podcasts = _Translations$podcasts$vi._(_root);
+	@override late final _Translations$subtitleAiUi$vi subtitleAiUi = _Translations$subtitleAiUi$vi._(_root);
 	@override late final _Translations$romm$vi romm = _Translations$romm$vi._(_root);
 	@override late final _Translations$subtitleCapture$vi subtitleCapture = _Translations$subtitleCapture$vi._(_root);
 	@override late final _Translations$karaokeUi$vi karaokeUi = _Translations$karaokeUi$vi._(_root);
@@ -4016,6 +4017,19 @@ class _Translations$podcasts$vi extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Tự động tải các tập mới nhất';
 	@override String get removeFinishedAfter => 'Xóa bản tải xuống đã nghe xong sau';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$vi extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$vi._(TranslationsVi root) : this._root = root, super.internal(root);
+
+	final TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Bắt đầu phụ đề trực tiếp';
+	@override String get liveCaptureStop => 'Dừng phụ đề trực tiếp';
+	@override String get inferenceProviderNotice => 'CPU là lựa chọn cơ bản. GPU, Core ML, QNN và RKNN là yêu cầu sử dụng môi trường đã cài đặt, không phải bằng chứng xử lý bằng phần cứng. Yêu cầu không được hỗ trợ hoặc thất bại sẽ thử lại bằng CPU; vị trí chạy của từng thao tác có thể chưa được xác minh.';
+	@override String get translationProviderNotice => 'Argos không báo cáo xử lý phần cứng cho từng dòng phụ đề và ML Kit không cho biết lựa chọn CPU/GPU.';
 }
 
 // Path: romm
@@ -9300,6 +9314,10 @@ extension on TranslationsVi {
 			'issueReport.openDraft' => 'Mở bản nháp GitHub',
 			'podcasts.autoDownloadLatest' => 'Tự động tải các tập mới nhất',
 			'podcasts.removeFinishedAfter' => 'Xóa bản tải xuống đã nghe xong sau',
+			'subtitleAiUi.liveCaptureStart' => 'Bắt đầu phụ đề trực tiếp',
+			'subtitleAiUi.liveCaptureStop' => 'Dừng phụ đề trực tiếp',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU là lựa chọn cơ bản. GPU, Core ML, QNN và RKNN là yêu cầu sử dụng môi trường đã cài đặt, không phải bằng chứng xử lý bằng phần cứng. Yêu cầu không được hỗ trợ hoặc thất bại sẽ thử lại bằng CPU; vị trí chạy của từng thao tác có thể chưa được xác minh.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos không báo cáo xử lý phần cứng cho từng dòng phụ đề và ML Kit không cho biết lựa chọn CPU/GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9627,12 +9645,12 @@ extension on TranslationsVi {
 			'musicDevices.thisDevice' => 'Thiết bị này',
 			'musicDevices.playingOn' => ({required Object device}) => 'Đang phát trên ${device}',
 			'musicDevices.remembered' => 'Thiết bị đã lưu',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Quên thiết bị',
 			'musicDevices.receive' => 'Cho phép phát trên thiết bị này',
 			'musicDevices.receiverHint' => 'Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.',
 			'musicDevices.moveFailed' => 'Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc.',
 			'musicDevices.away' => 'Khi xa nhà',
 			'musicDevices.relay' => 'URL chuyển tiếp nhạc',

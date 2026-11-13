@@ -113,6 +113,7 @@ class TranslationsHe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$he householdSetup = _Translations$householdSetup$he._(_root);
 	@override late final _Translations$issueReport$he issueReport = _Translations$issueReport$he._(_root);
 	@override late final _Translations$podcasts$he podcasts = _Translations$podcasts$he._(_root);
+	@override late final _Translations$subtitleAiUi$he subtitleAiUi = _Translations$subtitleAiUi$he._(_root);
 	@override late final _Translations$romm$he romm = _Translations$romm$he._(_root);
 	@override late final _Translations$subtitleCapture$he subtitleCapture = _Translations$subtitleCapture$he._(_root);
 	@override late final _Translations$karaokeUi$he karaokeUi = _Translations$karaokeUi$he._(_root);
@@ -4047,6 +4048,19 @@ class _Translations$podcasts$he extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'הורדה אוטומטית של הפרקים האחרונים';
 	@override String get removeFinishedAfter => 'הסרת הורדות שהושלמו לאחר';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$he extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$he._(TranslationsHe root) : this._root = root, super.internal(root);
+
+	final TranslationsHe _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'התחלת כתוביות בזמן אמת';
+	@override String get liveCaptureStop => 'עצירת כתוביות בזמן אמת';
+	@override String get inferenceProviderNotice => 'המעבד הוא ברירת המחדל. בחירה ב-GPU, ב-Core ML, ב-QNN או ב-RKNN מבקשת להשתמש בסביבת הריצה המותקנת, אך אינה מוכיחה שהחומרה ביצעה את העבודה. בקשה לא נתמכת או כושלת תנסה שוב במעבד; ייתכן שלא ניתן יהיה לאמת את המיקום של כל פעולה.';
+	@override String get translationProviderNotice => 'Argos לא מדווח על מיקום חומרה לכל כתובית, ו-ML Kit לא חושף בחירה בין מעבד ל-GPU.';
 }
 
 // Path: romm
@@ -9333,6 +9347,10 @@ extension on TranslationsHe {
 			'issueReport.openDraft' => 'פתיחת טיוטה ב-GitHub',
 			'podcasts.autoDownloadLatest' => 'הורדה אוטומטית של הפרקים האחרונים',
 			'podcasts.removeFinishedAfter' => 'הסרת הורדות שהושלמו לאחר',
+			'subtitleAiUi.liveCaptureStart' => 'התחלת כתוביות בזמן אמת',
+			'subtitleAiUi.liveCaptureStop' => 'עצירת כתוביות בזמן אמת',
+			'subtitleAiUi.inferenceProviderNotice' => 'המעבד הוא ברירת המחדל. בחירה ב-GPU, ב-Core ML, ב-QNN או ב-RKNN מבקשת להשתמש בסביבת הריצה המותקנת, אך אינה מוכיחה שהחומרה ביצעה את העבודה. בקשה לא נתמכת או כושלת תנסה שוב במעבד; ייתכן שלא ניתן יהיה לאמת את המיקום של כל פעולה.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos לא מדווח על מיקום חומרה לכל כתובית, ו-ML Kit לא חושף בחירה בין מעבד ל-GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9660,12 +9678,12 @@ extension on TranslationsHe {
 			'musicDevices.thisDevice' => 'מכשיר זה',
 			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',
 			'musicDevices.remembered' => 'מכשירים שמורים',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'שכח מכשיר',
 			'musicDevices.receive' => 'אפשר ניגון במכשיר זה',
 			'musicDevices.receiverHint' => 'השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.',
 			'musicDevices.moveFailed' => 'לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.',
 			'musicDevices.away' => 'מחוץ לבית',
 			'musicDevices.relay' => 'כתובת ממסר המוזיקה',

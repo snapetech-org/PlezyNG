@@ -113,6 +113,7 @@ class TranslationsHi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$hi householdSetup = _Translations$householdSetup$hi._(_root);
 	@override late final _Translations$issueReport$hi issueReport = _Translations$issueReport$hi._(_root);
 	@override late final _Translations$podcasts$hi podcasts = _Translations$podcasts$hi._(_root);
+	@override late final _Translations$subtitleAiUi$hi subtitleAiUi = _Translations$subtitleAiUi$hi._(_root);
 	@override late final _Translations$romm$hi romm = _Translations$romm$hi._(_root);
 	@override late final _Translations$subtitleCapture$hi subtitleCapture = _Translations$subtitleCapture$hi._(_root);
 	@override late final _Translations$karaokeUi$hi karaokeUi = _Translations$karaokeUi$hi._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$hi extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'नवीनतम एपिसोड अपने आप डाउनलोड करें';
 	@override String get removeFinishedAfter => 'पूरे सुने गए डाउनलोड इतने समय बाद हटाएँ';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$hi extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$hi._(TranslationsHi root) : this._root = root, super.internal(root);
+
+	final TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'लाइव कैप्शन शुरू करें';
+	@override String get liveCaptureStop => 'लाइव कैप्शन रोकें';
+	@override String get inferenceProviderNotice => 'CPU मूल विकल्प है। GPU, Core ML, QNN और RKNN चुने जाने पर इंस्टॉल किए गए रनटाइम का अनुरोध होता है, हार्डवेयर पर चलने का प्रमाण नहीं। असमर्थित या विफल अनुरोध CPU पर दोबारा चलते हैं; हर काम में हार्डवेयर का उपयोग सत्यापित नहीं हो सकता।';
+	@override String get translationProviderNotice => 'Argos हर कैप्शन के लिए हार्डवेयर उपयोग नहीं बताता और ML Kit CPU/GPU चयन नहीं दिखाता।';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsHi {
 			'issueReport.openDraft' => 'GitHub ड्राफ़्ट खोलें',
 			'podcasts.autoDownloadLatest' => 'नवीनतम एपिसोड अपने आप डाउनलोड करें',
 			'podcasts.removeFinishedAfter' => 'पूरे सुने गए डाउनलोड इतने समय बाद हटाएँ',
+			'subtitleAiUi.liveCaptureStart' => 'लाइव कैप्शन शुरू करें',
+			'subtitleAiUi.liveCaptureStop' => 'लाइव कैप्शन रोकें',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU मूल विकल्प है। GPU, Core ML, QNN और RKNN चुने जाने पर इंस्टॉल किए गए रनटाइम का अनुरोध होता है, हार्डवेयर पर चलने का प्रमाण नहीं। असमर्थित या विफल अनुरोध CPU पर दोबारा चलते हैं; हर काम में हार्डवेयर का उपयोग सत्यापित नहीं हो सकता।',
+			'subtitleAiUi.translationProviderNotice' => 'Argos हर कैप्शन के लिए हार्डवेयर उपयोग नहीं बताता और ML Kit CPU/GPU चयन नहीं दिखाता।',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsHi {
 			'musicDevices.thisDevice' => 'यह डिवाइस',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',
 			'musicDevices.remembered' => 'सहेजे गए डिवाइस',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'डिवाइस भूलें',
 			'musicDevices.receive' => 'इस डिवाइस पर प्लेबैक की अनुमति दें',
 			'musicDevices.receiverHint' => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।',
 			'musicDevices.moveFailed' => 'प्लेबैक स्थानांतरित नहीं हुआ। जाँचें कि डिवाइस सक्रिय और पेयर है तथा संगीत सर्वर तक पहुँच सकता है।',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।',
 			'musicDevices.away' => 'घर से दूर',
 			'musicDevices.relay' => 'संगीत रिले URL',

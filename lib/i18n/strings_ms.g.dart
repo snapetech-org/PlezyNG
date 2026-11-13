@@ -113,6 +113,7 @@ class TranslationsMs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$ms householdSetup = _Translations$householdSetup$ms._(_root);
 	@override late final _Translations$issueReport$ms issueReport = _Translations$issueReport$ms._(_root);
 	@override late final _Translations$podcasts$ms podcasts = _Translations$podcasts$ms._(_root);
+	@override late final _Translations$subtitleAiUi$ms subtitleAiUi = _Translations$subtitleAiUi$ms._(_root);
 	@override late final _Translations$romm$ms romm = _Translations$romm$ms._(_root);
 	@override late final _Translations$subtitleCapture$ms subtitleCapture = _Translations$subtitleCapture$ms._(_root);
 	@override late final _Translations$karaokeUi$ms karaokeUi = _Translations$karaokeUi$ms._(_root);
@@ -4016,6 +4017,19 @@ class _Translations$podcasts$ms extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Muat turun episod terkini secara automatik';
 	@override String get removeFinishedAfter => 'Alih keluar muat turun yang selesai selepas';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$ms extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$ms._(TranslationsMs root) : this._root = root, super.internal(root);
+
+	final TranslationsMs _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Mulakan sari kata langsung';
+	@override String get liveCaptureStop => 'Hentikan sari kata langsung';
+	@override String get inferenceProviderNotice => 'CPU ialah pilihan asas. GPU, Core ML, QNN dan RKNN meminta penggunaan masa jalan yang dipasang, tetapi tidak membuktikan pemprosesan perkakasan. Permintaan yang tidak disokong atau gagal dicuba semula pada CPU; penggunaan bagi setiap operasi mungkin tidak disahkan.';
+	@override String get translationProviderNotice => 'Argos tidak melaporkan penggunaan perkakasan bagi setiap sari kata, dan ML Kit tidak mendedahkan pilihan CPU/GPU.';
 }
 
 // Path: romm
@@ -9300,6 +9314,10 @@ extension on TranslationsMs {
 			'issueReport.openDraft' => 'Buka draf GitHub',
 			'podcasts.autoDownloadLatest' => 'Muat turun episod terkini secara automatik',
 			'podcasts.removeFinishedAfter' => 'Alih keluar muat turun yang selesai selepas',
+			'subtitleAiUi.liveCaptureStart' => 'Mulakan sari kata langsung',
+			'subtitleAiUi.liveCaptureStop' => 'Hentikan sari kata langsung',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU ialah pilihan asas. GPU, Core ML, QNN dan RKNN meminta penggunaan masa jalan yang dipasang, tetapi tidak membuktikan pemprosesan perkakasan. Permintaan yang tidak disokong atau gagal dicuba semula pada CPU; penggunaan bagi setiap operasi mungkin tidak disahkan.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos tidak melaporkan penggunaan perkakasan bagi setiap sari kata, dan ML Kit tidak mendedahkan pilihan CPU/GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9627,12 +9645,12 @@ extension on TranslationsMs {
 			'musicDevices.thisDevice' => 'Peranti ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',
 			'musicDevices.remembered' => 'Peranti disimpan',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Lupakan peranti',
 			'musicDevices.receive' => 'Benarkan main balik pada peranti ini',
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.',
 			'musicDevices.moveFailed' => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
 			'musicDevices.away' => 'Di luar rumah',
 			'musicDevices.relay' => 'URL geganti muzik',

@@ -113,6 +113,7 @@ class TranslationsHu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$hu householdSetup = _Translations$householdSetup$hu._(_root);
 	@override late final _Translations$issueReport$hu issueReport = _Translations$issueReport$hu._(_root);
 	@override late final _Translations$podcasts$hu podcasts = _Translations$podcasts$hu._(_root);
+	@override late final _Translations$subtitleAiUi$hu subtitleAiUi = _Translations$subtitleAiUi$hu._(_root);
 	@override late final _Translations$romm$hu romm = _Translations$romm$hu._(_root);
 	@override late final _Translations$subtitleCapture$hu subtitleCapture = _Translations$subtitleCapture$hu._(_root);
 	@override late final _Translations$karaokeUi$hu karaokeUi = _Translations$karaokeUi$hu._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$hu extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Legújabb epizódok automatikus letöltése';
 	@override String get removeFinishedAfter => 'Befejezett letöltések eltávolítása ennyi idő után';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$hu extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$hu._(TranslationsHu root) : this._root = root, super.internal(root);
+
+	final TranslationsHu _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Élő feliratok indítása';
+	@override String get liveCaptureStop => 'Élő feliratok leállítása';
+	@override String get inferenceProviderNotice => 'A CPU az alapértelmezett. A GPU, Core ML, QNN és RKNN telepített futtatókörnyezetet kér, de nem bizonyítja a hardveres végrehajtást. A nem támogatott vagy sikertelen kérések újrapróbálkoznak CPU-n; az egyes műveletek elhelyezése nem feltétlenül ellenőrzött.';
+	@override String get translationProviderNotice => 'Az Argos nem jelzi a hardveres végrehajtást feliratonként, az ML Kit pedig nem közli a CPU/GPU választást.';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsHu {
 			'issueReport.openDraft' => 'GitHub-vázlat megnyitása',
 			'podcasts.autoDownloadLatest' => 'Legújabb epizódok automatikus letöltése',
 			'podcasts.removeFinishedAfter' => 'Befejezett letöltések eltávolítása ennyi idő után',
+			'subtitleAiUi.liveCaptureStart' => 'Élő feliratok indítása',
+			'subtitleAiUi.liveCaptureStop' => 'Élő feliratok leállítása',
+			'subtitleAiUi.inferenceProviderNotice' => 'A CPU az alapértelmezett. A GPU, Core ML, QNN és RKNN telepített futtatókörnyezetet kér, de nem bizonyítja a hardveres végrehajtást. A nem támogatott vagy sikertelen kérések újrapróbálkoznak CPU-n; az egyes műveletek elhelyezése nem feltétlenül ellenőrzött.',
+			'subtitleAiUi.translationProviderNotice' => 'Az Argos nem jelzi a hardveres végrehajtást feliratonként, az ML Kit pedig nem közli a CPU/GPU választást.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsHu {
 			'musicDevices.thisDevice' => 'Ez az eszköz',
 			'musicDevices.playingOn' => ({required Object device}) => 'Lejátszás ezen az eszközön · ${device}',
 			'musicDevices.remembered' => 'Megjegyzett eszközök',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Eszköz elfelejtése',
 			'musicDevices.receive' => 'Lejátszás engedélyezése ezen az eszközön',
 			'musicDevices.receiverHint' => 'Hagyd nyitva a Pleazyng alkalmazást a zene fogadásához. Párosíts egyszer ezzel a kóddal.',
 			'musicDevices.moveFailed' => 'Nem sikerült áthelyezni a lejátszást. Ellenőrizd, hogy az eszköz ébren van, párosítva van, és eléri a zenekiszolgálót.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'A kapcsolat megszakadt. A lejátszás ellenőrzéséhez csatlakozz újra a kiválasztott eszközhöz.',
 			'musicDevices.away' => 'Otthontól távol',
 			'musicDevices.relay' => 'Zenei közvetítő URL-címe',

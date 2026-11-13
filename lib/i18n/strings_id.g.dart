@@ -113,6 +113,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$id householdSetup = _Translations$householdSetup$id._(_root);
 	@override late final _Translations$issueReport$id issueReport = _Translations$issueReport$id._(_root);
 	@override late final _Translations$podcasts$id podcasts = _Translations$podcasts$id._(_root);
+	@override late final _Translations$subtitleAiUi$id subtitleAiUi = _Translations$subtitleAiUi$id._(_root);
 	@override late final _Translations$romm$id romm = _Translations$romm$id._(_root);
 	@override late final _Translations$subtitleCapture$id subtitleCapture = _Translations$subtitleCapture$id._(_root);
 	@override late final _Translations$karaokeUi$id karaokeUi = _Translations$karaokeUi$id._(_root);
@@ -4016,6 +4017,19 @@ class _Translations$podcasts$id extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Unduh episode terbaru secara otomatis';
 	@override String get removeFinishedAfter => 'Hapus unduhan yang selesai setelah';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$id extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$id._(TranslationsId root) : this._root = root, super.internal(root);
+
+	final TranslationsId _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Mulai subtitel langsung';
+	@override String get liveCaptureStop => 'Hentikan subtitel langsung';
+	@override String get inferenceProviderNotice => 'CPU adalah pilihan dasar. GPU, Core ML, QNN, dan RKNN meminta runtime yang terpasang, tetapi tidak membuktikan pemrosesan berjalan di perangkat keras. Permintaan yang tidak didukung atau gagal dicoba ulang di CPU; penggunaan akselerator per operasi mungkin tidak terverifikasi.';
+	@override String get translationProviderNotice => 'Argos tidak melaporkan penggunaan perangkat keras per teks, dan ML Kit tidak menampilkan pilihan CPU/GPU.';
 }
 
 // Path: romm
@@ -9300,6 +9314,10 @@ extension on TranslationsId {
 			'issueReport.openDraft' => 'Buka draf GitHub',
 			'podcasts.autoDownloadLatest' => 'Unduh episode terbaru secara otomatis',
 			'podcasts.removeFinishedAfter' => 'Hapus unduhan yang selesai setelah',
+			'subtitleAiUi.liveCaptureStart' => 'Mulai subtitel langsung',
+			'subtitleAiUi.liveCaptureStop' => 'Hentikan subtitel langsung',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU adalah pilihan dasar. GPU, Core ML, QNN, dan RKNN meminta runtime yang terpasang, tetapi tidak membuktikan pemrosesan berjalan di perangkat keras. Permintaan yang tidak didukung atau gagal dicoba ulang di CPU; penggunaan akselerator per operasi mungkin tidak terverifikasi.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos tidak melaporkan penggunaan perangkat keras per teks, dan ML Kit tidak menampilkan pilihan CPU/GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9627,12 +9645,12 @@ extension on TranslationsId {
 			'musicDevices.thisDevice' => 'Perangkat ini',
 			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',
 			'musicDevices.remembered' => 'Perangkat tersimpan',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Lupakan perangkat',
 			'musicDevices.receive' => 'Izinkan pemutaran di perangkat ini',
 			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.',
 			'musicDevices.moveFailed' => 'Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.',
 			'musicDevices.away' => 'Di luar rumah',
 			'musicDevices.relay' => 'URL relai musik',

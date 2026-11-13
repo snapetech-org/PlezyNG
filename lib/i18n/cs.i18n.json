@@ -5057,7 +5057,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "Spustit živé titulky",
+    "liveCaptureStop": "Zastavit živé titulky",
+    "inferenceProviderNotice": "CPU je výchozí možnost. Volby GPU, Core ML, QNN a RKNN žádají o použití nainstalovaných běhových prostředí, ale nedokazují hardwarové zpracování. Při nepodporované nebo neúspěšné žádosti se zkouší CPU; použití akcelerátoru u jednotlivých operací nemusí být ověřeno.",
+    "translationProviderNotice": "Argos neuvádí hardwarové zpracování jednotlivých titulků a ML Kit nezpřístupňuje volbu CPU/GPU."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

@@ -5004,7 +5004,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "ライブ字幕を開始",
+    "liveCaptureStop": "ライブ字幕を停止",
+    "inferenceProviderNotice": "CPUが基本です。GPU、Core ML、QNN、RKNNの選択はインストール済みランタイムへの要求であり、ハードウェアで実行された証明ではありません。未対応または失敗した要求はCPUで再試行され、各処理の実行先は確認できない場合があります。",
+    "translationProviderNotice": "Argosは字幕ごとのハードウェア実行先を報告せず、ML KitはCPU/GPUの選択を公開しません。"
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

@@ -4982,7 +4982,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "เริ่มคำบรรยายสด",
+    "liveCaptureStop": "หยุดคำบรรยายสด",
+    "inferenceProviderNotice": "CPU เป็นตัวเลือกพื้นฐาน การเลือก GPU, Core ML, QNN หรือ RKNN เป็นการขอใช้รันไทม์ที่ติดตั้งไว้ แต่ไม่ได้ยืนยันว่าประมวลผลบนฮาร์ดแวร์ หากไม่รองรับหรือทำงานล้มเหลว จะลองใหม่ด้วย CPU และอาจตรวจสอบตำแหน่งการทำงานแต่ละรายการไม่ได้",
+    "translationProviderNotice": "Argos ไม่รายงานตำแหน่งฮาร์ดแวร์ของคำบรรยายแต่ละบรรทัด และ ML Kit ไม่เปิดเผยการเลือก CPU/GPU"
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

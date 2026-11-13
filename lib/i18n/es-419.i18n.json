@@ -930,5 +930,11 @@
   "musicExperience": {
     "bluetoothDriving": "Salidas Bluetooth para conducir",
     "bluetoothDrivingHint": "Elige las salidas Bluetooth conectadas que abren automáticamente la vista de conducción."
+  },
+  "subtitleAiUi": {
+    "liveCaptureStart": "Iniciar subtítulos en vivo",
+    "liveCaptureStop": "Detener subtítulos en vivo",
+    "inferenceProviderNotice": "La CPU es la opción base. GPU, Core ML, QNN y RKNN solicitan los entornos instalados, pero no demuestran que se use el hardware. Si una solicitud no es compatible o falla, se vuelve a intentar con la CPU; puede que no se verifique la ejecución de cada operación.",
+    "translationProviderNotice": "Argos no informa del uso de hardware en cada subtítulo y ML Kit no muestra la selección de CPU o GPU."
   }
 }

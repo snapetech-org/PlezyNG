@@ -5009,7 +5009,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "লাইভ ক্যাপশন শুরু করুন",
+    "liveCaptureStop": "লাইভ ক্যাপশন বন্ধ করুন",
+    "inferenceProviderNotice": "CPU হলো মূল বিকল্প। GPU, Core ML, QNN ও RKNN নির্বাচন ইনস্টল করা রানটাইম ব্যবহারের অনুরোধ; এটি হার্ডওয়্যারে কাজ হওয়ার প্রমাণ নয়। সমর্থন না থাকলে বা ব্যর্থ হলে CPU-তে আবার চেষ্টা হয়; প্রতিটি কাজের হার্ডওয়্যার ব্যবহার যাচাই করা নাও যেতে পারে।",
+    "translationProviderNotice": "Argos প্রতিটি ক্যাপশনের হার্ডওয়্যার ব্যবহার জানায় না, আর ML Kit CPU/GPU নির্বাচন প্রকাশ করে না।"
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

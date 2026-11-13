@@ -5009,7 +5009,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "Стартиране на субтитри на живо",
+    "liveCaptureStop": "Спиране на субтитри на живо",
+    "inferenceProviderNotice": "CPU е основният вариант. Изборът на GPU, Core ML, QNN или RKNN заявява използването на инсталирана среда, но не доказва изпълнение на хардуера. При липса на поддръжка или грешка се прави повторен опит с CPU; изпълнението за всяка операция може да остане непотвърдено.",
+    "translationProviderNotice": "Argos не отчита хардуерното изпълнение за всеки субтитър, а ML Kit не показва избора между CPU и GPU."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

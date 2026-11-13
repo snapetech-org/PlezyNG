@@ -113,6 +113,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$bn householdSetup = _Translations$householdSetup$bn._(_root);
 	@override late final _Translations$issueReport$bn issueReport = _Translations$issueReport$bn._(_root);
 	@override late final _Translations$podcasts$bn podcasts = _Translations$podcasts$bn._(_root);
+	@override late final _Translations$subtitleAiUi$bn subtitleAiUi = _Translations$subtitleAiUi$bn._(_root);
 	@override late final _Translations$romm$bn romm = _Translations$romm$bn._(_root);
 	@override late final _Translations$subtitleCapture$bn subtitleCapture = _Translations$subtitleCapture$bn._(_root);
 	@override late final _Translations$karaokeUi$bn karaokeUi = _Translations$karaokeUi$bn._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$bn extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'সর্বশেষ পর্বগুলো স্বয়ংক্রিয়ভাবে ডাউনলোড করুন';
 	@override String get removeFinishedAfter => 'শেষ করা ডাউনলোডগুলো এই সময় পরে সরান';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$bn extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$bn._(TranslationsBn root) : this._root = root, super.internal(root);
+
+	final TranslationsBn _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'লাইভ ক্যাপশন শুরু করুন';
+	@override String get liveCaptureStop => 'লাইভ ক্যাপশন বন্ধ করুন';
+	@override String get inferenceProviderNotice => 'CPU হলো মূল বিকল্প। GPU, Core ML, QNN ও RKNN নির্বাচন ইনস্টল করা রানটাইম ব্যবহারের অনুরোধ; এটি হার্ডওয়্যারে কাজ হওয়ার প্রমাণ নয়। সমর্থন না থাকলে বা ব্যর্থ হলে CPU-তে আবার চেষ্টা হয়; প্রতিটি কাজের হার্ডওয়্যার ব্যবহার যাচাই করা নাও যেতে পারে।';
+	@override String get translationProviderNotice => 'Argos প্রতিটি ক্যাপশনের হার্ডওয়্যার ব্যবহার জানায় না, আর ML Kit CPU/GPU নির্বাচন প্রকাশ করে না।';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsBn {
 			'issueReport.openDraft' => 'GitHub খসড়া খুলুন',
 			'podcasts.autoDownloadLatest' => 'সর্বশেষ পর্বগুলো স্বয়ংক্রিয়ভাবে ডাউনলোড করুন',
 			'podcasts.removeFinishedAfter' => 'শেষ করা ডাউনলোডগুলো এই সময় পরে সরান',
+			'subtitleAiUi.liveCaptureStart' => 'লাইভ ক্যাপশন শুরু করুন',
+			'subtitleAiUi.liveCaptureStop' => 'লাইভ ক্যাপশন বন্ধ করুন',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU হলো মূল বিকল্প। GPU, Core ML, QNN ও RKNN নির্বাচন ইনস্টল করা রানটাইম ব্যবহারের অনুরোধ; এটি হার্ডওয়্যারে কাজ হওয়ার প্রমাণ নয়। সমর্থন না থাকলে বা ব্যর্থ হলে CPU-তে আবার চেষ্টা হয়; প্রতিটি কাজের হার্ডওয়্যার ব্যবহার যাচাই করা নাও যেতে পারে।',
+			'subtitleAiUi.translationProviderNotice' => 'Argos প্রতিটি ক্যাপশনের হার্ডওয়্যার ব্যবহার জানায় না, আর ML Kit CPU/GPU নির্বাচন প্রকাশ করে না।',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsBn {
 			'musicDevices.thisDevice' => 'এই ডিভাইস',
 			'musicDevices.playingOn' => ({required Object device}) => '${device}-এ চলছে',
 			'musicDevices.remembered' => 'মনে রাখা ডিভাইস',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'ডিভাইস ভুলে যান',
 			'musicDevices.receive' => 'এই ডিভাইসে প্লেব্যাকের অনুমতি দিন',
 			'musicDevices.receiverHint' => 'গান গ্রহণ করতে Pleazyng খোলা রাখুন। এই কোড দিয়ে একবার জোড়া লাগান।',
 			'musicDevices.moveFailed' => 'প্লেব্যাক সরানো যায়নি। ডিভাইসটি চালু ও জোড়া লাগানো আছে এবং গান সার্ভারে প্রবেশ করতে পারে কিনা দেখুন।',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'সংযোগ বিচ্ছিন্ন হয়েছে। প্লেব্যাক দেখতে নির্বাচিত ডিভাইসে আবার সংযুক্ত হন।',
 			'musicDevices.away' => 'বাড়ির বাইরে',
 			'musicDevices.relay' => 'মিউজিক রিলে URL',

@@ -113,6 +113,7 @@ class TranslationsIt extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$it householdSetup = _Translations$householdSetup$it._(_root);
 	@override late final _Translations$issueReport$it issueReport = _Translations$issueReport$it._(_root);
 	@override late final _Translations$podcasts$it podcasts = _Translations$podcasts$it._(_root);
+	@override late final _Translations$subtitleAiUi$it subtitleAiUi = _Translations$subtitleAiUi$it._(_root);
 	@override late final _Translations$romm$it romm = _Translations$romm$it._(_root);
 	@override late final _Translations$subtitleCapture$it subtitleCapture = _Translations$subtitleCapture$it._(_root);
 	@override late final _Translations$karaokeUi$it karaokeUi = _Translations$karaokeUi$it._(_root);
@@ -4046,6 +4047,19 @@ class _Translations$podcasts$it extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Scarica automaticamente gli episodi più recenti';
 	@override String get removeFinishedAfter => 'Rimuovi i download completati dopo';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$it extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$it._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Avvia sottotitoli in diretta';
+	@override String get liveCaptureStop => 'Interrompi sottotitoli in diretta';
+	@override String get inferenceProviderNotice => 'La CPU è la base. GPU, Core ML, QNN e RKNN richiedono i runtime installati, ma non provano l’esecuzione hardware. Le richieste non supportate o non riuscite vengono riprovate sulla CPU; l’esecuzione di ogni singola operazione potrebbe non essere verificata.';
+	@override String get translationProviderNotice => 'Argos non riporta l’esecuzione hardware per ogni sottotitolo e ML Kit non espone la scelta CPU/GPU.';
 }
 
 // Path: romm
@@ -9332,6 +9346,10 @@ extension on TranslationsIt {
 			'issueReport.openDraft' => 'Apri la bozza GitHub',
 			'podcasts.autoDownloadLatest' => 'Scarica automaticamente gli episodi più recenti',
 			'podcasts.removeFinishedAfter' => 'Rimuovi i download completati dopo',
+			'subtitleAiUi.liveCaptureStart' => 'Avvia sottotitoli in diretta',
+			'subtitleAiUi.liveCaptureStop' => 'Interrompi sottotitoli in diretta',
+			'subtitleAiUi.inferenceProviderNotice' => 'La CPU è la base. GPU, Core ML, QNN e RKNN richiedono i runtime installati, ma non provano l’esecuzione hardware. Le richieste non supportate o non riuscite vengono riprovate sulla CPU; l’esecuzione di ogni singola operazione potrebbe non essere verificata.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos non riporta l’esecuzione hardware per ogni sottotitolo e ML Kit non espone la scelta CPU/GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9659,12 +9677,12 @@ extension on TranslationsIt {
 			'musicDevices.thisDevice' => 'Questo dispositivo',
 			'musicDevices.playingOn' => ({required Object device}) => 'In riproduzione su ${device}',
 			'musicDevices.remembered' => 'Dispositivi salvati',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Dimentica dispositivo',
 			'musicDevices.receive' => 'Consenti la riproduzione su questo dispositivo',
 			'musicDevices.receiverHint' => 'Tieni Pleazyng aperto per ricevere musica. Associa una volta con questo codice.',
 			'musicDevices.moveFailed' => 'Impossibile spostare la riproduzione. Controlla che il dispositivo sia attivo, associato e possa accedere al server musicale.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Connessione interrotta. Riconnettiti al dispositivo selezionato per verificare la riproduzione.',
 			'musicDevices.away' => 'Fuori casa',
 			'musicDevices.relay' => 'URL del relay musicale',

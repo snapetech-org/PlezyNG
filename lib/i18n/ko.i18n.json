@@ -5004,7 +5004,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "실시간 자막 시작",
+    "liveCaptureStop": "실시간 자막 중지",
+    "inferenceProviderNotice": "기본 경로는 CPU입니다. GPU, Core ML, QNN, RKNN 선택은 설치된 런타임 사용 요청일 뿐 하드웨어 실행을 증명하지 않습니다. 지원되지 않거나 실패한 요청은 CPU로 다시 시도하며, 작업별 실행 위치는 확인되지 않을 수 있습니다.",
+    "translationProviderNotice": "Argos는 자막별 하드웨어 실행 위치를 보고하지 않고, ML Kit은 CPU/GPU 선택을 공개하지 않습니다."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

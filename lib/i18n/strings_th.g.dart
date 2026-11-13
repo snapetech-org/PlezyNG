@@ -113,6 +113,7 @@ class TranslationsTh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$th householdSetup = _Translations$householdSetup$th._(_root);
 	@override late final _Translations$issueReport$th issueReport = _Translations$issueReport$th._(_root);
 	@override late final _Translations$podcasts$th podcasts = _Translations$podcasts$th._(_root);
+	@override late final _Translations$subtitleAiUi$th subtitleAiUi = _Translations$subtitleAiUi$th._(_root);
 	@override late final _Translations$romm$th romm = _Translations$romm$th._(_root);
 	@override late final _Translations$subtitleCapture$th subtitleCapture = _Translations$subtitleCapture$th._(_root);
 	@override late final _Translations$karaokeUi$th karaokeUi = _Translations$karaokeUi$th._(_root);
@@ -4016,6 +4017,19 @@ class _Translations$podcasts$th extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'ดาวน์โหลดตอนล่าสุดโดยอัตโนมัติ';
 	@override String get removeFinishedAfter => 'ลบไฟล์ดาวน์โหลดที่ฟังจบแล้วหลังจาก';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$th extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$th._(TranslationsTh root) : this._root = root, super.internal(root);
+
+	final TranslationsTh _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'เริ่มคำบรรยายสด';
+	@override String get liveCaptureStop => 'หยุดคำบรรยายสด';
+	@override String get inferenceProviderNotice => 'CPU เป็นตัวเลือกพื้นฐาน การเลือก GPU, Core ML, QNN หรือ RKNN เป็นการขอใช้รันไทม์ที่ติดตั้งไว้ แต่ไม่ได้ยืนยันว่าประมวลผลบนฮาร์ดแวร์ หากไม่รองรับหรือทำงานล้มเหลว จะลองใหม่ด้วย CPU และอาจตรวจสอบตำแหน่งการทำงานแต่ละรายการไม่ได้';
+	@override String get translationProviderNotice => 'Argos ไม่รายงานตำแหน่งฮาร์ดแวร์ของคำบรรยายแต่ละบรรทัด และ ML Kit ไม่เปิดเผยการเลือก CPU/GPU';
 }
 
 // Path: romm
@@ -9300,6 +9314,10 @@ extension on TranslationsTh {
 			'issueReport.openDraft' => 'เปิดฉบับร่าง GitHub',
 			'podcasts.autoDownloadLatest' => 'ดาวน์โหลดตอนล่าสุดโดยอัตโนมัติ',
 			'podcasts.removeFinishedAfter' => 'ลบไฟล์ดาวน์โหลดที่ฟังจบแล้วหลังจาก',
+			'subtitleAiUi.liveCaptureStart' => 'เริ่มคำบรรยายสด',
+			'subtitleAiUi.liveCaptureStop' => 'หยุดคำบรรยายสด',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU เป็นตัวเลือกพื้นฐาน การเลือก GPU, Core ML, QNN หรือ RKNN เป็นการขอใช้รันไทม์ที่ติดตั้งไว้ แต่ไม่ได้ยืนยันว่าประมวลผลบนฮาร์ดแวร์ หากไม่รองรับหรือทำงานล้มเหลว จะลองใหม่ด้วย CPU และอาจตรวจสอบตำแหน่งการทำงานแต่ละรายการไม่ได้',
+			'subtitleAiUi.translationProviderNotice' => 'Argos ไม่รายงานตำแหน่งฮาร์ดแวร์ของคำบรรยายแต่ละบรรทัด และ ML Kit ไม่เปิดเผยการเลือก CPU/GPU',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9627,12 +9645,12 @@ extension on TranslationsTh {
 			'musicDevices.thisDevice' => 'อุปกรณ์นี้',
 			'musicDevices.playingOn' => ({required Object device}) => 'กำลังเล่นบน ${device}',
 			'musicDevices.remembered' => 'อุปกรณ์ที่บันทึกไว้',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'ลืมอุปกรณ์',
 			'musicDevices.receive' => 'อนุญาตให้เล่นบนอุปกรณ์นี้',
 			'musicDevices.receiverHint' => 'เปิด Pleazyng ไว้เพื่อรับเพลง จับคู่ครั้งเดียวด้วยรหัสนี้',
 			'musicDevices.moveFailed' => 'ย้ายการเล่นไม่ได้ ตรวจสอบว่าอุปกรณ์เปิดอยู่ จับคู่แล้ว และเข้าถึงเซิร์ฟเวอร์เพลงได้',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'การเชื่อมต่อขัดข้อง เชื่อมต่ออุปกรณ์ที่เลือกอีกครั้งเพื่อตรวจสอบการเล่น',
 			'musicDevices.away' => 'นอกบ้าน',
 			'musicDevices.relay' => 'URL รีเลย์เพลง',

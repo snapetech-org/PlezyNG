@@ -91,6 +91,7 @@ class TranslationsPtPt extends TranslationsPt with BaseTranslations<AppLocale, T
 	@override late final Translations$subtitleCapture$pt_PT subtitleCapture = Translations$subtitleCapture$pt_PT.internal(_root);
 	@override late final Translations$musicTools$pt_PT musicTools = Translations$musicTools$pt_PT.internal(_root);
 	@override late final Translations$musicExperience$pt_PT musicExperience = Translations$musicExperience$pt_PT.internal(_root);
+	@override late final Translations$subtitleAiUi$pt_PT subtitleAiUi = Translations$subtitleAiUi$pt_PT.internal(_root);
 }
 
 // Path: cast
@@ -1104,6 +1105,19 @@ class Translations$musicExperience$pt_PT extends Translations$musicExperience$pt
 	@override String get bluetoothDrivingHint => 'Escolha as saídas Bluetooth ligadas que abrem automaticamente a vista de condução.';
 }
 
+// Path: subtitleAiUi
+class Translations$subtitleAiUi$pt_PT extends Translations$subtitleAiUi$pt {
+	Translations$subtitleAiUi$pt_PT.internal(TranslationsPtPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPtPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Iniciar legendas em direto';
+	@override String get liveCaptureStop => 'Parar legendas em direto';
+	@override String get inferenceProviderNotice => 'A CPU é a opção base. GPU, Core ML, QNN e RKNN solicitam os ambientes instalados, mas não comprovam a execução por hardware. Pedidos não suportados ou falhados são repetidos na CPU; a execução de cada operação pode não ser verificada.';
+	@override String get translationProviderNotice => 'O Argos não informa o uso de hardware em cada legenda, e o ML Kit não revela a escolha entre CPU e GPU.';
+}
+
 // Path: common.mediaKind
 class Translations$common$mediaKind$pt_PT extends Translations$common$mediaKind$pt {
 	Translations$common$mediaKind$pt_PT.internal(TranslationsPtPt root) : this._root = root, super.internal(root);
@@ -2015,6 +2029,10 @@ extension on TranslationsPtPt {
 			'musicTools.sharedPlaylists' => 'Listas partilhadas',
 			'musicExperience.bluetoothDriving' => 'Saídas Bluetooth para condução',
 			'musicExperience.bluetoothDrivingHint' => 'Escolha as saídas Bluetooth ligadas que abrem automaticamente a vista de condução.',
+			'subtitleAiUi.liveCaptureStart' => 'Iniciar legendas em direto',
+			'subtitleAiUi.liveCaptureStop' => 'Parar legendas em direto',
+			'subtitleAiUi.inferenceProviderNotice' => 'A CPU é a opção base. GPU, Core ML, QNN e RKNN solicitam os ambientes instalados, mas não comprovam a execução por hardware. Pedidos não suportados ou falhados são repetidos na CPU; a execução de cada operação pode não ser verificada.',
+			'subtitleAiUi.translationProviderNotice' => 'O Argos não informa o uso de hardware em cada legenda, e o ML Kit não revela a escolha entre CPU e GPU.',
 			_ => null,
 		};
 	}

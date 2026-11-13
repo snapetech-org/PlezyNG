@@ -113,6 +113,7 @@ class TranslationsAz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$az householdSetup = _Translations$householdSetup$az._(_root);
 	@override late final _Translations$issueReport$az issueReport = _Translations$issueReport$az._(_root);
 	@override late final _Translations$podcasts$az podcasts = _Translations$podcasts$az._(_root);
+	@override late final _Translations$subtitleAiUi$az subtitleAiUi = _Translations$subtitleAiUi$az._(_root);
 	@override late final _Translations$romm$az romm = _Translations$romm$az._(_root);
 	@override late final _Translations$subtitleCapture$az subtitleCapture = _Translations$subtitleCapture$az._(_root);
 	@override late final _Translations$karaokeUi$az karaokeUi = _Translations$karaokeUi$az._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$az extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Ən son epizodları avtomatik endir';
 	@override String get removeFinishedAfter => 'Bitmiş endirmələri bu müddətdən sonra sil';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$az extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$az._(TranslationsAz root) : this._root = root, super.internal(root);
+
+	final TranslationsAz _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Canlı subtitrləri başlat';
+	@override String get liveCaptureStop => 'Canlı subtitrləri dayandır';
+	@override String get inferenceProviderNotice => 'CPU əsas seçimdir. GPU, Core ML, QNN və RKNN quraşdırılmış icra mühitlərindən istifadə sorğusudur, aparat icrasının sübutu deyil. Dəstəklənməyən və ya uğursuz sorğular CPU ilə yenidən sınanır; hər əməliyyat üzrə icranı təsdiqləmək mümkün olmaya bilər.';
+	@override String get translationProviderNotice => 'Argos hər subtitr sətri üzrə aparat icrasını bildirmir; ML Kit CPU və ya GPU seçimini göstərmir.';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsAz {
 			'issueReport.openDraft' => 'GitHub qaralamasını açın',
 			'podcasts.autoDownloadLatest' => 'Ən son epizodları avtomatik endir',
 			'podcasts.removeFinishedAfter' => 'Bitmiş endirmələri bu müddətdən sonra sil',
+			'subtitleAiUi.liveCaptureStart' => 'Canlı subtitrləri başlat',
+			'subtitleAiUi.liveCaptureStop' => 'Canlı subtitrləri dayandır',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU əsas seçimdir. GPU, Core ML, QNN və RKNN quraşdırılmış icra mühitlərindən istifadə sorğusudur, aparat icrasının sübutu deyil. Dəstəklənməyən və ya uğursuz sorğular CPU ilə yenidən sınanır; hər əməliyyat üzrə icranı təsdiqləmək mümkün olmaya bilər.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos hər subtitr sətri üzrə aparat icrasını bildirmir; ML Kit CPU və ya GPU seçimini göstərmir.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsAz {
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} cihazında səsləndirilir',
 			'musicDevices.remembered' => 'Yadda saxlanmış cihazlar',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Cihazı unut',
 			'musicDevices.receive' => 'Bu cihazda səsləndirməyə icazə ver',
 			'musicDevices.receiverHint' => 'Musiqi qəbul etmək üçün Pleazyng açıq qalsın. Bu kodla bir dəfə qoşalaşdırın.',
 			'musicDevices.moveFailed' => 'Səsləndirmə köçürülmədi. Cihazın aktiv, qoşalaşdırılmış və musiqi serverinə bağlı olduğunu yoxlayın.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Bağlantı kəsildi. Səsləndirməni yoxlamaq üçün seçilmiş cihaza yenidən qoşulun.',
 			'musicDevices.away' => 'Evdən kənarda',
 			'musicDevices.relay' => 'Musiqi rele ünvanı',

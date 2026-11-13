@@ -114,6 +114,7 @@ class TranslationsZhHant extends TranslationsZh with BaseTranslations<AppLocale,
 	@override late final _Translations$householdSetup$zh_Hant householdSetup = _Translations$householdSetup$zh_Hant._(_root);
 	@override late final _Translations$issueReport$zh_Hant issueReport = _Translations$issueReport$zh_Hant._(_root);
 	@override late final _Translations$podcasts$zh_Hant podcasts = _Translations$podcasts$zh_Hant._(_root);
+	@override late final _Translations$subtitleAiUi$zh_Hant subtitleAiUi = _Translations$subtitleAiUi$zh_Hant._(_root);
 	@override late final _Translations$romm$zh_Hant romm = _Translations$romm$zh_Hant._(_root);
 	@override late final _Translations$subtitleCapture$zh_Hant subtitleCapture = _Translations$subtitleCapture$zh_Hant._(_root);
 	@override late final _Translations$karaokeUi$zh_Hant karaokeUi = _Translations$karaokeUi$zh_Hant._(_root);
@@ -4035,6 +4036,19 @@ class _Translations$podcasts$zh_Hant extends Translations$podcasts$zh {
 	// Translations
 	@override String get autoDownloadLatest => '自動下載最新單集';
 	@override String get removeFinishedAfter => '在以下時間後移除已聽完的下載';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$zh_Hant extends Translations$subtitleAiUi$zh {
+	_Translations$subtitleAiUi$zh_Hant._(TranslationsZhHant root) : this._root = root, super.internal(root);
+
+	final TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => '開始即時字幕';
+	@override String get liveCaptureStop => '停止即時字幕';
+	@override String get inferenceProviderNotice => 'CPU 是基本選項。選擇 GPU、Core ML、QNN 或 RKNN 只是要求使用已安裝的執行環境，不能證明由硬體執行。不支援或失敗的要求會改用 CPU 重試；每項操作的實際執行位置可能無法確認。';
+	@override String get translationProviderNotice => 'Argos 不會回報每行字幕的硬體執行位置，ML Kit 也不會公開 CPU/GPU 選擇。';
 }
 
 // Path: romm
@@ -9321,6 +9335,10 @@ extension on TranslationsZhHant {
 			'issueReport.openDraft' => '開啟 GitHub 草稿',
 			'podcasts.autoDownloadLatest' => '自動下載最新單集',
 			'podcasts.removeFinishedAfter' => '在以下時間後移除已聽完的下載',
+			'subtitleAiUi.liveCaptureStart' => '開始即時字幕',
+			'subtitleAiUi.liveCaptureStop' => '停止即時字幕',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU 是基本選項。選擇 GPU、Core ML、QNN 或 RKNN 只是要求使用已安裝的執行環境，不能證明由硬體執行。不支援或失敗的要求會改用 CPU 重試；每項操作的實際執行位置可能無法確認。',
+			'subtitleAiUi.translationProviderNotice' => 'Argos 不會回報每行字幕的硬體執行位置，ML Kit 也不會公開 CPU/GPU 選擇。',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9648,12 +9666,12 @@ extension on TranslationsZhHant {
 			'musicDevices.thisDevice' => '此裝置',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
 			'musicDevices.remembered' => '已儲存的裝置',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => '忘記裝置',
 			'musicDevices.receive' => '允許在此裝置上播放',
 			'musicDevices.receiverHint' => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。',
 			'musicDevices.moveFailed' => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => '連線中斷。請重新連線所選裝置以檢查播放狀態。',
 			'musicDevices.away' => '外出時',
 			'musicDevices.relay' => '音樂中繼 URL',

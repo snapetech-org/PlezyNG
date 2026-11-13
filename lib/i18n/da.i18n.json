@@ -5009,7 +5009,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "Start liveundertekster",
+    "liveCaptureStop": "Stop liveundertekster",
+    "inferenceProviderNotice": "CPU er standarden. GPU, Core ML, QNN og RKNN anmoder om brug af installerede kørselsmiljøer, men beviser ikke hardwarekørsel. Ikke-understøttede eller mislykkede anmodninger prøves igen på CPU; placeringen kan være ubekræftet for enkelte handlinger.",
+    "translationProviderNotice": "Argos rapporterer ikke hardwareplacering pr. undertekst, og ML Kit oplyser ikke valget mellem CPU og GPU."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

@@ -5009,7 +5009,11 @@
     "detectedSpeechLanguage": "",
     "translationQualityWarnings": "",
     "cueCountSummary": "",
-    "seekingUnavailableNote": ""
+    "seekingUnavailableNote": "",
+    "liveCaptureStart": "Starta direktextning",
+    "liveCaptureStop": "Stoppa direktextning",
+    "inferenceProviderNotice": "CPU är grundläget. GPU, Core ML, QNN och RKNN begär installerade körmiljöer men bevisar inte hårdvarukörning. Begäranden som inte stöds eller misslyckas försöks igen på CPU; placeringen för varje åtgärd kan vara obekräftad.",
+    "translationProviderNotice": "Argos rapporterar inte hårdvaruplacering per undertextrad och ML Kit visar inte CPU/GPU-valet."
   },
   "externalAccessUi": {
     "streamingAvailabilityPoweredByWatchmode": "",

@@ -113,6 +113,7 @@ class TranslationsTr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$tr householdSetup = _Translations$householdSetup$tr._(_root);
 	@override late final _Translations$issueReport$tr issueReport = _Translations$issueReport$tr._(_root);
 	@override late final _Translations$podcasts$tr podcasts = _Translations$podcasts$tr._(_root);
+	@override late final _Translations$subtitleAiUi$tr subtitleAiUi = _Translations$subtitleAiUi$tr._(_root);
 	@override late final _Translations$romm$tr romm = _Translations$romm$tr._(_root);
 	@override late final _Translations$subtitleCapture$tr subtitleCapture = _Translations$subtitleCapture$tr._(_root);
 	@override late final _Translations$karaokeUi$tr karaokeUi = _Translations$karaokeUi$tr._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$tr extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'En yeni bölümleri otomatik indir';
 	@override String get removeFinishedAfter => 'Bitirilen indirmeleri şu süreden sonra kaldır';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$tr extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$tr._(TranslationsTr root) : this._root = root, super.internal(root);
+
+	final TranslationsTr _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Canlı altyazıları başlat';
+	@override String get liveCaptureStop => 'Canlı altyazıları durdur';
+	@override String get inferenceProviderNotice => 'Temel seçenek CPU’dur. GPU, Core ML, QNN ve RKNN kurulu çalışma ortamlarını kullanma isteğidir; donanımda çalıştığını kanıtlamaz. Desteklenmeyen veya başarısız istekler CPU’da yeniden denenir; her işlemin çalışma yeri doğrulanmamış olabilir.';
+	@override String get translationProviderNotice => 'Argos her altyazı satırı için donanım kullanımını bildirmez; ML Kit CPU/GPU seçimini göstermez.';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsTr {
 			'issueReport.openDraft' => 'GitHub taslağını aç',
 			'podcasts.autoDownloadLatest' => 'En yeni bölümleri otomatik indir',
 			'podcasts.removeFinishedAfter' => 'Bitirilen indirmeleri şu süreden sonra kaldır',
+			'subtitleAiUi.liveCaptureStart' => 'Canlı altyazıları başlat',
+			'subtitleAiUi.liveCaptureStop' => 'Canlı altyazıları durdur',
+			'subtitleAiUi.inferenceProviderNotice' => 'Temel seçenek CPU’dur. GPU, Core ML, QNN ve RKNN kurulu çalışma ortamlarını kullanma isteğidir; donanımda çalıştığını kanıtlamaz. Desteklenmeyen veya başarısız istekler CPU’da yeniden denenir; her işlemin çalışma yeri doğrulanmamış olabilir.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos her altyazı satırı için donanım kullanımını bildirmez; ML Kit CPU/GPU seçimini göstermez.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsTr {
 			'musicDevices.thisDevice' => 'Bu cihaz',
 			'musicDevices.playingOn' => ({required Object device}) => '${device} üzerinde çalınıyor',
 			'musicDevices.remembered' => 'Kaydedilen cihazlar',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Cihazı unut',
 			'musicDevices.receive' => 'Bu cihazda oynatmaya izin ver',
 			'musicDevices.receiverHint' => 'Müzik almak için Pleazyng açık kalsın. Bu kodla bir kez eşleştirin.',
 			'musicDevices.moveFailed' => 'Oynatma taşınamadı. Cihazın açık, eşleştirilmiş ve müzik sunucusuna erişebilir olduğunu kontrol edin.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Bağlantı kesildi. Oynatmayı kontrol etmek için seçilen cihaza yeniden bağlanın.',
 			'musicDevices.away' => 'Ev dışındayken',
 			'musicDevices.relay' => 'Müzik rölesi URL’si',

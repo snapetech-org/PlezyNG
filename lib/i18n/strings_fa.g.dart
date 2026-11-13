@@ -113,6 +113,7 @@ class TranslationsFa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$fa householdSetup = _Translations$householdSetup$fa._(_root);
 	@override late final _Translations$issueReport$fa issueReport = _Translations$issueReport$fa._(_root);
 	@override late final _Translations$podcasts$fa podcasts = _Translations$podcasts$fa._(_root);
+	@override late final _Translations$subtitleAiUi$fa subtitleAiUi = _Translations$subtitleAiUi$fa._(_root);
 	@override late final _Translations$romm$fa romm = _Translations$romm$fa._(_root);
 	@override late final _Translations$subtitleCapture$fa subtitleCapture = _Translations$subtitleCapture$fa._(_root);
 	@override late final _Translations$karaokeUi$fa karaokeUi = _Translations$karaokeUi$fa._(_root);
@@ -4039,6 +4040,19 @@ class _Translations$podcasts$fa extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'بارگیری خودکار تازه‌ترین قسمت‌ها';
 	@override String get removeFinishedAfter => 'حذف بارگیری‌های تمام‌شده پس از';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$fa extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$fa._(TranslationsFa root) : this._root = root, super.internal(root);
+
+	final TranslationsFa _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'شروع زیرنویس زنده';
+	@override String get liveCaptureStop => 'توقف زیرنویس زنده';
+	@override String get inferenceProviderNotice => 'CPU گزینهٔ پایه است. انتخاب GPU، Core ML، QNN و RKNN درخواست استفاده از محیط‌های نصب‌شده است و اجرای سخت‌افزاری را ثابت نمی‌کند. درخواست‌های پشتیبانی‌نشده یا ناموفق با CPU دوباره امتحان می‌شوند؛ ممکن است اجرای سخت‌افزاری هر عملیات قابل‌تأیید نباشد.';
+	@override String get translationProviderNotice => 'Argos اجرای سخت‌افزاری هر زیرنویس را گزارش نمی‌کند و ML Kit انتخاب CPU یا GPU را نشان نمی‌دهد.';
 }
 
 // Path: romm
@@ -9325,6 +9339,10 @@ extension on TranslationsFa {
 			'issueReport.openDraft' => 'باز کردن پیش‌نویس GitHub',
 			'podcasts.autoDownloadLatest' => 'بارگیری خودکار تازه‌ترین قسمت‌ها',
 			'podcasts.removeFinishedAfter' => 'حذف بارگیری‌های تمام‌شده پس از',
+			'subtitleAiUi.liveCaptureStart' => 'شروع زیرنویس زنده',
+			'subtitleAiUi.liveCaptureStop' => 'توقف زیرنویس زنده',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU گزینهٔ پایه است. انتخاب GPU، Core ML، QNN و RKNN درخواست استفاده از محیط‌های نصب‌شده است و اجرای سخت‌افزاری را ثابت نمی‌کند. درخواست‌های پشتیبانی‌نشده یا ناموفق با CPU دوباره امتحان می‌شوند؛ ممکن است اجرای سخت‌افزاری هر عملیات قابل‌تأیید نباشد.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos اجرای سخت‌افزاری هر زیرنویس را گزارش نمی‌کند و ML Kit انتخاب CPU یا GPU را نشان نمی‌دهد.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9652,12 +9670,12 @@ extension on TranslationsFa {
 			'musicDevices.thisDevice' => 'این دستگاه',
 			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',
 			'musicDevices.remembered' => 'دستگاه‌های ذخیره‌شده',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'فراموش کردن دستگاه',
 			'musicDevices.receive' => 'اجازه پخش در این دستگاه',
 			'musicDevices.receiverHint' => 'برای دریافت موسیقی Pleazyng را باز نگه دارید. با این کد یک بار جفت‌سازی کنید.',
 			'musicDevices.moveFailed' => 'پخش منتقل نشد. بررسی کنید دستگاه روشن و جفت‌شده باشد و به سرور موسیقی دسترسی داشته باشد.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'ارتباط قطع شد. برای بررسی پخش دوباره به دستگاه انتخاب‌شده وصل شوید.',
 			'musicDevices.away' => 'بیرون از خانه',
 			'musicDevices.relay' => 'نشانی رلهٔ موسیقی',

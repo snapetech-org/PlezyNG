@@ -113,6 +113,7 @@ class TranslationsPl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$pl householdSetup = _Translations$householdSetup$pl._(_root);
 	@override late final _Translations$issueReport$pl issueReport = _Translations$issueReport$pl._(_root);
 	@override late final _Translations$podcasts$pl podcasts = _Translations$podcasts$pl._(_root);
+	@override late final _Translations$subtitleAiUi$pl subtitleAiUi = _Translations$subtitleAiUi$pl._(_root);
 	@override late final _Translations$romm$pl romm = _Translations$romm$pl._(_root);
 	@override late final _Translations$subtitleCapture$pl subtitleCapture = _Translations$subtitleCapture$pl._(_root);
 	@override late final _Translations$karaokeUi$pl karaokeUi = _Translations$karaokeUi$pl._(_root);
@@ -4085,6 +4086,19 @@ class _Translations$podcasts$pl extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Automatycznie pobieraj najnowsze odcinki';
 	@override String get removeFinishedAfter => 'Usuwaj ukończone pobrania po';
+}
+
+// Path: subtitleAiUi
+class _Translations$subtitleAiUi$pl extends Translations$subtitleAiUi$en {
+	_Translations$subtitleAiUi$pl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Uruchom napisy na żywo';
+	@override String get liveCaptureStop => 'Zatrzymaj napisy na żywo';
+	@override String get inferenceProviderNotice => 'CPU jest podstawowym trybem. GPU, Core ML, QNN i RKNN proszą o użycie zainstalowanego środowiska, ale nie potwierdzają wykonania sprzętowego. Nieobsługiwane lub nieudane żądania są ponawiane na CPU; miejsce wykonania poszczególnych operacji może pozostać niezweryfikowane.';
+	@override String get translationProviderNotice => 'Argos nie podaje użycia sprzętu dla każdej linijki napisów, a ML Kit nie ujawnia wyboru CPU/GPU.';
 }
 
 // Path: romm
@@ -9375,6 +9389,10 @@ extension on TranslationsPl {
 			'issueReport.openDraft' => 'Otwórz szkic GitHub',
 			'podcasts.autoDownloadLatest' => 'Automatycznie pobieraj najnowsze odcinki',
 			'podcasts.removeFinishedAfter' => 'Usuwaj ukończone pobrania po',
+			'subtitleAiUi.liveCaptureStart' => 'Uruchom napisy na żywo',
+			'subtitleAiUi.liveCaptureStop' => 'Zatrzymaj napisy na żywo',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU jest podstawowym trybem. GPU, Core ML, QNN i RKNN proszą o użycie zainstalowanego środowiska, ale nie potwierdzają wykonania sprzętowego. Nieobsługiwane lub nieudane żądania są ponawiane na CPU; miejsce wykonania poszczególnych operacji może pozostać niezweryfikowane.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos nie podaje użycia sprzętu dla każdej linijki napisów, a ML Kit nie ujawnia wyboru CPU/GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9702,12 +9720,12 @@ extension on TranslationsPl {
 			'musicDevices.thisDevice' => 'To urządzenie',
 			'musicDevices.playingOn' => ({required Object device}) => 'Odtwarzanie na ${device}',
 			'musicDevices.remembered' => 'Zapamiętane urządzenia',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => 'Zapomnij urządzenie',
 			'musicDevices.receive' => 'Zezwól na odtwarzanie na tym urządzeniu',
 			'musicDevices.receiverHint' => 'Pozostaw Pleazyng otwarte, aby odbierać muzykę. Sparuj raz przy użyciu tego kodu.',
 			'musicDevices.moveFailed' => 'Nie udało się przenieść odtwarzania. Sprawdź, czy urządzenie jest aktywne, sparowane i ma dostęp do serwera muzyki.',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => 'Połączenie przerwane. Połącz się ponownie z wybranym urządzeniem, aby sprawdzić odtwarzanie.',
 			'musicDevices.away' => 'Poza domem',
 			'musicDevices.relay' => 'URL przekaźnika muzyki',

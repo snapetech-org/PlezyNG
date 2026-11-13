@@ -113,6 +113,7 @@ class TranslationsEs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$householdSetup$es householdSetup = Translations$householdSetup$es.internal(_root);
 	@override late final Translations$issueReport$es issueReport = Translations$issueReport$es.internal(_root);
 	@override late final Translations$podcasts$es podcasts = Translations$podcasts$es.internal(_root);
+	@override late final Translations$subtitleAiUi$es subtitleAiUi = Translations$subtitleAiUi$es.internal(_root);
 	@override late final Translations$romm$es romm = Translations$romm$es.internal(_root);
 	@override late final Translations$subtitleCapture$es subtitleCapture = Translations$subtitleCapture$es.internal(_root);
 	@override late final Translations$karaokeUi$es karaokeUi = Translations$karaokeUi$es.internal(_root);
@@ -4056,6 +4057,19 @@ class Translations$podcasts$es extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => 'Descargar automáticamente los episodios más recientes';
 	@override String get removeFinishedAfter => 'Eliminar las descargas terminadas después de';
+}
+
+// Path: subtitleAiUi
+class Translations$subtitleAiUi$es extends Translations$subtitleAiUi$en {
+	Translations$subtitleAiUi$es.internal(TranslationsEs root) : this._root = root, super.internal(root);
+
+	final TranslationsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Iniciar subtítulos en directo';
+	@override String get liveCaptureStop => 'Detener subtítulos en directo';
+	@override String get inferenceProviderNotice => 'La CPU es la opción base. GPU, Core ML, QNN y RKNN solicitan los entornos instalados, pero no demuestran que se use el hardware. Si una solicitud no es compatible o falla, se vuelve a intentar con la CPU; puede que no se verifique la ejecución de cada operación.';
+	@override String get translationProviderNotice => 'Argos no informa del uso de hardware en cada subtítulo y ML Kit no muestra la selección de CPU o GPU.';
 }
 
 // Path: romm
@@ -9476,6 +9490,10 @@ extension on TranslationsEs {
 			'issueReport.openDraft' => 'Abrir borrador de GitHub',
 			'podcasts.autoDownloadLatest' => 'Descargar automáticamente los episodios más recientes',
 			'podcasts.removeFinishedAfter' => 'Eliminar las descargas terminadas después de',
+			'subtitleAiUi.liveCaptureStart' => 'Iniciar subtítulos en directo',
+			'subtitleAiUi.liveCaptureStop' => 'Detener subtítulos en directo',
+			'subtitleAiUi.inferenceProviderNotice' => 'La CPU es la opción base. GPU, Core ML, QNN y RKNN solicitan los entornos instalados, pero no demuestran que se use el hardware. Si una solicitud no es compatible o falla, se vuelve a intentar con la CPU; puede que no se verifique la ejecución de cada operación.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos no informa del uso de hardware en cada subtítulo y ML Kit no muestra la selección de CPU o GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9776,12 +9794,12 @@ extension on TranslationsEs {
 			'musicExperience.continuation' => 'Seguir con música similar',
 			'musicExperience.shuffleAlbums' => 'Mezclar álbumes',
 			'musicExperience.nextAlbum' => 'Álbum siguiente',
+			_ => null,
+		} ?? switch (path) {
 			'musicExperience.driving' => 'Vista de conducción',
 			'musicExperience.exitDriving' => 'Salir de la vista de conducción',
 			'musicExperience.signalPath' => 'Ruta de la señal de audio',
 			'musicExperience.source' => 'Fuente',
-			_ => null,
-		} ?? switch (path) {
 			'musicExperience.local' => 'Audio descargado',
 			'musicExperience.network' => 'Audio del servidor',
 			'musicExperience.engine' => 'Motor de reproducción',

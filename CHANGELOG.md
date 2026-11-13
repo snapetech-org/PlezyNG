@@ -38,6 +38,7 @@
 - Localize karaoke microphone/performance feedback and explain unavailable TV capture with phone-companion and external-mixer options.
 - Localize the LAN karaoke guest songbook, queue, stage, host actions and accessibility labels in English, German, Spanish and French, with English fallback elsewhere.
 - Localize phone-companion microphone controls, capture errors, HTTPS guidance and its accessible level label.
+- Localize live-subtitle capture controls and inference-provider placement notices through the canonical translation catalog.
 - Stop local karaoke capture if a device renegotiates a different PCM rate or channel count, preserving valid scoring and take files; document the current recorder boundary for separate audio buses.
 - Reuse a bounded, profile-scoped WAV source transcript across local subtitle translations to different target languages.
 - Disclose that locally generated source subtitle text and timing metadata can remain in the profile-scoped WAV transcript cache.

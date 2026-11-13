@@ -113,6 +113,7 @@ class TranslationsZh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$householdSetup$zh householdSetup = Translations$householdSetup$zh.internal(_root);
 	@override late final Translations$issueReport$zh issueReport = Translations$issueReport$zh.internal(_root);
 	@override late final Translations$podcasts$zh podcasts = Translations$podcasts$zh.internal(_root);
+	@override late final Translations$subtitleAiUi$zh subtitleAiUi = Translations$subtitleAiUi$zh.internal(_root);
 	@override late final Translations$romm$zh romm = Translations$romm$zh.internal(_root);
 	@override late final Translations$subtitleCapture$zh subtitleCapture = Translations$subtitleCapture$zh.internal(_root);
 	@override late final Translations$karaokeUi$zh karaokeUi = Translations$karaokeUi$zh.internal(_root);
@@ -4034,6 +4035,19 @@ class Translations$podcasts$zh extends Translations$podcasts$en {
 	// Translations
 	@override String get autoDownloadLatest => '自动下载最新单集';
 	@override String get removeFinishedAfter => '在以下时间后移除已听完的下载';
+}
+
+// Path: subtitleAiUi
+class Translations$subtitleAiUi$zh extends Translations$subtitleAiUi$en {
+	Translations$subtitleAiUi$zh.internal(TranslationsZh root) : this._root = root, super.internal(root);
+
+	final TranslationsZh _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => '开始实时字幕';
+	@override String get liveCaptureStop => '停止实时字幕';
+	@override String get inferenceProviderNotice => 'CPU 是基础选项。选择 GPU、Core ML、QNN 或 RKNN 只是请求使用已安装的运行环境，并不能证明由硬件执行。不受支持或失败的请求会改用 CPU 重试；每项操作的实际执行位置可能无法确认。';
+	@override String get translationProviderNotice => 'Argos 不会报告每条字幕的硬件执行位置，ML Kit 也不会公开 CPU/GPU 选择。';
 }
 
 // Path: romm
@@ -9320,6 +9334,10 @@ extension on TranslationsZh {
 			'issueReport.openDraft' => '打开 GitHub 草稿',
 			'podcasts.autoDownloadLatest' => '自动下载最新单集',
 			'podcasts.removeFinishedAfter' => '在以下时间后移除已听完的下载',
+			'subtitleAiUi.liveCaptureStart' => '开始实时字幕',
+			'subtitleAiUi.liveCaptureStop' => '停止实时字幕',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU 是基础选项。选择 GPU、Core ML、QNN 或 RKNN 只是请求使用已安装的运行环境，并不能证明由硬件执行。不受支持或失败的请求会改用 CPU 重试；每项操作的实际执行位置可能无法确认。',
+			'subtitleAiUi.translationProviderNotice' => 'Argos 不会报告每条字幕的硬件执行位置，ML Kit 也不会公开 CPU/GPU 选择。',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9647,12 +9665,12 @@ extension on TranslationsZh {
 			'musicDevices.thisDevice' => '此设备',
 			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
 			'musicDevices.remembered' => '已保存的设备',
+			_ => null,
+		} ?? switch (path) {
 			'musicDevices.forget' => '忘记设备',
 			'musicDevices.receive' => '允许在此设备上播放',
 			'musicDevices.receiverHint' => '保持 Pleazyng 打开以接收音乐。使用此代码配对一次。',
 			'musicDevices.moveFailed' => '无法转移播放。请检查设备已唤醒、已配对并能访问音乐服务器。',
-			_ => null,
-		} ?? switch (path) {
 			'musicDevices.uncertain' => '连接中断。请重新连接所选设备以检查播放状态。',
 			'musicDevices.away' => '外出时',
 			'musicDevices.relay' => '音乐中继 URL',

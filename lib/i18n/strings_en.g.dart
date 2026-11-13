@@ -12784,14 +12784,26 @@ class Translations$subtitleAiUi$en {
 	/// en: 'Inference backend'
 	String get inferenceBackend => 'Inference backend';
 
+	/// en: 'Start live captions'
+	String get liveCaptureStart => 'Start live captions';
+
+	/// en: 'Stop live captions'
+	String get liveCaptureStop => 'Stop live captions';
+
+	/// en: 'CPU is the baseline. GPU, Core ML, QNN, and RKNN are requests to use installed runtimes, not proof of hardware execution. Unsupported or failed requests retry on CPU; per-operation placement may be unverified.'
+	String get inferenceProviderNotice => 'CPU is the baseline. GPU, Core ML, QNN, and RKNN are requests to use installed runtimes, not proof of hardware execution. Unsupported or failed requests retry on CPU; per-operation placement may be unverified.';
+
+	/// en: 'Argos does not report per-cue hardware placement; GPU requests are best-effort. ML Kit does not expose CPU/GPU selection.'
+	String get translationProviderNotice => 'Argos does not report per-cue hardware placement; GPU requests are best-effort. ML Kit does not expose CPU/GPU selection.';
+
 	/// en: 'Restore, export, or delete reviewed versions stored on this device'
 	String get restoreExportOrDeleteReviewedVersion_e84dffb9 => 'Restore, export, or delete reviewed versions stored on this device';
 
 	/// en: 'Live captions from playback'
 	String get liveCaptionsFromPlayback => 'Live captions from playback';
 
-	/// en: 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.'
-	String get theActivePlayerCopiesBoundedDecodedP_1bef0371 => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.';
+	/// en: 'The active player copies bounded decoded PCM with media timestamps. Whisper runs locally on CPU, and the model downloads on first use. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.'
+	String get theActivePlayerCopiesBoundedDecodedP_1bef0371 => 'The active player copies bounded decoded PCM with media timestamps. Whisper runs locally on CPU, and the model downloads on first use. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.';
 
 	/// en: 'Browse captured transcript'
 	String get browseCapturedTranscript => 'Browse captured transcript';
@@ -22480,9 +22492,13 @@ extension on Translations {
 			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
 			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
 			'subtitleAiUi.inferenceBackend' => 'Inference backend',
+			'subtitleAiUi.liveCaptureStart' => 'Start live captions',
+			'subtitleAiUi.liveCaptureStop' => 'Stop live captions',
+			'subtitleAiUi.inferenceProviderNotice' => 'CPU is the baseline. GPU, Core ML, QNN, and RKNN are requests to use installed runtimes, not proof of hardware execution. Unsupported or failed requests retry on CPU; per-operation placement may be unverified.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos does not report per-cue hardware placement; GPU requests are best-effort. ML Kit does not expose CPU/GPU selection.',
 			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
-			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
+			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. Whisper runs locally on CPU, and the model downloads on first use. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
 			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
 			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
 			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
@@ -22966,12 +22982,12 @@ extension on Translations {
 			'karaokeUi.karaokeTools' => 'Karaoke tools',
 			'karaokeUi.privateTakes' => 'Private takes',
 			'karaokeUi.venueCollectionsAndReadiness' => 'Venue, collections and readiness',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.recentlyAdded' => 'Recently added',
 			'karaokeUi.scoredCharts' => 'Scored charts',
 			'karaokeUi.fitsMyRange' => 'Fits my range',
 			'karaokeUi.allGenres' => 'All genres',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.allLanguages' => 'All languages',
 			'karaokeUi.allDecades' => 'All decades',
 			'karaokeUi.allDifficultyLevels' => 'All difficulty levels',

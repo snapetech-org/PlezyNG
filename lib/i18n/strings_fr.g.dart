@@ -114,6 +114,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$householdSetup$fr householdSetup = Translations$householdSetup$fr.internal(_root);
 	@override late final Translations$issueReport$fr issueReport = Translations$issueReport$fr.internal(_root);
 	@override late final Translations$podcasts$fr podcasts = Translations$podcasts$fr.internal(_root);
+	@override late final Translations$subtitleAiUi$fr subtitleAiUi = Translations$subtitleAiUi$fr.internal(_root);
 	@override late final Translations$romm$fr romm = Translations$romm$fr.internal(_root);
 	@override late final Translations$subtitleCapture$fr subtitleCapture = Translations$subtitleCapture$fr.internal(_root);
 	@override late final Translations$karaokeUi$fr karaokeUi = Translations$karaokeUi$fr.internal(_root);
@@ -4073,6 +4074,19 @@ class Translations$podcasts$fr extends Translations$podcasts$en {
 	@override String get syncConsent => 'Partager les URL des podcasts et la progression d’écoute avec ce serveur';
 	@override String get autoDownloadLatest => 'Télécharger automatiquement les derniers épisodes';
 	@override String get removeFinishedAfter => 'Supprimer les téléchargements terminés après';
+}
+
+// Path: subtitleAiUi
+class Translations$subtitleAiUi$fr extends Translations$subtitleAiUi$en {
+	Translations$subtitleAiUi$fr.internal(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get liveCaptureStart => 'Démarrer les sous-titres en direct';
+	@override String get liveCaptureStop => 'Arrêter les sous-titres en direct';
+	@override String get inferenceProviderNotice => 'Le CPU est la base. GPU, Core ML, QNN et RKNN demandent les environnements installés, sans prouver une exécution matérielle. Les demandes non prises en charge ou en échec sont réessayées sur CPU ; le placement de chaque opération peut rester non vérifié.';
+	@override String get translationProviderNotice => 'Argos ne signale pas le placement matériel pour chaque sous-titre et ML Kit ne précise pas le choix CPU/GPU.';
 }
 
 // Path: romm
@@ -9389,6 +9403,10 @@ extension on TranslationsFr {
 			'podcasts.syncConsent' => 'Partager les URL des podcasts et la progression d’écoute avec ce serveur',
 			'podcasts.autoDownloadLatest' => 'Télécharger automatiquement les derniers épisodes',
 			'podcasts.removeFinishedAfter' => 'Supprimer les téléchargements terminés après',
+			'subtitleAiUi.liveCaptureStart' => 'Démarrer les sous-titres en direct',
+			'subtitleAiUi.liveCaptureStop' => 'Arrêter les sous-titres en direct',
+			'subtitleAiUi.inferenceProviderNotice' => 'Le CPU est la base. GPU, Core ML, QNN et RKNN demandent les environnements installés, sans prouver une exécution matérielle. Les demandes non prises en charge ou en échec sont réessayées sur CPU ; le placement de chaque opération peut rester non vérifié.',
+			'subtitleAiUi.translationProviderNotice' => 'Argos ne signale pas le placement matériel pour chaque sous-titre et ML Kit ne précise pas le choix CPU/GPU.',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9696,12 +9714,12 @@ extension on TranslationsFr {
 			'musicTools.sonicAnalysis' => 'Analyse sonore',
 			'musicTools.serverAnalysisScope' => 'Toutes les bibliothèques musicales éligibles de ce serveur. Leurs paramètres d’analyse ne sont pas modifiés.',
 			'musicTools.serverActivities' => 'Activités du serveur',
+			_ => null,
+		} ?? switch (path) {
 			'musicTools.playlistSharing' => 'Accès à la liste',
 			'musicTools.playlistRecipient' => 'Nom d’utilisateur Plex ou e-mail',
 			'musicTools.playlistSharingHint' => 'Accordez l’accès à cette liste et à ses titres. Le destinataire devra peut-être accepter une invitation.',
 			'musicTools.playlistSharingFailed' => 'Impossible de demander l’accès à la liste.',
-			_ => null,
-		} ?? switch (path) {
 			'musicTools.playlistSharingAccepted' => 'Plex a accepté la demande d’accès.',
 			'musicTools.playlistAccessList' => 'Accès actuel',
 			'musicTools.playlistAccessNone' => 'Aucun accès accordé à cette liste',

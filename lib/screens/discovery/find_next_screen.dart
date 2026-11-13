@@ -32,6 +32,7 @@ import '../../providers/catalog_sources_provider.dart';
 import '../../providers/explore_provider.dart';
 import '../../providers/offline_mode_provider.dart';
 import '../../screens/livetv/program_details_sheet.dart';
+import '../../screens/video_player/live_tv_session_args.dart';
 import '../../screens/lending/public_libraries_screen.dart';
 import '../../screens/sources/source_detail_screen.dart';
 import '../../screens/sources/source_player_screen.dart';
@@ -528,9 +529,8 @@ class _FindNextScreenState extends State<FindNextScreen> {
                       runSpacing: 8,
                       children: [
                         TextButton(
-                          onPressed: () => Navigator.of(
-                            sheetContext,
-                          ).pop((preferred: <String>{}, avoided: <String>{}, hiddenIds: <String>{}, reset: true)),
+                          onPressed: () => Navigator.of(sheetContext)
+                              .pop((preferred: <String>{}, avoided: <String>{}, hiddenIds: <String>{}, reset: true)),
                           child: Text(t.discover.findNext.resetTaste),
                         ),
                         FilledButton(
@@ -1178,9 +1178,8 @@ class _FindNextScreenState extends State<FindNextScreen> {
   static ExternalIds _externalIdsForMedia(MediaItem item) {
     if (item is PlexMediaItem) {
       final guids = item.raw?['Guid'];
-      return ExternalIds.fromGuids(
-        guids is List ? guids : const [],
-      ).fillFrom(ExternalIds.fromLegacyPlexGuid(item.guid));
+      return ExternalIds.fromGuids(guids is List ? guids : const [])
+          .fillFrom(ExternalIds.fromLegacyPlexGuid(item.guid));
     }
     final providerIds = item.raw?['ProviderIds'];
     if (providerIds is! Map) return const ExternalIds();
@@ -2613,7 +2612,9 @@ class _FindNextScreenState extends State<FindNextScreen> {
       from: now.subtract(const Duration(hours: 1)),
       to: now.add(const Duration(minutes: 1)),
     );
-    final channels = await client.liveTv.fetchChannels(lineup: liveServer.lineup);
+    final channels = (await client.liveTv.fetchChannels(lineup: liveServer.lineup))
+        .map((item) => item.copyWith(serverId: choice.serverId, liveDvrKey: liveServer.dvrKey))
+        .toList(growable: false);
     if (!mounted ||
         context.read<ActiveProfileProvider>().active?.id != profileId ||
         !identical(client.authenticationSessionId, authentication)) {
@@ -2624,6 +2625,7 @@ class _FindNextScreenState extends State<FindNextScreen> {
       final identity = (program.ratingKey ?? program.guid)?.trim();
       return identity != null &&
           _safeLiveReference(identity) == choice.liveProgramId &&
+          program.beginsAt == choice.liveBeginsAtSeconds &&
           program.beginsAt != null &&
           program.beginsAt! <= nowSeconds &&
           program.endsAt != null &&
@@ -2650,10 +2652,22 @@ class _FindNextScreenState extends State<FindNextScreen> {
         channel: channel,
         posterUrl: posterUrl,
         client: client,
-        onTuneChannel: () => navigateToLiveTv(context, multiServer: multiServer, channel: channel, channels: channels),
+        onTuneChannel: () => navigateToLiveTv(
+          context,
+          multiServer: multiServer,
+          channel: channel,
+          channels: channels,
+          startPosition: LiveTvStartPosition.live,
+        ),
       );
     } else {
-      await navigateToLiveTv(context, multiServer: multiServer, channel: channel, channels: channels);
+      await navigateToLiveTv(
+        context,
+        multiServer: multiServer,
+        channel: channel,
+        channels: channels,
+        startPosition: LiveTvStartPosition.live,
+      );
     }
   }
 

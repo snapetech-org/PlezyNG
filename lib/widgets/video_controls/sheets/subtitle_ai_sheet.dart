@@ -1,6 +1,7 @@
 import '../../../i18n/subtitle_capture_status_text.dart';
 import '../../../services/subtitle_capture_status.dart';
 import '../../../services/subtitle_speech_progress.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show File, Platform;
@@ -10,6 +11,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../../i18n/strings.g.dart';
+
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
@@ -30,6 +32,7 @@ import '../../../services/subtitle_translation_service.dart';
 import '../../../services/settings_service.dart';
 import '../../../services/subtitle_playback_transcription_service.dart';
 import '../../../services/subtitle_revision_service.dart';
+import '../../../services/subtitle_source_transcript_cache.dart';
 import '../../../utils/provider_extensions.dart';
 import '../../../widgets/app_icon.dart';
 import '../../../widgets/focusable_list_tile.dart';
@@ -187,6 +190,40 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     );
   }
 
+  Future<SubtitleCachedSourceTranscript> _sourceTranscriptForWav(String wavPath) async {
+    if (!SubtitleAiService.supportedPlatform) {
+      throw UnsupportedError('Local speech generation is unavailable on this platform.');
+    }
+    final languageCode = _speechLanguageCode == 'auto' ? null : _speechLanguageCode;
+    final profileId = _activeProfileId;
+    final identity = await SubtitleSourceTranscriptCacheService.identify(
+      profileId: profileId,
+      wavPath: wavPath,
+      provider: _provider,
+      languageCode: languageCode,
+    );
+    final cached = await SubtitleSourceTranscriptCacheService.load(profileId: profileId, identity: identity);
+    if (cached != null) return cached;
+
+    await _ensureSpeechModel();
+    final result = await SubtitleAiService.instance.transcribeWav(
+      wavPath,
+      provider: _provider,
+      languageCode: languageCode,
+      onProgress: (phase, received, total) {
+        if (!mounted) return;
+        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
+      },
+    );
+    if (result.translatedToEnglish) {
+      throw StateError('A translated-English result cannot be reused as a source-language transcript.');
+    }
+    if (!await SubtitleSourceTranscriptCacheService.audioStillMatches(wavPath, identity)) {
+      throw StateError('The WAV changed during transcription. Choose the unchanged audio file and retry.');
+    }
+    return SubtitleSourceTranscriptCacheService.store(profileId: profileId, identity: identity, result: result);
+  }
+
   Future<String?> _pickWav() async {
     final result = await FilePickerService.instance.pickFiles(type: FileType.custom, allowedExtensions: const ['wav']);
     if (!mounted || result == null || result.files.isEmpty) {
@@ -249,52 +286,182 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (wavPath == null || !mounted) {
       return;
     }
-    await _ensureSpeechModel();
     final translateToEnglish =
         _translateSpeechToEnglish &&
         (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu);
-    setState(
-      () => _speechProgress = SubtitleSpeechProgress(
-        translateToEnglish ? SubtitleSpeechPhase.translating : SubtitleSpeechPhase.transcribing,
-      ),
-    );
-    final result = await SubtitleAiService.instance.transcribeWav(
-      wavPath,
-      provider: _provider,
-      translateToEnglish: translateToEnglish,
-      languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
-      onProgress: (phase, received, total) {
-        if (!mounted) {
-          return;
-        }
-        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
-      },
-    );
+    final List<SubtitleCue> cues;
+    final List<SubtitleWordTiming> wordTimings;
+    final int durationMs;
+    final String detectedLanguage;
+    final String runtimeProvider;
+    final bool fellBackToCpu;
+    final SubtitleInferenceProvider requestedProvider;
+    final SubtitlePlacementEvidence placementEvidence;
+    final bool fromCache;
+    final bool persisted;
+    if (translateToEnglish) {
+      await _ensureSpeechModel();
+      setState(() => _speechProgress = const SubtitleSpeechProgress(SubtitleSpeechPhase.translating));
+      final result = await SubtitleAiService.instance.transcribeWav(
+        wavPath,
+        provider: _provider,
+        translateToEnglish: true,
+        languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
+        onProgress: (phase, received, total) {
+          if (!mounted) return;
+          setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
+        },
+      );
+      cues = result.cues;
+      wordTimings = result.wordTimings;
+      durationMs = result.durationMs;
+      detectedLanguage = result.detectedLanguage;
+      runtimeProvider = result.runtimeProvider;
+      fellBackToCpu = result.fellBackToCpu;
+      requestedProvider = result.requestedProvider;
+      placementEvidence = result.placementEvidence;
+      fromCache = false;
+      persisted = false;
+    } else {
+      final transcript = await _sourceTranscriptForWav(wavPath);
+      cues = transcript.cues;
+      wordTimings = transcript.wordTimings;
+      durationMs = transcript.durationMs;
+      detectedLanguage = transcript.detectedLanguage;
+      runtimeProvider = transcript.runtimeProvider;
+      fellBackToCpu = transcript.fellBackToCpu;
+      requestedProvider = transcript.requestedProvider;
+      placementEvidence = transcript.placementEvidence;
+      fromCache = transcript.cacheHit;
+      persisted = transcript.persisted;
+    }
     if (!await _writeAndApply(
-      result.cues,
-      operationLabel: result.translatedToEnglish ? 'Speech translated to English' : 'Generated subtitles',
-      operationLanguageCode: result.translatedToEnglish ? 'en' : result.detectedLanguage,
-      wordTimings: result.wordTimings,
+      cues,
+      operationLabel: translateToEnglish ? 'Speech translated to English' : 'Generated subtitles',
+      operationLanguageCode: translateToEnglish ? 'en' : detectedLanguage,
+      wordTimings: wordTimings,
     )) {
       return;
     }
     if (!mounted) {
       return;
     }
-    final providerLabel = result.fellBackToCpu
-        ? '${result.requestedProvider.displayName} request unavailable; CPU fallback'
-        : result.runtimeProvider.toUpperCase();
+    final providerLabel = fromCache
+        ? 'saved ${runtimeProvider.toUpperCase()} transcript'
+        : fellBackToCpu
+        ? '${requestedProvider.displayName} request unavailable; CPU fallback'
+        : runtimeProvider.toUpperCase();
     setState(() {
       _status = context.t.subtitleAiUi.generatedCueCountAndDuration(
-        cueCount: result.cues.length,
-        durationMinutes: (result.durationMs / 60000).ceil(),
-        speechStatus: result.translatedToEnglish
+        cueCount: cues.length,
+        durationMinutes: (durationMs / 60000).ceil(),
+        speechStatus: translateToEnglish
             ? context.t.subtitleAiUi.speechTranslatedToEnglish
-            : context.t.subtitleAiUi.detectedSpeechLanguage(language: result.detectedLanguage),
+            : context.t.subtitleAiUi.detectedSpeechLanguage(language: detectedLanguage),
         providerLabel: providerLabel,
-        placementEvidence: result.placementEvidence.displayLabel,
+        placementEvidence: placementEvidence.displayLabel,
         uploadedNote: _lastResultUploadedToServer ? context.t.subtitleAiUi.uploadedToServerLibraryNote : '',
       );
+      if (!translateToEnglish && !fromCache && !persisted) {
+        _status =
+            '$_status Source transcript is reusable in this session; an active profile is needed for persistent caching.';
+      }
+    });
+    await _showApplied();
+  });
+
+  Future<void> _translateSpeechFromWav() => _run(() async {
+    if (!await SubtitleTranslationService.isSupportedOnCurrentDevice()) {
+      throw UnsupportedError(
+        SubtitleTranslationService.desktopPlatformSupported
+            ? 'Install Argos Translate and the selected language pair to translate locally on desktop.'
+            : 'On-device translation is available on supported phones and tablets only.',
+      );
+    }
+    final wavPath = await _pickWav();
+    if (wavPath == null || !mounted) return;
+    final transcript = await _sourceTranscriptForWav(wavPath);
+    final languageCode = _speechLanguageCode == 'auto' ? transcript.detectedLanguage : _speechLanguageCode;
+    final sourceLanguage = SubtitleTranslationService.languageForCode(languageCode);
+    if (sourceLanguage == null) {
+      throw UnsupportedError(
+        'The speech language ($languageCode) is not supported by the local translator. Choose a supported speech language and retry.',
+      );
+    }
+    final targetLanguage = _targetLanguage;
+    if (sourceLanguage == targetLanguage) {
+      throw ArgumentError('Choose a target language different from the detected or selected speech language.');
+    }
+    if (_sourceLanguage != sourceLanguage) {
+      _glossaryDrafts[_currentGlossaryDraftKey()] = _glossaryController.text;
+      setState(() => _sourceLanguage = sourceLanguage);
+      await _loadGlossaryForCurrentPair();
+    }
+    final glossary = _parseGlossary();
+    final profileId = _activeProfileId;
+    if (profileId != null) {
+      await SubtitleTranslationService.saveGlossaryForProfile(
+        profileId: profileId,
+        sourceLanguage: sourceLanguage,
+        targetLanguage: targetLanguage,
+        seriesId: _useSeriesGlossary ? widget.seriesKey : null,
+        glossary: glossary,
+      );
+      _glossaryDrafts[_currentGlossaryDraftKey()] = _glossaryController.text;
+    }
+    setState(
+      () => _status = transcript.cacheHit
+          ? 'Reusing the saved source transcript; translating locally…'
+          : 'Transcribing this WAV once, then translating locally…',
+    );
+    final translated = await SubtitleTranslationService.translateCues(
+      cues: transcript.cues,
+      sourceLanguage: sourceLanguage,
+      targetLanguage: targetLanguage,
+      allowMobileData: _allowMobileData,
+      requestDesktopCuda: _requestTranslationCuda,
+      bilingual: _bilingualTranslation,
+      glossary: glossary,
+      onProgress: (completed, total) {
+        if (mounted) {
+          setState(
+            () => _status = context.t.subtitleAiUi.translatingCueOfOnThisDevice(completed: completed, total: total),
+          );
+        }
+      },
+    );
+    if (translated.cues.length != transcript.cues.length) {
+      throw StateError('Translation changed the cue count. No output was attached.');
+    }
+    for (var index = 0; index < translated.cues.length; index++) {
+      final sourceCue = transcript.cues[index];
+      final translatedCue = translated.cues[index];
+      if (translatedCue.id != sourceCue.id ||
+          translatedCue.startMs != sourceCue.startMs ||
+          translatedCue.endMs != sourceCue.endMs) {
+        throw StateError(
+          'Translation changed cue identity or timing at cue ${sourceCue.index}. No output was attached.',
+        );
+      }
+    }
+    if (!await _writeAndApply(
+      translated.cues,
+      operationLabel: 'Translated speech from WAV',
+      operationLanguageCode: targetLanguage.bcpCode,
+      sourceCues: transcript.cues,
+      reviewWarnings: translated.qualityWarnings,
+    )) {
+      return;
+    }
+    if (!mounted) return;
+    final reuseStatus = transcript.cacheHit
+        ? 'Reused the source transcript for this WAV.'
+        : transcript.persisted
+        ? 'Saved the source transcript for other target languages.'
+        : 'The source transcript is available for this session only.';
+    setState(() {
+      _status =
+          '${context.t.subtitleAiUi.translatedCuesFrom(cueCount: translated.cues.length, sourceLanguage: SubtitleTranslationService.languageLabel(sourceLanguage), targetLanguage: SubtitleTranslationService.languageLabel(targetLanguage), backendLabel: translated.backendLabel, uploadedNote: _lastResultUploadedToServer ? context.t.subtitleAiUi.uploadedToServerLibraryNote : '')} $reuseStatus';
     });
     await _showApplied();
   });
@@ -308,18 +475,11 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (selected == null || !mounted) {
       return;
     }
-    await _ensureSpeechModel();
-    setState(() => _status = context.t.subtitleAiUi.transcribingAudioAndAligningSubtitleText);
-    final transcription = await SubtitleAiService.instance.transcribeWav(
-      wavPath,
-      provider: _provider,
-      languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
-      onProgress: (phase, received, total) {
-        if (!mounted) {
-          return;
-        }
-        setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
-      },
+    final transcription = await _sourceTranscriptForWav(wavPath);
+    setState(
+      () => _status = transcription.cacheHit
+          ? 'Reusing the saved source transcript and aligning subtitle text…'
+          : context.t.subtitleAiUi.transcribingAudioAndAligningSubtitleText,
     );
     final aligned = SubtitleSyncService.synchronize(
       subtitleCues: selected.$1,
@@ -2160,6 +2320,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             ),
             onTap: _busy ? null : () => unawaited(_transcribe()),
           ),
+          if (_translationSupported)
+            FocusableListTile(
+              leading: const AppIcon(Symbols.translate_rounded),
+              title: const Text('Translate speech from WAV'),
+              subtitle: const Text(
+                'Transcribes a WAV once and reuses its source transcript for other target languages.',
+              ),
+              onTap: _busy ? null : () => unawaited(_translateSpeechFromWav()),
+            ),
           FocusableListTile(
             leading: const AppIcon(Symbols.sync_rounded),
             title: Text(context.t.subtitleAiUi.automaticallySyncAnExistingSubtitle),

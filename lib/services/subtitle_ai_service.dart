@@ -87,6 +87,16 @@ final class SubtitleAiService {
   static const bool _webOsBuild = bool.fromEnvironment('PLEZY_WEBOS');
   static const bool _tvOsBuild = bool.fromEnvironment('TVOS_BUILD');
 
+  /// Model and verified package identity used for source-transcript cache
+  /// invalidation. Provider requests are included separately by the cache.
+  static String sourceTranscriptModelIdentity(SubtitleInferenceProvider provider) => switch (provider) {
+    SubtitleInferenceProvider.cpu ||
+    SubtitleInferenceProvider.desktopGpu => SubtitleWhisperCppService.sourceTranscriptModelIdentity,
+    SubtitleInferenceProvider.coreMl ||
+    SubtitleInferenceProvider.qnn ||
+    SubtitleInferenceProvider.rknn => 'sherpa-onnx:$_modelId:archive:$_modelArchiveSha256:vad:$_vadSha256',
+  };
+
   static bool get supportedPlatform {
     if (_tizenBuild) return SubtitleWhisperCppService.supportedPlatform;
     return !kIsWeb &&

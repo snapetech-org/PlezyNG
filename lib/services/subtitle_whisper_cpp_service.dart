@@ -1,5 +1,6 @@
 import 'subtitle_capture_status.dart';
 import 'subtitle_speech_progress.dart';
+
 import 'dart:convert';
 import 'dart:ffi' as ffi;
 import 'dart:io';
@@ -40,6 +41,14 @@ final class SubtitleWhisperResult {
 /// native runtime; a failed GPU load or inference is retried on CPU.
 final class SubtitleWhisperCppService {
   static final SubtitleWhisperCppService instance = SubtitleWhisperCppService._();
+
+  /// Stable model identity for reusable transcripts. The model catalog's
+  /// checksum comes from the pubspec-locked flutter_whisper_ggml package.
+  static String get sourceTranscriptModelIdentity {
+    final model = whisper.WhisperModels.baseQ5_1;
+    return 'flutter_whisper_ggml:${model.id}:${model.sha256}';
+  }
+
   SubtitleWhisperCppService._();
 
   static const int _maximumAudioHours = 8;

@@ -15,11 +15,7 @@ void main() {
     final client = MediaServerHttpClient(
       client: MockClient((request) async {
         uploadedBody = request.body;
-        return http.Response(
-          '{"id":"opaque-capability"}',
-          200,
-          headers: {'content-type': 'application/json'},
-        );
+        return http.Response('{"id":"opaque-capability"}', 200, headers: {'content-type': 'application/json'});
       }),
     );
 

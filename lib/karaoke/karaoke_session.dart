@@ -16,6 +16,7 @@ import '../services/playback_coordinator.dart';
 import 'karaoke_analysis.dart';
 import 'karaoke_models.dart';
 import 'karaoke_packages.dart';
+import 'karaoke_show_templates.dart';
 import 'karaoke_store.dart';
 import 'karaoke_stem_mixer.dart';
 import 'karaoke_party.dart';
@@ -125,6 +126,16 @@ class KaraokeSession extends ChangeNotifier {
       ? (_player?.state.playing == true)
       : _started && (_usingMusic ? music.isPlaying : _player?.state.playing == true);
   bool get hasPerformance => _started;
+  bool get canApplyShowTemplate =>
+      !_disposed &&
+      !_started &&
+      !_usingFiller &&
+      !requests.any(
+        (request) =>
+            request.state == KaraokeRequestState.pending ||
+            request.state == KaraokeRequestState.ready ||
+            request.state == KaraokeRequestState.playing,
+      );
   int get durationMs {
     final actual = (_usingMusic ? music.duration?.inMilliseconds : _player?.state.duration.inMilliseconds) ?? 0;
     return actual > 0 ? actual : track?.durationMs ?? 0;
@@ -640,6 +651,25 @@ class KaraokeSession extends ChangeNotifier {
       if (guestSinger != null && !{'request', 'cancel', 'favorite', 'vote', 'missingSong', 'party'}.contains(action)) {
         throw StateError('Host permission required');
       }
+      final previousShowTemplateState = action == 'showTemplate'
+          ? (
+              revision: revision,
+              receipts: Map<String, Map<String, dynamic>>.from(_receipts),
+              setlists: Map<String, List<String>>.fromEntries(
+                setlists.entries.map((entry) => MapEntry(entry.key, List<String>.from(entry.value))),
+              ),
+              fillerTrackIds: List<String>.from(fillerTrackIds),
+              fairRotation: fairRotation,
+              allowExplicit: allowExplicit,
+              requireApproval: requireApproval,
+              allowVotes: allowVotes,
+              perSingerLimit: perSingerLimit,
+              banner: banner,
+              stageColor: stageColor,
+              stageTextScale: stageTextScale,
+              displayOffsetMs: displayOffsetMs,
+            )
+          : null;
       final response = <String, dynamic>{};
       switch (action) {
         case 'party':
@@ -1028,6 +1058,7 @@ class KaraokeSession extends ChangeNotifier {
           } else {
             final ids = List<String>.from(payload['tracks'] as List);
             if (ids.length > 256 ||
+                ids.toSet().length != ids.length ||
                 ids.any((id) => !catalog.containsKey(id)) ||
                 (setlists.length >= 100 && !setlists.containsKey(name))) {
               throw const FormatException('Setlist limit or missing song');
@@ -1052,6 +1083,30 @@ class KaraokeSession extends ChangeNotifier {
             0,
             math.min((payload['banner'] as String? ?? banner).length, 160),
           );
+        case 'showTemplate':
+          if (!canApplyShowTemplate) {
+            throw const KaraokeShowTemplateApplyBlocked();
+          }
+          final template = KaraokeShowTemplate.fromJson(payload);
+          final resolved = template.resolve(catalog);
+          for (final id in resolved.fillerTrackIds) {
+            if ((await packages.verify(catalog[id]!)).isNotEmpty) {
+              throw StateError('A show-template filler package failed checksum verification');
+            }
+          }
+          setlists
+            ..clear()
+            ..addAll(resolved.setlists);
+          fillerTrackIds = resolved.fillerTrackIds;
+          fairRotation = template.fairRotation;
+          allowExplicit = template.allowExplicit;
+          requireApproval = template.requireApproval;
+          allowVotes = template.allowVotes;
+          perSingerLimit = template.perSingerLimit;
+          banner = template.banner;
+          stageColor = template.stageColor | 0xff000000;
+          stageTextScale = template.stageTextScale;
+          displayOffsetMs = template.displayOffsetMs;
         default:
           throw UnsupportedError('Unknown room command: $action');
       }
@@ -1062,7 +1117,31 @@ class KaraokeSession extends ChangeNotifier {
       while (_receipts.length > 512) {
         _receipts.remove(_receipts.keys.first);
       }
-      await save(); // Keep the receipt in memory if storage fails; a retry persists it before acknowledging.
+      try {
+        await save();
+      } catch (_) {
+        if (previousShowTemplateState case final previous?) {
+          revision = previous.revision;
+          _receipts
+            ..clear()
+            ..addAll(previous.receipts);
+          setlists
+            ..clear()
+            ..addAll(previous.setlists);
+          fillerTrackIds = previous.fillerTrackIds;
+          fairRotation = previous.fairRotation;
+          allowExplicit = previous.allowExplicit;
+          requireApproval = previous.requireApproval;
+          allowVotes = previous.allowVotes;
+          perSingerLimit = previous.perSingerLimit;
+          banner = previous.banner;
+          stageColor = previous.stageColor;
+          stageTextScale = previous.stageTextScale;
+          displayOffsetMs = previous.displayOffsetMs;
+        }
+        rethrow;
+      }
+      // Preserve ordinary command receipts if persistence fails so a retry can write them.
       _notify();
       return response;
     });
@@ -1072,6 +1151,13 @@ class KaraokeSession extends ChangeNotifier {
 
   Future<Map<String, dynamic>> host(String action, [Map<String, dynamic> payload = const {}]) =>
       command(const Uuid().v4(), revision, action, payload);
+
+  /// Applies only reusable venue configuration. It never creates requests or
+  /// starts playback, and rejects stale rendition references before mutation.
+  Future<void> applyShowTemplate(KaraokeShowTemplate template) async {
+    await ready;
+    await host('showTemplate', template.toJson());
+  }
 
   Future<void> _start(KaraokeRequest request, {int resumeMs = 0}) async {
     if (_started) {

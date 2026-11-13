@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../services/file_picker_service.dart';
 import '../widgets/app_icon.dart';
 
@@ -11,6 +13,7 @@ import 'package:flutter/material.dart';
 import '../utils/platform_detector.dart';
 import 'karaoke_collections.dart';
 import 'karaoke_models.dart';
+import 'karaoke_show_templates.dart';
 import 'karaoke_session.dart';
 
 class KaraokeVenueScreen extends StatefulWidget {
@@ -23,8 +26,27 @@ class KaraokeVenueScreen extends StatefulWidget {
 class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
   KaraokeSession get s => widget.session;
   late final collections = KaraokeCollections(s);
+  late final templateLibrary = KaraokeShowTemplateLibrary(s.store);
+  List<KaraokeShowTemplate> showTemplates = const [];
   bool busy = false;
   String? message;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadShowTemplates());
+  }
+
+  Future<void> _loadShowTemplates() async {
+    try {
+      await s.ready;
+      final values = await templateLibrary.load();
+      if (mounted) setState(() => showTemplates = values);
+    } catch (error) {
+      if (mounted) setState(() => message = error.toString());
+    }
+  }
+
   Future<void> run(Future<void> Function() action) async {
     if (busy) {
       return;
@@ -32,6 +54,16 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
     setState(() => busy = true);
     try {
       await action();
+    } on KaraokeShowTemplateRenditionsUnavailable catch (error) {
+      message = l10n.t.karaokeUi.showTemplateMissingRenditions(value1: error.count.toString());
+    } on KaraokeShowTemplateApplyBlocked {
+      message = l10n.t.karaokeUi.finishShowBeforeApplyingTemplate;
+    } on KaraokeShowTemplateNameConflict {
+      message = l10n.t.karaokeUi.showTemplateNameAlreadyUsed;
+    } on KaraokeShowTemplateLimitReached {
+      message = l10n.t.karaokeUi.showTemplateLimitReached(value1: '$maxKaraokeShowTemplates');
+    } on KaraokeShowTemplateReferenceLimitReached {
+      message = l10n.t.karaokeUi.showTemplateReferenceLimitReached(value1: '$maxKaraokeShowTemplateReferences');
     } catch (e) {
       message = e.toString();
     } finally {
@@ -41,7 +73,7 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
     }
   }
 
-  Future<String?> text(String title, {String initial = '', bool obscure = false}) async {
+  Future<String?> text(String title, {String initial = '', bool obscure = false, int maxLength = 160}) async {
     final input = TextEditingController(text: initial);
     final value = await showDialog<String>(
       context: context,
@@ -51,7 +83,7 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
           controller: input,
           autofocus: true,
           obscureText: obscure,
-          maxLength: 160,
+          maxLength: maxLength,
           onSubmitted: (v) => Navigator.pop(context, v),
         ),
         actions: [
@@ -100,6 +132,107 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
     if (saved == true) {
       await run(() => s.host('setlist', {'name': name, 'tracks': selected.toList()}).then((_) {}));
     }
+  }
+
+  Future<void> saveShowTemplate([KaraokeShowTemplate? existing]) async {
+    final name = await text(l10n.t.karaokeUi.showTemplateName, initial: existing?.name ?? '', maxLength: 80);
+    if (name == null || name.trim().isEmpty || !mounted) return;
+    await run(() async {
+      await s.ready;
+      final template = KaraokeShowTemplate.capture(
+        id: existing?.id,
+        name: name,
+        setlists: s.setlists,
+        catalog: s.catalog,
+        fillerTrackIds: s.fillerTrackIds,
+        fairRotation: s.fairRotation,
+        allowExplicit: s.allowExplicit,
+        requireApproval: s.requireApproval,
+        allowVotes: s.allowVotes,
+        perSingerLimit: s.perSingerLimit,
+        banner: s.banner,
+        stageColor: s.stageColor,
+        stageTextScale: s.stageTextScale,
+        displayOffsetMs: s.displayOffsetMs,
+      );
+      await templateLibrary.save(template);
+      showTemplates = await templateLibrary.load();
+      message = null;
+    });
+  }
+
+  Future<void> removeShowTemplate(KaraokeShowTemplate template) async {
+    final remove = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.t.karaokeUi.deleteShowTemplate),
+        content: Text(l10n.t.karaokeUi.confirmDeleteShowTemplate(value1: template.name)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.t.common.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.t.common.delete)),
+        ],
+      ),
+    );
+    if (!mounted || remove != true) return;
+    await run(() async {
+      await templateLibrary.remove(template.id);
+      showTemplates = await templateLibrary.load();
+      message = null;
+    });
+  }
+
+  Future<void> applyShowTemplate(KaraokeShowTemplate template) async {
+    final apply = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.t.karaokeUi.applyShowTemplate),
+        content: Text(l10n.t.karaokeUi.confirmApplyShowTemplate(value1: template.name)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.t.common.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.t.karaokeUi.applyShowTemplate)),
+        ],
+      ),
+    );
+    if (!mounted || apply != true) return;
+    await run(() => s.applyShowTemplate(template));
+  }
+
+  Widget _showTemplateTile(KaraokeShowTemplate template) {
+    final unavailable = template.unavailableRenditionCount(s.catalog);
+    final renditionCount = template.renditionCount;
+    return ListTile(
+      title: Text(template.name),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.t.karaokeUi.showTemplateSummary(
+              value1: template.setlists.length.toString(),
+              value2: renditionCount.toString(),
+            ),
+          ),
+          if (unavailable > 0) Text(l10n.t.karaokeUi.showTemplateMissingRenditions(value1: unavailable.toString())),
+        ],
+      ),
+      trailing: Wrap(
+        children: [
+          TextButton(
+            onPressed: busy || !s.canApplyShowTemplate || unavailable > 0 ? null : () => applyShowTemplate(template),
+            child: Text(l10n.t.karaokeUi.applyShowTemplate),
+          ),
+          IconButton(
+            tooltip: l10n.t.karaokeUi.saveCurrentShowAsTemplate,
+            onPressed: busy ? null : () => saveShowTemplate(template),
+            icon: const AppIcon(Symbols.save_rounded),
+          ),
+          IconButton(
+            tooltip: l10n.t.karaokeUi.deleteShowTemplate,
+            onPressed: busy ? null : () => removeShowTemplate(template),
+            icon: const AppIcon(Symbols.delete_outline_rounded),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> importCollection() async {
@@ -258,6 +391,17 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
           ),
           OutlinedButton(onPressed: busy ? null : () => run(kiosk), child: Text(l10n.t.karaokeUi.openRequestKiosk)),
           Text(l10n.t.karaokeUi.theKioskLimitsThisScreenToSongRequestsUse),
+          const Divider(),
+          Text(l10n.t.karaokeUi.showTemplates, style: Theme.of(context).textTheme.titleLarge),
+          OutlinedButton(
+            onPressed: busy ? null : () => saveShowTemplate(),
+            child: Text(l10n.t.karaokeUi.saveCurrentShowAsTemplate),
+          ),
+          if (!s.canApplyShowTemplate) Text(l10n.t.karaokeUi.finishShowBeforeApplyingTemplate),
+          if (showTemplates.isEmpty)
+            Text(l10n.t.karaokeUi.noShowTemplates)
+          else
+            for (final template in showTemplates) _showTemplateTile(template),
           const Divider(),
           Text(l10n.t.karaokeUi.savedSets, style: Theme.of(context).textTheme.titleLarge),
           TextButton(onPressed: busy ? null : () => editSet(null), child: Text(l10n.t.karaokeUi.createASetlist)),

@@ -13972,6 +13972,30 @@ class Translations$karaokeUi$en {
 	/// en: 'Sections and medley cues'
 	String get sectionsAndMedleyCues => 'Sections and medley cues';
 
+	/// en: 'You can save up to ${value1} show templates.'
+	String showTemplateLimitReached({required Object value1}) => 'You can save up to ${value1} show templates.';
+
+	/// en: '${value1} renditions are missing or have changed. Restore the exact renditions before applying this template.'
+	String showTemplateMissingRenditions({required Object value1}) => '${value1} renditions are missing or have changed. Restore the exact renditions before applying this template.';
+
+	/// en: 'Show template name'
+	String get showTemplateName => 'Show template name';
+
+	/// en: 'A show template already uses this name.'
+	String get showTemplateNameAlreadyUsed => 'A show template already uses this name.';
+
+	/// en: 'Show templates can store up to ${value1} rendition references in total.'
+	String showTemplateReferenceLimitReached({required Object value1}) => 'Show templates can store up to ${value1} rendition references in total.';
+
+	/// en: '${value1} setlists · ${value2} renditions'
+	String showTemplateSummary({required Object value1, required Object value2}) => '${value1} setlists · ${value2} renditions';
+
+	/// en: 'Show templates'
+	String get showTemplates => 'Show templates';
+
+	/// en: 'Applying ${value1} replaces venue settings and saved setlists. Singers and playback stay unchanged.'
+	String confirmApplyShowTemplate({required Object value1}) => 'Applying ${value1} replaces venue settings and saved setlists. Singers and playback stay unchanged.';
+
 	/// en: 'Add section from current playback times'
 	String get addSectionFromCurrentPlaybackTimes => 'Add section from current playback times';
 
@@ -13986,6 +14010,9 @@ class Translations$karaokeUi$en {
 
 	/// en: 'Delete note'
 	String get deleteNote => 'Delete note';
+
+	/// en: 'Delete show template'
+	String get deleteShowTemplate => 'Delete show template';
 
 	/// en: 'Add a question you authored or may use'
 	String get addAQuestionYouAuthoredOrMayUse => 'Add a question you authored or may use';
@@ -14067,6 +14094,9 @@ class Translations$karaokeUi$en {
 
 	/// en: 'Companion URL'
 	String get companionURL => 'Companion URL';
+
+	/// en: 'Delete the show template ‘${value1}’?'
+	String confirmDeleteShowTemplate({required Object value1}) => 'Delete the show template ‘${value1}’?';
 
 	/// en: 'Token'
 	String get token => 'Token';
@@ -14224,6 +14254,9 @@ class Translations$karaokeUi$en {
 	/// en: 'Tempo (BPM)'
 	String get analysisTempoBpm => 'Tempo (BPM)';
 
+	/// en: 'Apply show template'
+	String get applyShowTemplate => 'Apply show template';
+
 	/// en: 'Chord timeline (one line per chord: milliseconds, then chord)'
 	String get chordTimeline => 'Chord timeline (one line per chord: milliseconds, then chord)';
 
@@ -14247,6 +14280,9 @@ class Translations$karaokeUi$en {
 
 	/// en: 'Noise gate'
 	String get noiseGate => 'Noise gate';
+
+	/// en: 'No show templates saved yet.'
+	String get noShowTemplates => 'No show templates saved yet.';
 
 	/// en: 'Trim start (ms)'
 	String get trimStartMs => 'Trim start (ms)';
@@ -14308,6 +14344,9 @@ class Translations$karaokeUi$en {
 	/// en: 'Approve duet merge after listening'
 	String get approveDuetMergeAfterListening => 'Approve duet merge after listening';
 
+	/// en: 'Save current show as template'
+	String get saveCurrentShowAsTemplate => 'Save current show as template';
+
 	/// en: 'Save setlist'
 	String get saveSetlist => 'Save setlist';
 
@@ -14367,6 +14406,9 @@ class Translations$karaokeUi$en {
 
 	/// en: '${value1} filler renditions selected'
 	String fillerRenditionsSelected({required Object value1}) => '${value1} filler renditions selected';
+
+	/// en: 'Finish the performance and clear active requests before applying a show template.'
+	String get finishShowBeforeApplyingTemplate => 'Finish the performance and clear active requests before applying a show template.';
 
 	/// en: 'Portability'
 	String get portability => 'Portability';
@@ -22657,11 +22699,20 @@ extension on Translations {
 			'karaokeUi.iAuditionedThisChartAndVerifiedTheNotesParts' => 'I auditioned this chart and verified the notes, parts and timing',
 			'karaokeUi.enablesReferenceBasedScoringForThisLocalRevision' => 'Enables reference-based scoring for this local revision.',
 			'karaokeUi.sectionsAndMedleyCues' => 'Sections and medley cues',
+			'karaokeUi.showTemplateLimitReached' => ({required Object value1}) => 'You can save up to ${value1} show templates.',
+			'karaokeUi.showTemplateMissingRenditions' => ({required Object value1}) => '${value1} renditions are missing or have changed. Restore the exact renditions before applying this template.',
+			'karaokeUi.showTemplateName' => 'Show template name',
+			'karaokeUi.showTemplateNameAlreadyUsed' => 'A show template already uses this name.',
+			'karaokeUi.showTemplateReferenceLimitReached' => ({required Object value1}) => 'Show templates can store up to ${value1} rendition references in total.',
+			'karaokeUi.showTemplateSummary' => ({required Object value1, required Object value2}) => '${value1} setlists · ${value2} renditions',
+			'karaokeUi.showTemplates' => 'Show templates',
+			'karaokeUi.confirmApplyShowTemplate' => ({required Object value1}) => 'Applying ${value1} replaces venue settings and saved setlists. Singers and playback stay unchanged.',
 			'karaokeUi.addSectionFromCurrentPlaybackTimes' => 'Add section from current playback times',
 			'karaokeUi.deleteLine' => 'Delete line',
 			'karaokeUi.referenceNotes' => 'Reference notes',
 			'karaokeUi.midi' => ({required Object value1, required Object value2, required Object value3}) => '${value1} · MIDI ${value2} · ${value3}',
 			'karaokeUi.deleteNote' => 'Delete note',
+			'karaokeUi.deleteShowTemplate' => 'Delete show template',
 			'karaokeUi.addAQuestionYouAuthoredOrMayUse' => 'Add a question you authored or may use',
 			'karaokeUi.triviaLyricCompletionNameThatTunePrompt' => 'Trivia / lyric completion / name that tune prompt',
 			'karaokeUi.optionsOnePerLine' => 'Options, one per line',
@@ -22689,6 +22740,7 @@ extension on Translations {
 			'karaokeUi.preparationCompanion' => 'Preparation companion',
 			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.',
 			'karaokeUi.companionURL' => 'Companion URL',
+			'karaokeUi.confirmDeleteShowTemplate' => ({required Object value1}) => 'Delete the show template ‘${value1}’?',
 			'karaokeUi.token' => 'Token',
 			'karaokeUi.chooseTheSourceAsset' => 'Choose the source asset',
 			'karaokeUi.prepare' => ({required Object value1}) => 'Prepare ${value1}',
@@ -22741,6 +22793,7 @@ extension on Translations {
 			'karaokeUi.analysisCorrectionsDoNotCertifyScoring' => 'Blank chord lists remove chord cues. Use estimates to discard all manual corrections. Manual corrections do not certify a singing score.',
 			'karaokeUi.analysisKey' => 'Key',
 			'karaokeUi.analysisTempoBpm' => 'Tempo (BPM)',
+			'karaokeUi.applyShowTemplate' => 'Apply show template',
 			'karaokeUi.chordTimeline' => 'Chord timeline (one line per chord: milliseconds, then chord)',
 			'karaokeUi.useAnalysisEstimates' => 'Use estimates',
 			'karaokeUi.mixAndExportPrivately' => 'Mix and export privately',
@@ -22749,6 +22802,7 @@ extension on Translations {
 			'karaokeUi.vocal' => 'Vocal',
 			'karaokeUi.echoWet' => 'Echo wet',
 			'karaokeUi.noiseGate' => 'Noise gate',
+			'karaokeUi.noShowTemplates' => 'No show templates saved yet.',
 			'karaokeUi.trimStartMs' => 'Trim start (ms)',
 			'karaokeUi.outputDurationMs' => 'Output duration (ms)',
 			'karaokeUi.mixApprovedResponse' => ({required Object value1}) => 'Mix approved response ${value1}',
@@ -22763,20 +22817,21 @@ extension on Translations {
 			'karaokeUi.keyTempo_f457ce13' => ({required Object value1, required Object value2, required Object value3, required Object value4, required Object value5}) => '${value1} · ${value2} · key ${value3} · tempo ${value4} · ${value5}',
 			'karaokeUi.recoverRecording' => 'Recover recording',
 			'karaokeUi.linkThisTakeToTheDuetInvitation' => 'Link this take to the duet invitation',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.listenToDryTake' => 'Listen to dry take',
 			'karaokeUi.listenToGuideTrack' => 'Listen to guide track',
 			'karaokeUi.mixExportAudioOrVideo' => 'Mix / export audio or video',
 			'karaokeUi.exportPortableTake' => 'Export portable take',
 			'karaokeUi.downloadCompletedRender' => 'Download completed render',
 			'karaokeUi.approveDuetMergeAfterListening' => 'Approve duet merge after listening',
+			'karaokeUi.saveCurrentShowAsTemplate' => 'Save current show as template',
 			'karaokeUi.saveSetlist' => 'Save setlist',
 			'karaokeUi.resolveCollectionConflicts' => 'Resolve collection conflicts',
 			'karaokeUi.newSingersAndSetlistsWillBeAddedChooseWhich' => 'New singers and setlists will be added. Choose which preferences to keep when the same singer or setlist already exists. Media packages are imported separately.',
 			'karaokeUi.keepExistingPreferences' => 'Keep existing preferences',
 			'karaokeUi.useImportedPreferences' => 'Use imported preferences',
 			'karaokeUi.instrumentalFiller' => 'Instrumental filler',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.stageBanner' => 'Stage banner',
 			'karaokeUi.stageTextSize' => 'Stage text size',
 			'karaokeUi.displayOffsetMs' => ({required Object value1}) => 'Display offset: ${value1} ms',
@@ -22791,6 +22846,7 @@ extension on Translations {
 			'karaokeUi.removeSetlist' => 'Remove setlist',
 			'karaokeUi.playARotatingLocalInstrumentalWhileTheNextSinger' => 'Play a rotating local instrumental while the next singer prepares. It stops when the next karaoke request starts.',
 			'karaokeUi.fillerRenditionsSelected' => ({required Object value1}) => '${value1} filler renditions selected',
+			'karaokeUi.finishShowBeforeApplyingTemplate' => 'Finish the performance and clear active requests before applying a show template.',
 			'karaokeUi.portability' => 'Portability',
 			'karaokeUi.exportSingersFavoritesAndSets' => 'Export singers, favorites and sets',
 			'karaokeUi.importCollection' => 'Import collection',

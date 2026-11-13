@@ -24,7 +24,7 @@ Future<LiveTvChannel?> showIptvLiveChannelPicker(
   isScrollControlled: true,
   builder: (_) => IptvLiveChannelPickerSheet(
     channels: channels,
-    currentChannelKey: currentChannel?.key,
+    currentChannelScopeKey: currentChannel == null ? null : liveTvChannelScopeKey(currentChannel),
     recentChannelOrder: recentChannelOrder,
   ),
 );
@@ -33,12 +33,12 @@ class IptvLiveChannelPickerSheet extends StatefulWidget {
   const IptvLiveChannelPickerSheet({
     super.key,
     required this.channels,
-    this.currentChannelKey,
+    this.currentChannelScopeKey,
     this.recentChannelOrder = const {},
   });
 
   final List<LiveTvChannel> channels;
-  final String? currentChannelKey;
+  final String? currentChannelScopeKey;
   final Map<String, int> recentChannelOrder;
 
   @override
@@ -60,7 +60,7 @@ class _IptvLiveChannelPickerSheetState extends State<IptvLiveChannelPickerSheet>
     if (widget.channels.any((channel) => channel.iptvFavorite)) {
       groups['favorites'] = t.liveTv.favorites;
     }
-    if (widget.channels.any((channel) => widget.recentChannelOrder.containsKey(channel.key))) {
+    if (widget.channels.any((channel) => widget.recentChannelOrder.containsKey(liveTvChannelScopeKey(channel)))) {
       groups['recent'] = t.iptv.recentChannels;
     }
     for (final source in groupLiveTvChannelsBySource(widget.channels)) {
@@ -78,7 +78,7 @@ class _IptvLiveChannelPickerSheetState extends State<IptvLiveChannelPickerSheet>
     if (_groupKey == 'favorites') {
       filtered = filtered.where((channel) => channel.iptvFavorite);
     } else if (_groupKey == 'recent') {
-      filtered = filtered.where((channel) => widget.recentChannelOrder.containsKey(channel.key));
+      filtered = filtered.where((channel) => widget.recentChannelOrder.containsKey(liveTvChannelScopeKey(channel)));
     } else if (_groupKey.startsWith('source:')) {
       final key = _groupKey.substring('source:'.length);
       filtered = filtered.where((channel) => liveTvChannelSourceKey(channel) == key);
@@ -100,7 +100,11 @@ class _IptvLiveChannelPickerSheetState extends State<IptvLiveChannelPickerSheet>
     }
     final result = filtered.toList(growable: false);
     if (_groupKey == 'recent') {
-      result.sort((a, b) => (widget.recentChannelOrder[b.key] ?? 0).compareTo(widget.recentChannelOrder[a.key] ?? 0));
+      result.sort(
+        (a, b) => (widget.recentChannelOrder[liveTvChannelScopeKey(b)] ?? 0).compareTo(
+          widget.recentChannelOrder[liveTvChannelScopeKey(a)] ?? 0,
+        ),
+      );
     }
     return result;
   }
@@ -174,7 +178,7 @@ class _IptvLiveChannelPickerSheetState extends State<IptvLiveChannelPickerSheet>
                       itemCount: visible.length,
                       itemBuilder: (context, index) {
                         final channel = visible[index];
-                        final selected = channel.key == widget.currentChannelKey;
+                        final selected = liveTvChannelScopeKey(channel) == widget.currentChannelScopeKey;
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 6),
                           child: FocusableWrapper(

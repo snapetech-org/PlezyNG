@@ -19,7 +19,7 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       for (final channel in channels) {
         final timestamp = savedOrder[liveTvChannelScopeKey(channel)];
         if (timestamp != null) {
-          recentOrder[channel.key] = timestamp;
+          recentOrder[liveTvChannelScopeKey(channel)] = timestamp;
         }
       }
     }
@@ -29,10 +29,13 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       currentChannel: current,
       recentChannelOrder: recentOrder,
     );
-    if (!mounted || selected == null || selected.key == current?.key) {
+    if (!mounted ||
+        selected == null ||
+        (current != null && liveTvChannelScopeKey(selected) == liveTvChannelScopeKey(current))) {
       return;
     }
-    final index = channels.indexWhere((channel) => channel.key == selected.key);
+    final selectedScope = liveTvChannelScopeKey(selected);
+    final index = channels.indexWhere((channel) => liveTvChannelScopeKey(channel) == selectedScope);
     if (index < 0) {
       return;
     }

@@ -1758,7 +1758,7 @@ class IptvSourceRepository {
       ];
       return await _replaceSnapshot(source, entries, mappedPrograms);
     } on IptvImportException catch (error) {
-      await _recordError(profileId, sourceId, error.code);
+      await _recordError(source, error.code);
       rethrow;
     } on SourceException catch (error) {
       final code = switch (error.reason) {
@@ -1768,10 +1768,10 @@ class IptvSourceRepository {
         SourceFailure.cancelled => 'cancelled',
         _ => 'provider_unavailable',
       };
-      await _recordError(profileId, sourceId, code);
+      await _recordError(source, code);
       throw IptvImportException(code);
     } on Object {
-      await _recordError(profileId, sourceId, 'provider_unavailable');
+      await _recordError(source, 'provider_unavailable');
       throw const IptvImportException('provider_unavailable');
     } finally {
       stalker?.close();
@@ -2293,17 +2293,19 @@ class IptvSourceRepository {
     return '${date.year}${two(date.month)}${two(date.day)}${two(date.hour)}${two(date.minute)}${two(date.second)}';
   }
 
-  Future<void> _recordError(String profileId, String sourceId, String code) async {
+  Future<void> _recordError(_StoredIptvSource expected, String code) async {
     try {
       await _database.runIdentityMutation(
-        () => _database.customStatement('UPDATE iptv_sources SET last_error_code=? WHERE profile_id=? AND id=?', [
-          code,
-          profileId,
-          sourceId,
-        ]),
+        () => _database.customStatement(
+          '''
+          UPDATE iptv_sources SET last_error_code=?
+          WHERE profile_id=? AND id=? AND revision=? AND generation=?
+        ''',
+          [code, expected.profileId, expected.id, expected.revision, expected.generation],
+        ),
       );
     } on Object {
-      // A removed source is intentionally not recreated by a late failure.
+      // A removed, updated or refreshed source is not changed by a late failure.
     }
   }
 

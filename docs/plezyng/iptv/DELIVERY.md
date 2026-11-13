@@ -26,6 +26,12 @@ device qualification.
   ID. When configured guide feeds overlap, the first feed with a programme for
   a channel/start slot wins and later feeds fill gaps, avoiding duplicate guide
   rows and primary-key conflicts.
+- Refresh errors are fenced to the source revision and lineup generation that
+  started the request, so a late failure cannot replace the status of a source
+  that has since been edited or successfully refreshed.
+- In-player channel selection and recently watched ordering use the full
+  source/DVR/channel scope, preserving distinct channels when backend keys
+  overlap and matching the profile-scoped keys stored for IPTV recents.
 
 This is a static source inventory. It does not claim that every one of the 240
 requirements in `PLAN.md` is implemented, that every backend is compatible, or

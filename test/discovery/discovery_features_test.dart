@@ -94,6 +94,80 @@ void main() {
     expect(DiscoveryTastePreferences.fromJson({'version': 2}).hidden, isEmpty);
   });
 
+  group('discovery decision history', () {
+    test('keeps the newest 500 decisions and newest 240 seen ids', () async {
+      final repository = _repository();
+      addTearDown(repository.database.close);
+      final store = DiscoveryStore(repository);
+
+      for (var index = 0; index < 520; index++) {
+        await store.decide('profile', _choice(id: 'pick-$index'), DiscoveryDecisionAction.notNow);
+      }
+
+      final state = await store.load('profile');
+      expect(state.history.map((decision) => decision.choice.id), List.generate(500, (index) => 'pick-${index + 20}'));
+      expect(state.seen, List.generate(240, (index) => 'pick-${index + 280}').toSet());
+    });
+
+    test('concurrent decisions keep every history record', () async {
+      final repository = _repository();
+      addTearDown(repository.database.close);
+      final store = DiscoveryStore(repository);
+      final ids = List.generate(24, (index) => 'parallel-$index');
+
+      await Future.wait(ids.map((id) => store.decide('profile', _choice(id: id), DiscoveryDecisionAction.notNow)));
+
+      final state = await store.load('profile');
+      expect(state.history, hasLength(ids.length));
+      expect(state.history.map((decision) => decision.choice.id).toSet(), ids.toSet());
+      expect(state.seen, ids.toSet());
+    });
+
+    test('failed Undo at the saved-item limit preserves history for retry', () async {
+      final repository = _repository();
+      addTearDown(repository.database.close);
+      final store = DiscoveryStore(repository);
+      final saved = List.generate(DiscoveryStore.maxSaved, (index) => _choice(id: 'saved-$index'));
+      for (final choice in saved) {
+        await store.decide('profile', choice, DiscoveryDecisionAction.save);
+      }
+      final removed = saved.first;
+      await store.decide('profile', removed, DiscoveryDecisionAction.removeSaved);
+
+      // Model another synchronized item filling the freed slot before Undo.
+      await repository.updatePreferenceAtomically('profile', DiscoveryStore.preferenceKey, (raw) {
+        final current = DiscoveryState.fromJson(raw);
+        return DiscoveryState(
+          saved: [
+            ...current.saved,
+            _choice(id: 'replacement'),
+          ],
+          seen: current.seen,
+          history: current.history,
+        ).toJson();
+      });
+
+      final beforeUndo = await store.load('profile');
+      await expectLater(store.undo('profile'), throwsA(isA<DiscoveryUndoLimitException>()));
+      final afterFailedUndo = await store.load('profile');
+      expect(afterFailedUndo.toJson(), beforeUndo.toJson());
+      expect(afterFailedUndo.undoChoice?.id, removed.id);
+
+      await repository.updatePreferenceAtomically('profile', DiscoveryStore.preferenceKey, (raw) {
+        final current = DiscoveryState.fromJson(raw);
+        return DiscoveryState(
+          saved: current.saved.where((choice) => choice.id != 'replacement').toList(),
+          seen: current.seen,
+          history: current.history,
+        ).toJson();
+      });
+      final (restored, undone) = await store.undo('profile');
+      expect(undone?.id, removed.id);
+      expect(restored.saved.map((choice) => choice.id), contains(removed.id));
+      expect(restored.undoChoice?.id, saved.last.id);
+    });
+  });
+
   test('portable restoration requires an exact shared public ID, matching type and kind', () {
     final saved = _choice(id: 'saved', title: 'Same title', portableIds: const {'isbn13': '9780306406157'});
     final exactId = _choice(

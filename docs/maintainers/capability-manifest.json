@@ -3,7 +3,7 @@
   "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "aa1f614b99a1e92c5df88a24ca31bd085c6324ad",
+    "auditedMainCommit": "89a70a62a4f0896b59835a58fc5b0f8375772192",
     "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
@@ -305,9 +305,10 @@
       "confidence": "high",
       "evidence": [
         "lib/discovery/discovery_store.dart",
-        "lib/sources/source_database.dart"
+        "lib/sources/source_database.dart",
+        "test/discovery/discovery_features_test.dart"
       ],
-      "qualification": "History appends then keeps the newest 500 actions within an atomic database read-modify-write. Undo preserves its history record if restoring a removed pick would exceed the 250-pick cap. Boundary and concurrent-device cases have not been run on this branch."
+      "qualification": "History appends then keeps the newest 500 actions within an atomic database read-modify-write. Focused tests cover the 500-history and 240-seen bounds, concurrent database updates, and failed/retried Undo at the 250-pick cap. Cross-device convergence and device or power-loss qualification remain open."
     },
     {
       "id": "F08",

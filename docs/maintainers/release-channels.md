@@ -8,9 +8,12 @@ Chocolatey submission, WinGet submission, and GHCR/Docker Hub delivery runs
 succeeded. Chocolatey publisher [run 43136868515](https://github.com/snapetech-org/pleazyng/actions/runs/43136868515)
 submitted 3.0.33; human review requested upstream-author credit and a fork
 description. Corrected publisher [run 43321437887](https://github.com/snapetech-org/pleazyng/actions/runs/43321437887)
-rebuilt and pushed the same version. The [Chocolatey package page](https://community.chocolatey.org/packages/pleazyng/3.0.33)
-now reports `Maintainer updated, waiting for Reviewer`; the current version's
-automated checks are pending and moderator approval has not happened. The WinGet
+rebuilt and pushed the same version. Following the review request, publisher
+[run 43357545060](https://github.com/snapetech-org/pleazyng/actions/runs/43357545060)
+resubmitted the corrected 3.0.33 package on 2026-11-13. The
+[Chocolatey package page](https://community.chocolatey.org/packages/pleazyng/3.0.33)
+reports `Maintainer updated, waiting for Reviewer`; automated checks for this
+latest submission are pending and moderator approval has not happened. The WinGet
 [manifest PR](https://github.com/microsoft/winget-pkgs/pull/478005) still needs
 Microsoft acceptance. The Amazon Fire TV build was submitted in the developer
 console and is under review; do not repeat its API upload while its bootstrap

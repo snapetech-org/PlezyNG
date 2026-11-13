@@ -1,12 +1,12 @@
 # Pleazyng Privacy Notice
 
-Effective October 25, 2026
+Effective November 12, 2026
 
 Pleazyng is a media client. It does not create a Pleazyng account, host your media, or send your library to a Pleazyng server. The app stores its working data on your device and connects to the media servers and other services you choose to use.
 
 ## Data stored on your device
 
-Pleazyng stores app settings, server and profile details, library preferences, and information needed to resume playback. It may also store authentication tokens for the services you connect, downloaded media, and diagnostic logs. Tokens are protected with platform secure storage where supported; other app data is kept in the app's local storage. Clearing app storage or uninstalling removes local app data. Media saved to a folder you selected may remain there and can be deleted separately.
+Pleazyng stores app settings, server and profile details, library preferences, and information needed to resume playback. It may also store authentication tokens for the services you connect, downloaded media, and diagnostic logs. Tokens are protected with platform secure storage where supported; other app data is kept in the app's local storage. Local speech features may save a bounded, profile-scoped cache of generated subtitle text and timing metadata so the same WAV can be reused for another translation. The cache does not contain the WAV audio. Without an active profile, one transcript is kept in memory for the current app process only. Cached transcripts remain on the device until they are evicted or app storage is cleared. Media saved to a folder you selected may remain there and can be deleted separately.
 
 ## Connections to other services
 

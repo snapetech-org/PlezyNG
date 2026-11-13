@@ -53,6 +53,9 @@ class DiscoverySync {
   bool running = false;
   SourceFailure? failure;
   DateTime? lastSuccess;
+  String? _statusProfileId;
+
+  String? get statusProfileId => _statusProfileId;
 
   static String namespaceFor(String code) {
     final publicationNamespace = SyncCipher(code).namespace;
@@ -67,6 +70,15 @@ class DiscoverySync {
     conflicts.clear();
     failure = null;
     lastSuccess = null;
+    _statusProfileId = null;
+  }
+
+  void _selectStatusProfile(String profile) {
+    if (_statusProfileId == profile) return;
+    conflicts.clear();
+    failure = null;
+    lastSuccess = null;
+    _statusProfileId = profile;
   }
 
   Future<SyncDocument> recoveryDocument(String profile, String code) async {
@@ -84,6 +96,7 @@ class DiscoverySync {
   }
 
   Future<void> importRecovery({required String profile, required String code, required SyncDocument incoming}) async {
+    _selectStatusProfile(profile);
     final namespace = namespaceFor(code);
     final cacheKey = _cacheKey(namespace);
     final device = await _device(profile);
@@ -107,6 +120,7 @@ class DiscoverySync {
   }) async {
     if (running) throw const SourceException(SourceFailure.conflict);
     running = true;
+    _selectStatusProfile(profile);
     failure = null;
     try {
       check();
@@ -192,12 +206,12 @@ class DiscoverySync {
         deleted: deleted,
       );
       check();
-      lastSuccess = DateTime.now();
+      if (_statusProfileId == profile) lastSuccess = DateTime.now();
     } on SourceException catch (error) {
-      failure = error.reason;
+      if (_statusProfileId == profile) failure = error.reason;
       rethrow;
     } on Object {
-      failure = SourceFailure.unavailable;
+      if (_statusProfileId == profile) failure = SourceFailure.unavailable;
       rethrow;
     } finally {
       running = false;
@@ -211,6 +225,7 @@ class DiscoverySync {
     required SyncVersion selected,
     required void Function() check,
   }) async {
+    _selectStatusProfile(profile);
     final namespace = namespaceFor(code);
     final cacheKey = _cacheKey(namespace);
     await repository.database.transaction(() async {

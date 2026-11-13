@@ -491,11 +491,11 @@ class SourceController extends ChangeNotifier {
             if (!current(epoch)) {
               return;
             }
+            discoverySync.resetStatus();
             await _settleImports();
             if (!current(epoch)) {
               return;
             }
-            discoverySync.resetStatus();
             downloads.cancelAll();
             oauth.cancel();
             if (id != null && !blocked && current(epoch)) {

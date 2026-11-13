@@ -187,13 +187,17 @@ class _SourceSyncScreenState extends State<SourceSyncScreen> {
     final sync = controller.cloudSync;
     final discovery = controller.discoverySync;
     final currentConfig = controller.syncConfig;
+    final discoveryStatusCurrent = discovery.statusProfileId == controller.profileId;
+    final discoveryRunning = discoveryStatusCurrent && discovery.running;
+    final discoveryFailure = discoveryStatusCurrent ? discovery.failure : null;
+    final discoveryLastSuccess = discoveryStatusCurrent ? discovery.lastSuccess : null;
     final configMatches =
         currentConfig != null &&
         currentConfig.sourceId == _source &&
         currentConfig.code == _code.text.trim() &&
         currentConfig.folder == _folder.text.trim() &&
         currentConfig.includeDiscovery == _includeDiscovery;
-    final lastSuccesses = [sync.lastSuccess, discovery.lastSuccess].whereType<DateTime>().toList();
+    final lastSuccesses = [sync.lastSuccess, discoveryLastSuccess].whereType<DateTime>().toList();
     final addSource = _busy ? null : _addSource;
     final generateCode = _busy
         ? null
@@ -368,7 +372,7 @@ class _SourceSyncScreenState extends State<SourceSyncScreen> {
                         ),
                       ),
                     ],
-                    if (_busy || sync.running || discovery.running)
+                    if (_busy || sync.running || discoveryRunning)
                       Semantics(
                         label: _busy ? t.audiobook.saveSync : t.fileSources.sync,
                         liveRegion: true,
@@ -378,8 +382,8 @@ class _SourceSyncScreenState extends State<SourceSyncScreen> {
                         selected != null &&
                         (sync.failure == SourceFailure.authentication ||
                             sync.failure == SourceFailure.permission ||
-                            discovery.failure == SourceFailure.authentication ||
-                            discovery.failure == SourceFailure.permission))
+                            discoveryFailure == SourceFailure.authentication ||
+                            discoveryFailure == SourceFailure.permission))
                       FocusableButton(
                         onPressed: reconnect,
                         child: OutlinedButton.icon(
@@ -388,11 +392,11 @@ class _SourceSyncScreenState extends State<SourceSyncScreen> {
                           label: Text(t.audiobook.syncReconnect),
                         ),
                       ),
-                    if (_error != null || sync.failure != null || discovery.failure != null)
+                    if (_error != null || sync.failure != null || discoveryFailure != null)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: SourceErrorMessage(
-                          message: sourceFailureText(_error ?? SourceException(sync.failure ?? discovery.failure!)),
+                          message: sourceFailureText(_error ?? SourceException(sync.failure ?? discoveryFailure!)),
                         ),
                       ),
                     if (lastSuccesses.isNotEmpty)
@@ -445,7 +449,7 @@ class _SourceSyncScreenState extends State<SourceSyncScreen> {
                           ),
                         ),
                     ],
-                    if (discovery.conflicts.isNotEmpty) ...[
+                    if (discoveryStatusCurrent && discovery.conflicts.isNotEmpty) ...[
                       const SizedBox(height: 32),
                       Text(t.discover.findNext.saved, style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: 8),

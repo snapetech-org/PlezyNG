@@ -1104,9 +1104,21 @@ class PublicationDownloads {
     if (pendingRemoval != null) {
       await pendingRemoval;
     }
-    return file.sampleOnly
-        ? null
-        : _verifiedLocal(profile, file, await repository.download(profile, key(sourceId, file)));
+    if (file.sampleOnly) {
+      return null;
+    }
+    final downloadKey = key(sourceId, file);
+    final current = await repository.download(profile, downloadKey);
+    if (current?['fingerprint'] == file.fingerprint) {
+      final local = await _verifiedLocal(profile, file, current);
+      if (local != null) {
+        return local;
+      }
+      if (current != null && current['complete'] != 1) {
+        return null;
+      }
+    }
+    return _verifiedLocal(profile, file, await repository.retiredDownload(profile, downloadKey, file.fingerprint));
   }
 
   Future<File?> _verifiedLocal(String profile, PublicationFile file, Map<String, dynamic>? record) async {
@@ -1136,8 +1148,13 @@ class PublicationDownloads {
     String profile,
     Iterable<SourceEntry> entries, {
     List<Map<String, dynamic>>? records,
+    List<Map<String, dynamic>>? retiredRecords,
   }) async {
     final byKey = {for (final row in records ?? await repository.downloads(profile)) row['key']: row};
+    final retiredByKey = {
+      for (final row in retiredRecords ?? await repository.retiredDownloads(profile))
+        sourceKey(row['key'] as String, row['fingerprint'] as String): row,
+    };
     final checked = <String>{};
     final verified = <String>{};
     for (final entry in entries) {
@@ -1146,9 +1163,17 @@ class PublicationDownloads {
         if (!checked.add(identity)) {
           continue;
         }
-        final record = byKey[key(entry.sourceId, file)];
+        final downloadKey = key(entry.sourceId, file);
+        final record = byKey[downloadKey];
         try {
-          if (await _verifiedLocal(profile, file, record) != null) {
+          if (await _verifiedLocal(
+                profile,
+                file,
+                record?['fingerprint'] == file.fingerprint
+                    ? record
+                    : retiredByKey[sourceKey(downloadKey, file.fingerprint)],
+              ) !=
+              null) {
             verified.add(identity);
           }
         } on SourceException {
@@ -1175,6 +1200,18 @@ class PublicationDownloads {
       }
       if (row['state'] != 'queued' && row['state'] != 'running') {
         await repository.forgetDownload(profile, row['key'] as String);
+      }
+    }
+    for (final row in await repository.retiredDownloads(profile)) {
+      final path = row['path'] as String? ?? '';
+      final downloadKey = row['key'] as String;
+      final fingerprint = row['fingerprint'] as String;
+      if (path.isEmpty || !p.isWithin(expected, path)) {
+        await repository.forgetRetiredDownload(profile, downloadKey, fingerprint);
+        continue;
+      }
+      if (!await File(path).exists()) {
+        await repository.forgetRetiredDownload(profile, downloadKey, fingerprint);
       }
     }
   }
@@ -1308,7 +1345,29 @@ class PublicationDownloads {
     final transferKey = sourceKey(profile, key(adapter.source.id, file));
     final existing = _pending[transferKey];
     if (existing != null) {
-      return existing;
+      final currentTask = _tasks[transferKey];
+      if (currentTask?.file.fingerprint == file.fingerprint) {
+        return existing;
+      }
+      return existing.then<File>(
+        (_) => download(profile, adapter, file, label: label, onProgress: onProgress),
+        onError: (Object _, StackTrace _) => download(profile, adapter, file, label: label, onProgress: onProgress),
+      );
+    }
+    final cached = await local(profile, adapter.source.id, file);
+    if (cached != null) {
+      return cached;
+    }
+    final pendingAfterLocalCheck = _pending[transferKey];
+    if (pendingAfterLocalCheck != null) {
+      final currentTask = _tasks[transferKey];
+      if (currentTask?.file.fingerprint == file.fingerprint) {
+        return pendingAfterLocalCheck;
+      }
+      return pendingAfterLocalCheck.then<File>(
+        (_) => download(profile, adapter, file, label: label, onProgress: onProgress),
+        onError: (Object _, StackTrace _) => download(profile, adapter, file, label: label, onProgress: onProgress),
+      );
     }
     final cancellation = TransferCancellation();
     final completer = Completer<File>();
@@ -1333,6 +1392,11 @@ class PublicationDownloads {
     final partial = File('${_target(profile, adapter.source.id, file).path}.partial');
     try {
       await reconcileProfile(profile);
+      final previous = await repository.download(profile, key(adapter.source.id, file));
+      if (previous != null && previous['fingerprint'] != file.fingerprint && previous['complete'] != 1) {
+        await _discardSupersededJob(profile, previous);
+      }
+      await repository.retireDownloadForRevision(profile, key(adapter.source.id, file), file.fingerprint, partial.path);
       final bytes = await partial.exists() ? await partial.length() : 0;
       await repository.reserveDownload(
         profile: profile,
@@ -1533,6 +1597,41 @@ class PublicationDownloads {
     label: label,
   );
 
+  Future<void> _discardSupersededJob(String profile, Map<String, dynamic> row) async {
+    final sourceId = row['source_id'] as String? ?? '';
+    final downloadKey = row['key'] as String? ?? '';
+    final path = row['path'] as String? ?? '';
+    PublicationFile? file;
+    try {
+      file = PublicationFile.fromJson(sourceMap(jsonDecode(row['file_payload'] as String? ?? '{}')));
+    } on Object {
+      // Malformed descriptors still permit cleanup of a contained partial.
+    }
+    if (sourceId.isNotEmpty && file != null && key(sourceId, file) == downloadKey) {
+      await _removeNativeTask(_nativeTaskId(profile, sourceId, file));
+    }
+    final root = p.join(directory.path, sourceDigest(profile));
+    if (path.isNotEmpty && p.isWithin(root, path)) {
+      final partial = File(path);
+      if (await partial.exists() && (await partial.stat()).type == FileSystemEntityType.file) {
+        await partial.delete();
+      }
+      if (path.endsWith('.partial')) {
+        final validator = File('${p.withoutExtension(path)}.validator');
+        if (p.isWithin(root, validator.path) && await validator.exists()) {
+          await validator.delete();
+        }
+      }
+    }
+    if (file != null && sourceId.isNotEmpty && key(sourceId, file) == downloadKey) {
+      final target = _target(profile, sourceId, file);
+      if (p.isWithin(root, target.path) && await target.exists()) {
+        await target.delete();
+      }
+    }
+    await repository.forgetDownload(profile, downloadKey);
+  }
+
   void _drainQueue() {
     while (_activeTransfers < maxConcurrentTransfers && _queue.isNotEmpty) {
       final task = _queue.removeFirst();
@@ -1609,6 +1708,18 @@ class PublicationDownloads {
     final cached = await local(profile, adapter.source.id, file);
     cancel.check();
     if (cached != null) {
+      final stat = await cached.stat();
+      await repository.recordDownload(
+        profile,
+        recordKey,
+        cached.path,
+        file.fingerprint,
+        stat.size,
+        reservedBytes: stat.size,
+        sourceId: adapter.source.id,
+        file: file,
+        label: label,
+      );
       return cached;
     }
     final folder = Directory(p.join(directory.path, sourceDigest(profile)));
@@ -2175,7 +2286,10 @@ class PublicationDownloads {
           if (!allowed()) {
             return;
           }
-          final record = await repository.download(profile, key(sourceId, file));
+          final downloadKey = key(sourceId, file);
+          final current = await repository.download(profile, downloadKey);
+          final isCurrent = current?['fingerprint'] == file.fingerprint;
+          final record = isCurrent ? current : await repository.retiredDownload(profile, downloadKey, file.fingerprint);
           if (!allowed()) {
             return;
           }
@@ -2194,7 +2308,11 @@ class PublicationDownloads {
             }
           }
           if (allowed()) {
-            await repository.forgetDownload(profile, key(sourceId, file));
+            if (record != null && isCurrent) {
+              await repository.forgetDownload(profile, downloadKey);
+            } else if (record != null) {
+              await repository.forgetRetiredDownload(profile, downloadKey, file.fingerprint);
+            }
           }
         }().whenComplete(() {
           if (identical(_removals[identity], removal)) {
@@ -2203,6 +2321,29 @@ class PublicationDownloads {
         });
     _removals[identity] = removal;
     return removal;
+  }
+
+  Future<void> removeRetiredDownload(String profile, String downloadKey, String fingerprint) async {
+    final row = await repository.retiredDownload(profile, downloadKey, fingerprint);
+    if (row == null) {
+      return;
+    }
+    final root = p.join(directory.path, sourceDigest(profile));
+    final path = row['path'] as String? ?? '';
+    if (path.isEmpty || !p.isWithin(root, path)) {
+      throw const SourceException(SourceFailure.permission);
+    }
+    final file = File(path);
+    if (await file.exists()) {
+      await file.delete();
+    }
+    if (path.endsWith('.partial')) {
+      final validator = File('${p.withoutExtension(path)}.validator');
+      if (p.isWithin(root, validator.path) && await validator.exists()) {
+        await validator.delete();
+      }
+    }
+    await repository.forgetRetiredDownload(profile, downloadKey, fingerprint);
   }
 }
 

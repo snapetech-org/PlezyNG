@@ -309,7 +309,7 @@
         "lib/sources/source_database.dart",
         "docs/sources/QUALIFICATION.md"
       ],
-      "qualification": "The app persists jobs, applies per-profile quota and free-space bounds, recovers interrupted transfers, and limits native background transfer to explicit safe subsets. Crash/resume, low-space, and platform lifecycle acceptance remains open."
+      "qualification": "The app persists jobs, applies per-profile quota and free-space bounds, recovers interrupted transfers, and limits native background transfer to explicit safe subsets. Replaced editions remain quota-accounted and removable while an active reader may still use them. Crash/resume, low-space, and platform lifecycle acceptance remains open."
     },
     {
       "id": "F12",

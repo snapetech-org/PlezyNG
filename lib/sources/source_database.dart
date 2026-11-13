@@ -62,7 +62,7 @@ class SourceDatabase extends GeneratedDatabase {
   }
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
   @override
   Iterable<TableInfo<Table, Object?>> get allTables => const [];
   @override
@@ -93,6 +93,7 @@ class SourceDatabase extends GeneratedDatabase {
       }
       await _createRemoteWorkerSchema();
       await _createPodcastSyncSchema();
+      await _createRetiredDownloadSchema();
       await _createEntrySearchIndex();
     },
     onUpgrade: (migrator, from, to) async {
@@ -210,6 +211,9 @@ class SourceDatabase extends GeneratedDatabase {
       if (from < 12) {
         await _createPodcastSyncSchema();
       }
+      if (from < 13) {
+        await _createRetiredDownloadSchema();
+      }
     },
   );
 
@@ -220,6 +224,13 @@ class SourceDatabase extends GeneratedDatabase {
     await customStatement(
       "CREATE INDEX entries_podcast_sync_identity ON entries(profile,CASE WHEN json_valid(payload) THEN json_extract(payload,'\$.identifiers.podcastSyncIdentity') END)",
     );
+  }
+
+  Future<void> _createRetiredDownloadSchema() async {
+    await customStatement(
+      'CREATE TABLE retired_downloads (profile TEXT NOT NULL, key TEXT NOT NULL, fingerprint TEXT NOT NULL, path TEXT NOT NULL, bytes INTEGER NOT NULL, complete INTEGER NOT NULL, source_id TEXT NOT NULL DEFAULT \'\', file_payload TEXT NOT NULL DEFAULT \'{}\', state TEXT NOT NULL DEFAULT \'retired\', updated INTEGER NOT NULL DEFAULT 0, reserved_bytes INTEGER NOT NULL DEFAULT 0, label TEXT NOT NULL DEFAULT \'\', PRIMARY KEY(profile,key,fingerprint))',
+    );
+    await customStatement('CREATE INDEX retired_downloads_profile_updated ON retired_downloads(profile,updated)');
   }
 
   Future<void> _createRemoteWorkerSchema() async {
@@ -325,6 +336,7 @@ class SourceRepository {
         'events',
         'annotations',
         'downloads',
+        'retired_downloads',
         'preferences',
         'canonical_cards',
         'canonical_aliases',
@@ -1415,29 +1427,66 @@ class SourceRepository {
     String label = '',
   }) {
     _writable(profile);
-    return database.customStatement(
-      'INSERT INTO downloads(profile,key,path,fingerprint,bytes,complete,source_id,file_payload,state,updated,reserved_bytes,label) '
-      'VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(profile,key) DO UPDATE SET '
-      'path=excluded.path,fingerprint=excluded.fingerprint,bytes=excluded.bytes,complete=excluded.complete,'
-      'state=excluded.state,updated=excluded.updated,reserved_bytes=MAX(excluded.reserved_bytes,excluded.bytes),'
-      'source_id=CASE WHEN excluded.source_id=\'\' THEN downloads.source_id ELSE excluded.source_id END,'
-      'file_payload=CASE WHEN excluded.file_payload=\'{}\' THEN downloads.file_payload ELSE excluded.file_payload END,'
-      'label=CASE WHEN excluded.label=\'\' THEN downloads.label ELSE excluded.label END',
-      [
-        profile,
-        key,
-        path,
-        fingerprint,
-        bytes,
-        complete ? 1 : 0,
-        sourceId,
-        file == null ? '{}' : jsonEncode(file.toJson()),
-        complete ? 'completed' : 'running',
-        DateTime.now().millisecondsSinceEpoch,
-        reservedBytes ?? bytes,
-        label,
-      ],
-    );
+    return database.transaction(() async {
+      await database.customStatement(
+        'INSERT INTO downloads(profile,key,path,fingerprint,bytes,complete,source_id,file_payload,state,updated,reserved_bytes,label) '
+        'VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(profile,key) DO UPDATE SET '
+        'path=excluded.path,fingerprint=excluded.fingerprint,bytes=excluded.bytes,complete=excluded.complete,'
+        'state=excluded.state,updated=excluded.updated,reserved_bytes=MAX(excluded.reserved_bytes,excluded.bytes),'
+        'source_id=CASE WHEN excluded.source_id=\'\' THEN downloads.source_id ELSE excluded.source_id END,'
+        'file_payload=CASE WHEN excluded.file_payload=\'{}\' THEN downloads.file_payload ELSE excluded.file_payload END,'
+        'label=CASE WHEN excluded.label=\'\' THEN downloads.label ELSE excluded.label END',
+        [
+          profile,
+          key,
+          path,
+          fingerprint,
+          bytes,
+          complete ? 1 : 0,
+          sourceId,
+          file == null ? '{}' : jsonEncode(file.toJson()),
+          complete ? 'completed' : 'running',
+          DateTime.now().millisecondsSinceEpoch,
+          reservedBytes ?? bytes,
+          label,
+        ],
+      );
+      if (complete) {
+        await database.customStatement(
+          'DELETE FROM retired_downloads WHERE profile=? AND key=? AND fingerprint=? AND path=?',
+          [profile, key, fingerprint, path],
+        );
+      }
+    });
+  }
+
+  /// Retires a completed cached edition before reserving a newer fingerprint.
+  /// The separate commit keeps the old copy visible and quota-accounted even
+  /// when the new reservation is rejected for insufficient quota.
+  Future<void> retireDownloadForRevision(String profile, String key, String fingerprint, String replacementPath) async {
+    _writable(profile);
+    await database.transaction(() async {
+      _writable(profile);
+      final current = await database
+          .customSelect(
+            'SELECT * FROM downloads WHERE profile=? AND key=?',
+            variables: [Variable(profile), Variable(key)],
+          )
+          .getSingleOrNull();
+      if (current == null ||
+          current.read<String>('fingerprint') == fingerprint ||
+          current.read<int>('complete') != 1 ||
+          current.read<String>('path') == replacementPath) {
+        return;
+      }
+      await database.customStatement(
+        'INSERT OR REPLACE INTO retired_downloads(profile,key,fingerprint,path,bytes,complete,source_id,file_payload,state,updated,reserved_bytes,label) '
+        'SELECT profile,key,fingerprint,path,bytes,complete,source_id,file_payload,\'retired\',updated,reserved_bytes,label '
+        'FROM downloads WHERE profile=? AND key=?',
+        [profile, key],
+      );
+      await database.customStatement('DELETE FROM downloads WHERE profile=? AND key=?', [profile, key]);
+    });
   }
 
   Future<int> downloadQuota(String profile) async {
@@ -1454,8 +1503,10 @@ class SourceRepository {
       _writable(profile);
       final usage = await database
           .customSelect(
-            'SELECT COALESCE(SUM(MAX(bytes,reserved_bytes)),0) AS reserved FROM downloads WHERE profile=?',
-            variables: [Variable(profile)],
+            'SELECT '
+            '(SELECT COALESCE(SUM(MAX(bytes,reserved_bytes)),0) FROM downloads WHERE profile=?) + '
+            '(SELECT COALESCE(SUM(MAX(bytes,reserved_bytes)),0) FROM retired_downloads WHERE profile=?) AS reserved',
+            variables: [Variable(profile), Variable(profile)],
           )
           .getSingle();
       if (usage.read<int>('reserved') > bytes) {
@@ -1468,9 +1519,12 @@ class SourceRepository {
   Future<({int usedBytes, int reservedBytes})> downloadStorageUsage(String profile) async {
     final row = await database
         .customSelect(
-          'SELECT COALESCE(SUM(bytes),0) AS used,COALESCE(SUM(MAX(bytes,reserved_bytes)),0) AS reserved '
-          'FROM downloads WHERE profile=?',
-          variables: [Variable(profile)],
+          'SELECT '
+          '(SELECT COALESCE(SUM(bytes),0) FROM downloads WHERE profile=?) + '
+          '(SELECT COALESCE(SUM(bytes),0) FROM retired_downloads WHERE profile=?) AS used, '
+          '(SELECT COALESCE(SUM(MAX(bytes,reserved_bytes)),0) FROM downloads WHERE profile=?) + '
+          '(SELECT COALESCE(SUM(MAX(bytes,reserved_bytes)),0) FROM retired_downloads WHERE profile=?) AS reserved',
+          variables: [Variable(profile), Variable(profile), Variable(profile), Variable(profile)],
         )
         .getSingle();
     return (usedBytes: row.read<int>('used'), reservedBytes: row.read<int>('reserved'));
@@ -1498,10 +1552,31 @@ class SourceRepository {
     await database.transaction(() async {
       _writable(profile);
       final quota = await downloadQuota(profile);
+      final current = await database
+          .customSelect(
+            'SELECT * FROM downloads WHERE profile=? AND key=?',
+            variables: [Variable(profile), Variable(key)],
+          )
+          .getSingleOrNull();
+      if (current != null && current.read<String>('fingerprint') != file.fingerprint) {
+        final currentPath = current.read<String>('path');
+        if (current.read<int>('complete') == 1 && currentPath != path) {
+          await database.customStatement(
+            'INSERT OR REPLACE INTO retired_downloads(profile,key,fingerprint,path,bytes,complete,source_id,file_payload,state,updated,reserved_bytes,label) '
+            'SELECT profile,key,fingerprint,path,bytes,complete,source_id,file_payload,\'retired\',updated,reserved_bytes,label '
+            'FROM downloads WHERE profile=? AND key=?',
+            [profile, key],
+          );
+        } else if (current.read<int>('complete') != 1) {
+          throw const SourceException(SourceFailure.conflict);
+        }
+      }
       final row = await database
           .customSelect(
-            'SELECT COALESCE(SUM(MAX(bytes,reserved_bytes)),0) AS used FROM downloads WHERE profile=? AND key<>?',
-            variables: [Variable(profile), Variable(key)],
+            'SELECT '
+            '(SELECT COALESCE(SUM(MAX(bytes,reserved_bytes)),0) FROM downloads WHERE profile=? AND key<>?) + '
+            '(SELECT COALESCE(SUM(MAX(bytes,reserved_bytes)),0) FROM retired_downloads WHERE profile=?) AS used',
+            variables: [Variable(profile), Variable(key), Variable(profile)],
           )
           .getSingle();
       if (row.read<int>('used') + math.max(reservedBytes, bytes) > quota) {
@@ -1552,6 +1627,30 @@ class SourceRepository {
       (await database.customSelect('SELECT * FROM downloads WHERE profile=?', variables: [Variable(profile)]).get())
           .map((r) => r.data)
           .toList();
+
+  Future<Map<String, dynamic>?> retiredDownload(String profile, String key, String fingerprint) async =>
+      (await database
+              .customSelect(
+                'SELECT * FROM retired_downloads WHERE profile=? AND key=? AND fingerprint=?',
+                variables: [Variable(profile), Variable(key), Variable(fingerprint)],
+              )
+              .getSingleOrNull())
+          ?.data;
+
+  Future<List<Map<String, dynamic>>> retiredDownloads(String profile) async =>
+      (await database
+              .customSelect(
+                'SELECT * FROM retired_downloads WHERE profile=? ORDER BY updated DESC',
+                variables: [Variable(profile)],
+              )
+              .get())
+          .map((row) => row.data)
+          .toList();
+
+  Future<void> forgetRetiredDownload(String profile, String key, String fingerprint) => database.customStatement(
+    'DELETE FROM retired_downloads WHERE profile=? AND key=? AND fingerprint=?',
+    [profile, key, fingerprint],
+  );
 
   /// Remaining bytes reserved by active writers across every profile. The OS
   /// free-space guard is volume-wide even while a profile switch is settling.

@@ -4150,6 +4150,8 @@
     "offlineStorageUsage": "Offline storage",
     "reservedStorage": "reserved",
     "downloadQueue": "Download queue",
+    "retiredOfflineCopies": "Older saved copies",
+    "retiredOfflineCopyHelp": "Kept while a reader may still use this edition. Remove it to free storage.",
     "downloadRunning": "Downloading",
     "downloadQueued": "Waiting",
     "downloadPaused": "Paused",

@@ -245,6 +245,7 @@ class _SourcesScreenState extends State<SourcesScreen> {
   final TextEditingController _searchController = TextEditingController();
   final Set<String> _offline = {};
   List<Map<String, dynamic>> _downloadJobs = const [];
+  List<Map<String, dynamic>> _retiredDownloads = const [];
   bool _loading = true;
   bool _usingIndexFallback = false;
   Object? _error;
@@ -377,7 +378,13 @@ class _SourcesScreenState extends State<SourcesScreen> {
       final uniqueItems = {for (final entry in items) entry.key: entry}.values.toList(growable: false);
       final progress = await controller.repository.progressForEntries(profile, uniqueItems.map((entry) => entry.key));
       final downloads = await controller.repository.downloads(profile);
-      final verified = await controller.downloads.verifiedFiles(profile, uniqueItems, records: downloads);
+      final retiredDownloads = await controller.repository.retiredDownloads(profile);
+      final verified = await controller.downloads.verifiedFiles(
+        profile,
+        uniqueItems,
+        records: downloads,
+        retiredRecords: retiredDownloads,
+      );
       controller.requireSession(epoch);
       if (!mounted || request != _request) return;
       _offline
@@ -386,6 +393,7 @@ class _SourcesScreenState extends State<SourcesScreen> {
       _downloadJobs = downloads
           .where((d) => d['complete'] != 1 && d['state'] != 'completed' && d['state'] != 'legacy')
           .toList(growable: false);
+      _retiredDownloads = retiredDownloads;
       setState(() {
         _entries = uniqueItems;
         _progress = progress;
@@ -645,6 +653,45 @@ class _SourcesScreenState extends State<SourcesScreen> {
     );
   }
 
+  Widget _retiredDownloadTile(SourceController sources, String profile, Map<String, dynamic> copy) {
+    final key = copy['key'] as String;
+    final fingerprint = copy['fingerprint'] as String;
+    final label = (copy['label'] as String?)?.trim() ?? '';
+    final version = fingerprint.length > 12 ? fingerprint.substring(0, 12) : fingerprint;
+    return FocusableListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: const AppIcon(Symbols.bookmark_rounded),
+      title: Text(
+        label.isEmpty ? t.fileSources.offline : isolateDisplayText(label),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text('${t.fileSources.retiredOfflineCopyHelp} · $version'),
+      trailing: IconButton(
+        tooltip: t.fileSources.removeDownloadJob,
+        icon: const AppIcon(Symbols.delete_outline_rounded),
+        onPressed: _loading
+            ? null
+            : () => sourceAction(context, () async {
+                if (!await showConfirmDialog(
+                  context,
+                  title: t.fileSources.removeDownloadJob,
+                  message: t.fileSources.confirmRemoveDownloadJob,
+                  confirmText: t.fileSources.removeDownloadJob,
+                  isDestructive: true,
+                )) {
+                  return;
+                }
+                if (!mounted || sources.profileId != profile) {
+                  return;
+                }
+                await sources.downloads.removeRetiredDownload(profile, key, fingerprint);
+                if (mounted) await _load();
+              }),
+      ),
+    );
+  }
+
   Future<void> _sourceAction(String action, FileSource source) async {
     final controller = context.read<SourceController>();
     if (action == 'scan') {
@@ -886,6 +933,12 @@ class _SourcesScreenState extends State<SourcesScreen> {
                   Text(t.fileSources.downloadQueue, style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 8),
                   for (final job in _downloadJobs) _downloadJobTile(sources, job),
+                  const SizedBox(height: 12),
+                ],
+                if (widget.offlineOnly && _retiredDownloads.isNotEmpty) ...[
+                  Text(t.fileSources.retiredOfflineCopies, style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 8),
+                  for (final copy in _retiredDownloads) _retiredDownloadTile(sources, sources.profileId!, copy),
                   const SizedBox(height: 12),
                 ],
                 if (root) ...[

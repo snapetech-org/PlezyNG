@@ -10318,6 +10318,12 @@ class Translations$fileSources$en {
 	/// en: 'Download queue'
 	String get downloadQueue => 'Download queue';
 
+	/// en: 'Older saved copies'
+	String get retiredOfflineCopies => 'Older saved copies';
+
+	/// en: 'Kept while a reader may still use this edition. Remove it to free storage.'
+	String get retiredOfflineCopyHelp => 'Kept while a reader may still use this edition. Remove it to free storage.';
+
 	/// en: 'Downloading'
 	String get downloadRunning => 'Downloading';
 
@@ -21680,6 +21686,8 @@ extension on Translations {
 			'fileSources.offlineStorageUsage' => 'Offline storage',
 			'fileSources.reservedStorage' => 'reserved',
 			'fileSources.downloadQueue' => 'Download queue',
+			'fileSources.retiredOfflineCopies' => 'Older saved copies',
+			'fileSources.retiredOfflineCopyHelp' => 'Kept while a reader may still use this edition. Remove it to free storage.',
 			'fileSources.downloadRunning' => 'Downloading',
 			'fileSources.downloadQueued' => 'Waiting',
 			'fileSources.downloadPaused' => 'Paused',
@@ -21934,10 +21942,10 @@ extension on Translations {
 			'games.computers' => 'Your computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
-			'games.name' => 'Computer name',
-			'games.address' => 'IP address or hostname',
 			_ => null,
 		} ?? switch (path) {
+			'games.name' => 'Computer name',
+			'games.address' => 'IP address or hostname',
 			'games.port' => 'Service port',
 			'games.protocol' => 'Streaming service',
 			'games.moonlight' => 'Sunshine / Moonlight',
@@ -22448,10 +22456,10 @@ extension on Translations {
 			'subtitleAiUi.cuesAreReadyReviewThisSampleBeforeAt_2851cf04' => ({required Object cuesCueCount}) => '${cuesCueCount} cues are ready. Review this sample before attaching the generated SRT.',
 			'subtitleAiUi.andMore' => ({required Object count}) => 'And ${count} more.',
 			'subtitleAiUi.saveSRTOrJSONExportsTheReviewedResul_b960b84b' => 'Save SRT or JSON exports the reviewed result without changing the active track or source subtitle.',
-			'subtitleAiUi.editAllCues_8771718b' => 'Edit all cues',
-			'subtitleAiUi.theCurrentlySelectedCaptionsAreBurne_9904ad02' => 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.editAllCues_8771718b' => 'Edit all cues',
+			'subtitleAiUi.theCurrentlySelectedCaptionsAreBurne_9904ad02' => 'The currently selected captions are burned into this video image. Attaching generated subtitles adds a separate track and cannot erase those pixels.',
 			'subtitleAiUi.uploadAttachStoresThisSRTOnTheActive_3e49fa27' => 'Upload + attach stores this SRT on the active library item when the server allows it.',
 			'subtitleAiUi.editSampleCue' => 'Edit sample cue',
 			'subtitleAiUi.saveSRT' => 'Save SRT',
@@ -22962,10 +22970,10 @@ extension on Translations {
 			'karaokeUi.scoredCharts' => 'Scored charts',
 			'karaokeUi.fitsMyRange' => 'Fits my range',
 			'karaokeUi.allGenres' => 'All genres',
-			'karaokeUi.allLanguages' => 'All languages',
-			'karaokeUi.allDecades' => 'All decades',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.allLanguages' => 'All languages',
+			'karaokeUi.allDecades' => 'All decades',
 			'karaokeUi.allDifficultyLevels' => 'All difficulty levels',
 			'karaokeUi.difficulty5' => ({required Object value1}) => 'Difficulty ${value1} / 5',
 			'karaokeUi.requestDuetGroup' => 'Request duet / group',

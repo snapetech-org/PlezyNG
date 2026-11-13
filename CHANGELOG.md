@@ -7,6 +7,7 @@
 - Require an active profile for both WebDAV settings directions, cap uploads at the restore limit, and abort owner-bound requests when the profile changes.
 - Keep discovery Undo history intact when a restored pick would exceed the saved-pick limit.
 - Retry cleanup of old publication and Saved-pick sync generations on unchanged syncs, and stop publishing before retained state exceeds the bounded provider listing capacity.
+- Keep older downloaded publication editions in the quota ledger while readers may still use them, and provide a removable list in Files & books.
 - Reject malformed IPTV XMLTV calendar, clock, and numeric timezone fields instead of normalizing them into shifted guide times.
 - Add per-session Multiview gain controls without changing saved player volume, plus an explicit two-session decoded MPV mix on matching non-exclusive desktop output routes where runtime capabilities allow it. Other backends keep single-session audio; physical-device qualification remains open.
 - Fix cross-platform builds for Multiview's optional per-session audio capabilities while retaining single-session fallback on unsupported backends.

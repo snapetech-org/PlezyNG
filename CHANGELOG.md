@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Reject untrusted browser origins at anonymous relay and upload endpoints, redact diagnostic uploads at the egress boundary, and restrict relay container filesystem access, privileges and resources.
+- Update locked Addressable to 2.9.1 to resolve three moderate dependency advisories in the Fastlane toolchain.
 - Add a documentation index, document webOS secure-storage behavior, and correct stale release guidance and broken repository links.
 
 - Allow a pinned-source release to run exact-source CI and create its stable tag through the authenticated release controller when the organization blocks Actions tag creation.

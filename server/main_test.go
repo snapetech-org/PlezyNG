@@ -8117,6 +8117,9 @@ func TestPostersRoundTrip(t *testing.T) {
 	if ct := getResp.Header.Get("Content-Type"); !strings.HasPrefix(ct, "image/png") {
 		t.Errorf("Content-Type=%q", ct)
 	}
+	if got := getResp.Header.Get("X-Content-Type-Options"); got != "nosniff" {
+		t.Errorf("X-Content-Type-Options=%q, want nosniff", got)
+	}
 }
 
 func servePosterGet(s *Server, path, remoteAddr string) *httptest.ResponseRecorder {

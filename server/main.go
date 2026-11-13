@@ -92,7 +92,7 @@ const (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true },
+	CheckOrigin:     browserOriginAllowed,
 }
 
 type clientMsg struct {
@@ -1593,6 +1593,9 @@ func (s *Server) handlePostLogs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+	if rejectUntrustedBrowserOrigin(w, r) {
+		return
+	}
 
 	ip, err := s.clientIPs.resolve(r)
 	if err != nil {
@@ -1764,6 +1767,9 @@ func (s *Server) handlePostPosters(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+	if rejectUntrustedBrowserOrigin(w, r) {
+		return
+	}
 
 	ip, err := s.clientIPs.resolve(r)
 	if err != nil {
@@ -1875,9 +1881,13 @@ func (s *Server) handleGetPosters(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "public, max-age="+strconv.Itoa(remaining))
 	w.Header().Set("Content-Type", entry.ContentType)
 	w.Header().Set("Content-Length", strconv.FormatInt(entry.Size, 10))
+	w.Header().Set("X-Content-Type-Options", "nosniff")
 	http.ServeContent(w, r, entry.Filename, entry.CreatedAt, f)
 }
 func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
+	if rejectUntrustedBrowserOrigin(w, r) {
+		return
+	}
 	ip, err := s.clientIPs.resolve(r)
 	if err != nil {
 		http.Error(w, "Invalid client address", http.StatusBadRequest)

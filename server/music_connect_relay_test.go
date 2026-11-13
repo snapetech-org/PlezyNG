@@ -130,6 +130,16 @@ func TestMusicRelayRejectsWrongCapabilitiesAndBrowserOrigins(t *testing.T) {
 	if err == nil || response == nil || response.StatusCode != http.StatusBadRequest {
 		t.Fatal("browser accepted")
 	}
+	duplicateOrigin := musicRelayTestHeaders("controller", secret, control)
+	duplicateOrigin.Add("Origin", "")
+	duplicateOrigin.Add("Origin", "https://evil.example")
+	conn, response, err = websocket.DefaultDialer.Dial(url, duplicateOrigin)
+	if conn != nil {
+		_ = conn.Close()
+	}
+	if err == nil || response == nil || response.StatusCode != http.StatusBadRequest {
+		t.Fatal("duplicate browser origin accepted")
+	}
 }
 
 func TestMusicRelayHostDisconnectRetiresItsControllers(t *testing.T) {

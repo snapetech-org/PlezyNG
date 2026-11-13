@@ -178,7 +178,7 @@ func (s *steamRelay) handle(w http.ResponseWriter, r *http.Request) {
 	raw := r.Header.Get("Authorization")
 	secret, err := base64.RawURLEncoding.DecodeString(strings.TrimPrefix(raw, "Bearer "))
 	role := r.Header.Get("X-Steam-Relay-Role")
-	if r.Method != "GET" || r.URL.RawQuery != "" || r.Header.Get("Origin") != "" || len(r.Header.Values("Authorization")) != 1 || !strings.HasPrefix(raw, "Bearer ") || err != nil || len(secret) != 32 || len(raw) != 50 || (role != "host" && role != "receiver") || r.Header.Get("X-Steam-Relay-Version") != "1" {
+	if r.Method != "GET" || r.URL.RawQuery != "" || len(r.Header.Values("Origin")) != 0 || len(r.Header.Values("Authorization")) != 1 || !strings.HasPrefix(raw, "Bearer ") || err != nil || len(secret) != 32 || len(raw) != 50 || (role != "host" && role != "receiver") || r.Header.Get("X-Steam-Relay-Version") != "1" {
 		http.Error(w, "Invalid relay request", 400)
 		return
 	}
@@ -225,7 +225,7 @@ func (s *steamRelay) handle(w http.ResponseWriter, r *http.Request) {
 	s.ips[ip]++
 	s.mu.Unlock()
 	defer s.remove(p)
-	upgrader := websocket.Upgrader{HandshakeTimeout: 5 * time.Second, ReadBufferSize: 4096, WriteBufferSize: 4096, EnableCompression: false, CheckOrigin: func(*http.Request) bool { return true }}
+	upgrader := websocket.Upgrader{HandshakeTimeout: 5 * time.Second, ReadBufferSize: 4096, WriteBufferSize: 4096, EnableCompression: false, CheckOrigin: func(r *http.Request) bool { return len(r.Header.Values("Origin")) == 0 }}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return

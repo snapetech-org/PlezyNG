@@ -2,8 +2,17 @@ services:
   relay:
     build: .
     restart: unless-stopped
+    read_only: true
     mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 64
     stop_grace_period: 15s
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m
     volumes:
       - logs:/data
     ports:
@@ -11,6 +20,7 @@ services:
     environment:
       OAUTH_BASE_URL: ${PLEZY_SERVER_PUBLIC_URL:?Set PLEZY_SERVER_PUBLIC_URL to this relay's public HTTPS URL}
       TRUSTED_PROXY_CIDRS: ${TRUSTED_PROXY_CIDRS:?Set TRUSTED_PROXY_CIDRS to the reverse proxy network CIDR}
+      PLEAZYNG_ALLOWED_BROWSER_ORIGINS: ${PLEAZYNG_ALLOWED_BROWSER_ORIGINS:-https://pleazyng.app,https://www.pleazyng.app}
       TRAKT_CLIENT_ID: ${TRAKT_CLIENT_ID:-}
       MAL_CLIENT_ID: ${MAL_CLIENT_ID:-}
       ANILIST_CLIENT_ID: ${ANILIST_CLIENT_ID:-}

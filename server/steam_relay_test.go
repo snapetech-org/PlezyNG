@@ -96,6 +96,7 @@ func TestSteamRelayLimitsAndAuthority(t *testing.T) {
 	token := base64.RawURLEncoding.EncodeToString(make([]byte, 32))
 	for _, headers := range []http.Header{
 		{}, {"Authorization": {"Bearer " + token}, "X-Steam-Relay-Role": {"receiver"}, "X-Steam-Relay-Version": {"1"}, "Origin": {"https://evil.test"}},
+		{"Authorization": {"Bearer " + token}, "X-Steam-Relay-Role": {"host"}, "X-Steam-Relay-Version": {"1"}, "X-Steam-Relay-Admission": {strings.Repeat("a", 43)}, "Origin": {"", "https://evil.test"}},
 	} {
 		r := httptest.NewRequest("GET", "https://relay.test/games/steam/relay", nil)
 		r.Header = headers

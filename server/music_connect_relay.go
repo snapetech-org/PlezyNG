@@ -106,7 +106,7 @@ func musicRelayToken(value string) bool {
 
 func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
-	if r.Method != http.MethodGet || r.URL.RawQuery != "" || r.Header.Get("Origin") != "" {
+	if r.Method != http.MethodGet || r.URL.RawQuery != "" || len(r.Header.Values("Origin")) != 0 {
 		http.Error(w, "Unsupported music relay request", http.StatusBadRequest)
 		return
 	}
@@ -186,7 +186,7 @@ func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 
 	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 5 * time.Second, ReadBufferSize: 4096, WriteBufferSize: 4096,
-		CheckOrigin: func(r *http.Request) bool { return r.Header.Get("Origin") == "" },
+		CheckOrigin: func(r *http.Request) bool { return len(r.Header.Values("Origin")) == 0 },
 	}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

@@ -1,6 +1,13 @@
 # PlezyNG to Pleazyng: brand, assets, packages and publishing migration
 
-Status: source implementation and the application repository/local checkout rename are complete. The owner authorized the repository cutover on 8 November 2026; see [repository migration](repository-rename.md). Other external channels and device qualification remain separately tracked in the [implementation record](pleazyng-rebrand-handoff.md) and [machine-readable status](pleazyng-rebrand-status.json). The original audit and checklist below are retained as the scope baseline; unchecked items are not completion claims.
+Status: The source rebrand and application repository/local checkout rename are
+complete; see [repository migration](repository-rename.md). The original
+inventory below is the 5 November 2026 scope baseline, not a live completion
+ledger. Current service, release and external-gate state was rechecked on
+12 November 2026 and is recorded in the [implementation record](pleazyng-rebrand-handoff.md),
+[machine-readable status](pleazyng-rebrand-status.json) and [provider-registration
+handoff](owned-provider-registrations.md). GitHub v3.0.33 is the current published
+core release; package/store delivery and review are tracked separately.
 Date: 5 November 2026 (America/Regina).
 Owner/publisher: SnapeTech.
 Source repository at audit: snapetech-org/PlezyNG (now snapetech-org/pleazyng), main at 2bc45e1b890776cb6b1a19ba3434867d01f0a404.
@@ -35,6 +42,36 @@ Observed findings:
 | P01 | GitHub v3.0.0 is published, with 31 assets containing a mixture of plezy-, plezyng- and PlezyNG- names. pubspec.yaml at the audit commit is 3.0.0+159. | Treat existing installs/releases as real. Use a later release with canonical names and a tested migration. Preserve historical tags, binaries, checksums and attestations. |
 | P02 | Repo metadata homepage points at a GitHub URL. Store documentation records prepared Play/Apple/Amazon records and a lifetime product, but this was not rechecked in consoles. | Audit actual records and purchases before retiring or replacing them; correct repo homepage during cutover. |
 | P03 | release-channels.md describes push CI, while inspected ci.yml is manually dispatched. Website README describes push deployment while deploy-pages.yml is manually dispatched. Old docs also describe optional webOS release omission. | Reconcile stale instructions with current workflows and AGENTS.md. All required release platforms remain required; a rebrand cannot bypass missing platform or redistribution work. |
+
+## Current-state reconciliation (12 November 2026)
+
+The findings table above records the initial audit snapshot. These later checks
+supersede its S01–S03 and P01 release-status observations:
+
+- **S01 — Discord:** The upstream application ID is no longer bundled. Desktop
+  Rich Presence reads optional `PLEAZYNG_DISCORD_APPLICATION_ID` and remains
+  unavailable when it is unset. The owned Discord application and public release
+  variable are recorded in [owned-provider-registrations.md](owned-provider-registrations.md);
+  desktop IPC and poster-upload qualification remain pending.
+- **S02 — service URLs:** The app requires explicit `PLEAZYNG_*` service
+  configuration and rejects `plezy.app` hosts; it has no upstream relay fallback.
+  The owned relay health endpoint returned HTTP 200 with certificate
+  verification on 12 November. This checks liveness only; it does not qualify
+  every route or provider flow.
+- **S03 — providers:** The Trakt client ID is an optional
+  `PLEAZYNG_TRAKT_CLIENT_ID` build input, not a bundled upstream ID. The
+  development registration exists; production approval and activation remain
+  pending. Other provider states are listed in
+  [owned-provider-registrations.md](owned-provider-registrations.md).
+- **P01 — releases:** [GitHub v3.0.33](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.33)
+  was published on 12 November 2026 as the current core release. It does not
+  establish acceptance or successful delivery through each store or package
+  manager.
+- **P02 — site:** The application repository's homepage now points to
+  `https://pleazyng.app/`; both the apex and `www` returned HTTP 200 with valid
+  TLS on 12 November. Registrant/control evidence and historical fork-domain
+  redirects remain unverified.
+
 
 ## 2. Canonical identity map
 
@@ -163,11 +200,15 @@ Exit: clean installation, supported legacy-fork migration and upstream side-by-s
 
 ### R4 — Own services and provider registrations
 
-- [ ] Deploy the fork's server/ on infrastructure controlled by SnapeTech. api.pleazyng.app is the preferred target only after domain/TLS/control are verified; configuration must support a verified SnapeTech-controlled alternative.
-- [ ] Replace PLEZY_SERVER_BASE_URL and the dependent commerce/Watchmode defaults with canonical Pleazyng configuration. Require valid fork-owned endpoints for enabled services; a missing endpoint disables that optional integration with a useful message, never a fallback to ice.plezy.app.
+- [x] Deploy the fork's relay on the configured Pleazyng endpoint. The service health URL returned HTTP 200 with valid TLS on 12 November 2026; this does not qualify provider routes or establish store readiness. See [owned-provider-registrations.md](owned-provider-registrations.md) and [pleazyng-relay-endpoints.md](pleazyng-relay-endpoints.md).
+- [x] Replace the upstream service defaults with explicit `PLEAZYNG_*` configuration. Missing required configuration fails closed, and configured `plezy.app` hosts are rejected. Keep optional routes disabled until their own credentials and production checks pass.
 - [ ] Audit every occurrence and runtime request involving ice.plezy.app, bugs.plezy.app, upstream OAuth clients and upstream telemetry/poster/log infrastructure, including native code and server config.
-- [ ] Create the fork's Discord application, app name, icon, Rich Presence asset keys, OAuth settings and any installer/integration registration. Replace ID 1453773470306402439 in client defaults.
-- [ ] Inventory Trakt, MyAnimeList, AniList, Simkl and MDBList registrations. Include cloud/source OAuth (Google Drive, OneDrive, Dropbox and any other configured source), commercial catalog keys, Steam/OpenID/relay registrations, and casting identities where relevant. Replace registrations owned by upstream; preserve legitimate user-provided credentials.
+- [x] Create and configure the owned Discord Rich Presence application and use the optional `PLEAZYNG_DISCORD_APPLICATION_ID` release input; no upstream application ID remains bundled. Desktop IPC and poster-upload qualification are still pending.
+- [ ] Complete the production registration/ownership inventory for the providers
+  in [owned-provider-registrations.md](owned-provider-registrations.md). Trakt's
+  development registration exists, but production approval/activation remains
+  pending; other providers have their own gates. Replace upstream-owned
+  registrations and preserve legitimate user-provided credentials.
 - [ ] Update application names shown on consent screens, HTTPS callback URLs, native callbacks, allowlisted origins, associated domains, app links/assetlinks, Android package/certificate bindings and Apple Team/bundle bindings together.
 - [ ] Replace or migrate only credentials SnapeTech controls. Keep secrets in protected configuration; do not copy client secrets into the app, plan or repository.
 - [ ] Deploy and test the new OAuth server before shipping clients that depend on it. Verify PKCE/state, trusted redirect allowlists, TTLs, token storage, refresh, cancellation, error handling and QR authorization on TV.
@@ -181,14 +222,18 @@ Exit: network evidence from enabled integrations shows no calls to upstream-oper
 
 ### R5 — Repository, automation and dependency references
 
-- [ ] Rename the existing main repository to snapetech-org/Pleazyng. Preserve Git history, issues including #149, PRs, releases, tags, stars and access settings. Do not recreate it as a history-free replacement.
-- [ ] Rename the existing private website repository to pleazyng.app and preserve its visibility. Preserve the existing private Site identity and audience in .openai/hosting.json.
-- [ ] Update repository description, homepage, topics, social-preview image, README badges/download links, FUNDING/support metadata, issue/PR templates and release descriptions for the new public identity.
+- [x] Rename the existing application repository and local checkout to the canonical `snapetech-org/pleazyng` identity. Preserve Git history, issue #149, PRs, releases, tags, stars and access settings; the old GitHub URL redirects to this repository.
+- [x] Retain the private website repository `snapetech-org/plezyng.app` and its existing private Site identity/audience. Website source changes are recorded in the deployment receipts below; public domain ownership and legacy redirects remain separate gates.
+- [x] Update the GitHub repository description, homepage and topics; current
+  metadata points to the Pleazyng website and identifies the fork.
+- [ ] Review the social-preview image, README badges/download links,
+  FUNDING/support metadata, issue/PR templates and release descriptions for the
+  current public identity.
 - [ ] Update remotes in working clones and CI workspaces; retain edde746/plezy as upstream. Do not rename unrelated shared dependencies such as mpv-build or MilkRust merely for this migration.
 - [ ] Audit all literal snapetech-org/pleazyng and plezyng.app references in workflows, scripts, source, manifests, lockfiles, website source, native-asset repositories and packaging consumers.
 - [ ] Check cross-repository actions/reusable workflow calls, token/repository allowlists, GitHub App installation access, deploy keys, environment policies, package links, Pages/custom-domain settings, webhooks and OIDC trust subjects. Repository redirects do not make every consumer work automatically.
 - [ ] Update the shared JIT broker/source routing in snapetech-org/packer where it keys on repository names, and only the relevant repository-specific runner labels. Preserve current compatible-hosted-first routing and private JIT for private resources; do not restart active brokers or displace running work.
-- [ ] Keep CodeQL disabled as directed by AGENTS.md. Do not enable it or change runner isolation as incidental rebrand work.
+- [x] Follow the current root `AGENTS.md`: keep GitHub CodeQL default setup enabled for this public repository on standard GitHub-hosted runners. Do not disable or move it to private JIT as incidental rebrand work.
 - [ ] Update scripts/release_all_platforms.py, lib/services/update_service.dart, scripts/configure_updater.dart, release notes/download/checksum/coverage/recovery tools, generators and all publish-* workflows together.
 - [ ] Preserve cryptographic trust anchors, dependency pins and provenance. If a pinned download URL changes, verify the same bytes or create a truthful new artifact/pin; never invent a new checksum or relabel an old build as newly rebuilt.
 - [ ] Audit external helper/plugin packaging, including integrations/steam-cloud-decky, public package labels, module metadata and documentation. Keep internal transport compatibility documented.

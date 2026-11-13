@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-11-08",
+  "updated": "2026-11-12",
   "product": "Pleazyng",
   "state": "source_implemented_application_repository_migrated",
   "completed": [
@@ -18,11 +18,10 @@
     "Application GitHub repository and local checkout renamed; redirects and exact runner workflow access migrated"
   ],
   "pending": [
-    "Website and other repository renames outside the application repository scope",
-    "Data/purchase continuity bridges and device qualification",
-    "Domain ownership/DNS/TLS and migration redirects",
-    "Store/channel records, signing, provider registrations and owned services",
-    "Fresh native store screenshots"
+    "Website domain registrant/control evidence and historical-domain migration redirects; apex and www DNS/TLS respond successfully",
+    "Data/purchase continuity bridges and native device qualification",
+    "Store/channel records, signing, purchase continuity, fresh store screenshots and package-manager reviews",
+    "Remaining provider production approvals and end-to-end account flows; the relay is live and the Discord application is configured"
   ],
   "checks": {
     "brand_exports": "590 exports reproduced byte-for-byte with --check",
@@ -33,10 +32,10 @@
     "webos_package_tests": "49 passed",
     "focused_flutter_tests": "72 passed",
     "website_build_and_checks": "passed; 4 browser-logic tests",
-    "full_flutter_launcher": "Superseded by 3.0.5 source f253feb9a: 9845 passed, 22 skipped; exact-source CI 42518011825 and complete release 42521168847 succeeded",
-    "native_release_matrix": "not run; release blocked",
-    "full_commit_hook": "failed existing formatting/icon/compile/dependency checks; bypass documented in handoff",
-    "github_release": "v3.0.5 published with every required platform; repository ID 1433487464 retained through rename"
+    "full_flutter_launcher": "Historical incomplete local run at 9e9745362; current complete core release is v3.0.33. Do not read the historical result as current release status.",
+    "native_release_matrix": "v3.0.33 complete core release published 2026-11-12; package/store channel delivery is tracked separately.",
+    "full_commit_hook": "Historical full-hook run reported formatting, generated-code, icon and analyzer/dependency findings; it is not a current-main result.",
+    "github_release": "v3.0.33 published 2026-11-12: https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.33"
   },
   "handoff": "docs/maintainers/pleazyng-rebrand-handoff.md",
   "website_receipts": {
@@ -46,5 +45,13 @@
     "private_site_deployment": "appgdep_6aed0c48c99c8191b062729e60417d33",
     "anonymous_pages_access": "HTTP 401; existing access controls retained; public cutover unverified"
   },
-  "artwork_audit": "docs/maintainers/pleazyng-artwork-audit.json"
+  "artwork_audit": "docs/maintainers/pleazyng-artwork-audit.json",
+  "current_verification": {
+    "source_baseline": "af5b1b21a7ddf986f20efd91ba475c406ee119ab",
+    "relay_health": "GET https://pleazyng-api.snape.tech/health returned HTTP 200 with certificate verification on 2026-11-12; route and provider qualification remain separate.",
+    "service_defaults": "Upstream relay defaults removed; app requires explicit PLEAZYNG_* service configuration and rejects plezy.app hosts.",
+    "discord": "No upstream application ID bundled; optional PLEAZYNG_DISCORD_APPLICATION_ID configured for official builds. Desktop IPC and poster upload remain unqualified.",
+    "providers": "Trakt development registration exists; production approval and activation are pending. Other registrations remain provider-specific; see owned-provider-registrations.md.",
+    "website": "Application repository homepage is https://pleazyng.app/; apex and www returned HTTP 200 with certificate verification on 2026-11-12. Domain registrant/control and historical-domain redirects remain unverified."
+  }
 }

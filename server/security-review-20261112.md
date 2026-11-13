@@ -73,10 +73,8 @@ when deployed.
   origins. Self-hosted browser clients must configure their own exact origins;
   native clients that omit `Origin` do not need a change.
 - Regression tests were added for origin policy, cross-site writes, duplicate
-  Origin headers, and poster response headers. They must run on the
-  organization-approved private ephemeral JIT runner before merge or
-  deployment. No test, package, vulnerability scan, or live service restart
-  was performed as part of this source change.
+  Origin headers, and poster response headers. Their validation and deployment
+  status is recorded in the follow-up below.
 - No full device matrix, provider account consent, external penetration test,
   or distributed-denial-of-service exercise was performed.
 
@@ -96,5 +94,37 @@ This IP-based control can affect other users sharing a NAT address or IPv6
 `/64`. The caps bound memory and persistence growth. It does not replace the
 Cloudflare edge ceiling or mitigate distributed floods. Regression tests cover
 aggregate relay limits, escalation, persistence, missing-key behavior, marked
-endpoint limits, and the health-check exception. The private ephemeral JIT
-validation and live deployment/geo-rule change remain separate release gates.
+endpoint limits, and the health-check exception.
+
+## Follow-up: validation and deployment — 2026-11-13
+
+The Go server security job passed in GitHub Actions run `43345834708` on
+revision `365964ec848e6577994d909653f7b9d882e0e0f1`. The server source tree is
+unchanged from that tested revision through `main` at
+`0aa3cdc062e3efc8de1e1a3ed2c764d684b5e9ab`. This validates the deployed
+server source, which is `bbcb7e881bc21f92353a5fc8270fc21ea7e6e241`.
+The current-main full security workflow was still pending at the time of this
+record; it does not change the source-equivalent Go job result.
+
+The Go relay is deployed as a versioned, static Linux amd64 binary from that
+source revision. The systemd unit passed `systemd-analyze verify`; after
+restart, the service was active, local and public health returned HTTP 200,
+and the public `/relay` route returned HTTP 101 for a WebSocket upgrade. The
+upgrade probe sent no frame, so it did not verify a complete create/join/leave
+session. Listeners remain loopback-only. The abuse-state key is mode 0600; raw
+client IPs are not persisted. Binary and unit hashes, rollback artifact, and
+the bounded verification receipt are recorded in
+[`snape.local`](https://github.com/snapetech-org/snape.local/blob/main/pleazyng-relay/qualification-20261113.json).
+
+Cloudflare firewall ruleset version 16 excludes `pleazyng-api.snape.tech`
+from the selected-country block so users in those regions can reach the relay.
+The selected-country block still covers the other configured internal hosts;
+Cloudflare-hosted Pleazyng and Snape sites remain outside that hostname set.
+The API's existing 480 requests per 10 seconds per source IP and Cloudflare
+colo limit remains enabled, along with the scanner/exploit-path rule. No AX11000
+router geo policy was changed. `/auth/*` remains on the Cloudflare Worker;
+other relay paths remain on the Tunnel to the loopback Go origin.
+
+The full Dart suite, complete live WebSocket room lifecycle, provider-account
+consent, external penetration test, and distributed-flood exercise were not
+qualified by this deployment check. The Tunnel and relay remain primary-only.

@@ -2002,6 +2002,14 @@ class _FindNextScreenState extends State<FindNextScreen> {
     if (!_catalogAllowed && lastDecision?.choice.catalogSourceId != null) {
       return;
     }
+    if (lastDecision != null &&
+        lastDecision.savedChanged &&
+        lastDecision.previousSaved != null &&
+        !_state.saved.any((saved) => saved.id == lastDecision.choice.id) &&
+        _state.saved.length >= DiscoveryStore.maxSaved) {
+      showErrorSnackBar(context, t.discover.findNext.savedLimit);
+      return;
+    }
     final profileId = _ownerProfileId!;
     final sources = context.read<SourceController>();
     if (!sources.current(_sourceGeneration) || sources.profileId != profileId) {
@@ -2024,6 +2032,8 @@ class _FindNextScreenState extends State<FindNextScreen> {
         });
         if (lastDecision?.savedChanged == true) sources.scheduleSync();
       }
+    } on DiscoveryUndoLimitException {
+      if (mounted) showErrorSnackBar(context, t.discover.findNext.savedLimit);
     } catch (_) {
       if (mounted) showErrorSnackBar(context, t.discover.findNext.changeFailed);
     } finally {
@@ -3313,6 +3323,8 @@ class _SavedPicksScreenState extends State<_SavedPicksScreen> {
       setState(() => _state = state);
       if (savedChanged) context.read<SourceController>().scheduleSync();
       await widget.onChanged();
+    } on DiscoveryUndoLimitException {
+      if (mounted) showErrorSnackBar(context, t.discover.findNext.savedLimit);
     } catch (_) {
       if (mounted) showErrorSnackBar(context, t.discover.findNext.changeFailed);
     } finally {

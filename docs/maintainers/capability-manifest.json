@@ -259,7 +259,7 @@
         "lib/discovery/discovery_store.dart",
         "lib/sources/source_database.dart"
       ],
-      "qualification": "History appends then keeps the newest 500 actions within an atomic database read-modify-write. Boundary and concurrent-device cases have not been run on this branch."
+      "qualification": "History appends then keeps the newest 500 actions within an atomic database read-modify-write. Undo preserves its history record if restoring a removed pick would exceed the 250-pick cap. Boundary and concurrent-device cases have not been run on this branch."
     },
     {
       "id": "F08",

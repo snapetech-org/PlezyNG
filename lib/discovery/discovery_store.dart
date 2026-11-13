@@ -3,6 +3,10 @@ import 'discovery_choice.dart';
 
 enum DiscoveryDecisionAction { save, notNow, removeSaved }
 
+class DiscoveryUndoLimitException implements Exception {
+  const DiscoveryUndoLimitException();
+}
+
 class DiscoveryDecision {
   const DiscoveryDecision({
     required this.action,
@@ -148,8 +152,14 @@ class DiscoveryStore {
     final next = await _update(profileId, (current) {
       if (current.history.isEmpty) return current;
       final decision = current.history.last;
-      undone = decision.choice;
       final saved = {for (final item in current.saved) item.id: item};
+      if (decision.savedChanged &&
+          decision.previousSaved != null &&
+          !saved.containsKey(decision.choice.id) &&
+          saved.length >= maxSaved) {
+        throw const DiscoveryUndoLimitException();
+      }
+      undone = decision.choice;
       if (decision.previousSaved != null) {
         saved[decision.choice.id] = decision.previousSaved!;
       } else if (decision.savedChanged) {

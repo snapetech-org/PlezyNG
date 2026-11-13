@@ -181,7 +181,7 @@ func (h *comicCommerceHandler) serveHTTP(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	if !h.limiter.allow(ip, time.Now()) {
-		http.Error(w, "Too many requests", http.StatusTooManyRequests)
+		markRateLimit(w, "Too many requests", time.Second)
 		return
 	}
 	mediaType, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))

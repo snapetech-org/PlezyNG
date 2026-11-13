@@ -77,19 +77,21 @@ type steamRelay struct {
 	bytesPerSecond int64
 	oauth          *oauthProxy
 	mu             sync.Mutex
+	wg             sync.WaitGroup
 	rooms          map[[32]byte]*steamRelayRoom
 	cookies        map[[32]byte]*steamRelayPeer
 	ips            map[string]int
 	clientIPs      clientIPResolver
+	abuse          *abuseGuard
 	udp            *net.UDPConn
 	udpPort        int
 	closed         bool
 }
 
-func newSteamRelay(resolver clientIPResolver, oauth *oauthProxy) *steamRelay {
-	return &steamRelay{bytesPerSecond: 8 << 20, oauth: oauth, rooms: map[[32]byte]*steamRelayRoom{}, cookies: map[[32]byte]*steamRelayPeer{}, ips: map[string]int{}, clientIPs: resolver}
+func newSteamRelay(resolver clientIPResolver, oauth *oauthProxy, guards ...*abuseGuard) *steamRelay {
+	return &steamRelay{bytesPerSecond: 8 << 20, oauth: oauth, rooms: map[[32]byte]*steamRelayRoom{}, cookies: map[[32]byte]*steamRelayPeer{}, ips: map[string]int{}, clientIPs: resolver, abuse: optionalAbuseGuard(guards)}
 }
-func registerSteamRelay(mux *http.ServeMux, resolver clientIPResolver, oauth *oauthProxy) *steamRelay {
+func registerSteamRelay(mux *http.ServeMux, resolver clientIPResolver, oauth *oauthProxy, guards ...*abuseGuard) *steamRelay {
 	if os.Getenv("STEAM_STREAM_RELAY_ENABLED") != "true" || oauth == nil {
 		return nil
 	}
@@ -97,7 +99,7 @@ func registerSteamRelay(mux *http.ServeMux, resolver clientIPResolver, oauth *oa
 	if err != nil || base.Scheme != "https" || base.Host == "" || base.User != nil || base.RawQuery != "" || base.Fragment != "" {
 		return nil
 	}
-	s := newSteamRelay(resolver, oauth)
+	s := newSteamRelay(resolver, oauth, guards...)
 	if raw := os.Getenv("STEAM_STREAM_RELAY_MIB_PER_SECOND"); raw != "" {
 		limit, err := strconv.Atoi(raw)
 		if err != nil || limit < 1 || limit > 64 {
@@ -125,7 +127,6 @@ func (s *steamRelay) close() {
 		return
 	}
 	s.mu.Lock()
-	defer s.mu.Unlock()
 	s.closed = true
 	if s.udp != nil {
 		_ = s.udp.Close()
@@ -136,6 +137,8 @@ func (s *steamRelay) close() {
 			r.receiver.stop()
 		}
 	}
+	s.mu.Unlock()
+	s.wg.Wait()
 }
 func (s *steamRelay) remove(p *steamRelayPeer) {
 	s.mu.Lock()
@@ -179,23 +182,27 @@ func (s *steamRelay) handle(w http.ResponseWriter, r *http.Request) {
 	secret, err := base64.RawURLEncoding.DecodeString(strings.TrimPrefix(raw, "Bearer "))
 	role := r.Header.Get("X-Steam-Relay-Role")
 	if r.Method != "GET" || r.URL.RawQuery != "" || len(r.Header.Values("Origin")) != 0 || len(r.Header.Values("Authorization")) != 1 || !strings.HasPrefix(raw, "Bearer ") || err != nil || len(secret) != 32 || len(raw) != 50 || (role != "host" && role != "receiver") || r.Header.Get("X-Steam-Relay-Version") != "1" {
-		http.Error(w, "Invalid relay request", 400)
+		markAbuseStatus(w, "Invalid relay request", http.StatusBadRequest)
 		return
 	}
 	admission := r.Header.Get("X-Steam-Relay-Admission")
 	if len(admission) != 43 || len(r.Header.Values("X-Steam-Relay-Admission")) != 1 {
-		http.Error(w, "Link Steam", 401)
+		markAbuseStatus(w, "Link Steam", http.StatusUnauthorized)
 		return
 	}
 	digest := sha256.Sum256([]byte(admission))
 	steamID := s.identity(digest)
 	if steamID == "" {
-		http.Error(w, "Link Steam", 401)
+		markAbuseStatus(w, "Link Steam", http.StatusUnauthorized)
 		return
 	}
 	ip, err := s.clientIPs.resolve(r)
 	if err != nil {
 		http.Error(w, "Invalid client", 400)
+		return
+	}
+	if s.abuse != nil && !s.abuse.allowHandshake(ip, time.Now()) {
+		markRateLimit(w, "Too many Steam relay connections", time.Second)
 		return
 	}
 	p := &steamRelayPeer{admission: digest, steamID: steamID, room: sha256.Sum256(secret), host: role == "host", ip: ip, out: make(chan steamRelayFrame, 16), done: make(chan struct{})}
@@ -211,9 +218,14 @@ func (s *steamRelay) handle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	room := s.rooms[p.room]
-	if s.closed || s.ips[ip] >= 8 || (p.host && (room != nil || len(s.rooms) >= steamRelayMaxRooms || accountRooms >= 4)) || (!p.host && (room == nil || room.host.conn == nil || room.receiver != nil || room.host.steamID != steamID)) {
+	sourceRateLimited := s.ips[ip] >= 8
+	if s.closed || sourceRateLimited || (p.host && (room != nil || len(s.rooms) >= steamRelayMaxRooms || accountRooms >= 4)) || (!p.host && (room == nil || room.host.conn == nil || room.receiver != nil || room.host.steamID != steamID)) {
 		s.mu.Unlock()
-		http.Error(w, "Unavailable", 503)
+		if sourceRateLimited {
+			markAbuseStatus(w, "Unavailable", http.StatusServiceUnavailable)
+		} else {
+			http.Error(w, "Unavailable", http.StatusServiceUnavailable)
+		}
 		return
 	}
 	if p.host {
@@ -223,7 +235,9 @@ func (s *steamRelay) handle(w http.ResponseWriter, r *http.Request) {
 		room.receiver = p
 	}
 	s.ips[ip]++
+	s.wg.Add(1)
 	s.mu.Unlock()
+	defer s.wg.Done()
 	defer s.remove(p)
 	upgrader := websocket.Upgrader{HandshakeTimeout: 5 * time.Second, ReadBufferSize: 4096, WriteBufferSize: 4096, EnableCompression: false, CheckOrigin: func(r *http.Request) bool { return len(r.Header.Values("Origin")) == 0 }}
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -256,6 +270,17 @@ func (s *steamRelay) handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		now := time.Now()
+		if s.abuse != nil {
+			if until := s.abuse.bannedUntil(p.ip, now); !until.IsZero() {
+				_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.ClosePolicyViolation, "temporarily blocked after repeated rate-limit violations"), now.Add(5*time.Second))
+				return
+			}
+			if !s.abuse.allowSteamFrame(p.ip, now) {
+				s.abuse.recordViolation(p.ip, now)
+				_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.ClosePolicyViolation, "relay frame rate exceeded"), now.Add(5*time.Second))
+				return
+			}
+		}
 		if s.identity(p.admission) != p.steamID || kind != websocket.BinaryMessage || len(data) < 1 || now.Sub(started) > 2*time.Hour {
 			return
 		}
@@ -266,6 +291,9 @@ func (s *steamRelay) handle(w http.ResponseWriter, r *http.Request) {
 		total += int64(len(data))
 		windowBytes += int64(len(data))
 		if total > 32<<30 || windowBytes > s.bytesPerSecond {
+			if s.abuse != nil {
+				s.abuse.recordViolation(p.ip, now)
+			}
 			return
 		}
 		s.mu.Lock()

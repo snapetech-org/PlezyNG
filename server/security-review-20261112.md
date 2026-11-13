@@ -79,3 +79,22 @@ when deployed.
   was performed as part of this source change.
 - No full device matrix, provider account consent, external penetration test,
   or distributed-denial-of-service exercise was performed.
+
+## Follow-up: shared relay abuse controls — 2026-11-13
+
+The follow-up source change adds a shared 120-request burst / 30-request-per-
+second HTTP limit, source-controlled failure tracking across endpoints, and
+per-address WebSocket handshake and frame limits. Ten marked violations within
+15 minutes now cause a 15-minute ban; later bans within 30 days escalate to
+one hour and then 24 hours. Active bans are checked on each incoming relay
+frame and across new HTTP/WebSocket requests. The systemd state directory
+stores only keyed HMAC source hashes and ban expiry/level information; the key
+and state file are owner-only, and a missing key beside existing state prevents
+startup.
+
+This IP-based control can affect other users sharing a NAT address or IPv6
+`/64`. The caps bound memory and persistence growth. It does not replace the
+Cloudflare edge ceiling or mitigate distributed floods. Regression tests cover
+aggregate relay limits, escalation, persistence, missing-key behavior, marked
+endpoint limits, and the health-check exception. The private ephemeral JIT
+validation and live deployment/geo-rule change remain separate release gates.

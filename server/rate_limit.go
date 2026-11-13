@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-
 type rateLimiter struct {
 	tokens     float64
 	maxTokens  float64
@@ -99,7 +98,6 @@ func cleanupRateWindows(windows map[string]time.Time, now time.Time, duration ti
 	}
 }
 
-
 type posterUploadLimiter struct {
 	mu             sync.Mutex
 	global         *rateLimiter
@@ -128,6 +126,14 @@ func newPosterUploadLimiter(
 }
 
 func (pl *posterUploadLimiter) tryStart(ip string, now time.Time) bool {
+	started, _ := pl.tryStartWithReason(ip, now)
+	return started
+}
+
+// tryStartWithReason reports whether a denial came from this source's rate
+// bucket. Concurrency-slot denials are not abuse signals: normal clients can
+// briefly have several transfers in flight.
+func (pl *posterUploadLimiter) tryStartWithReason(ip string, now time.Time) (bool, bool) {
 	pl.mu.Lock()
 	defer pl.mu.Unlock()
 
@@ -135,13 +141,13 @@ func (pl *posterUploadLimiter) tryStart(ip string, now time.Time) bool {
 	// no admission tokens. The per-IP slot cap keeps one client's slow
 	// transfers from monopolizing the global slots.
 	if pl.activePerIP[ip] >= pl.maxPerIP {
-		return false
+		return false, false
 	}
 	if pl.active >= pl.maxConcurrent {
-		return false
+		return false, false
 	}
 	if !pl.global.allowAt(now) {
-		return false
+		return false, false
 	}
 	limiter := pl.perIP[ip]
 	if limiter == nil {
@@ -150,11 +156,11 @@ func (pl *posterUploadLimiter) tryStart(ip string, now time.Time) bool {
 	}
 	if !limiter.allowAt(now) {
 		pl.global.refund()
-		return false
+		return false, true
 	}
 	pl.active++
 	pl.activePerIP[ip]++
-	return true
+	return true, false
 }
 
 func (pl *posterUploadLimiter) finish(ip string) {
@@ -177,7 +183,6 @@ func (pl *posterUploadLimiter) cleanup(now time.Time) {
 	cleanupRateLimiters(pl.perIP, now, nil)
 }
 
-
 type connTracker struct {
 	mu             sync.Mutex
 	perIP          map[string]int
@@ -197,14 +202,21 @@ func newConnTracker() *connTracker {
 }
 
 func (ct *connTracker) tryConnect(ip string) bool {
+	connected, _ := ct.tryConnectWithReason(ip)
+	return connected
+}
+
+// tryConnectWithReason distinguishes a per-source throttle from the global
+// connection ceiling so only source-controlled denials feed abuse bans.
+func (ct *connTracker) tryConnectWithReason(ip string) (bool, bool) {
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
 
 	if ct.globalCount >= maxGlobalConns {
-		return false
+		return false, false
 	}
 	if ct.perIP[ip] >= maxConnsPerIP {
-		return false
+		return false, true
 	}
 
 	rl, ok := ct.ipRate[ip]
@@ -214,12 +226,12 @@ func (ct *connTracker) tryConnect(ip string) bool {
 	}
 	// rl has its own mutex, so holding ct.mu here cannot deadlock.
 	if !rl.allow() {
-		return false
+		return false, true
 	}
 
 	ct.perIP[ip]++
 	ct.globalCount++
-	return true
+	return true, false
 }
 
 func (ct *connTracker) disconnect(ip string) {

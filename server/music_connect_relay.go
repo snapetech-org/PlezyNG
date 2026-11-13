@@ -75,23 +75,25 @@ type musicRelayRoom struct {
 
 type musicConnectRelay struct {
 	mu        sync.Mutex
+	wg        sync.WaitGroup
 	rooms     map[string]*musicRelayRoom
 	ips       map[string]int
 	total     int
 	queued    atomic.Int64
 	clientIPs clientIPResolver
+	abuse     *abuseGuard
 	closed    bool
 }
 
-func newMusicConnectRelay(resolver clientIPResolver) *musicConnectRelay {
-	return &musicConnectRelay{rooms: map[string]*musicRelayRoom{}, ips: map[string]int{}, clientIPs: resolver}
+func newMusicConnectRelay(resolver clientIPResolver, guards ...*abuseGuard) *musicConnectRelay {
+	return &musicConnectRelay{rooms: map[string]*musicRelayRoom{}, ips: map[string]int{}, clientIPs: resolver, abuse: optionalAbuseGuard(guards)}
 }
 
-func registerMusicConnectRelay(mux *http.ServeMux, resolver clientIPResolver) *musicConnectRelay {
+func registerMusicConnectRelay(mux *http.ServeMux, resolver clientIPResolver, guards ...*abuseGuard) *musicConnectRelay {
 	if os.Getenv("MUSIC_CONNECT_RELAY_ENABLED") != "true" {
 		return nil
 	}
-	service := newMusicConnectRelay(resolver)
+	service := newMusicConnectRelay(resolver, guards...)
 	mux.HandleFunc("/music/connect/relay", service.handle)
 	return service
 }
@@ -113,7 +115,7 @@ func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 	auth := r.Header.Get("Authorization")
 	if len(r.Header.Values("Authorization")) != 1 || !strings.HasPrefix(auth, "Bearer ") ||
 		!musicRelayToken(strings.TrimPrefix(auth, "Bearer ")) {
-		http.Error(w, "Music relay authentication required", http.StatusUnauthorized)
+		markAbuseStatus(w, "Music relay authentication required", http.StatusUnauthorized)
 		return
 	}
 	token := strings.TrimPrefix(auth, "Bearer ")
@@ -131,7 +133,7 @@ func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 		expected := hex.EncodeToString(digest[:])
 		if len(r.Header.Values("X-Pleazyng-Music-Control")) != 1 ||
 			!musicRelayToken(control) || subtle.ConstantTimeCompare([]byte(expected), []byte(roomID)) != 1 {
-			http.Error(w, "Invalid music relay registration", http.StatusUnauthorized)
+			markAbuseStatus(w, "Invalid music relay registration", http.StatusUnauthorized)
 			return
 		}
 	}
@@ -145,6 +147,10 @@ func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid client address", http.StatusBadRequest)
 		return
 	}
+	if s.abuse != nil && !s.abuse.allowHandshake(ip, time.Now()) {
+		markRateLimit(w, "Too many music relay connections", time.Second)
+		return
+	}
 	p := &musicRelayPeer{
 		id: hex.EncodeToString(peerID), ip: ip, room: roomID, host: role == "host",
 		out: make(chan []byte, 32), done: make(chan struct{}),
@@ -152,9 +158,13 @@ func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 	s.mu.Lock()
 	room := s.rooms[roomID]
 	status := 0
+	sourceRateLimited := false
 	switch {
-	case s.closed || s.total >= musicRelayMaxPeers || s.ips[p.ip] >= musicRelayMaxPeersPerIP:
+	case s.closed || s.total >= musicRelayMaxPeers:
 		status = http.StatusTooManyRequests
+	case s.ips[p.ip] >= musicRelayMaxPeersPerIP:
+		status = http.StatusTooManyRequests
+		sourceRateLimited = true
 	case p.host && room != nil:
 		status = http.StatusConflict
 	case p.host && len(s.rooms) >= musicRelayMaxRooms:
@@ -171,7 +181,11 @@ func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 	}
 	if status != 0 {
 		s.mu.Unlock()
-		http.Error(w, "Music device unavailable", status)
+		if sourceRateLimited {
+			markRateLimit(w, "Music device unavailable", time.Second)
+		} else {
+			http.Error(w, "Music device unavailable", status)
+		}
 		return
 	}
 	if p.host {
@@ -182,7 +196,9 @@ func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 	}
 	s.total++
 	s.ips[p.ip]++
+	s.wg.Add(1)
 	s.mu.Unlock()
+	defer s.wg.Done()
 
 	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 5 * time.Second, ReadBufferSize: 4096, WriteBufferSize: 4096,
@@ -216,6 +232,17 @@ func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		now := time.Now()
+		if s.abuse != nil {
+			if until := s.abuse.bannedUntil(p.ip, now); !until.IsZero() {
+				_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.ClosePolicyViolation, "temporarily blocked after repeated rate-limit violations"), time.Now().Add(5*time.Second))
+				return
+			}
+			if !s.abuse.allowRelayMessage(p.ip, now) {
+				s.abuse.recordViolation(p.ip, now)
+				_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.ClosePolicyViolation, "relay message rate exceeded"), time.Now().Add(5*time.Second))
+				return
+			}
+		}
 		remaining += int64(now.Sub(last).Seconds() * float64(1<<20))
 		if remaining > 8<<20 {
 			remaining = 8 << 20
@@ -223,6 +250,9 @@ func (s *musicConnectRelay) handle(w http.ResponseWriter, r *http.Request) {
 		last = now
 		remaining -= int64(len(data))
 		if remaining < 0 {
+			if s.abuse != nil {
+				s.abuse.recordViolation(p.ip, now)
+			}
 			return
 		}
 		var message musicRelayMessage
@@ -377,4 +407,5 @@ func (s *musicConnectRelay) close() {
 	for _, peer := range peers {
 		peer.stop()
 	}
+	s.wg.Wait()
 }

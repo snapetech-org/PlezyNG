@@ -85,8 +85,7 @@ func (p *oauthProxy) handleSteamCatalog(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	if allowed, _ := p.pollAllow(ip); !allowed {
-		w.Header().Set("Retry-After", "30")
-		http.Error(w, "Try again later", http.StatusTooManyRequests)
+		markRateLimit(w, "Try again later", 30*time.Second)
 		return
 	}
 	digest := sha256.Sum256([]byte(token))
@@ -109,14 +108,12 @@ func (p *oauthProxy) handleSteamCatalog(w http.ResponseWriter, r *http.Request) 
 	}
 	if grant.loading {
 		p.mu.Unlock()
-		w.Header().Set("Retry-After", "5")
-		http.Error(w, "Catalog refresh in progress", http.StatusTooManyRequests)
+		markRateLimit(w, "Catalog refresh in progress", 5*time.Second)
 		return
 	}
 	if now.Sub(grant.fetched) < 30*time.Second {
 		p.mu.Unlock()
-		w.Header().Set("Retry-After", "30")
-		http.Error(w, "Try again later", http.StatusTooManyRequests)
+		markRateLimit(w, "Try again later", 30*time.Second)
 		return
 	}
 

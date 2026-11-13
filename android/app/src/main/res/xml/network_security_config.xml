@@ -20,8 +20,9 @@
     <!-- Fixed endpoints. These carry account tokens, OAuth
          codes, crash payloads and update metadata, and by construction never
          live behind a private CA. System anchors only, i.e. the pre-2.9.1
-         behaviour. Every hard-coded https:// host in lib/ must appear here
-         and in CertificateTrust.fixedEndpointDomains. Pinned by
+         behaviour. Provider domains also appear in
+         CertificateTrust.fixedEndpointDomains; exact first-party service
+         hosts are matched from their configured URLs. Pinned by
          test/android/network_security_config_test.dart. -->
     <domain-config>
         <!-- plex.tv, clients.plex.tv, app.plex.tv, discover.provider.plex.tv,
@@ -43,8 +44,8 @@
         <domain includeSubdomains="true">simkl.com</domain>
         <!-- data.simkl.in (lib/services/trackers/simkl/simkl_constants.dart:22). -->
         <domain includeSubdomains="true">simkl.in</domain>
-        <!-- First-party MAL OAuth broker (lib/services/plezy_server.dart:7). -->
-        <domain includeSubdomains="true">pleazyng-api.snape.tech</domain>
+        <!-- Exact first-party MAL OAuth broker host (lib/services/plezy_server.dart:7). -->
+        <domain includeSubdomains="false">pleazyng-api.snape.tech</domain>
         <domain includeSubdomains="true">mdblist.com</domain>
         <!-- cdn.jsdelivr.net: anime-list mappings (anime_lists_mapping_store.dart:37,
              fribb_mapping_store.dart:49). -->

@@ -21,6 +21,21 @@ const _expectedDomains = <String>{
   'githubusercontent.com',
   'image.tmdb.org',
 };
+const _exactServiceDomains = <String>{'pleazyng-api.snape.tech'};
+const _suffixMatchedDomains = <String>{
+  'plex.tv',
+  'trakt.tv',
+  'myanimelist.net',
+  'anilist.co',
+  'simkl.com',
+  'simkl.in',
+  'mdblist.com',
+  'jsdelivr.net',
+  'github.com',
+  'api.github.com',
+  'githubusercontent.com',
+  'image.tmdb.org',
+};
 const _fixedEndpointSourcePaths = <String>[
   'lib/services/plex_auth_service.dart',
   'lib/services/plex_discover_client.dart',
@@ -70,11 +85,14 @@ void main() {
     final firstPartyConfig = domainConfigs.single;
     final domains = firstPartyConfig.findElements('domain').toList();
     expect(domains.map((domain) => domain.innerText.trim()).toSet(), unorderedEquals(_expectedDomains));
-    expect(
-      domains.map((domain) => domain.getAttribute('includeSubdomains')),
-      everyElement('true'),
-      reason: 'Every fixed parent domain must also protect its hard-coded subdomains',
-    );
+    for (final domain in domains) {
+      final host = domain.innerText.trim();
+      expect(
+        domain.getAttribute('includeSubdomains'),
+        _exactServiceDomains.contains(host) ? 'false' : 'true',
+        reason: '$host must follow its exact-host or parent-domain policy',
+      );
+    }
 
     final trustAnchors = firstPartyConfig.findElements('trust-anchors').single;
     final certificates = trustAnchors.findElements('certificates').toList();
@@ -83,10 +101,14 @@ void main() {
   });
 
   // The config only governs the platform HTTP stack. dart:io does its own TLS
-  // and applies the same split through CertificateTrust, so the two lists must
-  // not drift: a domain missing there would verify against user authorities.
-  test('dart:io keeps the same fixed endpoints on system certificate authorities', () {
-    expect(CertificateTrust.fixedEndpointDomains, unorderedEquals(_expectedDomains));
+  // and applies the same split through CertificateTrust: provider domains use
+  // suffix matching while the broker URL is an exact fixed service host.
+  test('dart:io keeps provider domains and the exact broker on system trust', () {
+    expect(CertificateTrust.fixedEndpointDomains, unorderedEquals(_suffixMatchedDomains));
+    final brokerHost = Uri.parse(pleazyngOAuthBrokerBaseUrl).host;
+    expect(_exactServiceDomains, unorderedEquals({brokerHost}));
+    expect(CertificateTrust.isFixedEndpoint(brokerHost), isTrue);
+    expect(CertificateTrust.isFixedEndpoint('sub.$brokerHost'), isFalse);
   });
 
   test('hard-coded HTTPS hosts remain covered by a system-only domain', () {

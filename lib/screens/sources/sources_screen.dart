@@ -129,7 +129,7 @@ class _SourcesScreenState extends State<SourcesScreen> {
     if (libraries.isEmpty) return;
     final servers = context.read<MultiServerProvider>();
     final identity = CanonicalLibrary(sources.repository.database);
-    final seriesIds = <String, ExternalIds>{};
+    final seriesIds = ExternalIdsLruCache();
     setState(() => _canonicalIndexing = true);
     var succeeded = true;
     try {
@@ -138,8 +138,8 @@ class _SourcesScreenState extends State<SourcesScreen> {
         final client = servers.getClientForServer(ServerId(library.serverId!));
         if (client == null) continue;
         var offset = 0;
-        final scanStarted = DateTime.now().millisecondsSinceEpoch;
-        final seen = <String>{};
+        final scanStarted = DateTime.now().microsecondsSinceEpoch;
+        final scanGeneration = CanonicalLibrary.newScanGeneration();
         var complete = false;
         String? previousPage;
         try {
@@ -165,7 +165,7 @@ class _SourcesScreenState extends State<SourcesScreen> {
             for (final item in page.items) {
               if (item.kind != MediaKind.episode || item.grandparentId == null) continue;
               final showKey = '${library.serverId}:${item.grandparentId}';
-              final ids = seriesIds[showKey] ??= await client.fetchExternalIds(item.grandparentId!);
+              final ids = await seriesIds.getOrLoad(showKey, () => client.fetchExternalIds(item.grandparentId!));
               if (!mounted || !sources.current(epoch) || sources.profileId != profile) return;
               aliases[item.globalKey] = canonicalVideoIdentitiesForExternalIds(
                 identifiers: {
@@ -178,8 +178,13 @@ class _SourcesScreenState extends State<SourcesScreen> {
                 episode: item.index,
               );
             }
-            await identity.recordServerItems(profile, page.items, identities: aliases, libraryId: library.id);
-            seen.addAll(page.items.map(CanonicalLibrary.serverKey));
+            await identity.recordServerItems(
+              profile,
+              page.items,
+              identities: aliases,
+              libraryId: library.id,
+              scanGeneration: scanGeneration,
+            );
             offset += page.items.length;
             if (offset >= page.totalCount) {
               complete = true;
@@ -187,7 +192,7 @@ class _SourcesScreenState extends State<SourcesScreen> {
             }
           }
           if (complete && sources.current(epoch) && sources.profileId == profile) {
-            await identity.reconcileServerLibrary(profile, library.serverId!, library.id, seen, scanStarted);
+            await identity.reconcileServerLibrary(profile, library.serverId!, library.id, scanGeneration, scanStarted);
           } else {
             succeeded = false;
           }

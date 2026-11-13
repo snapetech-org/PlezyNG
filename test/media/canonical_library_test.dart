@@ -169,8 +169,13 @@ void main() {
     await library.recordServerItems('alice', [missing, retained, concurrent], libraryId: 'movies');
     final original = (await library.cardForCopy('alice', CanonicalLibrary.entryKey(entry)))!.id;
     await db.customStatement('UPDATE canonical_copies SET updated=1');
+    const scanGeneration = 'scan-current';
+    await library.recordServerItems('alice', [retained], libraryId: 'movies', scanGeneration: scanGeneration);
+    await db.customStatement('UPDATE canonical_copies SET updated=1 WHERE copy_key=?', [
+      CanonicalLibrary.serverKey(retained),
+    ]);
     await library.recordServerItems('alice', [concurrent], libraryId: 'movies');
-    await library.reconcileServerLibrary('alice', 'plex', 'movies', {CanonicalLibrary.serverKey(retained)}, 2);
+    await library.reconcileServerLibrary('alice', 'plex', 'movies', scanGeneration, 2);
     final card = (await library.cardForCopy('alice', CanonicalLibrary.entryKey(entry)))!;
     expect(card.id, original);
     expect(card.copies, hasLength(1));

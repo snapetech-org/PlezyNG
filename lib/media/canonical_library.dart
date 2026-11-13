@@ -13,7 +13,7 @@ const canonicalLibrarySchema = [
   'CREATE TABLE canonical_cards (profile TEXT NOT NULL, id TEXT NOT NULL, created INTEGER NOT NULL, PRIMARY KEY(profile,id))',
   'CREATE TABLE canonical_aliases (profile TEXT NOT NULL, alias TEXT NOT NULL, card TEXT NOT NULL, PRIMARY KEY(profile,alias))',
   'CREATE INDEX canonical_alias_card ON canonical_aliases(profile,card)',
-  'CREATE TABLE canonical_copies (profile TEXT NOT NULL, copy_key TEXT NOT NULL, card TEXT NOT NULL, source TEXT NOT NULL, item TEXT NOT NULL, kind TEXT NOT NULL, payload TEXT NOT NULL, updated INTEGER NOT NULL, PRIMARY KEY(profile,copy_key))',
+  'CREATE TABLE canonical_copies (profile TEXT NOT NULL, copy_key TEXT NOT NULL, card TEXT NOT NULL, source TEXT NOT NULL, item TEXT NOT NULL, kind TEXT NOT NULL, payload TEXT NOT NULL, updated INTEGER NOT NULL, scan_generation TEXT NOT NULL DEFAULT \'\', PRIMARY KEY(profile,copy_key))',
   'CREATE INDEX canonical_copy_card ON canonical_copies(profile,card)',
   'CREATE INDEX canonical_copy_source ON canonical_copies(profile,source)',
   'CREATE TABLE canonical_redirects (profile TEXT NOT NULL, previous TEXT NOT NULL, card TEXT NOT NULL, PRIMARY KEY(profile,previous))',
@@ -49,6 +49,7 @@ class CanonicalLibrary {
   final SourceDatabase database;
   static String serverKey(MediaItem item) => 'server:${sourceKey(item.serverId ?? '', item.id)}';
   static String entryKey(SourceEntry entry) => 'source:${entry.key}';
+  static String newScanGeneration() => const Uuid().v4();
 
   Future<String> recordSource(String profile, SourceEntry entry) => _record(
     profile,
@@ -65,6 +66,7 @@ class CanonicalLibrary {
     Iterable<MediaItem> items, {
     Map<String, Set<String>> identities = const {},
     String? libraryId,
+    String? scanGeneration,
   }) async {
     for (final item in items) {
       final aliases = identities[item.globalKey] ?? canonicalVideoIdentitiesForMediaItem(item);
@@ -107,7 +109,16 @@ class CanonicalLibrary {
         final uri = value is String ? Uri.tryParse(value) : null;
         if (uri != null && (uri.hasQuery || uri.userInfo.isNotEmpty)) safe.remove(key);
       }
-      await _record(profile, serverKey(item), item.serverId!, item.id, 'server', jsonEncode(safe), aliases);
+      await _record(
+        profile,
+        serverKey(item),
+        item.serverId!,
+        item.id,
+        'server',
+        jsonEncode(safe),
+        aliases,
+        scanGeneration: scanGeneration,
+      );
     }
   }
 
@@ -118,9 +129,10 @@ class CanonicalLibrary {
     String item,
     String kind,
     String payload,
-    Set<String> aliases,
-  ) => database.transaction(() async {
-    final now = DateTime.now().millisecondsSinceEpoch;
+    Set<String> aliases, {
+    String? scanGeneration,
+  }) => database.transaction(() async {
+    final now = DateTime.now().microsecondsSinceEpoch;
     // Acquire the write lock before reading the graph. Separate background
     // and foreground connections cannot both create a different winner.
     await database.customStatement('UPDATE canonical_cards SET created=created WHERE profile=?', [profile]);
@@ -222,9 +234,11 @@ class CanonicalLibrary {
       }
     }
     await database.customStatement(
-      'INSERT INTO canonical_copies VALUES (?,?,?,?,?,?,?,?) '
-      'ON CONFLICT(profile,copy_key) DO UPDATE SET card=excluded.card,payload=excluded.payload,updated=excluded.updated',
-      [profile, key, winner, source, item, kind, payload, now],
+      'INSERT INTO canonical_copies(profile,copy_key,card,source,item,kind,payload,updated,scan_generation) '
+      'VALUES (?,?,?,?,?,?,?,?,?) '
+      'ON CONFLICT(profile,copy_key) DO UPDATE SET card=excluded.card,payload=excluded.payload,updated=excluded.updated,'
+      "scan_generation=CASE WHEN excluded.scan_generation='' THEN canonical_copies.scan_generation ELSE excluded.scan_generation END",
+      [profile, key, winner, source, item, kind, payload, now, scanGeneration ?? ''],
     );
     return winner;
   });
@@ -295,26 +309,15 @@ class CanonicalLibrary {
     String profile,
     String server,
     String library,
-    Set<String> seen,
+    String scanGeneration,
     int startedAt,
-  ) => database.transaction(() async {
-    final rows = await database
-        .customSelect(
-          "SELECT copy_key FROM canonical_copies WHERE profile=? AND source=? AND kind='server' AND json_extract(payload,'\$.libraryId')=? AND updated<=?",
-          variables: [Variable(profile), Variable(server), Variable(library), Variable(startedAt)],
-        )
-        .get();
-    for (final row in rows) {
-      final key = row.read<String>('copy_key');
-      if (!seen.contains(key)) {
-        await database.customStatement('DELETE FROM canonical_copies WHERE profile=? AND copy_key=? AND updated<=?', [
-          profile,
-          key,
-          startedAt,
-        ]);
-      }
-    }
-  });
+  ) => database.transaction(
+    () => database.customStatement(
+      "DELETE FROM canonical_copies WHERE profile=? AND source=? AND kind='server' "
+      "AND json_extract(payload,'\$.libraryId')=? AND updated<? AND scan_generation<>?",
+      [profile, server, library, startedAt, scanGeneration],
+    ),
+  );
 
   Future<CanonicalLibraryCard> card(String profile, String id) => _card(profile, id);
   Future<CanonicalLibraryCard> _card(

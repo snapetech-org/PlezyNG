@@ -173,4 +173,26 @@ void main() {
       expect(ids.imdb, 'tt12345');
     });
   });
+
+  group('ExternalIdsLruCache', () {
+    test('bounds metadata and refreshes recently used entries', () async {
+      final cache = ExternalIdsLruCache(capacity: 2);
+      var loads = 0;
+
+      Future<ExternalIds> load(String key) async {
+        loads++;
+        return ExternalIds(imdb: key);
+      }
+
+      await cache.getOrLoad('a', () => load('a'));
+      await cache.getOrLoad('b', () => load('b'));
+      await cache.getOrLoad('a', () => load('a'));
+      await cache.getOrLoad('c', () => load('c'));
+      expect(cache.length, 2);
+      await cache.getOrLoad('a', () => load('a'));
+      expect(loads, 3);
+      await cache.getOrLoad('b', () => load('b'));
+      expect(loads, 4, reason: 'least recently used entry was evicted');
+    });
+  });
 }

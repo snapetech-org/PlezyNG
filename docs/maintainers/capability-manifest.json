@@ -3,7 +3,7 @@
   "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "e2e72e6ec3d07aaeba47a278d2452730946d554d",
+    "auditedMainCommit": "d7db3f7f80439026163543a3a70074d84f5a71c3",
     "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
@@ -332,9 +332,14 @@
       "evidence": [
         "lib/sources/source_database.dart",
         "lib/sources/adapters/local_source.dart",
-        "lib/screens/sources/sources_screen.dart"
+        "lib/screens/sources/sources_screen.dart",
+        "lib/media/canonical_library.dart",
+        "lib/utils/external_ids.dart",
+        "test/media/canonical_library_test.dart",
+        "test/utils/external_ids_test.dart",
+        "test/sources/source_database_migration_test.dart"
       ],
-      "qualification": "UI retrieval is SQL-paged and local directory snapshots are bounded in memory and on disk. Oversized directories can be re-enumerated; target-device latency, memory, and I/O budgets have not been measured."
+      "qualification": "UI retrieval is SQL-paged. Merged server-library scans mark visited copies by generation in SQL and reconcile stale copies with a single database delete; their only per-scan external-ID cache retains at most 128 shows. Local directory snapshots remain bounded in memory and on disk. Target-device latency, memory, and I/O budgets have not been measured."
     },
     {
       "id": "F10",

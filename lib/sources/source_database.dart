@@ -62,7 +62,7 @@ class SourceDatabase extends GeneratedDatabase {
   }
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
   @override
   Iterable<TableInfo<Table, Object?>> get allTables => const [];
   @override
@@ -213,6 +213,9 @@ class SourceDatabase extends GeneratedDatabase {
       }
       if (from < 13) {
         await _createRetiredDownloadSchema();
+      }
+      if (from >= 11 && from < 14) {
+        await customStatement("ALTER TABLE canonical_copies ADD COLUMN scan_generation TEXT NOT NULL DEFAULT ''");
       }
     },
   );

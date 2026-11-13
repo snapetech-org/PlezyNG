@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 /// Season of a parent series as numbered by each external provider.
 ///
 /// Populated from the Fribb mapping's `season: {tvdb: N, tmdb: M}`.
@@ -261,5 +263,35 @@ class ExternalIds {
       }
     });
     return ExternalIds(imdb: imdb, tmdb: tmdb, tvdb: tvdb);
+  }
+}
+
+/// Least-recently-used external IDs retained during a single library scan.
+/// This keeps adjacent episodes cheap to index without growing with the entire
+/// remote library.
+class ExternalIdsLruCache {
+  ExternalIdsLruCache({this.capacity = defaultCapacity});
+
+  static const int defaultCapacity = 128;
+
+  final int capacity;
+  final LinkedHashMap<String, ExternalIds> _values = LinkedHashMap();
+
+  int get length => _values.length;
+
+  Future<ExternalIds> getOrLoad(String key, Future<ExternalIds> Function() load) async {
+    final cached = _values.remove(key);
+    if (cached != null) {
+      _values[key] = cached;
+      return cached;
+    }
+    final value = await load();
+    if (capacity > 0) {
+      _values[key] = value;
+      while (_values.length > capacity) {
+        _values.remove(_values.keys.first);
+      }
+    }
+    return value;
   }
 }

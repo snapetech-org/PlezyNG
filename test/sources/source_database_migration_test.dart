@@ -47,7 +47,38 @@ class _Version8Database extends SourceDatabase {
   );
 }
 
+class _Version13Database extends SourceDatabase {
+  _Version13Database(super.executor);
+
+  @override
+  int get schemaVersion => 13;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (migrator) async {
+      await super.migration.onCreate(migrator);
+      await customStatement('ALTER TABLE canonical_copies DROP COLUMN scan_generation');
+    },
+  );
+}
+
 void main() {
+  test('schema 13 adds the canonical scan-generation marker', () async {
+    final directory = await Directory.systemTemp.createTemp('plezy-schema13-');
+    addTearDown(() => directory.delete(recursive: true));
+    final file = File('${directory.path}/publications.sqlite');
+    final old = _Version13Database(NativeDatabase(file));
+    await old.customSelect('SELECT 1').getSingle();
+    await old.close();
+
+    final database = SourceDatabase(NativeDatabase(file));
+    addTearDown(database.close);
+    final columns = await database.customSelect("PRAGMA table_info('canonical_copies')").get();
+    expect(columns.any((row) => row.read<String>('name') == 'scan_generation'), isTrue);
+    final version = await database.customSelect('PRAGMA user_version').getSingle();
+    expect(version.read<int>('user_version'), 14);
+  });
+
   test('schema 9 upgrade indexes identified titles without changing entries or progress', () async {
     final directory = await Directory.systemTemp.createTemp('plezy-schema9-');
     addTearDown(() => directory.delete(recursive: true));

@@ -4,8 +4,11 @@ Reconciled into main on 2026-11-05 from PR #82. This ledger records the
 documented native/WebGL legacy profile and app workflow; its original authoring
 checkpoints follow below. Five native C++ lifecycle/process/transition/image
 regression binaries compile and pass, along with receipt/TV package checks.
-Native runtime builds, reference comparisons, device qualification, signed
-catalog activation and release publication remain open.
+Runtime installation across the supported target matrix, reference comparisons,
+device qualification, broader signed-catalog activation and release publication
+remain open. The canonical app catalog is already published through its
+keyless GitHub OIDC/Sigstore route and currently contains only the sample
+fixture.
 
 The original plan remains in COMPLETION_PLAN.md. Its product/custom-engine
 acceptance gates remain independent. New defects found during those gates must
@@ -26,7 +29,7 @@ is compatible.
 | V7 downloads | Explicit catalog fetch/install/update/remove, durable bounded staging, ETag/Range-validated resume, cancel/retry/discard, checksum validation and offline use. |
 | V8 app controls | Search/favorites/playlists, engine and per-preset capability negotiation, lock/shuffle/timing/transition/fullscreen/input controls, persisted profile choices and adaptive native resolution/frame pacing. |
 | V9 qualification tooling | Source regressions, fault/lifecycle controls, compatible hosted/private JIT jobs, reference/corpus evidence formats and per-target qualification gates. Execution and physical-device results are pending. |
-| V10 release tooling | Runtime/source/notices packaging for each claimed platform, mpv artifact promotion tooling, signing-root configuration, protected publisher/preflight and release documentation. The ordered PCM mpv artifacts are promoted in the app lock; MilkRust runtime production/installation qualification, signing custody and catalog publication remain open. |
+| V10 release tooling | Runtime/source/notices packaging for each claimed platform, ordered mpv artifact promotion, keyless Sigstore catalog publication/verification, separate Ed25519-root configuration, protected publisher/preflight and release documentation. The ordered PCM artifacts are promoted in the app lock and the sample-only keyless catalog is published; MilkRust runtime production/installation across targets, broader catalog rights/qualification and release publication remain open. |
 
 ## Final code closure
 
@@ -57,12 +60,17 @@ resolve aliases without copying source packs into each consumer.
   supported devices; the ordered PCM artifact promotion is already recorded in
   `mpv-build.lock.json`.
 - MilkRust runtime production and installation evidence across supported
-  targets, generation/rights review/qualification of candidate packs, reviewed
-  signing custody/public root, and catalog publication.
+  targets, generation/rights review/qualification of broader candidate packs,
+  and release publication. The separate upstream MilkRust Ed25519-root route
+  remains unprovisioned and fails closed; the canonical sample-only app catalog
+  is already published and verified through the pinned GitHub OIDC/Sigstore
+  publisher identity.
 
 None of those pending results is recorded as passed. The source lock retains
-source-only-unqualified. Current release binaries and remote catalog
-provisioning are not changed by this source-completion designation.
+source-only-unqualified. Current release binaries are not changed by this
+source-completion designation. The active keyless catalog contains only the
+sample fixture; broader remote content still requires rights review and
+per-preset/platform qualification.
 
 ## Fixed scope and platform limits
 

@@ -78,15 +78,19 @@ their own SDK and physical audio qualification.
    candidates. Pending inventories are
    deliberately non-promotable. Resolve rights and attach actual per-preset
    evidence for every required target before creating release entries.
-5. Run the keyless catalog preflight. Provision owner-held signing custody and
-   protected publisher settings, commit the reviewed public root via
-   `configure_catalog_trust.py`, then publish/verify the signed immutable catalog.
-   The app's current empty root disables remote refresh. Offline imports and the
-   included fixture continue to work independently.
+5. The canonical keyless catalog is published through the pinned
+   `visualizer-catalog.yml` GitHub OIDC/Sigstore identity and verified by the
+   app. It currently contains only the sample fixture. For the separate
+   schema-v1 Ed25519 route, provision owner-held signing custody and a reviewed
+   public root, then commit it with `configure_catalog_trust.py`; empty
+   Ed25519 keys disable that route only. Broader catalog entries still require
+   per-preset rights and qualification evidence before publication.
 
-No qualification, rights approval, production key or successful installed build
-is asserted by this handoff. See [the current ledger](IMPLEMENTATION_STATUS.md)
-for the remaining code/reference work as distinct from external qualification.
+No cross-platform production qualification, broader-pack rights approval,
+production key or complete release is asserted by this handoff. The exact Linux
+x64 package UI-path qualification is recorded in
+[the current ledger](IMPLEMENTATION_STATUS.md); remaining work is listed there
+as distinct from source completion.
 
 The 2026-10-29 continuation also adds shared native legacy-image and renderer
 lifetime regression programs under `test/native/visualizer_*_test.cc`; the private

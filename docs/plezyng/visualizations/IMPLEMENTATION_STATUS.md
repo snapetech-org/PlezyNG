@@ -49,7 +49,7 @@ JIT only where the required platform, device, or private resource demands it.
 | Runtime packaging | Regular desktop/Android/Apple/TV build paths stage the pinned runtime with corresponding source and notices | Produced artifacts, ABI loading, dependency exports and installation checks |
 | Library/UI | Search, notices, favorites, playlists, import, download/cancel/retry/update/remove, offline receipts and controls | Executed user flows, accessibility, TV focus, localization and performance |
 | Content | Existing offline CC0 fixture, 24 original CC0 studies and 55 unchanged CC BY 4.0 CaYaDev presets with pinned provenance; historical candidates remain rights-review-required | Archive builds, rights review and per-preset/target qualification before catalog promotion |
-| Signed delivery | Ed25519 quorum/expiry/sequence/revocation, public-root configuration, keyless preflight, gated publication | Owner-held keys, reviewed public root, environment provisioning and signed publication |
+| Signed delivery | Keyless GitHub OIDC/Sigstore catalog publication and client verification, rollback/expiry/revocation checks, plus a separate Ed25519-root configuration path | The published canonical catalog currently carries only the sample fixture. Broader entries need rights review and per-preset/platform qualification; the separate upstream MilkRust Ed25519 root remains unprovisioned and its schema-v1 route fails closed. |
 
 ## Audio and host contracts
 
@@ -134,9 +134,12 @@ specified in `AGENTS.md`. The historical notes below retain the execution state
 from their dated checkpoints and do not override that current runner policy.
 
 The remaining work includes full compiler/link and corpus/reference
-qualification, actual PCM playback, per-platform runtime/package installation,
-rights decisions, and production signing custody/catalog publication. The
-ordered PCM mpv artifacts are already promoted in the app lock.
+qualification, actual PCM playback, runtime/package installation across the
+supported platform matrix, rights decisions for broader catalog content and
+release publication. The ordered PCM mpv artifacts are already promoted in the
+app lock, and the canonical sample-only catalog is published through the
+keyless GitHub OIDC/Sigstore route. The separate upstream MilkRust Ed25519-root
+route remains unprovisioned.
 
 ## 2026-10-29 code-completion continuation
 

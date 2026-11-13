@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewedOn": "2026-11-12",
+  "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
     "auditedMainCommit": "f2e595c388190de8fe00e48f436384b83b9670a1",
@@ -142,7 +142,7 @@
         "native/visualizer/sources.lock.json",
         "docs/plezyng/visualizations/IMPLEMENTATION_STATUS.md"
       ],
-      "open": "ABI v2 native host/process helpers and runtime/source/notice packaging hooks are integrated for desktop, Android, Apple and TV routes. The canonical catalog is published with authentic GitHub OIDC/Sigstore identity and verified client-side, with rollback and expiry enforcement. The separate upstream MilkRust Ed25519 root remains unprovisioned and its route fails closed. Actual runtime/app builds, patched mpv promotion, driver/render fidelity, licensed catalog assets and device qualification remain open."
+      "open": "ABI v2 native host/process helpers and runtime/source/notice packaging hooks are integrated for desktop, Android, Apple and TV routes. The canonical sample-only catalog is published with GitHub OIDC/Sigstore identity and verified client-side, with rollback and expiry enforcement. Empty Ed25519 keys keep schema-v1 envelopes closed; the separate upstream MilkRust Ed25519 root remains unprovisioned. Ordered PCM artifacts are promoted in the app lock, but their receipts mark native execution unqualified. Beyond the exact Linux x64 package UI-path qualification recorded in IMPLEMENTATION_STATUS.md, runtime/app qualification across release targets, driver/render fidelity, broader licensed catalog assets and physical-device qualification remain open."
     },
     {
       "area": "Dolby Vision and FEL",

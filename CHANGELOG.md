@@ -4,6 +4,7 @@
 
 - Enforce the four-request NFS READ limit across read-ahead, metadata, and cover reads.
 - Prevent stale store-history responses from overriding a newer purchase or revocation event.
+- Require an active profile for both WebDAV settings directions, cap uploads at the restore limit, and abort owner-bound requests when the profile changes.
 - Keep discovery Undo history intact when a restored pick would exceed the saved-pick limit.
 - Retry cleanup of old publication and Saved-pick sync generations on unchanged syncs, and stop publishing before retained state exceeds the bounded provider listing capacity.
 - Reject malformed IPTV XMLTV calendar, clock, and numeric timezone fields instead of normalizing them into shifted guide times.

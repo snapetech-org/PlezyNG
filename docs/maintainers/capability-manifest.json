@@ -222,7 +222,7 @@
         "lib/screens/settings/cloud_settings_backup_dialog.dart",
         "lib/services/settings_export_service.dart"
       ],
-      "qualification": "The initiating profile identity and mutation generation are captured before storage awaits; restore is streamed with a 4 MiB cap and import checks ownership through guarded writes and rollback. Switch-during-download, malformed payload, and mid-write failure scenarios have not been run on this branch."
+      "qualification": "The initiating profile identity and mutation generation are captured before storage awaits; both WebDAV directions require an active profile and abort owner-bound requests, outbound JSON is encoded into a 4 MiB-capped buffer, restore is streamed with the same cap, and import checks ownership through guarded writes and rollback. Switch-during-download, oversized-upload, malformed-payload, and mid-write failure scenarios have not been run on this branch."
     },
     {
       "id": "F05",

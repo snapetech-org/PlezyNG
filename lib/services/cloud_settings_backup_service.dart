@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show immutable, visibleForTesting;
 import 'package:http/http.dart' as http;
@@ -56,6 +57,9 @@ class CloudSettingsBackupService {
     required String? expectedOwner,
     bool Function()? isCurrentSession,
   }) async {
+    if (expectedProfileId == null || expectedProfileId.isEmpty || expectedOwner == null || expectedOwner.isEmpty) {
+      throw const CloudSettingsBackupException('Choose a profile before backing up settings.');
+    }
     final storage = await StorageService.getInstance();
     if (!_sameOwner(storage, expectedProfileId, expectedOwner, isCurrentSession: isCurrentSession)) {
       throw const CloudSettingsBackupException('The active profile changed before the backup started.');
@@ -77,13 +81,15 @@ class CloudSettingsBackupService {
       currentUserUuid: expectedOwner,
       appVersion: appVersion,
     );
+    final bodyBytes = _encodeBackupBody(data);
     final response = await _request(
       () => _boundedRequest(
         'PUT',
         uri,
         {..._headers(configuration), 'Content-Type': 'application/json; charset=utf-8'},
-        body: jsonEncode(data),
+        bodyBytes: bodyBytes,
         maxBytes: 64 * 1024,
+        isCurrent: () => _sameOwner(storage, expectedProfileId, expectedOwner, isCurrentSession: isCurrentSession),
       ),
     );
     if (!_sameOwner(storage, expectedProfileId, expectedOwner, isCurrentSession: isCurrentSession)) {
@@ -100,7 +106,7 @@ class CloudSettingsBackupService {
     bool Function()? isCurrentSession,
   }) async {
     if (expectedProfileId == null || expectedProfileId.isEmpty || expectedOwner == null || expectedOwner.isEmpty) {
-      throw const CloudSettingsBackupException('Sign in before restoring settings.');
+      throw const CloudSettingsBackupException('Choose a profile before restoring settings.');
     }
     final storage = await StorageService.getInstance();
     bool isOwnerCurrent() => _sameOwner(storage, expectedProfileId, expectedOwner, isCurrentSession: isCurrentSession);
@@ -151,22 +157,45 @@ class CloudSettingsBackupService {
       storage.getActiveProfileId() == profileId &&
       storage.activeUserScope() == owner;
 
+  static Uint8List _encodeBackupBody(Map<String, dynamic> data) {
+    final sink = _BoundedBackupBodySink(_maxBackupBytes);
+    final encoder = JsonUtf8Encoder().startChunkedConversion(sink);
+    encoder.add(data);
+    encoder.close();
+    if (sink.exceededLimit) {
+      throw const CloudSettingsBackupException('The settings backup exceeds the 4 MiB limit.');
+    }
+    return sink.takeBytes();
+  }
+
   Future<http.Response> _boundedRequest(
     String method,
     Uri uri,
     Map<String, String> headers, {
-    String? body,
+    Uint8List? bodyBytes,
     required int maxBytes,
     bool Function()? isCurrent,
   }) async {
     final abort = Completer<void>();
-    _active.add(abort);
+    var ownerChanged = false;
     void cancel() {
       if (!abort.isCompleted) abort.complete();
     }
 
     final request = http.AbortableRequest(method, uri, abortTrigger: abort.future)..headers.addAll(headers);
-    if (body != null) request.body = body;
+    if (bodyBytes != null) request.bodyBytes = bodyBytes;
+    if (isCurrent != null && !isCurrent()) {
+      throw const CloudSettingsBackupException('The active profile changed before the backup request started.');
+    }
+    _active.add(abort);
+    Timer? ownerMonitor;
+    if (isCurrent != null) {
+      ownerMonitor = Timer.periodic(const Duration(milliseconds: 100), (_) {
+        if (ownerChanged || isCurrent()) return;
+        ownerChanged = true;
+        cancel();
+      });
+    }
     try {
       final pending = sendWithSafeRedirects(_http, request, allowCrossOrigin: false);
       return await pending
@@ -184,7 +213,13 @@ class CloudSettingsBackupService {
               throw TimeoutException('Settings backup timed out');
             },
           );
+    } catch (error, stackTrace) {
+      if (ownerChanged || (isCurrent != null && !isCurrent())) {
+        throw const CloudSettingsBackupException('The active profile changed during the backup request.');
+      }
+      Error.throwWithStackTrace(error, stackTrace);
     } finally {
+      ownerMonitor?.cancel();
       cancel();
       _active.remove(abort);
     }
@@ -249,4 +284,29 @@ class CloudSettingsBackupException implements Exception {
 
   @override
   String toString() => 'CloudSettingsBackupException: $message';
+}
+
+class _BoundedBackupBodySink implements Sink<List<int>> {
+  _BoundedBackupBodySink(this.maximumBytes);
+
+  final int maximumBytes;
+  final BytesBuilder _bytes = BytesBuilder(copy: false);
+  var _length = 0;
+  var exceededLimit = false;
+
+  @override
+  void add(List<int> chunk) {
+    if (exceededLimit) return;
+    if (chunk.length > maximumBytes - _length) {
+      exceededLimit = true;
+      return;
+    }
+    _length += chunk.length;
+    _bytes.add(chunk);
+  }
+
+  Uint8List takeBytes() => _bytes.takeBytes();
+
+  @override
+  void close() {}
 }

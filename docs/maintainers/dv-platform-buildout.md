@@ -172,6 +172,15 @@ property to report the actual selected API/fallback. Neither `reshaped`,
 `opengl-next`, an HEVC decoder name nor the source DV profile means FEL is
 qualified. No new “full FEL” badge is inferred from those properties.
 
+Automatic server fallback currently covers identified DV startup failures
+before the first visible frame (`streamInitFailed` or an open timeout), when the
+source is online and the server has a supported SDR route. A failure after
+playback has begun does not automatically migrate to a server rendition. The
+player does not yet receive a narrow native signal that distinguishes a fatal
+video-route, pairing or shader failure from recoverable network, audio or
+permission errors. Treat post-start route recovery as unfinished; generic
+player errors must not trigger an unrelated transcode.
+
 ## Linux run and evidence
 
 Build/extract the [isolated engine](../../tools/dv-engine/README.md), launch an app

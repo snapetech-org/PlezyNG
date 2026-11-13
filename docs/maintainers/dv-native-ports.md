@@ -155,11 +155,12 @@ there is no automatic patch skipping or fabricated parity result. Worktrees
 are for the patch audit, not complete build staging (submodules are fetched in
 the pristine source checkouts). Nothing changes the release pins.
 
-Android specifically shares FFmpeg between libmpv and Media3. The production
-bridge currently builds against FFmpeg 8.0.1 headers, while the FEL engine uses
-a different FFmpeg commit. A port must align headers, shared-library ABI,
-all packaged ABIs, JNI glue and production MediaCodec/surface patches together.
-An arbitrary replacement AAR is not enabled by this change.
+Android specifically shares FFmpeg between libmpv and Media3. The ordinary
+paired-FEL AAR carries headers matching its bundled runtime, across all four
+declared ABIs. Preserve that header/runtime ABI match, the JNI glue and the
+production MediaCodec/surface patches when updating the engine. A developer
+override may use a separate AAR only when both its absolute path and SHA-256 are
+supplied; an arbitrary replacement AAR is not an ordinary release input.
 
 webOS is not represented as a fictional mpv-build platform. Native HEVC/DV
 playback support alone does not expose decoded EL frames or GPU composition to
@@ -174,4 +175,7 @@ cases. Those checks do not compile the Windows engine or the Apple host.
 No Windows SDK/MSYS2, Xcode, Android native build or physical output trial was
 available in this execution environment. The source-stack network audit has
 not been run here. Native compilation, production patch rebasing and device
-evidence remain required before enabling these paths for ordinary users.
+evidence remain required to qualify runtime output. They are not gates on
+including implemented paths in ordinary compatible builds; the persisted
+Playback preference enables automatic selection by default, with an explicit
+Off override.

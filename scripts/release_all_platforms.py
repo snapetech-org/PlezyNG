@@ -2116,6 +2116,23 @@ def configured_repo_variables() -> dict[str, str]:
             if isinstance(row, dict) and isinstance(row.get("name"), str)}
 
 
+def microsoft_store_status(settings: dict[str, str], assets: set[str | None]) -> str:
+    if "pleazyng-windows.msixbundle" in assets:
+        return "MSIX bundle attached; manual Partner Center submission remains."
+    missing = sorted(
+        name for name in MSSTORE_BUILD_VARIABLES if not settings.get(name, "").strip()
+    )
+    if not missing:
+        return "Store identity is configured, but the required MSIX bundle is missing."
+    if len(missing) < len(MSSTORE_BUILD_VARIABLES):
+        missing_names = ", ".join(missing)
+        return (
+            "Partially configured; the optional MSIX build is skipped until these variables "
+            f"are set: {missing_names}"
+        )
+    return "Not configured; Store identity and lifetime product variables are absent."
+
+
 def play_publication_settings(settings: dict[str, str]) -> tuple[str, str]:
     track = settings.get("GOOGLE_PLAY_TRACK", "internal")
     status = settings.get("GOOGLE_PLAY_RELEASE_STATUS", "draft")
@@ -2328,7 +2345,7 @@ def publish_configured_channels(
     else:
         skipped.append({
             "channel": "Microsoft Store",
-            "reason": "The MSIX identity and lifetime product variables are not configured.",
+            "reason": "The Store identity and lifetime product variables are not configured.",
         })
     skipped.append({
         "channel": "Samsung Tizen Seller Office",
@@ -2817,6 +2834,16 @@ def main() -> int:
             metadata = release_metadata(tag)
             release_published = not metadata.get("draft") and bool(metadata.get("published_at"))
 
+        try:
+            store_release = release_metadata(tag)
+            store_assets = {
+                asset.get("name") for asset in store_release.get("assets", [])
+                if isinstance(asset, dict)
+            }
+            microsoft_store = microsoft_store_status(configured_repo_variables(), store_assets)
+        except Exception:
+            microsoft_store = "Configuration and artifact status could not be verified."
+
         summary = {
             "version": args.version,
             "tag": tag,
@@ -2846,7 +2873,7 @@ def main() -> int:
             "webos_attached_to_public_release": args.include_webos_release,
             "tizen_built": True,
             "tizen_seller_office_submission": "not configured; tester artifact only",
-            "microsoft_store": "not configured; package identity variables are absent",
+            "microsoft_store": microsoft_store,
             "runner_pool": "private broker pool for constrained jobs",
             "execution_profile": args.execution_profile,
             "publication_scope": "github-and-configured-channels" if args.publish else "github-only" if args.publish_github_only else "draft-only",

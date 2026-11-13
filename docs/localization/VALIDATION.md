@@ -9,13 +9,16 @@ Required PR merge-conflict resolution preserves the later main snapshot
 ## Explicit English fallback entries
 
 `lib/i18n/english_fallbacks.json` lists Steam connected-experience,
-service-integration, discovery, cloud-sync privacy and Trakt export messages
-that intentionally remain empty in non-English catalogs until their translations
-are reviewed. `slang.yaml` uses `base_locale_empty_string`, so those entries
-resolve to the English source text at runtime. `check_localizations.py` reports
-the fallback count and allows only listed keys; any other missing or empty
-translation, placeholder mismatch, or stale fallback entry still fails the gate.
-Remove a key from the list when its reviewed translations replace the fallback.
+service-integration, discovery, cloud-sync privacy, Trakt export, and later
+karaoke analysis, microphone/performance, phone-capture, A-B count-in,
+K23 trim/skip, audiobook bedtime, karaoke show-template, and comic archive
+password messages that intentionally remain empty in non-English catalogs
+until their translations are reviewed. `slang.yaml` uses
+`base_locale_empty_string`, so those entries resolve to the English source text
+at runtime. `check_localizations.py` reports the fallback count and allows only
+listed keys; any other missing or empty translation, placeholder mismatch, or
+stale fallback entry still fails the gate. Remove a key from the list when its
+reviewed translations replace the fallback.
 
 ## Merge-resolution verification
 

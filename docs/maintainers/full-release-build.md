@@ -75,7 +75,9 @@ If a later platform fails, recovery verifies the original build's current-attemp
 embedded CI records, successful source freeze, immutable tag and source-bound
 job contract. The platform failure does not invalidate passing CI, but failed or
 missing CI never falls back to another run. Older releases retain their separate
-`ci.yml` proof. Reuse successful platform artifacts under the existing product
+`ci.yml` proof, using the `capability-manifest.json` from that exact CI source
+SHA so later workflow metadata cannot redefine the historical required-job
+contract. Reuse successful platform artifacts under the existing product
 equivalence checks; do not dispatch another complete build for a delivery error.
 
 ## Apple native qualification

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 import datetime as dt
 import os
@@ -17,6 +18,7 @@ from unittest.mock import Mock, patch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import verify_release_ci as release_ci  # noqa: E402
 from verify_release_ci import _manifest_gate  # noqa: E402
 from verify_tvos_runner_acquisition import RunnerAcquisitionError  # noqa: E402
 from release_all_platforms import (  # noqa: E402
@@ -287,6 +289,39 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
 
         self.assertEqual(gate["workflowId"], "ci.yml")
         self.assertEqual(gate["requiredJobs"], release["requiredCiJobs"])
+
+    @patch("verify_release_ci._request_json")
+    def test_manifest_read_is_pinned_to_the_requested_commit(self, request_json) -> None:
+        manifest = {"release": {"version": "3.0.31"}}
+        payload = base64.b64encode(json.dumps(manifest).encode("utf-8")).decode("ascii")
+        request_json.return_value = {"encoding": "base64", "content": payload}
+        sha = "a" * 40
+
+        self.assertEqual(release_ci._manifest_for_commit(
+            "fixture", "snapetech-org/pleazyng", sha,
+        ), manifest)
+        self.assertIn(
+            f"/contents/docs/maintainers/capability-manifest.json?ref={sha}",
+            request_json.call_args.args[0],
+        )
+
+    def test_standalone_gate_uses_the_manifest_at_the_exact_release_sha(self) -> None:
+        required = ["Historical exact-source required job"]
+        manifest = {"release": {"requiredCiJobs": required, "releaseGate": {
+            "branch": "main", "event": "workflow_dispatch", "workflowId": "ci.yml",
+            "requiredJobs": required,
+        }}}
+        sha = "a" * 40
+        with patch.dict("os.environ", {
+            "GH_TOKEN": "fixture", "REPOSITORY": "snapetech-org/pleazyng", "COMMIT_SHA": sha,
+        }), patch.object(release_ci, "_manifest_for_commit", return_value=manifest) as read_manifest, \
+             patch.object(release_ci, "_latest_run", return_value={
+                 "status": "completed", "conclusion": "success",
+             }), patch.object(release_ci, "_check_jobs", return_value=[]) as check_jobs:
+            self.assertEqual(release_ci.main(), 0)
+
+        read_manifest.assert_called_once_with("fixture", "snapetech-org/pleazyng", sha)
+        self.assertEqual(check_jobs.call_args.args[3]["requiredJobs"], required)
 
     @patch("release_all_platforms.dispatch")
     @patch("release_all_platforms.matching_run", return_value=None)

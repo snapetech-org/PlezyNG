@@ -259,12 +259,21 @@ class SourceProofTests(unittest.TestCase):
                         recovery.verify_webos_transport_patch(recovery.REPOSITORY, "a" * 40, "b" * 40, [{"filename": "scripts/prepare_native_downloads.py"}])
 
     def test_source_ci_requires_complete_successful_exact_sha_checks(self):
+        required = ["Historical exact-source required job"]
+        manifest = {"release": {"requiredCiJobs": required, "releaseGate": {
+            "branch": "main", "event": "workflow_dispatch", "workflowId": "ci.yml",
+            "requiredJobs": required,
+        }}}
         with patch.dict("os.environ", {"GH_TOKEN": "test-token"}), \
-             patch.object(recovery.release_ci, "_manifest_gate", return_value={}), \
+             patch.object(recovery, "immutable_content", return_value=json.dumps(manifest)) as source_manifest, \
              patch.object(recovery.release_ci, "_latest_run", return_value={"status": "completed", "conclusion": "success"}), \
-             patch.object(recovery.release_ci, "_check_jobs", return_value=["Windows arm64: skipped"]):
+             patch.object(recovery.release_ci, "_check_jobs", return_value=["Windows arm64: skipped"]) as check_jobs:
             with self.assertRaisesRegex(recovery.RecoveryError, "CI is incomplete"):
                 recovery.ci_proof(recovery.REPOSITORY, "a" * 40)
+        source_manifest.assert_called_once_with(
+            recovery.REPOSITORY, "a" * 40, "docs/maintainers/capability-manifest.json"
+        )
+        self.assertEqual(check_jobs.call_args.args[3]["requiredJobs"], required)
 
 
     def frozen(self, **options):

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Bind standalone and recovery release CI checks to the required-job manifest at the exact release source SHA, so later workflow metadata cannot redefine historical qualification.
 - Enforce the four-request NFS READ limit across read-ahead, metadata, and cover reads.
 - Prevent stale store-history responses from overriding a newer purchase or revocation event.
 - Require an active profile for both WebDAV settings directions, cap uploads at the restore limit, and abort owner-bound requests when the profile changes.

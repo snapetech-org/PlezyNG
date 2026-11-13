@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 import re
@@ -66,9 +67,33 @@ def _pages(url: str, token: str, collection: str) -> list[dict]:
     raise GateError("GitHub Actions API pagination exceeded the safety limit.")
 
 
-def _manifest_gate() -> dict:
+def _manifest_for_commit(token: str, repository: str, commit_sha: str) -> dict:
+    owner, repo = repository.split("/", maxsplit=1)
+    path = "/".join(urllib.parse.quote(value, safe="") for value in (owner, repo))
+    manifest_path = urllib.parse.quote(MANIFEST.relative_to(ROOT).as_posix(), safe="/")
+    query = urllib.parse.urlencode({"ref": commit_sha})
+    result = _request_json(
+        f"{API_BASE}/repos/{path}/contents/{manifest_path}?{query}", token
+    )
+    content = result.get("content")
+    if result.get("encoding") != "base64" or not isinstance(content, str):
+        raise GateError("GitHub omitted the capability manifest for the exact release commit.")
     try:
-        data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        decoded = base64.b64decode("".join(content.split()), validate=True).decode("utf-8")
+        manifest = json.loads(decoded)
+    except ValueError:
+        raise GateError("The exact release commit has an invalid capability manifest.") from None
+    if not isinstance(manifest, dict):
+        raise GateError("The exact release commit has an invalid capability manifest.")
+    return manifest
+
+
+def _manifest_gate(manifest: dict | None = None) -> dict:
+    try:
+        if manifest is None:
+            data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        else:
+            data = manifest
         release = data["release"]
         gate = release["releaseGate"]
         required = gate["requiredJobs"]
@@ -176,8 +201,8 @@ def _check_jobs(token: str, repository: str, run: dict, gate: dict) -> list[str]
 
 def main() -> int:
     try:
-        gate = _manifest_gate()
         token, repository, commit_sha, _ = _required_environment()
+        gate = _manifest_gate(_manifest_for_commit(token, repository, commit_sha))
         run = _latest_run(token, repository, commit_sha, gate)
         run_status = run.get("status") or "missing"
         run_conclusion = run.get("conclusion") or "missing"

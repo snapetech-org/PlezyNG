@@ -168,7 +168,16 @@ def ci_proof(repository, source_sha, version=None, *, source_run=None):
         embedded = embedded_source_ci(repository, ci_source, source_run)
         if embedded is not None:
             return embedded
-    gate = release_ci._manifest_gate()
+    try:
+        source_manifest = json.loads(immutable_content(
+            repository, ci_source, "docs/maintainers/capability-manifest.json"
+        ))
+    except (RecoveryError, ValueError) as error:
+        raise RecoveryError("Could not read the exact CI source capability manifest") from error
+    try:
+        gate = release_ci._manifest_gate(source_manifest)
+    except release_ci.GateError as error:
+        raise RecoveryError(str(error)) from error
     run = release_ci._latest_run(token, repository, ci_source, gate)
     if run.get("status") != "completed" or run.get("conclusion") != "success":
         raise RecoveryError("The source release commit has no successful exact-SHA CI run.")

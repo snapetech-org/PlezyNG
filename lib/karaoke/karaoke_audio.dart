@@ -45,10 +45,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
       _pitchBusy = false,
       _recordStarting = false,
       _writeFailed = false;
-  int _generation = 0,
-      _lastPacket = 0,
-      _queuedBytes = 0,
-      droppedAnalysisFrames = 0;
+  int _generation = 0, _lastPacket = 0, _queuedBytes = 0, droppedAnalysisFrames = 0;
   static const _sampleRate = 48000, _channelCount = 1;
   String? _captureConfigFailure;
   double rms = 0;
@@ -69,11 +66,8 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
   Map<String, dynamic>? _takeMetadata;
   bool get recording => _dry != null;
   bool get supported =>
-      !PlatformDetector.isAppleTV() &&
-      !PlatformDetector.isTizenBuild() &&
-      !PlatformDetector.isWebOSBuild();
-  Future<List<InputDevice>> devices() async =>
-      supported ? _capture.listInputDevices() : [];
+      !PlatformDetector.isAppleTV() && !PlatformDetector.isTizenBuild() && !PlatformDetector.isWebOSBuild();
+  Future<List<InputDevice>> devices() async => supported ? _capture.listInputDevices() : [];
   void _notify() {
     if (!_disposed) {
       notifyListeners();
@@ -83,9 +77,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> start({required String singer, InputDevice? device}) async {
     await _stopping;
     if (!supported) {
-      throw UnsupportedError(
-        'Local microphone capture is unavailable on this TV; use an external mixer or companion',
-      );
+      throw UnsupportedError('Local microphone capture is unavailable on this TV; use an external mixer or companion');
     }
     if (capturing || starting) {
       throw StateError('Microphone already active');
@@ -153,10 +145,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
           echoCancel: false,
           noiseSuppress: false,
           streamBufferSize: 1920,
-          androidConfig: const AndroidRecordConfig(
-            manageBluetooth: false,
-            audioSource: AndroidAudioSource.unprocessed,
-          ),
+          androidConfig: const AndroidRecordConfig(manageBluetooth: false, audioSource: AndroidAudioSource.unprocessed),
           audioInterruption: AudioInterruptionMode.pause,
         ),
       );
@@ -176,19 +165,11 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
       score = song.canScore && session.party.game != 'no-score'
           ? KaraokeScore(
               track: song,
-              part:
-                  session.current?.parts[singer] ??
-                  session.current?.part ??
-                  song.parts.firstOrNull ??
-                  '1',
+              part: session.current?.parts[singer] ?? session.current?.part ?? song.parts.firstOrNull ?? '1',
               key: session.current!.key,
               tempo: session.current!.tempo,
               assisted: session.current!.clipEndMs != null,
-              calibration: {
-                'device': deviceId,
-                'inputOffsetMs': inputOffsetMs,
-                'calibrated': calibrated,
-              },
+              calibration: {'device': deviceId, 'inputOffsetMs': inputOffsetMs, 'calibrated': calibrated},
             )
           : null;
       _samples = stream.listen(
@@ -206,9 +187,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
       });
       _watchdog = Timer.periodic(const Duration(seconds: 1), (_) {
         if (DateTime.now().millisecondsSinceEpoch - _lastPacket > 3000) {
-          session.report(
-            'Microphone stopped delivering audio. Reconnect and enable it again.',
-          );
+          session.report('Microphone stopped delivering audio. Reconnect and enable it again.');
           unawaited(stop());
         }
       });
@@ -232,8 +211,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     }
     _lastPacket = DateTime.now().millisecondsSinceEpoch;
     if (_dry != null) {
-      if (_queuedBytes + bytes.length > 1024 * 1024 ||
-          _bytes + bytes.length > _recordingLimit) {
+      if (_queuedBytes + bytes.length > 1024 * 1024 || _bytes + bytes.length > _recordingLimit) {
         session.report('Recording stopped at its storage/backlog limit');
         unawaited(stopRecording());
       } else {
@@ -257,9 +235,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     // 48 kHz PCM -> 16 kHz analysis. Average each triplet for anti-aliasing.
     for (var i = 0; i + 5 < bytes.length; i += 6) {
       _window.add(
-        (data.getInt16(i, Endian.little) +
-                data.getInt16(i + 2, Endian.little) +
-                data.getInt16(i + 4, Endian.little)) /
+        (data.getInt16(i, Endian.little) + data.getInt16(i + 2, Endian.little) + data.getInt16(i + 4, Endian.little)) /
             (3 * 32768),
       );
     }
@@ -275,9 +251,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     }
     _pitchBusy = true;
     final samples = Float64List.fromList(_window),
-        sourceMs =
-            session.positionMs.value -
-            (inputOffsetMs * session.current!.tempo).round(),
+        sourceMs = session.positionMs.value - (inputOffsetMs * session.current!.tempo).round(),
         epoch = session.epoch;
     unawaited(
       Isolate.run(() => detectKaraokePitch(samples, 16000))
@@ -299,9 +273,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
             if (trace.length > 2000) {
               trace.removeAt(0);
             }
-            if (midi != null &&
-                result.confidence > .85 &&
-                rangeSamples.length < 20000) {
+            if (midi != null && result.confidence > .85 && rangeSamples.length < 20000) {
               rangeSamples.add(midi!);
             }
             _notify();
@@ -322,9 +294,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     if (score != null) {
       score!.invalidated = true;
     }
-    final data =
-        await session.store.read('audio-calibration') ??
-        {'schema': 1, 'routes': <String, dynamic>{}};
+    final data = await session.store.read('audio-calibration') ?? {'schema': 1, 'routes': <String, dynamic>{}};
     final routes = Map<String, dynamic>.from(data['routes'] as Map);
     routes[deviceId ?? 'default'] = {
       'inputOffsetMs': offset,
@@ -356,15 +326,11 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
           }
         }
       }
-      _recordingLimit = math.min(
-        512 * 1024 * 1024,
-        8 * 1024 * 1024 * 1024 - used,
-      );
+      _recordingLimit = math.min(512 * 1024 * 1024, 8 * 1024 * 1024 * 1024 - used);
       if (_recordingLimit < 10 * 1024 * 1024) {
         throw StateError('Private take storage quota reached');
       }
-      final dir = await Directory(p.join(root.path, 'takes', id))
-          .create(recursive: true);
+      final dir = await Directory(p.join(root.path, 'takes', id)).create(recursive: true);
       final metadata = <String, dynamic>{
         'schema': 1,
         'id': id,
@@ -387,17 +353,12 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
         'timeline': <Map<String, dynamic>>[],
         if (session.duetInvitation?['renditionId'] == session.track!.id) ...{
           'invitationId': session.duetInvitation!['id'],
-          'part':
-              session.current!.parts[singerId] ??
-              session.current!.part ??
-              session.duetInvitation!['part'],
+          'part': session.current!.parts[singerId] ?? session.current!.part ?? session.duetInvitation!['part'],
           'digests': session.duetInvitation!['digests'],
         },
       };
-      await File(p.join(dir.path, 'take.json'))
-          .writeAsString(jsonEncode(metadata), flush: true);
-      final file = await File(p.join(dir.path, 'dry.wav'))
-          .open(mode: FileMode.write);
+      await File(p.join(dir.path, 'take.json')).writeAsString(jsonEncode(metadata), flush: true);
+      final file = await File(p.join(dir.path, 'dry.wav')).open(mode: FileMode.write);
       await file.writeFrom(_wavHeader(0));
       if (!capturing || generation != _generation) {
         await file.close();
@@ -442,8 +403,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     return h.buffer.asUint8List();
   }
 
-  Future<void> stopRecording() =>
-      _finalizing ??= _stopRecording().whenComplete(() => _finalizing = null);
+  Future<void> stopRecording() => _finalizing ??= _stopRecording().whenComplete(() => _finalizing = null);
   Future<void> _stopRecording() async {
     final file = _dry, dir = _take, metadata = _takeMetadata;
     if (file == null || dir == null || metadata == null) {
@@ -467,8 +427,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     metadata['complete'] = !_writeFailed;
     metadata['frames'] = written ~/ 2;
     metadata['score'] = _writeFailed ? null : score?.result();
-    await File(p.join(dir.path, 'take.json'))
-        .writeAsString(jsonEncode(metadata), flush: true);
+    await File(p.join(dir.path, 'take.json')).writeAsString(jsonEncode(metadata), flush: true);
     _notify();
   }
 
@@ -493,18 +452,13 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  Future<void> stop() =>
-      _stopping ??= _stop().whenComplete(() => _stopping = null);
+  Future<void> stop() => _stopping ??= _stop().whenComplete(() => _stopping = null);
   Future<void> _stop() async {
     _generation++;
     capturing = false;
     starting = false;
     if (score != null && singerId != null && session.current != null) {
-      session.party.addResult(
-        score!.result(),
-        singerId: singerId!,
-        requestId: session.current!.id,
-      );
+      session.party.addResult(score!.result(), singerId: singerId!, requestId: session.current!.id);
     }
     _watchdog?.cancel();
     _watchdog = null;

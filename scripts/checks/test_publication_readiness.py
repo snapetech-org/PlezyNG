@@ -50,10 +50,15 @@ class PublicationReadinessTests(unittest.TestCase):
         self.assertEqual(play[2]['play_release_status'], 'completed')
         self.assertIn('pool:public:', play[1])
 
-    def test_appcast_dispatch_matches_public_only_workflow_input(self):
-        calls, _ = self.run_channels({})
-        appcast = next(x for x in calls if x[0] == 'update-packages.yml')
-        self.assertEqual(appcast[2]['runner_pool'], 'public')
+    def test_appcast_remains_in_core_release_without_a_cask_candidate(self):
+        calls, (_, skipped, failures) = self.run_channels({})
+        self.assertFalse(any(x[0] == 'update-packages.yml' for x in calls))
+        self.assertFalse(failures)
+        self.assertTrue(any(
+            item['channel'] == 'Homebrew Cask'
+            and 'appcast remains a core GitHub Release asset' in item['reason']
+            for item in skipped
+        ))
 
     def test_production_and_unrecognized_settings_are_rejected(self):
         for settings in [{'GOOGLE_PLAY_TRACK': 'production'}, {'GOOGLE_PLAY_RELEASE_STATUS': 'inProgress'}]:

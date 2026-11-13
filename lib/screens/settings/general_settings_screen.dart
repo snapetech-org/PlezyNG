@@ -24,6 +24,7 @@ import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/setting_tile.dart';
 import '../../widgets/settings_page.dart';
 import '../../widgets/settings_section.dart';
+import 'legacy_link_converter_screen.dart';
 import 'settings_utils.dart';
 
 IconData _inlineEndChevron(BuildContext context) =>
@@ -68,6 +69,20 @@ class GeneralSettingsScreen extends StatelessWidget {
                 title: t.settings.forceTvMode,
                 subtitle: t.settings.forceTvModeDescription,
               ),
+          ],
+        ),
+
+        SettingsGroup(
+          children: [
+            FocusableListTile(
+              leading: const AppIcon(Symbols.link_rounded, fill: 1),
+              title: Text(t.deepLinks.legacyConverterTitle),
+              subtitle: Text(t.deepLinks.legacyConverterDescription),
+              trailing: AppIcon(_inlineEndChevron(context), fill: 1),
+              onTap: () => Navigator.of(
+                context,
+              ).push<void>(MaterialPageRoute<void>(builder: (_) => const LegacyLinkConverterScreen())),
+            ),
           ],
         ),
 

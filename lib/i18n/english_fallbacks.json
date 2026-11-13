@@ -1,6 +1,6 @@
 {
   "baseLocale": "en",
-  "reason": "Product-specific karaoke host-stage analysis corrections, microphone and private-take controls, local and phone capture status and guidance, A-B count-in tick guidance, and K23 trim/skip controls; curated extras, Steam, service integration, required Trakt attribution, discovery, podcast, library genre, privacy, store review access, IPTV, motion processing, subtitle, visualizer and playback copy, plus profile-scoped audiobook bedtime controls and subtitle WAV transcript reuse/cache guidance, use Slang’s base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback. Workspace audio controls, per-session gain and explicit decoded mixing currently use the English fallback until translation review. The two retired publication offline-copy labels use the English fallback until translation review. The seven user-hosted relay settings and privacy labels use the English fallback until reviewed translations are available.",
+  "reason": "Product-specific karaoke host-stage analysis corrections, microphone and private-take controls, local and phone capture status and guidance, A-B count-in tick guidance, and K23 trim/skip controls; curated extras, Steam, service integration, required Trakt attribution, discovery, podcast, library genre, privacy, store review access, IPTV, motion processing, subtitle, visualizer and playback copy, plus profile-scoped audiobook bedtime controls and subtitle WAV transcript reuse/cache guidance, use Slang’s base_locale_empty_string English fallback until reviewed translations are available. This manifest does not imply language review; remove each key when translations no longer need fallback. Workspace audio controls, per-session gain and explicit decoded mixing currently use the English fallback until translation review. The two retired publication offline-copy labels use the English fallback until translation review. The seven user-hosted relay settings and privacy labels use the English fallback until reviewed translations are available. The five legacy-link converter labels use the English fallback until translation review.",
   "keys": [
     "about.traktAttribution",
     "appAccess.activateReviewAccess",
@@ -96,6 +96,11 @@
     "common.workspaceAudioPlaying",
     "common.workspaceAudioStopMix",
     "common.workspaceAudioTitle",
+    "deepLinks.legacyConverterClipboardUnavailable",
+    "deepLinks.legacyConverterDescription",
+    "deepLinks.legacyConverterTitle",
+    "deepLinks.legacyConverterUnsupportedRoute",
+    "deepLinks.legacyConverterUnsupportedScheme",
     "discover.findNext.aiApiKey",
     "discover.findNext.aiClearKey",
     "discover.findNext.aiConsentBody",

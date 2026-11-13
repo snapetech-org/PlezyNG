@@ -12408,6 +12408,21 @@ class Translations$deepLinks$en {
 
 	/// en: 'Link copied'
 	String get copied => 'Link copied';
+
+	/// en: 'Legacy link converter'
+	String get legacyConverterTitle => 'Legacy link converter';
+
+	/// en: 'Paste or type a saved link to preview a canonical pleazyng:// URI. Legacy plezy:// links convert only when Pleazyng supports their route. Nothing is opened.'
+	String get legacyConverterDescription => 'Paste or type a saved link to preview a canonical pleazyng:// URI. Legacy plezy:// links convert only when Pleazyng supports their route. Nothing is opened.';
+
+	/// en: 'Clipboard access failed. You can still type the link and select the preview text to copy it.'
+	String get legacyConverterClipboardUnavailable => 'Clipboard access failed. You can still type the link and select the preview text to copy it.';
+
+	/// en: 'Use a pleazyng://, plezyng://, plezxyng://, or plezy:// link.'
+	String get legacyConverterUnsupportedScheme => 'Use a pleazyng://, plezyng://, plezxyng://, or plezy:// link.';
+
+	/// en: 'This link does not match a route supported by Pleazyng. Nothing was opened.'
+	String get legacyConverterUnsupportedRoute => 'This link does not match a route supported by Pleazyng. Nothing was opened.';
 }
 
 // Path: householdSetup
@@ -22467,6 +22482,11 @@ extension on Translations {
 			'deepLinks.openAsProfile' => ({required Object name}) => 'Open as ${name}',
 			'deepLinks.copy' => 'Copy',
 			'deepLinks.copied' => 'Link copied',
+			'deepLinks.legacyConverterTitle' => 'Legacy link converter',
+			'deepLinks.legacyConverterDescription' => 'Paste or type a saved link to preview a canonical pleazyng:// URI. Legacy plezy:// links convert only when Pleazyng supports their route. Nothing is opened.',
+			'deepLinks.legacyConverterClipboardUnavailable' => 'Clipboard access failed. You can still type the link and select the preview text to copy it.',
+			'deepLinks.legacyConverterUnsupportedScheme' => 'Use a pleazyng://, plezyng://, plezxyng://, or plezy:// link.',
+			'deepLinks.legacyConverterUnsupportedRoute' => 'This link does not match a route supported by Pleazyng. Nothing was opened.',
 			'householdSetup.title' => 'Household setup',
 			'issueReport.title' => 'Report a problem',
 			'issueReport.instructions' => 'Scan the QR code to open a prefilled GitHub draft. Review it and submit only when you are ready.',
@@ -22576,6 +22596,8 @@ extension on Translations {
 			'subtitleAiUi.saveCue' => 'Save cue',
 			'subtitleAiUi.editAllCues' => ({required Object cuesCueCount}) => 'Edit all ${cuesCueCount} cues',
 			'subtitleAiUi.reviewOrEditAnyOutputCueChangesStayI_26d3610b' => 'Review or edit any output cue. Changes stay in this result until you attach it.',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.findInSourceOrOutputCues' => 'Find in source or output cues',
 			'subtitleAiUi.showingOfCues' => ({required Object visibleIndexesVisibleindexCount, required Object cuesCueCount}) => 'Showing ${visibleIndexesVisibleindexCount} of ${cuesCueCount} cues.',
 			'subtitleAiUi.noCuesMatchThisSearch' => 'No cues match this search.',
@@ -23090,6 +23112,8 @@ extension on Translations {
 			'karaokeUi.part' => ({required Object value1}) => 'Part ${value1}',
 			'karaokeUi.queueAssignedSingers' => 'Queue assigned singers',
 			'karaokeUi.roomConnection' => 'Room connection',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.configureHTTPS' => 'Configure HTTPS',
 			'karaokeUi.selectTrustedPEMCertificate' => 'Select trusted PEM certificate',
 			'karaokeUi.selectPrivatePEMKey' => 'Select private PEM key',

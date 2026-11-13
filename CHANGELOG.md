@@ -9,6 +9,7 @@
 - Keep the theme preview’s illustrative save/cancel controls out of pointer, keyboard-focus, and accessibility interaction until they have real actions.
 - Keep the download-queue source formatted with the repository Dart formatter so the release CI formatting gate passes.
 - Keep system-only TLS trust on the first-party OAuth broker, preserve owner-installed CA trust for user-selected relays, and retain MAL OAuth callback validation.
+- Add a user-driven saved-link converter that previews supported legacy Pleazyng links and copies canonical links only after explicit confirmation; upstream `plezy://` stays outside protocol registration and dispatch.
 - Declare Moonlight surface-recovery state before its timeout callback so Android Java compilation succeeds.
 - Validate explicitly selected legacy desktop databases on a staged copy before migration, retain the source, and stop adopting a database automatically by filename.
 - Offer a first-run desktop database import with an explicit file picker, staged preview, separate confirmation, and credential/download-path warnings; existing Pleazyng data is never replaced.

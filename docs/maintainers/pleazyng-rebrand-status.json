@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-11-12",
+  "updated": "2026-11-13",
   "current_relay_boundary": "Superseded on 2026-11-13: the operator-hosted Go relay and Tunnel origin were retired; pleazyng-api.snape.tech now provides only a code-only MAL OAuth handoff. See docs/maintainers/pleazyng-relay-endpoints.md and the security review.",
   "product": "Pleazyng",
   "state": "source_implemented_application_repository_migrated",
@@ -16,13 +16,15 @@
     "Website deployed to Cloudflare Pages and existing owner-private ChatGPT Site with audience preserved",
     "Replaced all nine inherited README pictograms and classified all 39 shared upstream images",
     "Updated GitHub repository descriptions and Pleazyng topic without renaming repositories",
-    "Application GitHub repository and local checkout renamed; redirects and exact runner workflow access migrated"
+    "Application GitHub repository and local checkout renamed; redirects and exact runner workflow access migrated",
+    "Added a user-driven saved-link converter that previews canonical pleazyng URIs, validates through the current grammar, and copies only after explicit action; upstream plezy is not registered or dispatched"
   ],
   "pending": [
     "Website domain registrant/control evidence and historical-domain migration redirects; apex and www DNS/TLS respond successfully",
     "Data/purchase continuity bridges and native device qualification",
     "Store/channel records, signing, purchase continuity, fresh store screenshots and package-manager reviews",
-    "Remaining provider production approvals and end-to-end account flows; the operator relay was live at this snapshot and was retired on 2026-11-13; the Discord application is configured"
+    "Remaining provider production approvals and end-to-end account flows; the operator relay was live at this snapshot and was retired on 2026-11-13; the Discord application is configured",
+    "Choose and document a retirement window for the existing plezyng:// and plezxyng:// native compatibility aliases"
   ],
   "checks": {
     "brand_exports": "590 exports reproduced byte-for-byte with --check",
@@ -48,11 +50,12 @@
   },
   "artwork_audit": "docs/maintainers/pleazyng-artwork-audit.json",
   "current_verification": {
-    "source_baseline": "af5b1b21a7ddf986f20efd91ba475c406ee119ab",
+    "source_baseline": "9dca2ee697b952775ceb1502fd4324ca18ca9662",
     "relay_health": "GET https://pleazyng-api.snape.tech/health returned HTTP 200 with certificate verification on 2026-11-12; route and provider qualification remain separate.",
     "service_defaults": "Upstream relay defaults removed; app requires explicit PLEAZYNG_* service configuration and rejects plezy.app hosts.",
     "discord": "No upstream application ID bundled; optional PLEAZYNG_DISCORD_APPLICATION_ID configured for official builds. Desktop IPC and poster upload remain unqualified.",
     "providers": "Trakt development registration exists; production approval and activation are pending. Other registrations remain provider-specific; see owned-provider-registrations.md.",
-    "website": "Application repository homepage is https://pleazyng.app/; apex and www returned HTTP 200 with certificate verification on 2026-11-12. Domain registrant/control and historical-domain redirects remain unverified."
+    "website": "Application repository homepage is https://pleazyng.app/; apex and www returned HTTP 200 with certificate verification on 2026-11-12. Domain registrant/control and historical-domain redirects remain unverified.",
+    "saved_link_converter": "Focused service and widget tests pass on 2026-11-13 for paste/type, preview and explicit copy; only supported current DeepLink routes are emitted. Upstream plezy remains absent from registration and parser acceptance."
   }
 }

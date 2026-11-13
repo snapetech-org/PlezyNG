@@ -10,6 +10,7 @@ import 'package:plezy/profiles/plex_home_service.dart';
 import 'package:plezy/profiles/profile_connection_registry.dart';
 import 'package:plezy/profiles/profile_registry.dart';
 import 'package:plezy/screens/settings/general_settings_screen.dart';
+import 'package:plezy/screens/settings/legacy_link_converter_screen.dart';
 import 'package:plezy/services/multi_server_manager.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
@@ -92,6 +93,17 @@ void main() {
     // The test host is a desktop OS, so the window group applies.
     expect(find.text(t.settings.startInFullscreen), findsOneWidget);
 
+    await disposeHarness(tester, harness);
+  });
+
+  testWidgets('opens the user-driven legacy link converter from General settings', (tester) async {
+    final harness = await pumpGeneralScreen(tester);
+
+    await tester.tap(find.text(t.deepLinks.legacyConverterTitle));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LegacyLinkConverterScreen), findsOneWidget);
+    expect(find.text(t.deepLinks.legacyConverterDescription), findsOneWidget);
     await disposeHarness(tester, harness);
   });
 

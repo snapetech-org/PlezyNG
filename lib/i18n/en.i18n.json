@@ -4844,7 +4844,12 @@
     "profileHint": "Opening this link switches to this profile.",
     "openAsProfile": "Open as ${name}",
     "copy": "Copy",
-    "copied": "Link copied"
+    "copied": "Link copied",
+    "legacyConverterTitle": "Legacy link converter",
+    "legacyConverterDescription": "Paste or type a saved link to preview a canonical pleazyng:// URI. Legacy plezy:// links convert only when Pleazyng supports their route. Nothing is opened.",
+    "legacyConverterClipboardUnavailable": "Clipboard access failed. You can still type the link and select the preview text to copy it.",
+    "legacyConverterUnsupportedScheme": "Use a pleazyng://, plezyng://, plezxyng://, or plezy:// link.",
+    "legacyConverterUnsupportedRoute": "This link does not match a route supported by Pleazyng. Nothing was opened."
   },
   "householdSetup": {
     "title": "Household setup"

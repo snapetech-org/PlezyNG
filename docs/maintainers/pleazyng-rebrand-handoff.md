@@ -1,13 +1,14 @@
 # Pleazyng implementation and cutover record
 
-Historical implementation snapshot updated 2026-11-12. Its relay deployment
+Implementation snapshot updated 2026-11-13. Its relay deployment
 statement below was superseded on 2026-11-13: the operator-hosted Go relay and
 Tunnel origin were retired, and `pleazyng-api.snape.tech` now handles only the
 code-only MAL OAuth handoff. See [the current relay boundary](pleazyng-relay-endpoints.md)
 and [security review](../../server/cloudflare-oauth/security-review-20261113.md).
 
-Source baseline:
-af5b1b21a7ddf986f20efd91ba475c406ee119ab. Owner: SnapeTech.
+The saved-link converter was implemented on source baseline
+9dca2ee697b952775ceb1502fd4324ca18ca9662. Earlier release and external receipts
+remain historical snapshots. Owner: SnapeTech.
 The application repository and local checkout now use the canonical
 `snapetech-org/pleazyng` identity; the old GitHub URL redirects to it. The
 private website repository remains `snapetech-org/plezyng.app`. The app
@@ -28,6 +29,12 @@ remain separate. Historical tags and release assets remain preserved.
 - Canonical pleazyng:// media links and pleazyng-source://oauth/callback.
   Native registration of upstream plezy:// removed. Legacy fork plezyng:// and
   plezxyng:// handlers remain explicit compatibility aliases.
+- General settings offers a paste/type → preview → copy converter for saved
+  `pleazyng://`, `plezyng://`, `plezxyng://` and `plezy://` links. Conversion
+  changes only the scheme text and validates the result with the current
+  `DeepLink` grammar, preserving path, query and fragment text. The upstream
+  scheme is accepted only by this user-driven converter; it is not registered,
+  routed or opened. Unsupported schemes and routes are rejected.
 - Future release asset consumers/producers, Homebrew, WinGet, Chocolatey,
   Debian/RPM/AUR, Flatpak/Snap and TV recipes use the new public identities.
 - Historical snapshot: the Pleazyng relay was deployed at the configured
@@ -93,6 +100,12 @@ four browser-logic tests passed. Visual contact sheet reviewed for symbol,
 wordmark and artwork. These are source/export results, not signed binary or
 device qualification. Generated localization output was regenerated from sources.
 
+The saved-link converter was separately checked with focused service and widget
+tests on 13 November 2026. These cover the supported legacy schemes, URI text
+preservation, unsupported routes and the explicit copy action; they do not
+qualify native protocol registration or device behavior. The registration
+checker and `DeepLink` parser continue to exclude upstream `plezy://`.
+
 The initial broader Flutter run found malformed games, RomM and visualization
 source. Concurrent commit 2a5378d62 repaired those defects and was integrated
 before this rebrand was pushed. Historical local validation at source commit
@@ -120,6 +133,8 @@ screenshots; and package-manager review. At this snapshot the operator relay
 was live; it was retired on 2026-11-13. The Discord app is configured, but
 neither fact qualifies every integration. Do not publish old
 binaries under new filenames or infer channel approval from the GitHub release.
+The native fork-only `plezyng://` and `plezxyng://` aliases remain registered;
+their time-bounded retirement window still needs an explicit decision.
 
 ## Repository and release order
 

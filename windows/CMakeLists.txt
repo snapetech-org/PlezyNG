@@ -518,6 +518,9 @@ install(CODE "
 install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
   DESTINATION "${INSTALL_BUNDLE_DATA_DIR}" COMPONENT Runtime)
 
+include("${CMAKE_SOURCE_DIR}/../cmake/pleazyng_desktop_neural_models.cmake")
+pleazyng_install_desktop_neural_models("${INSTALL_BUNDLE_DATA_DIR}")
+
 # Install the AOT library on non-Debug builds only.
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release

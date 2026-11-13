@@ -19,12 +19,11 @@ final class NeuralModelPackDownloadProgress {
 
 /// Installs the opt-in ANVIL model packs used by the Plezy Motion Engine.
 ///
-/// The compact 540p Performance graph stays bundled for offline playback.
-/// Balanced and Quality graphs download only when Neural is selected and are
-/// copied to app-private storage after their pinned size and SHA-256 verify.
+/// Desktop builds include the selected ONNX graphs. Each is copied to
+/// app-private storage after its pinned size and SHA-256 verify. Android uses
+/// its LiteRT/QNN model and context packs through the platform-specific paths.
 abstract final class NeuralModelPackService {
   static const _repositoryRevision = 'fa97e30f6aabe897bd4f6f82d971ad607f5d61fa';
-  static const _repository = 'https://huggingface.co/NihilDigit/anvil';
   static const _androidFilterRevision = '1efc82739f6f7034cd63e7ee8b3ec5431df27467';
   static const _downloadTimeout = Duration(minutes: 2);
 
@@ -40,7 +39,7 @@ abstract final class NeuralModelPackService {
   static const _balancedModel = _NeuralModelPack(
     id: 'anvil-s-1080p',
     revision: _repositoryRevision,
-    url: '$_repository/resolve/$_repositoryRevision/onnx/D_unet_v3bs_nomv_1080p.onnx',
+    assetPath: 'assets/motion_models/D_unet_v3bs_nomv_1080p.onnx',
     filename: 'D_unet_v3bs_nomv_1080p.onnx',
     bytes: 3441349,
     sha256: '65e871aed25b331e3a3747cf9019942121a94af71997476f5804a24b768cd0d8',
@@ -49,7 +48,7 @@ abstract final class NeuralModelPackService {
   static const _qualityModel = _NeuralModelPack(
     id: 'anvil-m-1080p',
     revision: _repositoryRevision,
-    url: '$_repository/resolve/$_repositoryRevision/onnx/D_unet_v3bm_nomv_1080p.onnx',
+    assetPath: 'assets/motion_models/D_unet_v3bm_nomv_1080p.onnx',
     filename: 'D_unet_v3bm_nomv_1080p.onnx',
     bytes: 10677524,
     sha256: '261f95a17c865b45e4d7e2be3439d91b47315bef96e32d46f3cfc785941774fd',
@@ -71,36 +70,12 @@ abstract final class NeuralModelPackService {
   );
 
   static final Map<String, Future<File>> _inFlight = {};
-  static final Map<String, NeuralModelPackDownloadProgress> _activeDownloads = {};
-
-  static NeuralModelPackDownloadProgress? downloadProgressForPreset(NeuralInterpolationPreset preset) =>
-      _activeDownloads[_modelForPreset(preset).id];
 
   /// Resolve the selected preset to its pinned local ONNX model.
   /// Performance uses the bundled 540p ANVIL-S graph; Balanced uses the
   /// upstream 1080p ANVIL-S graph; Quality uses the larger ANVIL-M graph.
   static Future<File> ensureInstalled(NeuralInterpolationPreset preset) =>
       _ensureInstalledMemoized(_modelForPreset(preset));
-
-  /// Return an already verified pack, or begin installing it without holding
-  /// the playback startup path. Neural playback can take effect on the next
-  /// open after this background download completes.
-  static Future<File?> installedOrStartInstall(NeuralInterpolationPreset preset) async {
-    final model = _modelForPreset(preset);
-    final support = await getApplicationSupportDirectory();
-    final destination = File(p.join(support.path, 'motion-models', model.id, model.revision, model.filename));
-    if (await _isValid(destination, model)) return destination;
-    if (model.assetPath != null) return _ensureInstalledMemoized(model);
-
-    final pending = _ensureInstalledMemoized(model);
-    unawaited(
-      pending.catchError((Object error, StackTrace stackTrace) {
-        appLogger.w('Neural model pack ${model.id} could not be installed', error: error, stackTrace: stackTrace);
-        return destination;
-      }),
-    );
-    return null;
-  }
 
   static _NeuralModelPack _modelForPreset(NeuralInterpolationPreset preset) => switch (preset) {
     NeuralInterpolationPreset.performance => _performanceModel,
@@ -174,7 +149,6 @@ abstract final class NeuralModelPackService {
     final uri = Uri.parse(url);
     final client = http.Client();
     final stopwatch = Stopwatch()..start();
-    _activeDownloads[model.id] = NeuralModelPackDownloadProgress(bytesReceived: 0, bytesTotal: model.bytes);
     try {
       final response = await client.send(http.Request('GET', uri)).timeout(_downloadTimeout);
       if (response.statusCode != HttpStatus.ok) {
@@ -200,10 +174,6 @@ abstract final class NeuralModelPackService {
           }
           digestInput.add(chunk);
           output.add(chunk);
-          _activeDownloads[model.id] = NeuralModelPackDownloadProgress(
-            bytesReceived: receivedBytes,
-            bytesTotal: model.bytes,
-          );
         }
         if (receivedBytes != model.bytes) {
           throw const FormatException('Neural model pack size does not match its pinned manifest.');
@@ -238,7 +208,6 @@ abstract final class NeuralModelPackService {
       rethrow;
     } finally {
       client.close();
-      _activeDownloads.remove(model.id);
     }
   }
 

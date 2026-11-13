@@ -18,6 +18,26 @@
       "opset": 17,
       "license": "MIT",
       "licenseFile": "assets/licenses/ANVIL_MIT_LICENSE.txt"
+    },
+    "anvil-s-1080p": {
+      "source": "https://huggingface.co/NihilDigit/anvil",
+      "sourceRevision": "fa97e30f6aabe897bd4f6f82d971ad607f5d61fa",
+      "file": "D_unet_v3bs_nomv_1080p.onnx",
+      "bytes": 3441349,
+      "sha256": "65e871aed25b331e3a3747cf9019942121a94af71997476f5804a24b768cd0d8",
+      "format": "ONNX",
+      "license": "MIT",
+      "licenseFile": "assets/licenses/ANVIL_MIT_LICENSE.txt"
+    },
+    "anvil-m-1080p": {
+      "source": "https://huggingface.co/NihilDigit/anvil",
+      "sourceRevision": "fa97e30f6aabe897bd4f6f82d971ad607f5d61fa",
+      "file": "D_unet_v3bm_nomv_1080p.onnx",
+      "bytes": 10677524,
+      "sha256": "261f95a17c865b45e4d7e2be3439d91b47315bef96e32d46f3cfc785941774fd",
+      "format": "ONNX",
+      "license": "MIT",
+      "licenseFile": "assets/licenses/ANVIL_MIT_LICENSE.txt"
     }
   }
 }

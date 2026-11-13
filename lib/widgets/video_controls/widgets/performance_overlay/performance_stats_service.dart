@@ -558,10 +558,6 @@ class PerformanceStatsService {
         _parseBool(videoResults?[19]) == true ||
         (neuralGeneratedFrames != null && neuralGeneratedFrames > 0) ||
         nativeInterpolationStatus == 'active';
-    final selectedNeuralPreset = SettingsService.instanceOrNull?.read(SettingsService.neuralInterpolationPreset);
-    final modelDownloadProgress = (Platform.isWindows || Platform.isLinux) && selectedNeuralPreset != null
-        ? NeuralModelPackService.downloadProgressForPreset(selectedNeuralPreset)
-        : null;
     final playbackPlayerType = player.playerType;
     final reportedVideoOutput =
         videoResults?[13] ??
@@ -609,8 +605,6 @@ class PerformanceStatsService {
           ((Platform.isIOS || Platform.isMacOS) && const {'ready', 'active'}.contains(nativeInterpolationStatus)),
       neuralProvider: neuralProvider,
       neuralProviderVendor: metadataProviderVendor,
-      neuralModelDownloadBytesReceived: modelDownloadProgress?.bytesReceived,
-      neuralModelDownloadBytesTotal: modelDownloadProgress?.bytesTotal,
       neuralPowerMode: videoResults?[28],
       neuralOutputObserved: neuralOutputObserved,
       neuralInferenceP95Ms: _parseDouble(videoResults?[20]),

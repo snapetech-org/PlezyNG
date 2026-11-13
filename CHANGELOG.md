@@ -9,6 +9,7 @@
 - Update locked Addressable to 2.9.1 to resolve three moderate dependency advisories in the Fastlane toolchain.
 - Add a documentation index, document webOS secure-storage behavior, and correct stale release guidance and broken repository links.
 - Reconcile the localization capability ledger with its generated 37-locale coverage report and enforce count consistency.
+- Include pinned Balanced and Quality Neural ONNX models in standard Windows/Linux bundles, bundle Android LiteRT models by default, and show the ANVIL MIT notice in the app license list.
 
 - Allow a pinned-source release to run exact-source CI and create its stable tag through the authenticated release controller when the organization blocks Actions tag creation.
 - Route an explicit private Apple selection to macOS as well as iOS and tvOS, and bound the macOS compile and package job to 100 and 150 minutes.

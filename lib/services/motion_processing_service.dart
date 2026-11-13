@@ -1166,14 +1166,21 @@ abstract final class MotionProcessingService {
     }
     if (!_supportsDesktopPmeSource(selectedVersion)) return false;
 
-    final model = await NeuralModelPackService.installedOrStartInstall(neuralPreset);
-    if (model == null) {
-      appLogger.i('MotionProcessingService: starting the Neural model download; playback remains on MPV smoothing.');
-      return false;
-    }
     final runtime = await _findDesktopPmeRuntime();
     if (runtime == null) {
       appLogger.w('MotionProcessingService: desktop PME runtime bundle is not installed.');
+      return false;
+    }
+
+    late final File model;
+    try {
+      model = await NeuralModelPackService.ensureInstalled(neuralPreset);
+    } catch (error, stackTrace) {
+      appLogger.w(
+        'MotionProcessingService: bundled Neural model is unavailable; playback remains on MPV smoothing.',
+        error: error,
+        stackTrace: stackTrace,
+      );
       return false;
     }
 

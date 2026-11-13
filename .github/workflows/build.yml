@@ -2348,6 +2348,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && '1' || '0' }}
+      PLEAZYNG_DESKTOP_NEURAL_MODEL_ROOT: ${{ github.workspace }}/build/desktop-neural-models
     permissions:
       contents: read
     strategy:
@@ -2517,6 +2518,10 @@ jobs:
       - name: Build bundled MilkRust for Windows
         shell: pwsh
         run: python scripts/visualizer/build_runtime.py --platform windows --architectures "${{ matrix.arch }}" --output build/visualizer-native
+
+      - name: Prepare pinned desktop Neural models
+        shell: pwsh
+        run: python scripts/motion/prepare_desktop_neural_models.py --destination "$env:PLEAZYNG_DESKTOP_NEURAL_MODEL_ROOT"
 
       - name: Build Windows ${{ matrix.arch }}
         id: windows-build
@@ -2945,6 +2950,7 @@ jobs:
             snap_arch: arm64
     env:
       GH_TOKEN: ${{ github.token }}
+      PLEAZYNG_DESKTOP_NEURAL_MODEL_ROOT: ${{ github.workspace }}/build/desktop-neural-models
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -3093,6 +3099,10 @@ jobs:
       - name: Build bundled MilkRust for Linux
         shell: bash
         run: python3 scripts/visualizer/build_runtime.py --platform linux --architectures "${{ matrix.arch }}" --output build/visualizer-native
+
+      - name: Prepare pinned desktop Neural models
+        shell: bash
+        run: python3 scripts/motion/prepare_desktop_neural_models.py --destination "$PLEAZYNG_DESKTOP_NEURAL_MODEL_ROOT"
 
       - name: Build Linux ${{ matrix.arch }}
         shell: bash

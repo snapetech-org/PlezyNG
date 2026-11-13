@@ -1394,6 +1394,9 @@ void _registerAppLicenses() {
       'AutoEq headphone equalization (Jaakko Pasanen)',
     ], await rootBundle.loadString('assets/licenses/AutoEq_MIT.txt'));
     yield LicenseEntryWithLineBreaks(const [
+      'ANVIL interpolation models (NihilDigit)',
+    ], await rootBundle.loadString('assets/licenses/ANVIL_MIT_LICENSE.txt'));
+    yield LicenseEntryWithLineBreaks(const [
       'MilkRust native integration (AGPL-3.0)',
     ], await rootBundle.loadString('assets/licenses/MilkRust_Native.txt'));
     yield LicenseEntryWithLineBreaks(const [

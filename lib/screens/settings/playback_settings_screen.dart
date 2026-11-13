@@ -243,10 +243,13 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
                 title: t.settings.audio,
                 children: [
                   if (PlatformDetector.supportsAudioPassthrough()) _audioPassthroughTile(),
-                  _audioChannelLimitTile(exoActive: exoActive),
-                  // Only a stereo fold mixes the center away; any fold can clip.
-                  if (channelLimit == AudioChannelLimit.stereo) _downmixCenterBoostTile(),
-                  if (channelLimit != AudioChannelLimit.original) _downmixNormalizeTile(),
+                  // The native TV players do not provide a channel-mixing hook.
+                  if (!PlatformDetector.usesNativeTvMedia()) ...[
+                    _audioChannelLimitTile(exoActive: exoActive),
+                    // Only a stereo fold mixes the center away; any fold can clip.
+                    if (channelLimit == AudioChannelLimit.stereo) _downmixCenterBoostTile(),
+                    if (channelLimit != AudioChannelLimit.original) _downmixNormalizeTile(),
+                  ],
                   _maxVolumeTile(),
                 ],
               ),

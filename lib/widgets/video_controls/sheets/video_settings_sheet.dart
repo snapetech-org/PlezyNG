@@ -1,4 +1,5 @@
 import 'package:plezy/i18n/presentation_formats.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -1081,25 +1082,27 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
         // it reports notApplicable. iOS covers iPhone, iPad, and Apple TV.
         if (Platform.isIOS) _AudioRenderingModeItem(player: widget.player),
 
-        _SettingsToggleItem(
-          pref: SettingsService.audioNormalization,
-          icon: Symbols.graphic_eq_rounded,
-          title: t.videoSettings.audioNormalization,
-          // Normalization wins over passthrough; say so where passthrough
-          // exists.
-          subtitle: PlatformDetector.supportsAudioPassthrough()
-              ? t.videoSettings.audioNormalizationDisablesPassthrough
-              : null,
-          onAfterWrite: widget.player.setAudioNormalization,
-        ),
+        if (!PlatformDetector.usesNativeTvMedia())
+          _SettingsToggleItem(
+            pref: SettingsService.audioNormalization,
+            icon: Symbols.graphic_eq_rounded,
+            title: t.videoSettings.audioNormalization,
+            // Normalization wins over passthrough; say so where passthrough
+            // exists.
+            subtitle: PlatformDetector.supportsAudioPassthrough()
+                ? t.videoSettings.audioNormalizationDisablesPassthrough
+                : null,
+            onAfterWrite: widget.player.setAudioNormalization,
+          ),
 
-        _SettingsMenuItem(
-          icon: Symbols.speaker_group_rounded,
-          title: t.settings.audioChannelLimit,
-          valueText: audioChannelLimitLabel(_displayedAudioChannelLimit),
-          isHighlighted: _displayedAudioChannelLimit != AudioChannelLimit.original,
-          onTap: () => _navigateTo(_SettingsView.audioChannelLimit),
-        ),
+        if (!PlatformDetector.usesNativeTvMedia())
+          _SettingsMenuItem(
+            icon: Symbols.speaker_group_rounded,
+            title: t.settings.audioChannelLimit,
+            valueText: audioChannelLimitLabel(_displayedAudioChannelLimit),
+            isHighlighted: _displayedAudioChannelLimit != AudioChannelLimit.original,
+            onTap: () => _navigateTo(_SettingsView.audioChannelLimit),
+          ),
 
         if (widget.player.playerType == 'mpv' && widget.player is AudioEqualizerCapable)
           _SettingsMenuItem(

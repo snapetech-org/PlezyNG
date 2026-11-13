@@ -517,8 +517,8 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
           Text(l10n.t.karaokeUi.packageImportLyricStageCDGHostingQuizzesEditing),
           Text(
             PlatformDetector.isAppleTV() || PlatformDetector.isTizenBuild() || PlatformDetector.isWebOSBuild()
-                ? 'Local microphone capture is unavailable in this TV build. Use external amplification. Key, tempo and stems require an MPV backend.'
-                : 'Local microphone capture uses the native record plugin with explicit permission. Key, tempo and stems require an MPV backend. USB devices, Bluetooth latency and capture quality require device validation.',
+                ? l10n.t.karaokeUi.thisBuildTvMicrophoneCapabilities
+                : l10n.t.karaokeUi.thisBuildLocalMicrophoneCapabilities,
           ),
           Text(l10n.t.karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire),
         ],

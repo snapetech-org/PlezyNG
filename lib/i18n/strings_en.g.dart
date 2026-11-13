@@ -13861,6 +13861,48 @@ class Translations$karaokeUi$en {
 	/// en: 'Pitch feedback and dry recording use your selected microphone. Use an external mixer for amplification.'
 	String get pitchFeedbackAndDryRecordingUseYourSelectedMicrophone => 'Pitch feedback and dry recording use your selected microphone. Use an external mixer for amplification.';
 
+	/// en: 'Microphone capture is unavailable in this TV build. Use the karaoke phone companion for mic capture, or connect a microphone to an external mixer for stage amplification.'
+	String get tvMicrophoneCaptureUnavailable => 'Microphone capture is unavailable in this TV build. Use the karaoke phone companion for mic capture, or connect a microphone to an external mixer for stage amplification.';
+
+	/// en: 'Enable microphone'
+	String get enableMicrophone => 'Enable microphone';
+
+	/// en: 'Mute microphone'
+	String get muteMicrophone => 'Mute microphone';
+
+	/// en: 'Record private take'
+	String get recordPrivateTake => 'Record private take';
+
+	/// en: 'Save private take'
+	String get savePrivateTake => 'Save private take';
+
+	/// en: 'Microphone level'
+	String get microphoneLevel => 'Microphone level';
+
+	/// en: 'No confident pitch'
+	String get noConfidentPitch => 'No confident pitch';
+
+	/// en: 'Pitch: MIDI ${value1}'
+	String pitchMIDI({required Object value1}) => 'Pitch: MIDI ${value1}';
+
+	/// en: 'Score: ${value1} / 10000 · ${value2}'
+	String performanceScore({required Object value1, required Object value2}) => 'Score: ${value1} / 10000 · ${value2}';
+
+	/// en: 'Practice pass: a seek or setting change disabled competitive scoring.'
+	String get practicePassCompetitiveScoringDisabled => 'Practice pass: a seek or setting change disabled competitive scoring.';
+
+	/// en: 'Sing-along: scoring requires a reviewed reference chart.'
+	String get singAlongNeedsReviewedChart => 'Sing-along: scoring requires a reviewed reference chart.';
+
+	/// en: 'calibrated'
+	String get inputCalibrated => 'calibrated';
+
+	/// en: 'manual / uncalibrated'
+	String get inputManualUncalibrated => 'manual / uncalibrated';
+
+	/// en: '${value1} ms'
+	String inputOffsetSliderLabel({required Object value1}) => '${value1} ms';
+
 	/// en: 'Input offset: ${value1} ms · ${value2}'
 	String inputOffsetMs({required Object value1, required Object value2}) => 'Input offset: ${value1} ms · ${value2}';
 
@@ -14430,6 +14472,12 @@ class Translations$karaokeUi$en {
 
 	/// en: 'This build'
 	String get thisBuild => 'This build';
+
+	/// en: 'Local microphone capture is unavailable in this TV build. Use the karaoke phone companion for mic capture, or connect a microphone to an external mixer for stage amplification. Key, tempo and stems require an MPV backend.'
+	String get thisBuildTvMicrophoneCapabilities => 'Local microphone capture is unavailable in this TV build. Use the karaoke phone companion for mic capture, or connect a microphone to an external mixer for stage amplification. Key, tempo and stems require an MPV backend.';
+
+	/// en: 'Local microphone capture uses the native record plugin with explicit permission. Key, tempo and stems require an MPV backend. USB devices, Bluetooth latency, and capture quality require device validation.'
+	String get thisBuildLocalMicrophoneCapabilities => 'Local microphone capture uses the native record plugin with explicit permission. Key, tempo and stems require an MPV backend. USB devices, Bluetooth latency, and capture quality require device validation.';
 
 	/// en: 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.'
 	String get packageImportLyricStageCDGHostingQuizzesEditing => 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.';
@@ -22662,6 +22710,20 @@ extension on Translations {
 			'karaokeUi.chooseAMicrophone' => 'Choose a microphone',
 			'karaokeUi.microphoneAndPrivateTake' => 'Microphone and private take',
 			'karaokeUi.pitchFeedbackAndDryRecordingUseYourSelectedMicrophone' => 'Pitch feedback and dry recording use your selected microphone. Use an external mixer for amplification.',
+			'karaokeUi.tvMicrophoneCaptureUnavailable' => 'Microphone capture is unavailable in this TV build. Use the karaoke phone companion for mic capture, or connect a microphone to an external mixer for stage amplification.',
+			'karaokeUi.enableMicrophone' => 'Enable microphone',
+			'karaokeUi.muteMicrophone' => 'Mute microphone',
+			'karaokeUi.recordPrivateTake' => 'Record private take',
+			'karaokeUi.savePrivateTake' => 'Save private take',
+			'karaokeUi.microphoneLevel' => 'Microphone level',
+			'karaokeUi.noConfidentPitch' => 'No confident pitch',
+			'karaokeUi.pitchMIDI' => ({required Object value1}) => 'Pitch: MIDI ${value1}',
+			'karaokeUi.performanceScore' => ({required Object value1, required Object value2}) => 'Score: ${value1} / 10000 · ${value2}',
+			'karaokeUi.practicePassCompetitiveScoringDisabled' => 'Practice pass: a seek or setting change disabled competitive scoring.',
+			'karaokeUi.singAlongNeedsReviewedChart' => 'Sing-along: scoring requires a reviewed reference chart.',
+			'karaokeUi.inputCalibrated' => 'calibrated',
+			'karaokeUi.inputManualUncalibrated' => 'manual / uncalibrated',
+			'karaokeUi.inputOffsetSliderLabel' => ({required Object value1}) => '${value1} ms',
 			'karaokeUi.inputOffsetMs' => ({required Object value1, required Object value2}) => 'Input offset: ${value1} ms · ${value2}',
 			'karaokeUi.comfortableRangeSavedMIDISuggestedKey' => ({required Object value1, required Object value2, required Object value3}) => 'Comfortable range saved: ${value1}–${value2} MIDI. Suggested key: ${value3}.',
 			'karaokeUi.saveMyComfortableRange' => 'Save my comfortable range',
@@ -22803,6 +22865,8 @@ extension on Translations {
 			'karaokeUi.echoWet' => 'Echo wet',
 			'karaokeUi.noiseGate' => 'Noise gate',
 			'karaokeUi.noShowTemplates' => 'No show templates saved yet.',
+			_ => null,
+		} ?? switch (path) {
 			'karaokeUi.trimStartMs' => 'Trim start (ms)',
 			'karaokeUi.outputDurationMs' => 'Output duration (ms)',
 			'karaokeUi.mixApprovedResponse' => ({required Object value1}) => 'Mix approved response ${value1}',
@@ -22817,8 +22881,6 @@ extension on Translations {
 			'karaokeUi.keyTempo_f457ce13' => ({required Object value1, required Object value2, required Object value3, required Object value4, required Object value5}) => '${value1} · ${value2} · key ${value3} · tempo ${value4} · ${value5}',
 			'karaokeUi.recoverRecording' => 'Recover recording',
 			'karaokeUi.linkThisTakeToTheDuetInvitation' => 'Link this take to the duet invitation',
-			_ => null,
-		} ?? switch (path) {
 			'karaokeUi.listenToDryTake' => 'Listen to dry take',
 			'karaokeUi.listenToGuideTrack' => 'Listen to guide track',
 			'karaokeUi.mixExportAudioOrVideo' => 'Mix / export audio or video',
@@ -22854,6 +22916,8 @@ extension on Translations {
 			'karaokeUi.mib' => ({required Object value1}) => '${value1} MiB',
 			'karaokeUi.removePackage' => 'Remove package',
 			'karaokeUi.thisBuild' => 'This build',
+			'karaokeUi.thisBuildTvMicrophoneCapabilities' => 'Local microphone capture is unavailable in this TV build. Use the karaoke phone companion for mic capture, or connect a microphone to an external mixer for stage amplification. Key, tempo and stems require an MPV backend.',
+			'karaokeUi.thisBuildLocalMicrophoneCapabilities' => 'Local microphone capture uses the native record plugin with explicit permission. Key, tempo and stems require an MPV backend. USB devices, Bluetooth latency, and capture quality require device validation.',
 			'karaokeUi.packageImportLyricStageCDGHostingQuizzesEditing' => 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.',
 			'karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire' => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.',
 			'karaokeUi.hostExitPIN' => 'Host exit PIN',

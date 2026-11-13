@@ -71,7 +71,11 @@ class _KaraokeAudioPanelState extends State<KaraokeAudioPanel> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(l10n.t.karaokeUi.microphoneAndPrivateTake, style: Theme.of(context).textTheme.titleLarge),
-              Text(l10n.t.karaokeUi.pitchFeedbackAndDryRecordingUseYourSelectedMicrophone),
+              Text(
+                a.supported
+                    ? l10n.t.karaokeUi.pitchFeedbackAndDryRecordingUseYourSelectedMicrophone
+                    : l10n.t.karaokeUi.tvMicrophoneCaptureUnavailable,
+              ),
               Wrap(
                 spacing: 12,
                 runSpacing: 8,
@@ -81,33 +85,40 @@ class _KaraokeAudioPanelState extends State<KaraokeAudioPanel> {
                         ? null
                         : () => a.capturing ? run(a.stop) : enable(),
                     icon: AppIcon(a.capturing ? Symbols.mic_off_rounded : Symbols.mic_rounded),
-                    label: Text(a.capturing ? 'Mute microphone' : 'Enable microphone'),
+                    label: Text(a.capturing ? l10n.t.karaokeUi.muteMicrophone : l10n.t.karaokeUi.enableMicrophone),
                   ),
                   OutlinedButton.icon(
                     onPressed: _busy || !a.capturing
                         ? null
                         : () => run(a.recording ? a.stopRecording : a.startRecording),
                     icon: AppIcon(a.recording ? Symbols.stop_rounded : Symbols.fiber_manual_record_rounded),
-                    label: Text(a.recording ? 'Save private take' : 'Record private take'),
+                    label: Text(a.recording ? l10n.t.karaokeUi.savePrivateTake : l10n.t.karaokeUi.recordPrivateTake),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              LinearProgressIndicator(value: (a.rms * 4).clamp(0, 1), semanticsLabel: 'Microphone level'),
-              Text(a.midi == null ? 'No confident pitch' : 'Pitch: MIDI ${a.midi!.toStringAsFixed(1)}'),
+              LinearProgressIndicator(value: (a.rms * 4).clamp(0, 1), semanticsLabel: l10n.t.karaokeUi.microphoneLevel),
+              Text(
+                a.midi == null
+                    ? l10n.t.karaokeUi.noConfidentPitch
+                    : l10n.t.karaokeUi.pitchMIDI(value1: a.midi!.toStringAsFixed(1)),
+              ),
               if (a.trace.isNotEmpty)
                 SizedBox(height: 120, child: CustomPaint(painter: _PitchTrace(a.trace.toList(), s.positionMs.value))),
               Text(
                 result?['eligible'] == true
-                    ? 'Score: ${result!['score']} / 10000 · ${KaraokeScore.rulesVersion}'
+                    ? l10n.t.karaokeUi.performanceScore(
+                        value1: result!['score'].toString(),
+                        value2: KaraokeScore.rulesVersion,
+                      )
                     : result?['invalidated'] == true
-                    ? 'Practice pass: a seek or setting change disabled competitive scoring.'
-                    : 'Sing-along: scoring requires a reviewed reference chart.',
+                    ? l10n.t.karaokeUi.practicePassCompetitiveScoringDisabled
+                    : l10n.t.karaokeUi.singAlongNeedsReviewedChart,
               ),
               Text(
                 l10n.t.karaokeUi.inputOffsetMs(
                   value1: (a.inputOffsetMs).toString(),
-                  value2: (a.calibrated ? 'calibrated' : 'manual / uncalibrated').toString(),
+                  value2: a.calibrated ? l10n.t.karaokeUi.inputCalibrated : l10n.t.karaokeUi.inputManualUncalibrated,
                 ),
               ),
               Slider(
@@ -115,7 +126,7 @@ class _KaraokeAudioPanelState extends State<KaraokeAudioPanel> {
                 max: 1000,
                 divisions: 150,
                 value: a.inputOffsetMs.toDouble().clamp(-500, 1000),
-                label: '${a.inputOffsetMs} ms',
+                label: l10n.t.karaokeUi.inputOffsetSliderLabel(value1: a.inputOffsetMs.toString()),
                 onChanged: _busy ? null : (value) => run(() => a.setCalibration(value.round(), measured: false)),
               ),
               TextButton(

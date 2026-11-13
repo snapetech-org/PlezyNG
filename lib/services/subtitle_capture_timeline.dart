@@ -3,6 +3,10 @@ enum SubtitleCapturePacketAction { append, resetWindow, resetTimeline, discard }
 /// A decoded audio clock. A user seek retains DVR cues, whereas an unexplained
 /// backwards live-clock jump starts a new epoch and cannot reuse old cue times.
 final class SubtitleCaptureTimeline {
+  /// Largest forward PTS gap that can remain in one inference window. The
+  /// capture adapter represents gaps through this bound as silence in PCM.
+  static const int maximumForwardGapUs = 250000;
+
   SubtitleCaptureTimeline({required this.live, required this._seekGeneration});
   final bool live;
   int _seekGeneration;
@@ -33,7 +37,9 @@ final class SubtitleCaptureTimeline {
     final gap = _expectedUs == null ? 0 : ptsUs - _expectedUs!;
     _expectedUs = ptsUs + durationUs;
     if (live && !sought && gap < -150000) return SubtitleCapturePacketAction.resetTimeline;
-    if (sought || formatChanged || gap < -150000 || gap > 1500000) return SubtitleCapturePacketAction.resetWindow;
+    if (sought || formatChanged || gap < -150000 || gap > maximumForwardGapUs) {
+      return SubtitleCapturePacketAction.resetWindow;
+    }
     return SubtitleCapturePacketAction.append;
   }
 }

@@ -487,7 +487,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         liveCaption.value = null;
       } else if (_streamStartMs == null) {
         _streamStartMs = ptsUs / 1000.0;
-      } else if (gapUs > 40000 && gapUs <= 250000) {
+      } else if (gapUs > 40000 && gapUs <= SubtitleCaptureTimeline.maximumForwardGapUs) {
         final silenceSamples = (gapUs * _sampleRate / 1000000).round();
         if (silenceSamples > 0 && silenceSamples <= _sampleRate ~/ 4) {
           _samples.addAll(List<double>.filled(silenceSamples, 0));

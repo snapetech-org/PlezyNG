@@ -13,6 +13,12 @@ without a declared seek invalidates all old cues before accepting the new epoch.
 Format changes reset the inference window. Channel, media-session and selected
 audio-track changes stop capture and discard captions from the old source.
 
+Forward packet gaps above 40 ms and up to 250 ms are represented as silence in
+the ASR window. A larger forward gap resets the current inference window while
+preserving earlier cues, so missing PCM is never concatenated into audio with
+shifted source timestamps. Smaller timing jitter remains within the current
+window.
+
 Same-channel server DVR seeks that reopen a source suspend capture through the
 live-session owner. When the new rendered clock is accepted, caption positions
 are rebased onto the original timeline and capture resumes. Failed or superseded

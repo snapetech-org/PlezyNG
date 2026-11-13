@@ -3,7 +3,7 @@
   "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "d7db3f7f80439026163543a3a70074d84f5a71c3",
+    "auditedMainCommit": "9f965519d3487e290ab0b02ada7a857c4693b257",
     "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
@@ -405,10 +405,13 @@
       "evidence": [
         ".github/workflows/ci.yml",
         "tools/reader-tests/package.json",
+        "tools/reader-tests/run.cjs",
+        "test/sources/publication_browser_test.dart",
+        "test/sources/fixtures/comic_layout.test.mjs",
         "lib/screens/sources/publication_reader_screen.dart",
         "docs/sources/QUALIFICATION.md"
       ],
-      "qualification": "The main Unit Tests job installs Playwright Chromium and runs the reader browser suite; this branch has not run that job. Android WebView, Apple WebKit, Windows WebView2, Linux external-browser lifecycle, and physical reader acceptance remain separate."
+      "qualification": "On 2026-11-13, the pinned Playwright 1.62.1 reader suite passed locally on kspld0 with system Chromium: five comic-layout checks and three Flutter EPUB/comic/Arabic browser flows. This local run does not qualify the hosted workflow. Android WebView, Apple WebKit, Windows WebView2, Linux external-browser lifecycle, and physical reader acceptance remain separate."
     },
     {
       "id": "F15",

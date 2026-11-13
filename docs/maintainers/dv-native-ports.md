@@ -17,8 +17,11 @@ a separate application, compiler flag, or manually replaced native library.
 Android/Linux/Windows native production patch series have been rebased onto the
 exact FEL sources in the mpv-build producer. Its normal AAR also carries matching
 FFmpeg headers, preventing the Media3 adapter from mixing header and runtime ABIs.
-The ordinary Android playback policy uses both the saved preference and a
-successfully installed filter, rather than engine presence, to activate FEL.
+The ordinary Android playback policy requires the saved preference, the loaded
+`plezyng-dv-fel-v1` engine identity, and an accepted enhancement-layer filter
+before selecting the FEL graph. If the paired engine is unavailable, it keeps
+the normal native or base-layer decoder route; the existing online startup
+fallback can then request a server-compatible rendition if that route fails.
 
 Apple bundles `PlezyNGDVRuntime.framework` and its prefixed Aether dependencies.
 The app links only the small `shared/apple/DVRuntimeAPI` package at its existing
@@ -26,7 +29,9 @@ OS floor, then loads the implementation when Settings requests it on macOS 15 or
 iOS/tvOS 18. All three Xcode projects run the mandatory packaging phase; the
 `DualLayerDolbyVision` trait is always compiled into that runtime. The app never
 asks the user to select a build variant. PiP is unavailable while using this
-experimental backend. Compatibility playback stays the default.
+experimental backend. The persisted setting enables the route by default on
+supported OS versions; ordinary playback remains available if the runtime
+cannot load or initialize.
 
 `tools/dv-engine/build_apple_runtime.py` pins Swift resolution, owns its APFS
 DerivedData/package directories, copies frameworks/resources/notices, and records
@@ -106,8 +111,8 @@ runtime DLLs are installed with the app and copied for native contract tests.
 Sources, notices and reports accompany an experimental app install.
 
 The archive override above is a diagnostic builder option. Ordinary releases
-use the rebased production producer and its locked artifacts; users enable the
-included implementation in Settings. Start app qualification with hardware decoding off,
+use the rebased production producer and its locked artifacts; the default-on
+Settings path selects the included implementation. Start app qualification with hardware decoding off,
 then test each hardware/copy path independently. Record the actual renderer,
 both layers, composer execution, seek/flush behavior, subtitles and A/V sync.
 

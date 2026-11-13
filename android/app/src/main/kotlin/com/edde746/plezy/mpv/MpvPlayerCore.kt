@@ -1761,7 +1761,10 @@ class MpvPlayerCore private constructor(
       conversionMode = mode,
       experimentalEnabled = experimentalDolbyVision
     )
-    val felActive = configureP7FelFilter(p, wantsP7Fel)
+    // `vf add` may accept the generic format filter even when this process
+    // loaded the compatibility engine. Only the paired engine advertises the
+    // decoder/composer path needed to make that request useful.
+    val felActive = configureP7FelFilter(p, wantsP7Fel && felEngineAvailable)
     val needsP7Fel = GpuVoPolicy.p7FelRouteActive(profile, mode, experimentalDolbyVision, felActive)
     val needsP5Reshape = profile == 5L &&
       GpuVoPolicy.needsDvReshaping(
@@ -1792,6 +1795,7 @@ class MpvPlayerCore private constructor(
       val decision = "profile=$profile mode=$mode dvOutput=${if (dvOutputAllowed) "yes" else "no"} " +
         "decoder=${fileDecoder ?: "none"} nativeP5Decoder=${p5Decoder ?: "none"} nativeP7Decoder=${p7Decoder ?: "none"} " +
         "displayDv=$displayDvSupported dolby_vision=${if (options.dolbyVision) 1 else 0} dv_p7_mode=${options.p7Mode} " +
+        "felEngine=${if (felEngineAvailable) "paired" else "compatibility"} " +
         "felFilter=${if (felActive) "active" else "unavailable"} " +
         "path=${when {
           needsP7Fel -> "software decode + gpu-next P7 FEL graph (unqualified)"
@@ -1862,7 +1866,9 @@ class MpvPlayerCore private constructor(
       conversionMode = mode,
       experimentalEnabled = experimentalDolbyVision
     )
-    val felActive = configureP7FelFilter(p, wantsP7Fel)
+    // Match the hardware-decoded path above: filter acceptance by itself does
+    // not prove that the loaded engine can pair and compose Profile 7 layers.
+    val felActive = configureP7FelFilter(p, wantsP7Fel && felEngineAvailable)
     val needsP7Fel = GpuVoPolicy.p7FelRouteActive(profile, mode, experimentalDolbyVision, felActive)
     val needsP5Reshape = profile == 5L && GpuVoPolicy.softwareDecodeNeedsDvReshaping(profile, mode, hwdecCurrent = "no")
     val needs = needsP5Reshape || needsP7Fel
@@ -1883,7 +1889,8 @@ class MpvPlayerCore private constructor(
       else -> initialVideoOutput(hardwareDecoding = false)
     }
     if (output == softwareVideoOutput) return
-    val decision = "profile=$profile mode=$mode felFilter=${if (felActive) "active" else "unavailable"} " +
+    val decision = "profile=$profile mode=$mode felEngine=${if (felEngineAvailable) "paired" else "compatibility"} " +
+      "felFilter=${if (felActive) "active" else "unavailable"} " +
       "path=software decode, vo=$output${if (needsP7Fel) " (P7 FEL graph unqualified)" else ""}"
     Log.i(TAG, "DV routing: $decision")
     emitLog("info", "dv-route", decision)

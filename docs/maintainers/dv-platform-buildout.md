@@ -8,35 +8,38 @@ the rebased Android/Linux/Windows producer, bundled Apple runtime and offline
 tools. The dated standalone experiments below retain their historical evidence;
 references to unchanged production pins describe those earlier runs.
 
-Updated 2026-10-26. This is the implementation and testing entry point. Read the
+Updated 2026-11-12. This is the implementation and testing entry point. Read the
 [Linux evidence](dv-engine-luna-handoff.md) and [platform research](../plezyng/dolby-vision-platform-research.md)
 alongside it. Automatic DV/FEL routing uses the bundled implementation; no system
 driver, EDID, kernel module or TV firmware is replaced automatically.
 
-The runner inventory below records the checks from October 26, 2026. Current
-runner selection follows root `AGENTS.md`: compatible hosted runners are the
-default, with private JIT reserved for hardware, network, storage, or isolation
-requirements that hosted runners cannot meet.
+The entries below separate current normal-build routing from run-specific
+qualification evidence. Current runner selection follows root `AGENTS.md`:
+compatible hosted runners are the default, with private JIT reserved for
+hardware, network, storage, or isolation requirements that hosted runners
+cannot meet.
 
 ## What is implemented
 
 | Platform/path | Implementation in this repository | Qualification boundary |
 | --- | --- | --- |
-| Linux app | Device-local Playback switches select `opengl-next`, permit one renderer-creation fallback, and enable player logging. The isolated FFmpeg/libplacebo/mpv build drives generated P7 video on software GLES and on `vaapi-copy` plus GPU EGL/GLES; hardware readback differed from software by at most one 8-bit code. A real local clip also traversed the graph. Production Linux now requests a server SDR rendition before opening identified DV unless the user explicitly opts into the Profile 7 experiment. | Full Plezy Wayland playback, zero-copy and independent pixel accuracy remain open. The synthetic result proves qualitative EL contribution only. The hardware residual capture produced three pending-RPU replacement warnings; its RPU/frame association is unqualified. |
-| macOS, iOS, tvOS | iOS/tvOS preserve local playback only for source Profile 5 or 8 when `AVPlayer.availableHDRModes` reports Dolby Vision. Other identified profiles request a server SDR rendition before opening. macOS has no qualified native-profile report and therefore uses the server route. A separate SwiftUI research host and pinned AetherEngine `DualLayerDolbyVision` trait provide opt-in load, surface, play/pause, seek, stop and engine-route readout. | The Apple mode/profile report selects a system path; it does not certify displayed pixels. Experimental FEL reconstruction is not integrated into production `MpvPlayerCore`. No Mac build or Apple-device pixel result is claimed. |
+| Linux app | Normal Linux packages include the locked FEL-capable libmpv and offline HDR10/SDR export tools. The default-on Playback preference requests `opengl-next`; if render-context creation fails and compatibility fallback is enabled, the app retries `opengl` once and reports the renderer actually selected. | Full Plezy Wayland playback, zero-copy and independent pixel accuracy remain open. The synthetic result proves qualitative EL contribution only. The hardware residual capture produced three pending-RPU replacement warnings; its RPU/frame association is unqualified. |
+| macOS, iOS, tvOS | Normal Apple packages include the bundled `PlezyNGDVRuntime.framework`. The default-on preference tries it on macOS 15 and iOS/tvOS 18; a load or initialization failure retains ordinary MPV playback. Other OS versions keep the ordinary route. | The Apple mode/profile report selects a system path; it does not certify displayed pixels. Physical output and FEL image accuracy remain unqualified. |
 | Offline companion | Pinned FelBaker builder patches its VapourSynth output key and builds a tested RGB48 pipeline. A 48-frame generated P7 sample changed all 2,073,600 designed residual-patch pixels; both HDR10/PQ HEVC and SDR/BT.709 H.264 outputs encoded and passed `ffprobe` frame/color-tag checks. | These lossy files are derived compatibility versions, not native DV. FelBaker is a comparison implementation, not an independent Dolby reference; real-clip and playback-device checks remain open. |
-| Android | Startup enumerates exact Profile 5/7/8 MediaCodec support. A matching profile keeps the local decoder path; missing or unknown profiles use a server SDR rendition before open. Explicit Profile 7 experimentation may still be enabled in mpv, while ExoPlayer remains outside the FEL experiment. A separate experimental AAR passes a synthetic FEL-on versus EL-dropped pixel comparison through Android Surface readback. | The profile report comes from the device codec list and is not a per-source pixel test. The production AAR remains on mpv 0.41 and does not contain the FEL path. The experimental AAR compiled for four ABIs; runtime pixel evidence is one API 36 x86_64 emulator with synthetic media. Real-device playback, reference pixels and physical Dolby Vision output remain unqualified. CoreELEC S5 remains a separate vendor/kernel project. |
+| Android | The checksum-pinned normal AAR contains `plezyng-dv-fel-v1`, paired FFmpeg headers, and all four declared ABIs. Android MPV attempts P7 FEL by default only when that engine identity is present and the enhancement-layer filter is accepted. Otherwise it retains the native decoder or compatible base-layer route; online startup failure can retry through a server SDR rendition. ExoPlayer remains on its platform decoder path. | The MediaCodec profile list is not a per-source pixel test. The API 36 x86_64 emulator comparison uses synthetic media and does not qualify real-device playback, reference pixels or physical Dolby Vision output. CoreELEC S5 remains a separate vendor/kernel project. |
 | webOS | For an identified Dolby Vision source, Plex, Jellyfin, and Emby are asked for a full server video encode, even at Original quality; a response offering only the original direct stream is rejected. Jellyfin/Emby also receive an explicit SDR output-range constraint. | The server's output must declare SDR in every HLS video variant before Plezy opens it. That declaration is not proof of correct tone mapping or visible pixel values. The app path exposes no BL/EL GPU composer. |
-| Windows | A D3D11 engine builder and verified app bundle selection prepare the native port. Identified Dolby Vision uses a server SDR rendition before the unqualified MPV path opens. The explicit Profile 7 experiment can override that policy when enabled. | FEL filter acceptance is not proof of EL pixels. The pinned Windows engine's FEL components, D3D11 rendering, independent pixels and device output remain unqualified. The configured private `packer-windows` route may queue; under the current root policy, compatible hosted runners are allowed when they meet the job's OS, architecture, and trust requirements. No D3D11/Vulkan reference comparison or device result is claimed. |
+| Windows | Ordinary app builds use the locked Windows libmpv from the rebased producer; the current artifact reports the paired FEL engine identity. The default-on per-file hook requests software decoding and the FEL filter for P7; when the hook, decoder override, or filter is unavailable, it preserves the existing route and logs the fallback. | FEL filter acceptance is not proof of EL pixels. D3D11 rendering, independent pixels and device output remain unqualified. The configured private `packer-windows` route may queue; compatible hosted runners are allowed when they meet the job's OS, architecture, and trust requirements. No D3D11/Vulkan reference comparison or device result is claimed. |
 
-Online VOD playback asks every backend to apply a profile-aware compatibility
-policy before a local decoder sees the source. Android and iOS/tvOS keep only
-profiles reported by their platform path; Linux, Windows, macOS, webOS, unknown
-profiles and failed capability probes use a server SDR rendition. The optional
-Windows/Linux Profile 7 experiment remains an explicit override. A downloaded
-DV source with no matching local profile also yields to the server; offline-only
-playback fails clearly when no compatible local route is reported. Live TV is
-unchanged. A later initialization failure still gets one bounded server retry.
+Online VOD playback uses a profile-aware compatibility policy before a local
+decoder sees the source. Android MPV, Windows, Linux and supported Apple OS
+versions attempt their bundled P7 implementation by default; native platform
+routes remain available where that implementation is absent or unsuitable.
+Identified profiles without a compatible local path request a server SDR
+rendition when the backend has a known route; unknown or incompatible profiles
+fail before the original DV stream opens. A downloaded DV source with no
+matching local profile also yields to the server; offline-only playback fails
+clearly when no compatible local route is reported. Live TV is unchanged. A
+later initialization failure still gets one bounded server retry.
 
 The server route is profile- and backend-specific. Jellyfin's documented
 Dolby Vision to SDR path accepts Profiles 5 and 8; Profile 7 is accepted only
@@ -88,9 +91,9 @@ This proves that authored EL data affects pixels through this experimental
 Android mpv graph and Surface on one emulator. The EL was deliberately
 synthetic, not derived from a mastered source, so the comparison is not a
 Dolby-reference accuracy check. The test ran in the mpv Android library, not in
-the Plezy UI; the production AAR remains unchanged. It does not qualify a
-physical Android device, hardware decoder, display output, or Dolby Vision
-signaling.
+the Plezy UI; it does not qualify a physical Android device, hardware decoder,
+display output, or Dolby Vision signaling. This is evidence from the 2026-10-26
+experimental checkpoint, before the normal producer artifact was rebased.
 
 On 2026-10-26, the complete Plezy debug APK also built against this AAR through
 the local Gradle override below. The APK SHA-256 is
@@ -102,12 +105,16 @@ or emulator was connected, so this is app packaging evidence, not Plezy UI
 playback evidence. The APK and logs remain in
 `/tmp/plezy-dv-platforms-build-20261026/` on the build host.
 
-The matching builder change is in draft [mpv-build PR #9](https://github.com/edde746/mpv-build/pull/9). It has not been merged or released, so shipping Android builds still use the stable engine lock.
+The local override below predates normal-build integration and remains useful
+for development-only engine experiments. Ordinary releases select the
+checksum-pinned Android artifact from `mpv-build.lock.json`; its current AAR
+declares `plezyng-dv-fel-v1`, paired FFmpeg headers, and all four Android ABIs.
+The normal artifact proves that the engine is packaged, not that device output
+or FEL pixels are qualified.
 
-To validate the complete Plezy Android app against an experimental AAR before
-publishing that engine, pass a local path and its SHA-256 to Gradle. The override
-is build-local; it does not edit `mpv-build.lock.json` or the production
-dependency-verification entry:
+To validate the complete Plezy Android app against a separately built AAR for
+development, pass a local path and its SHA-256 to Gradle. The override is
+build-local; it does not edit `mpv-build.lock.json` or the normal release input:
 
 ```bash
 cd android
@@ -121,21 +128,23 @@ Both Gradle properties are required together. The app then uses the normal
 Playback setting to explicitly disable or restore automatic FEL selection. Keep the AAR and APK out of source
 control; the override is for local integration testing, not a release path.
 
-See [native FEL ports](dv-native-ports.md) for the Windows engine build, Apple device-SDK build matrix and production patch audit. These preparations do not enable full FEL on Android or webOS.
+See [native FEL ports](dv-native-ports.md) for the Windows engine build, Apple device-SDK build matrix and production patch audit. Android MPV includes the paired FEL path in ordinary builds; ExoPlayer and webOS retain their platform or server compatibility paths without a local BL/EL composer.
 
 ## App settings and diagnostics
 
 Use **Settings → Playback → Video and display** (the existing settings tiles):
 
 1. **Experimental Dolby Vision** defaults on and requests the best available
-   implemented path automatically. Explicit Off remains a persisted override. On native Linux, it requests
-   `opengl-next` for the next video-player initialization. Android mpv and
-   Windows mpv force P7 `auto` playback through software decode and request
-   the FEL filter before the decoder starts. They keep the existing route if
-   the engine rejects it. ExoPlayer and native TV backends do not acquire a FEL
-   implementation from this switch; their supported compatibility paths remain.
-   Apple tries its bundled runtime on supported OS versions and retains the
-   ordinary player if runtime initialization fails.
+   implemented path automatically. Explicit Off remains a persisted override.
+   Linux selects `opengl-next` for the next playback initialization and can
+   retry `opengl` once if render-context creation fails. Android MPV checks the
+   loaded paired-FEL engine identity and accepted filter before forcing P7
+   software decoding; without both, it keeps the normal native/base-layer
+   route. Windows does the same per-file hook and preserves its current route
+   when setup fails. ExoPlayer and native TV backends keep their available
+   platform or server compatibility paths. Apple tries the bundled runtime on
+   supported OS versions and retains the ordinary player if runtime
+   initialization fails.
 2. **Compatibility fallback** defaults on and appears when the Linux experiment
    is enabled. It retries `opengl` once if experimental render-context creation
    fails. It is **not** a retry for arbitrary mid-stream decode, pairing or shader

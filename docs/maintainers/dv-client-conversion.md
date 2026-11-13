@@ -92,17 +92,17 @@ physical DV signaling. Failed/stale adapters remain ineligible.
 
 | Path | State after this change |
 | --- | --- |
-| Android mpv/ExoPlayer | Output-preference and P5 fallback changes are connected to the app. Device transition/throughput qualification remains required. |
-| Windows | Existing `gpu-next` automatic HDR/SDR output retained, including Adreno safeguards. No new FEL hardware adapter. |
-| Linux production app | Existing Wayland HDR/SDR surface negotiation retained. Legacy OpenGL embedding is not promoted to a P5/FEL-capable renderer. |
-| Linux experimental app | Automatic default-on `opengl-next`/FEL selection with compatibility fallback; explicit Off retained. Standalone launcher gains explicit output targets. |
-| Apple | Existing native output path and separate experimental host retained. No production integration of the experimental dual-layer engine is claimed. |
+| Android mpv/ExoPlayer | The normal mpv AAR includes the paired FEL engine. MPV enables P7 only after engine-identity and filter checks; ExoPlayer keeps the platform decoder route. Device output and reference pixels remain unqualified. |
+| Windows | Ordinary builds use the locked producer's FEL-capable engine; the default-on per-file route preserves the existing path when hook/filter setup fails. D3D11 output and reference pixels remain unqualified. |
+| Linux production app | Ordinary packages include the FEL-capable engine and offline HDR10/SDR tools. Default-on `opengl-next` has a single renderer-creation fallback to `opengl`; Wayland output and reference pixels remain unqualified. |
+| Apple | Ordinary packages include the bundled runtime. It is tried by default on macOS 15 and iOS/tvOS 18, with ordinary playback retained when initialization fails. Physical output and reference pixels remain unqualified. |
 | webOS | Existing native/compatible-base support retained. No portable GPU composer exposed by this change. |
 
-The portable selector is still a tool/adapter contract, not a replacement for
-all native app policies. Universal full-FEL playback is not complete: Apple
-production integration, Windows FEL integration, and Android/webOS reconstruction
-adapters remain actual engineering work, not merely a checkbox for device tests.
+The portable selector remains an adapter contract, not a replacement for native
+app policies. FEL implementations are included in ordinary Android MPV,
+Windows, Linux and supported Apple builds. Universal qualification is still
+incomplete: webOS/Tizen do not expose a local BL/EL composer, and device output,
+reference-pixel accuracy and throughput remain platform-specific evidence gates.
 
 ## Validation
 

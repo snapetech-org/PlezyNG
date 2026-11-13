@@ -99,12 +99,20 @@ endpoint limits, and the health-check exception.
 ## Follow-up: validation and deployment — 2026-11-13
 
 The Go server security job passed in GitHub Actions run `43345834708` on
-revision `365964ec848e6577994d909653f7b9d882e0e0f1`. The server source tree is
-unchanged from that tested revision through `main` at
-`0aa3cdc062e3efc8de1e1a3ed2c764d684b5e9ab`. This validates the deployed
-server source, which is `bbcb7e881bc21f92353a5fc8270fc21ea7e6e241`.
-The current-main full security workflow was still pending at the time of this
-record; it does not change the source-equivalent Go job result.
+revision `365964ec848e6577994d909653f7b9d882e0e0f1`. Go source files are
+unchanged from that tested revision through the deployed source
+`bbcb7e881bc21f92353a5fc8270fc21ea7e6e241` and latest `main` at
+`26c04cab5ecda768b0fe776681a3f86f57575166`.
+
+The full Dart suite on the earlier tested revision later completed with 11,299
+passed, 2 failed, and 22 skipped. One failure found that a second diagnostic
+redaction pass changed `[REDACTED_TOKEN]` into `[REDACTED]]`; the other was a
+map-type error in the subtitle validation test fixture. Both were fixed in
+source commit `bbcb7e881` (preserve existing redaction markers and correct the
+fixture). The fixes are present on `main` at
+`26c04cab5ecda768b0fe776681a3f86f57575166`. Its full Security regressions
+workflow run `43351852530` was pending at 02:23 UTC; a complete post-fix suite
+pass is not yet confirmed.
 
 The Go relay is deployed as a versioned, static Linux amd64 binary from that
 source revision. The systemd unit passed `systemd-analyze verify`; after

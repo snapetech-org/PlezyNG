@@ -7,7 +7,7 @@ implementation from executed platform qualification.
 
 | Area | Current implementation |
 | --- | --- |
-| Workspace | Profile-scoped live adapters, floating/split/fullscreen layouts, placement history, restore/park/tray actions, one selected audible owner and exclusive gamepad-input leases. Existing routes/services own auth, progress, players and teardown. |
+| Workspace | Profile-scoped live adapters, floating/split/fullscreen layouts, placement history, restore/park/tray actions, one selected audible owner and exclusive gamepad-input leases. Screen readers can activate a pane to focus it; interactive game panes receive input only after that focus action. Existing routes/services own auth, progress, players and teardown. |
 | Workspace audio | Single audible session remains the default. Player-backed video, local source and local music adapters can apply a transient per-session gain multiplier without changing their saved player volume. The workspace exposes an explicit second-stream Mix action only when both live MPV adapters report decoded non-exclusive output on the same nonempty device route; the primary retains focus and the mix is capped at two sessions. Android, iOS/tvOS, Tizen, webOS, remote cast, reader narration and game outputs do not advertise mixing. webOS gain is available only for its app-owned SoLoud audio route; LG video output has no per-session gain. Android/iOS/Tizen gain availability follows their player `setVolume` path. The latest user selection is fenced from stale callback completion or rollback. These are source capability gates, not device qualification. Audio ducking, interruption recovery, TTS gain and shared media-control routing remain open MV11 work. |
 | Hidden video | Parking a video pane or promoting another pane to fullscreen sends a pause intent through its existing player owner. Source-video pauses recheck route, player and file ownership when the serialized command starts and after native pause; they preserve an intervening manual pause and cannot pause a replacement source. An explicitly selected audible owner may continue as background audio; default audio ownership does not. Returning to a pane leaves it paused until Play. Watch Together and external playback retain their existing shared/remote transport policy. The session tray still uses a generic Parked label; type-specific paused, ready-to-reopen and game-disconnected status remains open. This is source behavior, not device qualification. |
 | Video admission | Four native player slots are reserved before asynchronous teardown and retained through native disposal. MPV and Android ExoPlayer have isolated channels for each slot across their supported app targets; Tizen and webOS controllers use their own native player IDs. A fifth session is rejected before player construction. |
@@ -32,6 +32,8 @@ cover live fallback, display matching, retry UI and ambient-light restoration
 without a workspace provider. Native-window calls have deadlines, and the
 unresponsive-availability regression passed. Native desktop and device results
 remain separately recorded in the [audit ledger](../../security/audit-remediation-2026-11-09.md).
+The focused workspace-overlay suite also verifies semantic activation of an
+interactive game pane and transfer of its input lease.
 
 Required platform acceptance remains: detach/reattach each admitted video slot,
 resize and move between mixed-DPI/HDR displays, unplug the saved display, exercise

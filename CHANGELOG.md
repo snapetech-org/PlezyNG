@@ -29,6 +29,7 @@
 - Reject private and reserved Stremio IP literals before opening a socket unless that exact manually entered origin has the saved LAN grant; account imports receive no private-network grant.
 - Preserve completed offline media when a native download finishes during a pause request.
 - Keep shared music queue edits atomic when a disk-backed scratch-index write fails, restoring the prior order, occurrences, cursor, and shuffle state.
+- Let screen readers activate a Multiview pane to focus it, including transferring the input lease to an interactive game pane.
 - Match gapless music transitions to queue occurrence IDs so repeated tracks remain distinct after reordering.
 - Bind standalone and recovery release CI checks to the required-job manifest at the exact release source SHA, so later workflow metadata cannot redefine historical qualification.
 - Add a one-touch karaoke venue emergency pause that preserves the session and queue while stopping local and paired-phone microphone capture; external mixer controls remain separate.

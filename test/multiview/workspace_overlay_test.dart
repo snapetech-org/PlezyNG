@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart' show SemanticsAction;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/i18n/presentation_formats.dart';
+import 'package:plezy/i18n/strings.g.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:plezy/multiview/workspace_controller.dart';
 import 'package:plezy/multiview/workspace_models.dart';
@@ -167,6 +169,40 @@ void main() {
     await tester.pump();
     expect(find.byTooltip('Finish moving window'), findsOneWidget);
     expect(find.textContaining('Drag to move'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    controller.dispose();
+    semantics.dispose();
+  });
+
+  testWidgets('semantic pane activation focuses an interactive game surface', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final controller = MultiviewWorkspaceController();
+    final inputOwnership = <bool>[];
+    controller.register(_registration(id: 'video', title: 'Film', kind: MultiviewMediaKind.video));
+    controller.register(
+      _registration(
+        id: 'game',
+        title: 'Game',
+        kind: MultiviewMediaKind.game,
+        acceptsInput: true,
+        onInputOwnershipChanged: inputOwnership.add,
+      ),
+    );
+    await _mount(tester, controller);
+
+    expect(controller.focusedSessionId, 'video');
+    expect(controller.inputSessionId, isNull);
+    final gameWindow = tester.getSemantics(
+      find.bySemanticsLabel(t.common.workspaceWindowLabel(title: isolateDisplayText('Game'))),
+    );
+    expect(gameWindow.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+    gameWindow.owner!.performAction(gameWindow.id, SemanticsAction.tap);
+    await tester.pumpAndSettle();
+
+    expect(controller.focusedSessionId, 'game');
+    expect(controller.inputSessionId, 'game');
+    expect(inputOwnership.last, isTrue);
 
     await tester.pumpWidget(const SizedBox.shrink());
     controller.dispose();

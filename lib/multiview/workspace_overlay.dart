@@ -474,6 +474,14 @@ class _WorkspaceWindowState extends State<_WorkspaceWindow> {
         label: t.common.workspaceWindowLabel(title: isolateDisplayText(registration.descriptor.title)),
         hint: widget.floating && !widget.fullscreen ? t.common.workspaceWindowHint : t.common.workspacePaneHint,
         focused: selected,
+        onTap: () {
+          controller.focus(id);
+          if (registration.descriptor.acceptsInput) {
+            _surfaceFocusNode.requestFocus();
+          } else {
+            _focusNode.requestFocus();
+          }
+        },
         onIncrease: widget.floating && !widget.fullscreen
             ? () => controller.resizeByPixels(id, const Offset(20, 12), widget.viewport, paneSize: widget.paneSize)
             : null,

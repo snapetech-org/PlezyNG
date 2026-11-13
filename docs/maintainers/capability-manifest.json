@@ -3,7 +3,7 @@
   "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "73f5c11a5114b8a29f91e5bfb9abbaa2074d0ff4",
+    "auditedMainCommit": "f9242419c999e925d1dfa8692c27ba082984e932",
     "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
@@ -441,9 +441,11 @@
         "lib/screens/sources/add_source_screen.dart",
         "lib/screens/sources/source_detail_screen.dart",
         "PRIVACY.md",
-        "docs/FILES_AND_BOOKS.md"
+        "docs/FILES_AND_BOOKS.md",
+        "lib/services/standalone_video_metadata_client.dart",
+        "test/services/standalone_video_metadata_client_test.dart"
       ],
-      "qualification": "Metadata lookup defaults off. The privacy notice identifies the title/year/episode/NFO identifier sent to Trakt when opted in and states that file bytes, full paths, and source credentials are excluded. Request-capture acceptance was not run on this branch."
+      "qualification": "Metadata lookup defaults off. The privacy notice identifies the title/year/episode/NFO identifier sent to Trakt when opted in and states that file bytes, full paths, and source credentials are excluded. A deterministic request-capture test verifies the cleaned filename query, year, and selected catalog ID while checking private paths and canary values are absent. Live Trakt-account acceptance remains open."
     },
     {
       "id": "F17",

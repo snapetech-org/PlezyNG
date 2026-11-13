@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Correct podcast implementation notes to reflect completed gPodder-compatible synchronization and the 10,000-episode RSS parsing limit.
 - Preserve Stremio add-on checkbox choices when a checked manifest default is turned off, including across reconfiguration.
 - Keep shared music queue edits atomic when a disk-backed scratch-index write fails, restoring the prior order, occurrences, cursor, and shuffle state.
 - Bind standalone and recovery release CI checks to the required-job manifest at the exact release source SHA, so later workflow metadata cannot redefine historical qualification.

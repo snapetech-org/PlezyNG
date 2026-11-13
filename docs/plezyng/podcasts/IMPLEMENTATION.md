@@ -59,12 +59,12 @@ The podcast view includes subscriptions, cached latest episodes, show-scoped bro
 
 RSS adds publication timestamps, season/episode/type/explicit metadata, video enclosures, duplicate-GUID suppression, Podlove inline chapters and Podcasting 2.0 JSON chapters. Chapter URLs stay in adapter memory and publisher credentials stay origin-scoped. Optional chapter failures do not prevent playback. Failed feed parsing retains the previous in-memory lookup maps.
 
-- Feed parsing retains the existing 6 MiB / 1,000-episode limit; Audiobookshelf show parsing is bounded at 10,000 episodes and the existing transport response limit.
+- Feed parsing retains the existing 6 MiB / 10,000-episode limit; Audiobookshelf show parsing is bounded at 10,000 episodes and the existing transport response limit.
 - The hub renders 200 entries at a time. Search and ordering happen before pagination; exact-edition status/offline filters scan in batches, bounded to 10,000 matching cached candidates. It does not continuously poll or perform unsolicited downloads. RSS refresh uses at most four concurrent requests; ABS refresh/indexing uses its existing source browse/scan controls.
 - Apple directory searches are cached for ten minutes and paced to one uncached request per three seconds per screen. Podcast Index results use the same bounded cache. HTTPS is required for directory subscriptions; explicit HTTP setup remains available in Add source.
 - Podcast Index credentials are profile-scoped encrypted preferences. Disconnect in Podcast Index settings removes them. No shared API secret, relay deployment or new package dependency is required.
 - New copy uses durable `podcasts.*` Slang keys with recorded English fallbacks; reviewed translations have not been fabricated. Existing controls retain their localized labels and direction-aware app components.
-- Nextcloud/gPodder synchronization, proprietary Spotify/Audible/YouTube account playback, automatic downloading, transcript presentation, notifications and feed archival pagination are outside this implemented scope.
+- Nextcloud synchronization, proprietary Spotify/Audible/YouTube account playback, automatic downloading, transcript presentation, notifications and feed archival pagination are outside this implemented scope. gPodder-compatible subscription and episode-progress synchronization is implemented; see [CLIENT_CONTRACT.md](CLIENT_CONTRACT.md).
 
 ## Review record
 

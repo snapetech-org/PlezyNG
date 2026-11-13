@@ -11,6 +11,37 @@ not executed. No Flutter app, native receiver, emulator, account write or device
 playback was qualified in this session. Sections below retain their original
 commit/date scope and do not certify this integrated revision.
 
+## Moonlight Android corresponding source
+
+The Android release workflow now prepares a source archive from the exact
+locked Moonlight Android revision and common submodule, includes the patched
+receiver and Pleazyng's app-owned adapters plus build instructions and license
+notices, records a source-tree digest, attests the archive, and attaches it to
+the versioned GitHub release. If a verified Android artifact from an earlier
+workflow lacks the archive, release assembly reconstructs it from that
+artifact's exact application source commit. This closes the source-packaging
+path in workflow code; the new archive generation, attestation, and release
+assembly have not yet run on this workflow revision. See
+[MOONLIGHT_SOURCE.md](MOONLIGHT_SOURCE.md).
+
+Surface detach/reattach, decoder recovery, physical input, audio routing, HDR,
+and device behavior remain unqualified. The source archive records what was
+built; it does not replace that platform evidence.
+
+### Planned, not yet shipped: Moonlight surface recreation
+
+`MoonlightStreamView.surfaceDestroyed` currently has no recovery action.
+`surfaceChanged` updates the receiver's `SurfaceHolder`, but starts the
+connection only once. In the pinned receiver, `MediaCodecDecoderRenderer`
+stores that holder and configures MediaCodec with its current `getSurface()`;
+the app adapter has no active-codec output-surface rebind or explicit retained
+surface strategy. A recreated Android surface therefore has no source-level
+proof that the running decoder is redirected to it. Keep detach/reattach and
+decoder recovery open until the adapter has a bounded lifecycle path and the
+target device scenarios pass. The [pinned receiver source](https://github.com/moonlight-stream/moonlight-android/blob/b48494cb96bff23d8886c4775cc4f39a1075495d/app/src/main/java/com/limelight/binding/video/MediaCodecDecoderRenderer.java)
+and [Android `SurfaceHolder` lifecycle contract](https://developer.android.com/reference/android/view/SurfaceHolder)
+inform this disposition; no new recovery behavior is claimed as shipped.
+
 ## Account Cloud host bridge — 2026-10-29
 
 - The Decky extension builds with the locked npm dependencies, passes TypeScript
@@ -430,7 +461,13 @@ and build gates are defined by the newer sections above and LIVE_TEST_HANDOFF.md
 3. Android phone/tablet, Android TV and Fire TV: qualify GameStream codecs/HDR/refresh/input features independently from Steam. GameStream now has a retained Moonlight surface alongside its private full-screen Activity; verify pane attach/detach, one active Moonlight session, decoder recovery, host connection teardown, audio ownership, physical controller ownership and touch input. Steam currently negotiates at most 1080p60 conventional video and stereo Opus, with one controller by default (up to four selectable seats), fixed touch overlay and basic keyboard. Its retained Multiview surface and full-screen Activity share a decoder implementation, but PlatformView/SurfaceView composition, frame latency, clipping, workspace audio/input leases and reconnect after pane unmount are unverified. Pyrowave is off by default per profile; after explicit opt-in and a successful Vulkan probe, its experimental Android path adds bounded SDR 4:2:0 decode with CPU readback; measure first-frame delay, dropped frames, CPU/GPU load, thermals and battery against H.264/HEVC on actual hardware. Rumble, gyro, full IME, multiple pads, AV1/HDR and Pyrowave performance are not release-qualified for Steam. Record exact hardware and host/client versions.
 4. Rotate/background/suspend, change profiles or disable Games during pairing/library/art requests, disconnect the network, and reopen repeatedly. Confirm cancellation, multicast-lock release, independent per-pane session teardown, no late launches, and sane media/audio restoration.
 5. Missing, malformed, oversized and slow cover art; large libraries; empty app list; offline refresh; multiple computers with duplicate game names. Confirm cards remain usable without artwork.
-6. Package the pinned modified engine's complete corresponding source, build instructions, dependencies and required license notices with each distribution. Review all third-party components and distribution-channel compatibility. The Moonlight and Steam notice assets alone are not a complete corresponding-source release bundle.
+6. Inspect the generated Moonlight source archive and its provenance on the
+   first release produced by this workflow. Confirm it is attached beside the
+   Android packages, its receipt matches the release source commit and locked
+   upstream/common revisions, its bundled tree digest verifies, and the
+   matching Pleazyng source checkout can consume the prepared-source marker and
+   rebuild the receiver. Review other native components and distribution
+   channel requirements separately; this archive covers Moonlight, not Steam.
 
 ### Gates at that historical checkpoint
 

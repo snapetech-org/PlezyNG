@@ -964,6 +964,18 @@ jobs:
           tar -czf pleazyng-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/pleazyng.apk/'
           tar -czf pleazyng-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/pleazyng.apk/'
 
+      - name: Package pinned Moonlight corresponding source
+        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        env:
+          APPLICATION_COMMIT: ${{ inputs.recovery_source_sha || github.sha }}
+          RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.release_tag }}
+        run: >-
+          python3 scripts/games/package_moonlight_sources.py
+          --source .dart_tool/games/moonlight-android
+          --output pleazyng-moonlight-android-source.tar.gz
+          --application-commit "$APPLICATION_COMMIT"
+          --release-tag "$RELEASE_TAG"
+
       - name: Build signed Android App Bundle
         env:
           REVIEW_ACCESS_PUBLIC_KEY: ${{ vars.REVIEW_ACCESS_PUBLIC_KEY }}
@@ -1015,6 +1027,7 @@ jobs:
             pleazyng-android-arm64-v8a.tar.gz
             pleazyng-android-armeabi-v7a.tar.gz
             pleazyng-android-x86_64.tar.gz
+            pleazyng-moonlight-android-source.tar.gz
 
       - name: Attest Android App Bundle
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
@@ -1049,6 +1062,7 @@ jobs:
             pleazyng-android-arm64-v8a.tar.gz
             pleazyng-android-armeabi-v7a.tar.gz
             pleazyng-android-x86_64.tar.gz
+            pleazyng-moonlight-android-source.tar.gz
             pleazyng-android-play.aab
             pleazyng-amazon-firetv.apk
             pleazyng-amazon-firetv-provenance.json
@@ -3323,12 +3337,24 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          ref: ${{ inputs.recovery_source_sha || github.sha }}
+          ref: ${{ inputs.recovery_source_sha || needs.validate-trusted-ref.outputs.android_source_sha || github.sha }}
           sparse-checkout: |
             CHANGELOG.md
             UPSTREAM_ATTRIBUTION.md
+            games-native.lock.json
             pubspec.yaml
             scripts/**
+            docs/games/MOONLIGHT_SOURCE.md
+            assets/licenses/Moonlight_GPL_3.txt
+            assets/licenses/Moonlight_NOTICE.txt
+            android/settings.gradle.kts
+            android/app/build.gradle.kts
+            android/moonlight/**
+            android/app/src/main/kotlin/com/edde746/plezy/GameStreamPlatformViewFactory.kt
+            android/app/src/main/kotlin/com/edde746/plezy/GamesChannel.kt
+            android/app/src/main/kotlin/com/edde746/plezy/PlezyActivity.kt
+            lib/multiview/moonlight_game_workspace_surface.dart
+            lib/screens/games/games_screen.dart
             docs/maintainers/capability-manifest.json
             Casks/snapetech-pleazyng.rb.template
           sparse-checkout-cone-mode: false
@@ -3427,6 +3453,32 @@ jobs:
         with:
           name: android-apk
           path: artifacts/android-apk
+
+      - name: Ensure the Android Moonlight source archive is available
+        id: moonlight-source
+        env:
+          APPLICATION_COMMIT: ${{ inputs.recovery_source_sha || needs.validate-trusted-ref.outputs.android_source_sha || github.sha }}
+          RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.release_tag }}
+        run: |
+          set -euo pipefail
+          source_archive=artifacts/android-apk/pleazyng-moonlight-android-source.tar.gz
+          if [[ -f "$source_archive" ]]; then
+            echo "generated=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          python3 scripts/games/prepare_moonlight.py
+          python3 scripts/games/package_moonlight_sources.py \
+            --source .dart_tool/games/moonlight-android \
+            --output "$source_archive" \
+            --application-commit "$APPLICATION_COMMIT" \
+            --release-tag "$RELEASE_TAG"
+          echo "generated=true" >> "$GITHUB_OUTPUT"
+
+      - name: Attest recovered Moonlight source archive
+        if: ${{ steps.moonlight-source.outputs.generated == 'true' }}
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: artifacts/android-apk/pleazyng-moonlight-android-source.tar.gz
 
       - name: Download WebOS artifact
         if: ${{ inputs.reuse_macos_package_run_id == '' && inputs.reuse_webos_run_id == '' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}
@@ -3740,6 +3792,7 @@ jobs:
             echo artifacts/android-apk/pleazyng-android-arm64-v8a.tar.gz
             echo artifacts/android-apk/pleazyng-android-armeabi-v7a.tar.gz
             echo artifacts/android-apk/pleazyng-android-x86_64.tar.gz
+            echo artifacts/android-apk/pleazyng-moonlight-android-source.tar.gz
             if [[ "$INCLUDE_WEBOS_RELEASE" == "true" ]]; then
               echo artifacts/webos/*.ipk
               echo artifacts/webos/webos-SHA256SUMS.txt

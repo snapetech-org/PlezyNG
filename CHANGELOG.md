@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Generate, attest and attach a matching corresponding-source archive for Android releases that bundle the pinned Moonlight receiver and Pleazyng's retained-view adapter. The receiver revision was contributed upstream by [@cgutman](https://github.com/cgutman) in [Moonlight Android commit `b48494cb`](https://github.com/moonlight-stream/moonlight-android/commit/b48494cb96bff23d8886c4775cc4f39a1075495d); Pleazyng independently adapts and packages it. See [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md#credited-moonlight-android-source).
 - Report ABI v2 for native MilkRust capability responses on Linux and Windows.
 - Correct podcast implementation notes to reflect completed gPodder-compatible synchronization and the 10,000-episode RSS parsing limit.
 - Keep Find your next live-TV picks bound to the selected DVR lineup and exact airing, and make Watch live tune at the live edge without offering a recording-history restart.

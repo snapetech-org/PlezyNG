@@ -1,6 +1,6 @@
 # IPTV implementation delivery
 
-Reconciled 2026-11-12 against the current `main` source tree. This tracker
+Reconciled 2026-11-13 against the current `main` source tree. This tracker
 supersedes the initial-branch status below in the original handoff. It records
 source presence separately from automated results, provider acceptance and
 device qualification.
@@ -22,6 +22,10 @@ device qualification.
 - XMLTV timestamp parsing rejects invalid calendar dates, clock fields and
   numeric timezone components so malformed guide entries are skipped instead
   of being normalized into a different UTC interval.
+- Guide refresh applies each XMLTV ID to every playlist channel carrying that
+  ID. When configured guide feeds overlap, the first feed with a programme for
+  a channel/start slot wins and later feeds fill gaps, avoiding duplicate guide
+  rows and primary-key conflicts.
 
 This is a static source inventory. It does not claim that every one of the 240
 requirements in `PLAN.md` is implemented, that every backend is compatible, or

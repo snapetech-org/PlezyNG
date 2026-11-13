@@ -13,6 +13,7 @@
 - Retry cleanup of old publication and Saved-pick sync generations on unchanged syncs, and stop publishing before retained state exceeds the bounded provider listing capacity.
 - Keep older downloaded publication editions in the quota ledger while readers may still use them, and provide a removable list in Files & books.
 - Reject malformed IPTV XMLTV calendar, clock, and numeric timezone fields instead of normalizing them into shifted guide times.
+- Apply XMLTV programmes to every playlist channel sharing a guide ID, and let earlier guide feeds win overlapping channel/start slots.
 - Add per-session Multiview gain controls without changing saved player volume, plus an explicit two-session decoded MPV mix on matching non-exclusive desktop output routes where runtime capabilities allow it. Other backends keep single-session audio; physical-device qualification remains open.
 - Pause hidden Multiview video sessions through their current owner when panes are parked or another pane is promoted; preserve manual pauses and explicit background-audio ownership.
 - Fix cross-platform builds for Multiview's optional per-session audio capabilities while retaining single-session fallback on unsupported backends.

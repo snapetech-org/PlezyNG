@@ -1730,27 +1730,14 @@ class IptvSourceRepository {
         for (final channel in playlistEntries)
           channel.id: guideIdOverrides[channel.id]?.isNotEmpty == true ? guideIdOverrides[channel.id] : channel.tvgId,
       };
-      final tvgToChannelId = <String, String>{};
+      final tvgToChannelIds = <String, List<String>>{};
       for (final channel in playlistEntries) {
         final tvgId = effectiveTvgIds[channel.id];
         if (tvgId != null) {
-          tvgToChannelId.putIfAbsent(tvgId, () => channel.id);
+          tvgToChannelIds.putIfAbsent(tvgId, () => []).add(channel.id);
         }
       }
-      final mappedPrograms = <IptvProgrammeSnapshot>[
-        for (final program in programmes)
-          if (tvgToChannelId[program.channelTvgId] case final channelId?)
-            IptvProgrammeSnapshot(
-              channelId: channelId,
-              beginsAt: program.beginsAt,
-              endsAt: program.endsAt,
-              title: program.title,
-              summary: program.summary,
-              category: program.category,
-              episodeId: program.episodeId,
-              thumb: program.thumb,
-            ),
-      ];
+      final mappedPrograms = _mapGuideProgrammes(programmes, tvgToChannelIds);
       final entries = [
         for (final channel in playlistEntries)
           IptvPlaylistEntry(
@@ -1790,6 +1777,35 @@ class IptvSourceRepository {
       stalker?.close();
       transport.close();
     }
+  }
+
+  /// Fans out shared guide IDs and lets the first configured guide win an
+  /// overlapping channel/start slot. Later guides can fill gaps without
+  /// duplicating schedule rows or violating the programme table's primary key.
+  List<IptvProgrammeSnapshot> _mapGuideProgrammes(
+    List<IptvXmltvProgramme> programmes,
+    Map<String, List<String>> tvgToChannelIds,
+  ) {
+    final seenChannelStarts = <(String, int)>{};
+    final mapped = <IptvProgrammeSnapshot>[];
+    for (final programme in programmes) {
+      for (final channelId in tvgToChannelIds[programme.channelTvgId] ?? const <String>[]) {
+        if (!seenChannelStarts.add((channelId, programme.beginsAt))) continue;
+        mapped.add(
+          IptvProgrammeSnapshot(
+            channelId: channelId,
+            beginsAt: programme.beginsAt,
+            endsAt: programme.endsAt,
+            title: programme.title,
+            summary: programme.summary,
+            category: programme.category,
+            episodeId: programme.episodeId,
+            thumb: programme.thumb,
+          ),
+        );
+      }
+    }
+    return mapped;
   }
 
   Future<int> _replaceSnapshot(

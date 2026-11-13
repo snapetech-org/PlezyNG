@@ -1,4 +1,4 @@
-FROM docker.io/library/ubuntu:26.04@sha256:065aa8626841f16057b78b027b464cd59c4fac36c204c72dcbf48d66f5fa8a96
+FROM docker.io/library/ubuntu:26.10@sha256:b5194b8e58989da0865ebc80078bf9f5f8742ec6a867c53f6ae699f6036756f7
 
 # Package versions are recorded in the output; the apt archive is not frozen.
 # This is a pinned-source experiment, not a claim of bit-identical rebuilds.
@@ -12,6 +12,7 @@ RUN apt-get update \
     libxext-dev libxpresent-dev libxss-dev libxv-dev libxkbcommon-dev \
     libwayland-dev wayland-protocols libdisplay-info-dev libcurl4-gnutls-dev \
     libgl1-mesa-dri \
+    && rm -f /usr/bin/pebble \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /work

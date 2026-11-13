@@ -330,7 +330,7 @@
       "id": "F09",
       "title": "Bounded source index and page retrieval",
       "priority": "P2",
-      "implementationStatus": "implemented",
+      "implementationStatus": "partial",
       "confidence": "high",
       "evidence": [
         "lib/sources/source_database.dart",

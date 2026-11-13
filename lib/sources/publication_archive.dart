@@ -77,11 +77,15 @@ class PublicationArchive {
       for (final header in directory.fileHeaders) {
         final file = header.file!;
         final name = safePath(file.filename);
+        final unixType = (header.versionMadeBy >> 8) == 3 ? (header.externalFileAttributes >> 16) & 0xf000 : 0;
+        final unsupportedUnixType = unixType != 0 && !const {0x8000, 0x4000}.contains(unixType);
+        // The generic ZIP reader represents Unix FIFOs, devices and sockets
+        // as files. Only ordinary files and directories may be extracted.
         if (safePath(header.filename) != name ||
             !names.add(name.toLowerCase()) ||
             file.uncompressedSize < 0 ||
             file.uncompressedSize > _maxEntrySize ||
-            ((header.externalFileAttributes >> 16) & 0xf000) == 0xa000) {
+            unsupportedUnixType) {
           throw const SourceException(SourceFailure.invalidData);
         }
         total += file.uncompressedSize;

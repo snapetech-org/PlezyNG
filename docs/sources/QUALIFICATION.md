@@ -42,15 +42,15 @@ For a target NAS qualification, run the measurement with the same file and netwo
 
 ## Native reader qualification
 
-The reader has separate native paths: EPUB and CBZ use the in-app WebView and the local publication server; PDF uses the native PDF viewer. Linux launches the reader in the external browser. The browser integration suite does not qualify the native WebView or PDF viewer.
+The reader has separate native paths: EPUB and CBZ/CBR/CB7 use the in-app WebView and the local publication server; PDF uses the native PDF viewer. Linux launches the reader in the external browser. The browser integration suite exercises EPUB/CBZ but does not qualify CBR/CB7 decoding, the native WebView or PDF viewer.
 
 | Platform | Reader engine | Qualification target |
 | --- | --- | --- |
-| Android phone/tablet | Android WebView and native PDF viewer | Open online and offline EPUB, CBZ, and PDF; save and restore position; search, notes, text selection, links, background/resume, process restart, rotation, TalkBack |
+| Android phone/tablet | Android WebView and native PDF viewer | Open online and offline EPUB, CBZ, CBR, CB7, and PDF; save and restore position; search, notes, text selection, links, background/resume, process restart, rotation, TalkBack |
 | iOS/iPadOS | WKWebView and native PDF viewer | Same flows; include app suspension, memory pressure, VoiceOver, and file URL/loopback behavior |
 | macOS | WKWebView and native PDF viewer | Same flows; include keyboard navigation, window resizing, sleep/wake, VoiceOver, and large documents |
 | Windows | WebView2 and native PDF viewer | Same flows; include keyboard navigation, window resize, WebView process restart, screen reader, and large documents |
-| Linux | External browser and PDF path | Confirm the browser bridge, note/progress saving, external-link policy, and PDF rendering on each supported distribution |
+| Linux | External browser and PDF path | Confirm EPUB and comic archive opening, the browser bridge, note/progress saving, external-link policy, and PDF rendering on each supported distribution |
 
 For every platform, test a small and a large fixture, a remote source and an offline copy, interrupted reading, annotation deletion, sync conflict handling, and a profile switch while the reader is open. Record OS version, device model, app build, WebView/PDF engine version, source type, fixture fingerprint, and pass/fail for each flow.
 

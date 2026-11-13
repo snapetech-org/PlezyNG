@@ -61,6 +61,7 @@
 - Reconcile stale file-source entries in bounded pages and load offline-download fingerprints only for the current page.
 - Add an optional persisted system click to each beat of the A–B practice-loop count-in.
 - Open password-protected CBZ, CBR and CB7 archives with a bounded, non-persistent password prompt.
+- Reject Unix special-file types in ZIP-based publication archives instead of extracting them as regular files.
 - Include Comics in the default shelves for book-capable sources, making local CBZ, CBR and CB7 archives discoverable without manually enabling the shelf.
 - Use the source-kind shelf defaults when editing legacy sources that have no saved shelf selection.
 - Verify Chocolatey release checksum provenance and attest moderation-correction packages.

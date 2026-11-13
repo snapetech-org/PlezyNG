@@ -3,7 +3,7 @@
   "reviewedOn": "2026-11-13",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
-    "auditedMainCommit": "7729b36be71e4f75e1a62a9ab13e13dc56c48976",
+    "auditedMainCommit": "73f5c11a5114b8a29f91e5bfb9abbaa2074d0ff4",
     "note": "Source facts were reconciled against current main. The linked remediation ledger preserves historical checks and qualification evidence; implementation changes are not device or binary qualification.",
     "securityRemediation": "docs/security/audit-remediation-2026-11-09.md"
   },
@@ -269,9 +269,11 @@
       "evidence": [
         "lib/services/cloud_settings_backup_service.dart",
         "lib/screens/settings/cloud_settings_backup_dialog.dart",
-        "lib/services/settings_export_service.dart"
+        "lib/services/settings_export_service.dart",
+        "test/services/cloud_settings_backup_service_test.dart",
+        "test/services/settings_export_service_test.dart"
       ],
-      "qualification": "The initiating profile identity and mutation generation are captured before storage awaits; both WebDAV directions require an active profile and abort owner-bound requests, outbound JSON is encoded into a 4 MiB-capped buffer, restore is streamed with the same cap, and import checks ownership through guarded writes and rollback. Switch-during-download, oversized-upload, malformed-payload, and mid-write failure scenarios have not been run on this branch."
+      "qualification": "The initiating profile identity and mutation generation are captured before storage awaits; both WebDAV directions require an active profile and abort owner-bound requests, outbound JSON is encoded into a 4 MiB-capped buffer, restore is streamed with the same cap, and import checks ownership through guarded writes and rollback. Deterministic tests cover an in-flight profile switch, oversized outbound rejection before sending, malformed remote JSON, redirect and timeout handling; settings-import tests cover malformed entries and rollback after a write failure. Live WebDAV server and device-lifecycle qualification remain open."
     },
     {
       "id": "F05",

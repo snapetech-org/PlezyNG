@@ -25,6 +25,21 @@ class _LateBackupClient extends http.BaseClient {
   }
 }
 
+class _AbortCompletingBackupClient extends http.BaseClient {
+  final started = Completer<void>();
+  final aborted = Completer<void>();
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    final abort = (request as http.AbortableRequest).abortTrigger!;
+    started.complete();
+    return abort.then((_) {
+      aborted.complete();
+      return http.StreamedResponse(const Stream<List<int>>.empty(), 200);
+    });
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() async {
@@ -80,6 +95,26 @@ void main() {
     await body.close();
   });
 
+  test('an outbound settings snapshot over 4 MiB is rejected before sending', () async {
+    var requests = 0;
+    final service = CloudSettingsBackupService(
+      httpClient: MockClient((_) async {
+        requests++;
+        return http.Response('', 201);
+      }),
+    );
+    addTearDown(service.dispose);
+    await configure(service, 'https://backup.test/settings.json');
+    final settings = await SettingsService.getInstance();
+    await settings.prefs.setString('user_audit-local_library_filters_profile', 'x' * (4 * 1024 * 1024));
+
+    await expectLater(
+      service.backUp(expectedProfileId: 'audit-local', expectedOwner: 'audit-local'),
+      throwsA(isA<CloudSettingsBackupException>()),
+    );
+    expect(requests, 0);
+  });
+
   test('same-origin HTTPS redirect restores settings and retains authentication', () async {
     var calls = 0;
     final service = CloudSettingsBackupService(
@@ -129,6 +164,32 @@ void main() {
     );
     addTearDown(service.dispose);
     await configure(service, 'https://backup.test/settings.json');
+    await expectLater(
+      service.restore(expectedProfileId: 'audit-local', expectedOwner: 'audit-local'),
+      throwsA(isA<CloudSettingsBackupException>()),
+    );
+    expect(await volume(), 31.0);
+  });
+
+  test('ownership changes during an in-flight download abort before import', () async {
+    final client = _AbortCompletingBackupClient();
+    final service = CloudSettingsBackupService(httpClient: client, requestTimeout: const Duration(seconds: 5));
+    addTearDown(service.dispose);
+    await configure(service, 'https://backup.test/settings.json');
+    final restore = service.restore(expectedProfileId: 'audit-local', expectedOwner: 'audit-local');
+    await client.started.future;
+    await (await StorageService.getInstance()).setActiveProfileId('different-owner');
+
+    await expectLater(restore, throwsA(isA<CloudSettingsBackupException>()));
+    await client.aborted.future;
+    expect(await volume(), 31.0);
+  });
+
+  test('malformed remote settings JSON is rejected without changing preferences', () async {
+    final service = CloudSettingsBackupService(httpClient: MockClient((_) async => http.Response('{', 200)));
+    addTearDown(service.dispose);
+    await configure(service, 'https://backup.test/settings.json');
+
     await expectLater(
       service.restore(expectedProfileId: 'audit-local', expectedOwner: 'audit-local'),
       throwsA(isA<CloudSettingsBackupException>()),

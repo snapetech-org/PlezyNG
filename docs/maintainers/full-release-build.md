@@ -500,13 +500,13 @@ Device qualification remains descriptive and does not gate inclusion of an
 implemented feature or platform. Apple jobs refresh their SwiftPM mirror after
 the native pin changes.
 Before publication, the orchestrator checks that every required release asset
-exists. `--publish-github-only` promotes the verified GitHub draft and starts
-its automatic Discord announcement without dispatching store, package,
-container, or appcast workflows.
-`--publish` promotes the draft and sequentially dispatches configured channels.
-It
-reuses successful channel runs and stops on a prior failed run rather than
-repeating an external side effect blindly.
+exists. `--publish-github-only` promotes the verified GitHub draft and runs its
+automatic Discord announcement (unless skipped), aerynOS reconciliation, and
+automatic Google Play delivery when enabled. It skips configured manual package, store, and
+container publishers. The Sparkle appcast is a core release asset, not a
+separate publication workflow. `--publish` also dispatches configured manual
+channels. The controller reuses successful channel runs and stops on a prior
+failed run rather than repeating an external side effect blindly.
 
 WebOS uses private Linux capacity for its large SDK. Its runtime inputs remain
 hash-locked and package inspection verifies ARM ELF files, application ID,

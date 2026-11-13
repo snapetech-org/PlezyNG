@@ -41,7 +41,16 @@ require(
 
 resolver = job("resolve-release")
 require("gh release view \"$REQUESTED_TAG\"" in resolver, "resolver must validate the tag")
-require("--json tagName,isDraft,isPrerelease,publishedAt" in resolver, "resolver must require a published release")
+require(
+    "--json tagName,isDraft,isPrerelease,publishedAt,assets" in resolver,
+    "resolver must validate a published release and inspect its Cask assets",
+)
+require(
+    'HAS_CASK_CANDIDATE=$(jq -r \'[.assets[]?.name] | any(. == "snapetech-pleazyng.rb")\'' in resolver
+    and 'echo "homebrew_enabled=false" >> "$GITHUB_OUTPUT"' in resolver
+    and 'Sparkle appcast delivery is handled by the core release and is independent of this Cask no-op.' in resolver,
+    "missing Homebrew candidates must be an explicit no-op without affecting appcast delivery",
+)
 require('if [ "$IS_PRERELEASE" != "false" ]; then' in resolver, "resolver must reject a pre-release tag")
 require(
     "tag: ${{ steps.release.outputs.tag }}" in resolver,

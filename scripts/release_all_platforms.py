@@ -8,6 +8,10 @@ It uses the operator's authenticated
 `gh` CLI session and never copies credentials into the repos.
 With --publish, it promotes the verified draft and runs every configured
 package/store publication workflow from main, sequentially and idempotently.
+Both publication modes also run the automatic post-release lanes: configured
+Google Play delivery, aerynOS reconciliation, and the Discord announcement
+unless it is explicitly disabled.
+`--publish-github-only` skips only the configured manual package/store lanes.
 """
 
 from __future__ import annotations
@@ -44,6 +48,15 @@ MSSTORE_BUILD_VARIABLES = frozenset({
     "MSSTORE_PUBLISHER",
     "MSSTORE_PUBLISHER_DISPLAY_NAME",
     "MSSTORE_LIFETIME_PRODUCT_ID",
+})
+HOMEBREW_CASK_SECRETS = frozenset({
+    "MACOS_CERTIFICATE_BASE64",
+    "MACOS_CERTIFICATE_PASSWORD",
+    "APPLE_API_KEY_ID",
+    "APPLE_API_ISSUER_ID",
+    "APPLE_API_PRIVATE_KEY",
+    "APPLE_TEAM_ID",
+    "HOMEBREW_TAP_TOKEN",
 })
 NATIVE_GROUPS = ("apple", "android", "linux", "windows")
 FFMPEG_SIGNING_FINGERPRINT = "FCF986EA15E6E293A5644F10B4322F04D67658D8"
@@ -2065,6 +2078,28 @@ def release_metadata(tag: str) -> dict:
     raise ReleaseError(f"No GitHub release (draft or published) exists for tag {tag}.")
 
 
+def verify_release_asset_attestation(
+    tag: str, asset_name: str, *, scratch_dir: Path | None = None
+) -> None:
+    """Download one published release asset and verify its GitHub provenance."""
+    with tempfile.TemporaryDirectory(
+        prefix="pleazyng-release-attestation-",
+        dir=str(scratch_dir) if scratch_dir else None,
+    ) as directory:
+        command([
+            "gh", "release", "download", tag, "--repo", PLEZY_REPO,
+            "--pattern", asset_name, "--dir", directory,
+        ])
+        asset_path = Path(directory) / asset_name
+        if not asset_path.is_file():
+            raise ReleaseError(f"Release download did not produce the expected asset: {asset_name}")
+        command([
+            sys.executable,
+            str(ROOT / "scripts" / "verify_release_attestation.py"),
+            str(asset_path), "--repo", PLEZY_REPO,
+        ], capture=True)
+
+
 def publish_github_release(tag: str) -> dict:
     release = release_metadata(tag)
     if release.get("tag_name") != tag:
@@ -2100,7 +2135,7 @@ def dispatch_aerynos_delivery(tag: str) -> dict:
 
 def post_release_actions(tag: str, version: str, *, release_sha: str,
                          include_webos_release: bool, publish_channels: bool,
-                         notify_discord: bool = True) -> dict:
+                         notify_discord: bool = True, scratch_dir: Path | None = None) -> dict:
     """Retryable delivery follows the already verified GitHub publication."""
     result = {"published_channels": [], "skipped_channels": [],
               "channel_failures": [], "notification_failures": [], "google_play_automation": [],
@@ -2129,6 +2164,7 @@ def post_release_actions(tag: str, version: str, *, release_sha: str,
             completed, skipped, failures = publish_configured_channels(
                 tag, version, release_sha=release_sha,
                 include_webos_release=include_webos_release,
+                scratch_dir=scratch_dir,
             )
             result["published_channels"].extend(completed)
             result["skipped_channels"].extend(skipped)
@@ -2136,8 +2172,13 @@ def post_release_actions(tag: str, version: str, *, release_sha: str,
         except Exception as error:
             result["channel_failures"].append(str(error))
     else:
-        result["skipped_channels"] = [{"channel": "configured release channels",
-                                       "reason": "GitHub-only publication requested"}]
+        result["skipped_channels"] = [{
+            "channel": "configured manual release channels",
+            "reason": (
+                "--publish-github-only selected; automatic Play delivery (when enabled), aerynOS "
+                "reconciliation, and the Discord notice (unless skipped) are reported separately."
+            ),
+        }]
     return result
 
 
@@ -2290,6 +2331,7 @@ def publish_configured_channels(
     *,
     release_sha: str,
     include_webos_release: bool,
+    scratch_dir: Path | None = None,
 ) -> tuple[list[dict], list[dict], list[str]]:
     release = release_metadata(tag)
     assets = {asset.get("name") for asset in release.get("assets", []) if isinstance(asset, dict)}
@@ -2409,27 +2451,20 @@ def publish_configured_channels(
             },
         },
         {
-            "name": "Sparkle appcast (Homebrew when configured)",
+            "name": "Homebrew Cask",
             "workflow": "update-packages.yml",
             "title": f"action:update-packages:pool:public:tag:{tag}",
             "fields": {"action": "update-packages", "runner_pool": "public", "release_tag": tag},
-            "secrets": set(), "variables": set(),
-            "assets": {"pleazyng-macos.dmg", "appcast.xml"},
+            "secrets": HOMEBREW_CASK_SECRETS, "variables": set(),
+            "assets": {"pleazyng-macos.dmg", "snapetech-pleazyng.rb"},
+            "optional_candidate_asset": "snapetech-pleazyng.rb",
+            "attestation_asset": "snapetech-pleazyng.rb",
         },
     ]
 
     completed: list[dict] = []
     skipped: list[dict] = []
     failures: list[str] = []
-    macos_signing = {
-        "MACOS_CERTIFICATE_BASE64", "MACOS_CERTIFICATE_PASSWORD",
-        "APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID",
-    }
-    if not (macos_signing | {"HOMEBREW_TAP_TOKEN"}).issubset(secrets):
-        skipped.append({
-            "channel": "Homebrew Cask",
-            "reason": "Developer ID signing/notarization or tap token is not configured; appcast update remains enabled.",
-        })
     if not {"WINDOWS_SIGNING_CERTIFICATE_BASE64", "WINDOWS_SIGNING_CERTIFICATE_PASSWORD"}.issubset(secrets):
         skipped.append({
             "channel": "Windows Authenticode signature",
@@ -2468,6 +2503,17 @@ def publish_configured_channels(
         if spec["fields"].get("channel") == "google-play" and publication_settings.get("GOOGLE_PLAY_AUTOMATIC_RELEASES") == "true":
             skipped.append({"channel": spec["name"], "reason": "Handled by the automatic Google Play release controller and its configured test track."})
             continue
+        candidate_asset = spec.get("optional_candidate_asset")
+        if candidate_asset and candidate_asset not in assets:
+            skipped.append({
+                "channel": spec["name"],
+                "reason": (
+                    f"No {candidate_asset} candidate is attached to this release; "
+                    "Homebrew Cask publication was skipped. "
+                    "The Sparkle appcast remains a core GitHub Release asset."
+                ),
+            })
+            continue
         if spec["fields"].get("channel") == "google-play" and play_error:
             failures.append(f"Google Play configuration: {play_error}")
             continue
@@ -2497,6 +2543,13 @@ def publish_configured_channels(
         if missing_assets:
             failures.append(f"{spec['name']} lacks release assets: {missing_assets}")
             continue
+        attestation_asset = spec.get("attestation_asset")
+        if attestation_asset:
+            try:
+                verify_release_asset_attestation(tag, attestation_asset, scratch_dir=scratch_dir)
+            except ReleaseError as error:
+                failures.append(f"{spec['name']} candidate attestation: {error}")
+                continue
         try:
             result = ensure_channel_run(
                 spec["workflow"],
@@ -2585,13 +2638,17 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "After every release build succeeds, publish the GitHub release and run each configured "
-            "package/store channel sequentially. Store lanes upload binaries but do not submit them for review."
+            "package/store channel sequentially, alongside automatic Play/aerynOS follow-ups and the default Discord notice. "
+            "Store lanes upload binaries but do not submit them for review."
         ),
     )
     publication.add_argument(
         "--publish-github-only",
         action="store_true",
-        help="Publish the verified GitHub release and its automatic Discord notice without starting package or store workflows.",
+        help=(
+            "Publish the verified GitHub release; automatic Play (when enabled), aerynOS reconciliation, "
+            "and the Discord notice (unless skipped) still run. Skip configured manual package/store/container publishers."
+        ),
     )
     parser.add_argument(
         "--scratch",
@@ -2939,6 +2996,7 @@ def main() -> int:
                     include_webos_release=args.include_webos_release,
                     publish_channels=args.publish,
                     notify_discord=not args.skip_discord_notification,
+                    scratch_dir=scratch,
                 )
             except Exception as error:
                 followups = {"published_channels": [], "skipped_channels": [],

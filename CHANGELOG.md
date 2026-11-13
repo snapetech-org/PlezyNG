@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Gate Homebrew Cask handoff on an attested candidate and publisher credentials; record missing-candidate skips, preserve the core Sparkle appcast, and clarify automatic post-release lanes in GitHub-only help.
 - Add a profile-scoped daily audiobook bedtime with a ten-second fade, independently adapting the certain-hours sleep-timer idea suggested upstream by [@GeorgeHahn](https://github.com/GeorgeHahn) in [Audiobookshelf app issue #260](https://github.com/advplyr/audiobookshelf-app/issues/260).
 - Add shared HTTP and WebSocket rate limits with escalating, persisted bans for repeated relay abuse.
 - Record relay deployment verification and Cloudflare regional access while retaining the edge rate ceiling and loopback-only origin.

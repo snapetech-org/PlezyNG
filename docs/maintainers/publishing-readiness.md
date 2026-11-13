@@ -63,9 +63,11 @@ and [aerynOS publication record](aerynos-sync.md).
 
 ## Publication behavior
 
-`--publish-github-only` publishes GitHub assets and the configured announcement;
-it does not upload to app stores. `--publish` dispatches configured downstream
-publishers, with receipts for completed, skipped and failed channels. Before
+`--publish-github-only` publishes the core GitHub assets and starts the
+automatic Google Play delivery lane when enabled, aerynOS reconciliation, and
+the configured announcement unless skipped; it skips manual package, store, and container
+publishers. `--publish` also dispatches configured manual downstream publishers,
+with receipts for completed, skipped and failed channels. Before
 first store publication, complete the console bootstrap and validate the actual
 signed artifact. [Automatic Google Play delivery](google-play-release-delivery.md)
 uses `GOOGLE_PLAY_AUTO_TRACK=internal` for completed internal-testing releases.

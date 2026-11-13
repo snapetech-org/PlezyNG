@@ -37,6 +37,7 @@ jobs:
       tag: ${{ steps.release.outputs.tag }}
       version: ${{ steps.release.outputs.version }}
       homebrew_enabled: ${{ steps.release.outputs.homebrew_enabled }}
+      homebrew_skip_reason: ${{ steps.release.outputs.homebrew_skip_reason }}
     steps:
       - name: Require the default branch for manual runs
         if: github.event_name == 'workflow_dispatch'
@@ -74,7 +75,7 @@ jobs:
           fi
 
           RELEASE=$(gh release view "$REQUESTED_TAG" --repo "$GITHUB_REPOSITORY" \
-            --json tagName,isDraft,isPrerelease,publishedAt)
+            --json tagName,isDraft,isPrerelease,publishedAt,assets)
           RESOLVED_TAG=$(jq -r '.tagName' <<< "$RELEASE")
           IS_PRERELEASE=$(jq -r '.isPrerelease' <<< "$RELEASE")
           IS_DRAFT=$(jq -r '.isDraft' <<< "$RELEASE")
@@ -118,10 +119,35 @@ jobs:
           if [[ -n "$MACOS_CERTIFICATE_BASE64" && -n "$MACOS_CERTIFICATE_PASSWORD" && \
                 -n "$APPLE_API_KEY_ID" && -n "$APPLE_API_ISSUER_ID" && \
                 -n "$APPLE_API_PRIVATE_KEY" && -n "$APPLE_TEAM_ID" && -n "$HOMEBREW_TAP_TOKEN" ]]; then
-            echo "homebrew_enabled=true" >> "$GITHUB_OUTPUT"
+            CREDENTIALS_READY=true
           else
+            CREDENTIALS_READY=false
+          fi
+
+          HAS_CASK_CANDIDATE=$(jq -r '[.assets[]?.name] | any(. == "snapetech-pleazyng.rb")' <<< "$RELEASE")
+          SKIP_REASONS=()
+          if [[ "$HAS_CASK_CANDIDATE" != "true" ]]; then
+            SKIP_REASONS+=("No snapetech-pleazyng.rb candidate is attached to this release.")
+          fi
+          if [[ "$CREDENTIALS_READY" != "true" ]]; then
+            SKIP_REASONS+=("Developer ID signing, notarization, or HOMEBREW_TAP_TOKEN is missing.")
+          fi
+
+          if ((${#SKIP_REASONS[@]})); then
+            HOME_BREW_SKIP_REASON=$(IFS=' '; echo "${SKIP_REASONS[*]}")
             echo "homebrew_enabled=false" >> "$GITHUB_OUTPUT"
-            echo "Developer ID signing, notarization, or HOMEBREW_TAP_TOKEN is missing; skipping the Homebrew Cask update."
+            echo "homebrew_skip_reason=$HOME_BREW_SKIP_REASON" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Homebrew Cask skipped::$HOME_BREW_SKIP_REASON"
+            {
+              echo "Homebrew Cask: skipped"
+              echo
+              echo "$HOME_BREW_SKIP_REASON"
+              echo
+              echo "Sparkle appcast delivery is handled by the core release and is independent of this Cask no-op."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "homebrew_enabled=true" >> "$GITHUB_OUTPUT"
+            echo "homebrew_skip_reason=" >> "$GITHUB_OUTPUT"
           fi
 
   update-homebrew:

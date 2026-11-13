@@ -76,13 +76,16 @@ versioned release includes Android, Linux x64/arm64, Windows x64/arm64, universa
 See [the full release build runbook](docs/maintainers/full-release-build.md) for the complete process and recovery
 procedures, and [release channels](docs/maintainers/release-channels.md) for downstream delivery status.
 
-For GitHub-only publication, the controller accepts `--publish-github-only`; `--publish` also dispatches configured
-package and store channels. Publishing a binary does not mean a vendor store has reviewed or approved it.
+For core-release-only publication, use `--publish-github-only`; automatic Google Play delivery (when enabled),
+aerynOS reconciliation, and the Discord notice (unless skipped) still run. `--publish` also dispatches configured manual package,
+store, and container publishers. Publishing a binary does not mean a vendor store has reviewed or approved it.
 
 Release notes use a matching changelog version section when one exists, otherwise they use `Unreleased`. After a release,
 move shipped bullets into its dated version section and keep `Unreleased` for new work. Publishing the GitHub Release
-triggers the Discord announcement; configured downstream package and store workflows run only when the controller is
-invoked with `--publish`. The core release carries the updater feed asset; the old appcast branch writer is retired.
+promotes the core release; the controller then starts the Discord announcement (unless skipped), aerynOS reconciliation, and
+automatic Google Play delivery when enabled. Configured manual downstream package and store publishers run only when
+the controller is invoked with `--publish`. The core release carries the updater feed asset; the old appcast branch
+writer is retired.
 Regular branch pushes do not run a release build.
 
 ### Maestro end-to-end tests

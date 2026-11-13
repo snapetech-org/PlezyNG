@@ -12,6 +12,21 @@ The macOS product bundle is `Pleazyng.app`, and the release disk image is `pleaz
 
 The Developer ID Application certificate was issued on 2026-11-05 for team `DM9A59DC85`, and the two dedicated macOS certificate secrets are configured. Existing iOS distribution credentials are separate and remain unchanged. Notarization uses the existing App Store Connect API key; an Apple app-specific password and persistent keychain password are not required. Native import, signing, notarization and Gatekeeper still need to pass on the qualified release.
 
+## Release handoff
+
+With `--publish`, the release controller updates the Pleazyng tap only when the
+published release contains the attested `snapetech-pleazyng.rb` candidate and
+all Developer ID, notarization, and tap credentials are configured. If the
+candidate is absent, the controller records Homebrew Cask as skipped. A direct
+`update-packages.yml` dispatch also reports a no-op when its release has no
+Cask candidate or the publisher credentials are incomplete. When enabled, the
+workflow verifies the candidate attestation, the checksum manifest, and the
+signed, notarized DMG before writing the tap.
+
+The Sparkle `appcast.xml` is generated and attached by the core release for
+every version; skipping Cask publication does not affect updater-feed delivery.
+The old mutable appcast branch writer remains retired.
+
 ## Official Homebrew submission
 
 Use the generated Cask as `Casks/s/snapetech-pleazyng.rb` in `Homebrew/homebrew-cask`. The `snapetech-` prefix identifies our Cask, which installs the Pleazyng bundle as `Pleazyng.app`.

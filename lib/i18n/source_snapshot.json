@@ -3839,6 +3839,8 @@
   "fileSources.offlineStorageUsage": "b5434673522c38d0",
   "fileSources.reservedStorage": "d651bb93a0034288",
   "fileSources.downloadQueue": "f2bd709c6edde75d",
+  "fileSources.retiredOfflineCopies": "46534fd0e6c840cc",
+  "fileSources.retiredOfflineCopyHelp": "ab0cf60ce04c0ac4",
   "fileSources.downloadRunning": "affa8e0334111ac0",
   "fileSources.downloadQueued": "3ec34c9e782a1399",
   "fileSources.downloadPaused": "b0c0000eeb008e92",

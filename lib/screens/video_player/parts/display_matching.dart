@@ -252,10 +252,11 @@ extension _VideoPlayerDisplayMatchingMethods on VideoPlayerScreenState {
     }
   }
 
-  /// Apply desktop display mode matching from what mpv presents: the derived
-  /// output rate for the refresh rate (Windows, macOS) and
-  /// `video-params/sig-peak`, which mpv raises above 1.0 for PQ/HLG (and
-  /// Dolby Vision base layers), for system HDR (Windows).
+  /// Apply desktop display mode matching from the effective video output
+  /// rate: an active motion-compensated target rate, or mpv's derived output
+  /// rate otherwise (Windows, macOS). `video-params/sig-peak`, which mpv
+  /// raises above 1.0 for PQ/HLG and Dolby Vision base layers, drives system
+  /// HDR matching on Windows.
   Future<void> _applyDisplayModeMatching() async {
     if (player == null || _displayModeService == null) return;
 
@@ -264,10 +265,34 @@ extension _VideoPlayerDisplayMatchingMethods on VideoPlayerScreenState {
       final output = await PlayerOutputFormat.read(currentPlayer);
       if (!mounted || player != currentPlayer) return;
       final sigPeak = double.tryParse(await currentPlayer.getProperty('video-params/sig-peak') ?? '');
-      if (!mounted || _displayModeService == null) return;
+      if (!mounted || player != currentPlayer || _displayModeService == null) return;
+      var matchFps = output.fps;
+      if (currentPlayer.playerType == 'mpv') {
+        try {
+          final motion = await MotionClarityService.forPlayer(currentPlayer).inspect();
+          final targetFps = motion.targetFps;
+          if (motion.isConfigured &&
+              !motion.requiresSourceReload &&
+              motion.effectiveEngine == MotionClarityEngine.motionCompensated &&
+              targetFps != null &&
+              targetFps.isFinite &&
+              targetFps > 0) {
+            // A/B bypass removes only the filter; preserve the selected MCI
+            // cadence so comparison does not also switch display modes.
+            matchFps = targetFps;
+          }
+        } catch (error, stackTrace) {
+          appLogger.w(
+            'Failed to inspect motion-compensated output rate; using the source-derived display rate',
+            error: error,
+            stackTrace: stackTrace,
+          );
+        }
+      }
+      if (!mounted || player != currentPlayer || _displayModeService == null) return;
       final displayModeService = _displayModeService!;
 
-      final delay = await displayModeService.applyDisplayMatching(fps: output.fps, sigPeak: sigPeak);
+      final delay = await displayModeService.applyDisplayMatching(fps: matchFps, sigPeak: sigPeak);
       if (!mounted || player != currentPlayer) return;
 
       // Leaving fullscreen clears mpv's colorspace hint so its HDR swapchain

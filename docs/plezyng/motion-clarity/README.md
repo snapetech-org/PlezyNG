@@ -38,10 +38,13 @@ always-interpolate sentinel. Motion compensation installs a labelled mpv `lavfi`
 filter for FFmpeg `minterpolate`; if the filter is absent or rejects its options,
 the service falls back to temporal blend and reports why. Android mpv suppresses
 source-rate switching for generated video and can request the selected generated
-rate instead; current-display mode keeps the active cadence. The operating system
-may decline an explicit rate. Existing Shader presets remain responsible for spatial
-upscaling, after the video filter. These are accepted requests, not measured
-presentation or quality results.
+rate instead; current-display mode keeps the active cadence. Fullscreen Windows
+and macOS desktop playback can match refresh rate to the active MCI target when
+Match Refresh Rate is enabled. Quick A/B bypass preserves that cadence so the
+display mode stays fixed during comparison. Temporal fallback and disabled MCI
+keep source-derived matching. The operating system may decline an explicit rate.
+Existing Shader presets remain responsible for spatial upscaling, after the video
+filter. These are accepted requests, not measured presentation or quality results.
 
 ## Product target and runtime boundary
 
@@ -60,8 +63,10 @@ search can warp or ghost around occlusions and cuts.
 
 The OLED preset targets the renderer-reported display cadence. The current
 display and generated target are shown in the player status when available.
-Android mpv can request the generated rate when playback opens; the display
-system decides whether to apply that mode.
+Android mpv can request the generated rate when playback opens. Fullscreen
+Windows/macOS desktop refresh matching can use the active MCI target when the
+user enables Match Refresh Rate. Both are mode requests; actual presentation
+cadence and panel scanout remain separate measurements.
 
 The load guard monitors mpv's estimated late-vsync count and uses the cumulative
 dropped-frame count when late-vsync telemetry is unavailable. Three consecutive

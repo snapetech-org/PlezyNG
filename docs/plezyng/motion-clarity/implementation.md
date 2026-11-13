@@ -31,6 +31,8 @@ design criteria, but their original status statements are not a current inventor
   the health monitor reapplies the filter when mpv reports a changed display rate,
   preserving the active preset and search effort. Android mpv suppresses source-rate matching for
   MCI and can negotiate the selected generated rate while preserving resolution matching.
+  Fullscreen Windows/macOS refresh matching uses the active MCI target when enabled;
+  A/B bypass preserves that target cadence, while temporal fallback retains source-rate matching.
   Unsupported filter setups fall back to temporal blend. The A/B switch bypasses the active
   filter while keeping display sync, scaling and audio settings; Original restores captured options.
 - Checks the active mpv output (gpu, gpu-next or libmpv), including supported libmpv

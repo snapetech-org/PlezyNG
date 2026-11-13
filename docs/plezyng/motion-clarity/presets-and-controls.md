@@ -49,7 +49,9 @@ These are kernel choices over mpv's temporal axis, not optical-flow strength val
 not a percentage of synthetic frames and not the complete target presets above.
 Temporal blend follows mpv's display clock. MCI chooses current-display cadence or
 an explicit 48–144 fps target; Android mpv uses the generated rate for its first-frame
-mode request, while other routes may keep the display's existing mode. The displayed
+mode request, and fullscreen Windows/macOS refresh matching uses the configured MCI
+target when Match Refresh Rate is enabled. A/B bypass keeps that target cadence while
+removing only the filter; other routes may keep the display's existing mode. The displayed
 Hz is renderer-reported, not measured panel scanout. MCI's Fast/Balanced/High
 choices alter FFmpeg block-search effort and variable-block refinement; higher
 effort costs more CPU and does not dial the soap-opera effect up or down. The

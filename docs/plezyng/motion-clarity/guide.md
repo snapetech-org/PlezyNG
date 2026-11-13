@@ -50,7 +50,7 @@ Motion compensation uses FFmpeg motion search to create in-between frames. Choos
 
 When the player repeatedly reports late frames or dropped frames, it can lower the active search effort from High to Balanced to Fast. If timing reports continue at Fast, playback returns to temporal blending. The saved quality selection remains unchanged; select the preset again to restore it and retry.
 
-On Android mpv, PlezyNG can request the selected generated rate when opening playback. The Android display system chooses whether to apply the requested mode. The in-player status shows the renderer-reported display rate and generated target when available.
+On Android mpv, Pleazyng can request the selected generated rate when opening playback. In fullscreen on Windows and macOS desktop, Match Refresh Rate uses the active MCI target when motion compensation is configured. Quick A/B comparison keeps that target cadence while bypassing the filter. The operating system chooses whether to apply the requested mode. The in-player status shows the renderer-reported display rate and generated target when available; neither value proves unique generated frames or panel scanout.
 
 ## Picture and sound
 

@@ -33,6 +33,8 @@
 
 - Save profile-local karaoke show templates with exact rendition references and safe venue-setting/setlist replacement that never starts playback or changes singers or requests.
 
+- Match Windows and macOS refresh rates to the active motion-compensated output cadence, retaining source-rate matching when MCI is not effective.
+
 - Save karaoke A–B practice loops per rendition and restore them with the profile session.
 
 - Compare a private karaoke take with its matching guide vocal or original audio at the recorded rendition position, key and tempo where supported.

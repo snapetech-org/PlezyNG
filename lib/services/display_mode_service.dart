@@ -50,10 +50,11 @@ class DisplayModeService {
   /// Whether the player channel has a display mode backend here.
   bool get _isSupported => _isWindows || _isMacOS;
 
-  /// Apply display matching from what mpv presents: [fps] is the derived
-  /// output rate (container rate, doubled under deinterlacing) and [sigPeak]
-  /// is `video-params/sig-peak`, above 1.0 for PQ/HLG content. Returns the
-  /// delay duration to wait before starting playback.
+  /// Apply display matching using the effective video output rate in [fps]
+  /// and `video-params/sig-peak` in [sigPeak]. Callers use the active motion-
+  /// compensated target rate when that filter is effective, and otherwise
+  /// mpv's derived output rate (container rate, doubled under deinterlacing).
+  /// Returns the delay duration to wait before starting playback.
   Future<Duration> applyDisplayMatching({required double? fps, required double? sigPeak}) async {
     if (!_isSupported) return Duration.zero;
     if (!_fullscreen.isFullscreen) {

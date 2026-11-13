@@ -40,15 +40,23 @@ Future<ConnectionTask<Socket>> publicInternetConnectionFactory(Uri url, String? 
   }
   final secure = url.isScheme('https');
   final port = url.port == 0 ? (secure ? HttpClient.defaultHttpsPort : HttpClient.defaultHttpPort) : url.port;
+  final host = url.host.replaceFirst('%25', '%');
+  final literal = InternetAddress.tryParse(host);
+  if (literal != null) {
+    if (!_isPublicInternetAddress(literal)) {
+      return Future.error(const SocketException('Destination is not a public Internet address'));
+    }
+    return Future.value(startHappyEyeballsConnect(host, port, secure: secure));
+  }
   late final Future<({List<InternetAddress> ipv4, List<InternetAddress> ipv6})> resolved;
-  resolved = _lookupPublicInternetAddresses(url.host);
+  resolved = _lookupPublicInternetAddresses(host);
 
   Future<List<InternetAddress>> lookup(String _, {required InternetAddressType type}) async {
     final addresses = await resolved;
     return type == InternetAddressType.IPv6 ? addresses.ipv6 : addresses.ipv4;
   }
 
-  return Future.value(startHappyEyeballsConnect(url.host, port, secure: secure, lookup: lookup));
+  return Future.value(startHappyEyeballsConnect(host, port, secure: secure, lookup: lookup));
 }
 
 Future<({List<InternetAddress> ipv4, List<InternetAddress> ipv6})> _lookupPublicInternetAddresses(String host) async {

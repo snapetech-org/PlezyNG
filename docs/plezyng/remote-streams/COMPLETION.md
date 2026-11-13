@@ -182,8 +182,9 @@ No new top-level navigation entry is added.
 The default native Stremio HTTP client resolves IPv4 and IPv6 together, rejects
 the request if any returned address is outside the public Internet ranges, and
 connects directly to the validated address while retaining the hostname for
-TLS. Each manually followed redirect repeats this validation, so rebinding or
-a redirect cannot route the add-on client to loopback, private, link-local or
+TLS. IP-literal destinations are classified synchronously before any socket is
+opened. Each manually followed redirect repeats this validation, so rebinding
+or a redirect cannot route the add-on client to loopback, private, link-local or
 reserved destinations. Proxies are rejected because the proxy would resolve
 the destination itself. Browser builds refuse Stremio HTTP requests because
 their fetch transport cannot enforce this address-pinning contract.

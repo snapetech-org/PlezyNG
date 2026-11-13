@@ -78,7 +78,8 @@ class SigningOptionsTests(unittest.TestCase):
         # with no assets to verify signing is never gated on legacy API secrets.
         with patch.object(release, "release_metadata", return_value={"assets": []}), \
              patch.object(release, "missing_assets", return_value=[]), \
-             patch.object(release, "configured_repo_names", return_value=set()):
+             patch.object(release, "configured_repo_names", return_value=set()), \
+             patch.object(release, "configured_repo_variables", return_value={}):
             for enabled in (False, True):
                 with self.subTest(enabled=enabled), self.assertRaises(release.ReleaseError) as raised:
                     release.validate_release_outputs("v3.0.1", "3.0.1", include_webos_release=True,

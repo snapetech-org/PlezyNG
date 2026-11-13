@@ -3920,6 +3920,8 @@
   "audiobook.speedHelp": "2f947f07ffac9b7e",
   "audiobook.apply": "417cf9c08b0b8d6c",
   "audiobook.customSleep": "13366915507203c8",
+  "audiobook.dailySleepSchedule": "589eb8f648994b8e",
+  "audiobook.disableDailySleepSchedule": "8c948cc27700be09",
   "audiobook.sleepMinutes": "ded256ae3dd6cc55",
   "audiobook.sleepChapters": "7c42e6b2784a3e27",
   "audiobook.extendSleep": "e223c3b4d6bab7c5",

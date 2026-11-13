@@ -4235,6 +4235,8 @@
     "speedHelp": "Choose a speed from 0.25× to 4×.",
     "apply": "Apply",
     "customSleep": "Custom sleep timer",
+    "dailySleepSchedule": "Daily bedtime",
+    "disableDailySleepSchedule": "Turn off daily bedtime",
     "sleepMinutes": "Minutes (1–1440)",
     "sleepChapters": "Stop after $count chapters",
     "extendSleep": "Add 5 minutes",

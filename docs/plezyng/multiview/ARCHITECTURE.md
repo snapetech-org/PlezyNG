@@ -122,7 +122,7 @@ Keep each slot isolated: no slot may alias another core, event sink, surface or 
 
 Each native session owns its core, decoder, event sink, HTTP/source state, subtitle renderer, surface binding, timers, observers and retirement task. A disposal for A cannot cancel B's event stream, audio device, PiP delegate or surface. Add operation generation checks at both ends; an ID is not enough if it is reused. Avoid unbounded dispatch queues from multiple 60 Hz property streams.
 
-Audio ownership, display-mode switching, window fullscreen, OS media controls and application-wide audio sessions remain coordinated shared resources. They do not become independently configurable per player merely because decoder instances are independent.
+Audio ownership, display-mode switching, window fullscreen, OS media controls and application-wide audio sessions remain coordinated shared resources. They do not become independently configurable per player merely because decoder instances are independent. The profile-scoped daily audiobook bedtime is scheduled against an active audiobook session only; it does not stop a music or workspace session.
 
 ## Surface composition and rendering
 
@@ -140,7 +140,7 @@ Do not route experimental FEL output through an unqualified compositor. Query th
 
 `WorkspaceAudioCoordinator` holds audible set (one by default), logical gain/mute for each session, transport owner, duck policy, OS audio focus/session and output-mode constraints. Multiple decoders do not each acquire competing OS audio focus. Wrap the existing media-controls manager with one app-level routing policy; extend native tvOS sessions only where the platform requires them.
 
-Single-audible mode keeps an accompanying video muted, not necessarily paused. Audiobooks/narration default to paused while inaudible. Theme-song playback and preview autoplay are suppressed while an explicit workspace media session is active. Music queue operations affect only the owning music session. Sleep timers are session-scoped; “Stop all at bedtime” is a separate explicit workspace action if implemented.
+Single-audible mode keeps an accompanying video muted, not necessarily paused. Audiobooks/narration default to paused while inaudible. Theme-song playback and preview autoplay are suppressed while an explicit workspace media session is active. Music queue operations affect only the owning music session. Sleep execution stays scoped to its owning session; daily audiobook bedtime is a profile preference that acts only on an active audiobook session. “Stop all at bedtime” is a separate explicit workspace action if implemented.
 
 For mixing, first implement per-session decoded PCM gain through the existing native backends and shared OS output where supported. If a backend needs an application mixer, it must provide bounded ring buffers, timestamp/drift handling, sample-rate/channel conversion and a limiter/headroom policy; do not add a mixer merely to render two gain sliders. Keep at most two audible streams initially. Refuse mixing on passthrough/exclusive or per-stream-gain-less backends; propose a decoded output switch and preserve the old output on cancellation/failure. On iOS, one AVAudioSession category and interruption policy serves all app sessions; `mixWithOthers` alone is not an in-app mixer.
 

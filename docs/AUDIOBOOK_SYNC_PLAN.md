@@ -25,6 +25,7 @@ This branch turns those repeated needs into usable app behavior and introduces e
 - Multipart progress retains both book offset and part index/part-relative offset. Chapter navigation falls back to part navigation when durations are incomplete.
 - Playback supports configurable short skips, speed presets through 4×, a validated custom rate, smart rewind, direct time entry and undo-seek.
 - Sleep supports a duration, end of chapter/track, the next 2/3/5 chapters/tracks, custom duration, five-minute extension and a visible timer countdown.
+- An optional daily local bedtime schedule is stored in the local preferences for each profile; it is not part of cross-device progress sync. If audiobook playback is playing at the deadline, it fades over ten seconds and pauses; it never starts playback or affects music, live input, video, or another workspace session. User mute and workspace audio routing still control audible volume without cancelling the scheduled pause. Choosing Off or another one-shot sleep timer cancels an in-progress fade; disabling the daily schedule cancels its pending deadline. The deadline is checked on playback progress and app resume, so an operating system suspension can delay handling until resume. A terminated process does not replay a missed bedtime on a later launch.
 - Bookmarks and notes retain the exact part-relative cursor for multipart books and can be opened at that cursor.
 - Sort by title, author, narrator, series or recent activity; filter new, in-progress and finished; preferences persist per shelf/source.
 - Playback settings can be saved for one edition or used as defaults.
@@ -77,7 +78,6 @@ These are the next useful additions, not prerequisites for the current delivered
 | Priority | Candidate | Why / engineering approach |
 | --- | --- | --- |
 | P1 | Queue and series-aware continuous play | Persist an explicit queue/order and play-next intent, independently from source directory order. Keep queue identity profile-scoped and allow removing unavailable items without changing progress. |
-| P1 | Automatic sleep schedule and gradual fade | Add opt-in local schedule, platform lifecycle handling and a short gain ramp; persist schedule settings per profile and test timer behavior through pause/background/resume. |
 | P1 | Better conflict history and recovery UI | Show last sync/device, current local-vs-remote cursor and a preview before choosing; add restore-from-previous-generation only after validating the whole document. |
 | P2 | Car/headset action mapping and screen-reader polish | Expose app preferences for skip actions and verify native controls, chapter labels and VoiceOver/TalkBack semantics on real devices. |
 | P2 | Download rules and per-source offline policies | Add Wi-Fi-only, keep-last-N and delete-after-finished policy without deleting originals or partial downloads. |
@@ -109,3 +109,7 @@ Mocks exercise provider REST responses and auth refresh, and in-memory stores ex
 - `python3 scripts/checks/clean_translations.py --check --strict`: passed across 20 locales, with zero unused keys.
 - `git diff --check`: passed.
 - `scripts/codegen.sh`: completed on the integrated tree to regenerate localization outputs, including the latest Google Drive source label; analysis and source tests then passed.
+
+## Upstream sources
+
+- [Audiobookshelf app issue #260](https://github.com/advplyr/audiobookshelf-app/issues/260), opened by [@GeorgeHahn](https://github.com/GeorgeHahn), requested automatic sleep-timer activation during certain hours. Pleazyng independently adapts that suggestion as a profile-scoped daily local bedtime schedule for an already active audiobook session, with a ten-second fade; time-range activation and motion-based timer resets from the discussion are not part of this implementation. See [UPSTREAM_ATTRIBUTION.md](../UPSTREAM_ATTRIBUTION.md) for source disposition.

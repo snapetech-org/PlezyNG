@@ -1358,9 +1358,50 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
                   value: n,
                   label: t.fileSources.minutes(count: n),
                 ),
+              if (s.entry?.kind == SourceItemKind.audiobook &&
+                  s.mode == PublicationMode.listening &&
+                  !s.isLiveInput &&
+                  !s.isSamplePreview) ...[
+                AppMenuItem(
+                  value: -12,
+                  label: t.audiobook.dailySleepSchedule,
+                  subtitle: s.dailySleepEnabled
+                      ? MaterialLocalizations.of(
+                          context,
+                        ).formatTimeOfDay(TimeOfDay(hour: s.dailySleepHour!, minute: s.dailySleepMinute!))
+                      : null,
+                ),
+                if (s.dailySleepEnabled) AppMenuItem(value: -13, label: t.audiobook.disableDailySleepSchedule),
+              ],
             ],
             onSelected: (n) async {
-              if (n == -10) {
+              if (n == -12) {
+                final scheduleToken = s.dailySleepScheduleToken;
+                if (scheduleToken == null) return;
+                final initialTime = s.dailySleepEnabled
+                    ? TimeOfDay(hour: s.dailySleepHour!, minute: s.dailySleepMinute!)
+                    : const TimeOfDay(hour: 22, minute: 0);
+                final selected = await showTimePicker(
+                  context: context,
+                  initialTime: initialTime,
+                  helpText: t.audiobook.dailySleepSchedule,
+                );
+                if (!mounted || selected == null) return;
+                await sourceAction(context, () async {
+                  await s.setDailySleepSchedule(
+                    hour: selected.hour,
+                    minute: selected.minute,
+                    expectedToken: scheduleToken,
+                  );
+                });
+              } else if (n == -13) {
+                final scheduleToken = s.dailySleepScheduleToken;
+                if (scheduleToken != null) {
+                  await sourceAction(context, () async {
+                    await s.setDailySleepSchedule(expectedToken: scheduleToken);
+                  });
+                }
+              } else if (n == -10) {
                 final value = await _entryDialog(
                   title: t.audiobook.customSleep,
                   help: t.audiobook.sleepMinutes,

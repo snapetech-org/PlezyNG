@@ -32,10 +32,15 @@ import 'source_controller.dart';
 import 'source_models.dart';
 
 typedef LocalPlaylistExportItem = ({String title, Uri uri});
+typedef DailySleepScheduleToken = ({String profile, int profileGeneration, int sessionGeneration});
 
 /// The book session owns source-time progress independently of the music queue.
 /// Commands serialize, and each native generation ignores stale event delivery.
 class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
+  static const _dailySleepPreferenceKey = 'audiobook-daily-bedtime';
+  static const _dailySleepFadeDuration = Duration(seconds: 10);
+  static const _dailySleepFadeStep = Duration(milliseconds: 50);
+
   SourcePlayback(
     this.sources, {
     this._playerFactory,
@@ -131,6 +136,17 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   String? _activeExternalSubtitleSyncBinding;
   Timer? _saveTimer;
   Timer? _sleepTimer;
+  Timer? _dailySleepTimer;
+  DateTime? _dailySleepDeadline;
+  Duration? _dailySleepTimeZoneOffset;
+  int? _dailySleepHour;
+  int? _dailySleepMinute;
+  String? _dailySleepFiredDate;
+  int _dailySleepGeneration = 0;
+  int _sleepFadeGeneration = 0;
+  double _sleepFadeGain = 1;
+  int _volumeWriteGeneration = 0;
+  Future<void> _volumeWrites = Future<void>.value();
   int? _sleepAtMs;
   int? _sleepUntilQueuePosition;
   int? _sleepBoundaryFile;
@@ -145,6 +161,16 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   int forwardSeconds = 30;
   bool get canUndoSeek => _undoSeek != null;
   bool get muted => _userMuted;
+  bool get dailySleepEnabled => _dailySleepHour != null && _dailySleepMinute != null;
+  int? get dailySleepHour => _dailySleepHour;
+  int? get dailySleepMinute => _dailySleepMinute;
+  DailySleepScheduleToken? get dailySleepScheduleToken {
+    if (!_dailySleepSessionEligible || _profile == null) {
+      return null;
+    }
+    return (profile: _profile!, profileGeneration: _profileGeneration, sessionGeneration: _generation);
+  }
+
   int get currentFilePositionMs => _failedFilePositionMs ?? _lastKnownFilePositionMs;
   bool get canRetry =>
       _valid &&
@@ -409,12 +435,12 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       } catch (error, stackTrace) {
         appLogger.w('Source workspace audio focus handoff failed', error: error, stackTrace: stackTrace);
       }
-      await native.setVolume(_userMuted ? 0 : 100);
+      await _applyOutputVolume();
       return;
     }
 
     try {
-      await native.setVolume(0);
+      await _applyOutputVolume();
     } finally {
       try {
         await native.setWorkspaceAudioFocusEnabled(false);
@@ -432,7 +458,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     final generation = _subtitleMuteGeneration += 1;
     final native = player;
     if (native != null && !native.disposed) {
-      await native.setVolume(_workspaceAudioEnabled && !muted ? 100 : 0);
+      await _applyOutputVolume();
       if (muted) {
         if (SettingsService.instance.read(SettingsService.subtitleOnMute) && video) {
           await _selectSubtitleForMute(native, generation);
@@ -444,6 +470,33 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       await _restoreSubtitleAfterMute(generation);
     }
     _notify();
+  }
+
+  double get _effectiveOutputVolume =>
+      _workspaceAudioEnabled && !_userMuted ? (100.0 * _sleepFadeGain).toDouble() : 0.0;
+
+  Future<void> _applyOutputVolume() {
+    final generation = ++_volumeWriteGeneration;
+    final native = player;
+    if (native == null || native.disposed) {
+      return Future<void>.value();
+    }
+    final next = _volumeWrites.catchError((Object _) {}).then((_) async {
+      final current = player;
+      if (_disposed || current == null || current.disposed || !identical(current, native)) {
+        return;
+      }
+      final currentGeneration = _volumeWriteGeneration;
+      if (generation != currentGeneration) {
+        return;
+      }
+      await current.setVolume(_effectiveOutputVolume);
+      if (currentGeneration != _volumeWriteGeneration && identical(player, current) && !current.disposed) {
+        await current.setVolume(_effectiveOutputVolume);
+      }
+    });
+    _volumeWrites = next;
+    return next;
   }
 
   Future<void> _selectSubtitleForMute(Player native, int generation, {List<SubtitleTrack>? availableTracks}) async {
@@ -805,6 +858,8 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       _temporaryMediaFiles = List.unmodifiable(temporaryMediaFiles);
       mode = requestedMode;
       _userMuted = false;
+      _sleepFadeGain = 1;
+      _sleepFadeGeneration += 1;
       _subtitleMuteRestore = null;
       _subtitleMuteGeneration += 1;
       _useEntryChapters =
@@ -886,7 +941,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
           (video ? Player(videoPlayerSlot: videoPlayerSlot?.index ?? 0) : Player.audio());
       player = native;
       await native.setWorkspaceAudioFocusEnabled(_workspaceAudioEnabled);
-      await native.setVolume(_workspaceAudioEnabled ? 100 : 0);
+      await _applyOutputVolume();
       _controls = _controlsFactory();
       await _controls!.setBackgroundMode(
         !video &&
@@ -930,6 +985,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
           if (position > 0 || _lastKnownFilePositionMs == 0) {
             _lastKnownFilePositionMs = math.max(0, position);
           }
+          _checkDailySleepDeadline();
           if (_sleepAtMs != null && positionMs >= _sleepAtMs!) {
             _sleepBoundaryFile = _fileIndex;
             clearSleep();
@@ -1056,6 +1112,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
           unawaited(_persist());
         }
       });
+      await _loadDailySleepSchedule();
     } catch (_) {
       await _stop();
       rethrow;
@@ -2447,100 +2504,113 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
 
   /// A deliberate retry reacquires this exact file's content lease (or its
   /// verified download). It never chooses another title, edition or file index.
-  Future<void> retry() => _serialize(() async {
-    if (!canRetry || !automotivePlaybackAllowedNow()) {
-      return;
-    }
-    final position = currentFilePositionMs;
-    final epoch = _profileGeneration;
-    final currentProgress = progress;
-    if (_persistProgress &&
-        currentProgress != null &&
-        (sources.cloudConflict(currentProgress.key) ||
-            await sources.repository.remoteConflict(_profile!, currentProgress.key) != null)) {
-      throw const SourceException(SourceFailure.conflict);
-    }
-    sources.requireSession(epoch);
-    failure = null;
-    try {
-      await _openFile(_fileIndex, position);
-      if (failure == null) {
-        _failedFilePositionMs = null;
-        await _persist();
+  Future<void> retry() {
+    _cancelDailySleepFade(restoreVolume: true);
+    return _serialize(() async {
+      if (!canRetry || !automotivePlaybackAllowedNow()) {
+        return;
       }
-    } catch (_) {
-      _failedFilePositionMs ??= position;
-      rethrow;
-    }
-    _notify();
-  });
+      final position = currentFilePositionMs;
+      final epoch = _profileGeneration;
+      final currentProgress = progress;
+      if (_persistProgress &&
+          currentProgress != null &&
+          (sources.cloudConflict(currentProgress.key) ||
+              await sources.repository.remoteConflict(_profile!, currentProgress.key) != null)) {
+        throw const SourceException(SourceFailure.conflict);
+      }
+      sources.requireSession(epoch);
+      failure = null;
+      try {
+        await _applyOutputVolume();
+        await _openFile(_fileIndex, position);
+        if (failure == null) {
+          _failedFilePositionMs = null;
+          await _persist();
+        }
+      } catch (_) {
+        _failedFilePositionMs ??= position;
+        rethrow;
+      }
+      _notify();
+    });
+  }
 
-  Future<void> play() => canRetry
-      ? retry()
-      : _serialize(() async {
-          if (!_valid || player == null || !automotivePlaybackAllowedNow()) {
+  Future<void> play() {
+    _cancelDailySleepFade(restoreVolume: true);
+    if (canRetry) {
+      return retry();
+    }
+    return _serialize(() async {
+      if (!_valid || player == null || !automotivePlaybackAllowedNow()) {
+        return;
+      }
+      if (_persistProgress && !playing && progress != null && entry != null) {
+        final old = progress!;
+        sources.releaseProgress(old.key);
+        try {
+          final latest = await sources.openProgress(entry!, old);
+          if (!_valid) {
             return;
           }
-          if (_persistProgress && !playing && progress != null && entry != null) {
-            final old = progress!;
-            sources.releaseProgress(old.key);
-            try {
-              final latest = await sources.openProgress(entry!, old);
-              if (!_valid) {
-                return;
-              }
-              if (sources.cloudConflict(old.key) ||
-                  await sources.repository.remoteConflict(_profile!, old.key) != null) {
-                throw const SourceException(SourceFailure.conflict);
-              }
-              if (latest.revision != old.revision) {
-                progress = latest;
-                final index = latest.fileIndex.clamp(0, files.length - 1);
-                if (index != _fileIndex) {
-                  await _openFile(index, latest.filePositionMs, play: false);
-                } else {
-                  _lastKnownFilePositionMs = math.max(0, latest.filePositionMs);
-                  await player!.seek(Duration(milliseconds: latest.filePositionMs));
-                }
-                await player!.setRate(latest.speed);
-              }
-            } finally {
-              if (_valid) {
-                sources.holdProgress(old.key);
-              }
-            }
+          if (sources.cloudConflict(old.key) || await sources.repository.remoteConflict(_profile!, old.key) != null) {
+            throw const SourceException(SourceFailure.conflict);
           }
-          if (_sleepBoundaryFile == _fileIndex && _completedEpoch == _fileEpoch) {
-            final nextIndex = _nextPlaybackFileIndex();
-            if (nextIndex != null) {
-              await _openFile(nextIndex, 0, play: false);
+          if (latest.revision != old.revision) {
+            progress = latest;
+            final index = latest.fileIndex.clamp(0, files.length - 1);
+            if (index != _fileIndex) {
+              await _openFile(index, latest.filePositionMs, play: false);
+            } else {
+              _lastKnownFilePositionMs = math.max(0, latest.filePositionMs);
+              await player!.seek(Duration(milliseconds: latest.filePositionMs));
             }
+            await player!.setRate(latest.speed);
           }
-          _sleepBoundaryFile = null;
-          if (smartRewind && _pausedAt != null) {
-            final away = DateTime.now().difference(_pausedAt!).inSeconds;
-            final rewind = away > 300
-                ? 15
-                : away > 30
-                ? 5
-                : 0;
-            if (rewind > 0) {
-              await _seek(math.max(0, positionMs - rewind * 1000));
-            }
+        } finally {
+          if (_valid) {
+            sources.holdProgress(old.key);
           }
-          _pausedAt = null;
-          await player!.play();
-          _notify();
-        });
-  Future<void> pause() => _serialize(() async {
-    await player?.pause();
-    _pausedAt = DateTime.now();
-    await _persist();
-    if (_persistProgress) {
-      sources.scheduleSync();
-    }
-    _notify();
-  });
+        }
+      }
+      if (_sleepBoundaryFile == _fileIndex && _completedEpoch == _fileEpoch) {
+        final nextIndex = _nextPlaybackFileIndex();
+        if (nextIndex != null) {
+          await _openFile(nextIndex, 0, play: false);
+        }
+      }
+      _sleepBoundaryFile = null;
+      if (smartRewind && _pausedAt != null) {
+        final away = DateTime.now().difference(_pausedAt!).inSeconds;
+        final rewind = away > 300
+            ? 15
+            : away > 30
+            ? 5
+            : 0;
+        if (rewind > 0) {
+          await _seek(math.max(0, positionMs - rewind * 1000));
+        }
+      }
+      _pausedAt = null;
+      await _applyOutputVolume();
+      await player!.play();
+      _notify();
+    });
+  }
+
+  Future<void> pause() {
+    _cancelDailySleepFade(restoreVolume: false);
+    return _serialize(() async {
+      await player?.pause();
+      _pausedAt = DateTime.now();
+      await _persist();
+      if (_persistProgress) {
+        sources.scheduleSync();
+      }
+      _notify();
+    });
+  }
+
   Future<void> toggle() => playing ? pause() : play();
   Future<void> seek(int milliseconds) => _serialize(() async {
     if (!_valid || player == null) {
@@ -2709,6 +2779,227 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     _notify();
   }
 
+  bool get _dailySleepSessionEligible =>
+      _valid && _persistProgress && !_liveInput && !video && entry?.kind == SourceItemKind.audiobook && player != null;
+
+  Future<void> setDailySleepSchedule({int? hour, int? minute, required DailySleepScheduleToken expectedToken}) async {
+    final enabled = hour != null && minute != null;
+    if ((hour == null) != (minute == null) ||
+        (hour != null && (hour < 0 || hour > 23)) ||
+        (minute != null && (minute < 0 || minute > 59))) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
+    if (!_matchesDailySleepToken(expectedToken)) {
+      return;
+    }
+    final profile = expectedToken.profile;
+    await sources.repository.savePreference(profile, _dailySleepPreferenceKey, {
+      'enabled': enabled,
+      'hour': ?hour,
+      'minute': ?minute,
+    });
+    if (!_matchesDailySleepToken(expectedToken)) {
+      return;
+    }
+
+    _cancelDailySleepTimer();
+    _cancelDailySleepFade(restoreVolume: true);
+    _dailySleepHour = enabled ? hour : null;
+    _dailySleepMinute = enabled ? minute : null;
+    _dailySleepFiredDate = null;
+    _armDailySleepTimer();
+    _notify();
+  }
+
+  bool _matchesDailySleepToken(DailySleepScheduleToken token) =>
+      _dailySleepSessionEligible &&
+      _profile == token.profile &&
+      _profileGeneration == token.profileGeneration &&
+      _generation == token.sessionGeneration;
+
+  Future<void> _loadDailySleepSchedule() async {
+    final profile = _profile;
+    final sessionGeneration = _generation;
+    final profileGeneration = _profileGeneration;
+    if (profile == null || !_dailySleepSessionEligible) {
+      return;
+    }
+    final Map<String, dynamic> settings;
+    try {
+      settings = await sources.repository.preference(profile, _dailySleepPreferenceKey);
+    } catch (error, stackTrace) {
+      appLogger.w('Could not load the profile audiobook bedtime schedule', error: error, stackTrace: stackTrace);
+      return;
+    }
+    if (!_valid || _profile != profile || _profileGeneration != profileGeneration || _generation != sessionGeneration) {
+      return;
+    }
+    final hour = sourceInt(settings['hour']);
+    final minute = sourceInt(settings['minute']);
+    final enabled =
+        settings['enabled'] == true &&
+        hour != null &&
+        hour >= 0 &&
+        hour <= 23 &&
+        minute != null &&
+        minute >= 0 &&
+        minute <= 59;
+    _dailySleepHour = enabled ? hour : null;
+    _dailySleepMinute = enabled ? minute : null;
+    _dailySleepFiredDate = null;
+    _armDailySleepTimer();
+    _notify();
+  }
+
+  void _cancelDailySleepTimer() {
+    _dailySleepGeneration += 1;
+    _dailySleepTimer?.cancel();
+    _dailySleepTimer = null;
+    _dailySleepDeadline = null;
+    _dailySleepTimeZoneOffset = null;
+  }
+
+  void _armDailySleepTimer() {
+    _cancelDailySleepTimer();
+    if (!dailySleepEnabled || !_dailySleepSessionEligible) {
+      return;
+    }
+    final hour = _dailySleepHour!, minute = _dailySleepMinute!;
+    final now = DateTime.now();
+    _dailySleepTimeZoneOffset = now.timeZoneOffset;
+    var deadline = DateTime(now.year, now.month, now.day, hour, minute);
+    if (!deadline.isAfter(now) || _dailySleepFiredDate == _localDateKey(deadline)) {
+      deadline = DateTime(now.year, now.month, now.day + 1, hour, minute);
+    }
+    final scheduleGeneration = _dailySleepGeneration;
+    final sessionGeneration = _generation;
+    final profileGeneration = _profileGeneration;
+    _dailySleepDeadline = deadline;
+    _dailySleepTimer = Timer(deadline.difference(now), () {
+      _handleDailySleepDeadline(scheduleGeneration, sessionGeneration, profileGeneration);
+    });
+  }
+
+  void _refreshDailySleepSchedule() {
+    if (!dailySleepEnabled || !_dailySleepSessionEligible) {
+      return;
+    }
+    _handleDailySleepDeadline(_dailySleepGeneration, _generation, _profileGeneration);
+  }
+
+  void _checkDailySleepDeadline() {
+    final deadline = _dailySleepDeadline;
+    if (deadline == null || !dailySleepEnabled || !_dailySleepSessionEligible) {
+      return;
+    }
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day, _dailySleepHour!, _dailySleepMinute!);
+    final timezoneChanged = _dailySleepTimeZoneOffset != now.timeZoneOffset;
+    final bedtimePassed = !today.isAfter(now) && _dailySleepFiredDate != _localDateKey(today);
+    if (timezoneChanged || bedtimePassed || !now.isBefore(deadline)) {
+      _handleDailySleepDeadline(_dailySleepGeneration, _generation, _profileGeneration);
+    }
+  }
+
+  void _handleDailySleepDeadline(int scheduleGeneration, int sessionGeneration, int profileGeneration) {
+    if (scheduleGeneration != _dailySleepGeneration ||
+        sessionGeneration != _generation ||
+        profileGeneration != _profileGeneration ||
+        !_dailySleepSessionEligible ||
+        !dailySleepEnabled) {
+      return;
+    }
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day, _dailySleepHour!, _dailySleepMinute!);
+    final firedDate = _localDateKey(today);
+    if (today.isAfter(now) || _dailySleepFiredDate == firedDate) {
+      _armDailySleepTimer();
+      return;
+    }
+
+    _dailySleepTimer?.cancel();
+    _dailySleepTimer = null;
+    _dailySleepDeadline = null;
+    _dailySleepTimeZoneOffset = null;
+    _dailySleepGeneration += 1;
+    _dailySleepFiredDate = firedDate;
+    clearSleep();
+    _armDailySleepTimer();
+    final native = player;
+    if (native != null && playing) {
+      unawaited(_fadeAndPauseForDailySleep(native, sessionGeneration, profileGeneration));
+    }
+  }
+
+  String _localDateKey(DateTime value) =>
+      '${value.year.toString().padLeft(4, '0')}-'
+      '${value.month.toString().padLeft(2, '0')}-${value.day.toString().padLeft(2, '0')}';
+
+  void _cancelDailySleepFade({required bool restoreVolume}) {
+    _sleepFadeGeneration += 1;
+    if (restoreVolume && _sleepFadeGain != 1) {
+      _sleepFadeGain = 1;
+      if (_valid) {
+        unawaited(_applyOutputVolume());
+      }
+    }
+  }
+
+  Future<void> _fadeAndPauseForDailySleep(Player native, int sessionGeneration, int profileGeneration) async {
+    final fadeGeneration = ++_sleepFadeGeneration;
+    final startedAt = DateTime.now();
+    try {
+      while (true) {
+        if (!_dailySleepFadeSessionCurrent(native, sessionGeneration, profileGeneration) ||
+            !_valid ||
+            fadeGeneration != _sleepFadeGeneration) {
+          return;
+        }
+        final elapsed = DateTime.now().difference(startedAt);
+        final fraction = (elapsed.inMilliseconds / _dailySleepFadeDuration.inMilliseconds).clamp(0.0, 1.0).toDouble();
+        _sleepFadeGain = 1.0 - fraction;
+        await _applyOutputVolume();
+        if (fadeGeneration != _sleepFadeGeneration) {
+          return;
+        }
+        if (fraction >= 1) {
+          break;
+        }
+        await Future<void>.delayed(_dailySleepFadeStep);
+      }
+    } catch (error, stackTrace) {
+      appLogger.w('Audiobook bedtime fade failed; pausing playback', error: error, stackTrace: stackTrace);
+    }
+
+    await _serialize(() async {
+      if (!_valid ||
+          !_dailySleepFadeSessionCurrent(native, sessionGeneration, profileGeneration) ||
+          _generation != sessionGeneration ||
+          _profileGeneration != profileGeneration ||
+          !identical(player, native) ||
+          fadeGeneration != _sleepFadeGeneration) {
+        return;
+      }
+      await native.pause();
+      _pausedAt = DateTime.now();
+      await _persist();
+      if (_persistProgress) {
+        sources.scheduleSync();
+      }
+      _notify();
+    });
+  }
+
+  bool _dailySleepFadeSessionCurrent(Player native, int sessionGeneration, int profileGeneration) =>
+      _valid &&
+      _persistProgress &&
+      !_liveInput &&
+      !video &&
+      entry?.kind == SourceItemKind.audiobook &&
+      _generation == sessionGeneration &&
+      _profileGeneration == profileGeneration &&
+      identical(player, native);
+
   void sleepFor(Duration duration) {
     if (duration <= Duration.zero || duration > const Duration(hours: 24)) {
       throw const SourceException(SourceFailure.invalidData);
@@ -2753,7 +3044,8 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     _notify();
   }
 
-  bool get sleepEnabled => _sleepTimer != null || _sleepAtMs != null || _sleepUntilQueuePosition != null;
+  bool get sleepEnabled =>
+      dailySleepEnabled || _sleepTimer != null || _sleepAtMs != null || _sleepUntilQueuePosition != null;
   void clearSleep() {
     _sleepTimer?.cancel();
     _sleepTimer = null;
@@ -2762,6 +3054,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     _sleepChapterFile = null;
     _sleepChapterFilePosition = null;
     sleepDeadline = null;
+    _cancelDailySleepFade(restoreVolume: true);
     _notify();
   }
 
@@ -2836,6 +3129,10 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshDailySleepSchedule();
+      return;
+    }
     if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
       unawaited(_persist());
       final current = player;
@@ -2865,9 +3162,22 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
       }
     }
 
+    _workspaceAudioEnabled = false;
+    _volumeWriteGeneration += 1;
+    _sleepFadeGain = 1;
+    await release(_applyOutputVolume);
     await _wakelock.setEnabled(false);
     _saveTimer?.cancel();
     _saveTimer = null;
+    _dailySleepTimer?.cancel();
+    _dailySleepTimer = null;
+    _dailySleepDeadline = null;
+    _dailySleepTimeZoneOffset = null;
+    _dailySleepGeneration += 1;
+    _sleepFadeGeneration += 1;
+    _dailySleepHour = null;
+    _dailySleepMinute = null;
+    _dailySleepFiredDate = null;
     clearSleep();
     await _persist();
     await _writes;
@@ -2887,6 +3197,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     _subtitleMuteGeneration += 1;
     _subtitleMuteRestore = null;
     _userMuted = false;
+    _volumeWriteGeneration += 1;
     for (final sub in _subscriptions) {
       await release(sub.cancel);
     }
@@ -2897,6 +3208,7 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
     _activeExternalSubtitleSyncBinding = null;
     final native = player;
     player = null;
+    await release(() async => _volumeWrites);
     final videoLease = _videoPlayerLease;
     _videoPlayerLease = null;
     videoPlayerSlot = null;

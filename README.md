@@ -808,7 +808,8 @@ Plezy is licensed under [GPL-3.0](LICENSE).
 
 Feature history links in **What Pleazyng has built** lead to the original
 Plezy PRs and issues. The [source ledger](UPSTREAM_ATTRIBUTION.md) credits
-their upstream authors and separates adapted code, reports, proposals and
-planned work. Pleazyng independently adapted or verified the relevant
-behavior; those authors contributed to upstream Plezy. Relevant feature
-guides include their own source footers.
+each record's originating project and author, and separates adapted code,
+reports, proposals and planned work. Credited people contributed or made their
+suggestions to the named upstream project; Pleazyng adapted or verified the
+relevant behavior independently. Relevant feature guides include their own
+source footers.

@@ -1,6 +1,6 @@
 # Upstream source attribution
 
-This ledger publicly credits 92 source records: 90 from [edde746/plezy](https://github.com/edde746/plezy), one receiver revision from [moonlight-stream/moonlight-android](https://github.com/moonlight-stream/moonlight-android), and one compatibility fix from [superuser404notfound/AetherEngine](https://github.com/superuser404notfound/AetherEngine). They informed, supplied, or were reconciled with behavior, documentation, maintained plans, or feature context in this fork.
+This ledger publicly credits 93 source records: 90 from [edde746/plezy](https://github.com/edde746/plezy), one feature request from [advplyr/audiobookshelf-app](https://github.com/advplyr/audiobookshelf-app), one receiver revision from [moonlight-stream/moonlight-android](https://github.com/moonlight-stream/moonlight-android), and one compatibility fix from [superuser404notfound/AetherEngine](https://github.com/superuser404notfound/AetherEngine). They informed, supplied, or were reconciled with behavior, documentation, maintained plans, or feature context in this fork.
 
 The linked people made their reports, suggestions, discussions, or code contributions to the upstream project. This is source credit only: it does not claim that they contributed directly to this fork, endorsed it, or participated in the fork integration. Fork maintainers adapted, integrated, or verified the resulting behavior separately.
 
@@ -13,6 +13,10 @@ The PR list comes from explicit “Squash of upstream” commit records and the 
 ## Credited dependency compatibility fix
 
 - [AetherEngine commit `fa8cc48b`](https://github.com/superuser404notfound/AetherEngine/commit/fa8cc48b93a5b9c83367bf4fb3d731fb3862a177) / [issue #883](https://github.com/superuser404notfound/AetherEngine/issues/883) — “fix(build): the package compiles on Xcode 26.3 (Swift 6.2) again,” authored and contributed to AetherEngine upstream by [@superuser404notfound](https://github.com/superuser404notfound). Pleazyng independently backports the three upstream compatibility changes to its older pinned AetherEngine source during the locked Apple runtime build; this credit does not claim a direct contribution to Pleazyng.
+
+## Credited Audiobookshelf feature request
+
+- [Issue #260](https://github.com/advplyr/audiobookshelf-app/issues/260), “[iOS] Auto sleep timer,” opened upstream by [@GeorgeHahn](https://github.com/GeorgeHahn). GeorgeHahn suggested automatic sleep-timer activation during certain hours to the Audiobookshelf project. Pleazyng independently adapts that idea as a profile-scoped daily local bedtime for an active audiobook session with a ten-second fade; this record does not claim direct contribution, endorsement, or participation in Pleazyng.
 
 ## Credited Plezy pull requests
 

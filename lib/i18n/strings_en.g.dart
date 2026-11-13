@@ -10579,6 +10579,12 @@ class Translations$audiobook$en {
 	/// en: 'Custom sleep timer'
 	String get customSleep => 'Custom sleep timer';
 
+	/// en: 'Daily bedtime'
+	String get dailySleepSchedule => 'Daily bedtime';
+
+	/// en: 'Turn off daily bedtime'
+	String get disableDailySleepSchedule => 'Turn off daily bedtime';
+
 	/// en: 'Minutes (1–1440)'
 	String get sleepMinutes => 'Minutes (1–1440)';
 
@@ -21566,6 +21572,8 @@ extension on Translations {
 			'audiobook.speedHelp' => 'Choose a speed from 0.25× to 4×.',
 			'audiobook.apply' => 'Apply',
 			'audiobook.customSleep' => 'Custom sleep timer',
+			'audiobook.dailySleepSchedule' => 'Daily bedtime',
+			'audiobook.disableDailySleepSchedule' => 'Turn off daily bedtime',
 			'audiobook.sleepMinutes' => 'Minutes (1–1440)',
 			'audiobook.sleepChapters' => ({required Object count}) => 'Stop after ${count} chapters',
 			'audiobook.extendSleep' => 'Add 5 minutes',
@@ -21739,10 +21747,10 @@ extension on Translations {
 			'games.qrHelp' => 'Scan to open the PIN page. The QR code contains only the computer address, never a password or pairing credential.',
 			'games.refreshGames' => 'Refresh games',
 			'games.play' => 'Play',
-			'games.recent' => 'Recently played',
-			'games.favorites' => 'Favorites',
 			_ => null,
 		} ?? switch (path) {
+			'games.recent' => 'Recently played',
+			'games.favorites' => 'Favorites',
 			'games.allGames' => 'All games',
 			'games.search' => 'Find a game',
 			'games.noMatches' => 'No games match this search.',
@@ -22253,10 +22261,10 @@ extension on Translations {
 			'subtitleAiUi.subtitleOperationFailed' => ({required Object error}) => 'Subtitle operation failed: ${error}',
 			'subtitleAiUi.speechLanguage' => 'Speech language',
 			'subtitleAiUi.autoDetect' => 'Auto-detect',
-			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
-			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.theSelectedAcceleratorUsesAnEnglishO_8735cf91' => 'The selected accelerator uses an English-only model. Choose Whisper CPU or desktop GPU to override language.',
+			'subtitleAiUi.wAVTranscriptionAndAudioSyncUseA16Bi_31205915' => 'WAV transcription and audio sync use a 16-bit PCM WAV from the same title and audio track; subtitle sync can also use an already synchronized same-language reference. Live captions are available only when the active player build exposes its bounded decoded-PCM tap.',
 			'subtitleAiUi.inferenceBackend' => 'Inference backend',
 			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
@@ -22767,10 +22775,10 @@ extension on Translations {
 			'karaokeUi.keepExistingPreferences' => 'Keep existing preferences',
 			'karaokeUi.useImportedPreferences' => 'Use imported preferences',
 			'karaokeUi.instrumentalFiller' => 'Instrumental filler',
-			'karaokeUi.stageBanner' => 'Stage banner',
-			'karaokeUi.stageTextSize' => 'Stage text size',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.stageBanner' => 'Stage banner',
+			'karaokeUi.stageTextSize' => 'Stage text size',
 			'karaokeUi.displayOffsetMs' => ({required Object value1}) => 'Display offset: ${value1} ms',
 			'karaokeUi.perSingerPendingRequestLimit' => 'Per-singer pending request limit',
 			'karaokeUi.openRequestKiosk' => 'Open request kiosk',

@@ -209,6 +209,17 @@ extension _VideoPlayerPipMethods on VideoPlayerScreenState {
           );
         }
       },
+      onHidden: () async {
+        if (!mounted ||
+            player != windowPlayer ||
+            _shuttingDown ||
+            _activeExternalPlaybackSource != null ||
+            _followedRoom() != null ||
+            (!_playbackIntentShouldPlay && !windowPlayer.state.playing)) {
+          return;
+        }
+        await _pauseWithPlaybackIntent(windowPlayer);
+      },
       readWorkspaceAudioCapabilities: () => windowPlayer.queryWorkspaceAudioCapabilities(),
     );
 

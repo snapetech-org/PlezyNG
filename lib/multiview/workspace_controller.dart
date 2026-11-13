@@ -17,6 +17,7 @@ import 'workspace_persistence.dart';
 typedef WorkspaceOwnershipHandler = FutureOr<void> Function(bool enabled);
 typedef WorkspaceAudioStateHandler = FutureOr<void> Function(PlayerWorkspaceAudioState state);
 typedef WorkspaceAudioCapabilitiesReader = Future<PlayerWorkspaceAudioCapabilities> Function();
+typedef WorkspaceHiddenHandler = FutureOr<void> Function();
 
 /// A live bridge between a safe-to-store descriptor and its existing owner.
 ///
@@ -33,6 +34,7 @@ class WorkspaceSurfaceRegistration {
     this.onAudioOwnershipChanged,
     this.onWorkspaceAudioStateChanged,
     this.readWorkspaceAudioCapabilities,
+    this.onHidden,
     this.onInputOwnershipChanged,
     this.videoPlayerSlot,
     this.onDetachWindow,
@@ -51,6 +53,7 @@ class WorkspaceSurfaceRegistration {
   final WorkspaceOwnershipHandler? onAudioOwnershipChanged;
   final WorkspaceAudioStateHandler? onWorkspaceAudioStateChanged;
   final WorkspaceAudioCapabilitiesReader? readWorkspaceAudioCapabilities;
+  final WorkspaceHiddenHandler? onHidden;
   final WorkspaceOwnershipHandler? onInputOwnershipChanged;
   final VideoPlayerSlot? videoPlayerSlot;
   final Future<bool> Function()? onDetachWindow;
@@ -280,6 +283,11 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   String? get mixedAudibleSessionId => _mixedAudibleSessionId;
 
   bool isSessionAudible(String id) => _audibleSessionId == id || _mixedAudibleSessionId == id;
+
+  /// Whether the user explicitly selected this session as an audio owner.
+  /// Default ownership must not silently become background playback.
+  bool isExplicitlyAudibleSession(String id) =>
+      _hasExplicitAudioSelection && (_requestedAudibleSessionId == id || _requestedMixedAudibleSessionId == id);
 
   double audioGainFor(String id) => _audioGains[id] ?? 1.0;
   String? get inputSessionId => _inputSessionId;
@@ -525,6 +533,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       onAudioOwnershipChanged: existing.onAudioOwnershipChanged,
       onWorkspaceAudioStateChanged: existing.onWorkspaceAudioStateChanged,
       readWorkspaceAudioCapabilities: existing.readWorkspaceAudioCapabilities,
+      onHidden: existing.onHidden,
       onInputOwnershipChanged: existing.onInputOwnershipChanged,
       videoPlayerSlot: nextVideoPlayerSlot,
       onDetachWindow: existing.onDetachWindow,
@@ -623,6 +632,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (!_sessions.containsKey(id)) {
       return false;
     }
+    final hidden = fullscreen
+        ? visibleSessions.where((session) => session.descriptor.id != id).toList(growable: false)
+        : const <WorkspaceSurfaceRegistration>[];
     final wasRestored = _restoredSessionIds.remove(id);
     final wasParked = _parkedSessionIds.remove(id);
     final wasFullscreen = fullscreen ? _fullscreenSessionId != id : _fullscreenSessionId == id;
@@ -633,6 +645,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     _fullscreenSessionId = fullscreen ? id : null;
     final registration = _sessions.remove(id)!;
     _sessions[id] = registration;
+    for (final hiddenRegistration in hidden) {
+      _notifyHidden(hiddenRegistration);
+    }
     _publish();
     return true;
   }
@@ -1203,6 +1218,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (!_sessions.containsKey(id) || _fullscreenSessionId == id) {
       return false;
     }
+    final hidden = visibleSessions.where((session) => session.descriptor.id != id).toList(growable: false);
     if (_positioningSessionId != null) {
       finishPositioning(cancel: false);
     }
@@ -1215,6 +1231,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     _restoredSessionIds.remove(id);
     _parkedSessionIds.remove(id);
     _focusedSessionId = id;
+    for (final registration in hidden) {
+      _notifyHidden(registration);
+    }
     _publish();
     return true;
   }
@@ -1232,7 +1251,8 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// Park one live session without stopping its owner. It stays reachable from
   /// [parkedSessions] and can be restored without reopening its source.
   bool park(String id) {
-    if (!_sessions.containsKey(id) || _parkedSessionIds.contains(id) || _restoredSessionIds.contains(id)) {
+    final registration = _sessions[id];
+    if (registration == null || _parkedSessionIds.contains(id) || _restoredSessionIds.contains(id)) {
       return false;
     }
     if (_positioningSessionId == id) {
@@ -1258,8 +1278,20 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       );
       unawaited(_enqueueInputReconcile());
     }
+    _notifyHidden(registration);
     _publish();
     return true;
+  }
+
+  void _notifyHidden(WorkspaceSurfaceRegistration registration) {
+    final id = registration.descriptor.id;
+    final handler = registration.onHidden;
+    if (handler == null || isExplicitlyAudibleSession(id)) return;
+    unawaited(
+      Future<void>.sync(handler).catchError((Object error, StackTrace stackTrace) {
+        debugPrint('Workspace hidden-session pause failed: $error\n$stackTrace');
+      }),
+    );
   }
 
   String? _firstVisibleSessionId({String? excluding}) {

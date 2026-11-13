@@ -462,6 +462,11 @@ class _SourcePlayerScreenState extends State<SourcePlayerScreen> {
         }());
       },
       onWorkspaceAudioStateChanged: playback.setWorkspaceAudioState,
+      onHidden: () async {
+        if (mounted && _session == playback && playback.video && !playback.isLiveInput && playback.playing) {
+          await playback.pause();
+        }
+      },
       readWorkspaceAudioCapabilities: playback.workspaceAudioCapabilities,
     );
 

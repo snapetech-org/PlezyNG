@@ -5,7 +5,7 @@
 - Render fixed-layout EPUB search results and saved note highlights, and preserve text selection and page identity across two-page spreads.
 - Keep merged server-library indexing bounded with SQL scan-generation reconciliation and a capped metadata cache.
 - Keep an offline book edition available while its reader is open, and block removal until that reader closes.
-- Move the MAL OAuth broker to a code-only handoff and require users to configure their own HTTPS relay for relay-backed integrations. See the [relay endpoint inventory](docs/maintainers/pleazyng-relay-endpoints.md) and [security review](server/cloudflare-oauth/security-review-20261113.md).
+- Move the MAL OAuth broker to a code-only handoff, restore configured-relay polling sessions, and require users to configure their own HTTPS relay for relay-backed integrations. See the [relay endpoint inventory](docs/maintainers/pleazyng-relay-endpoints.md) and [security review](server/cloudflare-oauth/security-review-20261113.md).
 - Add approved-only OverDrive Title Link search and Libby handoff, plus indexed audiobook playback through the existing Android Auto and CarPlay controls. See [LENDING_SETUP.md](docs/LENDING_SETUP.md) and the [car integration guide](docs/plezyng/music/CAR_INTEGRATION.md).
 - Require normal Android, Linux, and Windows packages to carry a checksum-bound Dolby Vision FEL engine receipt.
 - Reset the AUR package release number when publishing a new Pleazyng version while preserving same-version maintainer revisions.

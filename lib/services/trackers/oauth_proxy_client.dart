@@ -174,7 +174,10 @@ class OAuthProxyClient {
     Future<void>? onCancel,
   }) async {
     final pollBaseUrl = codeVerifier == null ? _baseUrl : pleazyngOAuthBrokerBaseUrl;
-    final uri = Uri.parse('$pollBaseUrl/auth/result');
+    final pollUri = Uri.parse('$pollBaseUrl/auth/result');
+    final uri = codeVerifier == null
+        ? pollUri.replace(queryParameters: {...pollUri.queryParameters, 'session': session})
+        : pollUri;
     final deadline = clock.now().add(TrackerConstants.oauthProxySessionTimeout);
     final cancelSentinel = Object();
     // Subscribe to onCancel once; reusing this derived future avoids

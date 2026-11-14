@@ -94,7 +94,10 @@ instead of upgrading a flag merely because another document says a graph ran.
 
 New paths below are **proposed**, not existing APIs. Use an isolated implementation
 branch and small reviewable commits. Read the current repository instructions;
-the planning PR does not authorize altering workflow triggers. Runner selection follows current root `AGENTS.md`, which permits compatible hosted runners and private JIT where special requirements need them.
+the planning PR does not authorize altering workflow triggers. Use public
+GitHub-hosted runners for compatible checks. Hardware qualification remains a
+manual target-device gate; private JIT is limited to requested Apple signing
+and the documented webOS storage overflow.
 
 ## 2. Package dependency map
 
@@ -336,10 +339,8 @@ validating the first real embedded playback route.
 
 - Implement TIM/SYN/BLR/COL/RES/INT/UX tests from qualification; use generated or
   properly redistributable fixtures. Run sanitizers/fuzzing for native boundaries.
-- Use compatible hosted runners for jobs they can satisfy. Keep accelerator
-  and hardware-specific jobs on suitable private JIT runners when hosted
-  hardware cannot meet their requirements; keep these runs explicit and
-  isolated. Any hosted route must preserve the same trust boundaries.
+- Use public GitHub-hosted runners for compatible jobs. Keep hardware-specific
+  qualification on target devices and preserve the same trust boundaries.
 - Done: reports identify exact engine/model/source/builds, failures are fixed,
   and unsupported tests are recorded rather than represented as passed.
 

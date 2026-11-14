@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Prepare/probe the selected real Xcode SDK without changing xcode-select.
 
-Run on an idle private Mac build agent. SDK selection is process-local. The
-source probes compile actual receiver and controller sources, not SDK stubs.
+Run on a compatible GitHub-hosted macOS runner for ordinary SDK probes and
+builds. Reserve private Apple JIT for explicitly requested signing or
+notarization. SDK selection is process-local; probes compile actual receiver
+and controller sources, not SDK stubs.
 """
 from __future__ import annotations
 

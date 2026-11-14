@@ -108,7 +108,7 @@ Use meaningful unit tests for event ordering, account generations, retry policy,
 
 ## Build and release rules
 
-Follow the root [AGENTS.md](../../../AGENTS.md): use compatible GitHub-hosted runners where OS, architecture, trust, and hardware requirements fit; use private ephemeral JIT runners for private network/storage, special hardware, or explicitly private validation. Keep untrusted-code isolation, preserve active jobs and unrelated work, and validate new workflow revisions at the actual revision. Missing JIT capacity blocks a job only when no compatible hosted route meets its requirements.
+Follow the root [AGENTS.md](../../../AGENTS.md): use public GitHub-hosted runners for compatible build, test, scan, package, and release work. Keep untrusted-code isolation, preserve active jobs and unrelated work, and validate new workflow revisions at the actual revision. Private JIT is limited to requested Apple signing and the documented webOS storage overflow; missing capacity there does not block other release targets.
 
 Future native/browser/crypto dependencies need pinned revisions, reproducible packaging, license/notice inventory, and an update/rollback owner. Test the binaries actually distributed, including codec support and browser sandbox configuration. Do not treat a dependency's supported-platform list as PlezyNG qualification.
 

@@ -20,9 +20,9 @@ remain open, so the broader R01–R16 release plan is not certified complete.
 
 The owner requested implementation on a PR branch. Commit and push only to that
 branch; do not dispatch GitHub Actions as part of that task. For later
-authorized build/CI work, follow root `AGENTS.md`: compatible hosted runners
-may be used where their requirements fit; private JIT remains available for
-private network/storage, special hardware, or explicitly private validation.
+authorized build/CI work, follow root `AGENTS.md`: use public GitHub-hosted
+runners for compatible work and qualify hardware manually. Private JIT is
+limited to requested Apple signing and the documented webOS storage overflow.
 
 ## Implemented on this branch
 

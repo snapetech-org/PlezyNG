@@ -54,8 +54,10 @@ blocked until that qualification and tag binding succeed. A failed preflight
 consumes no stable version; a new source receives a different candidate name.
 
 Compatible Linux, Android, Tizen, Windows x64 and native Windows ARM64 jobs use
-GitHub-hosted runners. Storage-heavy webOS remains private JIT. The captured
-workflow retains its authorized `main` reference for private runners; neither
+public GitHub-hosted runners. webOS remains on the single Linux x64 private
+capacity lane because its source build requires 60 GiB free while the standard
+public Ubuntu runner provides a 14 GB SSD. The captured workflow retains its
+`main` reference for that overflow lane and requested Apple signing; neither
 runner-group access nor broker policy needs to admit tags. No broker restart
 or access expansion is part of this protocol. Source, compiler, final assembler
 and stable tag all retain the same SHA.
@@ -82,27 +84,28 @@ equivalence checks; do not dispatch another complete build for a delivery error.
 
 ## Apple native qualification
 
-Apple native reliability CI and iOS, tvOS and macOS packages use compatible
-hosted macOS by default, with explicit Xcode 26.5 and native ARM64 checks.
-GitHub does not expose global hosted macOS capacity. If hosted tvOS remains queued for ten
-minutes with no runner identity or steps, the release controller preserves all
-active platform work. After every other platform job succeeds or is skipped and
-release assembly has not started, it cancels the drained workflow. The
-controller verifies the job's exact attempt, `macos-26` label, missing runner
-identity, empty step list, and the success of every other source job before it
-retries tvOS on private Apple JIT. `--tvos-runner-pool private` selects private
-JIT for all Apple packages and native checks. `--ios-runner-pool private` selects
-private iOS/macOS while leaving tvOS hosted and parallel; other hybrid jobs keep
-their compatible hosted runners.
-Unsigned developer releases reuse successful platform artifacts only after
-exact source and digest checks; signed Apple recovery uses the approved full
-build path. Other tvOS failures remain failures.
+Apple native reliability CI and unsigned iOS, tvOS and macOS packages use
+compatible public GitHub-hosted Macs, with explicit Xcode 26.5 and native ARM64
+checks. Release orchestration never probes the MacBook for unsigned work and
+does not automatically retry a failed hosted tvOS job on private JIT.
 
-The private queue controller waits for a free Apple slot and the Mac's APFS
-capacity gate, then launches the recovery job. Use
-`--apple-arm-runner-pool hosted|private` selects the macOS package route for
-qualification or diagnosis. Run releases through `scripts/release_all_platforms.py` so it can
-observe failure evidence and start the private JIT controller. Every Apple
+Private Apple JIT is reserved for requested Store signing or notarization.
+When such a lane is requested, `release_all_platforms.py` probes
+`APPLE_JIT_SSH_TARGET` over Tailnet SSH before dispatch. If the Mac is offline,
+the driver sets `private_apple_signing_unavailable=true`, skips signed Store
+IPAs and notarized Homebrew output, and continues the complete unsigned Apple
+build and the rest of the release on hosted runners. The run name and receipt
+record the unavailable signing lane. Store uploads remain independently gated.
+Use `--tvos-runner-pool private` or `--ios-runner-pool private` only for signed
+App Store outputs; use `--apple-arm-runner-pool private` only for the signed
+Homebrew output. CI is always unsigned and hosted.
+
+For requested signing work, the private queue controller waits for an Apple
+slot and the Mac's APFS capacity gate, then launches that signing job. Use
+`--apple-arm-runner-pool hosted|private` to select the macOS package route;
+private is valid only when Homebrew signing is requested. Run releases through
+`scripts/release_all_platforms.py` so it can observe failure evidence and
+start the private JIT controller only for signed work. Every Apple
 build checks ARM64, Xcode, simulator runtimes, and free APFS/NFS space; native
 tests retain their full coverage. Apple native tests stop after 75 minutes, the
 job stops after 120 minutes, and the iOS simulator's first VideoToolbox callback
@@ -174,13 +177,13 @@ queued package build cannot hold a release behind its runner wait. Old runs keep
 the group assigned by the workflow revision that started them. The steps inside
 each job still run in order.
 
-Capacity determines which eligible jobs start. The hybrid Linux, Android,
-Tizen, and Windows jobs can occupy separate hosted runners concurrently.
-Apple native reliability checks and iOS/tvOS package jobs use hosted macOS by
-default, with a verified private JIT retry when hosted tvOS was never assigned
-a runner. WebOS uses its
-own private Linux route and can remain queued until that compatible capacity is
-available; it has no dependency on an Apple job. The stage-by-stage waits in
+Capacity determines which eligible jobs start. Linux, Android, Tizen, and
+Windows jobs use public hosted runners concurrently. Apple CI and unsigned
+packages use hosted macOS; only requested signing or notarization can use
+private Apple JIT. WebOS uses its one Linux x64 overflow route because its
+source build requires 60 GiB free and the standard public Ubuntu runner has a
+14 GB SSD. It can remain queued until that compatible capacity is available;
+it has no dependency on an Apple job. The stage-by-stage waits in
 `release_all_platforms.py` protect the exact
 native-manifest, CI, tag, and release checks; they do not serialize
 independent platform jobs inside the dispatched release workflow.
@@ -515,9 +518,11 @@ separate publication workflow. `--publish` also dispatches configured manual
 channels. The controller reuses successful channel runs and stops on a prior
 failed run rather than repeating an external side effect blindly.
 
-WebOS uses private Linux capacity for its large SDK. Its runtime inputs remain
-hash-locked and package inspection verifies ARM ELF files, application ID,
-version, permissions, licenses, and runtime hashes. `check_release_package.py`
+WebOS uses private Linux x64 capacity because its source build preflight
+requires 60 GiB free under `RUNNER_TEMP`, beyond the 14 GB SSD on a standard
+public Ubuntu runner. Its runtime inputs remain hash-locked and package
+inspection verifies ARM ELF files, application ID, version, permissions,
+licenses, and runtime hashes. `check_release_package.py`
 then checks the new package against its recorded source and SHA-256. Historical
 C6 evidence is not an approval lock on an older application commit. Do not
 report device playback, vendor permission, or store approval as established by
@@ -535,9 +540,10 @@ complete GitHub release.
 
 The orchestrator uses the current machine's GitHub CLI authentication only for
 workflow dispatch, repository commits, and the version tag. Its default hybrid
-profile sends compatible jobs to GitHub-hosted runners, retries tvOS on private
-Apple JIT only after verified hosted runner non-acquisition, and uses private
-JIT for storage-heavy WebOS and other private-resource work. The script does not
+profile sends compatible jobs to public GitHub-hosted runners. Private JIT is
+limited to requested Apple signing and the verified 60 GiB webOS capacity
+overflow; hosted queue failures require explicit repair and never silently
+route to the Mac. The script does not
 accept custom runner labels or store or print credentials.
 It stops on a failed native group, FFmpeg signature, CI run,
 tag conflict, or release build. Re-running it reuses successful native,
@@ -788,13 +794,13 @@ webOS and other successful jobs from the original release run. Do not dispatch a
 second all-platform build. Native-fork HEAD movement does not invalidate unchanged
 pins in an explicitly approved frozen repair.
 
-For the `v3.0.33` Apple recovery, validate the RommWorker App Store profile
+For the historical `v3.0.33` Apple recovery, validate the RommWorker App Store profile
 against every checked-in Enhanced Security entitlement before archiving. A
 stale active profile is not sufficient merely because its bundle, team and
-certificate match. If hosted macOS ARM capacity cancels tvOS before it starts,
-select the private Apple ARM lane only after checking its live Xcode, NFS and
-local scratch capacity. Rebuild only the Apple jobs that failed; preserve the
-successful source run's platform artifacts and immutable product tag.
+certificate match. That recovery predates the hosted-default policy. New
+releases do not automatically retry hosted tvOS on private Apple JIT; request
+private Apple only for signed or notarized work and preserve successful
+artifacts during explicit recovery.
 
 The assembly publishes a schema-2 `platform-reuse-provenance.json` bound by the
 attested SHA256SUMS manifest. It identifies product, packaging and workflow SHAs,
@@ -837,11 +843,9 @@ certificates against their original workflow/run, and publishes a distinct
 The existing workflow `reuse_repaired_run_id` slot carries Apple sibling
 identities in this explicit frozen Apple mode; no additional dispatch input is
 required.
-The same slot carries the numeric failed-run ID for a complete private retry
-after hosted tvOS was canceled before runner assignment, paired with
-`rebuild_tvos=true` and no platform-reuse source. The workflow revalidates that
-exact run before building. Reusing an existing input keeps the dispatch within
-GitHub's 25-input limit.
+The same slot historically carried a numeric failed-run ID for a private retry
+after hosted tvOS was canceled before runner assignment. Automatic retries are
+now disabled; use explicit recovery only for requested signed Apple work.
 After both signed Apple siblings are complete, an approved assembly-only repair
 can use `--reuse-tvos-run` and `--reuse-ios-run` together. The existing workflow
 slot then carries `tvos:RUN,ios:RUN`. Verify each sibling's signed build,

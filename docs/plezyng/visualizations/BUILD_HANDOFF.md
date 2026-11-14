@@ -1,9 +1,9 @@
 # Visualization build and release handoff
 
-> Runner policy update (2026-11-09): use compatible GitHub-hosted runners by
-> default. Use private JIT only for Apple, device, private-network/storage, or
-> other unavailable hosted capabilities. Private-only wording in dated
-> handoffs below is retained as history and is not a current instruction.
+> Runner policy update (2026-11-13): use public GitHub-hosted runners for all
+> compatible build, test, scan and package work. Private JIT is limited to
+> requested Apple signing and the documented webOS storage overflow. Device
+> qualification is performed manually on the target device.
 
 PR #82 was reconciled into current main on 2026-11-05, including the ABI v2
 runtime, renderer process/lifetime handling and packaging hooks. Five native
@@ -36,8 +36,8 @@ Desktop CMake's `PLEZY_VISUALIZER_REQUIRE_MILKRUST` defaults to ON. An explicit
 OFF build can omit native presets, but is not a visualization release artifact.
 Android/Apple/TV standard paths require their runtime bundle. Receipt reuse is
 limited to the same run/context, source, recipe, platform, architectures and verified file hashes.
-Desktop/Android/Apple builders support local builds and compatible hosted or
-private CI workers. Local receipts remain unqualified and do not supply TV
+Desktop/Android/Apple builders support local builds and public GitHub-hosted
+workers. Local receipts remain unqualified and do not supply TV
 release provenance. SDK-specific worker constraints remain explicit.
 No builder installs credentials or creates production signing keys.
 
@@ -115,7 +115,7 @@ integration inputs. Its expected pixel checks matrix orientation, component
 multiplication, transpose/rectangular multiplication, writable selectors,
 single-evaluation indices and function output conversion. Compile acceptance
 alone is insufficient; retain its actual pixel assertion when executing the
-private-JIT integration gate. This source-only continuation has not run it.
+hosted integration gate. This source-only continuation has not run it.
 
 The same browser gate now includes the authored intrinsic numerical control,
 macro-rescan/volume-sampling cases, dimension-only bindings and constant LOD
@@ -133,7 +133,7 @@ The WASM package builder stages the decoder worker beside the generated module;
 the SDK configures its static URL only when it shares the page origin. The same
 pin includes per-file `.milk2` header defaults, default-on saved sprites, all
 documented saved blend patterns, and shared CPU-quantized sprite diffuse bytes.
-Build this exact source on the required private JIT before promoting artifacts.
+Build this exact source on the required public GitHub-hosted before promoting artifacts.
 
 
 The declaration/aggregate continuation additionally wires
@@ -159,7 +159,7 @@ The current engine source lock is MilkRust
 `2c51a7882971eb9fe6b2b043b8cfa6627e63cbe2`. It expands bounded global
 `Texture1D`/`Texture2D` arrays into named bindings for constant-index supported
 resource methods. Keep corpus compiler, native and Emscripten checks on the
-required private JIT runners; none has been run for this checkpoint.
+required public GitHub-hosted runners; none has been run for this checkpoint.
 
 
 ## 2026-10-30 legacy sampler-array continuation
@@ -191,7 +191,7 @@ Run these pixel controls with the existing native rejection/limit suite; none
 has been executed here. The pin also preserves bounded dynamic 1D/2D/3D resource
 array support and corrects its mixed inclusive/exclusive token-edit ranges.
 
-The private Linux sanitizer job additionally builds and runs
+The public hosted Linux sanitizer job additionally builds and runs
 `test/native/visualizer_preset_transition_test.cc`. Exercise the public load
 method with zero/default/ten-second durations on every platform, including
 rapid changes, pause, resize and audio-generation reset. MilkRust uses a frozen
@@ -215,15 +215,15 @@ modes, reference-source paired-tap blur kernels in native GL/WebGL, and bounded
 legacy effect-file sampler_state blocks with independent min/mag/mip filters.
 Native/WebGL use 96 shared sampler modes; reflection covers offset sampling,
 3D fetch and texture-size intrinsics.
-Run compiler, renderer, and reference-image work only on the required private
-JIT runners. This source update has not been built or tested.
+Run compiler, renderer, and reference-image checks on public GitHub-hosted
+runners. This source update has not been built or tested.
 
 
 ## 2026-10-30 MilkRust sampler parity handoff
 
 The pinned source is `7d7ed901bb105f9ad23431caa25e9f97e095a1bc`. The WebGL sprite pass now uses MilkRust's
 shared min/mag/mip and per-axis Wrap/Clamp/Mirror profile, matching native GL.
-On the private JIT runners, build and run compiler/resource regressions, then
+On the public GitHub-hosted runners, build and run compiler/resource regressions, then
 capture native and WebGL sprites for point/linear filters, mip settings, each
 address mode, color keys, and animated images. No build or capture has run for
 this source checkpoint.
@@ -233,14 +233,14 @@ this source checkpoint.
 
 The current MilkRust pin is `e0752db79a5b74668c4f1c9303630817ca120dec`. Verify scripted repeat values with
 non-default saved multipliers, position and scale values near their clamp
-limits, all sprite sampler profiles, and animated assets on the private JIT
+limits, all sprite sampler profiles, and animated assets on the public GitHub-hosted
 runner. Reference-pixel and device qualification remain required. No run was
 available for this source-only checkpoint.
 
 
 ## 2026-10-30 final sprite source pin
 
-Build and run MilkRust PR #20 at `ee9a0353b4b968dc02a2e6f475b2699592e099c3` on the private JIT runner. Include
+Build and run MilkRust PR #20 at `ee9a0353b4b968dc02a2e6f475b2699592e099c3` on the public GitHub-hosted runner. Include
 classic `.milk` default-on sprites, `.milk2` absent/zero/one sprite flags,
 BOM-prefixed wrappers, scripted repeat multipliers, offset and scale clamp
 boundaries, Wrap/Clamp/Mirror, min/mag/mip filters, color keys, animated sprites,
@@ -250,12 +250,12 @@ this pin.
 
 ## 2026-10-30 latest MilkRust source pin
 
-The app source lock advances to MilkRust `ee9a0353b4b968dc02a2e6f475b2699592e099c3`, including BOM-aware `.milk2` wrapper detection and explicit `sprite=1` gating for trailing saved sprites. The user has requested private builds; the connector has no workflow-dispatch operation and this repository's CI/build entrypoints are manual. No build/test result is available yet. Use the private JIT runner only.
+The app source lock advances to MilkRust `ee9a0353b4b968dc02a2e6f475b2699592e099c3`, including BOM-aware `.milk2` wrapper detection and explicit `sprite=1` gating for trailing saved sprites. Earlier notes requested private builds; the current owner direction requires public builds. This repository's CI/build entrypoints are manual. No build/test result is available yet; dispatch the public GitHub-hosted workflow for this source revision.
 
 
 ## 2026-10-30 real-file MilkDrop 3 pin
 
-Build and run MilkRust PR #20 at `ee9a0353b4b968dc02a2e6f475b2699592e099c3` on the private JIT runner. Cover Created/version and URL preambles, duplicate headers, numeric-prefix values, incomplete-marker fallback, BOM-prefixed complete wrappers, and explicit `.milk2` sprite enablement. No build or test is available for this pin; the GitHub connector currently exposes no workflow-dispatch action.
+Build and run MilkRust PR #20 at `ee9a0353b4b968dc02a2e6f475b2699592e099c3` on the public GitHub-hosted runner. Cover Created/version and URL preambles, duplicate headers, numeric-prefix values, incomplete-marker fallback, BOM-prefixed complete wrappers, and explicit `.milk2` sprite enablement. No build or test is available for this pin; the GitHub connector currently exposes no workflow-dispatch action.
 
 
 ## 2026-10-30 MilkRust mask and sprite source checkpoint
@@ -264,14 +264,14 @@ The app's exact MilkRust source lock is `551bb46ffbccbe1c0fa0defd5480b240e9efab5
 checks all 30 pattern formulas against the published Lactea 4x2 vertex table;
 the sprite regression controls now cover duplicate `.milk2` header flags and
 ignore preset-body `sprite` records. Build and run this exact revision on the
-private JIT runner when a run can be started; capture native and WebGL reference
+public GitHub-hosted runner when a run can be started; capture native and WebGL reference
 images separately. No run is attached to this revision, and pixel parity is not
 claimed.
 
 
 ## Current MilkRust pin — saved-mask alpha correction
 
-The app lock now pins MilkRust `ba314ab686586f67c06fed09a8036bba03778938` with ABI v2. Its 65x49 saved-pattern alpha field follows D3D9's clamp-and-truncate-to-byte behavior and is uploaded as R8 in both native GL and WebGL. The source control is unrun. Do not treat the engine pin as a built artifact: the connected GitHub tool exposes no manual workflow-dispatch action, and all builds must use compatible private ephemeral JIT runners.
+The app lock now pins MilkRust `ba314ab686586f67c06fed09a8036bba03778938` with ABI v2. Its 65x49 saved-pattern alpha field follows D3D9's clamp-and-truncate-to-byte behavior and is uploaded as R8 in both native GL and WebGL. The source control is unrun. Do not treat the engine pin as a built artifact: the connected GitHub tool exposes no manual workflow-dispatch action, and all compatible builds use public GitHub-hosted runners.
 
 
 ## 2026-10-30 raw finite MilkDrop 3 header values
@@ -281,7 +281,7 @@ MilkRust PR #20 now preserves finite float-range `.milk2` progress and random he
 
 ## Current MilkRust pin — MilkDrop host inputs
 
-The source lock pins MilkRust `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). It adds standard MilkDrop mouse and clock registers, a shared rising-edge `mouseclick`, and reference-style saved-pair blending for these host values. The added regression sources are unrun. This workspace has no Cargo toolchain or project checkout; the connector reports no Actions run for the engine commit. Use the compatible private JIT runner; the connected GitHub tool does not expose manual workflow dispatch.
+The source lock pins MilkRust `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). It adds standard MilkDrop mouse and clock registers, a shared rising-edge `mouseclick`, and reference-style saved-pair blending for these host values. The added regression sources are unrun. This workspace has no Cargo toolchain or project checkout; the connector reports no Actions run for the engine commit. Use the compatible public GitHub-hosted runner; the connected GitHub tool does not expose manual workflow dispatch.
 
 
 ## 2026-10-30 local clock and preset timing handoff
@@ -294,14 +294,14 @@ Apple, Tizen and webOS, including leap dates and invalid-input rejection. Check
 local timezone and daylight-saving changes while rendering. The MilkRust browser SDK supplies the page's local date and time before each frame.
 Direct WebAssembly/stateless callers that omit the setter retain zero calendar
 fields and preset-relative time. This source checkpoint has no build, test,
-browser capture, or device run; use only compatible private JIT runners.
+browser capture, or device run; use only compatible public GitHub-hosted runners.
 Native hosts can call MilkRustEngine::SetMouseState before rendering; platform
 pointer-event wiring is still pending. No build, test, or device run is attached to this
-source checkpoint; use only compatible private JIT runners.
+source checkpoint; use only compatible public GitHub-hosted runners.
 
 ## 2026-10-30 Current native pointer-input route
 
-The source lock pins MilkRust `e6da67bed512068086179b11724e656a24f5288b` (ABI v2). Validate inline/fullscreen mouse and touch input on Android, Apple, Linux, and Windows: coordinates remain normalized, coalesced movement deltas are delivered once per rendered frame, quick taps still raise `mouseclick`, and pause/focus loss does not leave a button stuck. The browser SDK validates and coalesces the same input before rendering. Build attempts for `cargo build --locked -p milkrust-native` and `flutter build linux` stopped before compilation because Cargo and Flutter are unavailable in this workspace. Compatible private JIT runners remain required; the latest PR heads have no Actions status or workflow runs, and the GitHub connector has no manual Actions-dispatch operation.
+The source lock pins MilkRust `e6da67bed512068086179b11724e656a24f5288b` (ABI v2). Validate inline/fullscreen mouse and touch input on Android, Apple, Linux, and Windows: coordinates remain normalized, coalesced movement deltas are delivered once per rendered frame, quick taps still raise `mouseclick`, and pause/focus loss does not leave a button stuck. The browser SDK validates and coalesces the same input before rendering. Build attempts for `cargo build --locked -p milkrust-native` and `flutter build linux` stopped before compilation because Cargo and Flutter are unavailable in this workspace. Compatible public GitHub-hosted runners remain required; the latest PR heads have no Actions status or workflow runs, and the GitHub connector has no manual Actions-dispatch operation.
 
 ## Desktop helper verification
 
@@ -315,8 +315,8 @@ helper. iOS/tvOS still use local rendering with thread quarantine. Android/Andro
 use the private service below; Tizen/webOS use their packaged helper below.
 
 The `visualizer_render_process_test.cc` source needs no GPU or MilkRust library:
-it starts itself as a fault-injecting child. Private Linux/macOS sanitizer jobs
-compile and run it; Windows native CMake/CTest enables it with
+it starts itself as a fault-injecting child. Public hosted Linux/macOS sanitizer
+jobs compile and run it; Windows native CMake/CTest enables it with
 `PLEZY_BUILD_VISUALIZER_PROCESS_TESTS=ON`. Cover normal frames and pointer/PCM
 payloads, reset, projectM selection, two-second deadlines, explicit cancellation,
 crash, malformed response, and recovery. Also qualify real shader compile/decode
@@ -334,7 +334,7 @@ controls remain unrun; do not infer passing results from the pin update.
 
 ## Android renderer service verification
 
-Build all selected ABIs and both debug/minified Android variants on private JIT.
+Build all selected ABIs and both debug/minified Android variants on public GitHub-hosted runners.
 The manifest must retain the non-exported `:milkrust_visualizer` service and R8
 must preserve `MilkRustNativeBridge` JNI names (the existing keep rule covers
 `startHelper`). Run `MilkRustRendererServiceTest` on a private emulator/device;
@@ -355,7 +355,7 @@ faults remain outside process-isolation guarantees.
 
 ## MilkRust noise resource checkpoint
 
-Build and qualify MilkRust `aeaf9147f4dce6e1f5b13c182e444a7dc368421b` on compatible private JIT runners. The noise generator now mirrors MilkDrop's physical texture dimensions, quality-specific cubic expansion order and single-level texture setup in native GL and WebGL. Compare rendered samples against the reference; random seeding remains deterministic in MilkRust while the reference seeds from its runtime clock. No compiler, browser, GPU, or pixel result is available for this pin.
+Build and qualify MilkRust `aeaf9147f4dce6e1f5b13c182e444a7dc368421b` on compatible public GitHub-hosted runners. The noise generator now mirrors MilkDrop's physical texture dimensions, quality-specific cubic expansion order and single-level texture setup in native GL and WebGL. Compare rendered samples against the reference; random seeding remains deterministic in MilkRust while the reference seeds from its runtime clock. No compiler, browser, GPU, or pixel result is available for this pin.
 
 ## Tizen/webOS helper verification
 
@@ -367,7 +367,7 @@ as executable `lib/plezy_visualizer_helper` beside `libmilkrust_native.so`. The
 TPK/IPK inspectors check the complete bundle, canonical paths, mode, architecture
 and hashes. Source checks passed; no SDK build or package was produced.
 
-On private JIT, run the expanded native process test on Linux plus the Tizen and
+On public GitHub-hosted runners, run the expanded native process test on Linux plus the Tizen and
 webOS package regressions. On Samsung/LG devices, verify native child execution
 policy, EGL pbuffer access, runtime lookup, inherited-descriptor closure, preset
 file access, startup with the firmware's descriptor limit, cancellation during
@@ -388,7 +388,7 @@ retirement, quarantine admission, original error retention, process interruption
 owner tokens, corruption recovery and bounded history. Flutter's session suite
 checks automatic-load refusal and explicit retry through a fresh lease.
 
-On private iOS/tvOS SDK builds and devices, exercise native inactive notifications
+On public iOS/tvOS SDK builds and target devices, exercise native inactive notifications
 before Dart responds, context creation racing backgrounding, safe pause/resume,
 close while inactive, foreground retirement, process termination while rendering,
 restart restoration, timed cycling to an interrupted preset and explicit Reload.
@@ -407,13 +407,13 @@ sampling uses the center row and requires a one-row asset for parity. Determinis
 noise remains available to offline tooling. Comparison sampling includes the
 implicit-LOD `SampleCmp` path but remains unqualified for pixel parity. The current source lock
 still records `source-only-unqualified`; do not promote a runtime receipt or pack from
-this pin until the private JIT compiler, native/browser decoder and renderer checks,
+this pin until the public GitHub-hosted compiler, native/browser decoder and renderer checks,
 reference comparisons, and target-device runs have been completed.
 
 ## Integrated shader overload and comparison-binding gate
 
 Use the lock's MilkRust `893a04399b5e02db8d201701a72f8c4a3ce61791` source (ABI v2). Run the
-native HLSL/core suites and `tools/smoke-hlsl.mjs` on private JIT. Added controls
+native HLSL/core suites and `tools/smoke-hlsl.mjs` on public GitHub-hosted runners. Added controls
 cover numeric resource-helper overloads and arities, renamed forward parameters,
 same-name overload forwarding, typed recursion rejection, grouped ordinary and
 comparison state, reflection of generated texture bindings, comparison array
@@ -428,8 +428,8 @@ cannot be inferred from source commits or from earlier workflow revisions.
 
 ## MilkRust comparison-channel and static-state alias gate
 
-Build the exact lock revision `a0ce0242eef5372501a3a6036569e53fb8ad7239` (ABI v2) on the compatible private
-JIT runner. Run the native HLSL/core suites and `tools/smoke-hlsl.mjs`, then
+Build the exact lock revision `a0ce0242eef5372501a3a6036569e53fb8ad7239` (ABI v2) on a public
+GitHub-hosted runner. Run the native HLSL/core suites and `tools/smoke-hlsl.mjs`, then
 exercise Emscripten delivery. New regression source covers all five
 Texture2D GatherCmp channel forms, comparison resource-array result widths,
 global `SamplerState` and `SamplerComparisonState` aliases (including
@@ -437,15 +437,15 @@ forward chains), unresolved targets, and cross-type aliases. Preserve the
 existing Gather order, compare-before-filter, overload, recursion and
 single-evaluation checks.
 
-No build or test run exists for this engine pin; the GitHub connector does not
-expose workflow dispatch for the private JIT jobs. Reference pixels, native
+No build or test run exists for this engine pin. Dispatch the public
+GitHub-hosted workflow for this revision. Reference pixels, native
 and browser driver behavior, device recovery and artifact promotion remain
 separate acceptance gates.
 
 
 ## MilkRust sampler-state alias follow-up
 
-Build exact lock revision `81593b2657c9de2bd6ea4f1903a9f992a3572800` (ABI v2) on the compatible private JIT
+Build exact lock revision `81593b2657c9de2bd6ea4f1903a9f992a3572800` (ABI v2) on the compatible public GitHub-hosted
 runner. The global alias collector now checks both brace and parenthesis depth,
 so `SamplerState` parameters in helper overloads do not collide with global
 state names. Run native overload/alias/compiler tests, the browser HLSL harness
@@ -475,7 +475,7 @@ closed separately from device performance, compiler and recovery validation.
 
 ## MilkRust direct resource-struct helper checkpoint
 
-Build exact lock revision `1ab258e889d1932395e22015c383695611b918a5` (ABI v2) on the compatible private JIT. It adds bounded specialization for helper parameters whose structs directly contain resources and whose arguments resolve to global struct instances. Local and dynamic arguments fail closed. Run the Rust compiler/core suite, native HLSL suite, browser HLSL harness and Emscripten delivery. The regression source covers both accepted global and rejected local arguments. No run is attached to this revision; the connected GitHub tools do not expose workflow dispatch. Keep the runtime lock `source-only-unqualified` until those checks and later rendering/device gates have evidence.
+Build exact lock revision `1ab258e889d1932395e22015c383695611b918a5` (ABI v2) on a public GitHub-hosted runner. It adds bounded specialization for helper parameters whose structs directly contain resources and whose arguments resolve to global struct instances. Local and dynamic arguments fail closed. Run the Rust compiler/core suite, native HLSL suite, browser HLSL harness and Emscripten delivery. The regression source covers both accepted global and rejected local arguments. No run is attached to this revision; dispatch the public workflow for that SHA. Keep the runtime lock `source-only-unqualified` until those checks and later rendering/device gates have evidence.
 
 
 ## 2026-10-30 latest engine pin
@@ -485,17 +485,17 @@ The app lock now points to MilkRust PR #20 revision
 standard per-frame `blendmode` the upstream default 0 and 0..4 clamp; the
 11-entry static `SpriteBlend` table is an explicit engine extension. No compiler,
 build, test or device qualification has run for this revision. Keep the lock
-`source-only-unqualified` until compatible private JIT and target checks complete.
+`source-only-unqualified` until compatible public GitHub-hosted and target checks complete.
 
 
 ## 2026-10-30 latest HLSL resource support pin
 
-PlezyNG now locks MilkRust PR #20 at `d7a646af44dc1fbd8d328bf607eaceaa63a46534` (ABI v2). This source revision adds bounded global resource-only struct aggregate aliases for type-compatible global texture bindings; computed, mixed numeric/resource, local and mismatched forms fail closed. The matching native regression source is present but unrun. Keep `source-only-unqualified` until the compatible private JIT jobs and platform qualification complete.
+PlezyNG now locks MilkRust PR #20 at `d7a646af44dc1fbd8d328bf607eaceaa63a46534` (ABI v2). This source revision adds bounded global resource-only struct aggregate aliases for type-compatible global texture bindings; computed, mixed numeric/resource, local and mismatched forms fail closed. The matching native regression source is present but unrun. Keep `source-only-unqualified` until the compatible public GitHub-hosted jobs and platform qualification complete.
 
 
 ## MilkRust initialized resource alias shape check
 
-Build exact lock revision `86f48b621737aebfbed05b40869f357ebebe4b6f` (ABI v2) on the compatible private JIT runner. Run the Rust compiler/core suite, native HLSL tests, browser HLSL harness and Emscripten delivery. New source cases cover Texture1D-to-Texture2D aggregate alias rejection despite shared sampler lowering and Texture2D scalar/vector-width mismatch. Preserve failures and keep qualification at source-only until these checks and platform rendering gates pass. No executable validation has been run for this pin.
+Build exact lock revision `86f48b621737aebfbed05b40869f357ebebe4b6f` (ABI v2) on the compatible public GitHub-hosted runner. Run the Rust compiler/core suite, native HLSL tests, browser HLSL harness and Emscripten delivery. New source cases cover Texture1D-to-Texture2D aggregate alias rejection despite shared sampler lowering and Texture2D scalar/vector-width mismatch. Preserve failures and keep qualification at source-only until these checks and platform rendering gates pass. No executable validation has been run for this pin.
 
 ## 2026-10-30 library authoring and dependency source closure
 
@@ -526,14 +526,14 @@ repository connection.
 
 ## MilkRust corpus-accounting source pin
 
-Build exact lock revision `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2) on the compatible private JIT runner. Run the Rust workspace/compiler suite, CLI compatibility-report tests, `npm run test:content-report`, and the full community compatibility report. Confirm every discovered CLI entry is retained, the manifest merge accounts for missing/unlisted preset paths, directory/input/read/decode diagnostics are present, and the generated summary's file accounting is complete or lists each remaining exception. The checked-in generated summary remains historical until this run. No executable validation has been performed for this pin.
+Build exact lock revision `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2) on the compatible public GitHub-hosted runner. Run the Rust workspace/compiler suite, CLI compatibility-report tests, `npm run test:content-report`, and the full community compatibility report. Confirm every discovered CLI entry is retained, the manifest merge accounts for missing/unlisted preset paths, directory/input/read/decode diagnostics are present, and the generated summary's file accounting is complete or lists each remaining exception. The checked-in generated summary remains historical until this run. No executable validation has been performed for this pin.
 
 
 ## 2026-10-30 nested resource-struct source continuation
 
 MilkRust PR #20 commit 7a83ea328be14c4c9acddb24079ef8ac2658b45a now lowers scalar texture fields nested through plain structs when accessed through a global instance. The compiler preserves leaf dimension/element width, resolves full dotted paths, specializes resource-bearing helpers to global instances, and dispatches literal and side-effect-free dynamic indices for bounded resource arrays nested through those paths. Regression sources cover direct/helper access, static/dynamic array selection, binding reflection and rejected nested aggregate initializers. Function-local arrays, nested aggregate initializers and nested sampler-state propagation remain unsupported. This is source only; compiler, browser, native render and device gates remain pending.
 
-PlezyNG locks MilkRust 7a83ea328be14c4c9acddb24079ef8ac2658b45a. The connected GitHub tool reports no pull-request workflow run for this engine revision and exposes no workflow-dispatch action. Run the MilkRust HLSL compiler suite and browser compiler/pixel harness on a compatible private ephemeral JIT runner, including nested texture access, helper forwarding, and static/dynamic nested-array selection. No build or test result exists for this checkpoint; reference-image parity is not claimed.
+PlezyNG locks MilkRust 7a83ea328be14c4c9acddb24079ef8ac2658b45a. No workflow run is attached to this engine revision. Run the MilkRust HLSL compiler suite and browser compiler/pixel harness on a public GitHub-hosted runner, including nested texture access, helper forwarding, and static/dynamic nested-array selection. No build or test result exists for this checkpoint; reference-image parity is not claimed.
 
 
 ## 2026-10-30 immutable local resource-struct alias source continuation
@@ -544,7 +544,7 @@ MilkRust PR #20 now includes commit 1cfb07306f0ced0b93f5d8aa13e4d5f55782b103 (AB
 
 The MilkRust pin `f4d2e8c5c009f915cc356b5f29ab8ff382720d0f` includes the declarative Butterchurn converter,
 its numeric VM intrinsics, schema/profile validation and Python/Rust regression
-sources. The Linux private-JIT CI lane now discovers `tools/tests/test_*.py`.
+sources. The Linux hosted CI lane now discovers `tools/tests/test_*.py`.
 The candidate workflow converts supported equations and shader stages, preserving
 a rejection row for each unsupported source. Run it before updating any converted
 count; no generation count changed during source implementation.

@@ -84,9 +84,10 @@ paths and their existing adapter tests.
 - Build and validate Android/Fire TV, Linux x64/ARM64, Windows x64/ARM64,
   universal macOS, iOS, tvOS, Tizen and webOS; run the release coverage checker
   on actual nonempty artifacts. Do not drop a platform to obtain success.
-- Use compatible hosted runners in the hybrid profile, including Apple.
-  Storage-heavy webOS remains private JIT; inspect its compatible live capacity
-  without interrupting active guests. CodeQL execution remains disabled.
+- Use public GitHub-hosted runners for compatible jobs, including unsigned
+  Apple builds. Private JIT is limited to requested Apple signing and the
+  webOS 60 GiB storage overflow; inspect its live capacity without interrupting
+  active guests. CodeQL execution remains disabled.
 - Enable automatic DV/FEL routing and compatibility fallback by default, preserve
   explicit runtime overrides, and include all corresponding native components.
   Neural motion processing remains off by default. Source tests do not claim device or provider qualification.

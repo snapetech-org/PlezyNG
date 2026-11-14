@@ -15,9 +15,9 @@ driver, EDID, kernel module or TV firmware is replaced automatically.
 
 The entries below separate current normal-build routing from run-specific
 qualification evidence. Current runner selection follows root `AGENTS.md`:
-compatible hosted runners are the default, with private JIT reserved for
-hardware, network, storage, or isolation requirements that hosted runners
-cannot meet.
+public GitHub-hosted runners handle all compatible CI. Device qualification is
+manual. Private JIT is limited to requested Apple signing and the documented
+webOS storage overflow.
 
 ## What is implemented
 
@@ -28,7 +28,7 @@ cannot meet.
 | Offline companion | Pinned FelBaker builder patches its VapourSynth output key and builds a tested RGB48 pipeline. A 48-frame generated P7 sample changed all 2,073,600 designed residual-patch pixels; both HDR10/PQ HEVC and SDR/BT.709 H.264 outputs encoded and passed `ffprobe` frame/color-tag checks. | These lossy files are derived compatibility versions, not native DV. FelBaker is a comparison implementation, not an independent Dolby reference; real-clip and playback-device checks remain open. |
 | Android | The checksum-pinned normal AAR contains `plezyng-dv-fel-v1`, paired FFmpeg headers, and all four declared ABIs. Android MPV attempts P7 FEL by default only when that engine identity is present and the enhancement-layer filter is accepted. Otherwise it retains the native decoder or compatible base-layer route. A typed video-chain initialization failure or explicit fatal P7 pairing error can retry through a server SDR rendition, including after the first frame; generic audio and network errors cannot. ExoPlayer remains on its platform decoder path. | The MediaCodec profile list is not a per-source pixel test. The API 36 x86_64 emulator comparison uses synthetic media and does not qualify real-device playback, reference pixels or physical Dolby Vision output. CoreELEC S5 remains a separate vendor/kernel project. |
 | webOS | For an identified Dolby Vision source, Plex, Jellyfin, and Emby are asked for a full server video encode, even at Original quality; a response offering only the original direct stream is rejected. Jellyfin/Emby also receive an explicit SDR output-range constraint. | The server's output must declare SDR in every HLS video variant before Plezy opens it. That declaration is not proof of correct tone mapping or visible pixel values. The app path exposes no BL/EL GPU composer. |
-| Windows | Ordinary app builds use the locked Windows libmpv from the rebased producer. The default-on per-file hook requires the loaded `plezyng-dv-fel-v1` engine identity before requesting software decoding and the FEL filter for P7; without that identity, or if the hook, decoder override, or filter is unavailable, it preserves the existing route and logs the fallback. | FEL filter acceptance is not proof of EL pixels. D3D11 rendering, independent pixels and device output remain unqualified. The configured private `packer-windows` route may queue; compatible hosted runners are allowed when they meet the job's OS, architecture, and trust requirements. No D3D11/Vulkan reference comparison or device result is claimed. |
+| Windows | Ordinary app builds use the locked Windows libmpv from the rebased producer. The default-on per-file hook requires the loaded `plezyng-dv-fel-v1` engine identity before requesting software decoding and the FEL filter for P7; without that identity, or if the hook, decoder override, or filter is unavailable, it preserves the existing route and logs the fallback. | FEL filter acceptance is not proof of EL pixels. D3D11 rendering, independent pixels and device output remain unqualified. Current compatible Windows CI uses public GitHub-hosted runners; the old private `packer-windows` route is not selected. No D3D11/Vulkan reference comparison or device result is claimed. |
 
 Online VOD playback uses a profile-aware compatibility policy before a local
 decoder sees the source. Android MPV, Windows, Linux and supported Apple OS
@@ -346,10 +346,14 @@ Checkpoint for source commit `9c0fb9693ad7b705e737a1829d10bfd70c6ce17e`
   accepts a valid subset while requiring the core pins and rejecting drift.
 - These two corrections had not been rerun when this October 26 snapshot was
   written. The earlier hosted run is historical evidence only and does not
-  prove that the overall workflow passed. Run updated work on compatible hosted
-  runners, using private JIT only for its hardware or private-resource needs.
+  prove that the overall workflow passed. Run updated CI on public
+  GitHub-hosted runners and qualify hardware manually.
 
 ## Historical private-JIT route and blockers (checked 2026-10-26)
+
+The following snapshot is historical and no longer describes current workflow
+routing. The current Dolby workflows use public GitHub-hosted runners for
+compatible checks; do not provision private JIT for these lanes.
 
 A read-only organization API check found these exact routes:
 
@@ -360,40 +364,25 @@ A read-only organization API check found these exact routes:
 | Windows contract job | `packer-windows` (group 11) exists and selects only `snapetech-org/packer/.github/workflows/ci.yml@refs/heads/main`. It selects only the Packer repository and currently has zero registered runners; no organization runner named `packer` is registered. | The broker still has no Windows group binding, and the group has no PlezyNG or Dolby workflow authorization. Packer owner-validation runs [40330520703](https://github.com/snapetech-org/packer/actions/runs/40330520703) and [40332285276](https://github.com/snapetech-org/packer/actions/runs/40332285276) remain queued. Preserve the owner's C0/slot and drain gates; do not dispatch a canary or use the trusted Linux pool. |
 | Fork and untrusted PR checks | `gvisor-sandbox` (group 6) is a disposable, restricted-egress JIT sandbox. | Its live allowlist contains only smoke workflows for other repositories. `dv-fork-validation.yml` is isolated on this group, but PlezyNG and the workflow are not authorized in the group or broker. `public-fork-jit` also has no PlezyNG workflow; `private-pr-jit` (group 9) has none selected. |
 
-The trusted jobs are main-ref only and all Dolby workflows now name JIT groups;
-none has a GitHub-hosted runner or hosted fallback. The owner-side route work is:
+The old snapshot reported main-only jobs with JIT groups and proposed broker
+allowlist, Apple runner, Windows capacity, and fork-sandbox changes. Those were
+historical proposals, not current instructions. Current workflow source routes
+compatible jobs to public GitHub-hosted runners; untrusted fork validation is
+read-only and secret-free.
 
-1. Add `dv-platforms.yml@refs/heads/main` and `dv-experimental.yml@refs/heads/main`
-   to group 10 and the broker. Admit Linux jobs `linux-contracts`, `app-tests`,
-   `felbaker-source`, and `linux-engine` with their run-scoped labels.
-2. Provision an ephemeral Apple JIT runner in group 8 carrying
-   `private-apple-jit`, then authorize `dv-platforms.yml@refs/heads/main` in the
-   group and its broker.
-3. The Packer owner is restoring the existing Windows route. Group 11 now exists,
-   but it is Packer-only, runnerless, and not bound in the broker; the two owner
-   validation runs remain queued. Preserve the owner's C0/slot and drain gates.
-   After the owner provisions and verifies the runner and authorizes PlezyNG,
-   allowlist `dv-platforms.yml@refs/heads/main` and job `windows-contracts`.
-4. Add `dv-fork-validation.yml@refs/heads/main` to group 6 and its broker. The
-   broker must accept this exact `pull_request_target` workflow and head SHA,
-   with read-only repository access, no secrets, and the isolated
-   `gvisor-sandbox` runner. Never route fork code through the trusted-main group.
-
-The app repository's general pull-request workflow (`ci.yml`) declares
-GitHub-hosted jobs. Compatible hosted runners are permitted under the current
-root `AGENTS.md`; do not block a PR solely because these compatible jobs use
-hosted runners. Keep fork code on a disposable, restricted JIT sandbox with no
-secrets. No jobs were dispatched, and no shared group, broker allowlist, runner
-service, or other worktree was changed during this work.
+The app repository's CI and fork-validation workflows use public
+GitHub-hosted runners for compatible jobs with read-only permissions and no
+secrets for untrusted code. The historical snapshot changed no shared groups,
+broker allowlists, runner services or other worktrees.
 
 This is only the Dolby workflow route. The org-wide inventory tracked in
 [Packer PR #9](https://github.com/snapetech-org/packer/pull/9) counts 407
 workflow files and 779 jobs across 60 repositories; 667 job definitions still
 contain hosted runner labels. Plezy's [shared-JIT PR #26](https://github.com/snapetech-org/pleazyng/pull/26)
 covers three trusted release jobs, not the remaining Plezy or org-wide routes.
-Keep each lane blocked until a compatible runner route and its trust boundary are
-verified. Use private JIT when hardware, private storage/network, or the
-untrusted-code isolation requirement needs it.
+Use public GitHub-hosted runners for compatible checks. Qualify hardware on
+target devices. Private JIT is limited to requested Apple signing and the
+documented webOS storage overflow.
 
 Validation checks (run on the compatible route selected under root `AGENTS.md`):
 
@@ -404,9 +393,8 @@ g++ -std=c++17 -Wall -Wextra -Werror linux/runner/mpv/experimental_render_api_te
 flutter test test/media/dolby_vision_playback_test.dart test/mpv/player_native_bridge_test.dart test/screens/settings/playback_settings_screen_test.dart test/widgets/performance_stats_service_test.dart
 ```
 
-Run these checks on compatible GitHub-hosted runners or approved private-JIT
-jobs under root `AGENTS.md`; use private JIT where GPU, device, private
-storage/network, or explicit validation needs require it. The dedicated
+Run compatible CI checks on public GitHub-hosted runners under root `AGENTS.md`;
+qualify GPU/device behavior on target hardware. The dedicated
 `dv-platforms.yml` workflow builds the Apple host and FelBaker source, runs
 contract checks on Linux/Windows/macOS, and checks app tests and codegen. It
 uses read-only repository permissions and no signing secrets. It does not fetch
@@ -435,7 +423,7 @@ Priority testing handoff:
    plus FelBaker and both HDR10 and SDR encodes passed frame/color-tag probes.
    The verifier has since gained explicit rate, dimensions, frame-count, sampled
    BL/RPU identity and authored EL-code gates; the old report predates those
-   assertions and must be regenerated on the approved private-JIT route. Then
+   assertions and must be regenerated on a public GitHub-hosted runner. Then
    compare pre-encode RGB48 against a trusted source, and test missing RPU,
    unequal frame counts, broken EL, cancellation, disk exhaustion and audio sync.
    FelBaker is a comparison implementation, not an independent Dolby oracle.
@@ -443,7 +431,7 @@ Priority testing handoff:
    normalized integer BL polynomial/MMR mapping, EL NLQ, and residual
    reconstruction from [ETSI GS CCM 001 clause 5](https://www.etsi.org/deliver/etsi_gs/CCM/001_099/001/01.01.01_60/gs_ccm001v010101p.pdf).
    Hand-calculated unit vectors are added, but their suite has not run on an
-   approved private-JIT runner. The module does not parse an RPU or establish
+   public GitHub-hosted runner. The module does not parse an RPU or establish
    Profile 7 equivalence. First map P7 RPU syntax and profile-specific rules,
    including CM 2.9/4.0 behavior, onto its composing metadata. Dolby's
    [UHD Blu-ray authoring guide](https://professional.dolby.com/siteassets/pdfs/dolby_vision_uhd_bluray_authoring_workflow.pdf)
@@ -458,8 +446,8 @@ Priority testing handoff:
    test broader bit depths, chroma siting, NLQ, pivots, nonlinear mapping,
    clipping, filter edges and precision, then set `reference_pixels` only after
    defining the error budget and validating the P7-to-spec mapping.
-6. **Remaining adapters:** complete and verify restoration of the existing
-   private Windows route before D3D11/Vulkan builds; Android vendor/native capability qualification and
+6. **Remaining adapters:** continue D3D11/Vulkan builds on public hosted
+   Windows; Android vendor/native capability qualification and
    an optional portable compositor; webOS compatible native/companion versions;
    Linux CB1 output experiments only on exact supported
    DRM/driver/HDMI paths. Native DV signaling and reference display mapping each

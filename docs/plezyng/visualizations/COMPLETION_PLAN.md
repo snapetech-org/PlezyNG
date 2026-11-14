@@ -1,8 +1,9 @@
 # PlezyNG visualization and community preset implementation plan
 
-> Runner policy update (2026-11-09): compatible GitHub-hosted runners are the
-> default. Private JIT is used only for capabilities hosted runners cannot
-> provide; private-only wording in historical checkpoints is superseded.
+> Runner policy update (2026-11-13): public GitHub-hosted runners are required
+> for compatible build, test, scan and package jobs. Private JIT is limited to
+> requested Apple signing and the documented webOS storage overflow; device
+> qualification stays on the target device.
 
 **Current code gate (2026-10-30): 100% complete for the documented implementation
 scope.** See [SOURCE_COMPLETION.md](SOURCE_COMPLETION.md) for source evidence
@@ -88,9 +89,9 @@ See [catalog release configuration](CATALOG_RELEASE.md) and
 work. Full HLSL and non-Fade `.milk2` rendering remain incomplete. The source-only
 restriction recorded in this handoff was superseded by the user's 2026-10-30
 instruction to continue code work and attempt builds. Build, test, scan and
-package jobs must still use compatible private ephemeral JIT runners; public
-hosted runners and fallback are prohibited. Missing private capacity is a
-provisioning blocker, not permission to bypass runner policy.
+package jobs use public GitHub-hosted runners for compatible work. Private JIT
+is limited to requested Apple signing and the webOS storage overflow documented
+in root `AGENTS.md`; no visualization task needs a private runner by default.
 
 “All community presets” is an engineering target, not an unbounded claim about every future file. Establish a versioned corpus that includes every current imported file plus representative MilkDrop 1, MilkDrop 2, MilkDrop 3 double presets, texture dependencies, fragments and converted formats. Preserve arbitrary local import so users are not limited to curated packs.
 
@@ -210,7 +211,7 @@ Qualify Linux x64/arm64 and Wayland, Windows x64/arm64, macOS Apple Silicon and 
 
 For the initial imported corpus, every file must be accounted for and every advertised preset must pass the declared renderer tier. Full custom compatibility requires the MilkRust gate too. Newly discovered valid formats/features add tracked conformance cases; exceptions remain visible rather than quietly shrinking the denominator.
 
-Use compatible GitHub-hosted runners for jobs whose OS, architecture, trust, and hardware needs they satisfy. Use private ephemeral JIT runners for private-network, special-hardware/storage, or explicitly private validation needs. Missing JIT capacity is a blocker only when no compatible hosted route meets the job's requirements; do not disturb active builds. Update [PlezyNG’s capability ledger](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/docs/maintainers/capability-manifest.json) with implementation, test, device and release states separately.
+Use public GitHub-hosted runners for every compatible build, test, scan and package job. Keep device qualification on target devices as a separate manual gate. Private ephemeral JIT is limited to requested Apple signing and the documented webOS storage overflow. Missing capacity blocks only the affected exception; do not disturb active builds. Update [PlezyNG’s capability ledger](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/docs/maintainers/capability-manifest.json) with implementation, test, device and release states separately.
 
 Luna should deliver reviewable PRs, exact engine/content pins, reports, logs and representative captures; update the user guide, acknowledgements and changelog. A merged PR, successful build or draft release alone does not establish downloadable delivery.
 
@@ -225,7 +226,7 @@ Proceed through the pack builder, transactional importer, in-app download catalo
 
 Keep the existing six original scenes and feed live features where supported. Preserve passthrough and playback ownership. Package community content with exact provenance, author credits, notices and recorded distribution status. Treat parsing, rendering fidelity, device qualification and published availability as separate gates.
 
-Work in reviewable PR-sized packages and use compatible hosted runners where their OS, architecture, trust, and hardware fit; use private JIT runners for special hardware, private storage/network, or explicitly private qualification. Keep a progress ledger with implemented/tested/qualified/released evidence. Do not claim all presets work from static parser reports, and do not stop at scaffolding. If a platform or external distribution requirement blocks completion, finish independent work and record the exact remaining dependency and next action.
+Work in reviewable PR-sized packages and use public GitHub-hosted runners for build, test, scan and package work. Keep hardware qualification on target devices as a separate manual gate; use private JIT only for the explicitly documented Apple signing or webOS capacity exception. Keep a progress ledger with implemented/tested/qualified/released evidence. Do not claim all presets work from static parser reports, and do not stop at scaffolding. If a platform or external distribution requirement blocks completion, finish independent work and record the exact remaining dependency and next action.
 ```
 
 ## Current implementation ledger — 2026-10-28
@@ -366,7 +367,7 @@ aliases/numeric templates, flattened legacy aggregate initialization and casts,
 typed constant selections, GLSL name isolation and readonly destination checks.
 Classic sprite alpha/key/byte-color handling, persistent unwrapped rotation and
 scripted numeric selectors have corresponding source controls. The status ledger
-and build handoff identify their private-JIT acceptance inputs.
+and build handoff identify their hosted acceptance inputs.
 
 The original completion criteria remain open for exact MD3 masks, non-default
 sprite fields/layer interactions and the remaining language/profile gaps listed
@@ -504,9 +505,9 @@ that recreate the core runtime can snapshot/restore a validated header state.
 The PlezyNG lock pins MilkRust `150cbf48c3d017978d3f692d31fd7f2eb0634132`.
 
 This closes the identified source-level carry and host-reset gaps. Builds,
-tests, reference captures and device qualification remain unrun because the
-repository requires private ephemeral JIT runners and no dispatch control is
-available here. The declared HLSL/resource and image-format profile still
+tests, reference captures and device qualification remain unrun for this
+checkpoint. Run compatible CI on public GitHub-hosted runners; qualify devices
+manually. The declared HLSL/resource and image-format profile still
 rejects unsupported constructs explicitly; they are not claimed to have
 universal MilkDrop compatibility. Runtime artifacts, GPU-driver process
 isolation, pack rights/qualification and production signing remain open.
@@ -520,7 +521,7 @@ methods require constant decimal indices, with external assets named
 `<resource>_<index>`. Dynamic/grouped arrays, `Texture3D` arrays, function-local
 arrays and resource arrays in structs remain explicit failures. PlezyNG's
 source lock pins MilkRust `2c51a7882971eb9fe6b2b043b8cfa6627e63cbe2`.
-The new source path has not been compiled or tested; private JIT validation and
+The new source path has not been compiled or tested; public hosted validation and
 pixel qualification remain open.
 
 
@@ -639,7 +640,7 @@ MilkRust PR #20 now preserves finite float-range `.milk2` progress and random he
 
 ## 2026-10-30 MilkDrop host input blending
 
-MilkRust PR #20 now binds standard mouse aliases (`mousex`, `mousey`, `mousedown`, `mouseclick`) and deterministic frame-clock values from `year` through `totalseconds`. One rising-edge `mouseclick` sample is shared by both active preset scopes. Saved-pair rendering cosine-mixes mouse positions and clock fields and snaps buttons at the reference shader-dependent threshold; temporary mixed values are restored after rendering. Source regression cases cover host binding, click edges, interpolation and snap behavior. The app source lock pins MilkRust `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). Builds and tests remain unrun; continue on compatible private JIT runners only.
+MilkRust PR #20 now binds standard mouse aliases (`mousex`, `mousey`, `mousedown`, `mouseclick`) and deterministic frame-clock values from `year` through `totalseconds`. One rising-edge `mouseclick` sample is shared by both active preset scopes. Saved-pair rendering cosine-mixes mouse positions and clock fields and snaps buttons at the reference shader-dependent threshold; temporary mixed values are restored after rendering. Source regression cases cover host binding, click edges, interpolation and snap behavior. The app source lock pins MilkRust `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). Builds and tests remain unrun; continue on compatible public GitHub-hosted runners.
 
 
 ## 2026-10-30 MilkRust per-preset and host clock source checkpoint
@@ -653,21 +654,21 @@ engine lock pins MilkRust `36f3058f150550cc1691303643489c8f89581300`, ABI v2.
 Regression sources cover preset-clock reset and clock-value binding. No private
 build, test, renderer capture or device run has executed for this checkpoint;
 the GitHub connector exposes no manual workflow-dispatch operation, and the
-private JIT runner requirement remains in force.
+public GitHub-hosted runner policy applies.
 
 
 ## 2026-10-30 MilkRust browser local clock injection
 
-The MilkRust WebAssembly API accepts validated local clock fields, and its browser SDK refreshes those values from the page's local date and time before each frame. Direct WebAssembly/stateless callers can supply the same fields through the setter. PlezyNG pins MilkRust `039725b4bfa0deee92d7b7364c953dbdfc4851e1` (ABI v2). Build and browser qualification remain pending on the compatible private JIT runners.
+The MilkRust WebAssembly API accepts validated local clock fields, and its browser SDK refreshes those values from the page's local date and time before each frame. Direct WebAssembly/stateless callers can supply the same fields through the setter. PlezyNG pins MilkRust `039725b4bfa0deee92d7b7364c953dbdfc4851e1` (ABI v2). Build and browser qualification remain pending on public GitHub-hosted runners.
 
 
 ## 2026-10-30 native MilkRust pointer input API
 
-MilkRust's ABI v2 now accepts finite mouse coordinates/deltas and a binary button state; the shared Plezy adapter exposes them through SetMouseState. Platform views do not yet route pointer or touch events into this method. The app lock pins MilkRust `ee0d836a118615fa58eb9125d7b8b2fc23014b24`. Native build and input regression remain pending on the compatible private JIT runners.
+MilkRust's ABI v2 now accepts finite mouse coordinates/deltas and a binary button state; the shared Plezy adapter exposes them through SetMouseState. Platform views do not yet route pointer or touch events into this method. The app lock pins MilkRust `ee0d836a118615fa58eb9125d7b8b2fc23014b24`. Native build and input regression remain pending on public GitHub-hosted runners.
 
 ## 2026-10-30 native pointer input source checkpoint
 
-The Flutter visualizer now routes mouse/touch pointer state through the inline and fullscreen surfaces to the native MilkRust ABI on Android, Apple, Linux, and Windows. UI and native queues coalesce movement deltas, and the native worker consumes them once per rendered frame. Button-down edges are latched for one frame so quick taps still reach `mouseclick`; pausing clears held or pending input. The browser SDK applies matching validation, delta accumulation, and quick-click latching. The PlezyNG source lock pins MilkRust `e6da67bed512068086179b11724e656a24f5288b`. Source routing is present; native build/input regressions and device checks remain open under the private-JIT requirement. This does not close exact renderer parity or release gates.
+The Flutter visualizer now routes mouse/touch pointer state through the inline and fullscreen surfaces to the native MilkRust ABI on Android, Apple, Linux, and Windows. UI and native queues coalesce movement deltas, and the native worker consumes them once per rendered frame. Button-down edges are latched for one frame so quick taps still reach `mouseclick`; pausing clears held or pending input. The browser SDK applies matching validation, delta accumulation, and quick-click latching. The PlezyNG source lock pins MilkRust `e6da67bed512068086179b11724e656a24f5288b`. Source routing is present; native build/input regressions and device checks remain open under the hosted requirement. This does not close exact renderer parity or release gates.
 
 ## 2026-10-30 desktop containment source checkpoint
 
@@ -676,7 +677,7 @@ processes. Shared native IPC carries bounded PCM, RGBA and controls with matchin
 sequence IDs and two-second response deadlines. Disposal and failure terminate
 the helper; unreaped helpers block retry. The host retains its player/session
 lease and published pixel ownership. Pointer input and display fades remain
-wired across the boundary. CMake/Xcode packaging and private-JIT fault-regression
+wired across the boundary. CMake/Xcode packaging and hosted fault-regression
 entrypoints are committed source, not executed evidence. Android/iOS/tvOS/TV local
 driver containment, device-wide GPU recovery, compiler/corpus/reference runs,
 real mpv artifacts, content qualification and signing custody remain separate
@@ -698,7 +699,7 @@ and request deadlines, self-termination, Binder-confirmed retry admission and
 queued controls are implemented. Desktop and Android share protocol v2; native
 fault and Android service-boundary regression sources were added but not run.
 iOS/tvOS, Tizen and webOS remain local with bounded teardown/quarantine. Installed
-artifact tests, private-JIT builds, reference fidelity and device-wide GPU
+artifact tests, hosted builds, reference fidelity and device-wide GPU
 recovery remain distinct gates; this checkpoint does not close those gates.
 
 
@@ -725,7 +726,7 @@ native lifecycle pause/drain, foreground-gated creation/destruction, bounded
 retirement/quarantine and persistent interruption recovery. Automatic restoration
 and timed preset changes cannot retry a recorded interrupted preset; explicit
 selection/reload can retry subject to native admission. Shared native, Apple
-Foundation and Dart regression sources are wired into the private JIT gates.
+Foundation and Dart regression sources are wired into public hosted CI gates.
 This closes the missing policy implementation, while mobile driver cancellation,
 SDK/device recovery qualification and the plan's build/conformance/release gates
 remain distinct. No new build or test result is claimed.
@@ -738,7 +739,7 @@ At that checkpoint, the PlezyNG lock pointed to MilkRust `836cd3275681a697f16cca
 adds bounded APNG and animated WebP decoding, Texture2D Gather lowering in the
 bounded HLSL profile, and runtime-seeded noise in native GL and WebGL. The
 deterministic generator remains available for offline callers. No build, test, browser render, native render or device qualification was
-performed; all execution remains assigned to compatible private ephemeral JIT runners.
+performed; compatible CI belongs on public GitHub-hosted runners and device checks remain manual.
 
 ## 2026-10-30 earlier MilkRust comparison-sampling source pin
 
@@ -759,7 +760,7 @@ implemented with native/compiler and browser pixel regression sources.
 
 The earlier Apple lifecycle/interruption checkpoint is also committed. This
 updates the implementation for the declared profile; the original plan's
-private-runner compile/test, reference/corpus, runtime-artifact and release
+public-hosted compile/test, reference/corpus, runtime-artifact and release
 acceptance requirements remain unfulfilled. Only source checks ran here.
 
 
@@ -788,12 +789,12 @@ Native source regressions are present but unrun. The pin remains
 
 ## 2026-10-30 resource-bearing HLSL helper arguments
 
-MilkRust PR #20 now supports helper parameters whose structs directly contain opaque resources, specialized against unambiguous global struct instances. Local or dynamic resource-bearing struct arguments remain unsupported and fail closed. PlezyNG's source lock now pins `1ab258e889d1932395e22015c383695611b918a5` (ABI v2). Source and regression updates are committed; private-JIT build, compiler execution, browser rendering and reference comparison remain unrun because no workflow-dispatch action is available through the connected GitHub tools. This closes the direct-struct helper source gap only; nested resource-bearing structs, other unsupported resource forms and the plan's execution/qualification requirements remain open.
+MilkRust PR #20 now supports helper parameters whose structs directly contain opaque resources, specialized against unambiguous global struct instances. Local or dynamic resource-bearing struct arguments remain unsupported and fail closed. PlezyNG's source lock now pins `1ab258e889d1932395e22015c383695611b918a5` (ABI v2). Source and regression updates are committed; hosted build, compiler execution, browser rendering and reference comparison remain unrun because no workflow-dispatch action is available through the connected GitHub tools. This closes the direct-struct helper source gap only; nested resource-bearing structs, other unsupported resource forms and the plan's execution/qualification requirements remain open.
 
 
 ## 2026-10-30 corpus accounting source continuation
 
-PlezyNG now pins MilkRust `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2). The compatibility CLI uses bounded traversal, records directory/symlink/input-limit/I/O outcomes, and emits one status per discovered preset file. Its report generator checks that entry count matches the denominator, joins results to the manifest, and preserves missing, unlisted and duplicate paths plus per-preset diagnostics. Temporary sample names map back to original manifest paths. Pack inventory/hash errors are bounded and explicit. Regression sources are authored but unrun. The historical generated summary still needs regeneration on the required private JIT runner to explain its 37-file mismatch; no compatibility count is updated by source changes alone.
+PlezyNG now pins MilkRust `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2). The compatibility CLI uses bounded traversal, records directory/symlink/input-limit/I/O outcomes, and emits one status per discovered preset file. Its report generator checks that entry count matches the denominator, joins results to the manifest, and preserves missing, unlisted and duplicate paths plus per-preset diagnostics. Temporary sample names map back to original manifest paths. Pack inventory/hash errors are bounded and explicit. Regression sources are authored but unrun. The historical generated summary still needs regeneration on a public GitHub-hosted runner to explain its 37-file mismatch; no compatibility count is updated by source changes alone.
 
 
 ## 2026-10-30 nested resource-struct source continuation

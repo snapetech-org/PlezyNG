@@ -289,11 +289,11 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
         ci_path = ROOT / '.github/workflows/ci.yml'
         original = Path.read_text
         ci = original(ci_path, encoding='utf-8')
-        selection = "inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool == 'hosted' || (inputs.apple_runner_pool == 'split' && matrix.platform != 'macOS') || (inputs.apple_runner_pool == 'private-ios' && matrix.platform == 'tvOS')) && 'macos-26' || fromJSON(format("
+        selection = "runs-on: macos-26"
         self.assertIn(selection, ci)
         changes = [
-            ("'macos-26'", "'macos-26-intel'"),
-            ("'macos-26'", "'macos-15'"),
+            ("runs-on: macos-26", "runs-on: macos-26-intel"),
+            ("runs-on: macos-26", "runs-on: macos-15"),
             ("hosted-xcode-version: '26.5'",
              "hosted-xcode-version: '26.3'"),
             ('test "$(uname -m)" = arm64', 'true'),
@@ -314,7 +314,7 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
                     with redirect_stderr(errors), self.assertRaises(SystemExit) as result:
                         runpy.run_path(str(CHECKER), run_name='__main__')
                 self.assertEqual(result.exception.code, 1)
-                self.assertIn('Apple arm64 native qualification', errors.getvalue())
+                self.assertIn('Apple native qualification', errors.getvalue())
 
     def test_locked_root_signer_passes(self) -> None:
         result = self._run(self._workflow())
@@ -405,20 +405,21 @@ sys.exit(1 if len(calls) <= int(os.environ['FAIL_UNTIL']) else 0)
                     result.stderr,
                 )
 
-    def test_macos_private_route_and_bounded_build_timeouts_are_enforced(self) -> None:
+    def test_macos_signing_route_and_bounded_build_timeouts_are_enforced(self) -> None:
         workflow = self._workflow()
         start = workflow.index("  build-macos:\n")
         end = workflow.index("  build-windows:\n", start)
         macos = workflow[start:end]
-        self.assertIn("inputs.tvos_runner_pool == 'hosted' && 'macos-26-intel' || fromJSON(format(", macos)
+        route = "needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true' && needs.validate-trusted-ref.outputs.tvos_runner_pool == 'private' && fromJSON(format("
+        self.assertIn(route, macos)
         self.assertIn("timeout-minutes: 150", macos)
         self.assertIn("timeout-minutes: 100", macos)
 
         mutations = (
             (
-                "inputs.tvos_runner_pool == 'hosted' && 'macos-26-intel' ||",
-                "inputs.execution_profile == 'hybrid' && 'macos-26-intel' ||",
-                "the explicit private Apple route must include macOS",
+                "needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true'",
+                "needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'false'",
+                "the private Apple route must be conditional on requested signing work",
             ),
             (
                 "timeout-minutes: 150",

@@ -10,11 +10,12 @@ The current continuation also builds and requires Tizen’s runtime bundle in th
 regular package workflow. Both cross-builds include target C++ for the vendored
 HLSL compiler. Neither platform is release-qualified.
 
-Use compatible GitHub-hosted runners by default. Tizen's hybrid workflow does
-this and reserves private JIT for constrained platform resources. The current
-webOS release-candidate script remains private-JIT-only because it enforces at
-least 60 GiB free under `RUNNER_TEMP` and verifies pinned LG toolchain inputs;
-that exception is tied to those storage and tooling requirements.
+Use compatible GitHub-hosted runners by default. Tizen's workflow is public
+hosted only. The current webOS release-candidate script remains on Linux x64
+private JIT because it enforces at least 60 GiB free under `RUNNER_TEMP`; the
+organization has no configured larger hosted runners and standard Ubuntu
+hosted runners provide 14 GB. This is a capacity exception, not a general
+private runner route.
 
 ## Tizen source implementation
 
@@ -135,7 +136,7 @@ registrant. The release-candidate source path now cross-builds the exact pinned
 MilkRust crate, bundles its corresponding-source archive and notices, and
 requires the runtime in every IPK created by `tools/webos/build_ipk.sh`. The IPK
 verifier rejects a package without it. This source integration has not been
-executed; its current private-JIT release path and toolchains still require
+executed; its current release path and toolchains still require
 qualification. The SoLoud tap observes that plugin's master
 mix, so introducing simultaneous `audioplayers_soloud` voices would require
 per-voice isolation before claiming exact-source analysis.
@@ -146,7 +147,7 @@ system loopback or microphone path is used.
 
 ### Native runtime build and admission
 
-The private-JIT release-candidate builder creates the ARMv7 artifact bundle
+The Linux x64 private-JIT release-candidate builder creates the ARMv7 artifact bundle
 from the source revision pinned in `native/visualizer/sources.lock.json`; it
 sets `PLEZY_WEBOS_VISUALIZER_NATIVE` and
 `PLEZY_WEBOS_VISUALIZER_MANIFEST_SHA256` for the pinned IPK packager. The bundle

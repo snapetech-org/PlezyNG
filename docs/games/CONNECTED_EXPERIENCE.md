@@ -97,7 +97,7 @@ account and hardware requirements; checking source work does not check those gat
 ### Build, deployment and live acceptance
 
 - [ ] Exact-current-head Windows/Apple SDK builds and Android/full-app packages
-      on compatible private ephemeral JIT runners.
+      on public GitHub-hosted runners matching each required OS and architecture.
 - [ ] Physical GPU/HDR/chroma, surround, controller, microphone and suspend/
       reconnect qualification on every supported receiver platform.
 - [ ] Real-account metadata, inventory, Families and approved-AppID Cloud tests;
@@ -141,10 +141,11 @@ receiver. Unsupported features stay unavailable with a useful explanation.
    authenticated host artwork; enforce bounds, no arbitrary webviews or scripts.
 9. No automatic installation, purchase, sharing, quitting a game, cloud-save
    replacement or guest invitation. Host Steam remains the entitlement authority.
-10. Preserve the runner trust boundaries in root `AGENTS.md`, using compatible
-    hosted runners where requirements fit and private ephemeral JIT for
-    private network/storage, special hardware, or explicitly private checks.
-    Keep dependencies pinned and license notices intact.
+10. Preserve the runner trust boundaries in root `AGENTS.md`. Use public
+    GitHub-hosted runners for compatible CI; perform hardware qualification on
+    the target device. Private JIT is limited to requested Apple signing and
+    the documented webOS storage overflow. Keep dependencies pinned and license
+    notices intact.
 
 ## Compatibility and rollout
 
@@ -448,7 +449,7 @@ those plugins does not advertise a working receiver. The build can explicitly
 omit it with `-DPLEZY_STEAM_RECEIVER=OFF`. Release bundles include the fixed
 pipelines' plugins and matching scanner; the launcher confines plugin discovery
 to that set. Distribution, Flatpak keyring/audio, full-runner builds and actual
-Steam hosts still require platform and hardware qualification; use private JIT when private-network or hardware needs require it.
+Steam hosts still require platform and hardware qualification on the target devices.
 
 Local verification: strict C++ compilation against Flutter Linux headers;
 actual H.264 encode→decode pixel checks; common Opus/speaker and controller seat
@@ -484,8 +485,9 @@ capability and per-session channels as Linux. Xcode builds the pinned portable
 transport without Vulkan, then compiles the shared Objective-C++ adapter. This
 is source implementation, **not evidence of a successful Apple SDK build or
 playback qualification**. Every target includes an XCTest decoding a real 64×64
-H.264 frame and checking pixels and teardown; those tests must run on private
-JIT Apple capacity before merge/release.
+H.264 frame and checking pixels and teardown; run those tests on public
+GitHub-hosted macOS before merge/release. Physical playback remains a separate
+device gate.
 
 VideoToolbox decodes H.264 and, after a hardware capability check, HEVC. Its
 IOSurface-backed BGRA pixel buffer is retained directly by Flutter's texture

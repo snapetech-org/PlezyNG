@@ -6,7 +6,7 @@ six plugins, SQLite and SMB compile. The complete package passes structure/ABI
 checks; its author/distributor signatures and payload digests have been checked.
 Re-signing with a second local development profile preserves every payload file.
 No Samsung TV is available: installation, remote input and playback remain
-unqualified. A successful local build is not evidence of a private-JIT run.
+unqualified. The current Tizen workflow uses public GitHub-hosted Ubuntu.
 
 Confidence is **high** in build/package generation, **moderate** in the tested
 Dart integration, and **unknown** for a particular TV until the device checklist
@@ -153,14 +153,11 @@ identical. It never overwrites an existing signed output or guesses a TV target.
 ## CI and rollout plan
 
 `.github/workflows/tizen.yml` is manual (`workflow_dispatch`) with no release
-publication. It defaults to compatible hosted Ubuntu and offers the private
-profile for tasks that require private network, storage, or provisioned SDK
-resources. The versioned release uses the hybrid route: Tizen builds run on
-hosted Ubuntu, and iOS/tvOS packages use hosted macOS by default. A hosted tvOS
-job canceled before runner assignment is retried on private Apple JIT after its
-run evidence passes the controller's exact no-runner checks. Storage-constrained
-WebOS jobs use private JIT. Both profiles preserve the ARM toolchain and signing
-gates.
+publication. Validation and package jobs use public GitHub-hosted Ubuntu; the
+workflow has no private runner profile. Versioned releases also use public
+hosted Ubuntu for Tizen, while unsigned iOS/tvOS builds use hosted macOS. Apple
+JIT is reserved for explicitly requested signing or notarization. The separate
+webOS package lane retains its documented storage-capacity exception.
 `build_package` defaults to false; packaging runs only on `main`. `tester_build`
 defaults to true. With no provisioned paths/profile, the ARM job checks out the
 pinned Flutter toolchain, bootstraps its isolated SDK and creates a disposable
@@ -169,11 +166,9 @@ development profile. Provisioned paths can override this through
 `PLEZYNG_TIZEN_TOOLCHAIN_X64`. x64 still requires a provisioned SDK. Selecting a
 real Samsung profile requires preprovisioning its SDK and certificate store.
 
-The shared JIT inventory in `snapetech-org/packer` remains necessary when the
-private profile is selected. The deployed broker policy, runner-group workflow
-access and runner bootstrap/capacity must agree before dispatching that route.
-Adding workflow YAML or inventory source does not deploy the broker or create
-capacity. ARM SDK and development signing are provisioned by the workflow.
+The ARM SDK and development signing are provisioned by the workflow. Samsung
+store identity and Seller Office signing remain separate from the public tester
+build and the Linux host runner.
 
 ## Existing Samsung signing and Seller Office handoff
 
@@ -185,7 +180,7 @@ keeps these two modes separate, and the catalogue remains disabled.
 
 For a non-tester build, create the signing profile in Samsung Certificate Manager, then store its portable bundle as the repository Actions secret `SAMSUNG_TIZEN_PROFILE_ARCHIVE_B64`. The secret value is base64 text for a gzip tar containing exactly one `profiles.xml` plus the selected profile's referenced `.p12`, `.pwd`, `.cer`, `.crt`, `.pem`, or `.der` files. Use relative archive paths; omit account tokens, logs, and unrelated profiles. Keep the encoded value within GitHub's 48 KiB secret limit. Set the `PLEZYNG_TIZEN_STUDIO_ROOT` Actions variable to the provisioned Tizen Studio root, and enter the profile name in the workflow's `security_profile` input. The helper rejects unsafe archive entries, narrows the XML to that profile, rebases referenced certificate paths, and never copies signing material to build outputs.
 
-Samsung's [Certificate Manager guide](https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/creating-certificates.html) requires a Samsung developer account and target-device DUID for profile creation; preserve the same author certificate for future updates. The [TV SDK installation guide](https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/installing-tv-sdk.html) requires Tizen Studio, Samsung TV Extensions, and Samsung Certificate Extension. Install these on the private JIT image after reviewing and accepting their vendor licenses; use TV Extension 10.0.0 and Certificate Extension 2.0.73 or later for the 2026 toolchain.
+Samsung's [Certificate Manager guide](https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/creating-certificates.html) requires a Samsung developer account and target-device DUID for profile creation; preserve the same author certificate for future updates. The [TV SDK installation guide](https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/installing-tv-sdk.html) requires Tizen Studio, Samsung TV Extensions, and Samsung Certificate Extension. The public Tizen workflow installs the pinned toolchain on its disposable hosted Ubuntu runner; use TV Extension 10.0.0 and Certificate Extension 2.0.73 or later for the 2026 toolchain.
 
 For an ARM non-tester package run, the workflow also emits a
 `plezyng-samsung-tv-store-submission` artifact. Its ZIP contains the signed TPK,
@@ -204,7 +199,7 @@ keys belong in the bundle or repository.
 | Milestone | Exit evidence | Status |
 | --- | --- | --- |
 | Research and app/platform port | Primary-source map, reviewed code, Dart and packaging tests | Implemented; host tests pass. |
-| Native build | ARM TPK, complete runtime payload, manifest/ABI checks, signing and unchanged-payload re-signing | Built locally with the actual SDK. Private-JIT execution remains unverified. |
+| Native build | ARM TPK, complete runtime payload, manifest/ABI checks, signing and unchanged-payload re-signing | Built locally with the actual SDK. Public GitHub-hosted workflow execution remains unverified. |
 | 2026 target | GCC 14.2 toolchain and compatible engine/embedder/plugin libraries, separate artifact and hardware checks | Not implemented or claimed by the legacy candidate. |
 | One-TV smoke test | Model/firmware/SDK recorded; install, launch, navigation, vault round-trip, login, H.264/AAC playback, seek, subtitles, stop and restart | Pending target TV. |
 | Compatibility expansion | At least the oldest claimed TV generation and a current model; separate codec/audio/standby/network evidence | Pending. Do not turn the 2021 floor into a blanket support claim. |

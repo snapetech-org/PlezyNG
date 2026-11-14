@@ -94,11 +94,17 @@ def check_workflow(path: Path, text: str) -> list[str]:
     active = _active_text(text)
 
     if path.as_posix() == CI_WORKFLOW.as_posix():
-        windows_job = re.search(r"(?m)^  windows-native-test:\s*$", text)
-        marker = "  # packer-windows-jit-v1\n  windows-native-test:"
-        if windows_job is not None and marker not in text:
+        windows_job = re.search(
+            r"(?ms)^  windows-native-test:\n(?P<body>.*?)(?=^  [A-Za-z0-9_-]+:\n|\Z)",
+            active,
+        )
+        if windows_job is not None and (
+            "self-hosted" in windows_job.group("body")
+            or "windows-2025" not in windows_job.group("body")
+            or "windows-11-vs2026-arm" not in windows_job.group("body")
+        ):
             errors.append(
-                f"{path}: Windows native CI must declare the private Packer JIT marker"
+                f"{path}: Windows native CI must use public GitHub-hosted Windows runners"
             )
 
     for dangerous_trigger in ("pull_request_target", "workflow_run"):

@@ -1,4 +1,4 @@
-# ng-runner-policy: private-jit-only-v1
+# ng-runner-policy: hosted-default-v2
 name: Games embedded engine
 run-name: ${{ format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
@@ -12,17 +12,17 @@ on:
         type: choice
         options: [games]
       runner_pool:
-        description: Runner pool for this build
+        description: Public GitHub-hosted runner pool
         required: true
         type: choice
-        options: [private]
+        options: [public]
 
 permissions:
   contents: read
 
 jobs:
   steam-transport:
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-steam-transport"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -51,7 +51,7 @@ jobs:
         run: ctest --test-dir build/games-steam-tests --output-on-failure
 
   android-engine:
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-android-engine"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -61,8 +61,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Configure private Android download proxy
-        run: python3 scripts/prepare_android_sdk.py proxy
       - name: Setup Android SDK
         uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
         with:
@@ -76,7 +74,7 @@ jobs:
           flutter-version: '3.47.8'
           cache: true
           pub-cache: false
-      - name: Check private manifest and cancellation patches
+      - name: Check manifest and cancellation patches
         run: python3 -m unittest discover -s scripts/games -p 'test_*.py'
       - name: Resolve application dependencies
         run: flutter pub get --enforce-lockfile --no-example

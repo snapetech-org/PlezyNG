@@ -1,4 +1,4 @@
-# Public hosted runners by default; optional private routing preserves native OS/architecture.
+# Public GitHub-hosted runners for release validation and all store uploads.
 name: Publish Pleazyng store builds
 run-name: ${{ format('action:{0}:pool:{1}:tag:{2}:channel:{3}', inputs.action, inputs.runner_pool, inputs.release_tag, inputs.channel) }}${{ inputs.channel == 'google-play' && format(':track:{0}:status:{1}', inputs.play_track, inputs.play_release_status) || '' }}
 
@@ -11,11 +11,11 @@ on:
         type: choice
         options: [publish-app-stores]
       runner_pool:
-        description: Runner pool for this publication
+        description: Public GitHub-hosted runner pool
         required: true
         type: choice
         default: public
-        options: [public, private]
+        options: [public]
       release_tag:
         description: Published GitHub release tag whose signed store build should be submitted
         required: true
@@ -68,7 +68,7 @@ concurrency:
 jobs:
   validate-release:
     name: Validate published release
-    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate-release"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     outputs:
       release_tag: ${{ steps.validate.outputs.release_tag }}
     steps:
@@ -142,7 +142,7 @@ jobs:
     name: Upload to Google Play
     needs: validate-release
     if: ${{ inputs.channel == 'google-play' }}
-    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-publish-google-play"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       attestations: read
@@ -246,7 +246,7 @@ jobs:
     name: Upload to Amazon Appstore
     needs: validate-release
     if: ${{ inputs.channel == 'amazon-appstore' }}
-    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-publish-amazon-appstore"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -303,7 +303,7 @@ jobs:
     name: Upload to Apple App Store Connect
     needs: validate-release
     if: ${{ inputs.channel == 'app-store-ios' || inputs.channel == 'app-store-tvos' }}
-    runs-on: ${{ inputs.runner_pool == 'public' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-publish-apple-app-store"]}}', github.run_id)) }}
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:

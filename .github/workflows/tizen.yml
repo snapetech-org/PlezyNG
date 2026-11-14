@@ -1,9 +1,8 @@
-# ng-runner-policy: hosted-first-v1
+# ng-runner-policy: hosted-default-v2
 name: Samsung Tizen TV
 run-name: ${{ format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
-# Use compatible hosted Ubuntu by default; the private profile remains available
-# for tasks that require private network, storage, or provisioned SDK resources.
+# Tizen validation and packaging use public GitHub-hosted Ubuntu on every attempt.
 on:
   workflow_dispatch:
     inputs:
@@ -13,15 +12,15 @@ on:
         type: choice
         options: [tizen]
       runner_pool:
-        description: Private broker pool for jobs that need constrained resources
+        description: Public GitHub-hosted runner pool
         required: true
         type: choice
-        options: [private]
+        options: [public]
       execution_profile:
-        description: Use hosted Ubuntu for compatible Tizen work or private JIT for constrained resources
+        description: Use public GitHub-hosted Ubuntu for Tizen work
         required: true
         type: choice
-        options: [private, hybrid]
+        options: [hybrid]
         default: hybrid
       build_package:
         description: Build an experimental ARM tester TPK after validation
@@ -50,7 +49,7 @@ on:
   workflow_call:
     inputs:
       execution_profile:
-        description: Use hosted Ubuntu for compatible Tizen work or private JIT for constrained resources
+        description: Use public GitHub-hosted Ubuntu for Tizen work
         type: string
         required: false
         default: hybrid
@@ -96,7 +95,7 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -138,7 +137,7 @@ jobs:
   package:
     needs: validate
     if: inputs.build_package && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-package"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-package"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
       TESTER_BUILD: ${{ inputs.tester_build }}
@@ -149,7 +148,7 @@ jobs:
       TIZEN_CMAKE_TOOLCHAIN_X64: ${{ vars.PLEZYNG_TIZEN_TOOLCHAIN_X64 }}
       PACKAGE_ARCH: ${{ inputs.architecture }}
       SIGNING_PROFILE: ${{ inputs.security_profile }}
-      PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt == 1 && '1' || '0' }}
+      PLEZYNG_ALLOW_DIRECT_DOWNLOADS: '1'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -177,12 +176,8 @@ jobs:
           git lfs version
           command -v rustup
           rustup --version
-          if [[ -z "${HTTPS_PROXY:-${https_proxy:-}}" && "$PLEZYNG_ALLOW_DIRECT_DOWNLOADS" != 1 ]]; then
-            echo "The private JIT HTTPS proxy is required to fetch the pinned Samsung SDK packages." >&2
-            exit 1
-          fi
-      - name: Ignore private Tizen toolchain paths on hosted runners
-        if: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt == 1 }}
+      - name: Use the pinned public Tizen toolchain
+        if: ${{ inputs.execution_profile == 'hybrid' }}
         shell: bash
         run: |
           {
@@ -192,7 +187,7 @@ jobs:
             echo 'TIZEN_CMAKE_TOOLCHAIN_X64='
           } >> "$GITHUB_ENV"
       - name: Check out the pinned Flutter-Tizen tool
-        if: ${{ (inputs.execution_profile == 'hybrid' && github.run_attempt == 1) || env.PLEZY_FLUTTER_TIZEN_ROOT == '' }}
+        if: ${{ (inputs.execution_profile == 'hybrid') || env.PLEZY_FLUTTER_TIZEN_ROOT == '' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: flutter-tizen/flutter-tizen
@@ -200,7 +195,7 @@ jobs:
           path: .tizen-toolchain/flutter-tizen
           persist-credentials: false
       - name: Check out its pinned Flutter framework
-        if: ${{ (inputs.execution_profile == 'hybrid' && github.run_attempt == 1) || env.PLEZY_FLUTTER_TIZEN_ROOT == '' }}
+        if: ${{ (inputs.execution_profile == 'hybrid') || env.PLEZY_FLUTTER_TIZEN_ROOT == '' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: flutter/flutter
@@ -208,7 +203,7 @@ jobs:
           path: .tizen-toolchain/flutter-tizen/flutter
           persist-credentials: false
       - name: Restore the pinned Flutter release tag for SDK version detection
-        if: ${{ (inputs.execution_profile == 'hybrid' && github.run_attempt == 1) || env.PLEZY_FLUTTER_TIZEN_ROOT == '' }}
+        if: ${{ (inputs.execution_profile == 'hybrid') || env.PLEZY_FLUTTER_TIZEN_ROOT == '' }}
         shell: bash
         run: |
           set -euo pipefail

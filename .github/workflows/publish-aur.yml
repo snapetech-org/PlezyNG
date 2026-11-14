@@ -1,4 +1,4 @@
-# ng-runner-policy: hosted-first-v1
+# ng-runner-policy: hosted-default-v2
 name: Update AUR package
 run-name: ${{ format('action:{0}:pool:{1}:tag:{2}', inputs.action, inputs.runner_pool, inputs.release_tag) }}
 
@@ -20,7 +20,7 @@ on:
         required: true
         type: string
 
-# Several publication gates run before checkout in fresh private guests.
+# Several publication gates run before checkout on public hosted runners.
 env:
   GH_REPO: ${{ github.repository }}
 

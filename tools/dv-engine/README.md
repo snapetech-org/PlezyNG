@@ -142,7 +142,7 @@ This is recorded as `container_check.rpu_per_video_packet`; the MP4 demuxed
 Annex-B stream is not used for access-unit grouping because this GPAC output has
 no AUD NALs after muxing. The packet check passed locally against the retained
 48-frame synthetic MP4 (`bdc0da2744554996eaad7918394f7e77fe91c74810ffa5da49d251aee67c7cc4`),
-but has not run on an approved private-JIT job. The source vector's license is
+but has not run in CI. The source vector's license is
 [MIT](https://github.com/quietvoid/dovi_tool/blob/ef85991cfc31e26bc3ffed76364965f29f9fd281/LICENSE).
 
 Requirements: `x265`, `dovi_tool`, FFmpeg/`ffprobe`, and GPAC `MP4Box`. The
@@ -257,7 +257,7 @@ code 2049. The frame fixture also checks all eight luma pieces, both chroma MMR
 curves, and fractional-only Q0.32 coefficient representation. A historical
 local run on `kspld0` on 2026-10-26 passed the focused CCM/adapter suite 14/14
 and the `tools/dv-engine` Python suite 57/57. Current organization policy
-requires new builds and tests to use approved private JIT infrastructure; those
+requires new builds and tests to use public GitHub-hosted runners; those
 local runs are historical evidence, not the current merge gate. This remains an
 equation-level sample check, not a full-frame Dolby-reference comparison.
 
@@ -322,7 +322,8 @@ and no Dolby Vision metadata or physical DV output claim.
   single-RPU P7 subset; it does not implement BT.1886 conversion or Dolby
   display management, and its endpoint adaptation still needs independent
   confirmation. CM 2.9/4.0 behavior and the real-clip mark remain unqualified
-  against reference pixels. Private-JIT checks remain required before merge.
+  against reference pixels. Run compatible CI checks on public GitHub-hosted
+  runners before merge; qualify device behavior on target hardware.
 - Expand the generated single-track graph fixture with separate-track input,
   PTS pairing and reorder, seek/flush, broken metadata/RPU, CM2.9/CM4 cases,
   scene changes, active area, malformed or missing EL, crop/chroma edges,

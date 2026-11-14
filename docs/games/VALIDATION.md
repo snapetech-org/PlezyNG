@@ -1,5 +1,11 @@
 # Games validation and release gates
 
+> Runner policy update (2026-11-13): run compatible build, test, scan and
+> package jobs on public GitHub-hosted runners. Use private JIT only for
+> requested Apple signing or the documented webOS storage overflow. Hardware
+> qualification remains a separate manual target-device gate; dated private
+> runner references below describe historical jobs only.
+
 ## Main integration — 2026-11-05
 
 Previously unmerged PR #81/#111 source was reconciled with current main.
@@ -84,7 +90,7 @@ by a live Valve write.
 ## Packaging and deployment code closure — 2026-10-29
 
 Added final APK/AAB receiver inspection, minified-app instrumentation and
-embedded-disabled packaging to the existing private build jobs. Release APKs
+embedded-disabled packaging to the existing public hosted build jobs. Release APKs
 are checked before archiving; Play/Amazon copies are checked before attestation.
 The checker verifies the exact receiver/Flutter ABI set, exported JNI contract,
 ELF alignment, runtime dependency presence and APK ZIP alignment. Its receipts
@@ -103,7 +109,8 @@ Validation performed:
   exports and real `llvm-readelf`/`zipalign` checks. This fixture is not a Flutter
   application and is not application-build evidence.
 - 22 build-workflow tests and 24 shrinker-rule tests pass; workflow security and
-  immutable-action-pin checks pass. Existing private runner routing is retained.
+  immutable-action-pin checks pass. Current compatible jobs use public
+  GitHub-hosted runners.
 - `go test -race ./...` passes, including real occupied-UDP-port rejection and
   configured/disabled/incomplete-feature startup cases. The server also compiles
   with CGO disabled for Linux amd64 and arm64.
@@ -214,7 +221,7 @@ records flows, branding, screenshot provenance and physical-device acceptance.
 
 This pass does not requalify native SDK builds or hardware. The phone
 controller-only native follow-up remains newer than earlier JNI/native receipts.
-The existing private-JIT, packaging, Apple/Windows, live-host/HDR/accessibility,
+The current-head public-hosted, packaging, Apple/Windows, live-host/HDR/accessibility,
 Valve-authority and relay deployment gates remain open. No workflows were
 changed or dispatched for the visual pass.
 
@@ -224,7 +231,7 @@ The implementation now adds an input-only Steam request and session negotiation,
 plus an Android connection-state JNI entry point. It is newer than the Android
 42-export and native-test evidence recorded below. This follow-up has not been
 built or run against a paired Steam host; the earlier counts do not qualify it.
-Run the exact current PR head through the private Android/iOS build gates and
+Run the exact current PR head through the public hosted Android/iOS build gates and
 verify whether the host permits this separate controller session alongside an
 existing play session.
 
@@ -295,7 +302,7 @@ release-distribution checksums):
 
 Application/native feature logic is unchanged from the preceding ownership
 checkpoint. The latest-main integration also preserves Darwin interface-flag
-visibility, parent CTest isolation from Opus, private-JIT memory/disk fixes and
+visibility, parent CTest isolation from Opus, runner memory/disk fixes and
 Apple simulator project changes. Historical Flutter, native runtime and Go
 results below still identify their original checks.
 Apple's real Xcode SDKs must be provisioned on Mac agents; unit-tested command
@@ -323,7 +330,8 @@ accessibility checks, and evidence template.
 The follow-up incorporates main `4f177e93`, including its subtitle, motion,
 connector and genre-browsing changes. PR #54 is already merged. Receiver
 implementation and security regressions are retained; Windows/JVM test
-registration and shared Apple test wiring remain part of private JIT CI.
+registration and shared Apple test wiring were part of private JIT CI at that
+revision. Current CI uses public GitHub-hosted runners under root `AGENTS.md`.
 
 This pass repairs source/API integration errors in the combined app, restores
 bounded TAR parsing, keeps stale settings writes from winning, and preserves
@@ -377,8 +385,8 @@ programmatic Cloud/Families implementation is claimed by this reconciliation.
 
 This pass incorporates main `f0f1e104` and the startup/build hardening in
 `60c8d0a4`. The PR records the final handoff commit; always check out that
-revision before building. Local evidence below is not private-JIT CI or
-platform/device qualification.
+revision before building. Local evidence below is not CI or platform/device
+qualification.
 
 - **287 Flutter tests passed** across Games, Multiview, gamepads, companion
   provider/receiver/peer, visualization, recordings and search. They include
@@ -391,7 +399,7 @@ platform/device qualification.
 - **41 native Debug tests passed with Vulkan and GStreamer enabled**. A separate
   **41-test ASan/UBSan run passed with Pyrowave disabled**, covering the portable
   transport and GStreamer receiver. Local LeakSanitizer was disabled because
-  this environment cannot inspect the required process state; private CI keeps
+  this environment cannot inspect the required process state; CI keeps
   leak detection enabled. Neither run establishes Vulkan GPU execution.
 - Real GStreamer H.264 red-pixel decoding now passes both Annex-B and
   avcC/length-prefixed framing. Runtime tests cover bounded connection and
@@ -415,7 +423,7 @@ platform/device qualification.
   keys and normalized missing keys to the existing empty-string fallback
   convention. This does not constitute language review.
 
-Current-head private-JIT CI, Windows MSVC/execution, Apple SDK/Metal tests,
+Current-head public-hosted CI, Windows MSVC/execution, Apple SDK/Metal tests,
 Android Gradle/NDK/release builds and real-host qualification remain required.
 HDR presentation, Android/Linux direct GPU Pyrowave, automatic internet
 rendezvous/traversal/relay, and programmatic Cloud/Families mutations remain
@@ -585,7 +593,7 @@ No external streaming-app handoff is used.
 - Two additional dialog tests passed: connection retirement suppresses a late
   title, and game-session actions fit a 320px RTL dialog with 2× text.
 - Focused Dart analysis of the changed implementation and tests: no issues.
-- These are local automated results. Current-head private-JIT builds, real
+- These are local automated results. Current-head public-hosted builds, real
   companion devices and actual Steam host actions remain unverified.
 
 
@@ -658,7 +666,7 @@ wired into all Apple targets. Source/project checks verify compilation inputs,
 framework linkage and archive wiring. Portable parser tests now cover opt-in
 4:4:4, siting, legacy 4:2:0 rejection, conflicting sequence headers and HDR
 rejection. This does not validate Metal shader compilation or GPU execution.
-The checked-in Apple XCTest must run on a compatible Apple runner. A hosted macOS runner is suitable when it meets the test's OS, architecture, and trust requirements; use private JIT for hardware or private-network needs it cannot meet.
+The checked-in Apple XCTest must run on a public GitHub-hosted macOS runner. Qualify hardware and playback manually on target devices.
 The Intel/simulator skip is explicit and is not a successful GPU test.
 
 Local follow-up checks: all **41 native tests** and **20 focused Dart/widget
@@ -704,22 +712,23 @@ and the Linux adapter passes strict compilation against Flutter's headers.
 - Xcode project structure verifies all three Apple source sets, archive build
   order, framework links and test inclusion; existing minimum OS versions are
   unchanged. This is not SDK compilation or GPU execution.
-- Current-head private-JIT CI has **not** run. Workflow dispatch is unavailable
+- Current-head public-hosted CI has **not** run. Workflow dispatch is available
   through the connected GitHub API, and the available browser is not signed in.
   Apple SDK/device validation and full platform build/release gates remain open.
 
-To run the existing private workflow from an authenticated maintainer session:
+To run the public workflow from an authenticated maintainer session:
 
 ```sh
 gh workflow run ci.yml --repo snapetech-org/pleazyng \
   --ref codex/steam-receivers-and-controls \
-  -f action=ci -f runner_pool=private -f build_linux_packages=true
+  -f action=ci -f runner_pool=public -f build_linux_packages=true
 ```
 
 Verify the run's head matches the PR head. A rerun of an older workflow revision
 does not validate these sources. This command explicitly selects the current
-private runner path; root `AGENTS.md` now permits compatible hosted runners for
-jobs that meet their requirements.
+public GitHub-hosted runner path. Keep pull-request jobs secret-free with
+read-only permissions; use device-specific manual qualification for hardware
+behavior that a hosted VM cannot observe.
 
 
 ### Windows receiver source and cross-compilation — 2026-10-28
@@ -806,13 +815,13 @@ jobs that meet their requirements.
 - The Android Steam Java module compiles against API 36 with generated resource
   symbols and 20 compatibility deprecation warnings. The new JNI entry point
   preserves all older entry points, but Android NDK/link/minified packages and
-  current Apple SDK builds still require private JIT verification.
+  current Apple SDK builds still require public hosted verification.
 
 See [STEAM_INTERNET.md](STEAM_INTERNET.md) for the disabled-by-default deployment,
 two-device opt-in, same-account admission, fixed-port forwarding, cryptographic
 and resource limits, and real-network test matrix. No real internet relay
 deployment, router traversal, Steam session throughput, hardware HDR output or
-independent cryptographic audit was performed here. Current-head private JIT
+independent cryptographic audit was performed here. Current-head public hosted
 jobs have not been dispatched from this environment; use the commands in
 [LIVE_TEST_HANDOFF.md](LIVE_TEST_HANDOFF.md). Confidence is high in the recorded
 local results and unknown in untested device/service/network behavior.
@@ -850,7 +859,7 @@ local results and unknown in untested device/service/network behavior.
   diagnostics report chroma only after an actual GPU-presented frame.
 
 These tests use controlled Steam API responses and do not claim successful
-Families changes on live accounts. Current private-JIT SDK builds, real HDR
+Families changes on live accounts. Current public-hosted SDK builds, real HDR
 output, relay deployment and Valve-approved Cloud scopes remain external gates.
 See [STEAM_FAMILIES.md](STEAM_FAMILIES.md) for the broader temporary-session trust
 model, explicit limits and live qualification cases.
@@ -902,7 +911,7 @@ checkpoint. Steam features and security controls are retained.
 Current-main SDK cache, private-runner routing, platform build repairs, database
 generation and test-fixture changes are retained. The workflow architecture
 guard passes, and formatting passes for all 30 authored Dart files that still
-differ from this base. These source checks do not establish a private-JIT build.
+differ from this base. These source checks do not establish a CI build.
 
 - The standard analyzer again passes with zero diagnostics; localization
   counts and explicit fallback tracking remain unchanged.
@@ -920,7 +929,7 @@ Native Steam, server, Games and Steam detail-screen source files are unchanged
 from the preceding implementation checkpoint. Their recorded native/server
 results remain separately identified above; no new SDK build or live deployment
 is claimed. This reconciliation resolves source conflicts without merging the
-PR into main or changing the required private-JIT platform qualification gates.
+PR into main or changing the required platform and device qualification gates.
 
 ## Code follow-through — 2026-10-29
 
@@ -986,7 +995,7 @@ accessed during these source tests.
   position controls. The ordinary input wire-format regression cases pass.
 - Standard analyzer passes with zero diagnostics. Localization placeholders,
   explicit English fallback manifest and source hashes pass; translation review
-  is not implied. The private-JIT workflow architecture guard passes unchanged.
+  is not implied. The workflow architecture guard passes unchanged.
 - **42 native tests passed; one display test skipped**. The extended runtime
   test also passes after its final feature-report assertions: fragmented/multiple
   host commands, duration bounds, stale motion, ownership loss, seat reuse,
@@ -1041,9 +1050,10 @@ with that explicit OS permission error, rather than passing or silently skipping
 No Windows/macOS runtime result is claimed. The plugin JS tests/build/typecheck
 and the five standalone Dart exchange tests were rerun for this checkpoint.
 Full Flutter validation remains unavailable because the prior Flutter SDK source
-is absent. Desktop SDK builds, cross-user access rejection and live Steam/Decky
-qualification must run on the private platform agents before release.
+is absent. Desktop SDK builds and cross-user access rejection must run in
+compatible public CI; live Steam/Decky qualification must run on target devices.
 
-The existing private Linux, macOS and Windows CI jobs now run the real IPC probe.
-Runner routing, permissions and trust conditions are unchanged; these amended
-jobs have not been dispatched or observed here.
+The Linux, macOS and Windows CI jobs run the real IPC probe on compatible
+public GitHub-hosted runners. Runner permissions and trust conditions remain
+read-only and secret-free for untrusted code; these amended jobs have not been
+dispatched or observed here.

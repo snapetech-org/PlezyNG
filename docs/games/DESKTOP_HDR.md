@@ -43,7 +43,8 @@ Teardown stops the display monitor and joins the worker before removing the laye
 ## Qualification
 
 Cross-build/linking and source tests do not prove a real HDR display. Test the
-current commit on private JIT MSVC x64/ARM64 and Apple SDK builders, then record:
+current commit on public GitHub-hosted Windows x64/ARM64 and Apple SDK builders,
+then record:
 
 | Case | Required result |
 | --- | --- |

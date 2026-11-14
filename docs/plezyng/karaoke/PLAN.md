@@ -1,9 +1,9 @@
 # PlezyNG karaoke implementation
 
-> Runner policy update (2026-11-10): compatible GitHub-hosted runners are the
-> default. Private JIT is reserved for platform, device, private-network, or
-> storage requirements that hosted runners cannot satisfy. Historical
-> no-hosted-fallback wording below is superseded.
+> Runner policy update (2026-11-13): use public GitHub-hosted runners for all
+> compatible jobs. Private JIT is limited to requested Apple signing and the
+> documented webOS storage overflow. Qualify devices manually on target
+> hardware. Historical private-only wording below is superseded.
 
 Owner request: implement the full 48-requirement karaoke assessment dated 2026-10-29.
 
@@ -65,7 +65,7 @@ Owner request: implement the full 48-requirement karaoke assessment dated 2026-1
 | K45 | P7 | **Optional community layer.** Plan opted-in profile libraries, performance links, shared song packages, following/comments/reactions, discovery and moderation. Public publishing requires an actual hosted service, access controls and supported content permissions; local recording stays independent. [S01,S09,S13] | Blocked: public community requires hosting, moderation and content permissions |
 | K46 | P5 | **Portable collections and sync.** Export/import complete open packages, favorites, singer presets and setlists; optionally sync them through existing configured storage. Resolve conflicts explicitly and revoke sharing links. Data formats are versioned and preserve source identity. [S13,S16; PlezyNG design] | Partial: versioned singer/setlist collection and open package export; no account sync |
 | K47 | P0/P6 | **Platform capability and packaging.** Publish per-build capabilities for formats, pitch/tempo, stems, microphones, scoring, capture and secondary output. Package codecs/DSP/models with version and license records. Unsupported features must return a specific reason rather than silently succeed. [C07,C10] | Partial: source capability gates and companion capability report; platform packaging remains unqualified |
-| K48 | P6 | **Release evidence and completion.** Track implemented, integrated, packaged and device-qualified status separately for every requirement. Cover full menu-to-performance-to-save/next-singer flows, migration and failure recovery. Use compatible GitHub-hosted runners by default and private ephemeral JIT only when platform, device, network, storage or tooling needs require it. [C12] | Not qualified: recent commit hooks passed codegen freshness, localization, repository script/test guard suites, formatting, and repository Dart analysis. The full Flutter test suite, all platform builds and physical-device qualification remain open |
+| K48 | P6 | **Release evidence and completion.** Track implemented, integrated, packaged and device-qualified status separately for every requirement. Cover full menu-to-performance-to-save/next-singer flows, migration and failure recovery. Use public GitHub-hosted runners for compatible CI; qualify devices manually. Private JIT is limited to requested Apple signing and the documented webOS storage overflow. [C12] | Not qualified: recent commit hooks passed codegen freshness, localization, repository script/test guard suites, formatting, and repository Dart analysis. The full Flutter test suite, all platform builds and physical-device qualification remain open |
 
 ## Delivery order
 

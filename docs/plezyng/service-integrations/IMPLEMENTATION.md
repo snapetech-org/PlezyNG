@@ -4,7 +4,7 @@ Status updated **2026-10-28** for closeout branch `codex/service-roadmap-closeou
 
 Current main contains the Watchmode server connector and contextual availability rows, plus an iOS Apple MusicKit catalog/playback pilot inside the existing Links flow. It also includes the official storefront and affiliate link broker, inline comic access, Open Library/Google Books, OverDrive behind its explicit flag, OpenSubsonic/Subsonic, podcasts/OPML, connected catalog search, Hardcover, Trakt-to-Letterboxd export, and exact Steam links. This closeout reconciles those deliveries without inferring provider account, entitlement, purchase, loan, or playback from a link or catalog row.
 
-Code within the selected first-release scope is **implemented but unqualified** until local build/analyzer evidence, private-JIT results where applicable, partner setup, and device/provider checks are recorded. No tests, analyzer, platform build, live API, or device qualification were run for this closeout. Watchmode and MusicKit remain disabled until their exact setup requirements are met.
+Code within the selected first-release scope is **implemented but unqualified** until local build/analyzer evidence, public-hosted CI results, partner setup, and device/provider checks are recorded. No tests, analyzer, platform build, live API, or device qualification were run for this closeout. Watchmode and MusicKit remain disabled until their exact setup requirements are met.
 
 ## Closeout context
 
@@ -117,7 +117,7 @@ No messages, applications, payments, deployments or agreements were sent/accepte
 
 Use coherent PRs for contracts/persistence, launch/UI, each merchant/feed, each lending adapter and each SDK. Explain user-visible behavior and evidence; do not call a fixture-only provider supported. Avoid broad format churn, dependency upgrades or unrelated player rewrites. Follow the current runner policy in `AGENTS.md`. Use the repository's normal verification path for code changes and affected suites for follow-up work.
 
-For an implementation PR, run meaningful affected tests, formatting, analyzer/localization and required repository checks under the current instructions. CI results must identify the exact tested SHA and runner workflow. Use compatible GitHub-hosted runners when their OS, architecture, trust, and hardware fit; use private JIT where those requirements or private storage/network need it. Missing JIT capacity blocks a job only when a compatible hosted runner cannot meet its requirements. Manual device results require model/OS/build, account/library sandbox and reproducer.
+For an implementation PR, run meaningful affected tests, formatting, analyzer/localization and required repository checks under the current instructions. CI results must identify the exact tested SHA and runner workflow. Use public GitHub-hosted runners for compatible jobs; qualify target devices manually. Private JIT is limited to requested Apple signing and the documented webOS storage overflow. Manual device results require model/OS/build, account/library sandbox and reproducer.
 
 ## Code-level closeout
 

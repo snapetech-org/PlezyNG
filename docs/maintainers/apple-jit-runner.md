@@ -1,52 +1,29 @@
-# Pleazyng Apple JIT runner
+# Pleazyng Apple signing runner
 
-Compatible GitHub-hosted macOS is the default for Apple package jobs. GitHub
-does not expose global hosted macOS capacity, so queued Apple jobs in this
-repository are not a valid signal that hosted capacity is free or busy.
+Use public GitHub-hosted macOS runners for Apple CI, tests, and unsigned release
+artifacts. The private Apple JIT lane is optional and only for explicitly
+requested signing/notarization work. If its Mac is offline, skip or fail that
+Apple signing lane cleanly while the unsigned Apple jobs and all other release
+platforms continue.
 
-When a versioned release's hosted tvOS job is canceled before runner
-assignment, the release controller checks the exact failed run and attempt.
-It retries only when the job used `macos-26`, has no runner ID/name or steps,
-and every other source job completed successfully or was skipped. For ordinary
-developer artifacts, the retry rebuilds tvOS on the private Apple JIT lane and
-reuses the other successful platform outputs only after the existing exact
-source and artifact-digest checks pass. A nonpublishing candidate uses a
-separately titled private retry and rebuilds its complete matrix. A real tvOS
-build failure is never converted into an allocation retry.
+Hosted queue delays and build failures never trigger an automatic private retry.
+Preserve active jobs and diagnose the exact failure. Reuse successful immutable
+artifacts for a signed-only recovery when their source and digests match.
 
-If hosted tvOS remains queued for ten minutes without a runner identity or any
-steps, the controller preserves all active platform jobs. Once every other
-platform job has succeeded or been skipped and release assembly has not started,
-it cancels the drained workflow and retries through the private Apple JIT lane.
-
-The private queue controller waits for the single Mac slot, confirms current
-APFS capacity, and launches the recovery job when it is available. The runner
-is never started while the capacity gate is closed. Explicit `hosted` and
-`private` route overrides remain available for qualification and diagnosis.
-
-This policy responds to the v3.0.33 hosted release, which waited 7h18 for its
+Historical context: the v3.0.33 hosted release waited 7h18 for its
 Apple jobs, then the signed iOS job reached its six-hour limit while archiving.
 A verified private Apple recovery completed iOS in 1h43 and tvOS in 26 minutes
 ([hosted release](https://github.com/snapetech-org/pleazyng/actions/runs/42992562384),
 [iOS recovery](https://github.com/snapetech-org/pleazyng/actions/runs/43120491761),
 [tvOS recovery](https://github.com/snapetech-org/pleazyng/actions/runs/43115287017)).
-The release controller starts the runner on demand and serializes Apple jobs
-because the private lane has one Mac slot. Direct workflow dispatches default
-to hosted Apple. The release controller monitors tvOS acquisition and switches
-to private JIT after the bounded unassigned queue wait.
-`--tvos-runner-pool hosted|private` selects the iOS/tvOS package pair, while
-`--apple-arm-runner-pool hosted|private` selects the Mac package route.
-`--ios-runner-pool private` routes iOS and macOS through Apple JIT while tvOS
-stays hosted and parallel. Release CI's native test matrix follows that same
-route. GitHub does not expose global hosted macOS capacity,
-so queued jobs in this repository cannot prove whether the global hosted pool
-is free or busy. The macOS compile step is bounded at 100 minutes, with a
-150-minute job limit; recent successful hosted compiles took 64–74 minutes.
-
-Release CI's Apple native reliability checks use the same selected route as
-the iOS, tvOS and macOS package jobs. This prevents a private-capacity decision
-for the packages from silently sending prerequisite checks to a congested
-hosted Mac queue. Other hybrid lanes retain their platform-compatible routes.
+The historical recovery used private Apple JIT after hosted queue delays. That
+fallback was removed. The current controller keeps unsigned Apple artifacts on
+public hosted Macs and does not switch routes after a queue delay. Signed
+packages may select private Apple JIT explicitly when the Mac is online.
+`--tvos-runner-pool hosted|private` selects the signed iOS/tvOS package route;
+`--apple-arm-runner-pool hosted|private` selects the signed/notarized macOS
+package route. `--ios-runner-pool private` selects the explicitly requested
+signed Apple route. Apple CI tests remain unsigned on public hosted Macs.
 
 ## Pinned tvOS host tools on Apple silicon
 
@@ -264,7 +241,8 @@ that exact compilation rather than repeat the build:
 
 ```sh
 gh workflow run build.yml --ref main \
-  -f action=build -f runner_pool=private -f execution_profile=hybrid \
+  -f action=build -f runner_pool=public -f execution_profile=hybrid \
+  -f tvos_runner_pool=private \
   -f mode=macos-validation -f build_version=3.0.3 \
   -f prepare_homebrew_cask=true -f macos_compilation_job_id=128247608189
 ```

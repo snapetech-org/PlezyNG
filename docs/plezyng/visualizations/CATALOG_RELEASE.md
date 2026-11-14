@@ -43,9 +43,10 @@ qualify content or force a download.
 Every remotely delivered broader pack needs a signed immutable qualification
 report and all 13 targets required by `all-native-hosts-v1`. The publisher
 checks per-preset evidence, source/artifact digests, rights review and the
-required runner/device evidence, using compatible public GitHub-hosted runners
-by default and private ephemeral JIT only where platform, device, or private
-resource requirements demand it. The app validates the signed report summary
+required runner/device evidence, using public GitHub-hosted runners for
+compatible jobs. Device qualification runs on target devices; private JIT is
+limited to requested Apple signing and the documented webOS storage overflow.
+The app validates the signed report summary
 and links it in the library; report inspection is user-initiated. It does not
 re-run GPU comparisons on the phone/TV. Labels describe the report's recorded
 engine/device versions, not universal fidelity on all future hardware. The

@@ -28,7 +28,7 @@ is compatible.
 | V6 local library | Bounded loose/folder/ZIP/rmpack import, atomic install/recovery/removal, dependency-aware shared texture storage, private resolved views, preset/assets/notices export, shape/wave export and composition into a new copy. |
 | V7 downloads | Explicit catalog fetch/install/update/remove, durable bounded staging, ETag/Range-validated resume, cancel/retry/discard, checksum validation and offline use. |
 | V8 app controls | Search/favorites/playlists, engine and per-preset capability negotiation, lock/shuffle/timing/transition/fullscreen/input controls, persisted profile choices and adaptive native resolution/frame pacing. |
-| V9 qualification tooling | Source regressions, fault/lifecycle controls, compatible hosted/private JIT jobs, reference/corpus evidence formats and per-target qualification gates. Execution and physical-device results are pending. |
+| V9 qualification tooling | Source regressions, fault/lifecycle controls, public-hosted CI, reference/corpus evidence formats and per-target qualification gates. Execution and physical-device results are pending. |
 | V10 release tooling | Runtime/source/notices packaging for each claimed platform, ordered mpv artifact promotion, keyless Sigstore catalog publication/verification, separate Ed25519-root configuration, protected publisher/preflight and release documentation. The ordered PCM artifacts are promoted in the app lock and the sample-only keyless catalog is published; MilkRust runtime production/installation across targets, broader catalog rights/qualification and release publication remain open. |
 
 ## Final code closure
@@ -52,8 +52,9 @@ resolve aliases without copying source packs into each consumer.
 ## Validation and delivery still pending
 
 - Compile/link, tests, corpus conversion runs, driver execution and reference
-  pixel/behavior comparisons on compatible hosted runners by default, using
-  private JIT only when the required platform, device, or private resource needs it.
+  pixel/behavior comparisons on public GitHub-hosted runners. Device output is
+  qualified manually on target devices; private JIT is limited to requested
+  Apple signing and the documented webOS storage overflow.
 - Installed app, audio ownership, accessibility/localization, performance,
   lifecycle and physical-device qualification for each platform.
 - Actual PCM playback, lifecycle, passthrough and performance qualification on

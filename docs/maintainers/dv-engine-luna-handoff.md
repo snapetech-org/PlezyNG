@@ -1,5 +1,10 @@
 # Dolby Vision FEL experimental build — handoff
 
+> Runner policy update (2026-11-13): use public GitHub-hosted runners for
+> compatible CI. Hardware qualification runs on target devices. Private JIT is
+> limited to requested Apple signing and the documented webOS storage overflow;
+> the dated runner details below are historical.
+
 Updated 2026-10-26. Repository: [snapetech-org/pleazyng](https://github.com/snapetech-org/pleazyng). Follow-up work is tracked in [PR #16](https://github.com/snapetech-org/pleazyng/pull/16) and `tools/dv-engine/`. This brief records the validated engine revision; later documentation or main-sync commits do not change the engine test result.
 
 Current policy, 2026-11-09: normal compatible builds request implemented DV/FEL
@@ -82,7 +87,7 @@ NAL per video packet, recorded as `container_check.rpu_per_video_packet`. The
 retained synthetic MP4 (`bdc0da2744554996eaad7918394f7e77fe91c74810ffa5da49d251aee67c7cc4`)
 passed locally: 48 packets, 48 RPUs, one per packet. The former post-mux Annex-B
 check was invalid because FFmpeg's demux output has no AUD NALs; the packet-based
-check replaces that assumption. It has not run on an approved private-JIT job.
+check replaces that assumption. It has not run in CI.
 
 `dovi_tool` 2.3.1 parses the embedded vector as **Profile 7 FEL, CM v2.9** with
 `disable_residual_flag=false`, 10-bit BL/EL and a 12-bit VDR signal. The authored
@@ -174,8 +179,8 @@ of 48 packets. The corresponding zero-B-frame run had PTS=DTS and no warnings.
 This correlates the observed replacement warning with the reordered synthetic
 timeline on this path. RPU/frame identity for B-frame content remains
 unqualified; zero warnings do not prove frame identity. The final local suite
-ran 65/65 Dolby experiment contracts. These are local checks, not an approved
-private-JIT result or a Dolby reference-pixel comparison.
+ran 65/65 Dolby experiment contracts. These are local checks, not a CI result
+or a Dolby reference-pixel comparison.
 
 ## Profile 7 RPU-to-CCM sample reference
 
@@ -215,9 +220,9 @@ sentinel. This matches [libplacebo's public reshape shader](https://github.com/h
 ### Historical local validation (2026-10-26)
 
 The checks below were run directly on `kspld0` and record past experiment
-evidence. Current organization policy requires every new build and test to run
-on approved private JIT infrastructure; these local results do not satisfy that
-gate.
+evidence. The runner policy at that time required private JIT. The owner changed
+the current policy on 2026-11-13: compatible CI uses public GitHub-hosted
+runners. These local results remain historical and do not substitute for CI.
 
 - CCM and Profile 7 adapter tests: **14/14**; `tools/dv-engine` Python suite:
   **57/57**; platform DV Python suite: **47/47**; targeted Flutter
@@ -297,11 +302,11 @@ chroma. The JSON report records these assertions. The historical report above
 has not been rerun with the strengthened verifier. Do not describe the old
 measurement as having passed it.
 
-The current shared JIT group selects only PlezyNG's `build.yml`; `ci.yml` and
-the Dolby workflows are not selected. The ordinary CI workflow therefore has
-no approved route for this branch, and no validation run was dispatched while
-that route gap remains. Use the reviewed isolated owner-PR dispatcher before
-adding workflow access; do not route this PR's code to a shared runner group.
+At the time of this handoff, the shared JIT group selected only PlezyNG's
+`build.yml`; `ci.yml` and the Dolby workflows were not selected. The owner
+changed the current routing on 2026-11-13: compatible validation uses public
+GitHub-hosted runners. Do not widen private runner-group access for ordinary
+CI.
 
 ## Android synthetic Surface trial (2026-10-26)
 

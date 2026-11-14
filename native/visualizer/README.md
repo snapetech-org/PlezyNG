@@ -66,9 +66,9 @@ actual runtime capability is still negotiated from the loaded binary.
 
 ## Source preparation and promotion
 
-On a compatible GitHub-hosted runner by default (or private JIT when the target
-platform, device, network, storage or tooling requires it), prepare clean
-dependency sources with:
+On public GitHub-hosted runners for compatible platforms, prepare clean
+dependency sources with the following commands. Qualify hardware manually; private JIT is limited to
+requested Apple signing and the documented webOS storage overflow.
 
 ```sh
 python3 native/visualizer/prepare_sources.py --platform linux --destination /path/to/visualizer-sources
@@ -210,9 +210,10 @@ supplies this state.
 
 ### Regular runtime artifact wiring
 
-The regular build paths produce the pinned MilkRust runtime. Use compatible
-GitHub-hosted runners by default; reserve private JIT for platform, device,
-network, storage or tooling needs hosted runners cannot meet.
+The regular build paths produce the pinned MilkRust runtime. Use public
+GitHub-hosted runners for compatible builds and qualify devices manually.
+Private JIT is limited to requested Apple signing and the documented webOS
+storage overflow.
 Desktop workflows call `scripts/visualizer/build_runtime.py` before Flutter;
 CMake verifies the receipt/pin/digests and requires the runtime by default.
 Android Gradle stages selected ABIs before JNI/assets merge. Apple Runner targets

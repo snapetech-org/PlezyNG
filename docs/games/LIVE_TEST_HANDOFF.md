@@ -76,18 +76,21 @@ maintainer session:
 ```sh
 gh workflow run ci.yml --repo snapetech-org/pleazyng \
   --ref codex/steam-vulkan-cloud-relay-20261028 \
-  -f action=ci -f runner_pool=private -f build_linux_packages=true
+  -f action=ci -f runner_pool=public -f build_linux_packages=true
 gh workflow run games-native.yml --repo snapetech-org/pleazyng \
   --ref codex/steam-vulkan-cloud-relay-20261028 \
-  -f action=games -f runner_pool=private
+  -f action=games -f runner_pool=public
 ```
 
 Confirm each run's SHA matches the intended checkout. The CI workflow covers
-the existing private Linux, Android, Windows x64/ARM64 and Apple jobs. Apple
+Linux, Android, Windows x64/ARM64 and Apple jobs on compatible public
+GitHub-hosted runners. Apple
 tests build the real Runner workspaces and invoke the VideoToolbox/Metal tests;
 a simulator/Intel Metal skip does not qualify the GPU path. The Android module
 job now runs the Steam JVM tests as well as building both embedded engines.
-These commands explicitly select the current private runner path. Root `AGENTS.md` permits compatible hosted runners for jobs that meet their OS, architecture, trust, and hardware requirements; preserve runner-group access boundaries and do not widen trusted permissions.
+These commands select public GitHub-hosted runners. Keep pull-request jobs
+secret-free with read-only permissions; use device-specific manual qualification
+for hardware behavior that a hosted VM cannot observe.
 
 Before live testing, require the platform's build and tests to pass. Build
 Android's minified app release as well as debug; verify both supported ABIs and

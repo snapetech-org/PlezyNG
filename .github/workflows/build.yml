@@ -1,8 +1,8 @@
-# ng-runner-policy: hosted-first-v1
-# Hybrid builds use compatible hosted runners by default; private-ios keeps tvOS hosted while routing iOS and macOS through Apple JIT.
-# packer-windows-jit-v1
+# ng-runner-policy: hosted-default-v2
+# Public GitHub-hosted runners are required for all compatible jobs; only
+# requested Apple signing and the verified webOS storage overflow use JIT.
 name: Pleazyng Release
-run-name: ${{ inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'build' && format('action:{0}:pool:{1}:mode:{2}:version:{3}:runner-retry-of:{4}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}:runner-retry-of:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && inputs.reuse_platform_run_id != '' && inputs.rebuild_tvos && format('action:{0}:pool:{1}:tag:v{2}:recovery:source:{3}:tvos', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_platform_run_id) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
+run-name: ${{ format('{0}{1}', inputs.private_apple_signing_unavailable && 'apple-signing-unavailable:' || '', inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'build' && format('action:{0}:pool:{1}:mode:{2}:version:{3}:runner-retry-of:{4}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos && inputs.reuse_platform_run_id == '' && inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}:runner-retry-of:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_repaired_run_id) || inputs.recovery_source_sha != '' && format('action:{0}:pool:{1}:tag:v{2}:repair:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.recovery_source_sha) || inputs.action == 'release' && inputs.reuse_platform_run_id != '' && inputs.rebuild_tvos && format('action:{0}:pool:{1}:tag:v{2}:recovery:source:{3}:tvos', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_platform_run_id) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool)) }}
 
 on:
   workflow_dispatch:
@@ -16,17 +16,17 @@ on:
           - release
           - apple-signing-preflight
       runner_pool:
-        description: Private JIT pool for jobs that need constrained resources
+        description: Use public GitHub-hosted runners for every compatible job
         required: true
         type: choice
         options:
-          - private
+          - public
+        default: public
       execution_profile:
-        description: Use standard hosted runners for compatible trusted-main jobs; reserve private JIT for webOS and explicit constrained builds
+        description: Use the public hosted platform matrix; Linux x64 webOS uses its explicit 60 GiB overflow lane
         required: true
         type: choice
         options:
-          - private
           - hybrid
         default: hybrid
       mode:
@@ -48,10 +48,10 @@ on:
         required: false
         type: string
       tvos_runner_pool:
-        description: "Apple package route: hosted uses hosted Macs throughout; private uses Apple JIT throughout; split uses hosted iOS/tvOS and private macOS; private-ios uses private iOS/macOS and hosted tvOS"
+        description: "Public hosted Macs for unsigned builds; private Apple JIT is only for requested App Store or Homebrew signing"
         required: false
         type: choice
-        options: [hosted, private, split, private-ios]
+        options: [hosted, private]
         default: hosted
       macos_compilation_job_id:
         description: Recover a verified same-product Mac compilation for signing-only macos-validation
@@ -140,6 +140,11 @@ on:
         required: true
         type: boolean
         default: false
+      private_apple_signing_unavailable:
+        description: Keep unsigned Apple release artifacts on hosted Macs when the private Mac JIT is unreachable; omit signed Store and notarized Homebrew outputs
+        required: false
+        type: boolean
+        default: false
 env:
   GH_TOKEN: ${{ github.token }}
   # Keep SDK analytics failures separate from build and analysis diagnostics.
@@ -225,7 +230,7 @@ jobs:
         run: |
           test "$CAPTURE_MODE" = release
           test "$CAPTURE_PROFILE" = hybrid
-          test "$CAPTURE_POOL" = private
+          [[ "$CAPTURE_POOL" == public ]]
           python3 scripts/verify_embedded_release_ci.py --candidate-only
           python3 tools/webos/verify_package.py --project-metadata
           python3 scripts/sync_native_revision.py --check
@@ -240,11 +245,11 @@ jobs:
       actions: read
     with:
       action: ci
-      runner_pool: private
+      runner_pool: public
       execution_profile: hybrid
       build_linux_packages: true
-      # Keep Release CI on the same Apple route selected for the package jobs.
-      apple_runner_pool: ${{ inputs.tvos_runner_pool }}
+      # CI Apple validation is unsigned and always uses hosted Macs.
+      apple_runner_pool: hosted
 
   freeze-qualified-source:
     name: Freeze qualified source
@@ -277,8 +282,8 @@ jobs:
   validate-trusted-ref:
     name: Validate release request
     needs: freeze-qualified-source
-    if: ${{ always() && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && (inputs.candidate_ref == '' || needs.freeze-qualified-source.result == 'success') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) }}
+    if: ${{ always() && inputs.runner_pool == 'public' && (inputs.action == 'build' || inputs.action == 'release') && (inputs.candidate_ref == '' || needs.freeze-qualified-source.result == 'success') }}
+    runs-on: ubuntu-24.04
     outputs:
       action: ${{ steps.request.outputs.action }}
       runner_pool: ${{ steps.request.outputs.runner_pool }}
@@ -295,6 +300,7 @@ jobs:
       include_tizen_build: ${{ steps.request.outputs.include_tizen_build }}
       include_apple_store_build: ${{ steps.request.outputs.include_apple_store_build }}
       prepare_homebrew_cask: ${{ steps.request.outputs.prepare_homebrew_cask }}
+      tvos_runner_pool: ${{ steps.request.outputs.tvos_runner_pool }}
     permissions:
       contents: read
       actions: read
@@ -352,6 +358,7 @@ jobs:
           INCLUDE_TIZEN_BUILD_INPUT: ${{ inputs.include_tizen_build }}
           INCLUDE_APPLE_STORE_BUILD_INPUT: ${{ inputs.include_apple_store_build }}
           PREPARE_HOMEBREW_CASK_INPUT: ${{ inputs.prepare_homebrew_cask }}
+          PRIVATE_APPLE_SIGNING_UNAVAILABLE_INPUT: ${{ inputs.private_apple_signing_unavailable }}
           SUBTITLE_GPU_BACKEND_INPUT: ${{ inputs.subtitle_gpu_backend }}
           RUNNER_ACQUISITION_RETRY_OF: ${{ inputs.reuse_platform_run_id == '' && inputs.rebuild_tvos && inputs.reuse_repaired_run_id || '' }}
           REUSE_PLATFORMS: ${{ inputs.reuse_platform_run_id }}
@@ -382,23 +389,27 @@ jobs:
           INCLUDE_TIZEN_BUILD="$INCLUDE_TIZEN_BUILD_INPUT"
           INCLUDE_APPLE_STORE_BUILD="$INCLUDE_APPLE_STORE_BUILD_INPUT"
           PREPARE_HOMEBREW_CASK="$PREPARE_HOMEBREW_CASK_INPUT"
+          PRIVATE_APPLE_SIGNING_UNAVAILABLE="$PRIVATE_APPLE_SIGNING_UNAVAILABLE_INPUT"
           if [[ "$ACTION" != "build" && "$ACTION" != "release" ]]; then
             echo "Unsupported action: $ACTION" >&2
             exit 1
           fi
-          if [[ "$RUNNER_POOL" != "private" ]]; then
-            echo "This workflow currently supports only the private runner pool." >&2
+          if [[ "$RUNNER_POOL" != "public" ]]; then
+            echo "runner_pool must be public." >&2
             exit 1
           fi
-          if [[ "$TVOS_RUNNER_POOL_INPUT" != "hosted" && "$TVOS_RUNNER_POOL_INPUT" != "private" && "$TVOS_RUNNER_POOL_INPUT" != "split" ]]; then
+          # Public hosted runners are required for all compatible jobs. JIT is
+          # reserved for requested Apple signing and the webOS storage overflow.
+          RUNNER_POOL=public
+          if [[ "$TVOS_RUNNER_POOL_INPUT" != "hosted" && "$TVOS_RUNNER_POOL_INPUT" != "private" ]]; then
             echo "Unsupported Apple package route: $TVOS_RUNNER_POOL_INPUT" >&2
             exit 1
           fi
-          if [[ -n "$RUNNER_ACQUISITION_RETRY_OF" ]] && { [[ ! "$RUNNER_ACQUISITION_RETRY_OF" =~ ^[1-9][0-9]*$ ]] || [[ "$MODE" != "release" || "$TVOS_RUNNER_POOL_INPUT" != "private" || -n "$REUSE_PLATFORMS" ]]; }; then
-            echo "Runner-acquisition retries require a numeric failed run, release mode, and private tvOS route." >&2
+          if [[ -n "$RUNNER_ACQUISITION_RETRY_OF" ]] && { [[ ! "$RUNNER_ACQUISITION_RETRY_OF" =~ ^[1-9][0-9]*$ ]] || [[ "$MODE" != "release" || "$TVOS_RUNNER_POOL_INPUT" != "private" || -n "$REUSE_PLATFORMS" || ( "$INCLUDE_APPLE_STORE_BUILD" != "true" && "$PREPARE_HOMEBREW_CASK" != "true" ) ]]; }; then
+            echo "Private Apple runner recovery requires an exact failed run, release mode, and a requested signed Apple deliverable." >&2
             exit 1
           fi
-          if [[ "$EXECUTION_PROFILE" != "private" && "$EXECUTION_PROFILE" != "hybrid" ]]; then
+          if [[ "$EXECUTION_PROFILE" != "hybrid" ]]; then
             echo "Unsupported execution profile: $EXECUTION_PROFILE" >&2
             exit 1
           fi
@@ -477,6 +488,22 @@ jobs:
             echo "include_apple_store_build must be true or false." >&2
             exit 1
           fi
+          if [[ "$PRIVATE_APPLE_SIGNING_UNAVAILABLE" != "true" && "$PRIVATE_APPLE_SIGNING_UNAVAILABLE" != "false" ]]; then
+            echo "private_apple_signing_unavailable must be true or false." >&2
+            exit 1
+          fi
+          if [[ "$PRIVATE_APPLE_SIGNING_UNAVAILABLE" == "true" && "$MODE" != "release" ]]; then
+            echo "The private Apple signing fallback is only valid for complete release builds." >&2
+            exit 1
+          fi
+          if [[ "$PRIVATE_APPLE_SIGNING_UNAVAILABLE" == "true" ]]; then
+            echo "::warning::Private Apple JIT is unavailable; store signatures and Homebrew notarization are omitted while unsigned Apple artifacts continue on hosted Macs."
+            INCLUDE_APPLE_STORE_BUILD=false
+            PREPARE_HOMEBREW_CASK=false
+          fi
+          if [[ "$PRIVATE_APPLE_SIGNING_UNAVAILABLE" == "true" || ( "$INCLUDE_APPLE_STORE_BUILD" != "true" && "$PREPARE_HOMEBREW_CASK" != "true" ) ]]; then
+            TVOS_RUNNER_POOL_INPUT=hosted
+          fi
           if [[ "$MODE" != "release" && "$INCLUDE_APPLE_STORE_BUILD" == "true" ]]; then
             echo "Signed App Store IPAs are available only in full release mode." >&2
             exit 1
@@ -526,6 +553,8 @@ jobs:
             echo "include_tizen_build=$INCLUDE_TIZEN_BUILD"
             echo "include_apple_store_build=$INCLUDE_APPLE_STORE_BUILD"
             echo "prepare_homebrew_cask=$PREPARE_HOMEBREW_CASK"
+            echo "tvos_runner_pool=$TVOS_RUNNER_POOL_INPUT"
+            echo "private_apple_signing_unavailable=$PRIVATE_APPLE_SIGNING_UNAVAILABLE"
           } >> "$GITHUB_OUTPUT"
 
       - name: Verify hosted tvOS runner-acquisition retry source
@@ -544,12 +573,12 @@ jobs:
       - name: Summarize runner execution profile
         env:
           EXECUTION_PROFILE: ${{ steps.request.outputs.execution_profile }}
-          APPLE_RUNNER_ROUTE: ${{ inputs.tvos_runner_pool }}
+          APPLE_RUNNER_ROUTE: ${{ steps.request.outputs.tvos_runner_pool }}
         run: |
-          echo "Execution profile: **$EXECUTION_PROFILE** (broker pool: private)." >> "$GITHUB_STEP_SUMMARY"
-          echo "Apple package route: **$APPLE_RUNNER_ROUTE** (split sends iOS/tvOS to hosted Macs and macOS to private Apple JIT)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Execution profile: **$EXECUTION_PROFILE** (public GitHub-hosted runners by default)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Apple package route: **$APPLE_RUNNER_ROUTE** (private Apple JIT is reserved for explicitly requested signing work)." >> "$GITHUB_STEP_SUMMARY"
           if [[ "$EXECUTION_PROFILE" == "hybrid" ]]; then
-            echo "Compatible Linux, Android, Tizen, Windows, and iOS/tvOS reliability jobs use standard GitHub-hosted runners; the split Apple package route runs iOS/tvOS on hosted Macs and macOS on private JIT; storage-heavy WebOS uses private JIT." >> "$GITHUB_STEP_SUMMARY"
+            echo "Compatible Linux, Android, Tizen, Windows, and unsigned Apple jobs use public GitHub-hosted runners; webOS uses private JIT because its verified build requires more storage than a standard hosted runner provides." >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Require the main branch for builds
@@ -626,8 +655,8 @@ jobs:
             echo "Unsupported action: $ACTION" >&2
             exit 1
           fi
-          if [[ "$RUNNER_POOL" != "private" ]]; then
-            echo "runner_pool must be 'private' for the broker route used by constrained jobs." >&2
+          if [[ "$RUNNER_POOL" != "public" ]]; then
+            echo "runner_pool must normalize to public." >&2
             exit 1
           fi
           if [[ "$MODE" != "release" && "$MODE" != "webos-validation" && "$MODE" != "macos-validation" && "$MODE" != "android-validation" ]]; then
@@ -778,12 +807,12 @@ jobs:
           echo "No draft release is created."
 
   build-android:
-    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_android_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_android_run_id == '' && inputs.runner_pool != '' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'public' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
     needs: validate-trusted-ref
     timeout-minutes: 360
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: "2"
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-android"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     permissions:
       id-token: write
       attestations: write
@@ -800,10 +829,6 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "21"
-
-      - name: Configure Java downloads for the private JIT proxy
-        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && needs.validate-trusted-ref.outputs.execution_profile != 'hybrid' }}
-        run: python3 scripts/prepare_android_sdk.py proxy
 
       - name: Restore Android FFmpeg source cache
         id: ffmpeg-source-cache
@@ -928,30 +953,6 @@ jobs:
           EOF
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
-      - name: Configure Gradle to use the private JIT proxy
-        if: ${{ needs.validate-trusted-ref.outputs.execution_profile != 'hybrid' }}
-        shell: bash
-        run: |
-          python3 - <<'PY' >> "$GITHUB_ENV"
-          import os
-          from urllib.parse import urlsplit
-
-          proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
-          if not proxy:
-              raise SystemExit("The private JIT HTTPS proxy is required for Gradle downloads.")
-          parsed = urlsplit(proxy if "://" in proxy else f"http://{proxy}")
-          if not parsed.hostname or not parsed.port or parsed.username or parsed.password:
-              raise SystemExit("The private JIT HTTPS proxy URL is invalid for Gradle.")
-          options = [
-              f"-Dhttp.proxyHost={parsed.hostname}",
-              f"-Dhttp.proxyPort={parsed.port}",
-              f"-Dhttps.proxyHost={parsed.hostname}",
-              f"-Dhttps.proxyPort={parsed.port}",
-          ]
-          existing = os.environ.get("GRADLE_OPTS", "").strip()
-          print("GRADLE_OPTS=" + " ".join(([existing] if existing else []) + options))
-          PY
-
       - name: Build APKs
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
         run: python3 scripts/run_android_build.py flutter --verbose build apk --release --split-per-abi ${{ env.RELEASE_DART_DEFINES }} --obfuscate --split-debug-info=debug-info/android-apk --extra-gen-snapshot-options=--save-obfuscation-map=debug-info/android-apk/obfuscation.map.json
@@ -997,7 +998,7 @@ jobs:
           --build-tools "$ANDROID_HOME/build-tools/36.1.0"
           --output pleazyng-amazon-firetv-provenance.json
 
-      - name: Capture Android JIT memory diagnostics
+      - name: Capture Android hosted runner memory diagnostics
         if: always()
         shell: bash
         run: |
@@ -1068,7 +1069,7 @@ jobs:
           if-no-files-found: warn
 
   build-webos:
-    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_webos_run_id == '' && inputs.reuse_macos_package_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'webos-validation' || (needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_build == 'true')) }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_webos_run_id == '' && inputs.reuse_macos_package_run_id == '' && inputs.runner_pool != '' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'public' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'webos-validation' || (needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_build == 'true')) }}
     needs: validate-trusted-ref
     name: Build WebOS TV package (ARMv7)
     timeout-minutes: 360
@@ -1262,7 +1263,7 @@ jobs:
           retention-days: 14
 
   build-tizen:
-    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_tizen_build == 'true' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_platform_run_id == '' && inputs.runner_pool != '' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'public' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_tizen_build == 'true' }}
     needs: validate-trusted-ref
     name: Build Samsung Tizen TV package (ARM)
     permissions:
@@ -1276,11 +1277,25 @@ jobs:
       security_profile: ''
       include_seller_office_handoff: false
 
+  apple-private-signing-unavailable:
+    name: Apple signed builds unavailable (private Mac JIT)
+    if: ${{ needs.validate-trusted-ref.outputs.private_apple_signing_unavailable == 'true' }}
+    needs: validate-trusted-ref
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    permissions:
+      contents: read
+    steps:
+      - name: Fail only the signed Apple delivery lane
+        run: |
+          echo "::error title=Private Apple JIT unavailable::The MacBook Air was unreachable over Tailnet SSH during release preflight. Unsigned Apple artifacts continue on hosted Macs; Store IPAs and notarized Homebrew outputs are omitted."
+          exit 1
+
   build-ios:
-    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_ios) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_ios) && inputs.runner_pool != '' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'public' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     timeout-minutes: 240
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && inputs.tvos_runner_pool != 'private-ios' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.include_apple_store_build == 'true' && needs.validate-trusted-ref.outputs.tvos_runner_pool == 'private' && fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) || 'macos-26-intel' }}
     permissions:
       id-token: write
       attestations: write
@@ -1601,11 +1616,11 @@ jobs:
           fi
 
   build-tvos:
-    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos) && inputs.runner_pool != '' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'public' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     timeout-minutes: 180
     name: Build tvOS developer package (arm64)
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool != 'private' && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.include_apple_store_build == 'true' && needs.validate-trusted-ref.outputs.tvos_runner_pool == 'private' && fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) || 'macos-26' }}
     permissions:
       id-token: write
       attestations: write
@@ -1838,10 +1853,10 @@ jobs:
         run: bash scripts/cleanup_apple_jit_scratch.sh tvos
 
   build-macos:
-    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_macos) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'macos-validation') }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_macos) && inputs.runner_pool != '' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'public' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'macos-validation') }}
     needs: validate-trusted-ref
     timeout-minutes: 150
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && inputs.tvos_runner_pool == 'hosted' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-macos"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true' && needs.validate-trusted-ref.outputs.tvos_runner_pool == 'private' && fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-macos"]}}', github.run_id)) || 'macos-26-intel' }}
     permissions:
       actions: read
       id-token: write
@@ -2350,10 +2365,10 @@ jobs:
           fi
 
   build-windows:
-    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && inputs.reuse_platform_run_id == '' && inputs.runner_pool != '' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'public' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build Windows (${{ matrix.arch }})
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","Pleazyng","gha-{0}-{1}-build-windows"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025' }}
     env:
       GH_TOKEN: ${{ github.token }}
       PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && '1' || '0' }}
@@ -2675,9 +2690,9 @@ jobs:
           if-no-files-found: error
 
   package-windows:
-    if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool != '' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'public' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: [validate-trusted-ref, build-windows]
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'windows-2025' || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","Pleazyng","gha-{0}-package-windows"]}}', github.run_id)) }}
+    runs-on: windows-2025
     permissions:
       id-token: write
       attestations: write
@@ -2936,10 +2951,10 @@ jobs:
           path: release-packages/pleazyng.*.nupkg
 
   build-linux:
-    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_linux) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ always() && !cancelled() && needs.validate-trusted-ref.result == 'success' && (inputs.reuse_platform_run_id == '' || inputs.rebuild_linux) && inputs.runner_pool != '' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'public' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build Linux (${{ matrix.arch }})
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') || (matrix.arch == 'x64' && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index))) || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","arm64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     permissions:
       id-token: write
       attestations: write
@@ -3068,25 +3083,7 @@ jobs:
           python3 scripts/fetch_linux_libmpv.py --dest libmpv-prefix
 
       - name: Install fpm
-        shell: bash
-        env:
-          EXECUTION_PROFILE: ${{ needs.validate-trusted-ref.outputs.execution_profile }}
-        run: |
-          if [[ "$EXECUTION_PROFILE" == "hybrid" ]]; then
-            sudo gem install fpm --version 1.17.0 --no-document
-            exit $?
-          fi
-          proxy="${HTTPS_PROXY:-${https_proxy:-}}"
-          if [[ -z "$proxy" ]]; then
-            echo "The private JIT HTTPS proxy is required to install fpm." >&2
-            exit 1
-          fi
-          sudo env \
-            HTTP_PROXY="${HTTP_PROXY:-$proxy}" \
-            HTTPS_PROXY="$proxy" \
-            http_proxy="${http_proxy:-${HTTP_PROXY:-$proxy}}" \
-            https_proxy="${https_proxy:-$proxy}" \
-            gem install fpm --version 1.17.0 --no-document
+        run: sudo gem install fpm --version 1.17.0 --no-document
 
       - name: Install dependencies
         shell: bash
@@ -3325,8 +3322,8 @@ jobs:
 
   create-release:
     needs: [validate-trusted-ref, build-android, build-webos, build-tizen, build-ios, build-tvos, build-macos, build-windows, package-windows, build-linux]
-    if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && ((inputs.rebuild_ios && needs.build-ios.result == 'success') || (!inputs.rebuild_ios && needs.build-ios.result == 'skipped')) && ((inputs.rebuild_tvos && needs.build-tvos.result == 'success') || (!inputs.rebuild_tvos && needs.build-tvos.result == 'skipped')) && ((inputs.rebuild_macos && needs.build-macos.result == 'success') || (!inputs.rebuild_macos && needs.build-macos.result == 'skipped')) && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && ((inputs.rebuild_linux && needs.build-linux.result == 'success') || (!inputs.rebuild_linux && needs.build-linux.result == 'skipped')) && (needs.build-webos.result == 'success' || (inputs.reuse_webos_run_id != '' && needs.validate-trusted-ref.outputs.webos_source_sha != '' && needs.build-webos.result == 'skipped') || (inputs.reuse_macos_package_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-webos.result == 'skipped') || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-create-release"]}}', github.run_id)) }}
+    if: ${{ always() && inputs.runner_pool != '' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'public' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && ((inputs.rebuild_ios && needs.build-ios.result == 'success') || (!inputs.rebuild_ios && needs.build-ios.result == 'skipped')) && ((inputs.rebuild_tvos && needs.build-tvos.result == 'success') || (!inputs.rebuild_tvos && needs.build-tvos.result == 'skipped')) && ((inputs.rebuild_macos && needs.build-macos.result == 'success') || (!inputs.rebuild_macos && needs.build-macos.result == 'skipped')) && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && ((inputs.rebuild_linux && needs.build-linux.result == 'success') || (!inputs.rebuild_linux && needs.build-linux.result == 'skipped')) && (needs.build-webos.result == 'success' || (inputs.reuse_webos_run_id != '' && needs.validate-trusted-ref.outputs.webos_source_sha != '' && needs.build-webos.result == 'skipped') || (inputs.reuse_macos_package_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-webos.result == 'skipped') || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       actions: read
@@ -3374,6 +3371,7 @@ jobs:
       - name: Generate release notes from CHANGELOG.md
         env:
           RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.version }}
+          PRIVATE_APPLE_SIGNING_UNAVAILABLE: ${{ needs.validate-trusted-ref.outputs.private_apple_signing_unavailable }}
         run: |
           python3 scripts/generate_release_notes.py "$RELEASE_TAG" > release-notes.md
           # Keep the complete credit ledger within GitHub's release-body limit.
@@ -3391,6 +3389,14 @@ jobs:
               body += f'\n\nRelease notes continue in the [full changelog](https://github.com/snapetech-org/pleazyng/blob/{tag}/CHANGELOG.md).\n'
               notes.write_text(body)
           PYNOTES
+          if [[ "$PRIVATE_APPLE_SIGNING_UNAVAILABLE" == "true" ]]; then
+            cat >> release-notes.md <<'APPLE_STATUS'
+
+          ## Apple signing status
+
+          Unsigned iOS, tvOS, and macOS artifacts were built on hosted macOS runners. Apple signed distribution packages and the notarized Homebrew candidate were unavailable because the private Apple JIT host was unreachable over Tailnet during release preflight. Store submissions remain gated on account business and tax reviews.
+          APPLE_STATUS
+          fi
           printf '\n\n## Upstream people and sources\n\n' >> release-notes.md
           printf '[Tag-pinned attribution ledger](https://github.com/snapetech-org/pleazyng/blob/v%s/UPSTREAM_ATTRIBUTION.md)\n\n' "$RELEASE_TAG" >> release-notes.md
           cat UPSTREAM_ATTRIBUTION.md >> release-notes.md

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run queued Pleazyng Apple jobs one at a time on the private Mac JIT lane."""
+"""Run explicitly requested Apple signing/notarization jobs on private JIT."""
 
 from __future__ import annotations
 
@@ -87,7 +87,7 @@ def is_apple_job(job: dict, run_id: str) -> bool:
 def is_failed_release_build(run: dict, jobs: list[dict]) -> bool:
     # Reusable qualification belongs to the captured build run, but its matrix
     # must finish before ordinary failed-platform drainage applies. Otherwise
-    # one failed CI child could strand the remaining queued private CI jobs.
+    # one failed CI child could strand the remaining queued Apple signing jobs.
     if any(str(job.get("name", "")).startswith("Release CI / ")
            and job.get("status") != "completed" for job in jobs):
         return False

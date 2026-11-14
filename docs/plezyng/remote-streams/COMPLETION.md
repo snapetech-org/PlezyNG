@@ -249,6 +249,6 @@ their broader validation requirements in IMPLEMENTATION.md and VALIDATION.md.
 Confidence is high for the locally tested engine, persistence and Dart paths;
 packaged platform behavior remains unqualified until those target checks run.
 No Actions workflow was dispatched. Any subsequent CI/build job must follow
-the current root `AGENTS.md`: use compatible hosted runners where their
-requirements fit and private ephemeral JIT for private network/storage,
-special hardware, or explicitly private validation.
+the current root `AGENTS.md`: use public GitHub-hosted runners for compatible
+work and qualify hardware manually. Private JIT is limited to requested Apple
+signing and the documented webOS storage overflow.

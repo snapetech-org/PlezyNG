@@ -1,5 +1,4 @@
-# ng-runner-policy: hosted-first-v1
-# packer-windows-jit-v1
+# ng-runner-policy: hosted-default-v2
 name: Publish Chocolatey Package
 run-name: ${{ format('action:{0}:pool:{1}:tag:{2}:publish:{3}:rebuild:{4}', inputs.action, inputs.runner_pool, inputs.release_tag, inputs.publish, inputs.rebuild_package) }}
 
@@ -31,7 +30,7 @@ on:
         required: true
         type: boolean
 
-# Several publication gates run before checkout in fresh private guests.
+# Several publication gates run before checkout on public hosted runners.
 env:
   GH_REPO: ${{ github.repository }}
 

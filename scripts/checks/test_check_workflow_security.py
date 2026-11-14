@@ -45,14 +45,18 @@ jobs:
 
         self.assertEqual(self.check(changed, CI_PATH), [])
 
-    def test_rejects_ci_windows_job_without_private_packer_jit_marker(self) -> None:
+    def test_rejects_ci_windows_job_routed_to_private_jit(self) -> None:
         workflow = (ROOT / CI_PATH).read_text(encoding="utf-8")
-        changed = workflow.replace("  # packer-windows-jit-v1\n", "", 1)
-        self.assertNotEqual(changed, workflow, "fixture must include the Packer JIT marker")
+        changed = workflow.replace(
+            "runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025' }}",
+            "runs-on: [self-hosted, windows-2025]",
+            1,
+        )
+        self.assertNotEqual(changed, workflow, "fixture must include the public Windows selector")
 
         errors = self.check(changed, CI_PATH)
 
-        self.assertTrue(any("private Packer JIT marker" in error for error in errors))
+        self.assertTrue(any("public GitHub-hosted Windows runners" in error for error in errors))
 
     def test_accepts_a_different_immutable_action_pin(self) -> None:
         workflow = f"jobs:\n  test:\n    steps:\n      - uses: actions/setup-go@{'b' * 40}\n"

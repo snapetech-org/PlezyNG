@@ -20,7 +20,7 @@ This record is a run protocol, not a claim that a device passed. The current exe
 | Windows x64, RTX 3060 | Whisper CUDA and Vulkan builds separately; patched MPV capture artifact | CUDA/Vulkan device identity, operation-level placement, full-run fallback reason, RTF, thermals, PCM continuity and drops |
 | macOS, M4 | Core ML Sherpa request and CPU baseline; patched MPV capture artifact | Core ML execution trace by operation, ANE/GPU/CPU assignment if the OS exposes it, memory and thermal data, PCM continuity and drops |
 | iPhone/iPad target | CPU Whisper baseline; patched MPV capture artifact | model latency, memory and thermals, PCM continuity and drops on the selected audio route |
-| Samsung Tizen 6–9 ARM TV | CPU Whisper source build; native `player_h` PCM callback | private-JIT package success, runtime FFI load, WAV ASR, 20-minute VOD capture, codec matrix, caption latency, memory and playback impact |
+| Samsung Tizen 6–9 ARM TV | CPU Whisper source build; native `player_h` PCM callback | public-hosted package success, runtime FFI load, WAV ASR, 20-minute VOD capture, codec matrix, caption latency, memory and playback impact |
 | Android Qualcomm NPU target | QNN request and CPU baseline | QNN graph partition/provider trace, CPU-assigned nodes, fallback reason, battery and thermal data |
 | Android Rockchip target | RKNN request and CPU baseline | RKNN graph partition/provider trace, CPU-assigned nodes, fallback reason and sustained RTF |
 | Intel CPU/GPU/NPU and Steam Deck | Build-specific available providers | Enumerated device plus operation-level execution trace; no inference from device presence alone |

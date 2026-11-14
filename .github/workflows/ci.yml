@@ -1,5 +1,6 @@
-# ng-runner-policy: hosted-first-v1
-# The trusted-main hybrid profile routes compatible Linux, Windows, and Apple validation jobs to standard GitHub-hosted runners.
+# ng-runner-policy: hosted-default-v2
+# CI uses public GitHub-hosted runners for every compatible job. Apple CI is
+# unsigned and hosted; no CI job requires the MacBook Air.
 name: CI - Sanity Checks
 run-name: ${{ format('action:{0}:pool:{1}:apple:{2}', inputs.action, inputs.runner_pool, inputs.apple_runner_pool) }}
 
@@ -12,7 +13,7 @@ on:
         default: ci
       runner_pool:
         type: string
-        default: private
+        default: public
       execution_profile:
         type: string
         default: hybrid
@@ -30,15 +31,15 @@ on:
         type: choice
         options: [ci]
       runner_pool:
-        description: Private JIT pool for jobs that need constrained resources
+        description: Public GitHub-hosted runners
         required: true
         type: choice
-        options: [private]
+        options: [public]
       execution_profile:
         description: Use standard hosted runners for compatible Linux, Windows, and Apple validation work
         required: true
         type: choice
-        options: [private, hybrid]
+        options: [hybrid]
         default: hybrid
       build_linux_packages:
         description: >
@@ -47,10 +48,10 @@ on:
         default: false
         type: boolean
       apple_runner_pool:
-        description: Select the Apple route for native reliability checks; private-ios keeps tvOS hosted while using private iOS and macOS runners
+        description: CI Apple validation is unsigned and always uses hosted macOS
         required: false
         type: choice
-        options: [hosted, private, split, private-ios]
+        options: [hosted]
         default: hosted
 
 env:
@@ -62,11 +63,11 @@ env:
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
 
 jobs:
-  # Private mode remains available for explicit constrained-runner validation.
+  # Every compatible CI lane uses its native public GitHub-hosted runner.
   analyze:
     name: Code Analysis
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -77,11 +78,11 @@ jobs:
           EXECUTION_PROFILE_INPUT: ${{ inputs.execution_profile }}
         run: |
           set -euo pipefail
-          if [[ "$RUNNER_POOL_INPUT" != "private" ]]; then
-            echo "The trusted-main CI route requires the private broker pool." >&2
+          if [[ "$RUNNER_POOL_INPUT" != "public" ]]; then
+            echo "CI requires the public GitHub-hosted runner pool." >&2
             exit 1
           fi
-          if [[ "$EXECUTION_PROFILE_INPUT" != "private" && "$EXECUTION_PROFILE_INPUT" != "hybrid" ]]; then
+          if [[ "$EXECUTION_PROFILE_INPUT" != "hybrid" ]]; then
             echo "Unsupported execution profile: $EXECUTION_PROFILE_INPUT" >&2
             exit 1
           fi
@@ -90,10 +91,8 @@ jobs:
             exit 1
           fi
           {
-            echo "Execution profile: **$EXECUTION_PROFILE_INPUT** (broker pool: private)."
-            if [[ "$EXECUTION_PROFILE_INPUT" == "hybrid" ]]; then
-              echo "Compatible Linux, Windows, and Apple validation jobs use standard GitHub-hosted runners."
-            fi
+            echo "Execution profile: **$EXECUTION_PROFILE_INPUT** (public GitHub-hosted runners)."
+            echo "Compatible Linux, Windows, and Apple validation jobs use standard GitHub-hosted runners."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Checkout code
@@ -198,8 +197,8 @@ jobs:
 
   test:
     name: Unit Tests
-    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-test"]}}', github.run_id)) }}
+    if: ${{ inputs.execution_profile == 'hybrid' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -246,7 +245,7 @@ jobs:
       - name: Run tests
         run: |
           if [ -d "test" ] && [ "$(find test -name '*_test.dart' | wc -l)" -gt 0 ]; then
-            # Drift-backed tests can exceed package:test's 30s default on busy JIT workers.
+            # Drift-backed tests can exceed package:test's 30s default on busy hosted workers.
             scripts/run_tests.sh -j 2 --timeout=120s
           else
             echo "No tests found, skipping test execution"
@@ -311,7 +310,7 @@ jobs:
   android-test:
     name: Android JVM and Native Tests
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-android-test"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: read
@@ -326,23 +325,6 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "21"
-
-      - name: Configure Gradle to use the private JIT proxy
-        if: ${{ inputs.execution_profile != 'hybrid' }}
-        run: python3 scripts/prepare_android_sdk.py proxy
-
-      - name: Verify private proxy access to Maven Central mirror
-        if: ${{ inputs.execution_profile != 'hybrid' }}
-        shell: bash
-        run: |
-          proxy="${HTTPS_PROXY:-${https_proxy:-}}"
-          if [[ -z "$proxy" ]]; then
-            echo "The private JIT HTTPS proxy is not configured."
-            exit 1
-          fi
-          curl --fail --show-error --silent --head --max-time 30 \
-            --proxy "$proxy" \
-            https://storage.googleapis.com/maven-central/maven2/org/robolectric/nativeruntime-dist-compat/1.0.18/nativeruntime-dist-compat-1.0.18.jar
 
       - name: Verify public runner access to Maven Central mirror
         if: ${{ inputs.execution_profile == 'hybrid' }}
@@ -533,7 +515,7 @@ jobs:
   native-format:
     name: Native Formatting
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-native-format"]}}', github.run_id)) }}
+    runs-on: macos-26-intel
     permissions:
       contents: read
     steps:
@@ -557,7 +539,7 @@ jobs:
   linux-native-test:
     name: Linux native reliability (${{ matrix.sanitizer }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-linux-native-test"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     strategy:
@@ -695,7 +677,7 @@ jobs:
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
     timeout-minutes: 120
     # Native tests and their simulator dependencies build arm64 on every platform.
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool == 'hosted' || (inputs.apple_runner_pool == 'split' && matrix.platform != 'macOS') || (inputs.apple_runner_pool == 'private-ios' && matrix.platform == 'tvOS')) && 'macos-26' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: macos-26
     permissions:
       contents: read
     env:
@@ -1098,18 +1080,22 @@ jobs:
           path: ${{ env.APPLE_SIMULATOR_RECEIPT }}
           retention-days: 7
 
-  # packer-windows-jit-v1
   windows-native-test:
     name: Windows native reliability (${{ matrix.arch }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","Pleazyng","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025' }}
     env:
-      PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}
+      PLEZYNG_ALLOW_DIRECT_DOWNLOADS: '1'
     permissions:
       contents: read
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(inputs.execution_profile == 'hybrid' && '{"include":[{"arch":"x64","flutter_setup":"action"},{"arch":"arm64","flutter_setup":"git"}]}' || '{"include":[{"arch":"x64","flutter_setup":"action"}]}') }}
+      matrix:
+        include:
+          - arch: x64
+            flutter_setup: action
+          - arch: arm64
+            flutter_setup: git
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -1135,7 +1121,7 @@ jobs:
         run: |
           $sevenZip = Get-Command 7z -CommandType Application -ErrorAction Stop
           & $sevenZip.Source i
-          if ($LASTEXITCODE -ne 0) { throw 'The pinned private image 7-Zip is not usable' }
+          if ($LASTEXITCODE -ne 0) { throw 'The public Windows runner 7-Zip is not usable' }
 
       - name: Load pinned Flutter SDK
         shell: pwsh
@@ -1248,7 +1234,7 @@ jobs:
   dependency-check:
     name: Dependency Validation
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-dependency-check"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -1298,7 +1284,7 @@ jobs:
   server:
     name: Server checks
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-server"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -1330,7 +1316,7 @@ jobs:
   linux-packages:
     name: Linux package smoke build
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_linux_packages && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-linux-packages"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -1383,14 +1369,8 @@ jobs:
               http_proxy="${http_proxy:-${HTTP_PROXY:-$proxy}}" \
               https_proxy="${https_proxy:-$proxy}" \
               gem install fpm --version 1.17.0 --no-document
-          elif [[ "$EXECUTION_PROFILE_INPUT" == "hybrid" ]]; then
-            # Public runners have direct egress and do not expose the private
-            # JIT proxy variables. Use that scoped path only for this release
-            # profile; private jobs must keep the proxy requirement below.
-            sudo gem install fpm --version 1.17.0 --no-document
           else
-            echo "The private JIT HTTPS proxy is required to install fpm." >&2
-            exit 1
+            sudo gem install fpm --version 1.17.0 --no-document
           fi
         env:
           EXECUTION_PROFILE_INPUT: ${{ inputs.execution_profile }}

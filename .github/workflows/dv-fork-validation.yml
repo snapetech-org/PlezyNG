@@ -1,4 +1,4 @@
-# ng-runner-policy: private-jit-only-v1
+# ng-runner-policy: hosted-default-v2
 name: Dolby Vision fork validation
 run-name: ${{ format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
@@ -12,10 +12,10 @@ on:
         type: choice
         options: [dv-validation]
       runner_pool:
-        description: Runner pool for this validation
+        description: Use an isolated public GitHub-hosted runner
         required: true
         type: choice
-        options: [private]
+        options: [public]
 
 permissions:
   contents: read
@@ -27,9 +27,7 @@ concurrency:
 jobs:
   contracts:
     if: ${{ github.repository_id == '1433487464' }}
-    runs-on:
-      group: gvisor-sandbox
-      labels: gvisor-sandbox
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - name: Checkout pull request source

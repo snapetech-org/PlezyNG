@@ -15,13 +15,12 @@ and [validation](VALIDATION.md). Full Gradle/R8 app packaging, the Kotlin app
 bridge, iOS SDK builds and paired-host acceptance remain separate gates. The
 42-export evidence in the historical table below predates this follow-up.
 
-Use compatible GitHub-hosted runners for these SDK preparation and build jobs
-by default, preserving each target's native operating system and architecture.
-Use a private ephemeral JIT runner only when the job needs private hardware,
-network access, files, storage, or explicit JIT validation. Missing private
-capacity is not a blocker when a compatible hosted runner is available.
-Preserve active builds and existing SDKs. Runner trust widening, publishing,
-account mutation, and deployment remain outside this SDK setup handoff.
+Use public GitHub-hosted runners for SDK preparation and build jobs, preserving
+each target's native operating system and architecture. Device qualification
+is a separate manual step. Private JIT is limited to requested Apple signing
+and the documented webOS storage overflow. Preserve active builds and existing
+SDKs. Runner trust widening, publishing, account mutation, and deployment remain
+outside this SDK setup handoff.
 
 ## What is ready
 
@@ -34,7 +33,7 @@ account mutation, and deployment remain outside this SDK setup handoff.
 
 There are **39 passing Python SDK/source-preparation tests** (14 shared Android
 SDK tests and 25 Games preparation/archive/artifact tests). Workflow action-pin,
-architecture/private-runner and security checks pass. The amended workflows have
+architecture and security checks pass. The amended workflows have
 not been dispatched from this environment; their execution is a build-agent gate.
 
 SDK archives and generated binaries are intentionally outside source control.
@@ -63,7 +62,7 @@ Locks, recipes, probes, tests and handoff instructions are committed. See
 
 ## Android agent
 
-Install JDK 21 on the private builder and select it using `JAVA_HOME`. Set
+Install JDK 21 on the public GitHub-hosted Linux builder and select it using `JAVA_HOME`. Set
 `ANDROID_SDK_ROOT` to an absolute, agent-owned directory; `ANDROID_HOME` should
 identify that same directory when configuring Gradle. No global Java/SDK setting
 is changed by the Python installer.
@@ -158,9 +157,9 @@ references or new production keep rules that would mask an R8 defect. Run it
 with embedded engines enabled. A passing harness build is not a passing device
 test; record the executed test count and device ABI separately.
 
-## Windows agents
+## Windows hosted runners
 
-Run PowerShell 7.2+ on the native x64 and ARM64 private agents. Existing
+Run PowerShell 7.2+ on native x64 and ARM64 GitHub-hosted Windows runners. Existing
 `windows/tool/prepare-build-toolchain.ps1` remains responsible for the app's
 other pinned build utilities. The Steam preflight is read-only by default:
 
@@ -205,11 +204,14 @@ ctest --test-dir build/steam-msvc-x64 -C Debug --output-on-failure
 if ($LASTEXITCODE) { throw 'Steam Windows tests failed' }
 ```
 
-Use the ARM64 receipt, a separate directory and `-A ARM64` on the ARM64 agent.
+Use the ARM64 receipt, a separate directory and `-A ARM64` on the ARM64 runner.
 Inspect Media Foundation/HEVC availability and HDR/controller/audio behavior
 only after full app builds succeed.
 
-## Apple agents
+## Apple SDK setup on macOS
+
+Use GitHub-hosted macOS for ordinary SDK probes, builds and tests. A private
+Apple JIT runner is reserved for explicitly requested signing or notarization.
 
 Install the approved **full Xcode** from
 [Apple's developer downloads](https://developer.apple.com/download/all/) or the
@@ -320,9 +322,9 @@ Official setup references: [Android tools/checksums](https://developer.android.c
 
 ## Account Cloud desktop IPC gate
 
-The existing private Linux reliability, macOS and Windows reliability jobs now
-run `python3 scripts/games/cloud_transport_probe.py` (`python` on Windows) using
-the installed Dart SDK. Run this before handoff on each desktop architecture.
+The hosted Linux, macOS and Windows reliability jobs run
+`python3 scripts/games/cloud_transport_probe.py` (`python` on Windows) using the
+installed Dart SDK. Run this before handoff on each desktop architecture.
 It exercises actual OS IPC with a simulated observer, never Steam. Keep the real
 Cloud plugin stopped; the harness refuses occupied endpoints. A socket denial is
 a failure, not a pass. Linux/macOS use Unix sockets; Windows uses same-SID local

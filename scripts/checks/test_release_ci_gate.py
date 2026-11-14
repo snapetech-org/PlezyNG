@@ -108,17 +108,16 @@ class AppleRunnerRoutingTests(unittest.TestCase):
     })
     @patch("release_all_platforms.active_run", return_value=None)
     @patch("release_all_platforms.matching_run", return_value=None)
-    def test_candidate_dispatch_routes_mobile_hosted_and_mac_private(
+    def test_candidate_dispatch_keeps_unsigned_apple_jobs_hosted(
         self, _matching_run, _active_run, dispatch_mock, _ensure_main,
     ) -> None:
-        ensure_candidate_build(
-            "3.0.34", "a" * 40, tvos_runner_pool="auto", macos_runner_pool="private",
-        )
+        ensure_candidate_build("3.0.34", "a" * 40)
 
         fields = dispatch_mock.call_args.args[3]
-        self.assertEqual(fields["tvos_runner_pool"], "split")
+        self.assertEqual(fields["tvos_runner_pool"], "hosted")
         self.assertTrue(dispatch_mock.call_args.kwargs["watch_hosted_tvos"])
 
+    @patch("release_all_platforms.run_has_successful_step", return_value=True)
     @patch("release_all_platforms.ensure_remote_main_sha")
     @patch("release_all_platforms.dispatch", return_value={
         "databaseId": 19, "status": "completed", "conclusion": "success",
@@ -126,12 +125,13 @@ class AppleRunnerRoutingTests(unittest.TestCase):
     })
     @patch("release_all_platforms.active_run", return_value=None)
     @patch("release_all_platforms.matching_run", return_value=None)
-    def test_candidate_dispatch_routes_private_ios_and_macos_with_hosted_tvos(
-        self, _matching_run, _active_run, dispatch_mock, _ensure_main,
+    def test_private_apple_route_is_only_selected_for_requested_signing(
+        self, _matching_run, _active_run, dispatch_mock, _ensure_main, _signed_steps,
     ) -> None:
         ensure_candidate_build(
             "3.0.34", "b" * 40, tvos_runner_pool="auto", macos_runner_pool="private",
-            ios_runner_pool="private",
+            ios_runner_pool="private", include_apple_store_build=True,
+            prepare_homebrew_cask=True,
         )
 
         fields = dispatch_mock.call_args.args[3]
@@ -179,12 +179,12 @@ class AppleRunnerRoutingTests(unittest.TestCase):
                             "runner_name": "ubuntu-1", "steps": [{"name": "Create release"}]},
         ]))
 
-    def test_hosted_tvos_fallback_is_limited_to_trusted_release_builds(self) -> None:
+    def test_hosted_tvos_queue_watch_is_limited_to_trusted_release_builds(self) -> None:
         run = {
             "event": "workflow_dispatch", "head_branch": "main",
             "head_repository": {"full_name": "snapetech-org/pleazyng"},
             "path": ".github/workflows/build.yml@refs/heads/main",
-            "display_title": "action:build:pool:private:mode:release:version:3.0.0",
+            "display_title": "action:build:pool:public:mode:release:version:3.0.0",
         }
         self.assertTrue(trusted_release_workflow_run(run, "snapetech-org/pleazyng"))
         self.assertFalse(trusted_release_workflow_run(
@@ -220,12 +220,12 @@ class AppleRunnerRoutingTests(unittest.TestCase):
             {"id": 7, "status": "in_progress", "event": "workflow_dispatch", "head_branch": "main",
              "head_repository": {"full_name": "snapetech-org/pleazyng"},
              "path": ".github/workflows/build.yml@refs/heads/main",
-             "display_title": "action:release:pool:private:tag:v3.0.0"},
+             "display_title": "action:release:pool:public:tag:v3.0.0"},
             {"jobs": jobs, "total_count": len(jobs)},
             {"id": 7, "status": "in_progress", "event": "workflow_dispatch", "head_branch": "main",
              "head_repository": {"full_name": "snapetech-org/pleazyng"},
              "path": ".github/workflows/build.yml@refs/heads/main",
-             "display_title": "action:release:pool:private:tag:v3.0.0"},
+             "display_title": "action:release:pool:public:tag:v3.0.0"},
             {"jobs": jobs, "total_count": len(jobs)},
             {"status": "completed", "conclusion": "cancelled"},
             {"databaseId": 7, "status": "completed", "conclusion": "cancelled", "jobs": []},
@@ -255,7 +255,7 @@ class PreflightCIFastFailTests(unittest.TestCase):
             "head_branch": "main",
             "head_repository": {"full_name": "snapetech-org/pleazyng"},
             "path": ".github/workflows/ci.yml@refs/heads/main",
-            "display_title": "action:ci:pool:private:apple:private",
+            "display_title": "action:ci:pool:public:apple:hosted",
         }
 
     def test_only_trusted_main_preflight_ci_is_fast_fail_cancellable(self) -> None:
@@ -265,7 +265,7 @@ class PreflightCIFastFailTests(unittest.TestCase):
             {"head_branch": "feature/untrusted"},
             {"head_repository": {"full_name": "other/repository"}},
             {"path": ".github/workflows/build.yml@refs/heads/main"},
-            {"display_title": "action:release:pool:private:tag:v3.0.0"},
+            {"display_title": "action:release:pool:public:tag:v3.0.0"},
         ):
             with self.subTest(changes=changes):
                 self.assertFalse(trusted_preflight_ci_run({**self.run, **changes}, "snapetech-org/pleazyng"))
@@ -380,13 +380,13 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
             "main",
             {
                 "action": "ci",
-                "runner_pool": "private",
+                "runner_pool": "public",
                 "execution_profile": "hybrid",
                 "build_linux_packages": "true",
                 "apple_runner_pool": "hosted",
             },
             "Pleazyng CI",
-            expected_title="action:ci:pool:private:apple:hosted",
+            expected_title="action:ci:pool:public:apple:hosted",
             expected_sha=commit_sha,
         )
 
@@ -404,19 +404,19 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
             "main",
             {
                 "action": "ci",
-                "runner_pool": "private",
+                "runner_pool": "public",
                 "execution_profile": "hybrid",
                 "build_linux_packages": "true",
                 "apple_runner_pool": "hosted",
             },
             "Pleazyng CI",
-            expected_title="action:ci:pool:private:apple:hosted",
+            expected_title="action:ci:pool:public:apple:hosted",
             expected_sha=commit_sha,
         )
 
     @patch("release_all_platforms.dispatch")
     @patch("release_all_platforms.matching_run", return_value=None)
-    def test_release_ci_dispatch_can_use_hosted_when_private_capacity_is_busy(
+    def test_release_ci_dispatch_uses_public_hosted_apple(
         self, _matching_run, dispatch
     ) -> None:
         commit_sha = "e" * 40
@@ -426,12 +426,14 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
 
     @patch("release_all_platforms.dispatch")
     @patch("release_all_platforms.matching_run", return_value=None)
-    def test_release_ci_private_ios_route_keeps_tvos_hosted(self, _matching_run, dispatch) -> None:
+    def test_release_ci_always_uses_public_hosted_apple(self, _matching_run, dispatch) -> None:
         ensure_ci("f" * 40, apple_runner_pool="private", ios_runner_pool="private")
 
-        self.assertEqual(dispatch.call_args.args[3]["apple_runner_pool"], "private-ios")
+        fields = dispatch.call_args.args[3]
+        self.assertEqual(fields["runner_pool"], "public")
+        self.assertEqual(fields["apple_runner_pool"], "hosted")
         self.assertEqual(dispatch.call_args.kwargs["expected_title"],
-                         "action:ci:pool:private:apple:private-ios")
+                         "action:ci:pool:public:apple:hosted")
 
     @patch(
         "release_all_platforms.gh_json",
@@ -501,7 +503,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
             "main",
             {
                 "action": "build",
-                "runner_pool": "private",
+                "runner_pool": "public",
                 "execution_profile": "hybrid",
                 "mode": "release",
                 "build_version": "3.0.0",
@@ -514,7 +516,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
                 "prepare_homebrew_cask": "false",
             },
             "Pleazyng 3.0.0 all-platform release-mode candidate",
-            expected_title="action:build:pool:private:mode:release:version:3.0.0",
+            expected_title="action:build:pool:public:mode:release:version:3.0.0",
             expected_sha=commit_sha,
             allow_failure=True,
             watch_hosted_tvos=True,
@@ -531,7 +533,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
     })
     @patch("release_all_platforms.active_run", return_value=None)
     @patch("release_all_platforms.matching_run", return_value=None)
-    def test_signed_apple_candidate_is_explicit_without_changing_runner_title(
+    def test_signed_apple_candidate_keeps_public_pool_title(
         self, _matching_run, _active_run, dispatch, _ensure_main
     ) -> None:
         ensure_candidate_build("3.0.0", "e" * 40, include_apple_store_build=True)
@@ -540,7 +542,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
         self.assertEqual(fields["include_apple_store_build"], "true")
         self.assertEqual(
             dispatch.call_args.kwargs["expected_title"],
-            "action:build:pool:private:mode:release:version:3.0.0",
+            "action:build:pool:public:mode:release:version:3.0.0",
         )
 
     @patch("release_all_platforms.run_has_successful_job", return_value=True)
@@ -557,78 +559,57 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
             "build.yml",
             "b" * 40,
             ref="main",
-            expected_title="action:build:pool:private:mode:release:version:3.0.0",
+            expected_title="action:build:pool:public:mode:release:version:3.0.0",
         )
 
-    @patch("release_all_platforms.verify_unacquired_hosted_tvos_run", side_effect=RunnerAcquisitionError("build step ran"))
+    @patch("release_all_platforms.verify_unacquired_hosted_tvos_run")
     @patch("release_all_platforms.matching_run")
-    def test_rejects_a_failed_candidate_for_the_exact_commit(self, matching_run, _verify) -> None:
+    def test_failed_candidate_does_not_attempt_a_private_retry(self, matching_run, verify) -> None:
         matching_run.return_value = {"databaseId": 124, "status": "completed", "conclusion": "failure"}
 
-        with self.assertRaisesRegex(ReleaseError, "not a verified hosted tvOS runner-acquisition cancellation"):
+        with self.assertRaisesRegex(ReleaseError, "hosted failures never reroute to private JIT automatically"):
+            ensure_candidate_build("3.0.0", "b" * 40)
+        verify.assert_not_called()
+
+    @patch("release_all_platforms.verify_unacquired_hosted_tvos_run")
+    @patch("release_all_platforms.dispatch")
+    @patch("release_all_platforms.matching_run", return_value={
+        "databaseId": 124, "status": "completed", "conclusion": "failure",
+    })
+    def test_failed_hosted_candidate_does_not_retry_privately(
+        self, _matching_run, dispatch, verify
+    ) -> None:
+        with self.assertRaisesRegex(ReleaseError, "hosted failures never reroute to private JIT automatically"):
             ensure_candidate_build("3.0.0", "b" * 40)
 
-    @patch("release_all_platforms.verify_unacquired_hosted_tvos_run", return_value={"run_id": 124})
-    @patch("release_all_platforms.ensure_remote_main_sha")
-    @patch("release_all_platforms.dispatch", return_value={
-        "databaseId": 125, "status": "completed", "conclusion": "success",
-        "jobs": [{"name": "Build Windows (arm64)", "status": "completed", "conclusion": "success"}],
-    })
-    @patch("release_all_platforms.active_run", return_value=None)
+        dispatch.assert_not_called()
+        verify.assert_not_called()
+
+    @patch("release_all_platforms.verify_unacquired_hosted_tvos_run")
+    @patch("release_all_platforms.dispatch")
     @patch("release_all_platforms.matching_run")
-    def test_hosted_allocation_failure_dispatches_a_unique_private_candidate_retry(
-        self, matching_run, _active, dispatch, _main, verify
-    ) -> None:
-        matching_run.side_effect = [
-            {"databaseId": 124, "status": "completed", "conclusion": "failure"},
-            None,
-        ]
-
-        result = ensure_candidate_build("3.0.0", "b" * 40)
-
-        self.assertEqual(result["databaseId"], 125)
-        verify.assert_called_once_with(124, "b" * 40, "3.0.0", action="build")
-        fields = dispatch.call_args.args[3]
-        self.assertEqual(fields["tvos_runner_pool"], "private")
-        self.assertEqual(fields["reuse_repaired_run_id"], "124")
-        self.assertEqual(fields["rebuild_tvos"], "true")
-        self.assertEqual(
-            dispatch.call_args.kwargs["expected_title"],
-            "action:build:pool:private:mode:release:version:3.0.0:runner-retry-of:124",
-        )
-
-    @patch("release_all_platforms.run_has_successful_job", return_value=True)
-    @patch("release_all_platforms.verify_unacquired_hosted_tvos_run", return_value={"run_id": 124})
+    @patch("release_all_platforms.active_run")
     @patch("release_all_platforms.ensure_remote_main_sha")
-    @patch("release_all_platforms.dispatch", return_value={
-        "databaseId": 125, "status": "completed", "conclusion": "success",
-        "jobs": [{"name": "Build Windows (arm64)", "status": "completed", "conclusion": "success"}],
-    })
-    @patch("release_all_platforms.active_run", return_value=None)
-    @patch("release_all_platforms.matching_run")
     @patch("release_all_platforms.wait_for_run", return_value={
         "databaseId": 124, "status": "completed", "conclusion": "failure",
     })
-    def test_active_candidate_that_finishes_with_runnerless_tvos_retries_privately(
-        self, wait, matching_run, _active, dispatch, _ensure_main, verify, _arm64_job,
+    def test_active_failed_candidate_does_not_retry_privately(
+        self, wait, _ensure_main, _active, matching_run, dispatch, verify,
     ) -> None:
-        matching_run.side_effect = [
-            {"databaseId": 124, "status": "in_progress", "conclusion": None},
-            None,
-        ]
+        matching_run.return_value = {
+            "databaseId": 124, "status": "in_progress", "conclusion": None,
+        }
 
-        result = ensure_candidate_build("3.0.0", "b" * 40)
+        with self.assertRaisesRegex(ReleaseError, "hosted failures never reroute to private JIT automatically"):
+            ensure_candidate_build("3.0.0", "b" * 40)
 
-        self.assertEqual(result["databaseId"], 125)
         wait.assert_called_once_with(
             "snapetech-org/pleazyng", {"databaseId": 124, "status": "in_progress", "conclusion": None},
             "Pleazyng 3.0.0 all-platform release-mode candidate", private_apple=False,
             allow_failure=True, watch_hosted_tvos=True,
         )
-        verify.assert_called_once_with(124, "b" * 40, "3.0.0", action="build")
-        self.assertEqual(dispatch.call_args.args[3]["tvos_runner_pool"], "private")
-        self.assertEqual(dispatch.call_args.args[3]["reuse_repaired_run_id"], "124")
-        self.assertFalse(dispatch.call_args.kwargs["watch_hosted_tvos"])
+        dispatch.assert_not_called()
+        verify.assert_not_called()
 
 
 class ImmutableReleaseTagTests(unittest.TestCase):

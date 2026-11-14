@@ -141,7 +141,7 @@ simulated callbacks are not a verified live contract or all-platform release.
 ## Remaining contracts and qualification
 
 - Final-package verification and a shrunk-app Android device harness are now
-  implemented and wired into private build/release jobs. Embedded-disabled app
+  implemented and wired into public hosted build/release jobs. Embedded-disabled app
   builds explicitly check that the receiver is absent. Requested Steam server
   features fail startup if configuration or UDP binding prevented registration.
   These close packaging/deployment code gaps; they do not count as executed
@@ -150,7 +150,7 @@ simulated callbacks are not a verified live contract or all-platform release.
 - SDK preparation is implemented: checksum-verified Android host tools and all
   vendored-module pins; NDK/JNI/ELF artifact inspection; Linux development/codec
   preflight; Windows VS/SDK provisioning and verification; process-local Xcode,
-  Metal and actual Apple source probes. Private-runner CI invokes these checks
+  Metal and actual Apple source probes. Public hosted CI invokes these checks
   and preserves receipts. Windows/Apple host execution and the amended workflows
   have not run in this Linux development environment.
 

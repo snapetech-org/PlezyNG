@@ -235,6 +235,6 @@ locally generated fixture and a loopback-only seeder.
 
 The repository's inspected workflows are manual/reusable, rather than triggered
 by ordinary pushes. Preserve that policy. For later authorized CI/build work,
-follow [AGENTS.md](../../../AGENTS.md): use compatible hosted runners where
-their requirements fit and private JIT for private network/storage, special
-hardware, or explicitly private validation.
+follow [AGENTS.md](../../../AGENTS.md): use public GitHub-hosted runners for
+compatible jobs and qualify hardware manually. Private JIT is limited to
+requested Apple signing and the documented webOS storage overflow.

@@ -416,7 +416,7 @@ Use the dependency order and acceptance conditions in this roadmap when implemen
 5. Every offered seek/replay/recording action has a real capable owner and valid retained/archived range. No fabricated rewind window or “scheduled” local job on a platform unable to execute it.
 6. Remote, keyboard, touch and assistive-technology flows are tested. Large text and narrow layouts preserve primary actions. Existing themes and icons remain authoritative.
 7. Storage/time/connection/decoder budgets hold under stress. A low-resource device gracefully rejects extra capability without interrupting active recording or unrelated media.
-8. Build new native paths on compatible GitHub-hosted runners when their OS, architecture, trust, and hardware fit; use private ephemeral JIT for requirements they cannot meet. Test on the declared device classes. Missing JIT capacity blocks a target only when no compatible hosted route satisfies its requirements.
+8. Build new native paths on public GitHub-hosted runners. Test on the declared device classes. Private JIT is limited to requested Apple signing and the documented webOS storage overflow; capacity for either exception must not block other release targets.
 
 ### Proposed measurable budgets
 
@@ -463,7 +463,7 @@ Maintain a per-platform scorecard with **better / equivalent / worse / unavailab
 | Scheduled capture is advertised without a durable host | Recorder | Host capability and lease reconciliation are release gates, not a UI toggle |
 | Synchronization resurrects deleted sources or wrong progress | Sync/profile | Tombstones, edition-qualified identity, deterministic conflicts and offline replay fixtures |
 | The feature set makes Plezy feel like an administration console | Product/UI | Existing-surface contract, screenshot review in current themes, remote task testing and contextual advanced settings |
-| Native build/device capacity is unavailable | Release owner | Inventory compatible hosted and private JIT options in M0; qualify targets independently and disclose the exact blocked gate |
+| Native build/device capacity is unavailable | Release owner | Use public GitHub-hosted runners for compatible builds; qualify devices separately and disclose only the exact blocked platform gate |
 
 ### Fixture corpus
 
@@ -638,7 +638,7 @@ These are dependency-ordered roadmap slices, not a promise that every unit fits 
 
 **Milestone:** M2. **Depends on:** PR10. **Requirements:** 193, 194, 195, 196.
 
-**Touchpoints:** `Existing native player adapters`; `Existing private JIT workflows`; `docs/plezyng/iptv/PLATFORMS.md (new)`.
+**Touchpoints:** `Existing native player adapters`; `Existing public-hosted CI workflows`; `docs/plezyng/iptv/PLATFORMS.md (new)`.
 
 **Exit gate:** Build and device ledger covers declared platforms; unsupported targets remain gated; existing VOD and media-server Live TV smoke tests pass.
 
@@ -915,7 +915,7 @@ Then land protected persistence and bounded ingestion. The current connection mo
 - Use a durable host for promised unattended recording. Keep local capture's platform limits explicit.
 - Treat provider M3U/XMLTV, logos and metadata as untrusted data. Never execute playlist-supplied commands or arbitrary player options.
 - Profile restrictions apply before preview/search/deep-link/failover/casting. A favorite or stored layout cannot bypass current permission.
-- Use compatible GitHub-hosted runners for jobs whose OS, architecture, trust, and hardware needs they satisfy. Use private ephemeral JIT runners for private network/storage, special hardware, or explicitly private validation. Do not route work to a runner that fails those requirements.
+- Use public GitHub-hosted runners for compatible CI. Perform device qualification on target hardware. Private JIT is limited to requested Apple signing and the documented webOS storage overflow. Do not route work to a runner that fails its actual requirements.
 
 ### Work and reporting discipline
 

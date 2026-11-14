@@ -1,7 +1,7 @@
 name: Security regressions
 
 # Trusted main only. Public PRs need the separately isolated, restricted-egress
-# sandbox required by AGENTS.md; never route them to trusted private runners.
+# secret-free public GitHub-hosted checks. Keep permissions read-only.
 on:
   push:
     branches: [main, 'audit-remediation/**']

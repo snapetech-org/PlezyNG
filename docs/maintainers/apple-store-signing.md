@@ -33,7 +33,7 @@ retrying a failed archive:
 
 ```sh
 gh workflow run build.yml --repo snapetech-org/pleazyng --ref main \
-  -f action=apple-signing-preflight -f runner_pool=private \
+  -f action=apple-signing-preflight -f runner_pool=public \
   -f execution_profile=hybrid -f mode=release
 ```
 

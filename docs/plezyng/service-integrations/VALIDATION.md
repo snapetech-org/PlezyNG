@@ -110,7 +110,7 @@ The availability bake-off sample is specified in PROVIDERS. Publish observed res
 
 Start disabled behind provider/capability/distribution flags. Enable an internal pilot for one approved territory and target, then expand only tested cells. Keep stable local features unaffected by remote policy changes. Rollback disables the provider action/feed, retires in-flight operations and follows data-license deletion rules; it preserves owned downloads, annotations and existing server connections.
 
-This assessment must not trigger CI, enroll partner accounts or deploy a gateway. Runtime implementation PRs use the current required checks and runner selection policy in root `AGENTS.md`: compatible hosted runners where requirements fit, private JIT where they do not. Manual releases remain separate owner actions.
+This assessment must not trigger CI, enroll partner accounts or deploy a gateway. Runtime implementation PRs use public GitHub-hosted runners for compatible checks under root `AGENTS.md`; hardware qualification remains a separate manual gate. Private JIT is limited to requested Apple signing and the documented webOS storage overflow. Manual releases remain separate owner actions.
 
 ## Validation performed for this implementation branch
 

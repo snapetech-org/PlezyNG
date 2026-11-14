@@ -254,16 +254,16 @@ nonzero `reserved_zero_3bits`. It also requires the demuxer's container-level
 `dv_md_compression` value and accepts only `0` (`none`); raw RPU JSON alone is
 not sufficient input. It does not implement BT.1886 conversion or Dolby
 display management. Historical sample tests passed
-locally on `kspld0` on 2026-10-26; run new tests on a compatible hosted runner
-or approved private-JIT route under the current root `AGENTS.md`. The final RPU
+locally on `kspld0` on 2026-10-26; run new tests on public GitHub-hosted
+runners under the current root `AGENTS.md`. The final RPU
 pivot is assigned to the last encoded interval to reconcile the RPU's one-piece-
 per-interval payload with the generic CCM terminal sentinel. This matches the
 [public libplacebo shader](https://github.com/haasn/libplacebo/blob/master/src/shaders/colorspace.c#L141-L260) pivot clamp and `>=` coefficient selection, but it is not an independent Dolby reference. The rule still needs a trusted Profile 7 sample-level oracle. The synthetic graph also passed locally
 through embedded mpv and software GLES, but its pixel delta only proves the
 authored EL reaches the graph output, not that the output matches Dolby's
-composer. Follow the current runner policy for checks before merge; use private
-JIT where GPU, hardware, private storage/network, or explicit validation needs
-require it.
+composer. Follow the current runner policy for checks before merge; run
+compatible CI on public GitHub-hosted runners and qualify hardware on target
+devices.
 With the mapping and error budget established, compare GPU output for reshaping,
 NLQ, filtering and clipping. FEL can change visible
 image values even when the final display is 10-bit. Record separately whether

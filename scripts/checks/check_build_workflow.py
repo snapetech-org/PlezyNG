@@ -93,9 +93,9 @@ require(
 )
 require(
     tvos_pool_input is not None
-    and "options: [hosted, private, split, private-ios]" in tvos_pool_input.group("body")
+    and "options: [hosted, private]" in tvos_pool_input.group("body")
     and "default: hosted" in tvos_pool_input.group("body"),
-    "Apple release builds must default hosted and support explicit split and private-iOS routes",
+    "Apple release builds must default hosted and expose private routing only for requested signing",
 )
 require(
     "inputs.reuse_repaired_run_id != '' && inputs.rebuild_tvos"
@@ -103,16 +103,15 @@ require(
     "tvOS runner retries must reuse an existing dispatch input within GitHub's input limit",
 )
 require(
-    "HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS = 10 * 60" in release_driver_text
-    and "trusted_release_workflow_run(overview, repo)" in release_driver_text
-    and 'command(["gh", "run", "cancel", run_id, "--repo", repo])' in release_driver_text
-    and '"repos/{repo}/actions/jobs/{tvos_job_id}/cancel"' not in release_driver_text,
-    "the release controller must cancel only a drained workflow after a bounded unassigned hosted tvOS wait",
+    "allow_private_apple_retry: bool = False" in release_driver_text
+    and release_driver_text.count("allow_private_apple_retry=False") >= 2
+    and "automatically retry" in release_driver_text,
+    "hosted Apple build failures must not trigger private runner retries",
 )
 require(
-    "apple_runner_pool: ${{ inputs.tvos_runner_pool }}"
+    "apple_runner_pool: hosted"
     in job("release-ci"),
-    "Release CI must inherit the same explicit Apple route as the release packages",
+    "Release CI must use public hosted runners even when a signed package route is requested",
 )
 require(
     "inputs.action == 'release' && 'pleazyng-versioned-release-v2'" in text
@@ -144,14 +143,9 @@ require(
     isinstance(apple_pool_default, ast.Constant)
     and apple_pool_default.value == "auto"
     and "def select_apple_runner_pool(requested: str) -> str:" in release_driver_text
-    and "from verify_tvos_runner_acquisition import RunnerAcquisitionError, verify_unacquired_hosted_tvos_run" in release_driver_text
-    and "runner-retry-of" in release_driver_text
-    and "recovery:source:" in release_driver_text
-    and "apple_runner_pool=apple_pool" in release_driver_text
-    and "apple_workflow_route(\n        tvos_runner_pool, macos_runner_pool, ios_runner_pool" in release_driver_text
     and "--ios-runner-pool" in release_driver_text
     and "private Apple JIT route" in release_driver_text,
-    "release driver must support hosted mobile Apple jobs alongside a private macOS job",
+    "release driver must default Apple builds to hosted and reserve private Apple for signing",
 )
 
 
@@ -246,15 +240,9 @@ require(
 )
 validate_windows_jni_jdk(windows, "Windows release builds")
 require(
-    '"group":"packer-windows"' in windows
-    and '"Windows","X64"' in windows
-    and '"Pleazyng"' in windows,
-    "Windows x64 must retain its private route for the private profile",
-)
-require(
     "'windows-2025'" in windows
     and "'windows-11-vs2026-arm'" in windows,
-    "the hybrid release must use standard native Windows x64 and ARM64 runners",
+    "Windows x64 and ARM64 must use compatible public hosted runners",
 )
 require("fail-fast: false" in windows, "Windows matrix must not cancel its other architecture")
 require(
@@ -911,15 +899,11 @@ require(
 
 linux = job("build-linux")
 require(
-    '"group":"ng-shared-main-jit"' in linux
-    and "ng-shared-main-pleazyng" in linux
-    and '"linux","x64"' in linux
-    and '"linux","arm64"' in linux
-    and "matrix.arch == 'x64'" in linux
+    "matrix.arch == 'x64'" in linux
     and "'ubuntu-24.04-arm'" in linux
     and "'ubuntu-24.04'" in linux
-    and '"gha-{0}-{1}-build-linux"' in linux,
-    "Linux architectures must use compatible hosted runners in hybrid mode and retain the private route",
+    and "self-hosted" not in linux,
+    "Linux architectures must use public hosted runners",
 )
 require("fail-fast: false" in linux, "Linux matrix must not cancel its other architecture")
 require(
@@ -1079,7 +1063,7 @@ require(
 require(
     "python3 -m unittest discover -s tools/webos/tests -v"
     in named_step(build_webos, "Test WebOS packaging and integrity"),
-    "private webOS builds must run the headless packaging and release-gate tests",
+    "webOS capacity-overflow builds must run the headless packaging and release-gate checks",
 )
 require(
     "verify_package.py --project-metadata" in named_step(
@@ -1166,7 +1150,7 @@ require(
     "  workflow_call:" in tizen_workflow
     and "tester_build:" in tizen_workflow
     and "default: hybrid" in tizen_workflow
-    and "options: [private, hybrid]" in tizen_workflow
+    and "options: [hybrid]" in tizen_workflow
     and tizen_workflow.count("inputs.execution_profile == 'hybrid' && 'ubuntu-24.04'") == 2
     and "PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt == 1 && '1' || '0' }}" in tizen_workflow
     and "Ignore private Tizen toolchain paths on hosted runners" in tizen_workflow
@@ -1222,15 +1206,15 @@ require(
 require(
     re.search(
         r"(?ms)^      runner_pool:\n.*?^        required: true\n        type: choice\n"
-        r".*?^        options:\n          - private$",
+        r".*?^        options:\n          - public\n        default: public$",
         text,
     ) is not None,
-    "platform workflow must select its supported broker route",
+    "platform workflow must expose and default to public GitHub-hosted runners",
 )
 require(
     re.search(
         r"(?ms)^      execution_profile:\n.*?^        required: true\n        type: choice\n"
-        r".*?^        options:\n          - private\n          - hybrid\n        default: hybrid$",
+        r".*?^        options:\n          - hybrid\n        default: hybrid$",
         text,
     ) is not None
     and "inputs.execution_profile == 'hybrid'" in job("validate-trusted-ref")
@@ -1535,13 +1519,13 @@ for apple_job_name in ("build-ios", "build-tvos"):
         f"{apple_job_name} signing archives and DerivedData must stay on local APFS",
     )
 require(
-    "inputs.execution_profile == 'hybrid' && (inputs.apple_runner_pool == 'hosted' || (inputs.apple_runner_pool == 'split' && matrix.platform != 'macOS') || (inputs.apple_runner_pool == 'private-ios' && matrix.platform == 'tvOS')) && 'macos-26' || fromJSON(format(" in apple_native
+    "runs-on: macos-26" in apple_native
     and "timeout-minutes: 120" in apple_native
     and "timeout-minutes: 75" in named_step(apple_native, "Run Apple native reliability tests")
     and "hosted-xcode-version: '26.5'" in apple_native
     and 'test "$(uname -m)" = arm64' in named_step(apple_native, "Require native Apple Silicon host")
     and "ARCHS=arm64" in apple_native,
-    "Apple arm64 native qualification must select compatible Apple Silicon hosts and toolchains",
+    "Apple native qualification must use compatible public Apple Silicon hosts and toolchains",
 )
 require(
     "scripts/refresh_apple_spm.sh ios" in apple_native
@@ -1574,17 +1558,17 @@ require(
     "Flutter Chrome tests must use the installed Chromium and have bounded test and step timeouts",
 )
 require(
-    "        options: [private, hybrid]\n        default: hybrid" in ci_text,
-    "manual CI must default to the trusted-main hybrid profile",
+    "        options: [hybrid]\n        default: hybrid" in ci_text
+    and "default: public" in ci_text,
+    "manual CI must use the hybrid profile on public hosted runners",
 )
 
 windows_native = job_block(ci_text, "windows-native-test")
 native_format = job_block(ci_text, "native-format")
 require(
-    "inputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format(" in native_format
-    and '"group":"private-apple-builds"' in native_format
+    "runs-on: macos-26-intel" in native_format
     and "scripts/format_native.sh --check" in native_format,
-    "hybrid native formatting must use standard macOS while private mode preserves the Apple JIT route",
+    "native formatting must use public hosted macOS",
 )
 validate_windows_jni_jdk(windows_native, "Windows native CI")
 windows_ci_flutter_cache_key = re.search(
@@ -1657,16 +1641,16 @@ for action_pool_job in (
     block = job(action_pool_job)
     if action_pool_job == "validate-trusted-ref":
         gated = (
-            "inputs.runner_pool == 'private'" in block
+            "inputs.runner_pool == 'public'" in block
             and "inputs.action == 'build'" in block
             and "inputs.action == 'release'" in block
         )
     else:
         gated = (
             "needs.validate-trusted-ref.outputs.action == 'build'" in block
-            and "needs.validate-trusted-ref.outputs.runner_pool == 'private'" in block
+            and "needs.validate-trusted-ref.outputs.runner_pool == 'public'" in block
         )
-    require(gated, f"{action_pool_job} must be gated by the requested action and private pool")
+    require(gated, f"{action_pool_job} must be gated by the requested action and public pool")
 
 release = job("create-release")
 require(
@@ -1775,7 +1759,7 @@ release_condition = release_if.group(1) if release_if else ""
 require(
     "needs.validate-trusted-ref.outputs.mode == 'release'" in release_condition
     and "needs.validate-trusted-ref.outputs.action == 'release'" in release_condition
-    and "needs.validate-trusted-ref.outputs.runner_pool == 'private'" in release_condition
+    and "needs.validate-trusted-ref.outputs.runner_pool == 'public'" in release_condition
     and all(f"needs.{name}.result == 'success'" in release_condition for name in (
         "build-android", "build-ios", "build-tvos", "build-macos", "build-windows", "package-windows", "build-linux"))
     and "needs.validate-trusted-ref.result == 'success'" in release_condition
@@ -1882,7 +1866,7 @@ require(
 ios_worker_stage = named_step(job("build-ios"), "Stage locked iOS worker frameworks for Release")
 require(
     "(inputs.reuse_platform_run_id == '' || inputs.rebuild_ios)" in job("build-ios")
-    and "inputs.tvos_runner_pool != 'private' && inputs.tvos_runner_pool != 'private-ios' && 'macos-26-intel' || fromJSON(format(" in job("build-ios")
+    and "needs.validate-trusted-ref.outputs.include_apple_store_build == 'true' && needs.validate-trusted-ref.outputs.tvos_runner_pool == 'private' && fromJSON(format(" in job("build-ios")
     and "--rebuild-ios" in recovery_gate and "--rebuild-ios" in recovery_download
     and "inputs.rebuild_ios && needs.build-ios.result == 'success'" in release_condition
     and "!inputs.rebuild_ios && needs.build-ios.result == 'skipped'" in release_condition
@@ -1906,10 +1890,10 @@ require(
     "tvOS AOT recovery requires a compatible ARM host and a successful fresh artifact",
 )
 require(
-    "inputs.tvos_runner_pool == 'hosted' && 'macos-26-intel' || fromJSON(format(" in job("build-macos")
+    "needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true' && needs.validate-trusted-ref.outputs.tvos_runner_pool == 'private' && fromJSON(format(" in job("build-macos")
     and '"group":"private-apple-builds"' in job("build-macos")
     and '"gha-{0}-build-macos"' in job("build-macos"),
-    "the explicit private Apple route must include macOS on the run-scoped ARM JIT runner",
+    "the private Apple route must be conditional on requested signing work",
 )
 require(
     "scripts/recover_release_platforms.py" in recovery_gate
@@ -1944,7 +1928,8 @@ require(
     "Validate release tag before building" in trusted_ref
     and '"$VERSION" != "$PACKAGE_VERSION"' in trusted_ref
     and '"$ACTION" == "release" && "$RELEASE_TAG" != "v$PACKAGE_VERSION"' in trusted_ref
-    and '"$RUNNER_POOL" != "private"' in trusted_ref
+    and '"$RUNNER_POOL" != "public"' in trusted_ref
+    and "RUNNER_POOL=public" in named_step(trusted_ref, "Resolve release request")
     and '"$ACTION" != "build" && "$ACTION" != "release"' in trusted_ref
     and '"$REF_TYPE" != "branch" || "$REF_NAME" != "main"' in request_resolver
     and 'git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"' in trusted_ref
@@ -1980,7 +1965,7 @@ require(
     and "pleazyng-amazon-firetv-provenance.json" in android_job,
     "Android releases must build and verify a signed Amazon TV APK with the current lifetime SKU",
 )
-android_memory_diagnostics = named_step(android_job, "Capture Android JIT memory diagnostics")
+android_memory_diagnostics = named_step(android_job, "Capture Android hosted runner memory diagnostics")
 android_ffmpeg_prepare = named_step(android_job, "Prepare verified Android FFmpeg source archive")
 android_gradle_properties = (ROOT / "android/gradle.properties").read_text(encoding="utf-8")
 android_ci = job_block(ci_text, "android-test")
@@ -2027,7 +2012,7 @@ require(
         f"/sys/fs/cgroup/{name}" in android_memory_diagnostics
         for name in ("memory.current", "memory.max", "memory.peak", "memory.events")
     ),
-    "Android release builds must limit native parallelism and log JIT memory state even on failure",
+    "Android release builds must limit native parallelism and log hosted memory state even on failure",
 )
 
 require(

@@ -153,10 +153,10 @@ describe the wider platform and image-processing paths.
   decoder/output limits and does not replace the local implementation.
 - Keep diagnostics honest: requested, effective and measured states, distinct
   generated-frame counts, fallback reasons, and qualification evidence IDs.
-- Respect [AGENTS.md](../../../AGENTS.md): use compatible hosted runners where
-  their OS, architecture, trust, and hardware fit; use private ephemeral JIT for
-  special hardware, private network/storage, or explicitly private validation.
-  Keep existing trust boundaries. Do not turn workflow triggers back on or
+- Respect [AGENTS.md](../../../AGENTS.md): use public GitHub-hosted runners
+  for every compatible job. Qualify hardware manually on target devices.
+  Private JIT is limited to requested Apple signing and the documented webOS
+  storage overflow. Keep existing trust boundaries. Do not turn workflow triggers back on or
   dispatch releases as part of this plan.
 
 ## Delivery gates

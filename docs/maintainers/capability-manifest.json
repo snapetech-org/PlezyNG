@@ -218,7 +218,7 @@
         ".github/workflows/ci.yml",
         ".github/workflows/build.yml"
       ],
-      "open": "Compatible public GitHub-hosted runners are the default. Private ephemeral JIT is used for private resources or platform constraints. Existing builds validate their own revisions, not subsequent remediation commits."
+      "open": "Use public GitHub-hosted runners for compatible jobs and qualify hardware on target devices. Private ephemeral JIT is limited to requested Apple signing and the documented webOS storage overflow. Existing builds validate their own revisions, not subsequent remediation commits."
     }
   ],
   "findings": [

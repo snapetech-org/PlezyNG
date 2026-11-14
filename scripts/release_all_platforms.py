@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Orchestrate a native dependency refresh and the complete Pleazyng release.
 
-This is a local control-plane command. Pleazyng 3.0.0 uses compatible
-GitHub-hosted runners by default, private Apple JIT for needs the hosted pool
-cannot meet, and private JIT for WebOS storage or other private requirements.
+This is a local control-plane command. Pleazyng uses compatible public
+GitHub-hosted runners by default, private Apple JIT only for requested signing,
+and private Linux JIT only for the verified storage-heavy webOS build.
 It uses the operator's authenticated
 `gh` CLI session and never copies credentials into the repos.
 With --publish, it promotes the verified draft and runs every configured
@@ -63,7 +63,9 @@ FFMPEG_SIGNING_FINGERPRINT = "FCF986EA15E6E293A5644F10B4322F04D67658D8"
 DOWNLOAD_ATTEMPTS = 4
 DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
 HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS = 10 * 60
+NATIVE_FAILED_RUN_QUEUE_TIMEOUT_SECONDS = 15 * 60
 APPLE_JIT_EVIDENCE_ROOT: Path | None = None
+APPLE_JIT_SSH_TARGET = os.environ.get("APPLE_JIT_SSH_TARGET", "keith@100.64.0.3")
 RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "tools/webos/NATIVE-PREFLIGHT.md",
     "webos/CMakeLists.txt", "scripts/verify_webos_link_patch.py", "scripts/test_verify_webos_link_patch.py",
@@ -197,14 +199,19 @@ def matching_run(
     sha: str,
     *,
     ref: str | None = None,
-    expected_title: str | None = None,
+    expected_title: str | tuple[str, ...] | None = None,
 ) -> dict | None:
     runs = workflow_runs(repo, workflow, ref=ref)
     matches = [
         run for run in runs
         if run.get("headSha") == sha
         and run.get("event") == "workflow_dispatch"
-        and (expected_title is None or run.get("displayTitle") == expected_title)
+        and (
+            expected_title is None
+            or run.get("displayTitle") in expected_title
+            if isinstance(expected_title, tuple)
+            else expected_title is None or run.get("displayTitle") == expected_title
+        )
     ]
     matches.sort(key=lambda run: run.get("createdAt", ""), reverse=True)
     return matches[0] if matches else None
@@ -310,6 +317,7 @@ def trusted_preflight_ci_run(run: dict, repository: str) -> bool:
         and isinstance(path, str)
         and path.split("@", 1)[0] == ".github/workflows/ci.yml"
         and run.get("display_title") in {
+            "action:ci:pool:public:apple:hosted",
             "action:ci:pool:private:apple:hosted",
             "action:ci:pool:private:apple:private",
             "action:ci:pool:private:apple:split",
@@ -395,11 +403,65 @@ def trusted_release_workflow_run(run: dict, repository: str) -> bool:
         and isinstance(path, str)
         and path.split("@", 1)[0] == ".github/workflows/build.yml"
         and isinstance(title, str)
-        and (
-            title.startswith("action:build:pool:private:mode:release:version:")
-            or title.startswith("action:release:pool:private:tag:v")
-        )
+        and any(title.startswith(prefix) for prefix in (
+            "action:build:pool:public:mode:release:version:",
+            "action:release:pool:public:tag:v",
+            "action:build:pool:private:mode:release:version:",
+            "action:release:pool:private:tag:v",
+        ))
     )
+
+
+def trusted_native_build_run(run: dict, repository: str) -> bool:
+    """Scope native recovery cancellation to this fork's trusted-main build."""
+    head_repository = run.get("head_repository")
+    path = run.get("path")
+    return (
+        repository == MPV_REPO
+        and run.get("event") == "workflow_dispatch"
+        and run.get("head_branch") == "main"
+        and isinstance(head_repository, dict)
+        and head_repository.get("full_name") == repository
+        and isinstance(path, str)
+        and path.split("@", 1)[0] == ".github/workflows/publish.yml"
+        and run.get("display_title") in {"action:build:pool:public", "action:build:pool:private"}
+    )
+
+
+def failed_native_build_jobs(jobs: list[dict]) -> list[dict]:
+    return [
+        job for job in jobs
+        if job.get("status") == "completed"
+        and job.get("conclusion") in {"failure", "timed_out"}
+    ]
+
+
+def native_build_failure_has_drained(jobs: list[dict], *, now_utc=None) -> bool:
+    """Only release a failed native run after active jobs finish and stale queued jobs can be recovered."""
+    if not failed_native_build_jobs(jobs):
+        return False
+    if any(not isinstance(job, dict) or not isinstance(job.get("status"), str) for job in jobs):
+        return False
+    if any(job.get("status") == "in_progress" for job in jobs):
+        return False
+    pending = [job for job in jobs if job.get("status") in {"queued", "waiting", "requested", "pending"}]
+    if not pending:
+        return all(job.get("status") == "completed" for job in jobs)
+    now = (now_utc or dt.datetime.now(dt.timezone.utc)).astimezone(dt.timezone.utc)
+    for job in pending:
+        stamp = job.get("started_at") or job.get("created_at")
+        if not isinstance(stamp, str):
+            return False
+        try:
+            queued_at = dt.datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+        except ValueError:
+            return False
+        if queued_at.tzinfo is None:
+            return False
+        age = (now - queued_at.astimezone(dt.timezone.utc)).total_seconds()
+        if age < NATIVE_FAILED_RUN_QUEUE_TIMEOUT_SECONDS:
+            return False
+    return True
 
 
 def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = True,
@@ -426,6 +488,9 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
     next_preflight_check = 0.0
     hosted_tvos_cancel_requested = False
     next_hosted_queue_check = 0.0
+    next_native_job_check = 0.0
+    native_failed_job_keys: set[tuple[int, str]] = set()
+    native_cancellation_requested = False
     watch_failures = 0
     while True:
         watcher = subprocess.Popen(
@@ -433,6 +498,59 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
             cwd=ROOT,
         )
         while watcher.poll() is None:
+            if repo == MPV_REPO and not native_cancellation_requested \
+                    and time.monotonic() >= next_native_job_check:
+                next_native_job_check = time.monotonic() + 15
+                try:
+                    overview = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
+                    if (overview.get("id") == int(run_id)
+                            and overview.get("status") != "completed"
+                            and trusted_native_build_run(overview, repo)):
+                        inventory = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100")
+                        jobs = inventory.get("jobs", [])
+                        complete = (isinstance(jobs, list) and all(isinstance(job, dict) for job in jobs)
+                                    and inventory.get("total_count", len(jobs)) <= len(jobs))
+                        failures = failed_native_build_jobs(jobs) if complete else []
+                        for failed in failures:
+                            key = (failed.get("id", 0), failed.get("conclusion", "failure"))
+                            if key not in native_failed_job_keys:
+                                native_failed_job_keys.add(key)
+                                print(
+                                    f"Native build job {failed.get('name', 'unknown')} "
+                                    f"{failed.get('conclusion')} in run {run_id} while the workflow "
+                                    f"is still {overview.get('status')}; keeping active sibling builds "
+                                    "running and checking for verified artifact recovery.", flush=True,
+                                )
+                        if failures and native_build_failure_has_drained(jobs):
+                            # Re-read both objects immediately before canceling. A whole-run cancel
+                            # is safe here only because there are no active native jobs; stale queued
+                            # groups will be verified or rebuilt by recover_native_groups().
+                            confirmation = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
+                            confirmed = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100")
+                            confirmed_jobs = confirmed.get("jobs", [])
+                            confirmed_complete = (
+                                isinstance(confirmed_jobs, list)
+                                and all(isinstance(job, dict) for job in confirmed_jobs)
+                                and confirmed.get("total_count", len(confirmed_jobs)) <= len(confirmed_jobs)
+                            )
+                            if (confirmation.get("id") == int(run_id)
+                                    and confirmation.get("status") != "completed"
+                                    and trusted_native_build_run(confirmation, repo)
+                                    and confirmed_complete
+                                    and failed_native_build_jobs(confirmed_jobs)
+                                    and native_build_failure_has_drained(confirmed_jobs)):
+                                print(
+                                    f"Native run {run_id} has failed job(s), no active jobs, and only "
+                                    f"queued work older than {NATIVE_FAILED_RUN_QUEUE_TIMEOUT_SECONDS // 60} "
+                                    "minutes. Canceling the drained run so verified native artifacts can "
+                                    "be recovered and missing groups rebuilt from current main.", flush=True,
+                                )
+                                command(["gh", "run", "cancel", run_id, "--repo", repo])
+                                native_cancellation_requested = True
+                except ReleaseError as error:
+                    print(f"Could not inspect native child jobs; preserving run {run_id} and retrying: {error}",
+                          flush=True)
+
             preflight_check_time = time.monotonic() if cancel_failed_preflight else 0.0
             if (cancel_failed_preflight and not preflight_cancel_requested
                     and preflight_check_time >= next_preflight_check):
@@ -511,7 +629,7 @@ def wait_for_run(repo: str, run: dict, purpose: str, *, private_apple: bool = Tr
                                         f"Hosted tvOS job {tvos_job_id} has waited at least "
                                         f"{HOSTED_TVOS_QUEUE_TIMEOUT_SECONDS // 60} minutes without a runner; "
                                         "all other platform jobs passed, and release assembly has not started. "
-                                        "Canceling the drained run so the release controller can retry privately.",
+                                        "Canceling the drained run and failing fast; no private retry is automatic.",
                                         flush=True,
                                     )
                                     command(["gh", "run", "cancel", run_id, "--repo", repo])
@@ -629,27 +747,35 @@ def active_run(repo: str, workflow: str, *, ref: str) -> dict | None:
 
 
 def select_apple_runner_pool(requested: str) -> str:
-    """Use compatible public macOS first; recover to private JIT after proven non-acquisition."""
+    """Use hosted Macs by default; private Apple JIT is selected only for signing work."""
     if requested != "auto":
         return requested
-    print(
-        "Apple route: selecting compatible GitHub-hosted macOS. If GitHub cancels tvOS before "
-        "runner acquisition, the release controller will verify the job record and retry on private Apple JIT.",
-        flush=True,
-    )
     return "hosted"
+
+
+def private_apple_host_reachable() -> bool:
+    """Probe the exact tailnet SSH path used by the private Apple JIT launcher."""
+    try:
+        result = subprocess.run(
+            ["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5",
+             APPLE_JIT_SSH_TARGET, "true"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=8,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return result.returncode == 0
 
 
 def apple_workflow_route(
     tvos_runner_pool: str, macos_runner_pool: str, ios_runner_pool: str = "hosted"
 ) -> str:
-    """Encode the selected iOS, tvOS and macOS runner pools in one workflow input."""
-    if tvos_runner_pool == "private":
+    """Select the private Apple route only when an Apple signing lane needs it."""
+    if "private" in {tvos_runner_pool, ios_runner_pool, macos_runner_pool}:
         return "private"
-    if ios_runner_pool == "private":
-        return "private-ios"
-    if macos_runner_pool == "private":
-        return "split"
     return "hosted"
 
 
@@ -844,13 +970,13 @@ def prepare_native_checkout(scratch: Path) -> tuple[Path, str]:
         return checkout, native_sha
 
     native_head = command(["git", "rev-parse", "HEAD"], cwd=checkout, capture=True).stdout.strip()
-    native_title = "action:build:pool:private"
+    native_title = "action:build:pool:public"
     existing = matching_run(
         MPV_REPO,
         MPV_WORKFLOW,
         native_head,
         ref="main",
-        expected_title=native_title,
+        expected_title=(native_title, "action:build:pool:private"),
     )
     if existing and existing.get("status") == "completed" and existing.get("conclusion") == "success":
         print(f"Reusing successful native build {existing['databaseId']} for current source {native_head[:12]}.")
@@ -864,7 +990,7 @@ def prepare_native_checkout(scratch: Path) -> tuple[Path, str]:
             MPV_REPO,
             MPV_WORKFLOW,
             "main",
-            {"action_tag": "build", "runner_pool_tag": "private"},
+            {"action_tag": "build", "runner_pool_tag": "public"},
             "Native mpv/FFmpeg build",
             expected_title=native_title,
             expected_sha=native_head,
@@ -985,7 +1111,7 @@ def verify_native_release_assets(checkout: Path, *, groups=NATIVE_GROUPS) -> Non
                 raise ReleaseError(
                     f"Published {group}/{name} digest {remote_digest} does not match manifest {checksum}."
                 )
-        print(f"Verified {len(available)} assets in the {group} private-builder release.")
+        print(f"Verified {len(available)} assets in the {group} native-builder release.")
 
 
 def native_recovery_run_is_trusted(run: dict) -> bool:
@@ -994,7 +1120,7 @@ def native_recovery_run_is_trusted(run: dict) -> bool:
         and run.get("event") == "workflow_dispatch"
         and run.get("head_branch") == "main"
         and run.get("path") == ".github/workflows/publish.yml"
-        and run.get("display_title") == "action:build:pool:private"
+        and run.get("display_title") in {"action:build:pool:public", "action:build:pool:private"}
         and (run.get("head_repository") or {}).get("full_name") == MPV_REPO
         and re.fullmatch(r"[0-9a-f]{40}", run.get("head_sha", "")) is not None
     )
@@ -1041,7 +1167,7 @@ def recover_native_groups(checkout: Path, scratch: Path) -> list[str]:
     for summary in runs[:12]:
         if (summary.get("status") != "completed"
                 or summary.get("event") != "workflow_dispatch"
-                or summary.get("displayTitle") != "action:build:pool:private"):
+                or summary.get("displayTitle") not in {"action:build:pool:public", "action:build:pool:private"}):
             continue
         run_id = summary["databaseId"]
         run = gh_json("api", f"repos/{MPV_REPO}/actions/runs/{run_id}")
@@ -1140,7 +1266,7 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
     changelog = worktree / "CHANGELOG.md"
     changelog_source = changelog.read_text(encoding="utf-8")
     unreleased = "## [Unreleased]\n\n"
-    pin_note = "- Refresh pinned MPV and FFmpeg artifacts to the verified private native build.\n\n"
+    pin_note = "- Refresh pinned MPV and FFmpeg artifacts to the verified public native build.\n\n"
     if pin_note.rstrip() not in changelog_source:
         if changelog_source.count(unreleased) != 1:
             raise ReleaseError("Expected one [Unreleased] section before committing native pins.")
@@ -1174,19 +1300,17 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
 def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref: str = "main",
               apple_runner_pool: str = "auto", ios_runner_pool: str = "auto",
               tvos_runner_pool: str = "auto") -> dict:
-    apple_runner_pool = select_apple_runner_pool(apple_runner_pool)
-    ios_runner_pool = select_apple_runner_pool(ios_runner_pool)
-    tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
-    if tvos_runner_pool == "private":
-        apple_runner_pool = ios_runner_pool = "private"
-    elif ios_runner_pool == "private":
-        apple_runner_pool = "private"
-    apple_route = apple_workflow_route(tvos_runner_pool, apple_runner_pool, ios_runner_pool)
+    # CI has no signing lane; every Apple validation job is unsigned and hosted.
+    apple_route = "hosted"
     if source_ref != "main":
         ensure_frozen_release_source(source_ref, commit_sha)
-    ci_title = f"action:ci:pool:private:apple:{apple_route}"
+    ci_title = f"action:ci:pool:public:apple:{apple_route}"
     existing = matching_run(
-        PLEZY_REPO, CI_WORKFLOW, commit_sha, ref=source_ref, expected_title=ci_title,
+        PLEZY_REPO, CI_WORKFLOW, commit_sha, ref=source_ref,
+        expected_title=(ci_title, "action:ci:pool:private:apple:hosted",
+                        "action:ci:pool:private:apple:private",
+                        "action:ci:pool:private:apple:split",
+                        "action:ci:pool:private:apple:private-ios"),
     )
     if existing:
         if existing.get("status") == "completed" and existing.get("conclusion") != "success":
@@ -1196,7 +1320,7 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref:
                 PLEZY_REPO,
                 existing,
                 "Pleazyng CI",
-                private_apple=execution_profile != "hybrid" or apple_route != "hosted",
+                private_apple=False,
                 cancel_failed_preflight=True,
             )
         if execution_profile != "hybrid" or run_has_successful_job(
@@ -1208,9 +1332,9 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref:
             f"CI run {existing['databaseId']} passed without the required Windows ARM64 job; "
             "dispatching the hybrid profile."
         )
-    fields = {"action": "ci", "runner_pool": "private", "execution_profile": execution_profile,
+    fields = {"action": "ci", "runner_pool": "public", "execution_profile": execution_profile,
               "build_linux_packages": "true"}
-    fields["apple_runner_pool"] = apple_route
+    fields["apple_runner_pool"] = "hosted"
     return dispatch(
         PLEZY_REPO,
         CI_WORKFLOW,
@@ -1222,8 +1346,11 @@ def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid", source_ref:
     )
 
 
-def candidate_build_title(version: str) -> str:
-    return f"action:build:pool:private:mode:release:version:{version}"
+def candidate_build_title(
+    version: str, *, private_apple_signing_unavailable: bool = False
+) -> str:
+    prefix = "apple-signing-unavailable:" if private_apple_signing_unavailable else ""
+    return f"{prefix}action:build:pool:public:mode:release:version:{version}"
 
 
 def candidate_build_runner_retry_title(version: str, failed_run_id: int) -> str:
@@ -1241,9 +1368,11 @@ def ensure_candidate_build(
     tvos_runner_pool: str = "auto",
     macos_runner_pool: str = "auto",
     ios_runner_pool: str = "auto",
+    private_apple_signing_unavailable: bool = False,
+    allow_private_apple_retry: bool = False,
 ) -> dict:
     """Require a complete nonpublishing release-mode build before creating the immutable tag."""
-    watch_hosted_tvos = tvos_runner_pool == "auto"
+    watch_hosted_tvos = tvos_runner_pool in {"auto", "hosted"}
     tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
     macos_runner_pool = select_apple_runner_pool(macos_runner_pool)
     ios_runner_pool = select_apple_runner_pool(ios_runner_pool)
@@ -1278,7 +1407,7 @@ def ensure_candidate_build(
     def candidate_fields(pool: str, retry_of: int | None = None) -> dict[str, str]:
         fields = {
             "action": "build",
-            "runner_pool": "private",
+            "runner_pool": "public",
             "execution_profile": execution_profile,
             "mode": "release",
             "build_version": version,
@@ -1286,6 +1415,7 @@ def ensure_candidate_build(
             "include_webos_release": "true",
             "include_tizen_build": "true",
             "include_apple_store_build": "true" if include_apple_store_build else "false",
+            "private_apple_signing_unavailable": "true" if private_apple_signing_unavailable else "false",
             "tvos_runner_pool": apple_workflow_route(pool, macos_runner_pool, ios_runner_pool),
             "subtitle_gpu_backend": "cpu",
             "prepare_homebrew_cask": "true" if prepare_homebrew_cask else "false",
@@ -1297,30 +1427,46 @@ def ensure_candidate_build(
 
     source = matching_run(
         PLEZY_REPO, RELEASE_WORKFLOW, commit_sha, ref="main",
-        expected_title=candidate_build_title(version),
+        expected_title=(
+            candidate_build_title(
+                version, private_apple_signing_unavailable=private_apple_signing_unavailable
+            ),
+            candidate_build_title(
+                version, private_apple_signing_unavailable=private_apple_signing_unavailable
+            ).replace("pool:public", "pool:private"),
+        ),
     )
     retry_of: int | None = None
     if source and source.get("status") == "completed" and source.get("conclusion") != "success":
-        try:
-            verify_unacquired_hosted_tvos_run(
-                source["databaseId"], commit_sha, version, action="build"
-            )
-        except RunnerAcquisitionError as error:
+        if not allow_private_apple_retry:
             raise ReleaseError(
-                f"Release-mode candidate run {source['databaseId']} concluded "
-                f"{source.get('conclusion')}; the failure was not a verified hosted tvOS "
-                f"runner-acquisition cancellation ({error}). Refusing to tag it."
-            ) from error
-        retry_of = source["databaseId"]
-        print(
-            f"GitHub canceled tvOS before assigning a runner in candidate run {retry_of}; "
-            "retrying the exact source with the private Apple JIT route.", flush=True
-        )
+                f"Candidate run {source['databaseId']} concluded {source.get('conclusion')}; "
+                "hosted failures never reroute to private JIT automatically. Repair the failed lane "
+                "explicitly before dispatching a separate recovery."
+            )
+        else:
+            try:
+                verify_unacquired_hosted_tvos_run(
+                    source["databaseId"], commit_sha, version, action="build"
+                )
+            except RunnerAcquisitionError as error:
+                raise ReleaseError(
+                    f"Release-mode candidate run {source['databaseId']} concluded "
+                    f"{source.get('conclusion')}; the failure was not a verified hosted tvOS "
+                    f"runner-acquisition cancellation ({error}). Refusing to tag it."
+                ) from error
+            retry_of = source["databaseId"]
+            print(
+                f"GitHub canceled tvOS before assigning a runner in candidate run {retry_of}; "
+                "retrying the exact source with the private Apple JIT route.", flush=True
+            )
 
     if retry_of is not None:
         tvos_runner_pool = "private"
     run_title = (candidate_build_runner_retry_title(version, retry_of)
-                 if retry_of is not None else candidate_build_title(version))
+                 if retry_of is not None else candidate_build_title(
+                     version, private_apple_signing_unavailable=private_apple_signing_unavailable
+                 ))
     existing = (source if retry_of is None else matching_run(
         PLEZY_REPO, RELEASE_WORKFLOW, commit_sha, ref="main", expected_title=run_title,
     ))
@@ -1334,6 +1480,12 @@ def ensure_candidate_build(
                 watch_hosted_tvos=watch_hosted_tvos and tvos_runner_pool == "hosted",
             )
         if existing.get("conclusion") != "success":
+            if not allow_private_apple_retry:
+                raise ReleaseError(
+                    f"Release-mode candidate run {existing['databaseId']} concluded "
+                    f"{existing.get('conclusion')}; hosted failures never reroute to private JIT "
+                    "automatically. Repair the failed lane explicitly before dispatching a separate recovery."
+                )
             if retry_of is not None or source is None or existing.get("databaseId") != source.get("databaseId"):
                 raise ReleaseError(
                     f"Release-mode candidate retry run {existing['databaseId']} concluded "
@@ -1402,6 +1554,12 @@ def ensure_candidate_build(
             f"Private tvOS retry {result.get('databaseId')} concluded "
             f"{result.get('conclusion')}; inspect its runner and build evidence."
         )
+    if not allow_private_apple_retry:
+        raise ReleaseError(
+            f"Release-mode candidate run {result.get('databaseId')} concluded "
+            f"{result.get('conclusion')}; hosted failures never reroute to private JIT automatically. "
+            "Repair the failed lane explicitly before dispatching a separate recovery."
+        )
     try:
         verify_unacquired_hosted_tvos_run(
             result["databaseId"], commit_sha, version, action="build"
@@ -1418,6 +1576,8 @@ def ensure_candidate_build(
         prepare_homebrew_cask=prepare_homebrew_cask,
         include_webos_build=include_webos_build,
         tvos_runner_pool="private",
+        private_apple_signing_unavailable=private_apple_signing_unavailable,
+        allow_private_apple_retry=allow_private_apple_retry,
     )
 
 
@@ -1585,8 +1745,10 @@ def ensure_release(
     packaging_source_sha: str | None = None,
     workflow_source_sha: str | None = None,
     runner_acquisition_retry_of: int | None = None,
+    private_apple_signing_unavailable: bool = False,
+    allow_private_apple_retry: bool = False,
 ) -> dict:
-    watch_hosted_tvos = tvos_runner_pool == "auto"
+    watch_hosted_tvos = tvos_runner_pool in {"auto", "hosted"}
     tvos_runner_pool = select_apple_runner_pool(tvos_runner_pool)
     macos_runner_pool = select_apple_runner_pool(macos_runner_pool)
     ios_runner_pool = select_apple_runner_pool(ios_runner_pool)
@@ -1602,7 +1764,9 @@ def ensure_release(
         if candidate_ref != f"{tag}-candidate.{commit_sha}":
             raise ReleaseError("A captured main build requires its exact version/SHA candidate reference.")
         ensure_frozen_release_source(candidate_ref, commit_sha)
-    run_title = f"action:release:pool:private:tag:{tag}"
+    run_title = f"action:release:pool:public:tag:{tag}"
+    if private_apple_signing_unavailable:
+        run_title = f"apple-signing-unavailable:{run_title}"
     repair = packaging_source_sha is not None
     if runner_acquisition_retry_of is not None:
         if (repair or reuse_platform_run_id or reuse_repaired_run_id is not None
@@ -1632,10 +1796,15 @@ def ensure_release(
             RELEASE_WORKFLOW,
             commit_sha,
             ref="main",
-            expected_title=run_title,
+            expected_title=(run_title, run_title.replace("pool:public", "pool:private")),
         )
 
     def retry_after_unassigned_tvos(failed_run: dict) -> dict:
+        if not allow_private_apple_retry:
+            raise ReleaseError(
+                "Hosted tvOS did not acquire a runner; hosted failures never reroute to private JIT automatically. "
+                "Repair the failed lane explicitly before dispatching a separate signed recovery."
+            )
         source_run_id = failed_run.get("databaseId")
         try:
             verify_unacquired_hosted_tvos_run(
@@ -1729,7 +1898,7 @@ def ensure_release(
                 RELEASE_WORKFLOW,
                 commit_sha,
                 ref="main",
-                expected_title=run_title,
+                expected_title=(run_title, run_title.replace("pool:public", "pool:private")),
             )
     if existing:
         if existing.get("status") == "completed" and existing.get("conclusion") != "success":
@@ -1791,7 +1960,7 @@ def ensure_release(
     ensure_remote_main_sha(dispatch_sha, f"dispatching the {tag} release build")
     fields = {
         "action": "release",
-        "runner_pool": "private",
+        "runner_pool": "public",
         "execution_profile": execution_profile,
         "mode": "release",
         "build_version": tag.removeprefix("v"),
@@ -1799,6 +1968,7 @@ def ensure_release(
         "include_webos_release": "true" if include_webos_release else "false",
         "include_tizen_build": "true",
         "include_apple_store_build": "true" if include_apple_store_build else "false",
+        "private_apple_signing_unavailable": "true" if private_apple_signing_unavailable else "false",
         "prepare_homebrew_cask": "true" if prepare_homebrew_cask else "false",
     }
     if candidate_ref:
@@ -2216,7 +2386,7 @@ def validate_release_outputs(
     version: str,
     *,
     include_webos_release: bool,
-    execution_profile: str = "private",
+    execution_profile: str = "hybrid",
     include_apple_store_build: bool = False,
     prepare_homebrew_cask: bool = False,
 ) -> None:
@@ -2613,15 +2783,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--apple-arm-runner-pool", "--macos-runner-pool", dest="macos_runner_pool",
         choices=("auto", "hosted", "private"), default="auto",
-        help="Select the macOS package and macOS native reliability route; private sends only the Mac jobs to Apple JIT.",
+        help="Select macOS packaging; private Apple JIT is used only when Homebrew signing is requested.",
     )
     parser.add_argument(
         "--tvos-runner-pool", choices=("auto", "hosted", "private"), default="auto",
-        help="Select the iOS/tvOS package route; auto uses hosted Macs and retries tvOS privately after verified queue cancellation.",
+        help="Select the iOS/tvOS package route; auto uses hosted Macs unless signing was requested.",
     )
     parser.add_argument(
         "--ios-runner-pool", choices=("auto", "hosted", "private"), default="auto",
-        help="Select iOS separately; private runs iOS on Apple JIT while tvOS can remain hosted and parallel.",
+        help="Select iOS separately; private Apple JIT is reserved for explicitly requested signing.",
     )
     parser.add_argument(
         "--reuse-platform-run", type=int,
@@ -2645,9 +2815,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--execution-profile",
-        choices=("private", "hybrid"),
+        choices=("hybrid",),
         default=None,
-        help="Use hosted runners for compatible jobs by default; private JIT remains available for constrained work.",
+        help="Use public GitHub-hosted runners for compatible jobs; the verified webOS storage lane remains private.",
     )
     parser.add_argument(
         "--include-apple-store-build", action="store_true",
@@ -2758,7 +2928,9 @@ def main() -> int:
     progress = {"version": args.version, "execution_profile": args.execution_profile,
                 "status": "running", "stage": stage,
                 "include_apple_store_build": args.include_apple_store_build,
-                "prepare_homebrew_cask": args.prepare_homebrew_cask}
+                "prepare_homebrew_cask": args.prepare_homebrew_cask,
+                "requested_include_apple_store_build": args.include_apple_store_build,
+                "requested_prepare_homebrew_cask": args.prepare_homebrew_cask}
 
     def save_progress() -> None:
         progress_path.write_text(json.dumps(progress, indent=2) + "\n", encoding="utf-8")
@@ -2844,7 +3016,7 @@ def main() -> int:
         if args.reuse_platform_run:
             repair_options = {}
             if packaging_repair:
-                repair_title = f"action:release:pool:private:tag:{tag}:repair:{pin_sha}"
+                repair_title = f"action:release:pool:public:tag:{tag}:repair:{pin_sha}"
                 prior_repair = matching_packaging_repair_run(repair_title)
                 workflow_sha = (prior_repair["headSha"] if prior_repair else
                                 gh_json("api", f"repos/{PLEZY_REPO}/branches/main")["commit"]["sha"])
@@ -2893,18 +3065,59 @@ def main() -> int:
         progress["stage"] = stage
         save_progress()
         apple_pool = getattr(args, "macos_runner_pool", getattr(args, "apple_arm_runner_pool", "auto"))
-        if apple_pool == "auto":
-            apple_pool = select_apple_runner_pool(apple_pool)
         tvos_pool = getattr(args, "tvos_runner_pool", "auto")
         ios_pool = getattr(args, "ios_runner_pool", "auto")
+        signing_requested = args.include_apple_store_build or args.prepare_homebrew_cask
+        if not signing_requested:
+            # Unsigned Apple builds never probe or wait for the home Mac.
+            apple_pool = tvos_pool = ios_pool = "hosted"
+        else:
+            # Auto selects private JIT only for the requested signed lane. A
+            # caller may explicitly choose hosted signing if that route fits.
+            if args.include_apple_store_build:
+                if tvos_pool == "auto":
+                    tvos_pool = "private"
+                if ios_pool == "auto":
+                    ios_pool = "private"
+            if args.prepare_homebrew_cask and apple_pool == "auto":
+                apple_pool = "private"
+        explicit_private_apple = any(
+            pool == "private" for pool in (apple_pool, tvos_pool, ios_pool)
+        )
+        apple_host_available = True
+        if signing_requested and explicit_private_apple:
+            apple_host_available = private_apple_host_reachable()
+            if apple_host_available:
+                print("Private Apple signing host is reachable over Tailnet SSH.", flush=True)
+        private_apple_signing_unavailable = signing_requested and explicit_private_apple and not apple_host_available
+        if private_apple_signing_unavailable:
+            print(
+                "Private Apple signing host is unreachable over Tailnet SSH. Keeping the complete "
+                "unsigned Apple packages on hosted Macs and omitting signed Store and notarized "
+                "Homebrew outputs.", flush=True
+            )
+            apple_pool = tvos_pool = ios_pool = "hosted"
+            args.include_apple_store_build = False
+            args.prepare_homebrew_cask = False
+        elif not signing_requested:
+            print("Apple builds are unsigned; all Apple jobs use public GitHub-hosted Macs.", flush=True)
+        progress["private_apple_signing_unavailable"] = private_apple_signing_unavailable
+        progress["apple_signing_status"] = (
+            "unavailable_private_jit" if private_apple_signing_unavailable else "available_or_hosted"
+        )
+        progress["include_apple_store_build"] = args.include_apple_store_build
+        progress["prepare_homebrew_cask"] = args.prepare_homebrew_cask
+        save_progress()
         if frozen:
             # One main workflow captures the source for reusable CI and every
-            # platform. Existing main-only private runner authorization remains
-            # unchanged; the stable tag is created inside only after CI passes.
+            # platform. Compatible jobs use public hosted runners; only the
+            # requested Apple signing lane and webOS capacity overflow use JIT.
             captured = ensure_release(tag, pin_sha, include_webos_release=args.include_webos_release,
                 execution_profile=args.execution_profile, include_apple_store_build=args.include_apple_store_build,
                 prepare_homebrew_cask=args.prepare_homebrew_cask, candidate_ref=candidate_ref,
-                tvos_runner_pool=tvos_pool, macos_runner_pool=apple_pool, ios_runner_pool=ios_pool)
+                tvos_runner_pool=tvos_pool, macos_runner_pool=apple_pool, ios_runner_pool=ios_pool,
+                private_apple_signing_unavailable=private_apple_signing_unavailable,
+                allow_private_apple_retry=False)
             ci = {"databaseId": captured["databaseId"]}
             progress["release_run"] = captured["databaseId"]
             progress["ci_mode"] = "embedded"
@@ -2921,9 +3134,9 @@ def main() -> int:
             ci = ensure_ci(
                 ci_source,
                 execution_profile=args.execution_profile,
-                apple_runner_pool=apple_pool,
-                ios_runner_pool=ios_pool,
-                tvos_runner_pool=tvos_pool,
+                apple_runner_pool="hosted",
+                ios_runner_pool="hosted",
+                tvos_runner_pool="hosted",
             )
         progress["ci_run"] = ci["databaseId"]
         # Store variants are explicit preparation, never implied by publishing.
@@ -2957,6 +3170,8 @@ def main() -> int:
             tvos_runner_pool=tvos_pool,
             macos_runner_pool=apple_pool,
             ios_runner_pool=ios_pool,
+            private_apple_signing_unavailable=private_apple_signing_unavailable,
+            allow_private_apple_retry=False,
             **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"rebuild_macos": True} if args.rebuild_macos else {}),
             **({"rebuild_tvos": True} if args.rebuild_tvos else {}),
@@ -3083,6 +3298,8 @@ def main() -> int:
             "release_published": release_published,
             "include_apple_store_build": include_apple_store_build,
             "prepare_homebrew_cask": args.prepare_homebrew_cask,
+            "private_apple_signing_unavailable": private_apple_signing_unavailable,
+            "apple_signing_status": progress.get("apple_signing_status", "available_or_hosted"),
             "published_channels": published_channels,
             "skipped_channels": skipped_channels,
             "channel_failures": channel_failures,
@@ -3096,7 +3313,7 @@ def main() -> int:
             "tizen_built": True,
             "tizen_seller_office_submission": "not configured; tester artifact only",
             "microsoft_store": microsoft_store,
-            "runner_pool": "private broker pool for constrained jobs",
+            "runner_pool": "public GitHub-hosted runners by default; private Apple signing and verified webOS storage overflow only",
             "execution_profile": args.execution_profile,
             "publication_scope": "github-and-configured-channels" if args.publish else "github-only" if args.publish_github_only else "draft-only",
         }

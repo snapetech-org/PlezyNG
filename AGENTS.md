@@ -1,25 +1,32 @@
-## Runner policy — owner directive, 2026-11-10
+## Runner policy — owner directive, 2026-11-13
 
-Use compatible public GitHub-hosted runners by default, preserving each job's
-required OS and architecture. Reserve private ephemeral JIT runners for signed
-builds or work whose hardware, network, files, storage, or tooling requirements
-GitHub-hosted runners cannot meet. Signed builds may use the existing compatible
-hosted route; this directive does not require moving every signing job to JIT.
-Public pull-request code must run without secrets and with minimal
-permissions; use disposable isolated execution when the task requires tighter
-egress or environment controls. Preserve active builds and other agents' work.
-Do not restart the broker while it owns running guests. Validate each workflow
-revision on the runner class it selects; rerunning an old run uses its old
-revision.
+Use compatible public GitHub-hosted runners first for every build, test, scan,
+package, release, and delivery job. Preserve the target OS and architecture.
+The MacBook Air is not a build dependency: unsigned Apple builds, mpv builds,
+and ordinary Apple tests use hosted runners and must continue when that Mac is
+offline.
 
-The shared JIT inventory lives in
-`snapetech-org/packer/scripts/shared-jit-runner-pool/`. Check source routing,
-runner-group access, deployed broker policy, and live capacity when a task
-needs a private JIT route.
+Private ephemeral JIT is not a general build pool. Use it only for requested
+Apple signing/notarization and the one verified webOS capacity overflow. The
+webOS source build preflights for 60 GiB under `RUNNER_TEMP`; this organization
+has no configured GitHub larger runners, and standard Ubuntu hosted runners
+provide only 14 GB. Keep that webOS lane on Linux x64 JIT until the build fits a
+standard public runner or a larger hosted runner is configured. Do not use
+private JIT for MPV builds, ordinary Apple builds, or jobs that merely seem
+heavy. If the MacBook is offline, report the signed Apple lane unavailable and
+continue unsigned Apple artifacts and the rest of the release.
 
-Public-fork and other untrusted code remains isolated in a disposable VM-backed
-JIT sandbox with no secrets, minimal permissions, and restricted egress. Do not
-widen trusted runner-group access to make untrusted code run.
+Update stale private-only instructions, selectors, and workflow routes when
+found. A rerun uses its original workflow revision; validate each changed
+revision on its selected GitHub-hosted runner class. Preserve active builds and
+other work, and do not restart the broker while it owns running guests. Consult
+the shared JIT inventory at
+`snapetech-org/packer/scripts/shared-jit-runner-pool/` only when an approved
+overflow or Apple signing route needs it.
+
+Public pull-request code runs without secrets and with minimal permissions.
+Use GitHub-hosted disposable execution for untrusted code; never widen trusted
+runner-group access to admit it.
 
 ## CodeQL
 

@@ -30,13 +30,12 @@ AI-assisted pull requests must state in the PR description which model(s) were u
 
 ### Code Quality Checks
 
-`CI - Sanity Checks` is manually dispatched from GitHub Actions and defaults to
-the hybrid profile: compatible jobs use GitHub-hosted runners, while Apple or
-other private-resource jobs use ephemeral JIT runners. `runner_pool=private`
-selects the broker used for constrained jobs; it does not require every CI job
-to run privately. CI does not trigger automatically for pushes or pull
-requests. PR descriptions should report focused validation; after changes merge
-to `main`, dispatch CI against that exact SHA before a release build.
+`CI - Sanity Checks` is manually dispatched from GitHub Actions and uses the
+hybrid profile on public GitHub-hosted runners. Dispatch with
+`runner_pool=public`; there is no private-pool selector for compatible CI
+jobs. CI does not trigger automatically for pushes or pull requests. PR
+descriptions should report focused validation; after changes merge to `main`,
+dispatch CI against that exact SHA before a release build.
 
 1. **Code Formatting**: Ensures code follows Dart and native formatting standards
    - Run locally: `scripts/format_dart.sh` to format Dart files
@@ -70,8 +69,10 @@ against the exact source before creating or checking the immutable version tag.
 
 Use `scripts/release_all_platforms.py` to prepare and run a versioned release; pushing a version tag does not start a build.
 The controller validates the exact `main` source, runs CI, creates or verifies the immutable version tag, builds the
-required platform artifacts, checks release coverage, and then publishes according to the selected option. Compatible
-GitHub-hosted runners are the default; private JIT is reserved for constrained work such as the webOS build. Every
+required platform artifacts, checks release coverage, and then publishes according to the selected option. Public
+GitHub-hosted runners are required for compatible work. Private JIT is limited to requested Apple signing and the
+webOS source-build storage overflow, which needs 60 GiB on a standard runner with 14 GB. The MacBook Air is not a
+build dependency for unsigned Apple or MPV builds. Every
 versioned release includes Android, Linux x64/arm64, Windows x64/arm64, universal macOS, iOS, tvOS, Tizen and webOS.
 See [the full release build runbook](docs/maintainers/full-release-build.md) for the complete process and recovery
 procedures, and [release channels](docs/maintainers/release-channels.md) for downstream delivery status.

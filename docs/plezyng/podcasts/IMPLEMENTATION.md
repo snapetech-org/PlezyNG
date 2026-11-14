@@ -38,7 +38,7 @@ Confidence: high in this source assessment; no runtime validation performed.
 
 ## Verification and constraints
 
-Use the attached GitHub connector for all remote reads/writes. No builds, tests, analyzer, formatter or CI runs in this task. Keep the feature on its own review branch and preserve other active work. Existing workflows are manual dispatch and currently route to private JIT; compatible hosted runners may be used for jobs that meet their OS, architecture, trust, and hardware requirements under root `AGENTS.md`.
+Use the attached GitHub connector for all remote reads/writes. No builds, tests, analyzer, formatter or CI runs in this task. Keep the feature on its own review branch and preserve other active work. This assessment recorded the runner policy that existed on 2026-10-30. Current work follows root `AGENTS.md`: compatible jobs use public GitHub-hosted runners, with private JIT reserved for explicitly requested Apple signing and the documented webOS storage overflow. Podcast work has no separate private-runner requirement.
 
 Source completion does not establish device behavior, provider availability or release qualification. Validation should cover private-feed redirects, profile changes during requests, a real Audiobookshelf podcast library, resumed/offline playback, keyboard/remote traversal and long/RTL text.
 
